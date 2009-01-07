@@ -946,6 +946,83 @@ chat_lookup_contact (EmpathyTpChat *chat,
 	return NULL;
 }
 
+typedef struct
+{
+    TpHandle old_handle;
+    guint reason;
+    const gchar *message;
+} ContactRenameData;
+
+static ContactRenameData*
+contact_rename_data_new (TpHandle handle,
+			 guint reason,
+			 const gchar* message)
+{
+	ContactRenameData *data = g_new (ContactRenameData, 1);
+	data->old_handle = handle;
+	data->reason = reason;
+	data->message = message;
+
+	return data;
+}
+
+static void
+contact_rename_data_free (ContactRenameData* data)
+{
+    g_free (data);
+}
+
+static void
+tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
+                                 guint                    n_contacts,
+                                 EmpathyContact * const * contacts,
+                                 guint                    n_failed,
+                                 const TpHandle          *failed,
+                                 const GError            *error,
+                                 gpointer                 user_data,
+                                 GObject                 *chat)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (chat);
+	const TpIntSet *members;
+	TpHandle handle;
+	EmpathyContact *old = NULL, *new = NULL;
+
+	if (error) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	/* renamed members can only be delivered one at a time */
+	g_warn_if_fail (n_contacts == 1);
+
+	ContactRenameData *rename_data = (ContactRenameData*) user_data;
+
+	new = contacts[0];
+
+	members = tp_channel_group_get_members (priv->channel);
+	handle = empathy_contact_get_handle (new);
+
+	old = chat_lookup_contact (EMPATHY_TP_CHAT (chat),
+				   rename_data->old_handle, TRUE);
+
+	/* Make sure the contact is still member */
+	if (tp_intset_is_member (members, handle)) {
+		priv->members = g_list_prepend (priv->members,
+			g_object_ref (new));
+
+		if (old != NULL) {
+			g_signal_emit_by_name (chat, "member-renamed",
+					       old, new, rename_data->reason,
+					       rename_data->message);
+			g_object_unref (old);
+		}
+	}
+
+	tp_chat_update_remote_contact (EMPATHY_TP_CHAT (chat));
+	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
+}
+
+
 static void
 tp_chat_group_members_changed_cb (TpChannel     *self,
 				  gchar         *message,
@@ -961,6 +1038,24 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 	EmpathyContact *contact;
 	EmpathyContact *actor_contact = NULL;
 	guint i;
+	ContactRenameData *rename_data;
+
+	/* Contact renamed */
+	if (reason == TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED) {
+		/* there can only be a single 'added' and a single 'removed' handle */
+		g_warn_if_fail(removed->len == 1);
+		g_warn_if_fail(added->len == 1);
+
+		TpHandle old_handle = g_array_index (removed, guint, 0);
+
+		rename_data = contact_rename_data_new (old_handle, reason, message);
+		empathy_tp_contact_factory_get_from_handles (priv->factory,
+			added->len, (TpHandle *) added->data,
+			tp_chat_got_renamed_contacts_cb,
+			rename_data, (GDestroyNotify) contact_rename_data_free,
+			G_OBJECT (chat));
+		return;
+	}
 
 	if (actor != 0) {
 		actor_contact = chat_lookup_contact (chat, actor, FALSE);

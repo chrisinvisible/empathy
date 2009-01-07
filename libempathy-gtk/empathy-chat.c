@@ -1791,6 +1791,8 @@ chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 			 gboolean        is_member,
 			 EmpathyChat    *chat)
 {
+	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED != reason);
+
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	const gchar *name = empathy_contact_get_name (contact);
 	gchar *str;
@@ -1807,6 +1809,30 @@ chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 
 	empathy_chat_view_append_event (chat->view, str);
 	g_free (str);
+}
+
+static void
+chat_member_renamed_cb (EmpathyTpChat  *tp_chat,
+			 EmpathyContact *old_contact,
+			 EmpathyContact *new_contact,
+			 guint           reason,
+			 gchar          *message,
+			 EmpathyChat    *chat)
+{
+	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED == reason);
+
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	if (priv->block_events_timeout_id == 0) {
+		gchar *str;
+
+		str = g_strdup_printf (_("%s is now known as %s"),
+				       empathy_contact_get_name (old_contact),
+				       empathy_contact_get_name (new_contact));
+		empathy_chat_view_append_event (chat->view, str);
+		g_free (str);
+	}
+
 }
 
 static gboolean
@@ -2535,6 +2561,9 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 			  chat);
 	g_signal_connect (tp_chat, "members-changed",
 			  G_CALLBACK (chat_members_changed_cb),
+			  chat);
+	g_signal_connect (tp_chat, "member-renamed",
+			  G_CALLBACK (chat_member_renamed_cb),
 			  chat);
 	g_signal_connect_swapped (tp_chat, "notify::remote-contact",
 				  G_CALLBACK (chat_remote_contact_changed_cb),

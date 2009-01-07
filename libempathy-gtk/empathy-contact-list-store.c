@@ -103,6 +103,12 @@ static void             contact_list_store_members_changed_cb        (EmpathyCon
 								      gchar                         *message,
 								      gboolean                       is_member,
 								      EmpathyContactListStore       *store);
+static void             contact_list_store_member_renamed_cb         (EmpathyContactList            *list_iface,
+								      EmpathyContact                *old_contact,
+								      EmpathyContact                *new_contact,
+								      guint                          reason,
+								      gchar                         *message,
+								      EmpathyContactListStore       *store);
 static void             contact_list_store_groups_changed_cb         (EmpathyContactList            *list_iface,
 								      EmpathyContact                *contact,
 								      gchar                         *group,
@@ -174,6 +180,10 @@ contact_list_store_iface_setup (gpointer user_data)
 	GList                       *contacts, *l;
 
 	/* Signal connection. */
+	g_signal_connect (priv->list,
+			  "member-renamed",
+			  G_CALLBACK (contact_list_store_member_renamed_cb),
+			  store);
 	g_signal_connect (priv->list,
 			  "members-changed",
 			  G_CALLBACK (contact_list_store_members_changed_cb),
@@ -308,6 +318,9 @@ contact_list_store_dispose (GObject *object)
 	}
 	g_list_free (contacts);
 
+	g_signal_handlers_disconnect_by_func (priv->list,
+					      G_CALLBACK (contact_list_store_member_renamed_cb),
+					      object);
 	g_signal_handlers_disconnect_by_func (priv->list,
 					      G_CALLBACK (contact_list_store_members_changed_cb),
 					      object);
@@ -832,6 +845,49 @@ contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 
 		contact_list_store_remove_contact (store, contact);
 	}
+}
+
+static void
+contact_list_store_member_renamed_cb (EmpathyContactList      *list_iface,
+				      EmpathyContact          *old_contact,
+				      EmpathyContact          *new_contact,
+				      guint                    reason,
+				      gchar                   *message,
+				      EmpathyContactListStore *store)
+{
+	EmpathyContactListStorePriv *priv;
+
+	priv = GET_PRIV (store);
+
+	DEBUG ("Contact %s (%d) renamed to %s (%d)",
+		empathy_contact_get_id (old_contact),
+		empathy_contact_get_handle (old_contact),
+		empathy_contact_get_id (new_contact),
+		empathy_contact_get_handle (new_contact));
+
+	/* connect to signals of new contact */
+	g_signal_connect (new_contact, "notify::presence",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (new_contact, "notify::presence-message",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (new_contact, "notify::name",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (new_contact, "notify::avatar",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (new_contact, "notify::capabilities",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	contact_list_store_add_contact (store, new_contact);
+
+	/* disconnect from old contact */
+	g_signal_handlers_disconnect_by_func (old_contact,
+					      G_CALLBACK (contact_list_store_contact_updated_cb),
+					      store);
+	contact_list_store_remove_contact (store, old_contact);
 }
 
 static void

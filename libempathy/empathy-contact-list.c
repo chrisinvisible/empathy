@@ -54,6 +54,15 @@ contact_list_base_init (gpointer klass)
 	static gboolean initialized = FALSE;
 
 	if (!initialized) {
+		g_signal_new ("member-renamed",
+			      G_TYPE_FROM_CLASS (klass),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      _empathy_marshal_VOID__OBJECT_OBJECT_UINT_STRING,
+			      G_TYPE_NONE,
+			      4, EMPATHY_TYPE_CONTACT, EMPATHY_TYPE_CONTACT, G_TYPE_UINT, G_TYPE_STRING);
+
 		g_signal_new ("members-changed",
 			      G_TYPE_FROM_CLASS (klass),
 			      G_SIGNAL_RUN_LAST,
