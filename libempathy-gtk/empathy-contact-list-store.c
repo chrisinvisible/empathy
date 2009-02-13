@@ -803,6 +803,38 @@ contact_list_store_inibit_active_cb (EmpathyContactListStore *store)
 }
 
 static void
+contact_list_store_add_contact_and_connect (EmpathyContactListStore *store, EmpathyContact *contact)
+{
+	g_signal_connect (contact, "notify::presence",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (contact, "notify::presence-message",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (contact, "notify::name",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (contact, "notify::avatar",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+	g_signal_connect (contact, "notify::capabilities",
+			  G_CALLBACK (contact_list_store_contact_updated_cb),
+			  store);
+
+	contact_list_store_add_contact (store, contact);
+}
+
+static void
+contact_list_store_remove_contact_and_disconnect (EmpathyContactListStore *store, EmpathyContact *contact)
+{
+	g_signal_handlers_disconnect_by_func (contact,
+					      G_CALLBACK (contact_list_store_contact_updated_cb),
+					      store);
+
+	contact_list_store_remove_contact (store, contact);
+}
+
+static void
 contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 				       EmpathyContact          *contact,
 				       EmpathyContact          *actor,
@@ -821,29 +853,9 @@ contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 		is_member ? "added" : "removed");
 
 	if (is_member) {
-		g_signal_connect (contact, "notify::presence",
-				  G_CALLBACK (contact_list_store_contact_updated_cb),
-				  store);
-		g_signal_connect (contact, "notify::presence-message",
-				  G_CALLBACK (contact_list_store_contact_updated_cb),
-				  store);
-		g_signal_connect (contact, "notify::name",
-				  G_CALLBACK (contact_list_store_contact_updated_cb),
-				  store);
-		g_signal_connect (contact, "notify::avatar",
-				  G_CALLBACK (contact_list_store_contact_updated_cb),
-				  store);
-		g_signal_connect (contact, "notify::capabilities",
-				  G_CALLBACK (contact_list_store_contact_updated_cb),
-				  store);
-
-		contact_list_store_add_contact (store, contact);
+		contact_list_store_add_contact_and_connect (store, contact);
 	} else {
-		g_signal_handlers_disconnect_by_func (contact,
-						      G_CALLBACK (contact_list_store_contact_updated_cb),
-						      store);
-
-		contact_list_store_remove_contact (store, contact);
+		contact_list_store_remove_contact_and_disconnect (store, contact);
 	}
 }
 
@@ -865,29 +877,11 @@ contact_list_store_member_renamed_cb (EmpathyContactList      *list_iface,
 		empathy_contact_get_id (new_contact),
 		empathy_contact_get_handle (new_contact));
 
-	/* connect to signals of new contact */
-	g_signal_connect (new_contact, "notify::presence",
-			  G_CALLBACK (contact_list_store_contact_updated_cb),
-			  store);
-	g_signal_connect (new_contact, "notify::presence-message",
-			  G_CALLBACK (contact_list_store_contact_updated_cb),
-			  store);
-	g_signal_connect (new_contact, "notify::name",
-			  G_CALLBACK (contact_list_store_contact_updated_cb),
-			  store);
-	g_signal_connect (new_contact, "notify::avatar",
-			  G_CALLBACK (contact_list_store_contact_updated_cb),
-			  store);
-	g_signal_connect (new_contact, "notify::capabilities",
-			  G_CALLBACK (contact_list_store_contact_updated_cb),
-			  store);
-	contact_list_store_add_contact (store, new_contact);
+	/* add the new contact */
+	contact_list_store_add_contact_and_connect (store, new_contact);
 
-	/* disconnect from old contact */
-	g_signal_handlers_disconnect_by_func (old_contact,
-					      G_CALLBACK (contact_list_store_contact_updated_cb),
-					      store);
-	contact_list_store_remove_contact (store, old_contact);
+	/* remove old contact */
+	contact_list_store_remove_contact_and_disconnect (store, old_contact);
 }
 
 static void
