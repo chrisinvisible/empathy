@@ -40,6 +40,7 @@ typedef enum {
 
 GtkWidget * empathy_contact_menu_new           (EmpathyContact             *contact,
 						EmpathyContactFeatureFlags  features);
+GtkWidget * empathy_contact_add_menu_item_new  (EmpathyContact             *contact);
 GtkWidget * empathy_contact_chat_menu_item_new (EmpathyContact             *contact);
 GtkWidget * empathy_contact_audio_call_menu_item_new (EmpathyContact             *contact);
 GtkWidget * empathy_contact_video_call_menu_item_new (EmpathyContact             *contact);

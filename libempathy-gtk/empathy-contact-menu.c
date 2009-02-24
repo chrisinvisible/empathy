@@ -28,6 +28,7 @@
 
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-log-manager.h>
+#include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-chatroom-manager.h>
@@ -55,6 +56,13 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 
 	menu = gtk_menu_new ();
 	shell = GTK_MENU_SHELL (menu);
+
+	/* Add Contact */
+	item = empathy_contact_add_menu_item_new (contact);
+	if (item) {
+		gtk_menu_shell_append (shell, item);
+		gtk_widget_show (item);
+	}
 
 	/* Chat */
 	if (features & EMPATHY_CONTACT_FEATURE_CHAT) {
@@ -124,6 +132,41 @@ empathy_contact_chat_menu_item_activated (GtkMenuItem *item,
   empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
 }
 
+GtkWidget *
+empathy_contact_add_menu_item_new (EmpathyContact *contact)
+{
+	GtkWidget *item;
+	GtkWidget *image;
+	EmpathyContactManager *manager;
+	GList *l, *members;
+	gboolean found = FALSE;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	manager = empathy_contact_manager_dup_singleton ();
+	members = empathy_contact_list_get_members (EMPATHY_CONTACT_LIST (manager));
+	for (l = members; l; l = l->next) {
+		if (!found && empathy_contact_equal (l->data, contact)) {
+			found = TRUE;
+			/* we keep iterating so that we don't leak contact
+			 * refs */
+		}
+
+		g_object_unref (l->data);
+	}
+	g_list_free (members);
+
+	if (found) return NULL;
+
+	item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact..."));
+	image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
+					      GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+
+	/* FIXME - callback */
+
+	return item;
+}
 
 GtkWidget *
 empathy_contact_chat_menu_item_new (EmpathyContact *contact)
