@@ -129,9 +129,16 @@ static void
 empathy_contact_add_menu_item_activated (GtkMenuItem *item,
 	EmpathyContact *contact)
 {
-	/* FIXME - attempt to get parent */
+	GtkWidget *toplevel;
+
+	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (item));
+	if (!GTK_WIDGET_TOPLEVEL (toplevel) || !GTK_IS_WINDOW (toplevel)) {
+		toplevel = NULL;
+	}
+
 	/* FIXME - the contact dialog doesn't set the source account right */
-	empathy_new_contact_dialog_show_with_contact (NULL, contact);
+	empathy_new_contact_dialog_show_with_contact (GTK_WINDOW (toplevel),
+						      contact);
 }
 
 GtkWidget *
