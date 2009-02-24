@@ -370,6 +370,13 @@ new_contact_response_cb (GtkDialog *dialog,
 void
 empathy_new_contact_dialog_show (GtkWindow *parent)
 {
+	empathy_new_contact_dialog_show_with_contact (parent, NULL);
+}
+
+void
+empathy_new_contact_dialog_show_with_contact (GtkWindow *parent,
+                                              EmpathyContact *contact)
+{
 	GtkWidget *dialog;
 	GtkWidget *button;
 	GtkWidget *contact_widget;
@@ -402,7 +409,7 @@ empathy_new_contact_dialog_show (GtkWindow *parent)
 	gtk_widget_show (button);
 
 	/* Contact info widget */
-	contact_widget = empathy_contact_widget_new (NULL,
+	contact_widget = empathy_contact_widget_new (contact,
 						     EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ACCOUNT |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ID |

@@ -126,10 +126,12 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 }
 
 static void
-empathy_contact_chat_menu_item_activated (GtkMenuItem *item,
+empathy_contact_add_menu_item_activated (GtkMenuItem *item,
 	EmpathyContact *contact)
 {
-  empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
+	/* FIXME - attempt to get parent */
+	/* FIXME - the contact dialog doesn't set the source account right */
+	empathy_new_contact_dialog_show_with_contact (NULL, contact);
 }
 
 GtkWidget *
@@ -163,9 +165,18 @@ empathy_contact_add_menu_item_new (EmpathyContact *contact)
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 
-	/* FIXME - callback */
+	g_signal_connect (item, "activate",
+			G_CALLBACK (empathy_contact_add_menu_item_activated),
+			contact);
 
 	return item;
+}
+
+static void
+empathy_contact_chat_menu_item_activated (GtkMenuItem *item,
+	EmpathyContact *contact)
+{
+  empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
 }
 
 GtkWidget *

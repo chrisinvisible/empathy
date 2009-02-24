@@ -35,7 +35,12 @@ void empathy_contact_information_dialog_show (EmpathyContact *contact,
 void empathy_contact_edit_dialog_show        (EmpathyContact *contact,
 					      GtkWindow      *parent);
 void empathy_contact_personal_dialog_show    (GtkWindow      *parent);
-void empathy_new_contact_dialog_show         (GtkWindow      *parent);
+					      GtkWindow     *parent,
+					      gboolean       edit,
+					      gboolean       is_user);
+void empathy_new_contact_dialog_show         (GtkWindow     *parent);
+void empathy_new_contact_dialog_show_with_contact (GtkWindow     *parent,
+                                                   EmpathyContact *contact);
 
 G_END_DECLS
 
