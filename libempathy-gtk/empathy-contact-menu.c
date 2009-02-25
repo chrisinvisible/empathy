@@ -136,7 +136,6 @@ empathy_contact_add_menu_item_activated (GtkMenuItem *item,
 		toplevel = NULL;
 	}
 
-	/* FIXME - the contact dialog doesn't set the source account right */
 	empathy_new_contact_dialog_show_with_contact (GTK_WINDOW (toplevel),
 						      contact);
 }

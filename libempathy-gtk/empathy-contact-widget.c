@@ -400,6 +400,13 @@ contact_widget_set_contact (EmpathyContactWidget *information,
       information->factory = empathy_tp_contact_factory_dup_singleton (connection);
     }
 
+  /* set the selected account to be the account this contact came from */
+  if (contact && EMPATHY_IS_ACCOUNT_CHOOSER (information->widget_account)) {
+      empathy_account_chooser_set_account (
+		      EMPATHY_ACCOUNT_CHOOSER (information->widget_account),
+		      empathy_contact_get_account (contact));
+  }
+
   /* Update information for widgets */
   contact_widget_contact_update (information);
   contact_widget_groups_update (information);
