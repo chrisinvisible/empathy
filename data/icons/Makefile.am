@@ -24,6 +24,7 @@ private_icons = \
 	hicolor_status_16x16_im-message.png \
 	hicolor_status_16x16_user-typing.png \
 	hicolor_apps_16x16_im-ekiga.png \
+	hicolor_apps_16x16_im-facebook.png \
 	hicolor_apps_16x16_im-gizmo.png \
 	hicolor_apps_16x16_im-google-talk.png \
 	hicolor_apps_16x16_im-irc.png \
@@ -37,6 +38,7 @@ private_icons = \
 	hicolor_apps_16x16_empathy-starred.png \
 	hicolor_apps_16x16_empathy-unstarred.png \
 	hicolor_apps_22x22_im-ekiga.png \
+	hicolor_apps_22x22_im-facebook.png \
 	hicolor_apps_22x22_im-gizmo.png \
 	hicolor_apps_22x22_im-google-talk.png \
 	hicolor_apps_22x22_im-irc.png \
@@ -74,6 +76,7 @@ private_icons = \
 	hicolor_apps_32x32_empathy-starred.png \
 	hicolor_apps_32x32_empathy-unstarred.png \
 	hicolor_apps_48x48_im-ekiga.png \
+	hicolor_apps_48x48_im-facebook.png \
 	hicolor_apps_48x48_im-gizmo.png \
 	hicolor_apps_48x48_im-google-talk.png \
 	hicolor_apps_48x48_im-irc.png \
