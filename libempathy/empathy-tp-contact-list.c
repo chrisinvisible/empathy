@@ -1074,6 +1074,30 @@ tp_contact_list_remove_group (EmpathyContactList *list,
 	g_array_free (handles, TRUE);
 }
 
+static EmpathyContactListFlags
+tp_contact_list_get_flags (EmpathyContactList *list)
+{
+	EmpathyTpContactListPriv *priv;
+	EmpathyContactListFlags flags = 0;
+	TpChannelGroupFlags group_flags;
+
+	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
+
+	priv = GET_PRIV (list);
+
+	group_flags = tp_channel_group_get_flags (priv->subscribe);
+
+	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) {
+		flags |= EMPATHY_CONTACT_LIST_CAN_ADD;
+	}
+
+	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_REMOVE) {
+		flags |= EMPATHY_CONTACT_LIST_CAN_REMOVE;
+	}
+
+	return flags;
+}
+
 static void
 tp_contact_list_iface_init (EmpathyContactListIface *iface)
 {
@@ -1087,6 +1111,7 @@ tp_contact_list_iface_init (EmpathyContactListIface *iface)
 	iface->remove_from_group = tp_contact_list_remove_from_group;
 	iface->rename_group      = tp_contact_list_rename_group;
 	iface->remove_group	 = tp_contact_list_remove_group;
+	iface->get_flags	 = tp_contact_list_get_flags;
 }
 
 gboolean

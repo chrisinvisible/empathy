@@ -34,6 +34,11 @@ G_BEGIN_DECLS
 #define EMPATHY_IS_CONTACT_LIST(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_CONTACT_LIST))
 #define EMPATHY_CONTACT_LIST_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), EMPATHY_TYPE_CONTACT_LIST, EmpathyContactListIface))
 
+typedef enum {
+	EMPATHY_CONTACT_LIST_CAN_ADD		= 1 << 0,
+	EMPATHY_CONTACT_LIST_CAN_REMOVE		= 1 << 1,
+} EmpathyContactListFlags;
+
 typedef struct _EmpathyContactListIface EmpathyContactListIface;
 
 struct _EmpathyContactListIface {
@@ -64,6 +69,8 @@ struct _EmpathyContactListIface {
 					       const gchar	  *group);
 	EmpathyContactMonitor *
 			 (*get_monitor)       (EmpathyContactList *list);
+	EmpathyContactListFlags
+			 (*get_flags)         (EmpathyContactList *list);
 };
 
 GType    empathy_contact_list_get_type          (void) G_GNUC_CONST;
@@ -91,6 +98,9 @@ void	 empathy_contact_list_remove_group	(EmpathyContactList *list,
 						 const gchar	    *group);
 EmpathyContactMonitor *
          empathy_contact_list_get_monitor       (EmpathyContactList *list);
+
+EmpathyContactListFlags
+         empathy_contact_list_get_flags		(EmpathyContactList *list);
 
 G_END_DECLS
 
