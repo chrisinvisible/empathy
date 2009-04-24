@@ -527,9 +527,10 @@ contact_manager_iface_init (EmpathyContactListIface *iface)
 	iface->remove_group	 = contact_manager_remove_group;
 }
 
-gboolean
-empathy_contact_manager_can_add (EmpathyContactManager *manager,
-				 TpConnection          *connection)
+EmpathyContactListFlags
+empathy_contact_manager_get_flags_for_connection (
+				EmpathyContactManager *manager,
+				TpConnection          *connection)
 {
 	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
 	EmpathyContactList        *list;
@@ -544,6 +545,6 @@ empathy_contact_manager_can_add (EmpathyContactManager *manager,
 	}
 	flags = empathy_contact_list_get_flags (list);
 
-	return (flags & EMPATHY_CONTACT_LIST_CAN_ADD);
+	return flags;
 }
 
