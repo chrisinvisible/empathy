@@ -1114,23 +1114,6 @@ tp_contact_list_iface_init (EmpathyContactListIface *iface)
 	iface->get_flags	 = tp_contact_list_get_flags;
 }
 
-gboolean
-empathy_tp_contact_list_can_add (EmpathyTpContactList *list)
-{
-	EmpathyTpContactListPriv *priv;
-	TpChannelGroupFlags       flags;
-
-	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
-
-	priv = GET_PRIV (list);
-
-	if (priv->subscribe == NULL)
-		return FALSE;
-
-	flags = tp_channel_group_get_flags (priv->subscribe);
-	return (flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) != 0;
-}
-
 void
 empathy_tp_contact_list_remove_all (EmpathyTpContactList *list)
 {
