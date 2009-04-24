@@ -37,6 +37,8 @@ G_BEGIN_DECLS
 typedef enum {
 	EMPATHY_CONTACT_LIST_CAN_ADD		= 1 << 0,
 	EMPATHY_CONTACT_LIST_CAN_REMOVE		= 1 << 1,
+	EMPATHY_CONTACT_LIST_CAN_ALIAS		= 1 << 2,
+	EMPATHY_CONTACT_LIST_CAN_GROUP		= 1 << 3,
 } EmpathyContactListFlags;
 
 typedef struct _EmpathyContactListIface EmpathyContactListIface;

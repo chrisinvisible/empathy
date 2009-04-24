@@ -1508,6 +1508,7 @@ empathy_contact_list_view_get_contact_menu (EmpathyContactListView *view)
 	}
 	flags = empathy_contact_list_view_get_flags (view);
 
+	/* FIXME: how to get the contact list flags in empathy_contact_menu_new() */
 	menu = empathy_contact_menu_new (contact, priv->contact_features);
 
 	/* Remove contact */

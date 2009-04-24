@@ -50,6 +50,8 @@ typedef struct {
 	GHashTable     *pendings; /* handle -> EmpathyContact */
 	GHashTable     *groups; /* group name -> TpChannel */
 	GHashTable     *add_to_group; /* group name -> GArray of handles */
+
+	EmpathyContactListFlags flags;
 } EmpathyTpContactListPriv;
 
 typedef enum {
@@ -509,6 +511,25 @@ tp_contact_list_publish_request_channel_cb (TpConnection *connection,
 }
 
 static void
+tp_contact_list_get_alias_flags_cb (TpConnection *connection,
+				    guint         flags,
+				    const GError *error,
+				    gpointer      user_data,
+				    GObject      *list)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+
+	if (error) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	if (flags & TP_CONNECTION_ALIAS_FLAG_USER_SET) {
+		priv->flags |= EMPATHY_CONTACT_LIST_CAN_ALIAS;
+	}
+}
+
+static void
 tp_contact_list_publish_request_handle_cb (TpConnection *connection,
 					   const GArray *handles,
 					   const GError *error,
@@ -721,6 +742,19 @@ tp_contact_list_constructed (GObject *list)
 	const gchar              *names[] = {NULL, NULL};
 
 	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
+
+	/* call GetAliasFlags() */
+	if (tp_proxy_has_interface_by_id (priv->connection,
+				TP_IFACE_QUARK_CONNECTION_INTERFACE_ALIASING)) {
+		tp_cli_connection_interface_aliasing_call_get_alias_flags (
+				priv->connection,
+				-1,
+				tp_contact_list_get_alias_flags_cb,
+				NULL, NULL,
+				G_OBJECT (list));
+	}
+
+	/* FIXME: lookup RequestableChannelClasses */
 
 	names[0] = "publish";
 	tp_cli_connection_call_request_handles (priv->connection,
@@ -1078,12 +1112,13 @@ static EmpathyContactListFlags
 tp_contact_list_get_flags (EmpathyContactList *list)
 {
 	EmpathyTpContactListPriv *priv;
-	EmpathyContactListFlags flags = 0;
+	EmpathyContactListFlags flags;
 	TpChannelGroupFlags group_flags;
 
 	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
 
 	priv = GET_PRIV (list);
+	flags = priv->flags;
 
 	group_flags = tp_channel_group_get_flags (priv->subscribe);
 
