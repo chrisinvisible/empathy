@@ -33,6 +33,9 @@
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
+#include <libempathy/empathy-enum-types.h>
+#include <libempathy/empathy-contact-manager.h>
+
 #include "empathy-contact-list-store.h"
 #include "empathy-ui-utils.h"
 #include "empathy-gtk-enum-types.h"
@@ -725,19 +728,22 @@ static void
 contact_list_store_setup (EmpathyContactListStore *store)
 {
 	EmpathyContactListStorePriv *priv;
-	GType                       types[] = {G_TYPE_STRING,        /* Status icon-name */
-					       GDK_TYPE_PIXBUF,      /* Avatar pixbuf */
-					       G_TYPE_BOOLEAN,       /* Avatar pixbuf visible */
-					       G_TYPE_STRING,        /* Name */
-					       G_TYPE_STRING,        /* Status string */
-					       G_TYPE_BOOLEAN,       /* Show status */
-					       EMPATHY_TYPE_CONTACT, /* Contact type */
-					       G_TYPE_BOOLEAN,       /* Is group */
-					       G_TYPE_BOOLEAN,       /* Is active */
-					       G_TYPE_BOOLEAN,       /* Is online */
-					       G_TYPE_BOOLEAN,       /* Is separator */
-					       G_TYPE_BOOLEAN,       /* Can make audio calls */
-					       G_TYPE_BOOLEAN};      /* Can make video calls */
+	GType types[] = {
+		G_TYPE_STRING,        /* Status icon-name */
+		GDK_TYPE_PIXBUF,      /* Avatar pixbuf */
+		G_TYPE_BOOLEAN,       /* Avatar pixbuf visible */
+		G_TYPE_STRING,        /* Name */
+		G_TYPE_STRING,        /* Status string */
+		G_TYPE_BOOLEAN,       /* Show status */
+		EMPATHY_TYPE_CONTACT, /* Contact type */
+		G_TYPE_BOOLEAN,       /* Is group */
+		G_TYPE_BOOLEAN,       /* Is active */
+		G_TYPE_BOOLEAN,       /* Is online */
+		G_TYPE_BOOLEAN,       /* Is separator */
+		G_TYPE_BOOLEAN,       /* Can make audio calls */
+		G_TYPE_BOOLEAN,       /* Can make video calls */
+		EMPATHY_TYPE_CONTACT_LIST_FLAGS, /* Flags */
+	};
 
 	priv = GET_PRIV (store);
 
@@ -851,6 +857,8 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	EmpathyContactListStorePriv *priv;
 	GtkTreeIter                 iter;
 	GList                      *groups = NULL, *l;
+	TpConnection               *connection;
+	EmpathyContactListFlags     flags;
 
 	priv = GET_PRIV (store);
 
@@ -862,6 +870,10 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	if (priv->show_groups) {
 		groups = empathy_contact_list_get_groups (priv->list, contact);
 	}
+
+	connection = empathy_contact_get_connection (contact);
+	flags = empathy_contact_manager_get_flags_for_connection (
+			EMPATHY_CONTACT_MANAGER (priv->list), connection);
 
 	/* If no groups just add it at the top level. */
 	if (!groups) {
@@ -877,6 +889,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL,
 				      empathy_contact_get_capabilities (contact) &
 				        EMPATHY_CAPABILITIES_VIDEO,
+				    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, flags,
 				    -1);
 	}
 
@@ -899,6 +912,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL,
 				      empathy_contact_get_capabilities (contact) &
 				        EMPATHY_CAPABILITIES_VIDEO,
+				    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, flags,
 				    -1);
 		g_free (l->data);
 	}
