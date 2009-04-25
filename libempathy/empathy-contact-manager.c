@@ -204,6 +204,23 @@ contact_manager_constructor (GType type,
 	return retval;
 }
 
+/**
+ * empathy_contact_manager_initialized:
+ *
+ * Reports whether or not the singleton has already been created.
+ *
+ * There can be instances where you want to access the #EmpathyContactManager
+ * only if it has been set up for this process.
+ *
+ * Returns: %TRUE if the #EmpathyContactManager singleton has previously
+ * been initialized.
+ */
+gboolean
+empathy_contact_manager_initialized (void)
+{
+	return (manager_singleton != NULL);
+}
+
 static void
 empathy_contact_manager_class_init (EmpathyContactManagerClass *klass)
 {
