@@ -530,6 +530,45 @@ tp_contact_list_get_alias_flags_cb (TpConnection *connection,
 }
 
 static void
+tp_contact_list_get_requestablechannelclasses_cb (TpProxy      *connection,
+						  const GValue *value,
+						  const GError *error,
+						  gpointer      user_data,
+						  GObject      *list)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	GPtrArray *classes;
+	int i;
+
+	if (error) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	classes = g_value_get_boxed (value);
+	for (i = 0; i < classes->len; i++) {
+		GValueArray *class = g_ptr_array_index (classes, i);
+		GHashTable *props;
+		const char *channel_type;
+		guint handle_type;
+
+		props = g_value_get_boxed (g_value_array_get_nth (class, 0));
+
+		channel_type = tp_asv_get_string (props,
+				TP_IFACE_CHANNEL ".ChannelType");
+		handle_type = tp_asv_get_uint32 (props,
+				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
+
+		if (!strcmp (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST) &&
+		    handle_type == TP_HANDLE_TYPE_GROUP) {
+			DEBUG ("Got channel class for a contact group");
+			priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
+			break;
+		}
+	}
+}
+
+static void
 tp_contact_list_publish_request_handle_cb (TpConnection *connection,
 					   const GArray *handles,
 					   const GError *error,
@@ -754,7 +793,20 @@ tp_contact_list_constructed (GObject *list)
 				G_OBJECT (list));
 	}
 
-	/* FIXME: lookup RequestableChannelClasses */
+	/* lookup RequestableChannelClasses */
+	if (tp_proxy_has_interface_by_id (priv->connection,
+				TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS)) {
+		tp_cli_dbus_properties_call_get (priv->connection,
+				-1,
+				TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
+				"RequestableChannelClasses",
+				tp_contact_list_get_requestablechannelclasses_cb,
+				NULL, NULL,
+				G_OBJECT (list));
+	} else {
+		/* we just don't know... better mark the flag just in case */
+		priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
+	}
 
 	names[0] = "publish";
 	tp_cli_connection_call_request_handles (priv->connection,
