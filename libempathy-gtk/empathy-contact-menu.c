@@ -31,6 +31,7 @@
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-chatroom-manager.h>
+#include <libempathy/empathy-contact-manager.h>
 
 #include "empathy-contact-menu.h"
 #include "empathy-images.h"
@@ -306,16 +307,35 @@ contact_edit_menu_item_activate_cb (EmpathyContact *contact)
 GtkWidget *
 empathy_contact_edit_menu_item_new (EmpathyContact *contact)
 {
+	EmpathyContactManager *manager;
 	GtkWidget *item;
 	GtkWidget *image;
+	gboolean enable = FALSE;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	if (empathy_contact_manager_initialized ()) {
+		TpConnection *connection;
+		EmpathyContactListFlags flags;
+
+		manager = empathy_contact_manager_dup_singleton ();
+		connection = empathy_contact_get_connection (contact);
+		flags = empathy_contact_manager_get_flags_for_connection (
+				manager, connection);
+
+		enable = (flags & EMPATHY_CONTACT_LIST_CAN_ALIAS ||
+		          flags & EMPATHY_CONTACT_LIST_CAN_GROUP);
+
+		g_object_unref (manager);
+	}
 
 	item = gtk_image_menu_item_new_with_mnemonic (_("_Edit"));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	gtk_widget_show (image);
+
+	gtk_widget_set_sensitive (item, enable);
 
 	g_signal_connect_swapped (item, "activate",
 				  G_CALLBACK (contact_edit_menu_item_activate_cb),
