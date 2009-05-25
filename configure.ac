@@ -1,4 +1,24 @@
-AC_INIT(Empathy, 2.29.1, http://bugzilla.gnome.org/browse.cgi?product=empathy)
+# Making releases:
+#   set the new version number:
+#     odd minor -> development series
+#     even minor -> stable series
+#     increment micro for each release within a series
+#   set empathy_nano_version to 0.
+
+m4_define([empathy_major_version], [2])
+m4_define([empathy_minor_version], [29])
+m4_define([empathy_micro_version], [1])
+m4_define([empathy_nano_version], [1])
+
+m4_define([empathy_base_version],
+          [empathy_major_version.empathy_minor_version.empathy_micro_version])
+m4_define([empathy_version],
+          [m4_if(empathy_nano_version, 0, [empathy_base_version],
+              [empathy_base_version].[empathy_nano_version])])
+
+AC_INIT(Empathy, empathy_version, http://bugzilla.gnome.org/browse.cgi?product=empathy)
+
+
 AC_PREREQ(2.59)
 AC_COPYRIGHT([
   Copyright (C) 2003-2007 Imendio AB
