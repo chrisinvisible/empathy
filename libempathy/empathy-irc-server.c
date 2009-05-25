@@ -34,7 +34,7 @@
 typedef struct
 {
   gchar *address;
-  gint port;
+  guint port;
   gboolean ssl;
 } EmpathyIrcServerPriv;
 
