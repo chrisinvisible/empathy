@@ -2,6 +2,7 @@ include $(top_srcdir)/tools/shave.mk
 include $(top_srcdir)/tools/flymake.mk
 
 AM_CPPFLAGS =						\
+	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DG_LOG_DOMAIN=\"empathy\"			\
 	$(EMPATHY_CFLAGS)				\
