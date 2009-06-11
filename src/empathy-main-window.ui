@@ -99,6 +99,56 @@
           </object>
         </child>
         <child>
+          <object class="GtkRadioAction" id="view_sort_by_name">
+            <property name="name">view_sort_by_name</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Sort by _Name</property>
+            <property name="draw_as_radio">True</property>
+            <property name="value">1</property>
+            <property name="current-value">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="view_sort_by_status">
+            <property name="name">view_sort_by_status</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Sort by _Status</property>
+            <property name="draw_as_radio">True</property>
+            <property name="group">view_sort_by_name</property>
+            <property name="value">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="view_normal_size">
+            <property name="name">view_normal_size</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">N_ormal Size</property>
+            <property name="draw_as_radio">True</property>
+            <property name="value">0</property>
+            <property name="current-value">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="view_normal_without_icons">
+            <property name="name">view_normal_without_icons</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Normal Size _Without Icons</property>
+            <property name="draw_as_radio">True</property>
+            <property name="group">view_normal_size</property>
+            <property name="value">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="view_compact_size">
+            <property name="name">view_compact_size</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">_Compact Size</property>
+            <property name="draw_as_radio">True</property>
+            <property name="group">view_normal_size</property>
+            <property name="value">2</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="room">
             <property name="name">room</property>
             <property name="label" translatable="yes">_Room</property>
@@ -171,6 +221,13 @@
         </menu>
         <menu action="view">
           <menuitem action="view_show_offline"/>
+          <separator/>
+          <menuitem action="view_sort_by_name"/>
+          <menuitem action="view_sort_by_status"/>
+          <separator/>
+          <menuitem action="view_normal_size"/>
+          <menuitem action="view_normal_without_icons"/>
+          <menuitem action="view_compact_size"/>
           <separator/>
           <menuitem action="view_history"/>
           <menuitem action="view_show_ft_manager"/>

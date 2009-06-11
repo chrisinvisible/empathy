@@ -718,6 +718,36 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 }
 
 static void
+main_window_view_sort_contacts_cb (GtkRadioAction    *action,
+				   GtkRadioAction    *current,
+				   EmpathyMainWindow *window)
+{
+	EmpathyContactListStoreSort value;
+
+	value = gtk_radio_action_get_current_value (action);
+	
+	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
+}
+
+/* Matches GtkRadioAction values set in empathy-main-window.ui */
+#define CONTACT_LIST_NORMAL_SIZE		0
+#define CONTACT_LIST_NORMAL_WITHOUT_ICONS	1
+#define CONTACT_LIST_COMPACT_SIZE		2
+
+static void
+main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
+					GtkRadioAction    *current,
+					EmpathyMainWindow *window)
+{
+	gint     value;
+
+	value = gtk_radio_action_get_current_value (action);
+	
+	empathy_contact_list_store_set_show_avatars (window->list_store, value == CONTACT_LIST_NORMAL_SIZE);
+	empathy_contact_list_store_set_is_compact (window->list_store, value == CONTACT_LIST_COMPACT_SIZE);
+}
+
+static void
 main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 			      EmpathyMainWindow *window)
 {
@@ -1052,9 +1082,10 @@ main_window_notify_compact_contact_list_cb (EmpathyConf        *conf,
 }
 
 static void
-main_window_notify_sort_criterium_cb (EmpathyConf       *conf,
-				      const gchar       *key,
-				      EmpathyMainWindow *window)
+main_window_conf_sort_criterium (EmpathyConf       *conf,
+				 const gchar       *key,
+				 EmpathyMainWindow *window,
+				 GtkRadioAction    *action)
 {
 	gchar *str = NULL;
 
@@ -1067,11 +1098,17 @@ main_window_notify_sort_criterium_cb (EmpathyConf       *conf,
 		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 		enum_value = g_enum_get_value_by_nick (enum_class, str);
 		g_free (str);
-
-		if (enum_value) {
-			empathy_contact_list_store_set_sort_criterium (window->list_store,
-								       enum_value->value);
+		
+		if (enum_value->value == EMPATHY_CONTACT_LIST_STORE_SORT_STATE) {
+			gtk_radio_action_set_current_value (action, 2);
+		} else {
+			gtk_radio_action_set_current_value (action, 1);
 		}
+
+//		if (enum_value) {
+//			empathy_contact_list_store_set_sort_criterium (window->list_store,
+//								       enum_value->value);
+//		}
 	}
 }
 
@@ -1112,6 +1149,11 @@ empathy_main_window_show (void)
 	EmpathyConf              *conf;
 	GtkWidget                *sw;
 	GtkToggleAction          *show_offline_widget;
+	GtkRadioAction           *sort_by_name;
+	GtkRadioAction           *sort_by_status;
+	GtkRadioAction           *normal_size;
+	GtkRadioAction           *normal_without_icons;
+	GtkRadioAction           *compact_size;
 	GtkWidget                *ebox;
 	GtkAction                *show_map_widget;
 	GtkToolItem              *item;
@@ -1119,6 +1161,7 @@ empathy_main_window_show (void)
 	gboolean                  show_avatars;
 	gboolean                  compact_contact_list;
 	gint                      x, y, w, h;
+	gint			  value = 1;
 	gchar                    *filename;
 	GSList                   *l;
 
@@ -1137,6 +1180,11 @@ empathy_main_window_show (void)
 				       "errors_vbox", &window->errors_vbox,
 				       "ui_manager", &window->ui_manager,
 				       "view_show_offline", &show_offline_widget,
+				       "view_sort_by_name", &sort_by_name,
+				       "view_sort_by_status", &sort_by_status,
+				       "view_normal_size", &normal_size,
+				       "view_normal_without_icons", &normal_without_icons,
+				       "view_compact_size", &compact_size,
 				       "view_history", &window->view_history,
 				       "view_show_map", &show_map_widget,
 				       "room_join_favorites", &window->room_join_favorites,
@@ -1157,6 +1205,8 @@ empathy_main_window_show (void)
 			      "chat_add_contact", "activate", main_window_chat_add_contact_cb,
 			      "view_show_ft_manager", "activate", main_window_view_show_ft_manager,
 			      "view_show_offline", "toggled", main_window_view_show_offline_cb,
+			      "view_sort_by_name", "changed", main_window_view_sort_contacts_cb,
+			      "view_normal_size", "changed", main_window_view_contacts_list_size_cb,
 			      "view_show_map", "activate", main_window_view_show_map_cb,
 			      "edit", "activate", main_window_edit_cb,
 			      "edit_accounts", "activate", main_window_edit_accounts_cb,
@@ -1307,35 +1357,70 @@ empathy_main_window_show (void)
 				show_offline_widget);
 
 	gtk_toggle_action_set_active (show_offline_widget, show_offline);
+	
+	/* Sort by name / by status ? */
+		/* without conf */	
+	main_window_view_sort_contacts_cb (sort_by_name, sort_by_name, window);
+	
+		/* with conf */
+//	main_window_conf_sort_criterium (conf,
+//					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+//					 window,
+//					 sort_by_name);
+
+
+	/* Contacts list size */
+		/* whithout conf */
+	main_window_view_contacts_list_size_cb (normal_size, normal_size, window);
+	
+		/* with conf */
+//	empathy_conf_get_bool (conf,
+//			      EMPATHY_PREFS_UI_SHOW_AVATARS,
+//			      &show_avatars);
+//	empathy_conf_get_bool (conf,
+//			      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+//			      &compact_contact_list);
+//			      
+//	if (compact_contact_list == TRUE) {
+//		value = CONTACT_LIST_COMPACT_SIZE;
+//	} else if (show_avatars == TRUE) {
+//		value = CONTACT_LIST_NORMAL_SIZE;
+//	} else {
+//		value = CONTACT_LIST_NORMAL_WITHOUT_ICONS;
+//	}
+//	gtk_radio_action_set_current_value (normal_size, value);
+		
+
 
 	/* Show avatars ? */
-	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_UI_SHOW_AVATARS,
-			      &show_avatars);
-	empathy_conf_notify_add (conf,
-				EMPATHY_PREFS_UI_SHOW_AVATARS,
-				(EmpathyConfNotifyFunc) main_window_notify_show_avatars_cb,
-				window);
-	empathy_contact_list_store_set_show_avatars (window->list_store, show_avatars);
+//	empathy_conf_get_bool (conf,
+//			      EMPATHY_PREFS_UI_SHOW_AVATARS,
+//			      &show_avatars);
+//	empathy_conf_notify_add (conf,
+//				EMPATHY_PREFS_UI_SHOW_AVATARS,
+//				(EmpathyConfNotifyFunc) main_window_notify_show_avatars_cb,
+//				window);
+//	empathy_contact_list_store_set_show_avatars (window->list_store, show_avatars);
 
 	/* Is compact ? */
-	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-			      &compact_contact_list);
-	empathy_conf_notify_add (conf,
-				EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-				(EmpathyConfNotifyFunc) main_window_notify_compact_contact_list_cb,
-				window);
-	empathy_contact_list_store_set_is_compact (window->list_store, compact_contact_list);
+//	empathy_conf_get_bool (conf,
+//			      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+//			      &compact_contact_list);
+//	empathy_conf_notify_add (conf,
+//				EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+//				(EmpathyConfNotifyFunc) main_window_notify_compact_contact_list_cb,
+//				window);
+//	empathy_contact_list_store_set_is_compact (window->list_store, compact_contact_list);
 
 	/* Sort criterium */
-	empathy_conf_notify_add (conf,
-				EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-				(EmpathyConfNotifyFunc) main_window_notify_sort_criterium_cb,
-				window);
-	main_window_notify_sort_criterium_cb (conf,
-					      EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-					      window);
+	/* with conf */
+		//	empathy_conf_notify_add (conf,
+		//				EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+		//				(EmpathyConfNotifyFunc) main_window_notify_sort_criterium_cb,
+		//				window);
+//	main_window_notify_sort_criterium_cb (conf,
+//					      EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+//					      window);
 
 	main_window_update_status (window, window->account_manager);
 
