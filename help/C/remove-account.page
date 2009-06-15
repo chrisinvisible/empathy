@@ -1,11 +1,10 @@
 <page xmlns="http://www.gnome.org/~shaunm/mallard"
   type="topic"
-  id="add-account">
+  id="remove-account">
   
   <info>
     <link type="guide" xref="index"/>
-    <link type="seealso" xref="remove-account"/>
-    <desc>Add a new account to <app>Empathy</app>.</desc>
+    <desc>Remove an account from <app>Empathy</app>.</desc>
     <revision version="3.0" date="2009-06-14" status="stub"/>
     
     <credit type="author">
@@ -25,11 +24,20 @@
   
   <comment>
     <cite date="2009-06-14"><name>Milo Casagrande</name></cite>
-    <p>Section about how to add a new account to <app>Empathy</app>.</p>
+    <p>Section about how to remove an account from <app>Empathy</app>.</p>
   </comment>
   
-  <title>How can I add a new account?</title>
-  
+  <title>How can I remove an account?</title>
+
+  <p>
+    Removing an account means to delete it from your computer with all
+    the conversations you had with other people.
+  </p>
+  <p>
+    After removing an account you will not be able to recover it or
+    the conversations you had.
+  </p>
+
   <steps>
     <item>
       <p>
@@ -50,48 +58,28 @@
     </item>
     <item>
       <p>
-	If it is the first time you launch <app>Empathy</app>:
-      </p>
-      <list>
-	<item>
-	  <p>
-	    From the <gui>Type</gui> drop-down list choose
-	    the service you wish to add an account for, then click
-	    on the <gui>Create</gui> button.
-	  </p>
-	</item>
-      </list>
-      <p>
-	Otherwise:
-      </p>
-      <steps>
-	<item>
-	  <p>
-	    Click on the <gui>Add</gui> button.
-	  </p>
-	</item>
-	<item>
-	  <p>
-	    From the <gui>Type</gui> drop-down list choose
-	    the service you wish to add an account for, then click
-	    on the <gui>Create</gui> button.
-	  </p>
-	</item>
-      </steps>
-    </item>
-    <item>
-      <p>
-	Fill the required fields with your <em>user
-	  name</em> and	<em>password</em>.
+	Select the account you wish to remove in the box on the
+	left of the dialog.
       </p>
     </item>
     <item>
       <p>
-	To enable the new account, select the
-	<gui>Enabled</gui> check-box next to
-	the name of the account in the box on the left of the window.
+	Click on the <gui>Remove</gui> button.
+      </p>
+    </item>
+    <item>
+      <p>
+	A dialog will be shown asking for confirmation. Click on
+	the <gui>Remove</gui> button to permanently remove the
+	account.
       </p>
     </item>
   </steps>
+  
+  <note>
+    <p>
+      If you only want to disable an account, see <link xref="disable-account"/>.
+    </p>
+  </note>
 
 </page>
