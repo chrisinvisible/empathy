@@ -1,0 +1,113 @@
+<page xmlns="http://www.gnome.org/~shaunm/mallard"
+      type="guide"
+      id="problems_connecting">
+
+<info>
+  <link type="guide" xref="index"/>
+  <desc>Diagnose common problems with connecting to an instant messaging service.</desc>
+  <revision version="3.0" date="2009-06-14" status="stub"/>
+
+  <credit type="author">
+    <name>Phil Bull</name>
+    <email>philbull@gmail.com</email>
+  </credit>
+  <copyright>
+    <year>2009</year>
+    <name>GNOME Documentation Project</name>
+  </copyright>
+
+    <license>Creative Commons Share Alike</license>
+
+  <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
+</info>
+
+<title>I have a problem connecting to an instant messaging service</title>
+
+<comment>
+    <cite date="2009-06-14"><name>Phil Bull</name></cite>
+    <p>This is a stub. We should identify the most common causes for a user not 
+    being able to connect and document those.</p>
+</comment>
+
+<section>
+    <title>I get a message that says "Authentication failed"</title>
+    <p>
+    If you try to connect and an error message appears in the main Empathy 
+    window saying that <gui>Authentication failed</gui>, your instant messaging 
+    service is not allowing you to connect because it does not recognize your 
+    username or password for some reason.
+    </p>
+    <list>
+        <item>
+        <p>
+        Make sure that you have registered for an account with the service you 
+        are trying to connect to. If you do not have an account, most services 
+        will not allow you to connect.
+        </p>
+        </item>
+        <item>
+        <p>
+        Click the <gui>Edit Account</gui> button in the error message. Type 
+        your username and password again to make sure that they are correct. 
+        Uncheck the <gui>Enabled</gui> box next to the name of your account and 
+        then check it again to try to connect to the service again.
+        </p>
+       </item>
+   </list>
+</section>
+
+<section>
+    <title>I get a message that says "Network error"</title>
+    <p>
+    If you try to connect and an error message appears in the main Empathy 
+    window which says <gui>Network error</gui>, Empathy cannot communicate with 
+    the instant messaging service for some reason.
+    </p>
+    <list>
+        <item>
+        <p>
+        Check that you are connected to the Internet or network.
+        </p>
+        </item>
+        <item>
+        <p>
+        Click the <gui>Edit Account</gui> button in the error message. Expand 
+        the <gui>Advanced</gui> section and make sure that the details such as 
+        server address and port are correct. You should be able to find these 
+        details from the website of the messaging service. Uncheck the 
+        <gui>Enabled</gui> box next to the name of your account and then check 
+        it again to try to connect to the service again.
+        </p>
+       </item>
+   </list>
+</section>
+
+<section>
+    <title>My account is not enabled</title>
+    <p>
+    If the instant messaging account that you want to use is not enabled in the 
+    drop-down account list when you try to start a new conversation or join a 
+    chat, your account details may not be correct.
+    </p>
+    <list>
+        <item>
+        <p>
+        Click <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq> and make sure 
+        that the <gui>Enabled</gui> checkbox is checked.
+        </p>
+        </item>
+        <item>
+        <p>
+        Make sure that your username and password are correct.
+        </p>
+        </item>
+        <item>
+        <p>
+        Expand the <gui>Advanced</gui> section of the <app>Accounts</app> 
+        window and make sure that all of the server settings are correct.
+        </p>
+        </item>
+    </list>
+</section>
+
+</page>
