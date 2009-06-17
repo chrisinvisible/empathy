@@ -49,7 +49,7 @@ geometry_get_filename (void)
 	gchar *dir;
 	gchar *filename;
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	if (!g_file_test (dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
 		DEBUG ("Creating directory:'%s'", dir);
 		g_mkdir_with_parents (dir, GEOMETRY_DIR_CREATE_MODE);

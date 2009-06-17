@@ -176,7 +176,7 @@ empathy_status_presets_get_all (void)
 		presets = NULL;
 	}
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 	file_with_path = g_build_filename (dir, STATUS_PRESETS_XML_FILENAME, NULL);
 	g_free (dir);
@@ -203,7 +203,7 @@ status_presets_file_save (void)
 		count[i] = 0;
 	}
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 	file = g_build_filename (dir, STATUS_PRESETS_XML_FILENAME, NULL);
 	g_free (dir);

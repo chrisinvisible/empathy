@@ -611,7 +611,7 @@ main_window_accels_load (void)
 {
 	gchar *filename;
 
-	filename = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, ACCELS_FILENAME, NULL);
+	filename = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, ACCELS_FILENAME, NULL);
 	if (g_file_test (filename, G_FILE_TEST_EXISTS)) {
 		DEBUG ("Loading from:'%s'", filename);
 		gtk_accel_map_load (filename);
@@ -626,7 +626,7 @@ main_window_accels_save (void)
 	gchar *dir;
 	gchar *file_with_path;
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 	file_with_path = g_build_filename (dir, ACCELS_FILENAME, NULL);
 	g_free (dir);

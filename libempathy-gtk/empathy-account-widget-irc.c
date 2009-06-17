@@ -432,7 +432,7 @@ empathy_account_widget_irc_new (EmpathyAccount *account)
   settings = g_slice_new0 (EmpathyAccountWidgetIrc);
   settings->account = g_object_ref (account);
 
-  dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+  dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
   g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
   user_file_with_path = g_build_filename (dir, IRC_NETWORKS_FILENAME, NULL);
   g_free (dir);
