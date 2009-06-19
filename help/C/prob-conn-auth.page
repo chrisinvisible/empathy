@@ -1,0 +1,51 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="prob-conn-auth">
+
+  <info>
+    <link type="guide" xref="prob-conn"/>
+    <desc>
+        An error message appears in the main window saying that 
+        <gui>Authentication failed</gui>.
+    </desc>
+    <revision version="3.0" date="2009-06-17" status="stub"/>
+    <credit type="author">
+      <name>Phil Bull</name>
+      <email>philbull@gmail.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <license>Creative Commons Share Alike</license>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
+  </info>
+
+<title>I get a message that says "Authentication failed"</title>
+
+<p>
+If you try to connect and an error message appears in the main Empathy 
+window saying that <gui>Authentication failed</gui>, your instant messaging 
+service is not allowing you to connect because it does not recognize your 
+username or password for some reason.
+</p>
+
+<list>
+<item>
+    <p>
+    Make sure that you have registered for an account with the service you 
+    are trying to connect to. If you do not have an account, most services 
+    will not allow you to connect.
+    </p>
+</item>
+<item>
+    <p>
+    Click the <gui>Edit Account</gui> button in the error message. Type 
+    your username and password again to make sure that they are correct. 
+    Uncheck the <gui>Enabled</gui> box next to the name of your account and 
+    then check it again to try to connect to the service again.
+    </p>
+</item>
+</list>
+
+</page>
