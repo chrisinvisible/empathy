@@ -95,6 +95,12 @@ typedef struct {
 	GtkWidget              *presence_chooser;
 	GtkWidget              *errors_vbox;
 
+	GtkRadioAction         *sort_by_name;
+	GtkRadioAction         *sort_by_status;
+	GtkRadioAction         *normal_size;
+	GtkRadioAction         *normal_without_icons;
+	GtkRadioAction         *compact_size;
+
 	GtkUIManager           *ui_manager;
 	GtkAction              *view_history;
 	GtkAction              *room_join_favorites;
@@ -749,7 +755,6 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
 					 valueStr);
 	}
-
 	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
 }
 
@@ -768,14 +773,16 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 	value = gtk_radio_action_get_current_value (action);
 
 	empathy_conf_set_bool (empathy_conf_get (),
-			      EMPATHY_PREFS_UI_SHOW_AVATARS,
-			      value == CONTACT_LIST_NORMAL_SIZE);
+			       EMPATHY_PREFS_UI_SHOW_AVATARS,
+			       value == CONTACT_LIST_NORMAL_SIZE);
 	empathy_conf_set_bool (empathy_conf_get (),
-			      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-			      value == CONTACT_LIST_COMPACT_SIZE);
+			       EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+			       value == CONTACT_LIST_COMPACT_SIZE);
 
-	empathy_contact_list_store_set_show_avatars (window->list_store, value == CONTACT_LIST_NORMAL_SIZE);
-	empathy_contact_list_store_set_is_compact (window->list_store, value == CONTACT_LIST_COMPACT_SIZE);
+	empathy_contact_list_store_set_show_avatars (window->list_store,
+						     value == CONTACT_LIST_NORMAL_SIZE);
+	empathy_contact_list_store_set_is_compact (window->list_store,
+						   value == CONTACT_LIST_COMPACT_SIZE);
 }
 
 static void
@@ -1086,15 +1093,41 @@ main_window_notify_show_offline_cb (EmpathyConf *conf,
 	}
 }
 
+static void
+main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
+					 const gchar       *key,
+					 EmpathyMainWindow *window)
+{
+	gboolean show_avatars;
+	gboolean compact_contact_list;
+	gint value = CONTACT_LIST_NORMAL_SIZE;
+
+	if (empathy_conf_get_bool (conf,
+				   EMPATHY_PREFS_UI_SHOW_AVATARS,
+				   &show_avatars)
+	    && empathy_conf_get_bool (conf,
+				      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+				      &compact_contact_list)) {
+		if (compact_contact_list) {
+			value = CONTACT_LIST_COMPACT_SIZE;
+		} else if (show_avatars) {
+			value = CONTACT_LIST_NORMAL_SIZE;
+		} else {
+			value = CONTACT_LIST_NORMAL_WITHOUT_ICONS;
+		}
+	}
+	gtk_radio_action_set_current_value (window->normal_size, value);
+}
+
+
 /* Matches GtkRadioAction values set in empathy-main-window.ui */
 #define CONTACT_LIST_SORT_BY_STATUS		0
 #define CONTACT_LIST_SORT_BY_NAME		1
 
 static void
-main_window_conf_sort_criterium (EmpathyConf       *conf,
-				 const gchar       *key,
-				 EmpathyMainWindow *window,
-				 GtkRadioAction    *action)
+main_window_notify_sort_contact_cb (EmpathyConf       *conf,
+				    const gchar       *key,
+				    EmpathyMainWindow *window)
 {
 	gchar *str = NULL;
 
@@ -1106,13 +1139,19 @@ main_window_conf_sort_criterium (EmpathyConf       *conf,
 		type = empathy_contact_list_store_sort_get_type ();
 		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 		enum_value = g_enum_get_value_by_nick (enum_class, str);
-		g_free (str);
 
-		if (enum_value->value == EMPATHY_CONTACT_LIST_STORE_SORT_STATE) {
-			gtk_radio_action_set_current_value (action, CONTACT_LIST_SORT_BY_STATUS);
+		if (enum_value) {
+			if (enum_value->value == EMPATHY_CONTACT_LIST_STORE_SORT_STATE) {
+				gtk_radio_action_set_current_value (window->sort_by_name,
+								    CONTACT_LIST_SORT_BY_STATUS);
+			} else {
+				gtk_radio_action_set_current_value (window->sort_by_name,
+								    CONTACT_LIST_SORT_BY_NAME);
+			}
 		} else {
-			gtk_radio_action_set_current_value (action, CONTACT_LIST_SORT_BY_NAME);
+			g_warning ("Wrong value for sort_criterium configuration : %s", str);
 		}
+		g_free (str);
 	}
 }
 
@@ -1153,19 +1192,11 @@ empathy_main_window_show (void)
 	EmpathyConf              *conf;
 	GtkWidget                *sw;
 	GtkToggleAction          *show_offline_widget;
-	GtkRadioAction           *sort_by_name;
-	GtkRadioAction           *sort_by_status;
-	GtkRadioAction           *normal_size;
-	GtkRadioAction           *normal_without_icons;
-	GtkRadioAction           *compact_size;
 	GtkWidget                *ebox;
 	GtkAction                *show_map_widget;
 	GtkToolItem              *item;
 	gboolean                  show_offline;
-	gboolean                  show_avatars;
-	gboolean                  compact_contact_list;
 	gint                      x, y, w, h;
-	gint			  value = 1;
 	gchar                    *filename;
 	GSList                   *l;
 
@@ -1184,11 +1215,11 @@ empathy_main_window_show (void)
 				       "errors_vbox", &window->errors_vbox,
 				       "ui_manager", &window->ui_manager,
 				       "view_show_offline", &show_offline_widget,
-				       "view_sort_by_name", &sort_by_name,
-				       "view_sort_by_status", &sort_by_status,
-				       "view_normal_size", &normal_size,
-				       "view_normal_without_icons", &normal_without_icons,
-				       "view_compact_size", &compact_size,
+				       "view_sort_by_name", &window->sort_by_name,
+				       "view_sort_by_status", &window->sort_by_status,
+				       "view_normal_size", &window->normal_size,
+				       "view_normal_without_icons", &window->normal_without_icons,
+				       "view_compact_size", &window->compact_size,
 				       "view_history", &window->view_history,
 				       "view_show_map", &show_map_widget,
 				       "room_join_favorites", &window->room_join_favorites,
@@ -1363,29 +1394,28 @@ empathy_main_window_show (void)
 	gtk_toggle_action_set_active (show_offline_widget, show_offline);
 
 	/* Sort by name / by status ? */
-	main_window_conf_sort_criterium (conf,
-					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-					 window,
-					 sort_by_name);
+	empathy_conf_notify_add (conf,
+				 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+				 (EmpathyConfNotifyFunc) main_window_notify_sort_contact_cb,
+				 window);
 
+	main_window_notify_sort_contact_cb (conf,
+					    EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+					    window);
 
 	/* Contacts list size */
-	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_UI_SHOW_AVATARS,
-			      &show_avatars);
-	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-			      &compact_contact_list);
+	empathy_conf_notify_add (conf,
+				 EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+				 (EmpathyConfNotifyFunc) main_window_notify_contact_list_size_cb,
+				 window);
+	empathy_conf_notify_add (conf,
+				 EMPATHY_PREFS_UI_SHOW_AVATARS,
+				 (EmpathyConfNotifyFunc) main_window_notify_contact_list_size_cb,
+				 window);
 
-	if (compact_contact_list) {
-		value = CONTACT_LIST_COMPACT_SIZE;
-	} else if (show_avatars) {
-		value = CONTACT_LIST_NORMAL_SIZE;
-	} else {
-		value = CONTACT_LIST_NORMAL_WITHOUT_ICONS;
-	}
-	gtk_radio_action_set_current_value (normal_size, value);
-
+	main_window_notify_contact_list_size_cb (conf,
+						 EMPATHY_PREFS_UI_SHOW_AVATARS,
+						 window);
 
 	main_window_update_status (window, window->account_manager);
 
