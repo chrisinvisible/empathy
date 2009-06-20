@@ -212,7 +212,7 @@ debug_dialog_set_toolbar_sensitivity (EmpathyDebugDialog *debug_dialog,
     gboolean sensitive)
 {
   EmpathyDebugDialogPriv *priv = GET_PRIV (debug_dialog);
-  GtkWidget *vbox = GTK_DIALOG (debug_dialog)->vbox;
+  GtkWidget *vbox = gtk_dialog_get_content_area (GTK_DIALOG (debug_dialog));
 
   gtk_widget_set_sensitive (GTK_WIDGET (priv->save_button), sensitive);
   gtk_widget_set_sensitive (GTK_WIDGET (priv->copy_button), sensitive);
@@ -948,7 +948,7 @@ debug_dialog_constructor (GType type,
   gtk_window_set_title (GTK_WINDOW (object), _("Debug Window"));
   gtk_window_set_default_size (GTK_WINDOW (object), 800, 400);
 
-  vbox = GTK_DIALOG (object)->vbox;
+  vbox = gtk_dialog_get_content_area (GTK_DIALOG (object));
 
   toolbar = gtk_toolbar_new ();
   gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH_HORIZ);

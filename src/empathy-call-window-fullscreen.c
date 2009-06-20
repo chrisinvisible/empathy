@@ -71,11 +71,11 @@ empathy_call_window_fullscreen_set_cursor_visible (
 
   if (priv->video_widget != NULL && !show_cursor)
     {
-      gdk_window_set_cursor (priv->video_widget->window,
+      gdk_window_set_cursor (gtk_widget_get_window (priv->video_widget),
           gdk_cursor_new (GDK_BLANK_CURSOR));
     }
   else
-    gdk_window_set_cursor (priv->video_widget->window, NULL);
+    gdk_window_set_cursor (gtk_widget_get_window (priv->video_widget), NULL);
 }
 
 static void
@@ -130,7 +130,7 @@ empathy_call_window_fullscreen_show_popup (EmpathyCallWindowFullscreen *self)
   screen = gtk_window_get_screen (GTK_WINDOW (priv->parent_window));
   gdk_screen_get_monitor_geometry (screen,
       gdk_screen_get_monitor_at_window (screen,
-          GTK_WIDGET (priv->parent_window)->window),
+          gtk_widget_get_window (GTK_WIDGET (priv->parent_window))),
       &fullscreen_rect);
 
   /* Getting the popup window sizes */

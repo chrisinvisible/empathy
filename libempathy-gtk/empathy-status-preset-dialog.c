@@ -559,8 +559,8 @@ empathy_status_preset_dialog_init (EmpathyStatusPresetDialog *self)
 	status_preset_dialog_setup_presets_treeview (self);
 	status_preset_dialog_setup_add_combobox (self);
 
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (self)->vbox), toplevel_vbox,
-			TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
+	    toplevel_vbox, TRUE, TRUE, 0);
 
 	g_object_unref (gui);
 }

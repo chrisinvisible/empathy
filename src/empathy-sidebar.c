@@ -243,7 +243,7 @@ empathy_sidebar_menu_position_under (GtkMenu *menu,
 
   widget = GTK_WIDGET (user_data);
 
-  gdk_window_get_origin (widget->window, x, y);
+  gdk_window_get_origin (gtk_widget_get_window (widget), x, y);
 
   *x += widget->allocation.x;
   *y += widget->allocation.y + widget->allocation.height;

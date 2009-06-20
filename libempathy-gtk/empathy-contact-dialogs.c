@@ -193,7 +193,7 @@ empathy_contact_information_dialog_show (EmpathyContact *contact,
 		EMPATHY_CONTACT_WIDGET_SHOW_LOCATION |
 		EMPATHY_CONTACT_WIDGET_EDIT_NONE);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	gtk_widget_show (contact_widget);
@@ -252,7 +252,7 @@ empathy_contact_edit_dialog_show (EmpathyContact *contact,
 		EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 		EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	gtk_widget_show (contact_widget);
@@ -304,7 +304,7 @@ empathy_contact_personal_dialog_show (GtkWindow *parent)
 		EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 		EMPATHY_CONTACT_WIDGET_EDIT_AVATAR);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (personal_dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (personal_dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	empathy_contact_widget_set_account_filter (contact_widget,
@@ -407,7 +407,7 @@ empathy_new_contact_dialog_show (GtkWindow *parent)
 						     EMPATHY_CONTACT_WIDGET_EDIT_ACCOUNT |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ID |
 						     EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	empathy_contact_widget_set_account_filter (contact_widget,

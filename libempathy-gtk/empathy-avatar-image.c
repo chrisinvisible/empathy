@@ -232,7 +232,7 @@ avatar_image_button_press_event (GtkWidget *widget, GdkEventButton *event)
 	gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
 	g_object_unref (pixbuf);
 
-	gdk_window_get_origin (priv->image->window, &x, &y);
+	gdk_window_get_origin (gtk_widget_get_window (priv->image), &x, &y);
 
 	x = x - (popup_width - width) / 2;
 	y = y - (popup_height - height) / 2;

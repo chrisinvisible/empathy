@@ -176,7 +176,7 @@ chat_tab_style_set_cb (GtkWidget *hbox,
 		"chat-window-tab-close-button");
 	context = gtk_widget_get_pango_context (hbox);
 
-	metrics = pango_context_get_metrics (context, hbox->style->font_desc,
+	metrics = pango_context_get_metrics (context, gtk_widget_get_style (hbox)->font_desc,
 		pango_context_get_language (context));
 	char_width = pango_font_metrics_get_approximate_char_width (metrics);
 	pango_font_metrics_unref (metrics);
@@ -1242,7 +1242,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		const gchar           *account_id;
 		const gchar           *contact_id;
 
-		id = (const gchar*) selection->data;
+		id = (const gchar*) gtk_selection_data_get_data (selection);
 		account_manager = empathy_account_manager_dup_singleton ();
 
 		DEBUG ("DND contact from roster with id:'%s'", id);
@@ -1299,7 +1299,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 		DEBUG ("DND tab");
 
-		chat = (void *) selection->data;
+		chat = (void *) gtk_selection_data_get_data (selection);
 		old_window = chat_window_find_chat (*chat);
 
 		if (old_window) {

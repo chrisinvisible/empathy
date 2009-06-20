@@ -292,7 +292,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		goto OUT;
 	}
 
-	id = (const gchar*) selection->data;
+	id = (const gchar*) gtk_selection_data_get_data (selection);
 	DEBUG ("Received %s%s drag & drop contact from roster with id:'%s'",
 		context->action == GDK_ACTION_MOVE ? "move" : "",
 		context->action == GDK_ACTION_COPY ? "copy" : "",
@@ -851,7 +851,7 @@ contact_list_view_expander_cell_data_func (GtkTreeViewColumn     *column,
 		gboolean     row_expanded;
 
 		path = gtk_tree_model_get_path (model, iter);
-		row_expanded = gtk_tree_view_row_expanded (GTK_TREE_VIEW (column->tree_view), path);
+		row_expanded = gtk_tree_view_row_expanded (GTK_TREE_VIEW (gtk_tree_view_column_get_tree_view (column)), path);
 		gtk_tree_path_free (path);
 
 		g_object_set (cell,

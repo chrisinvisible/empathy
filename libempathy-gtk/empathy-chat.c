@@ -748,13 +748,14 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 	if (!(event->state & GDK_CONTROL_MASK) &&
 	    event->keyval == GDK_Page_Up) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
-		gtk_adjustment_set_value (adj, adj->value - adj->page_size);
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_value (adj) - gtk_adjustment_get_page_size (adj));
 		return TRUE;
 	}
 	if ((event->state & GDK_CONTROL_MASK) != GDK_CONTROL_MASK &&
 	    event->keyval == GDK_Page_Down) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
-		val = MIN (adj->value + adj->page_size, adj->upper - adj->page_size);
+		val = MIN (gtk_adjustment_get_value (adj) + gtk_adjustment_get_page_size (adj),
+			   gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj));
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
@@ -1478,15 +1479,18 @@ chat_size_request (GtkWidget      *widget,
 		   GtkRequisition *requisition)
 {
   GtkBin *bin = GTK_BIN (widget);
+  GtkWidget *child;
 
-  requisition->width = GTK_CONTAINER (widget)->border_width * 2;
-  requisition->height = GTK_CONTAINER (widget)->border_width * 2;
+  requisition->width = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
+  requisition->height = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
 
-  if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
+  child = gtk_bin_get_child (bin);
+
+  if (child && GTK_WIDGET_VISIBLE (child))
     {
       GtkRequisition child_requisition;
 
-      gtk_widget_size_request (bin->child, &child_requisition);
+      gtk_widget_size_request (child, &child_requisition);
 
       requisition->width += child_requisition.width;
       requisition->height += child_requisition.height;
@@ -1499,17 +1503,20 @@ chat_size_allocate (GtkWidget     *widget,
 {
   GtkBin *bin = GTK_BIN (widget);
   GtkAllocation child_allocation;
+  GtkWidget *child;
 
   widget->allocation = *allocation;
 
-  if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
-    {
-      child_allocation.x = allocation->x + GTK_CONTAINER (widget)->border_width;
-      child_allocation.y = allocation->y + GTK_CONTAINER (widget)->border_width;
-      child_allocation.width = MAX (allocation->width - GTK_CONTAINER (widget)->border_width * 2, 0);
-      child_allocation.height = MAX (allocation->height - GTK_CONTAINER (widget)->border_width * 2, 0);
+  child = gtk_bin_get_child (bin);
 
-      gtk_widget_size_allocate (bin->child, &child_allocation);
+  if (child && GTK_WIDGET_VISIBLE (child))
+    {
+      child_allocation.x = allocation->x + gtk_container_get_border_width (GTK_CONTAINER (widget));
+      child_allocation.y = allocation->y + gtk_container_get_border_width (GTK_CONTAINER (widget));
+      child_allocation.width = MAX (allocation->width - gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2, 0);
+      child_allocation.height = MAX (allocation->height - gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2, 0);
+
+      gtk_widget_size_allocate (child, &child_allocation);
     }
 }
 

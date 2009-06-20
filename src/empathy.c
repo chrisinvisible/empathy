@@ -357,7 +357,7 @@ on_bacon_message_received (const char *message,
 				gtk_widget_realize (GTK_WIDGET (window));
 			}
 
-			startup_timestamp = gdk_x11_get_server_time (window->window);
+			startup_timestamp = gdk_x11_get_server_time (gtk_widget_get_window (window));
 		}
 
 		gtk_window_present_with_time (GTK_WINDOW (window), startup_timestamp);

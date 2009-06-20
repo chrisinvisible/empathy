@@ -1250,7 +1250,7 @@ empathy_window_get_is_visible (GtkWindow *window)
 
 	g_return_val_if_fail (GTK_IS_WINDOW (window), FALSE);
 
-	gdk_window = GTK_WIDGET (window)->window;
+	gdk_window = gtk_widget_get_window (GTK_WIDGET (window));
 	if (!gdk_window) {
 		return FALSE;
 	}
@@ -1272,7 +1272,7 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 	GdkWindow    *gdk_window;
 
 	gtk_status_icon_get_geometry (status_icon, NULL, &icon_location, NULL);
-	gdk_window = GTK_WIDGET (window)->window;
+	gdk_window = gtk_widget_get_window (GTK_WIDGET (window));
 	dpy = gdk_x11_drawable_get_xdisplay (gdk_window);
 
 	data[0] = icon_location.x;
