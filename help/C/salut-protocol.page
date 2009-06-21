@@ -1,0 +1,55 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="salut-protocol">
+  
+  <info>
+    <link type="seealso" xref="create-account"/>
+      <desc>
+	Undesrtanding the <em>Salut</em> protocol.
+      </desc>
+      <revision version="" date="" status="stub"/>
+      
+      <credit type="author">
+	<name>Milo Casagrande</name>
+	<email>milo@ubuntu.com</email>
+      </credit>
+      <copyright>
+	<year>2009</year>
+	<name>GNOME Documentation Project</name>
+      </copyright>
+      
+      <license>Creative Commons Share Alike</license>
+      
+      <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"
+	/>
+  </info>
+  
+  <comment>
+    <cite date="2009-06-21"><name>Milo Casagrande</name></cite>
+    <p>
+      Need to work on this section, explaining people in clear words
+      what the hell is this service!
+    </p>
+  </comment>
+
+  <title>What is the <em>Salut</em> service?</title>
+
+  <p>
+    The <em>Salut</em> service is a serverless communication service:
+    you do not need to connect and authenticate to a central server in
+    order to use it. 
+  </p>
+  <p>
+    This kind of serverless messaging system is restricted to local
+    network and an active Internet connection is not necessary.
+  </p>
+  <p>
+    The people that use this service inside the same local network
+    will be auto-discovered, and it will be possibile to send them messages
+    and files as with other services.
+  </p>
+  <p>
+    All the modern local network should be able to support this kind
+    of service.
+  </p>
+</page>
