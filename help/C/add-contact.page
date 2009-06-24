@@ -1,42 +1,77 @@
 <page xmlns="http://projectmallard.org/1.0/"
-      type="topic"
-      id="add_contact">
-
-<info>
-  <link type="guide" xref="index#talk"/>
-  <desc>Add someone to your contact list.</desc>
-  <revision version="3.0" date="2009-06-15" status="stub"/>
-
-  <credit type="author">
-    <name>Phil Bull</name>
-    <email>philbull@gmail.com</email>
-  </credit>
-  <copyright>
-    <year>2009</year>
-    <name>GNOME Documentation Project</name>
-  </copyright>
-
-    <license>Creative Commons Share Alike</license>
-
-  <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
-</info>
-
-<title>Add someone to your list of contacts</title>
-
-<comment>
+  type="topic"
+  id="add-contact">
+  
+  <info>
+    <link type="guide" xref="index#talk"/>
+    <link type="seealso" xref="offline-contacts"/>
+    <desc>Add someone to your contact list.</desc>
+    <revision version="3.0" date="2009-06-15" status="stub"/>
+    
+    <credit type="author">
+      <name>Phil Bull</name>
+      <email>philbull@gmail.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    
+    <license>Creative Commons Share Alike 3.0</license>
+    
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+  
+  <comment>
     <cite date="2009-06-15"><name>Phil Bull</name></cite>
     <p>Instructions need review, didn't test with other IM services to confirm 
-    the names of the textboxes. Also, check the name of the Add button.</p>
-</comment>
+      the names of the textboxes. Also, check the name of the Add button.</p>
+  </comment>
 
-<p>
-Click <guiseq><gui>Chat</gui><gui>Add Contact</gui></guiseq>. Type the email 
-address or username of the person you want to add to your contacts into the 
-<gui>Identifier</gui> text box. Type their name into the <gui>Alias</gui> text 
-box. Click <gui>Add</gui> to add the person to your list of contacts.
-</p>
-<p>
-You can view your list of contacts in the main Empathy window.
-</p>
+  <title>Add someone to your list of contacts</title>
+  
+  <steps>
+    <item>
+      <p>
+	Choose <guiseq><gui>Chat</gui><gui>Add Contact</gui></guiseq>
+      </p>
+    </item>
+    <item>
+      <p>
+	From the <gui>Account</gui> drop-down list, select the type of
+	service the person you want to add to your contacts is using.
+      </p>
+    </item>
+    <item>
+      <p>
+	In the <gui>Identifier</gui> text box, type the email address
+	or the username of the person you want to add to your
+	contacts list.
+      </p>
+    </item>
+    <item>
+      <p>
+	In the <gui>Alias</gui> text box, type their name.
+      </p>
+    </item>
+    <item>
+      <p>
+	Click <gui>Add</gui> to add the person to your list of
+	contacts.
+      </p>
+    </item>
+  </steps>
+
+  <p>
+    You can view your list of contacts in the main window of
+    <app>Empathy</app>.
+  </p>
+
+  <note>
+    <p>
+      To add a new person to your list of contacts, you need to be
+      connected to the Internet and to your account.
+    </p>
+  </note>
 
 </page>
