@@ -54,6 +54,7 @@ typedef struct {
 	time_t                last_timestamp;
 	gboolean              page_loaded;
 	GList                *message_queue;
+	gchar                *hovered_uri;
 } EmpathyThemeAdiumPriv;
 
 struct _EmpathyAdiumData {
@@ -104,11 +105,71 @@ theme_adium_navigation_requested_cb (WebKitWebView        *view,
 }
 
 static void
+theme_adium_hovering_over_link_cb (EmpathyThemeAdium *theme,
+				   gchar             *title,
+				   gchar             *uri,
+				   gpointer           user_data)
+{
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	if (tp_strdiff (uri, priv->hovered_uri)) {
+		g_free (priv->hovered_uri);
+		priv->hovered_uri = g_strdup (uri);
+	}
+}
+
+static void
+theme_adium_copy_address_cb (GtkMenuItem *menuitem,
+			     gpointer     user_data)
+{
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	GtkClipboard          *clipboard;
+
+	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+
+	clipboard = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
+	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+}
+
+static void
+theme_adium_open_address_cb (GtkMenuItem *menuitem,
+			     gpointer     user_data)
+{
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	empathy_url_show (GTK_WIDGET (menuitem), priv->hovered_uri);
+}
+
+static void
 theme_adium_populate_popup_cb (WebKitWebView *view,
 			       GtkMenu       *menu,
 			       gpointer       user_data)
 {
 	GtkWidget *item;
+	GList     *items;
+	GtkWidget *icon;
+	gchar     *stock_id;
+	gboolean   is_link = FALSE;
+
+	/* FIXME: WebKitGTK+'s context menu API clearly needs an
+	 * overhaul.  There is currently no way to know what is being
+	 * clicked, to decide what features to provide. You either
+	 * take what it gives you as a menu, or use hacks to figure
+	 * out what to display. */
+	items = gtk_container_get_children (GTK_CONTAINER (menu));
+	item = GTK_WIDGET (g_list_nth_data (items, 0));
+	g_list_free (items);
+
+	if (GTK_IS_IMAGE_MENU_ITEM (item)) {
+		icon = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (item));
+		gtk_image_get_stock (GTK_IMAGE (icon), &stock_id, NULL);
+
+		if (!strcmp (stock_id, GTK_STOCK_OPEN))
+			is_link = TRUE;
+	}
 
 	/* Remove default menu items */
 	gtk_container_foreach (GTK_CONTAINER (menu),
@@ -147,10 +208,31 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 				  G_CALLBACK (empathy_chat_view_clear),
 				  view);
 
-	/* FIXME: Add open_link and copy_link when those bugs are fixed:
-	 * https://bugs.webkit.org/show_bug.cgi?id=16092
-	 * https://bugs.webkit.org/show_bug.cgi?id=16562
-	 */
+	/* We will only add the following menu items if we are
+	 * right-clicking a link */
+	if (!is_link)
+		return;
+
+	/* Separator */
+	item = gtk_separator_menu_item_new ();
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
+
+	/* Copy Link Address menu item */
+	item = gtk_menu_item_new_with_mnemonic (_("_Copy Link Address"));
+	g_signal_connect (item, "activate",
+			  G_CALLBACK (theme_adium_copy_address_cb),
+			  view);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
+
+	/* Open Link menu item */
+	item = gtk_menu_item_new_with_mnemonic (_("_Open Link"));
+	g_signal_connect (item, "activate",
+			  G_CALLBACK (theme_adium_open_address_cb),
+			  view);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
 }
 
 static gchar *
@@ -661,6 +743,7 @@ theme_adium_finalize (GObject *object)
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (object);
 
 	empathy_adium_data_unref (priv->data);
+	g_free (priv->hovered_uri);
 
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->finalize (object);
 }
@@ -794,6 +877,9 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 			  NULL);
 	g_signal_connect (theme, "populate-popup",
 			  G_CALLBACK (theme_adium_populate_popup_cb),
+			  NULL);
+	g_signal_connect (theme, "hovering-over-link",
+			  G_CALLBACK (theme_adium_hovering_over_link_cb),
 			  NULL);
 }
 
