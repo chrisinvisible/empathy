@@ -97,8 +97,8 @@ typedef struct {
 
 	GtkRadioAction         *sort_by_name;
 	GtkRadioAction         *sort_by_status;
+	GtkRadioAction         *normal_with_avatars;
 	GtkRadioAction         *normal_size;
-	GtkRadioAction         *normal_without_icons;
 	GtkRadioAction         *compact_size;
 
 	GtkUIManager           *ui_manager;
@@ -729,15 +729,12 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 				   EmpathyMainWindow *window)
 {
 	EmpathyContactListStoreSort value;
-	const gchar *valueStr = NULL;
-
-	value = gtk_radio_action_get_current_value (action);
-
 	GSList      *group;
 	GType        type;
 	GEnumClass  *enum_class;
 	GEnumValue  *enum_value;
 
+	value = gtk_radio_action_get_current_value (action);
 	group = gtk_radio_action_get_group (action);
 
 	/* Get string from index */
@@ -749,19 +746,20 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 		g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioButton index:%d",
 			   g_slist_index (group, action));
 	} else {
-		valueStr = enum_value->value_nick;
+		const gchar *value_str;
+		value_str = enum_value->value_nick;
 
 		empathy_conf_set_string (empathy_conf_get (),
 					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-					 valueStr);
+					 value_str);
 	}
 	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
 }
 
 /* Matches GtkRadioAction values set in empathy-main-window.ui */
-#define CONTACT_LIST_NORMAL_SIZE		0
-#define CONTACT_LIST_NORMAL_WITHOUT_ICONS	1
-#define CONTACT_LIST_COMPACT_SIZE		2
+#define CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS		0
+#define CONTACT_LIST_NORMAL_SIZE			1
+#define CONTACT_LIST_COMPACT_SIZE			2
 
 static void
 main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
@@ -774,13 +772,13 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 
 	empathy_conf_set_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_UI_SHOW_AVATARS,
-			       value == CONTACT_LIST_NORMAL_SIZE);
+			       value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_conf_set_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
 			       value == CONTACT_LIST_COMPACT_SIZE);
 
 	empathy_contact_list_store_set_show_avatars (window->list_store,
-						     value == CONTACT_LIST_NORMAL_SIZE);
+						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_contact_list_store_set_is_compact (window->list_store,
 						   value == CONTACT_LIST_COMPACT_SIZE);
 }
@@ -1100,7 +1098,7 @@ main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
 {
 	gboolean show_avatars;
 	gboolean compact_contact_list;
-	gint value = CONTACT_LIST_NORMAL_SIZE;
+	gint value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
 
 	if (empathy_conf_get_bool (conf,
 				   EMPATHY_PREFS_UI_SHOW_AVATARS,
@@ -1111,12 +1109,12 @@ main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
 		if (compact_contact_list) {
 			value = CONTACT_LIST_COMPACT_SIZE;
 		} else if (show_avatars) {
-			value = CONTACT_LIST_NORMAL_SIZE;
+			value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
 		} else {
-			value = CONTACT_LIST_NORMAL_WITHOUT_ICONS;
+			value = CONTACT_LIST_NORMAL_SIZE;
 		}
 	}
-	gtk_radio_action_set_current_value (window->normal_size, value);
+	gtk_radio_action_set_current_value (window->normal_with_avatars, value);
 }
 
 
@@ -1217,8 +1215,8 @@ empathy_main_window_show (void)
 				       "view_show_offline", &show_offline_widget,
 				       "view_sort_by_name", &window->sort_by_name,
 				       "view_sort_by_status", &window->sort_by_status,
+				       "view_normal_size_with_avatars", &window->normal_with_avatars,
 				       "view_normal_size", &window->normal_size,
-				       "view_normal_without_icons", &window->normal_without_icons,
 				       "view_compact_size", &window->compact_size,
 				       "view_history", &window->view_history,
 				       "view_show_map", &show_map_widget,
@@ -1241,7 +1239,7 @@ empathy_main_window_show (void)
 			      "view_show_ft_manager", "activate", main_window_view_show_ft_manager,
 			      "view_show_offline", "toggled", main_window_view_show_offline_cb,
 			      "view_sort_by_name", "changed", main_window_view_sort_contacts_cb,
-			      "view_normal_size", "changed", main_window_view_contacts_list_size_cb,
+			      "view_normal_size_with_avatars", "changed", main_window_view_contacts_list_size_cb,
 			      "view_show_map", "activate", main_window_view_show_map_cb,
 			      "edit", "activate", main_window_edit_cb,
 			      "edit_accounts", "activate", main_window_edit_accounts_cb,
