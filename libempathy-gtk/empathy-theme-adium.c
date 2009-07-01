@@ -56,6 +56,8 @@ typedef struct {
 	gboolean              page_loaded;
 	GList                *message_queue;
 	gchar                *hovered_uri;
+	guint                 notify_enable_webkit_developer_tools_id;
+	GtkWidget            *inspector_window;
 } EmpathyThemeAdiumPriv;
 
 struct _EmpathyAdiumData {
@@ -98,6 +100,31 @@ G_DEFINE_TYPE_WITH_CODE (EmpathyThemeAdium, empathy_theme_adium,
 			 WEBKIT_TYPE_WEB_VIEW,
 			 G_IMPLEMENT_INTERFACE (EMPATHY_TYPE_CHAT_VIEW,
 						theme_adium_iface_init));
+
+static void
+theme_adium_update_enable_webkit_developer_tools (EmpathyThemeAdium *theme)
+{
+	WebKitWebView  *web_view = WEBKIT_WEB_VIEW (theme);
+	gboolean        enable_webkit_developer_tools;
+
+	if (empathy_conf_get_bool (empathy_conf_get (), "/apps/empathy/conversation/enable_webkit_developer_tools", &enable_webkit_developer_tools) == FALSE)
+		return;
+
+	g_object_set (G_OBJECT (webkit_web_view_get_settings (web_view)),
+		      "enable-developer-extras",
+		      enable_webkit_developer_tools,
+		      NULL);
+}
+
+static void
+theme_adium_notify_enable_webkit_developer_tools_cb (EmpathyConf *conf,
+						     const gchar *key,
+						     gpointer     user_data)
+{
+	EmpathyThemeAdium  *theme = user_data;
+
+	theme_adium_update_enable_webkit_developer_tools (theme);
+}
 
 static WebKitNavigationResponse
 theme_adium_navigation_requested_cb (WebKitWebView        *view,
@@ -162,6 +189,7 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 	GtkWidget *icon;
 	gchar     *stock_id;
 	gboolean   is_link = FALSE;
+	gboolean   developer_tools_enabled;
 
 	/* FIXME: WebKitGTK+'s context menu API clearly needs an
 	 * overhaul.  There is currently no way to know what is being
@@ -181,8 +209,11 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 	}
 
 	/* Remove default menu items */
-	gtk_container_foreach (GTK_CONTAINER (menu),
-		(GtkCallback) gtk_widget_destroy, NULL);
+	g_object_get (G_OBJECT (webkit_web_view_get_settings (view)),
+		      "enable-developer-extras", &developer_tools_enabled, NULL);
+	if (!developer_tools_enabled)
+		gtk_container_foreach (GTK_CONTAINER (menu),
+				       (GtkCallback) gtk_widget_destroy, NULL);
 
 	/* Select all item */
 	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_SELECT_ALL, NULL);
@@ -821,6 +852,9 @@ theme_adium_finalize (GObject *object)
 	empathy_adium_data_unref (priv->data);
 	g_free (priv->hovered_uri);
 
+	empathy_conf_notify_remove (empathy_conf_get (),
+				    priv->notify_enable_webkit_developer_tools_id);
+
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->finalize (object);
 }
 
@@ -839,7 +873,75 @@ theme_adium_dispose (GObject *object)
 		priv->last_contact = NULL;
 	}
 
+	if (priv->inspector_window) {
+		gtk_widget_destroy (priv->inspector_window);
+		priv->inspector_window = NULL;
+	}
+
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->dispose (object);
+}
+
+static gboolean
+theme_adium_inspector_show_window_cb (WebKitWebInspector *inspector,
+				      gpointer            user_data)
+{
+	EmpathyThemeAdium     *theme = user_data;
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	gtk_widget_show_all (priv->inspector_window);
+
+	return TRUE;
+}
+
+static gboolean
+theme_adium_inspector_close_window_cb (WebKitWebInspector *inspector,
+				       gpointer            user_data)
+{
+	EmpathyThemeAdium     *theme = user_data;
+	EmpathyThemeAdiumPriv *priv;
+
+	/* We may be called too late - when the theme has already been
+	 * destroyed */
+	if (!theme)
+		return FALSE;
+
+	priv = GET_PRIV (theme);
+
+	if (priv->inspector_window) {
+		gtk_widget_hide (priv->inspector_window);
+	}
+
+	return TRUE;
+}
+
+static WebKitWebView *
+theme_adium_inspect_web_view_cb (WebKitWebInspector *inspector,
+				 WebKitWebView *web_view,
+				 gpointer data)
+{
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (EMPATHY_THEME_ADIUM (web_view));
+	GtkWidget             *scrolled_window;
+	GtkWidget             *inspector_web_view;
+
+	if (!priv->inspector_window) {
+		priv->inspector_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		gtk_window_set_default_size (GTK_WINDOW (priv->inspector_window),
+					     800, 600);
+
+		g_signal_connect (priv->inspector_window, "delete-event",
+				  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+
+		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_container_add (GTK_CONTAINER (priv->inspector_window), scrolled_window);
+
+		inspector_web_view = webkit_web_view_new ();
+		gtk_container_add (GTK_CONTAINER (scrolled_window), inspector_web_view);
+
+		return WEBKIT_WEB_VIEW (inspector_web_view);
+	}
+
+	return NULL;
 }
 
 static void
@@ -861,7 +963,15 @@ theme_adium_constructed (GObject *object)
 	if (font_size) {
 		g_object_set (G_OBJECT (webkit_settings), "default-font-size", font_size, NULL);
 	}
-	webkit_web_view_set_settings (WEBKIT_WEB_VIEW (object), webkit_settings);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "inspect-web-view",
+			  G_CALLBACK (theme_adium_inspect_web_view_cb), NULL);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "show-window",
+			  G_CALLBACK (theme_adium_inspector_show_window_cb), object);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "close-window",
+			  G_CALLBACK (theme_adium_inspector_close_window_cb), NULL);
 
 	/* Load template */
 	basedir_uri = g_strconcat ("file://", priv->data->basedir, NULL);
@@ -931,7 +1041,6 @@ empathy_theme_adium_class_init (EmpathyThemeAdiumClass *klass)
 							      G_PARAM_READWRITE |
 							      G_PARAM_STATIC_STRINGS));
 
-
 	g_type_class_add_private (object_class, sizeof (EmpathyThemeAdiumPriv));
 }
 
@@ -957,6 +1066,14 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 	g_signal_connect (theme, "hovering-over-link",
 			  G_CALLBACK (theme_adium_hovering_over_link_cb),
 			  NULL);
+
+	priv->notify_enable_webkit_developer_tools_id =
+		empathy_conf_notify_add (empathy_conf_get (),
+					 "/apps/empathy/conversation/enable_webkit_developer_tools",
+					 theme_adium_notify_enable_webkit_developer_tools_cb,
+					 theme);
+
+	theme_adium_update_enable_webkit_developer_tools (theme);
 }
 
 EmpathyThemeAdium *

@@ -362,6 +362,20 @@
     </schema>
 
     <schema>
+      <key>/schemas/apps/empathy/conversation/enable_webkit_developer_tools</key>
+      <applyto>/apps/empathy/conversation/enable_webkit_developer_tools</applyto>
+      <owner>empathy</owner>
+      <type>bool</type>
+      <default></default>
+      <locale name="C">
+         <short>Enable WebKit Developer Tools</short>
+         <long>
+           Whether WebKit developer tools, such as the Web Inspector, should be enabled.
+         </long>
+      </locale>
+    </schema>
+
+    <schema>
       <key>/schemas/apps/empathy/conversation/theme_chat_room</key>
       <applyto>/apps/empathy/conversation/theme_chat_room</applyto>
       <owner>empathy</owner>
