@@ -1159,14 +1159,59 @@ static void
 chat_text_view_copy_clipboard (EmpathyChatView *view)
 {
 	GtkTextBuffer *buffer;
+	GtkTextIter start, iter, end;
 	GtkClipboard  *clipboard;
+	GdkPixbuf *pixbuf;
+	gunichar c;
+	GtkTextChildAnchor *anchor = NULL;
+	GString *str;
+	GList *list;
+	gboolean flag_return = FALSE;
+
+	str = g_string_new ("");
 
 	g_return_if_fail (EMPATHY_IS_CHAT_TEXT_VIEW (view));
 
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
 	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
 
-	gtk_text_buffer_copy_clipboard (buffer, clipboard);
+	if (gtk_text_buffer_get_selection_bounds (buffer, &start, &end)) {
+		iter = start;
+		while ((c = gtk_text_iter_get_char (&iter)) != 0 &&
+			!gtk_text_iter_equal (&iter, &end)) {
+			if (c == 0xFFFC) {
+				flag_return = FALSE;
+				if ((pixbuf = gtk_text_iter_get_pixbuf (&iter))) {
+					gchar *text;
+					text = g_object_get_data (G_OBJECT(pixbuf),
+								  "smiley_str");
+					if (text)
+						str = g_string_append (str, text);
+				} else if ((anchor = gtk_text_iter_get_child_anchor (&iter))) {
+					gchar *text;
+					list = gtk_text_child_anchor_get_widgets (anchor);
+					if (list) {
+						text = g_object_get_data (G_OBJECT(list->data),
+									  "str_obj");
+						if (text)
+							str = g_string_append (str, text);
+					}
+					g_list_free (list);
+				}
+			} else if (c == '\n') {
+				if (!flag_return) {
+					flag_return = TRUE;
+					str = g_string_append_unichar (str, c);
+				}
+			} else {
+				flag_return = FALSE;
+				str = g_string_append_unichar (str, c);
+			}
+			gtk_text_iter_forward_char (&iter);
+		}
+	}
+
+	gtk_clipboard_set_text (clipboard, g_string_free (str, FALSE), -1);
 }
 
 static void
