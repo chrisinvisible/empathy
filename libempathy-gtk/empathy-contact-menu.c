@@ -167,7 +167,7 @@ empathy_contact_audio_call_menu_item_new (EmpathyContact *contact)
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-	gtk_widget_set_sensitive (item, empathy_contact_can_voip (contact));
+	gtk_widget_set_sensitive (item, empathy_contact_can_voip_audio (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -199,7 +199,7 @@ empathy_contact_video_call_menu_item_new (EmpathyContact *contact)
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VIDEO_CALL,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-	gtk_widget_set_sensitive (item, empathy_contact_can_voip (contact));
+	gtk_widget_set_sensitive (item, empathy_contact_can_voip_video (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",

@@ -809,7 +809,6 @@ static void
 init_contact_avatar_with_size (EmpathyContact *contact, GtkWidget *image_widget,
     gint size)
 {
-
   GdkPixbuf *pixbuf_avatar = NULL;
 
   if (contact != NULL)
@@ -1347,6 +1346,8 @@ empathy_call_window_connected (gpointer user_data)
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   EmpathyTpCall *call;
+  gboolean can_send_video = priv->video_input != NULL && priv->contact != NULL
+    && empathy_contact_can_voip_video (priv->contact);
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
 
@@ -1357,9 +1358,10 @@ empathy_call_window_connected (gpointer user_data)
     gtk_widget_set_sensitive (priv->dtmf_panel, TRUE);
 
   if (priv->video_input == NULL)
-      empathy_call_window_set_send_video (self, FALSE);
+    empathy_call_window_set_send_video (self, FALSE);
 
-  priv->sending_video = empathy_tp_call_is_sending_video (call);
+  priv->sending_video = can_send_video ?
+    empathy_tp_call_is_sending_video (call) : FALSE;
 
   gtk_action_set_sensitive (priv->show_preview, TRUE);
   gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
@@ -1370,8 +1372,8 @@ empathy_call_window_connected (gpointer user_data)
   gtk_toggle_tool_button_set_active (
       GTK_TOGGLE_TOOL_BUTTON (priv->camera_button),
       priv->sending_video && priv->video_input != NULL);
-  gtk_widget_set_sensitive (priv->camera_button, priv->video_input != NULL);
-  gtk_action_set_sensitive (priv->send_video, priv->video_input != NULL);
+  gtk_widget_set_sensitive (priv->camera_button, can_send_video);
+  gtk_action_set_sensitive (priv->send_video, can_send_video);
 
   gtk_action_set_sensitive (priv->redial, FALSE);
   gtk_widget_set_sensitive (priv->redial_button, FALSE);
