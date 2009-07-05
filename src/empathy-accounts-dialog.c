@@ -466,7 +466,7 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn    *tree_column,
 			    COL_ACCOUNT_POINTER, &account,
 			    -1);
 
-	icon_name = empathy_icon_name_from_account (account);
+	icon_name = empathy_account_get_icon_name (account);
 	pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON);
 
 	if (pixbuf) {

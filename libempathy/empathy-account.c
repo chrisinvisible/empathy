@@ -77,6 +77,7 @@ struct _EmpathyAccountPriv
 
   gchar *cm_name;
   gchar *proto_name;
+  gchar *icon_name;
 };
 
 #define GET_PRIV(obj)  EMPATHY_GET_PRIV (obj, EmpathyAccount)
@@ -256,6 +257,7 @@ empathy_account_finalize (GObject *object)
 
   g_free (priv->cm_name);
   g_free (priv->proto_name);
+  g_free (priv->icon_name);
 
   /* free any data held directly by the object here */
   if (G_OBJECT_CLASS (empathy_account_parent_class)->finalize != NULL)
@@ -347,6 +349,14 @@ empathy_account_get_protocol (EmpathyAccount *account)
   EmpathyAccountPriv *priv = GET_PRIV (account);
 
   return priv->proto_name;
+}
+
+const gchar *
+empathy_account_get_icon_name (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  return priv->icon_name;
 }
 
 void
@@ -460,6 +470,7 @@ _empathy_account_new (McAccount *mc_account)
 
       priv->proto_name = g_strdup (mc_protocol_get_name (protocol));
       priv->cm_name = g_strdup (mc_manager_get_unique_name (manager));
+      priv->icon_name = g_strdup_printf ("im-%s", priv->proto_name);
 
       g_object_unref (protocol);
       g_object_unref (manager);

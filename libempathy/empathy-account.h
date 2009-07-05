@@ -63,6 +63,7 @@ const gchar *empathy_account_get_display_name (EmpathyAccount *account);
 
 const gchar *empathy_account_get_connection_manager (EmpathyAccount *account);
 const gchar *empathy_account_get_protocol (EmpathyAccount *account);
+const gchar *empathy_account_get_icon_name (EmpathyAccount *account);
 
 void empathy_account_set_enabled (EmpathyAccount *account,
   gboolean enabled);

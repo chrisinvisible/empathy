@@ -610,7 +610,7 @@ account_chooser_update_iter (EmpathyAccountChooser *chooser,
 			    COL_ACCOUNT_POINTER, &account,
 			    -1);
 
-	icon_name = empathy_icon_name_from_account (account);
+	icon_name = empathy_account_get_icon_name (account);
 	if (priv->filter) {
 		is_enabled = priv->filter (account, priv->filter_data);
 	}

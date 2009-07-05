@@ -419,7 +419,7 @@ log_window_find_populate (EmpathyLogWindow *window,
 
 		date_readable = empathy_log_manager_get_date_readable (hit->date);
 		account_name = empathy_account_get_display_name (hit->account);
-		account_icon = empathy_icon_name_from_account (hit->account);
+		account_icon = empathy_account_get_icon_name (hit->account);
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,
