@@ -29,10 +29,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#include <libmissioncontrol/mc-protocol.h>
-
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-account.h>
+
+#include <telepathy-glib/connection-manager.h>
 
 #include "empathy-account-widget.h"
 #include "empathy-ui-utils.h"
@@ -60,27 +60,9 @@ account_widget_entry_focus_cb (GtkWidget     *widget,
 		gtk_entry_set_text (GTK_ENTRY (widget), value ? value : "");
 		g_free (value);
 	} else {
-		McProfile   *profile;
-		const gchar *domain = NULL;
-		gchar       *dup_str = NULL;
-
-		profile = empathy_account_get_profile (account);
-		if (mc_profile_get_capabilities (profile) &
-		    MC_PROFILE_CAPABILITY_SPLIT_ACCOUNT) {
-			domain = mc_profile_get_default_account_domain (profile);
-		}
-
-		if (domain && !strstr (str, "@") &&
-		    strcmp (param_name, "account") == 0) {
-			DEBUG ("Adding @%s suffix to account", domain);
-			str = dup_str = g_strconcat (str, "@", domain, NULL);
-			gtk_entry_set_text (GTK_ENTRY (widget), str);
-		}
 		DEBUG ("Setting %s to %s", param_name,
 			strstr (param_name, "password") ? "***" : str);
 		empathy_account_set_param_string (account, param_name, str);
-		g_free (dup_str);
-		g_object_unref (profile);
 	}
 
 	return FALSE;
@@ -257,37 +239,19 @@ account_widget_generic_format_param_name (const gchar *param_name)
 
 static void
 accounts_widget_generic_setup (EmpathyAccount *account,
+			       TpConnectionManagerParam *params,
 			       GtkWidget *table_common_settings,
 			       GtkWidget *table_advanced_settings)
 {
-	McProtocol *protocol;
-	McProfile  *profile;
-	GSList     *params, *l;
+	TpConnectionManagerParam *param;
 
-	profile = empathy_account_get_profile (account);
-	protocol = mc_profile_get_protocol (profile);
-
-	if (!protocol) {
-		/* The CM is not installed, MC shouldn't list them
-		 * see SF bug #1688779
-		 * FIXME: We should display something asking the user to
-		 * install the CM
-		 */
-		g_object_unref (profile);
-		return;
-	}
-
-	params = mc_protocol_get_params (protocol);
-
-	for (l = params; l; l = l->next) {
-		McProtocolParam *param;
+	for (param = params; param != NULL; param++) {
 		GtkWidget       *table_settings;
 		guint            n_rows = 0;
 		GtkWidget       *widget = NULL;
 		gchar           *param_name_formatted;
 
-		param = l->data;
-		if (param->flags & MC_PROTOCOL_PARAM_REQUIRED) {
+		if (param->flags & TP_CONN_MGR_PARAM_FLAG_REQUIRED) {
 			table_settings = table_common_settings;
 		} else {
 			table_settings = table_advanced_settings;
@@ -296,7 +260,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 		g_object_get (table_settings, "n-rows", &n_rows, NULL);
 		gtk_table_resize (GTK_TABLE (table_settings), ++n_rows, 2);
 
-		if (param->signature[0] == 's') {
+		if (param->dbus_signature[0] == 's') {
 			gchar *str;
 
 			str = g_strdup_printf (_("%s:"), param_name_formatted);
@@ -327,20 +291,20 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 			gtk_widget_show (widget);
 		}
 		/* int types: ynqiuxt. double type is 'd' */
-		else if (param->signature[0] == 'y' ||
-			 param->signature[0] == 'n' ||
-			 param->signature[0] == 'q' ||
-			 param->signature[0] == 'i' ||
-			 param->signature[0] == 'u' ||
-			 param->signature[0] == 'x' ||
-			 param->signature[0] == 't' ||
-			 param->signature[0] == 'd') {
+		else if (param->dbus_signature[0] == 'y' ||
+			 param->dbus_signature[0] == 'n' ||
+			 param->dbus_signature[0] == 'q' ||
+			 param->dbus_signature[0] == 'i' ||
+			 param->dbus_signature[0] == 'u' ||
+			 param->dbus_signature[0] == 'x' ||
+			 param->dbus_signature[0] == 't' ||
+			 param->dbus_signature[0] == 'd') {
 			gchar   *str = NULL;
 			gdouble  minint = 0;
 			gdouble  maxint = 0;
 			gdouble  step = 1;
 
-			switch (param->signature[0]) {
+			switch (param->dbus_signature[0]) {
 			case 'y': minint = G_MININT8;  maxint = G_MAXINT8;   break;
 			case 'n': minint = G_MININT16; maxint = G_MAXINT16;  break;
 			case 'q': minint = 0;          maxint = G_MAXUINT16; break;
@@ -373,7 +337,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 					  0, 0);
 			gtk_widget_show (widget);
 		}
-		else if (param->signature[0] == 'b') {
+		else if (param->dbus_signature[0] == 'b') {
 			widget = gtk_check_button_new_with_label (param_name_formatted);
 			gtk_table_attach (GTK_TABLE (table_settings),
 					  widget,
@@ -384,7 +348,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 			gtk_widget_show (widget);
 		} else {
 			DEBUG ("Unknown signature for param %s: %s",
-				param_name_formatted, param->signature);
+				param_name_formatted, param->dbus_signature);
 		}
 
 		if (widget) {
@@ -393,10 +357,6 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 
 		g_free (param_name_formatted);
 	}
-
-	g_slist_free (params);
-	g_object_unref (profile);
-	g_object_unref (protocol);
 }
 
 static void
@@ -475,27 +435,77 @@ empathy_account_widget_set_default_focus (GtkBuilder  *gui,
 			  NULL);
 }
 
+static void
+account_widget_tp_cm_ready_cb (TpConnectionManager *cm, const GError *error,
+		gpointer user_data, GObject *weak_object)
+{
+	GtkBuilder *builder;
+	EmpathyAccount *account;
+	GtkWidget *table_common_settings;
+	GtkWidget *table_advanced_settings;
+	const TpConnectionManagerProtocol *protocol;
+
+	if (error != NULL) {
+		DEBUG ("CM wasn't happy: %s", error->message);
+		return;
+	}
+
+	account = EMPATHY_ACCOUNT (user_data);
+	builder = GTK_BUILDER (weak_object);
+
+	table_common_settings = GTK_WIDGET (gtk_builder_get_object (builder,
+		"table_common_settings"));
+	table_advanced_settings = GTK_WIDGET (gtk_builder_get_object (builder,
+		"table_advanced_settings"));
+
+	protocol = tp_connection_manager_get_protocol (cm,
+		empathy_account_get_protocol (account));
+
+	accounts_widget_generic_setup (account, protocol->params,
+		table_common_settings, table_advanced_settings);
+}
+
 GtkWidget *
 empathy_account_widget_generic_new (EmpathyAccount *account)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
-	GtkWidget *table_common_settings;
-	GtkWidget *table_advanced_settings;
 	gchar     *filename;
 
 	filename = empathy_file_lookup ("empathy-account-widget-generic.ui",
 					"libempathy-gtk");
 	gui = empathy_builder_get_file (filename,
 					"vbox_generic_settings", &widget,
-					"table_common_settings", &table_common_settings,
-					"table_advanced_settings", &table_advanced_settings,
 					NULL);
-	g_free (filename);
 
-	accounts_widget_generic_setup (account, table_common_settings, table_advanced_settings);
+	/* If the profile isn't installed get_protocol will return NULL with MC4 */
+	if (empathy_account_get_protocol (account) != NULL) {
+		TpDBusDaemon *dbus;
+		TpConnectionManager *cm;
+		GError *error;
 
-	return empathy_builder_unref_and_keep_widget (gui, widget);
+		dbus = tp_dbus_daemon_dup (NULL);
+
+		cm = tp_connection_manager_new (dbus,
+			empathy_account_get_connection_manager (account), NULL, &error);
+
+		if (cm == NULL) {
+			DEBUG ("failed to get the cm: %s", error->message);
+			g_error_free (error);
+			g_object_unref (gui);
+			return NULL;
+		}
+
+		tp_connection_manager_call_when_ready (cm, account_widget_tp_cm_ready_cb,
+			account, g_object_unref, G_OBJECT (gui));
+
+		g_object_unref (dbus);
+	} else {
+		/* no protocol information available :(( */
+		return empathy_builder_unref_and_keep_widget (gui, widget);
+	}
+
+	return g_object_ref (widget);
 }
 
 GtkWidget *

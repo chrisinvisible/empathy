@@ -164,13 +164,45 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 	g_free (text);
 }
 
+typedef GtkWidget *CreateWidget (EmpathyAccount *);
+
+static GtkWidget *
+get_account_setup_widget (EmpathyAccount *account)
+{
+	const gchar *cm = empathy_account_get_connection_manager (account);
+	const gchar *proto = empathy_account_get_protocol (account);
+	struct {
+		const gchar *cm;
+		const gchar *proto;
+		CreateWidget *cb;
+	} dialogs[] = {
+		{ "gabble", "jabber", empathy_account_widget_jabber_new},
+		{ "butterfly", "msn", empathy_account_widget_msn_new},
+		{ "salut", "local-xmpp", empathy_account_widget_salut_new},
+		{ "idle", "irc", empathy_account_widget_irc_new},
+		{ "haze", "icq", empathy_account_widget_icq_new},
+		{ "haze", "aim", empathy_account_widget_aim_new},
+		{ "haze", "yahoo", empathy_account_widget_yahoo_new},
+		{ "haze", "groupwise", empathy_account_widget_groupwise_new},
+		{ "sofiasip", "sip", empathy_account_widget_sip_new},
+		{ NULL, NULL, NULL }
+	};
+	int i;
+
+	for (i = 0; dialogs[i].cm != NULL; i++) {
+		if (!tp_strdiff (cm, dialogs[i].cm)
+			&& !tp_strdiff (proto, dialogs[i].proto))
+				return dialogs[i].cb(account);
+	}
+
+	return empathy_account_widget_generic_new (account);
+}
+
+
 static void
 accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 				EmpathyAccount       *account)
 {
-	McProfile   *profile;
-	const gchar *config_ui;
-
 	if (!account) {
 		GtkTreeView  *view;
 		GtkTreeModel *model;
@@ -215,48 +247,7 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 		dialog->settings_widget = NULL;
 	}
 
-	profile = empathy_account_get_profile (account);
-	config_ui = mc_profile_get_configuration_ui (profile);
-	if (!tp_strdiff (config_ui, "jabber")) {
-		dialog->settings_widget =
-			empathy_account_widget_jabber_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "msn")) {
-		dialog ->settings_widget =
-			empathy_account_widget_msn_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "local-xmpp")) {
-		dialog->settings_widget =
-			empathy_account_widget_salut_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "irc")) {
-		dialog->settings_widget =
-			empathy_account_widget_irc_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "icq")) {
-		dialog->settings_widget =
-			empathy_account_widget_icq_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "aim")) {
-		dialog->settings_widget =
-			empathy_account_widget_aim_new (account);
-	}
-	else if (!tp_strdiff (config_ui, "yahoo")) {
-		dialog->settings_widget =
-			empathy_account_widget_yahoo_new (account);
-	}
-	else if  (!tp_strdiff (config_ui, "sofiasip")) {
-		dialog->settings_widget =
-			empathy_account_widget_sip_new (account);
-	}
-	else if  (!tp_strdiff (config_ui, "groupwise")) {
-		dialog->settings_widget =
-			empathy_account_widget_groupwise_new (account);
-	}
-	else {
-		dialog->settings_widget =
-			empathy_account_widget_generic_new (account);
-	}
+	dialog->settings_widget = get_account_setup_widget (account);
 
 	gtk_container_add (GTK_CONTAINER (dialog->alignment_settings),
 			   dialog->settings_widget);
@@ -264,14 +255,12 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 
 
 	gtk_image_set_from_icon_name (GTK_IMAGE (dialog->image_type),
-				      mc_profile_get_icon_name (profile),
+				      empathy_account_get_icon_name (account),
 				      GTK_ICON_SIZE_DIALOG);
 	gtk_widget_set_tooltip_text (dialog->image_type,
-				     mc_profile_get_display_name (profile));
+				     empathy_account_get_protocol (account));
 
 	accounts_dialog_update_name_label (dialog, account);
-
-	g_object_unref (profile);
 }
 
 static void
@@ -661,13 +650,10 @@ accounts_dialog_account_added_cb (EmpathyAccountManager *manager,
 	current_name = empathy_account_get_display_name (account);
 	account_param = empathy_account_get_param_string (account, "account");
 	if (!EMP_STR_EMPTY (account_param)) {
-		McProfile   *profile;
-		const gchar *profile_name;
 		gchar       *new_name;
 
-		profile = empathy_account_get_profile (account);
-		profile_name = mc_profile_get_display_name (profile);
-		new_name = g_strdup_printf ("%s (%s)", profile_name,
+		new_name = g_strdup_printf ("%s (%s)",
+					    empathy_account_get_protocol (account),
 					    account_param);
 
 		DEBUG ("Setting new display name for account %s: '%s'",
@@ -675,7 +661,6 @@ accounts_dialog_account_added_cb (EmpathyAccountManager *manager,
 
 		empathy_account_set_display_name (account, new_name);
 		g_free (new_name);
-		g_object_unref (profile);
 	} else {
 		/* FIXME: This CM has no account parameter, what can be done? */
 	}

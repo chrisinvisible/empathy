@@ -358,14 +358,12 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 {
 	EmpathyAccountChooser *account_chooser;
 	EmpathyAccount        *account;
-	McProfile             *profile;
 	const gchar           *protocol;
 	const gchar           *room;
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser);
 	account = empathy_account_chooser_dup_account (account_chooser);
-	profile = empathy_account_get_profile (account);
-	protocol = mc_profile_get_protocol_name (profile);
+	protocol = empathy_account_get_protocol (account);
 
 	gtk_entry_set_text (GTK_ENTRY (dialog->entry_server), "");
 
@@ -390,7 +388,6 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 	gtk_widget_grab_focus (dialog->entry_room);
 
 	g_object_unref (account);
-	g_object_unref (profile);
 }
 
 static void
