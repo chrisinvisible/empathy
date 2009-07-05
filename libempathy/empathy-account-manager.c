@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <libmissioncontrol/mc-account-monitor.h>
+#include <telepathy-glib/util.h>
 
 #include "empathy-account-manager.h"
 #include "empathy-account-priv.h"
@@ -582,13 +583,52 @@ empathy_account_manager_dup_singleton (void)
 }
 
 EmpathyAccount *
-empathy_account_manager_create (EmpathyAccountManager *manager,
+empathy_account_manager_create_by_profile (EmpathyAccountManager *manager,
   McProfile *profile)
 {
   McAccount *mc_account = mc_account_create (profile);
   return g_object_ref (create_account (manager,
       mc_account_get_unique_name (mc_account),
       mc_account));
+}
+
+EmpathyAccount *
+empathy_account_manager_create (EmpathyAccountManager *manager,
+	const gchar *connection_manager,
+	const gchar *protocol,
+	const gchar *display_name)
+{
+	McProfile *profile;
+	gboolean found;
+	GList *profiles, *l;
+	EmpathyAccount *result = NULL;
+
+	profiles = mc_profiles_list_by_protocol (protocol);
+
+	for (l = profiles; l != NULL;  l = g_list_next (l)) {
+		McProtocol *protocol;
+		McManager *cm;
+
+		profile = MC_PROFILE (l->data);
+
+		protocol = mc_profile_get_protocol (profile);
+		cm = mc_protocol_get_manager (protocol);
+		found = !tp_strdiff (mc_manager_get_unique_name (cm),
+			connection_manager);
+		
+		g_object_unref (protocol);
+		g_object_unref (manager);
+		
+		if (found) {
+			result = empathy_account_manager_create_by_profile (manager, profile);
+			empathy_account_set_display_name (result, display_name);
+			break;
+		}
+	}
+
+	mc_profiles_free_list (profiles);
+	
+	return result;
 }
 
 int

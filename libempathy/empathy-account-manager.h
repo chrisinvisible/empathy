@@ -52,7 +52,13 @@ GType empathy_account_manager_get_type (void);
 /* public methods */
 
 EmpathyAccountManager * empathy_account_manager_dup_singleton (void);
-EmpathyAccount *        empathy_account_manager_create
+EmpathyAccount *        empathy_account_manager_create (
+    EmpathyAccountManager *manager,
+    const gchar *connection_manager,
+    const gchar *protocol,
+    const gchar *display_name);
+
+EmpathyAccount *        empathy_account_manager_create_by_profile
                                 (EmpathyAccountManager *manager,
                                  McProfile *profile);
 int                     empathy_account_manager_get_connected_accounts
