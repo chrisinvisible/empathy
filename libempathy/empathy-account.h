@@ -61,6 +61,9 @@ TpConnection *empathy_account_get_connection (EmpathyAccount *account);
 const gchar *empathy_account_get_unique_name (EmpathyAccount *account);
 const gchar *empathy_account_get_display_name (EmpathyAccount *account);
 
+const gchar *empathy_account_get_connection_manager (EmpathyAccount *account);
+const gchar *empathy_account_get_protocol (EmpathyAccount *account);
+
 void empathy_account_set_enabled (EmpathyAccount *account,
   gboolean enabled);
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
@@ -84,10 +87,6 @@ gboolean empathy_account_is_valid (EmpathyAccount *account);
 
 void empathy_account_set_display_name (EmpathyAccount *account,
     const gchar *display_name);
-
-
-/* TODO remove McProfile */
-McProfile *empathy_account_get_profile (EmpathyAccount *account);
 
 G_END_DECLS
 

@@ -73,6 +73,10 @@ struct _EmpathyAccountPriv
   glong connect_time;
 
   McAccount *mc_account;
+  McProfile *mc_profile;
+
+  gchar *cm_name;
+  gchar *proto_name;
 };
 
 #define GET_PRIV(obj)  EMPATHY_GET_PRIV (obj, EmpathyAccount)
@@ -236,6 +240,10 @@ empathy_account_dispose (GObject *object)
     g_object_unref (priv->connection);
   priv->connection = NULL;
 
+  if (priv->mc_profile != NULL)
+    g_object_unref (priv->mc_profile);
+  priv->mc_profile = NULL;
+
   /* release any references held by the object here */
   if (G_OBJECT_CLASS (empathy_account_parent_class)->dispose != NULL)
     G_OBJECT_CLASS (empathy_account_parent_class)->dispose (object);
@@ -244,6 +252,11 @@ empathy_account_dispose (GObject *object)
 void
 empathy_account_finalize (GObject *object)
 {
+  EmpathyAccountPriv *priv = GET_PRIV (object);
+
+  g_free (priv->cm_name);
+  g_free (priv->proto_name);
+
   /* free any data held directly by the object here */
   if (G_OBJECT_CLASS (empathy_account_parent_class)->finalize != NULL)
     G_OBJECT_CLASS (empathy_account_parent_class)->finalize (object);
@@ -318,6 +331,22 @@ empathy_account_is_valid (EmpathyAccount *account)
   EmpathyAccountPriv *priv = GET_PRIV (account);
 
   return mc_account_is_complete (priv->mc_account);
+}
+
+const gchar *
+empathy_account_get_connection_manager (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  return priv->cm_name;
+}
+
+const gchar *
+empathy_account_get_protocol (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  return priv->proto_name;
 }
 
 void
@@ -409,22 +438,33 @@ empathy_account_set_display_name (EmpathyAccount *account,
   mc_account_set_display_name (priv->mc_account, display_name);
 }
 
-McProfile *
-empathy_account_get_profile (EmpathyAccount *account)
-{
-  EmpathyAccountPriv *priv = GET_PRIV (account);
-  return mc_account_get_profile (priv->mc_account);
-}
-
 EmpathyAccount *
 _empathy_account_new (McAccount *mc_account)
 {
   EmpathyAccount *account;
   EmpathyAccountPriv *priv;
+  McProfile *profile;
+  McProtocol *protocol;
+
 
   account = g_object_new (EMPATHY_TYPE_ACCOUNT, NULL);
   priv = GET_PRIV (account);
   priv->mc_account = mc_account;
+
+  profile =  mc_account_get_profile (mc_account);
+  protocol = mc_profile_get_protocol (profile);
+
+  if (protocol != NULL)
+    {
+      McManager *manager = mc_protocol_get_manager (protocol);
+
+      priv->proto_name = g_strdup (mc_protocol_get_name (protocol));
+      priv->cm_name = g_strdup (mc_manager_get_unique_name (manager));
+
+      g_object_unref (protocol);
+      g_object_unref (manager);
+    }
+  g_object_unref (profile);
 
   return account;
 }
@@ -571,5 +611,6 @@ McAccount *
 _empathy_account_get_mc_account (EmpathyAccount *account)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
+
   return priv->mc_account;
 }
