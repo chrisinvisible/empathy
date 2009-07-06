@@ -32,9 +32,6 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
-#include <libmissioncontrol/mission-control.h>
-#include <libmissioncontrol/mc-profile.h>
-
 #include <libempathy/empathy-tp-roomlist.h>
 #include <libempathy/empathy-chatroom.h>
 #include <libempathy/empathy-utils.h>

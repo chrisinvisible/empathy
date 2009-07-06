@@ -49,8 +49,6 @@
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include "empathy-accounts-dialog.h"
 #include "empathy-main-window.h"
 #include "ephy-spinner.h"

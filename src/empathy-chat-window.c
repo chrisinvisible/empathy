@@ -35,7 +35,6 @@
 #include <libnotify/notification.h>
 
 #include <telepathy-glib/util.h>
-#include <libmissioncontrol/mission-control.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>

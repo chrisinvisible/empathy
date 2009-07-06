@@ -38,8 +38,6 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 
-#include <libmissioncontrol/mc-profile.h>
-
 #include "empathy-ui-utils.h"
 #include "empathy-images.h"
 #include "empathy-conf.h"

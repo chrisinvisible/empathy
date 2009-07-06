@@ -41,7 +41,6 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/connection-manager.h>
-#include <libmissioncontrol/mission-control.h>
 
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>

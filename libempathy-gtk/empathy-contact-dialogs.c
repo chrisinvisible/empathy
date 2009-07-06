@@ -27,8 +27,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-contact-list.h>

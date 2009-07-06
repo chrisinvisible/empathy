@@ -34,8 +34,6 @@
 
 #include <gtk/gtk.h>
 
-#include <libmissioncontrol/mc-profile.h>
-
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-account.h>
 #include <libempathy/empathy-ft-handler.h>

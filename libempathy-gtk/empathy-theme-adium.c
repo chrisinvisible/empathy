@@ -31,7 +31,6 @@
 
 #include <libempathy/empathy-time.h>
 #include <libempathy/empathy-utils.h>
-#include <libmissioncontrol/mc-profile.h>
 
 #include "empathy-theme-adium.h"
 #include "empathy-smiley-manager.h"

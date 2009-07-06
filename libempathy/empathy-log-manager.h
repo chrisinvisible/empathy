@@ -26,8 +26,6 @@
 
 #include <glib-object.h>
 
-#include <libmissioncontrol/mc-account.h>
-
 #include "empathy-message.h"
 #include "empathy-dispatcher.h"
 

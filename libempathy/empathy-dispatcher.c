@@ -32,8 +32,6 @@
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/gtypes.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include <extensions/extensions.h>
 
 #include "empathy-dispatcher.h"

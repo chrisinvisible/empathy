@@ -31,8 +31,6 @@
 #include <panel-2.0/panel-applet-gconf.h>
 #include <gconf/gconf-client.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-dispatcher.h>
