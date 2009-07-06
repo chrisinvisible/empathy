@@ -282,6 +282,17 @@
   (c-name "empathy_account_manager_create")
   (return-type "EmpathyAccount*")
   (parameters
+    '("const-gchar*" "connection_manager")
+    '("const-gchar*" "protocol")
+    '("const-gchar*" "display_name")
+  )
+)
+
+(define-method create_by_profile
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_create_by_profile")
+  (return-type "EmpathyAccount*")
+  (parameters
     '("McProfile*" "profile")
   )
 )

@@ -118,11 +118,11 @@
   (gtype-id "EMPATHY_TYPE_PRESENCE_CHOOSER")
 )
 
-(define-object ProfileChooser
+(define-object ProtocolChooser
   (in-module "Empathy")
   (parent "GtkComboBox")
-  (c-name "EmpathyProfileChooser")
-  (gtype-id "EMPATHY_TYPE_PROFILE_CHOOSER")
+  (c-name "EmpathyProtocolChooser")
+  (gtype-id "EMPATHY_TYPE_PROTOCOL_CHOOSER")
 )
 
 (define-object SmileyManager
@@ -251,25 +251,6 @@
     '("empathy-gst-video-src-channel-brightness" "EMPATHY_GST_VIDEO_SRC_CHANNEL_BRIGHTNESS")
     '("empathy-gst-video-src-channel-gamma" "EMPATHY_GST_VIDEO_SRC_CHANNEL_GAMMA")
     '("nr-empathy-gst-video-src-channels" "NR_EMPATHY_GST_VIDEO_SRC_CHANNELS")
-  )
-)
-
-(define-enum Sound
-  (in-module "Empathy")
-  (c-name "EmpathySound")
-  (gtype-id "EMPATHY_TYPE_SOUND")
-  (values
-    '("empathy-sound-message-incoming" "EMPATHY_SOUND_MESSAGE_INCOMING")
-    '("empathy-sound-message-outgoing" "EMPATHY_SOUND_MESSAGE_OUTGOING")
-    '("empathy-sound-conversation-new" "EMPATHY_SOUND_CONVERSATION_NEW")
-    '("empathy-sound-contact-connected" "EMPATHY_SOUND_CONTACT_CONNECTED")
-    '("empathy-sound-contact-disconnected" "EMPATHY_SOUND_CONTACT_DISCONNECTED")
-    '("empathy-sound-account-connected" "EMPATHY_SOUND_ACCOUNT_CONNECTED")
-    '("empathy-sound-account-disconnected" "EMPATHY_SOUND_ACCOUNT_DISCONNECTED")
-    '("empathy-sound-phone-incoming" "EMPATHY_SOUND_PHONE_INCOMING")
-    '("empathy-sound-phone-outgoing" "EMPATHY_SOUND_PHONE_OUTGOING")
-    '("empathy-sound-phone-hangup" "EMPATHY_SOUND_PHONE_HANGUP")
-    '("last-empathy-sound" "LAST_EMPATHY_SOUND")
   )
 )
 
@@ -1541,28 +1522,31 @@
 
 
 
-;; From empathy-profile-chooser.h
+;; From empathy-protocol-chooser.h
 
-(define-function profile_chooser_get_type
-  (c-name "empathy_profile_chooser_get_type")
+(define-function protocol_chooser_get_type
+  (c-name "empathy_protocol_chooser_get_type")
   (return-type "GType")
 )
 
-(define-function profile_chooser_new
-  (c-name "empathy_profile_chooser_new")
-  (is-constructor-of "EmpathyProfileChooser")
+(define-function protocol_chooser_new
+  (c-name "empathy_protocol_chooser_new")
+  (is-constructor-of "EmpathyProtocolChooser")
   (return-type "GtkWidget*")
 )
 
 (define-method dup_selected
-  (of-object "EmpathyProfileChooser")
-  (c-name "empathy_profile_chooser_dup_selected")
-  (return-type "McProfile*")
+  (of-object "EmpathyProtocolChooser")
+  (c-name "empathy_protocol_chooser_dup_selected")
+  (return-type "TpConnectionManager*")
+  (parameters
+    '("TpConnectionManagerProtocol**" "protocol")
+  )
 )
 
-(define-method n_profiles
-  (of-object "EmpathyProfileChooser")
-  (c-name "empathy_profile_chooser_n_profiles")
+(define-method n_protocols
+  (of-object "EmpathyProtocolChooser")
+  (c-name "empathy_protocol_chooser_n_protocols")
   (return-type "gint")
 )
 
@@ -1782,14 +1766,6 @@
   )
 )
 
-(define-function icon_name_from_account
-  (c-name "empathy_icon_name_from_account")
-  (return-type "const-gchar*")
-  (parameters
-    '("EmpathyAccount*" "account")
-  )
-)
-
 (define-function icon_name_for_presence
   (c-name "empathy_icon_name_for_presence")
   (return-type "const-gchar*")
@@ -1983,32 +1959,6 @@
   (parameters
     '("EmpathyFTHandler*" "handler")
   )
-)
-
-(define-function sound_play
-  (c-name "empathy_sound_play")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("EmpathySound" "sound_id")
-  )
-)
-
-(define-function sound_play_full
-  (c-name "empathy_sound_play_full")
-  (return-type "gboolean")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("EmpathySound" "sound_id")
-    '("ca_finish_callback_t" "callback")
-    '("gpointer" "user_data")
-  )
-)
-
-(define-method stop
-  (of-object "EmpathySound")
-  (c-name "empathy_sound_stop")
-  (return-type "none")
 )
 
 
