@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
-#include <libempathy-gtk/empathy-profile-chooser.h>
+#include <libempathy-gtk/empathy-protocol-chooser.h>
 
 int
 main (int argc,
@@ -16,7 +16,7 @@ main (int argc,
   empathy_gtk_init ();
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  chooser = empathy_profile_chooser_new ();
+  chooser = empathy_protocol_chooser_new ();
   gtk_container_add (GTK_CONTAINER (window), chooser);
 
   /*  gtk_window_set_default_size (GTK_WINDOW (window), 150, -1);*/

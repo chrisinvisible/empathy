@@ -31,13 +31,12 @@
 #include <glib/gi18n.h>
 #include <dbus/dbus-glib.h>
 
-#include <libmissioncontrol/mc-profile.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
-#include <libempathy-gtk/empathy-profile-chooser.h>
+#include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-account-widget.h>
 #include <libempathy-gtk/empathy-account-widget-irc.h>
 #include <libempathy-gtk/empathy-account-widget-sip.h>
@@ -58,7 +57,7 @@ typedef struct {
 	GtkWidget        *alignment_settings;
 
 	GtkWidget        *vbox_details;
-	GtkWidget        *frame_no_profile;
+	GtkWidget        *frame_no_protocol;
 
 	GtkWidget        *treeview;
 
@@ -67,7 +66,7 @@ typedef struct {
 	GtkWidget        *button_import;
 
 	GtkWidget        *frame_new_account;
-	GtkWidget        *combobox_profile;
+	GtkWidget        *combobox_protocol;
 	GtkWidget        *hbox_type;
 	GtkWidget        *button_create;
 	GtkWidget        *button_back;
@@ -215,8 +214,8 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 			accounts_dialog_model_select_first (dialog);
 			return;
 		}
-		if (empathy_profile_chooser_n_profiles (
-			EMPATHY_PROFILE_CHOOSER (dialog->combobox_profile)) > 0) {
+		if (empathy_protocol_chooser_n_protocols (
+			EMPATHY_PROTOCOL_CHOOSER (dialog->combobox_protocol)) > 0) {
 			/* We have no account configured but we have some
 			 * profiles instsalled. The user obviously wants to add
 			 * an account. Click on the Add button for him. */
@@ -228,7 +227,7 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 		/* No account and no profile, warn the user */
 		gtk_widget_hide (dialog->vbox_details);
 		gtk_widget_hide (dialog->frame_new_account);
-		gtk_widget_show (dialog->frame_no_profile);
+		gtk_widget_show (dialog->frame_no_protocol);
 		gtk_widget_set_sensitive (dialog->button_add, FALSE);
 		gtk_widget_set_sensitive (dialog->button_remove, FALSE);
 		return;
@@ -237,7 +236,7 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 	/* We have an account selected, destroy old settings and create a new
 	 * one for the account selected */
 	gtk_widget_hide (dialog->frame_new_account);
-	gtk_widget_hide (dialog->frame_no_profile);
+	gtk_widget_hide (dialog->frame_no_protocol);
 	gtk_widget_show (dialog->vbox_details);
 	gtk_widget_set_sensitive (dialog->button_add, TRUE);
 	gtk_widget_set_sensitive (dialog->button_remove, TRUE);
@@ -801,31 +800,30 @@ static void
 accounts_dialog_button_create_clicked_cb (GtkWidget             *button,
 					  EmpathyAccountsDialog  *dialog)
 {
-	McProfile *profile;
 	EmpathyAccount *account;
 	gchar     *str;
-	McProfileCapabilityFlags cap;
+	TpConnectionManager *cm;
+	TpConnectionManagerProtocol *proto;
 
-	profile = empathy_profile_chooser_dup_selected (
-	    EMPATHY_PROFILE_CHOOSER (dialog->combobox_profile));
+	cm = empathy_protocol_chooser_dup_selected (
+	    EMPATHY_PROTOCOL_CHOOSER (dialog->combobox_protocol), &proto);
 
 	/* Create account */
-	account = empathy_account_manager_create (dialog->account_manager, profile);
+	/* To translator: %s is the protocol name */
+	str = g_strdup_printf (_("New %s account"), proto->name);
+
+	account = empathy_account_manager_create (dialog->account_manager,
+		cm->name, proto->name, str);
+
+	g_free (str);
+
 	if (account == NULL) {
 		/* We can't display an error to the user as MC doesn't give us
 		 * any clue about the reason of the failure... */
-		g_object_unref (profile);
 		return;
 	}
 
-	/* To translator: %s is the protocol name */
-	str = g_strdup_printf (_("New %s account"),
-			       mc_profile_get_display_name (profile));
-	empathy_account_set_display_name (account, str);
-	g_free (str);
-
-	cap = mc_profile_get_capabilities (profile);
-	if (cap & MC_PROFILE_CAPABILITY_REGISTRATION_UI) {
+	if (tp_connection_manager_protocol_can_register (proto)) {
 		gboolean active;
 
 		active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register));
@@ -838,7 +836,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget             *button,
 	accounts_dialog_model_set_selected (dialog, account);
 
 	g_object_unref (account);
-	g_object_unref (profile);
+	g_object_unref (cm);
 }
 
 static void
@@ -852,24 +850,23 @@ accounts_dialog_button_back_clicked_cb (GtkWidget             *button,
 }
 
 static void
-accounts_dialog_profile_changed_cb (GtkWidget             *widget,
+accounts_dialog_protocol_changed_cb (GtkWidget             *widget,
 				    EmpathyAccountsDialog *dialog)
 {
-	McProfile *profile;
-	McProfileCapabilityFlags cap;
+	TpConnectionManager *cm;
+	TpConnectionManagerProtocol *proto;
 
-	profile = empathy_profile_chooser_dup_selected (
-	    EMPATHY_PROFILE_CHOOSER (dialog->combobox_profile));
-	cap = mc_profile_get_capabilities (profile);
+	cm = empathy_protocol_chooser_dup_selected (
+	    EMPATHY_PROTOCOL_CHOOSER (dialog->combobox_protocol), &proto);
 
-	if (cap & MC_PROFILE_CAPABILITY_REGISTRATION_UI) {
+	if (tp_connection_manager_protocol_can_register (proto)) {
 		gtk_widget_show (dialog->radiobutton_register);
 		gtk_widget_show (dialog->radiobutton_reuse);
 	} else {
 		gtk_widget_hide (dialog->radiobutton_register);
 		gtk_widget_hide (dialog->radiobutton_reuse);
 	}
-	g_object_unref (profile);
+	g_object_unref (cm);
 }
 
 static void
@@ -888,7 +885,7 @@ accounts_dialog_button_add_clicked_cb (GtkWidget             *button,
 	gtk_widget_set_sensitive (dialog->button_add, FALSE);
 	gtk_widget_set_sensitive (dialog->button_remove, FALSE);
 	gtk_widget_hide (dialog->vbox_details);
-	gtk_widget_hide (dialog->frame_no_profile);
+	gtk_widget_hide (dialog->frame_no_protocol);
 	gtk_widget_show (dialog->frame_new_account);
 
 	/* If we have no account, no need of a back button */
@@ -898,11 +895,11 @@ accounts_dialog_button_add_clicked_cb (GtkWidget             *button,
 		gtk_widget_hide (dialog->button_back);
 	}
 
-	accounts_dialog_profile_changed_cb (dialog->radiobutton_register, dialog);
+	accounts_dialog_protocol_changed_cb (dialog->radiobutton_register, dialog);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_reuse),
 				      TRUE);
-	gtk_combo_box_set_active (GTK_COMBO_BOX (dialog->combobox_profile), 0);
-	gtk_widget_grab_focus (dialog->combobox_profile);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (dialog->combobox_protocol), 0);
+	gtk_widget_grab_focus (dialog->combobox_protocol);
 }
 
 static void
@@ -1052,7 +1049,7 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 	gui = empathy_builder_get_file (filename,
 				       "accounts_dialog", &dialog->window,
 				       "vbox_details", &dialog->vbox_details,
-				       "frame_no_profile", &dialog->frame_no_profile,
+				       "frame_no_protocol", &dialog->frame_no_protocol,
 				       "alignment_settings", &dialog->alignment_settings,
 				       "treeview", &dialog->treeview,
 				       "frame_new_account", &dialog->frame_new_account,
@@ -1084,14 +1081,14 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 
 	g_object_unref (gui);
 
-	/* Create profile chooser */
-	dialog->combobox_profile = empathy_profile_chooser_new ();
+	/* Create protocol chooser */
+	dialog->combobox_protocol = empathy_protocol_chooser_new ();
 	gtk_box_pack_end (GTK_BOX (dialog->hbox_type),
-			  dialog->combobox_profile,
+			  dialog->combobox_protocol,
 			  TRUE, TRUE, 0);
-	gtk_widget_show (dialog->combobox_profile);
-	g_signal_connect (dialog->combobox_profile, "changed",
-			  G_CALLBACK (accounts_dialog_profile_changed_cb),
+	gtk_widget_show (dialog->combobox_protocol);
+	g_signal_connect (dialog->combobox_protocol, "changed",
+			  G_CALLBACK (accounts_dialog_protocol_changed_cb),
 			  dialog);
 
 	/* Set up signalling */

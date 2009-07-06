@@ -52,7 +52,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-log-window.c			\
 	empathy-new-message-dialog.c		\
 	empathy-presence-chooser.c		\
-	empathy-profile-chooser.c		\
+	empathy-protocol-chooser.c		\
 	empathy-smiley-manager.c		\
 	empathy-sound.c				\
 	empathy-spell.c				\
@@ -112,7 +112,7 @@ libempathy_gtk_headers =			\
 	empathy-log-window.h			\
 	empathy-new-message-dialog.h		\
 	empathy-presence-chooser.h		\
-	empathy-profile-chooser.h		\
+	empathy-protocol-chooser.h		\
 	empathy-smiley-manager.h		\
 	empathy-sound.h				\
 	empathy-spell.h				\
