@@ -99,7 +99,9 @@ import_dialog_add_account (EmpathyImportAccountData *data)
   GValue *username;
 
   account_manager = empathy_account_manager_dup_singleton ();
-  account = empathy_account_manager_create (account_manager, data->profile);
+  account = empathy_account_manager_create_by_profile (account_manager,
+    data->profile);
+
   g_object_unref (account_manager);
   if (account == NULL)
     {
