@@ -47,6 +47,7 @@
 #include "empathy-avatar-chooser.h"
 #include "empathy-avatar-image.h"
 #include "empathy-ui-utils.h"
+#include "empathy-kludge-label.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
 #include <libempathy/empathy-debug.h>
@@ -219,7 +220,6 @@ empathy_contact_widget_new (EmpathyContact *contact,
        "hbox_presence", &information->hbox_presence,
        "label_alias", &information->label_alias,
        "image_state", &information->image_state,
-       "label_status", &information->label_status,
        "table_contact", &information->table_contact,
        "vbox_avatar", &information->vbox_avatar,
        "vbox_location", &information->vbox_location,
@@ -587,6 +587,12 @@ update_avatar_chooser_account_cb (EmpathyAccountChooser *account_chooser,
 static void
 contact_widget_contact_setup (EmpathyContactWidget *information)
 {
+  /* Setup label_status as a KludgeLabel */
+  information->label_status = empathy_kludge_label_new ("");
+  gtk_box_pack_start (GTK_BOX (information->hbox_presence),
+        information->label_status, TRUE, TRUE, 0);
+  gtk_widget_show (information->label_status);
+
   /* Setup account label/chooser */
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_ACCOUNT)
     {
