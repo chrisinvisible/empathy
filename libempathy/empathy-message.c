@@ -39,6 +39,7 @@ typedef struct {
 	EmpathyContact           *receiver;
 	gchar                    *body;
 	time_t                    timestamp;
+	gboolean                  is_backlog;
 	guint                     id;
 } EmpathyMessagePriv;
 
@@ -61,6 +62,7 @@ enum {
 	PROP_RECEIVER,
 	PROP_BODY,
 	PROP_TIMESTAMP,
+	PROP_IS_BACKLOG,
 };
 
 static void
@@ -112,6 +114,13 @@ empathy_message_class_init (EmpathyMessageClass *class)
 							    G_MAXLONG,
 							    -1,
 							    G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_IS_BACKLOG,
+					 g_param_spec_boolean ("is-backlog",
+							       "History message",
+							       "If the message belongs to history",
+							       FALSE,
+							       G_PARAM_READWRITE));
 
 
 	g_type_class_add_private (object_class, sizeof (EmpathyMessagePriv));
@@ -386,6 +395,33 @@ empathy_message_set_timestamp (EmpathyMessage *message,
 
 	g_object_notify (G_OBJECT (message), "timestamp");
 }
+
+gboolean
+empathy_message_is_backlog (EmpathyMessage *message)
+{
+	EmpathyMessagePriv *priv;
+
+	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
+
+	priv = GET_PRIV (message);
+
+	return priv->is_backlog;
+}
+
+void
+empathy_message_set_is_backlog (EmpathyMessage *message,
+				gboolean is_backlog)
+{
+	EmpathyMessagePriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_MESSAGE (message));
+
+	priv = GET_PRIV (message);
+
+	priv->is_backlog = is_backlog;
+
+	g_object_notify (G_OBJECT (message), "is-backlog");
+}				
 
 #define IS_SEPARATOR(ch) (ch == ' ' || ch == ',' || ch == '.' || ch == ':')
 gboolean

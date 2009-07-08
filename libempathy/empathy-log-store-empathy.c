@@ -497,6 +497,7 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       empathy_message_set_sender (message, sender);
       empathy_message_set_timestamp (message, t);
       empathy_message_set_tptype (message, msg_type);
+      empathy_message_set_is_backlog (message, TRUE);
 
       if (cm_id_str)
         empathy_message_set_id (message, cm_id);
