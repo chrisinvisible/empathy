@@ -1026,7 +1026,7 @@ empathy_adium_data_ref (EmpathyAdiumData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 
-	data->ref_count++;
+	g_atomic_int_inc (&data->ref_count);
 
 	return data;
 }
@@ -1036,8 +1036,7 @@ empathy_adium_data_unref (EmpathyAdiumData *data)
 {
 	g_return_if_fail (data != NULL);
 
-	data->ref_count--;
-	if (data->ref_count == 0) {
+	if (g_atomic_int_dec_and_test (&data->ref_count)) {
 		g_free (data->path);
 		g_free (data->basedir);
 		g_free (data->template_html);
