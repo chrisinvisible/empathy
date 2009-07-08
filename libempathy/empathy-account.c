@@ -848,6 +848,49 @@ empathy_account_set_enabled (EmpathyAccount *account,
   g_object_notify (G_OBJECT (account), "enabled");
 }
 
+static void
+empathy_account_requested_presence_cb (TpProxy *proxy,
+  const GError *error,
+  gpointer user_data,
+  GObject *weak_object)
+{
+  if (error)
+    DEBUG (":( : %s", error->message);
+}
+
+
+void
+empathy_account_request_presence (EmpathyAccount *account,
+  TpConnectionPresenceType type,
+  const gchar *status,
+  const gchar *message)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+  GValue value = {0, };
+  GValueArray *arr;
+
+  g_value_init (&value, TP_STRUCT_TYPE_SIMPLE_PRESENCE);
+  g_value_take_boxed (&value, dbus_g_type_specialized_construct
+    (TP_STRUCT_TYPE_SIMPLE_PRESENCE));
+  arr = (GValueArray *) g_value_get_boxed (&value);
+
+  g_value_set_uint (arr->values, type);
+  g_value_set_static_string (arr->values + 1, status);
+  g_value_set_static_string (arr->values + 2, message);
+
+  tp_cli_dbus_properties_call_set (TP_PROXY (priv->account),
+    -1,
+    TP_IFACE_ACCOUNT,
+    "RequestedPresence",
+    &value,
+    empathy_account_requested_presence_cb,
+    NULL,
+    NULL,
+    G_OBJECT (account));
+
+  g_value_unset (&value);
+}
+
 #if 0
 McAccount *
 _empathy_account_get_mc_account (EmpathyAccount *account)

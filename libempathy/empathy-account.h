@@ -93,6 +93,10 @@ void empathy_account_set_display_name (EmpathyAccount *account,
 EmpathyAccount *empathy_account_new (TpDBusDaemon *bus_daemon,
     const gchar *unique_name);
 
+void empathy_account_request_presence (EmpathyAccount *account,
+  TpConnectionPresenceType type, const gchar *status, const gchar *message);
+
+
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_ACCOUNT_H__*/
