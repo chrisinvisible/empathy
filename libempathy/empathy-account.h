@@ -70,7 +70,7 @@ void empathy_account_set_enabled (EmpathyAccount *account,
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
 
 void empathy_account_unset_param (EmpathyAccount *account, const gchar *param);
-gchar *empathy_account_get_param_string (EmpathyAccount *account,
+const gchar *empathy_account_get_param_string (EmpathyAccount *account,
     const gchar *param);
 gint empathy_account_get_param_int (EmpathyAccount *account,
     const gchar *param);
@@ -85,9 +85,13 @@ void empathy_account_set_param_boolean (EmpathyAccount *account,
     const gchar *param, gboolean value);
 
 gboolean empathy_account_is_valid (EmpathyAccount *account);
+gboolean empathy_account_is_ready (EmpathyAccount *account);
 
 void empathy_account_set_display_name (EmpathyAccount *account,
     const gchar *display_name);
+
+EmpathyAccount *empathy_account_new (TpDBusDaemon *bus_daemon,
+    const gchar *unique_name);
 
 G_END_DECLS
 

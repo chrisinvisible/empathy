@@ -25,7 +25,6 @@ lib_LTLIBRARIES = libempathy.la
 
 libempathy_la_SOURCES =					\
 	empathy-account.c			\
-	empathy-account-priv.h			\
 	empathy-account-manager.c			\
 	empathy-chatroom.c				\
 	empathy-chatroom-manager.c			\

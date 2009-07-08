@@ -637,7 +637,7 @@ accounts_dialog_account_added_cb (EmpathyAccountManager *manager,
 				  EmpathyAccountsDialog *dialog)
 {
 	const gchar *current_name;
-	gchar       *account_param = NULL;
+	const gchar       *account_param = NULL;
 
 	accounts_dialog_add_or_update_account (dialog, account);
 
@@ -663,7 +663,6 @@ accounts_dialog_account_added_cb (EmpathyAccountManager *manager,
 	} else {
 		/* FIXME: This CM has no account parameter, what can be done? */
 	}
-	g_free (account_param);
 }
 
 static void

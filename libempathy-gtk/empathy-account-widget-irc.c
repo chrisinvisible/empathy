@@ -321,11 +321,11 @@ fill_networks_model (EmpathyAccountWidgetIrc *settings,
 static void
 account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
 {
-  gchar *nick = NULL;
-  gchar *fullname = NULL;
-  gchar *server = NULL;
+  const gchar *nick = NULL;
+  const gchar *fullname = NULL;
+  const gchar *server = NULL;
   gint port = 6667;
-  gchar *charset;
+  const gchar *charset;
   gboolean ssl = FALSE;
   EmpathyIrcNetwork *network = NULL;
 
@@ -402,11 +402,6 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
 
 
   fill_networks_model (settings, network);
-
-  g_free (nick);
-  g_free (fullname);
-  g_free (server);
-  g_free (charset);
 }
 
 /**

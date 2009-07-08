@@ -52,13 +52,12 @@ account_widget_entry_focus_cb (GtkWidget     *widget,
 	param_name = g_object_get_data (G_OBJECT (widget), "param_name");
 
 	if (EMP_STR_EMPTY (str)) {
-		gchar *value = NULL;
+		const gchar *value = NULL;
 
 		empathy_account_unset_param (account, param_name);
 		value = empathy_account_get_param_string (account, param_name);
 		DEBUG ("Unset %s and restore to %s", param_name, value);
 		gtk_entry_set_text (GTK_ENTRY (widget), value ? value : "");
-		g_free (value);
 	} else {
 		DEBUG ("Setting %s to %s", param_name,
 			strstr (param_name, "password") ? "***" : str);
@@ -185,11 +184,10 @@ account_widget_setup_widget (GtkWidget   *widget,
 				  account);
 	}
 	else if (GTK_IS_ENTRY (widget)) {
-		gchar *str = NULL;
+		const gchar *str = NULL;
 
 		str = empathy_account_get_param_string (account, param_name);
 		gtk_entry_set_text (GTK_ENTRY (widget), str ? str : "");
-		g_free (str);
 
 		if (strstr (param_name, "password")) {
 			gtk_entry_set_visibility (GTK_ENTRY (widget), FALSE);
@@ -406,14 +404,13 @@ empathy_account_widget_add_forget_button (EmpathyAccount   *account,
 {
 	GtkWidget *button_forget;
 	GtkWidget *entry_password;
-	gchar   *password = NULL;
+	const gchar   *password = NULL;
 
 	button_forget = GTK_WIDGET (gtk_builder_get_object (gui, button));
 	entry_password = GTK_WIDGET (gtk_builder_get_object (gui, entry));
 
 	password = empathy_account_get_param_string (account, "password");
 	gtk_widget_set_sensitive (button_forget, !EMP_STR_EMPTY (password));
-	g_free (password);
 
 	g_signal_connect (button_forget, "clicked",
 			  G_CALLBACK (account_widget_forget_clicked_cb),

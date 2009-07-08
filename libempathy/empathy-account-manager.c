@@ -23,6 +23,9 @@
 
 #include <libmissioncontrol/mc-account-monitor.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/account-manager.h>
+#include <telepathy-glib/enums.h>
+#include <telepathy-glib/defs.h>
 
 #include "empathy-account-manager.h"
 #include "empathy-account-priv.h"
@@ -34,15 +37,18 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountManager)
 
+#define MC5_BUS_NAME "org.freedesktop.Telepathy.MissionControl5"
+
 typedef struct {
-  McAccountMonitor *monitor;
-  MissionControl   *mc;
 
   /* (owned) unique name -> (reffed) EmpathyAccount */
   GHashTable       *accounts;
   int               connected;
   int               connecting;
   gboolean          dispose_run;
+  TpProxySignalConnection *proxy_signal;
+  TpAccountManager *tp_manager;
+  TpDBusDaemon *dbus;
 } EmpathyAccountManagerPriv;
 
 enum {
@@ -62,6 +68,7 @@ static EmpathyAccountManager *manager_singleton = NULL;
 
 G_DEFINE_TYPE (EmpathyAccountManager, empathy_account_manager, G_TYPE_OBJECT);
 
+#if 0
 static TpConnectionPresenceType
 mc_presence_to_tp_presence (McPresence presence)
 {
@@ -83,6 +90,7 @@ mc_presence_to_tp_presence (McPresence presence)
         return TP_CONNECTION_PRESENCE_TYPE_UNSET;
     }
 }
+#endif
 
 static void
 emp_account_connection_cb (EmpathyAccount *account,
@@ -96,6 +104,17 @@ emp_account_connection_cb (EmpathyAccount *account,
 
   if (connection != NULL)
     g_signal_emit (manager, signals[NEW_CONNECTION], 0, connection);
+}
+
+static void
+emp_account_enabled_cb (EmpathyAccount *account,
+  GParamSpec *spec,
+  gpointer manager)
+{
+  if (empathy_account_is_enabled (account))
+    g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
+  else
+    g_signal_emit (manager, signals[ACCOUNT_DISABLED], 0, account);
 }
 
 static void
@@ -147,11 +166,39 @@ emp_account_presence_changed_cb (EmpathyAccount *account,
     account, new, old);
 }
 
+static void
+emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
+  EmpathyAccount *account = EMPATHY_ACCOUNT (obj);
+  gboolean ready;
+
+  g_object_get (account, "ready", &ready, NULL);
+
+  if (!ready)
+    return;
+
+  g_signal_emit (manager, signals[ACCOUNT_CREATED], 0, account);
+
+  g_signal_connect (account, "notify::connection",
+    G_CALLBACK (emp_account_connection_cb), manager);
+
+  g_signal_connect (account, "notify::enabled",
+    G_CALLBACK (emp_account_enabled_cb), manager);
+
+  g_signal_connect (account, "status-changed",
+    G_CALLBACK (emp_account_status_changed_cb), manager);
+
+  g_signal_connect (account, "presence-changed",
+    G_CALLBACK (emp_account_presence_changed_cb), manager);
+}
+
 static EmpathyAccount *
 create_account (EmpathyAccountManager *manager,
   const gchar *account_name,
   McAccount *mc_account)
 {
+#if 0
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   EmpathyAccount *account;
   TpConnectionStatus status;
@@ -210,8 +257,11 @@ create_account (EmpathyAccountManager *manager,
     presence);
 
   return account;
+#endif
+  return NULL;
 }
 
+#if 0
 static void
 account_created_cb (McAccountMonitor *mon,
                     gchar *account_name,
@@ -254,39 +304,6 @@ account_changed_cb (McAccountMonitor *mon,
     g_signal_emit (manager, signals[ACCOUNT_CHANGED], 0, account);
 }
 
-static void
-account_disabled_cb (McAccountMonitor *mon,
-                     gchar *account_name,
-                     EmpathyAccountManager *manager)
-{
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
-
-  account = g_hash_table_lookup (priv->accounts, account_name);
-
-  if (account)
-    {
-      _empathy_account_set_enabled (account, FALSE);
-      g_signal_emit (manager, signals[ACCOUNT_DISABLED], 0, account);
-    }
-}
-
-static void
-account_enabled_cb (McAccountMonitor *mon,
-                    gchar *account_name,
-                    EmpathyAccountManager *manager)
-{
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
-
-  account = g_hash_table_lookup (priv->accounts, account_name);
-
-  if (account)
-    {
-      _empathy_account_set_enabled (account, TRUE);
-      g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
-    }
-}
 
 typedef struct {
   TpConnectionStatus status;
@@ -335,7 +352,9 @@ account_status_changed_idle_cb (ChangedSignalData *signal_data)
 
   return FALSE;
 }
+#endif
 
+#if 0
 static void
 account_status_changed_cb (MissionControl *mc,
                            TpConnectionStatus status,
@@ -360,27 +379,104 @@ account_status_changed_cb (MissionControl *mc,
 
   g_idle_add ((GSourceFunc) account_status_changed_idle_cb, data);
 }
+#endif
+
+static void
+account_manager_got_all_cb (TpProxy *proxy,
+    GHashTable *properties,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GPtrArray *accounts;
+  int i;
+
+  if (error != NULL)
+    {
+      DEBUG ("Failed to get account manager properties: %s", error->message);
+      return;
+    }
+
+  accounts = tp_asv_get_boxed (properties, "ValidAccounts",
+    EMPATHY_ARRAY_TYPE_OBJECT);
+
+
+  for (i = 0; i < accounts->len; i++)
+    {
+      EmpathyAccount *account;
+      gchar *name = g_ptr_array_index (accounts, i);
+
+      account = empathy_account_new (priv->dbus, name);
+      g_hash_table_insert (priv->accounts, g_strdup (name), account);
+
+      g_signal_connect (account, "notify::ready",
+        G_CALLBACK (emp_account_ready_cb), manager);
+    }
+}
+
+static void
+account_manager_name_owner_changed_cb (TpDBusDaemon *proxy,
+    const gchar *arg0,
+    const gchar *arg1,
+    const gchar *arg2,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  tp_proxy_signal_connection_disconnect (priv->proxy_signal);
+  priv->proxy_signal = NULL;
+
+  priv->tp_manager = tp_account_manager_new (priv->dbus);
+  tp_cli_dbus_properties_call_get_all (priv->tp_manager, -1,
+    TP_IFACE_ACCOUNT_MANAGER,
+    account_manager_got_all_cb,
+    NULL,
+    NULL,
+    G_OBJECT (manager));
+}
 
 static void
 empathy_account_manager_init (EmpathyAccountManager *manager)
 {
   EmpathyAccountManagerPriv *priv;
-  GList *mc_accounts, *l;
+  TpProxy *mc5_proxy;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (manager,
       EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerPriv);
 
   manager->priv = priv;
-  priv->monitor = mc_account_monitor_new ();
-  priv->mc = empathy_mission_control_dup_singleton ();
   priv->connected = priv->connecting = 0;
-  priv->dispose_run = FALSE;
 
   priv->accounts = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, (GDestroyNotify) g_object_unref);
 
-  mc_accounts = mc_accounts_list ();
+  priv->dbus = tp_dbus_daemon_dup (NULL);
 
+  priv->proxy_signal = tp_cli_dbus_daemon_connect_to_name_owner_changed (
+      priv->dbus,
+      account_manager_name_owner_changed_cb,
+      TP_ACCOUNT_MANAGER_BUS_NAME,
+      NULL,
+      G_OBJECT (manager),
+      NULL);
+
+  /* trigger MC5 starting */
+  mc5_proxy = g_object_new (TP_TYPE_PROXY,
+    "dbus-daemon", priv->dbus,
+    "dbus-connection", tp_proxy_get_dbus_connection (TP_PROXY (priv->dbus)),
+    "bus-name", MC5_BUS_NAME,
+    "object-path", "/",
+    NULL);
+
+  tp_cli_dbus_peer_call_ping (mc5_proxy, -1, NULL, NULL, NULL, NULL);
+
+  g_object_unref (mc5_proxy);
+
+#if 0
   for (l = mc_accounts; l; l = l->next)
     account_created_cb (priv->monitor,
       (char *) mc_account_get_unique_name (l->data), manager);
@@ -401,6 +497,7 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
                                manager, NULL);
 
   mc_accounts_list_free (mc_accounts);
+#endif
 }
 
 static void
@@ -425,6 +522,11 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
+  if (priv->dbus == NULL)
+    g_object_unref (priv->dbus);
+  priv->dbus = NULL;
+
+#if 0
   dbus_g_proxy_disconnect_signal (DBUS_G_PROXY (priv->mc),
                                   "AccountStatusChanged",
                                   G_CALLBACK (account_status_changed_cb),
@@ -450,6 +552,7 @@ do_dispose (GObject *obj)
     g_object_unref (priv->mc);
 
   g_hash_table_remove_all (priv->accounts);
+#endif
 
   G_OBJECT_CLASS (empathy_account_manager_parent_class)->dispose (obj);
 }
@@ -769,5 +872,5 @@ void
 empathy_account_manager_remove (EmpathyAccountManager *manager,
     EmpathyAccount *account)
 {
-  mc_account_delete (_empathy_account_get_mc_account (account));
+  /* FIXME */
 }
