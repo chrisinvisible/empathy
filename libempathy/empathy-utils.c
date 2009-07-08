@@ -378,3 +378,13 @@ empathy_uint_compare (gconstpointer a,
 	return *(guint *) a - *(guint *) b;
 }
 
+GType
+empathy_type_dbus_ao (void)
+{
+  static GType t = 0;
+
+  if (G_UNLIKELY (t == 0))
+     t = dbus_g_type_get_collection ("GPtrArray", DBUS_TYPE_G_OBJECT_PATH);
+
+  return t;
+}
