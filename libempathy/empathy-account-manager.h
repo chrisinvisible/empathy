@@ -81,6 +81,12 @@ void                    empathy_account_manager_remove (
                                  EmpathyAccountManager *manager,
                                  EmpathyAccount *account);
 
+void empathy_account_manager_request_global_presence (
+  EmpathyAccountManager *manager,
+  TpConnectionPresenceType type,
+  const gchar *status,
+  const gchar *message);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_MANAGER_H__ */

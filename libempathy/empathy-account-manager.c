@@ -40,7 +40,6 @@
 #define MC5_BUS_NAME "org.freedesktop.Telepathy.MissionControl5"
 
 typedef struct {
-
   /* (owned) unique name -> (reffed) EmpathyAccount */
   GHashTable       *accounts;
   int               connected;
@@ -874,3 +873,31 @@ empathy_account_manager_remove (EmpathyAccountManager *manager,
 {
   /* FIXME */
 }
+
+
+void
+empathy_account_manager_request_global_presence (
+  EmpathyAccountManager *manager,
+  TpConnectionPresenceType type,
+  const gchar *status,
+  const gchar *message)
+{
+  /* FIXME should remember requested presence and set it on new accounts
+     as well */
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GHashTableIter iter;
+  gpointer value;
+
+  g_hash_table_iter_init (&iter, priv->accounts);
+  while (g_hash_table_iter_next (&iter, NULL, &value))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (value);
+      gboolean ready;
+
+      g_object_get (account, "ready", &ready, NULL);
+
+      if (ready)
+        empathy_account_request_presence (account, type, status, message);
+    }
+}
+
