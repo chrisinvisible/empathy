@@ -33,6 +33,7 @@
 #include <telepathy-glib/util.h>
 #include <libmissioncontrol/mc-enum-types.h>
 
+#include "empathy-account-manager.h"
 #include "empathy-idle.h"
 #include "empathy-utils.h"
 
@@ -63,6 +64,8 @@ typedef struct {
 	gboolean        is_idle;
 	gboolean        nm_connected;
 	guint           ext_away_timeout;
+
+	EmpathyAccountManager *manager;
 } EmpathyIdlePriv;
 
 typedef enum {
@@ -296,6 +299,9 @@ idle_finalize (GObject *object)
 		g_object_unref (priv->gs_proxy);
 	}
 
+	if (priv->manager != NULL)
+		g_object_unref (priv->manager);
+
 #ifdef HAVE_NM
 	if (priv->nm_client) {
 		g_object_unref (priv->nm_client);
@@ -482,6 +488,8 @@ empathy_idle_init (EmpathyIdle *idle)
 	idle->priv = priv;
 	priv->is_idle = FALSE;
 	priv->mc = empathy_mission_control_dup_singleton ();
+
+	priv->manager = empathy_account_manager_dup_singleton ();
 	priv->state = empathy_idle_get_actual_presence (idle, &error);
 	if (error) {
 		DEBUG ("Error getting actual presence: %s", error->message);
@@ -617,33 +625,12 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 			   TpConnectionPresenceType   state,
 			   const gchar *status)
 {
-	McPresence mc_state = MC_PRESENCE_UNSET;
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
 
-	switch (state) {
-		case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
-			mc_state = MC_PRESENCE_OFFLINE;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_AVAILABLE:
-			mc_state = MC_PRESENCE_AVAILABLE;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_AWAY:
-			mc_state = MC_PRESENCE_AWAY;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
-			mc_state = MC_PRESENCE_EXTENDED_AWAY;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
-			mc_state = MC_PRESENCE_HIDDEN;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_BUSY:
-			mc_state = MC_PRESENCE_DO_NOT_DISTURB;
-			break;
-		default:
-			g_assert_not_reached ();
-	}
 
-	mission_control_set_presence (priv->mc, mc_state, status, NULL, NULL);
+	/* FIXME */
+	empathy_account_manager_request_global_presence (priv->manager,
+		state, "available", status);
 }
 
 void
