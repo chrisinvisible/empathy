@@ -903,76 +903,7 @@ preferences_radio_button_toggled_cb (GtkWidget *button,
 
 	empathy_conf_set_string (empathy_conf_get (), key, value);
 }
-<<<<<<< HEAD:src/empathy-preferences.c
-=======
 #endif
-
-static void
-preferences_theme_adium_update_visibility (EmpathyPreferences *preferences,
-					   const gchar        *name)
-{
-	if (name && strcmp (name, "adium") == 0) {
-		gtk_widget_show (preferences->hbox_adium_theme);
-	} else {
-		gtk_widget_hide (preferences->hbox_adium_theme);
-		gtk_widget_hide (preferences->label_invalid_adium_theme);
-	}
-}
-
-static void
-preferences_theme_adium_update_validity (EmpathyPreferences *preferences,
-					 const gchar        *path)
-{
-#ifdef HAVE_WEBKIT
-	if (empathy_adium_path_is_valid (path)) {
-		gtk_widget_hide (preferences->label_invalid_adium_theme);
-	} else {
-		gtk_widget_show (preferences->label_invalid_adium_theme);
-	}
-#endif
-}
-
-static void
-preferences_theme_adium_path_notify_cb (EmpathyConf *conf,
-					const gchar *key,
-					gpointer     user_data)
-{
-	EmpathyPreferences *preferences = user_data;
-	GtkFileChooser     *chooser;
-	gchar              *value;
-	const gchar        *path;
-
-	if (!empathy_conf_get_string (conf, key, &value)) {
-		return;
-	}
-
-	if (EMP_STR_EMPTY (value)) {
-		path = g_get_home_dir ();
-	} else {
-		path = value;
-	}
-
-	chooser = GTK_FILE_CHOOSER (preferences->filechooserbutton_adium_theme);
-	gtk_file_chooser_set_current_folder (chooser, path);
-	preferences_theme_adium_update_validity (preferences, path);
-	g_free (value);
-}
-
-static void
-preferences_theme_adium_file_set_cb (GtkFileChooser     *chooser,
-				     EmpathyPreferences *preferences)
-{
-	gchar *path;
-
-	path = gtk_file_chooser_get_current_folder (chooser);
-	empathy_conf_set_string (empathy_conf_get (),
-				 EMPATHY_PREFS_CHAT_ADIUM_PATH,
-				 path);
-	preferences_theme_adium_update_validity (preferences, path);
-
-	g_free (path);
-}
->>>>>>> Move Compact List and Sort Contacts from Preferences to View menu:src/empathy-preferences.c
 
 static void
 preferences_theme_notify_cb (EmpathyConf *conf,
