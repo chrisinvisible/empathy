@@ -724,6 +724,34 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 }
 
 static void
+main_window_notify_sort_contact_cb (EmpathyConf       *conf,
+				    const gchar       *key,
+				    EmpathyMainWindow *window)
+{
+	gchar *str = NULL;
+
+	if (empathy_conf_get_string (conf, key, &str) && str) {
+		GType       type;
+		GEnumClass *enum_class;
+		GEnumValue *enum_value;
+
+		type = empathy_contact_list_store_sort_get_type ();
+		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
+		enum_value = g_enum_get_value_by_nick (enum_class, str);
+		if (enum_value) {
+			/* By changing the value of the GtkRadioAction, 
+			   it emits a signal that calls main_window_view_sort_contacts_cb
+			   which updates the contacts list */
+			gtk_radio_action_set_current_value (window->sort_by_name,
+							    enum_value->value);
+		} else {
+			g_warning ("Wrong value for sort_criterium configuration : %s", str);
+		}
+		g_free (str);
+	}
+}
+
+static void
 main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 				   GtkRadioAction    *current,
 				   EmpathyMainWindow *window)
@@ -743,7 +771,7 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 	enum_value = g_enum_get_value (enum_class, g_slist_index (group, current));
 
 	if (!enum_value) {
-		g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioButton index:%d",
+		g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioAction index:%d",
 			   g_slist_index (group, action));
 	} else {
 		const gchar *value_str;
@@ -781,6 +809,32 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_contact_list_store_set_is_compact (window->list_store,
 						   value == CONTACT_LIST_COMPACT_SIZE);
+}
+
+static void
+main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
+					 const gchar       *key,
+					 EmpathyMainWindow *window)
+{
+	gboolean show_avatars;
+	gboolean compact_contact_list;
+	gint value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
+
+	if (empathy_conf_get_bool (conf,
+				   EMPATHY_PREFS_UI_SHOW_AVATARS,
+				   &show_avatars)
+	    && empathy_conf_get_bool (conf,
+				      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+				      &compact_contact_list)) {
+		if (compact_contact_list) {
+			value = CONTACT_LIST_COMPACT_SIZE;
+		} else if (show_avatars) {
+			value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
+		} else {
+			value = CONTACT_LIST_NORMAL_SIZE;
+		}
+	}
+	gtk_radio_action_set_current_value (window->normal_with_avatars, value);
 }
 
 static void
@@ -1088,68 +1142,6 @@ main_window_notify_show_offline_cb (EmpathyConf *conf,
 
 	if (empathy_conf_get_bool (conf, key, &show_offline)) {
 		gtk_toggle_action_set_active (toggle_action, show_offline);
-	}
-}
-
-static void
-main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
-					 const gchar       *key,
-					 EmpathyMainWindow *window)
-{
-	gboolean show_avatars;
-	gboolean compact_contact_list;
-	gint value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
-
-	if (empathy_conf_get_bool (conf,
-				   EMPATHY_PREFS_UI_SHOW_AVATARS,
-				   &show_avatars)
-	    && empathy_conf_get_bool (conf,
-				      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-				      &compact_contact_list)) {
-		if (compact_contact_list) {
-			value = CONTACT_LIST_COMPACT_SIZE;
-		} else if (show_avatars) {
-			value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
-		} else {
-			value = CONTACT_LIST_NORMAL_SIZE;
-		}
-	}
-	gtk_radio_action_set_current_value (window->normal_with_avatars, value);
-}
-
-
-/* Matches GtkRadioAction values set in empathy-main-window.ui */
-#define CONTACT_LIST_SORT_BY_STATUS		0
-#define CONTACT_LIST_SORT_BY_NAME		1
-
-static void
-main_window_notify_sort_contact_cb (EmpathyConf       *conf,
-				    const gchar       *key,
-				    EmpathyMainWindow *window)
-{
-	gchar *str = NULL;
-
-	if (empathy_conf_get_string (conf, key, &str) && str) {
-		GType       type;
-		GEnumClass *enum_class;
-		GEnumValue *enum_value;
-
-		type = empathy_contact_list_store_sort_get_type ();
-		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
-		enum_value = g_enum_get_value_by_nick (enum_class, str);
-
-		if (enum_value) {
-			if (enum_value->value == EMPATHY_CONTACT_LIST_STORE_SORT_STATE) {
-				gtk_radio_action_set_current_value (window->sort_by_name,
-								    CONTACT_LIST_SORT_BY_STATUS);
-			} else {
-				gtk_radio_action_set_current_value (window->sort_by_name,
-								    CONTACT_LIST_SORT_BY_NAME);
-			}
-		} else {
-			g_warning ("Wrong value for sort_criterium configuration : %s", str);
-		}
-		g_free (str);
 	}
 }
 
