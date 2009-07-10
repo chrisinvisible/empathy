@@ -90,6 +90,7 @@ enum
 {
   PROP_INTERFACES = 1,
   PROP_CHANNEL_FILTER,
+  PROP_CHANNELS
 };
 
 enum
@@ -928,6 +929,9 @@ dispatcher_get_property (GObject *object,
   GValue *value,
   GParamSpec *pspec)
 {
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+
   switch (property_id)
     {
       case PROP_INTERFACES:
@@ -941,6 +945,24 @@ dispatcher_get_property (GObject *object,
           g_ptr_array_add (filters, filter);
 
           g_value_set_boxed (value, filters);
+          break;
+        }
+      case PROP_CHANNELS:
+        {
+          GPtrArray *accounts;
+          GList *l;
+
+          accounts = g_ptr_array_new ();
+
+          for (l = priv->channels; l != NULL; l = g_list_next (l))
+            {
+              TpProxy *channel = TP_PROXY (l->data);
+
+              g_ptr_array_add (accounts,
+                g_strdup (tp_proxy_get_object_path (channel)));
+            }
+
+          g_value_set_boxed (value, accounts);
           break;
         }
       default:
@@ -961,6 +983,7 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
   };
   static TpDBusPropertiesMixinPropImpl client_handler_props[] = {
     { "HandlerChannelFilter", "channel-filter", NULL },
+    { "HandledChannels", "channels", NULL },
     { NULL }
   };
   static TpDBusPropertiesMixinIfaceImpl prop_interfaces[] = {
@@ -994,6 +1017,13 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class,
     PROP_CHANNEL_FILTER, param_spec);
+
+  param_spec = g_param_spec_boxed ("channels", "channels",
+    "List of channels we're handling",
+    EMPATHY_ARRAY_TYPE_OBJECT,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+    PROP_CHANNELS, param_spec);
 
   signals[OBSERVE] =
     g_signal_new ("observe",
