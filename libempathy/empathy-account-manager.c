@@ -28,7 +28,6 @@
 #include <telepathy-glib/defs.h>
 
 #include "empathy-account-manager.h"
-#include "empathy-account-priv.h"
 #include "empathy-marshal.h"
 #include "empathy-utils.h"
 
