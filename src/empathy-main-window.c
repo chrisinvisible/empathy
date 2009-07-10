@@ -774,12 +774,9 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 		g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioAction index:%d",
 			   g_slist_index (group, action));
 	} else {
-		const gchar *value_str;
-		value_str = enum_value->value_nick;
-
 		empathy_conf_set_string (empathy_conf_get (),
 					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-					 value_str);
+					 enum_value->value_nick);
 	}
 	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
 }
@@ -834,6 +831,9 @@ main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
 			value = CONTACT_LIST_NORMAL_SIZE;
 		}
 	}
+	/* By changing the value of the GtkRadioAction,
+	   it emits a signal that calls main_window_view_contacts_list_size_cb
+	   which updates the contacts list */
 	gtk_radio_action_set_current_value (window->normal_with_avatars, value);
 }
 
