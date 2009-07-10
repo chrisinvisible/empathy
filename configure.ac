@@ -162,7 +162,7 @@ AM_GLIB_GNU_GETTEXT
 AC_ARG_ENABLE(network-manager,
               AS_HELP_STRING([--enable-network-manager=@<:@no/yes/auto@:>@],
                              [build with network-manager support]), ,
-                             enable_webkit=auto)
+                             enable_network_manager=auto)
 
 if test "x$enable_network_manager" != "xno"; then
    PKG_CHECK_MODULES(NETWORK_MANAGER,
