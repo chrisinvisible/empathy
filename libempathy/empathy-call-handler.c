@@ -427,53 +427,24 @@ empathy_call_handler_tf_channel_closed_cb (TfChannel *tfchannel,
 }
 
 static GList *
-empathy_call_handler_tf_channel_codec_config_get_defaults (FsCodec *codecs)
-{
-  GList *l = NULL;
-  int i;
-
-  for (i = 0; codecs[i].encoding_name != NULL; i++)
-      l = g_list_append (l, fs_codec_copy (codecs + i));
-
-  return l;
-}
-
-static GList *
 empathy_call_handler_tf_channel_codec_config_cb (TfChannel *channel,
   guint stream_id, FsMediaType media_type, guint direction, gpointer user_data)
 {
-  FsCodec audio_codecs[] = {
-    { FS_CODEC_ID_ANY, "SPEEX", FS_MEDIA_TYPE_AUDIO, 16000, },
-    { FS_CODEC_ID_ANY, "SPEEX", FS_MEDIA_TYPE_AUDIO, 8000, },
+  gchar *filename = empathy_file_lookup ("codec-preferences", "data");
+  GList *codecs;
+  GError *error = NULL;
 
-    { FS_CODEC_ID_DISABLE, "DV",     FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "MPA",    FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "VORBIS", FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "MP3",    FS_MEDIA_TYPE_AUDIO, },
-    { 0, NULL, 0,}
-  };
-  FsCodec video_codecs[] = {
-    { FS_CODEC_ID_ANY, "H264",   FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_ANY, "THEORA", FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_ANY, "H263",   FS_MEDIA_TYPE_VIDEO, },
+  codecs = fs_codec_list_from_keyfile (filename, &error);
+  g_free (filename);
 
-    { FS_CODEC_ID_DISABLE, "DV",   FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_DISABLE, "JPEG", FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_DISABLE, "MPV",  FS_MEDIA_TYPE_VIDEO, },
-    { 0, NULL, 0}
-  };
-
-  switch (media_type)
+  if (!codecs)
     {
-      case FS_MEDIA_TYPE_AUDIO:
-        return empathy_call_handler_tf_channel_codec_config_get_defaults
-          (audio_codecs);
-      case FS_MEDIA_TYPE_VIDEO:
-        return empathy_call_handler_tf_channel_codec_config_get_defaults
-          (video_codecs);
+      g_warning ("No codec-preferences file: %s",
+          error ? error->message : "No error message");
     }
+  g_clear_error (&error);
 
-  return NULL;
+  return codecs;
 }
 
 static void
