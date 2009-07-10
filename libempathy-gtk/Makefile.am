@@ -60,6 +60,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-theme-boxes.c			\
 	empathy-theme-irc.c			\
 	empathy-theme-manager.c			\
+	empathy-kludge-label.c			\
 	empathy-ui-utils.c
 
 libempathy_gtk_la_SOURCES =			\
@@ -120,6 +121,7 @@ libempathy_gtk_headers =			\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\
+	empathy-kludge-label.h			\
 	empathy-ui-utils.h
 
 check_c_sources = \
