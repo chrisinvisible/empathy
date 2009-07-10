@@ -322,48 +322,32 @@ empathy_call_handler_bus_message (EmpathyCallHandler *handler,
 }
 
 static void
-conference_element_added (FsElementAddedNotifier *notifier,
-    GstBin *bin,
-    GstElement *element,
-    gpointer user_data)
-{
-  GstElementFactory *factory;
-  const gchar *name;
-
-  factory = gst_element_get_factory (element);
-  name = gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory));
-
-  if (!tp_strdiff (name, "x264enc"))
-    {
-      /* Ensure that the encoder creates the baseline profile */
-      g_object_set (element,
-          "byte-stream", TRUE,
-          "bframes", 0,
-          "b-adapt", FALSE,
-          "cabac", FALSE,
-          "dct8x8", FALSE,
-          NULL);
-    }
-  else if (!tp_strdiff (name, "gstrtpbin"))
-    {
-      /* Lower the jitterbuffer latency to make it more suitable for video
-       * conferencing */
-      g_object_set (element, "latency", 100, NULL);
-    }
-}
-
-static void
 empathy_call_handler_tf_channel_session_created_cb (TfChannel *tfchannel,
   FsConference *conference, FsParticipant *participant,
   EmpathyCallHandler *self)
 {
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+  GKeyFile *keyfile;
+  gchar *filename;
+  GError *error = NULL;
 
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (conference));
 
-  g_signal_connect (priv->fsnotifier, "element-added",
-    G_CALLBACK (conference_element_added), NULL);
+  keyfile = g_key_file_new ();
+  filename = empathy_file_lookup ("element-properties", "data");
+  if (g_key_file_load_from_file (keyfile, filename, G_KEY_FILE_NONE, &error))
+    {
+      fs_element_added_notifier_set_properties_from_keyfile (priv->fsnotifier,
+          keyfile);
+    }
+  else
+    {
+      g_warning ("Could not load element-properties file: %s", error->message);
+      g_key_file_free (keyfile);
+      g_clear_error (&error);
+    }
+  g_free (filename);
 
   g_signal_emit (G_OBJECT (self), signals[CONFERENCE_ADDED], 0,
     GST_ELEMENT (conference));

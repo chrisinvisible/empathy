@@ -32,7 +32,8 @@ schemas_DATA 	 = $(schemas_in_files:.schemas.in=.schemas)
 
 streamingprefsdir =  $(datadir)/empathy
 streamingprefs_DATA =		\
-	codec-preferences
+	codec-preferences	\
+	element-properties
 
 if GCONF_SCHEMAS_INSTALL
 install-data-local:
