@@ -739,7 +739,7 @@ main_window_notify_sort_contact_cb (EmpathyConf       *conf,
 		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 		enum_value = g_enum_get_value_by_nick (enum_class, str);
 		if (enum_value) {
-			/* By changing the value of the GtkRadioAction, 
+			/* By changing the value of the GtkRadioAction,
 			   it emits a signal that calls main_window_view_sort_contacts_cb
 			   which updates the contacts list */
 			gtk_radio_action_set_current_value (window->sort_by_name,
