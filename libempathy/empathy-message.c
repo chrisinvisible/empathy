@@ -421,7 +421,7 @@ empathy_message_set_is_backlog (EmpathyMessage *message,
 	priv->is_backlog = is_backlog;
 
 	g_object_notify (G_OBJECT (message), "is-backlog");
-}				
+}
 
 #define IS_SEPARATOR(ch) (ch == ' ' || ch == ',' || ch == '.' || ch == ':')
 gboolean
