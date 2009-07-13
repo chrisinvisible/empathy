@@ -468,19 +468,19 @@ theme_adium_append_message (EmpathyChatView *view,
 			avatar_filename = priv->data->default_avatar_filename;
 		}
 	}
-	
+
 	is_backlog = empathy_message_is_backlog (msg);
 
 	/* Get the right html/func to add the message */
 	func = "appendMessage";
-	
+
 	message_classes = g_string_new ("message");
-	
+
 	/* eventually append the "history" class */
 	if (is_backlog) {
 		g_string_append (message_classes, " history");
 	}
-	
+
 	/* check the sender of the message and append the appropriate class */
 	if (empathy_contact_is_user (sender)) {
 		g_string_append (message_classes, " outgoing");
@@ -488,18 +488,18 @@ theme_adium_append_message (EmpathyChatView *view,
 	else {
 		g_string_append (message_classes, " incoming");
 	}
-	
+
 	/*
 	 * To mimick Adium's behavior, we only want to join messages
 	 * sent by the same contact within a 5 minute time frame.
 	 */
 	if (empathy_contact_equal (priv->last_contact, sender) &&
-	    (timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) && 
+	    (timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) &&
 	    (is_backlog == priv->last_is_backlog)) {
 		/* the messages can be appended */
 		func = "appendNextMessage";
 		g_string_append (message_classes, " consecutive");
-		
+
 		/* check who is the sender of the message to use the correct html file */
 		if (empathy_contact_is_user (sender)) {
 			/* check if this is a backlog message and use NextContext.html */
@@ -507,7 +507,7 @@ theme_adium_append_message (EmpathyChatView *view,
 				html = priv->data->out_nextcontext_html;
 				len = priv->data->out_nextcontext_len;
 			}
-			
+
 			/*
 			 * html is null if this is not a backlog message or
 			 * if we have to fallback (NextContext.html missing).
@@ -523,14 +523,14 @@ theme_adium_append_message (EmpathyChatView *view,
 				html = priv->data->in_nextcontext_html;
 				len = priv->data->in_nextcontext_len;
 			}
-			
+
 			if (html == NULL) {
 				html = priv->data->in_nextcontent_html;
 				len = priv->data->in_nextcontent_len;
 			}
 		}
 	}
-			
+
 	/*
 	 * we have html == NULL here if:
 	 * 1. the message didn't have to be appended because
@@ -544,7 +544,7 @@ theme_adium_append_message (EmpathyChatView *view,
 				html = priv->data->out_context_html;
 				len = priv->data->out_context_len;
 			}
-			
+
 			if (html == NULL) {
 				html = priv->data->out_content_html;
 				len = priv->data->out_content_len;
@@ -555,7 +555,7 @@ theme_adium_append_message (EmpathyChatView *view,
 				html = priv->data->in_context_html;
 				len = priv->data->in_context_len;
 			}
-			
+
 			if (html == NULL) {
 				html = priv->data->in_content_html;
 				len = priv->data->in_content_len;
@@ -983,7 +983,7 @@ empathy_adium_data_new_with_info (const gchar *path, GHashTable *info)
 	file = g_build_filename (data->basedir, "Incoming", "NextContent.html", NULL);
 	g_file_get_contents (file, &data->in_nextcontent_html, &data->in_nextcontent_len, NULL);
 	g_free (file);
-	
+
 	file = g_build_filename (data->basedir, "Incoming", "Context.html", NULL);
 	g_file_get_contents (file, &data->in_context_html, &data->in_context_len, NULL);
 	g_free (file);
