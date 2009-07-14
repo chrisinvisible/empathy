@@ -146,12 +146,27 @@ empathy_contact_add_menu_item_new (EmpathyContact *contact)
 	GtkWidget *item;
 	GtkWidget *image;
 	EmpathyContactManager *manager;
+	TpConnection *connection;
 	GList *l, *members;
 	gboolean found = FALSE;
+	EmpathyContactListFlags flags;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
+	if (!empathy_contact_manager_initialized ()) {
+		return NULL;
+	}
+
 	manager = empathy_contact_manager_dup_singleton ();
+	connection = empathy_contact_get_connection (contact);
+
+	flags = empathy_contact_manager_get_flags_for_connection (manager,
+			connection);
+
+	if (!(flags & EMPATHY_CONTACT_LIST_CAN_ADD)) {
+		return NULL;
+	}
+
 	members = empathy_contact_list_get_members (EMPATHY_CONTACT_LIST (manager));
 	for (l = members; l; l = l->next) {
 		if (!found && empathy_contact_equal (l->data, contact)) {
@@ -163,6 +178,7 @@ empathy_contact_add_menu_item_new (EmpathyContact *contact)
 		g_object_unref (l->data);
 	}
 	g_list_free (members);
+	g_object_unref (manager);
 
 	if (found) {
 		return NULL;
