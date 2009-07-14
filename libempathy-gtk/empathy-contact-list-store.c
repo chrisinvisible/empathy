@@ -872,8 +872,12 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 
 	connection = empathy_contact_get_connection (contact);
-	flags = empathy_contact_manager_get_flags_for_connection (
+	if (EMPATHY_IS_CONTACT_MANAGER (priv->list)) {
+		flags = empathy_contact_manager_get_flags_for_connection (
 			EMPATHY_CONTACT_MANAGER (priv->list), connection);
+	} else {
+		flags = 0;
+	}
 
 	/* If no groups just add it at the top level. */
 	if (!groups) {
