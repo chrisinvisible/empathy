@@ -164,7 +164,9 @@ empathy_contact_add_menu_item_new (EmpathyContact *contact)
 	}
 	g_list_free (members);
 
-	if (found) return NULL;
+	if (found) {
+		return NULL;
+	}
 
 	item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact..."));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
