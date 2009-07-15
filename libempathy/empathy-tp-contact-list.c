@@ -559,7 +559,7 @@ tp_contact_list_get_requestablechannelclasses_cb (TpProxy      *connection,
 		handle_type = tp_asv_get_uint32 (props,
 				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
 
-		if (!strcmp (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST) &&
+		if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST) &&
 		    handle_type == TP_HANDLE_TYPE_GROUP) {
 			DEBUG ("Got channel class for a contact group");
 			priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
@@ -782,7 +782,7 @@ tp_contact_list_constructed (GObject *list)
 
 	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
 
-	/* call GetAliasFlags() */
+	/* call GetAliasFlags */
 	if (tp_proxy_has_interface_by_id (priv->connection,
 				TP_IFACE_QUARK_CONNECTION_INTERFACE_ALIASING)) {
 		tp_cli_connection_interface_aliasing_call_get_alias_flags (
