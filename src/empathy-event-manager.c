@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-dispatcher.h>

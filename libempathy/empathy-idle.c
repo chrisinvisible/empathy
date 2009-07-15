@@ -31,7 +31,6 @@
 
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
-#include <libmissioncontrol/mc-enum-types.h>
 
 #include "empathy-account-manager.h"
 #include "empathy-idle.h"
@@ -45,7 +44,6 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIdle)
 typedef struct {
-	MissionControl *mc;
 	DBusGProxy     *gs_proxy;
 #ifdef HAVE_NM
 	NMClient       *nm_client;
@@ -294,7 +292,6 @@ idle_finalize (GObject *object)
 	priv = GET_PRIV (object);
 
 	g_free (priv->status);
-	g_object_unref (priv->mc);
 
 	if (priv->gs_proxy) {
 		g_object_unref (priv->gs_proxy);
@@ -461,7 +458,6 @@ empathy_idle_init (EmpathyIdle *idle)
 
 	idle->priv = priv;
 	priv->is_idle = FALSE;
-	priv->mc = empathy_mission_control_dup_singleton ();
 
 	priv->manager = empathy_account_manager_dup_singleton ();
 	priv->state = empathy_account_manager_get_global_presence (priv->manager,

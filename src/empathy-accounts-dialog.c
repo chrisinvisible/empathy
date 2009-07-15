@@ -85,7 +85,6 @@ typedef struct {
 	guint             connecting_id;
 
 	EmpathyAccountManager *account_manager;
-	MissionControl    *mc;
 } EmpathyAccountsDialog;
 
 enum {
@@ -1030,7 +1029,6 @@ accounts_dialog_destroy_cb (GtkWidget            *widget,
 	}
 
 	g_object_unref (dialog->account_manager);
-	g_object_unref (dialog->mc);
 
 	g_free (dialog);
 }
@@ -1104,7 +1102,6 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 
 	/* Set up signalling */
 	dialog->account_manager = empathy_account_manager_dup_singleton ();
-	dialog->mc = empathy_mission_control_dup_singleton ();
 
 	g_signal_connect (dialog->account_manager, "account-created",
 			  G_CALLBACK (accounts_dialog_account_added_cb),

@@ -37,6 +37,7 @@
 #include <telepathy-glib/defs.h>
 #include <telepathy-glib/svc-client.h>
 #include <telepathy-glib/svc-generic.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <extensions/extensions.h>
 
@@ -55,7 +56,6 @@
 typedef struct
 {
   EmpathyAccountManager *account_manager;
-  MissionControl *mc;
   /* connection to connection data mapping */
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
@@ -917,7 +917,6 @@ dispatcher_finalize (GObject *object)
     }
 
   g_object_unref (priv->account_manager);
-  g_object_unref (priv->mc);
 
   g_hash_table_destroy (priv->connections);
   g_hash_table_destroy (priv->outstanding_classes_requests);
@@ -1072,7 +1071,6 @@ empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
     EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherPriv);
 
   dispatcher->priv = priv;
-  priv->mc = empathy_mission_control_dup_singleton ();
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
   g_signal_connect (priv->account_manager, "new-connection",

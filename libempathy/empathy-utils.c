@@ -242,21 +242,6 @@ empathy_account_equal (gconstpointer a,
   return a == b;
 }
 
-MissionControl *
-empathy_mission_control_dup_singleton (void)
-{
-	static MissionControl *mc = NULL;
-
-	if (!mc) {
-		mc = mission_control_new (tp_get_bus ());
-		g_object_add_weak_pointer (G_OBJECT (mc), (gpointer) &mc);
-	} else {
-		g_object_ref (mc);
-	}
-
-	return mc;
-}
-
 const gchar *
 empathy_presence_get_default_message (TpConnectionPresenceType presence)
 {

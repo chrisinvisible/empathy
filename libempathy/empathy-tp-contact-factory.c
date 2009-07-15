@@ -26,6 +26,8 @@
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/interfaces.h>
+
 #if HAVE_GEOCLUE
 #include <geoclue/geoclue-geocode.h>
 #endif

@@ -29,6 +29,7 @@
 #include <glib/gstdio.h>
 
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #include "empathy-log-manager.h"
 #include "empathy-log-store-empathy.h"

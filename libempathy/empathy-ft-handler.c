@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/interfaces.h>
 
 #include "empathy-ft-handler.h"
 #include "empathy-tp-contact-factory.h"

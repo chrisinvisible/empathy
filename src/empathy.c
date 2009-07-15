@@ -41,6 +41,7 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/connection-manager.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
@@ -143,68 +144,6 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 			empathy_ft_factory_claim_channel (factory, operation);
 		}
 	}
-}
-
-static void
-service_ended_cb (MissionControl *mc,
-		  gpointer        user_data)
-{
-	DEBUG ("Mission Control stopped");
-}
-
-static void
-operation_error_cb (MissionControl *mc,
-		    guint           operation_id,
-		    guint           error_code,
-		    gpointer        user_data)
-{
-	const gchar *message;
-
-	switch (error_code) {
-	case MC_DISCONNECTED_ERROR:
-		message = "Disconnected";
-		break;
-	case MC_INVALID_HANDLE_ERROR:
-		message = "Invalid handle";
-		break;
-	case MC_NO_MATCHING_CONNECTION_ERROR:
-		message = "No matching connection";
-		break;
-	case MC_INVALID_ACCOUNT_ERROR:
-		message = "Invalid account";
-		break;
-	case MC_PRESENCE_FAILURE_ERROR:
-		message = "Presence failure";
-		break;
-	case MC_NO_ACCOUNTS_ERROR:
-		message = "No accounts";
-		break;
-	case MC_NETWORK_ERROR:
-		message = "Network error";
-		break;
-	case MC_CONTACT_DOES_NOT_SUPPORT_VOICE_ERROR:
-		message = "Contact does not support voice";
-		break;
-	case MC_LOWMEM_ERROR:
-		message = "Lowmem";
-		break;
-	case MC_CHANNEL_REQUEST_GENERIC_ERROR:
-		message = "Channel request generic error";
-		break;
-	case MC_CHANNEL_BANNED_ERROR:
-		message = "Channel banned";
-		break;
-	case MC_CHANNEL_FULL_ERROR:
-		message = "Channel full";
-		break;
-	case MC_CHANNEL_INVITE_ONLY_ERROR:
-		message = "Channel invite only";
-		break;
-	default:
-		message = "Unknown error code";
-	}
-
-	DEBUG ("Error during operation %d: %s", operation_id, message);
 }
 
 static void
@@ -529,7 +468,6 @@ main (int argc, char *argv[])
 	EmpathyCallFactory *call_factory;
 	EmpathyFTFactory  *ft_factory;
 	GtkWidget         *window;
-	MissionControl    *mc;
 	EmpathyIdle       *idle;
 	gboolean           autoconnect = TRUE;
 	gboolean           no_connect = FALSE;
@@ -636,15 +574,6 @@ main (int argc, char *argv[])
 		g_clear_error (&error);
 	}
 
-	/* Setting up MC */
-	mc = empathy_mission_control_dup_singleton ();
-	g_signal_connect (mc, "ServiceEnded",
-			  G_CALLBACK (service_ended_cb),
-			  NULL);
-	g_signal_connect (mc, "Error",
-			  G_CALLBACK (operation_error_cb),
-			  NULL);
-
 	if (accounts_dialog) {
 		GtkWidget *dialog;
 
@@ -671,7 +600,7 @@ main (int argc, char *argv[])
 	if (autoconnect && ! no_connect &&
 		tp_connection_presence_type_cmp_availability (empathy_idle_get_state
 			(idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE) <= 0) {
-		empathy_idle_set_state (idle, MC_PRESENCE_AVAILABLE);
+		empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 	}
 
 	/* account management */
@@ -722,7 +651,6 @@ main (int argc, char *argv[])
 
 	empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 
-	g_object_unref (mc);
 	g_object_unref (idle);
 	g_object_unref (icon);
 	g_object_unref (account_manager);

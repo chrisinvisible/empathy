@@ -32,8 +32,6 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include "empathy-contact.h"
 
 #define EMPATHY_GET_PRIV(obj,type) ((type##Priv *) ((type *) obj)->priv)
@@ -67,7 +65,6 @@ xmlNodePtr   empathy_xml_node_find_child_prop_value (xmlNodePtr       node,
 guint        empathy_account_hash                   (gconstpointer    key);
 gboolean     empathy_account_equal                  (gconstpointer    a,
 						    gconstpointer    b);
-MissionControl *empathy_mission_control_dup_singleton (void);
 const gchar * empathy_presence_get_default_message  (TpConnectionPresenceType presence);
 const gchar * empathy_presence_to_str               (TpConnectionPresenceType presence);
 TpConnectionPresenceType empathy_presence_from_str  (const gchar     *str);

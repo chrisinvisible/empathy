@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <telepathy-farsight/channel.h>
 #include <telepathy-farsight/stream.h>

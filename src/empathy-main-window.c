@@ -79,7 +79,6 @@
 typedef struct {
 	EmpathyContactListView  *list_view;
 	EmpathyContactListStore *list_store;
-	MissionControl          *mc;
 	EmpathyAccountManager   *account_manager;
 	EmpathyChatroomManager  *chatroom_manager;
 	EmpathyEventManager     *event_manager;
@@ -646,7 +645,6 @@ main_window_destroy_cb (GtkWidget         *widget,
 
 	g_list_free (window->actions_connected);
 
-	g_object_unref (window->mc);
 	g_object_unref (window->account_manager);
 	g_object_unref (window->list_store);
 	g_hash_table_destroy (window->errors);
@@ -1175,7 +1173,6 @@ empathy_main_window_show (void)
 	gtk_action_set_visible (show_map_widget, FALSE);
 #endif
 
-	window->mc = empathy_mission_control_dup_singleton ();
 	window->account_manager = empathy_account_manager_dup_singleton ();
 
 	g_signal_connect (window->account_manager,
