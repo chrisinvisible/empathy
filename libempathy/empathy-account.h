@@ -24,7 +24,6 @@
 #include <glib-object.h>
 
 #include <telepathy-glib/connection.h>
-#include <libmissioncontrol/mc-profile.h>
 
 G_BEGIN_DECLS
 

@@ -27,6 +27,7 @@
 #include <telepathy-glib/account.h>
 #include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -50,6 +51,8 @@ static guint signals[LAST_SIGNAL];
 enum {
   PROP_ENABLED = 1,
   PROP_PRESENCE,
+  PROP_STATUS,
+  PROP_STATUS_MESSAGE,
   PROP_READY,
   PROP_CONNECTION_STATUS,
   PROP_CONNECTION_STATUS_REASON,
@@ -71,9 +74,12 @@ struct _EmpathyAccountPriv
   TpConnection *connection;
   guint connection_invalidated_id;
 
-  TpConnectionStatus status;
+  TpConnectionStatus connection_status;
   TpConnectionStatusReason reason;
+
   TpConnectionPresenceType presence;
+  gchar *status;
+  gchar *message;
 
   gboolean enabled;
   gboolean valid;
@@ -108,7 +114,7 @@ empathy_account_init (EmpathyAccount *obj)
 
   obj->priv = priv;
 
-  priv->status = TP_CONNECTION_STATUS_DISCONNECTED;
+  priv->connection_status = TP_CONNECTION_STATUS_DISCONNECTED;
 }
 
 static void
@@ -157,8 +163,14 @@ empathy_account_get_property (GObject *object,
       case PROP_PRESENCE:
         g_value_set_uint (value, priv->presence);
         break;
+      case PROP_STATUS:
+        g_value_set_string (value, priv->status);
+        break;
+      case PROP_STATUS_MESSAGE:
+        g_value_set_string (value, priv->message);
+        break;
       case PROP_CONNECTION_STATUS:
-        g_value_set_uint (value, priv->status);
+        g_value_set_uint (value, priv->connection_status);
         break;
       case PROP_CONNECTION_STATUS_REASON:
         g_value_set_uint (value, priv->reason);
@@ -191,11 +203,12 @@ empathy_account_update (EmpathyAccount *account, GHashTable *properties)
   EmpathyAccountPriv *priv = GET_PRIV (account);
   const gchar *conn_path;
   GValueArray *arr;
-  TpConnectionStatus old_s = priv->status;
-  TpConnectionPresenceType old_p = priv->presence;
+  TpConnectionStatus old_s = priv->connection_status;
+  gboolean presence_changed = FALSE;
 
   if (g_hash_table_lookup (properties, "ConnectionStatus") != NULL)
-    priv->status = tp_asv_get_int32 (properties, "ConnectionStatus", NULL);
+    priv->connection_status =
+      tp_asv_get_int32 (properties, "ConnectionStatus", NULL);
 
   if (g_hash_table_lookup (properties, "ConnectionStatusReason") != NULL)
     priv->reason = tp_asv_get_int32 (properties,
@@ -203,9 +216,16 @@ empathy_account_update (EmpathyAccount *account, GHashTable *properties)
 
   if (g_hash_table_lookup (properties, "CurrentPresence") != NULL)
     {
+      presence_changed = TRUE;
       arr = tp_asv_get_boxed (properties, "CurrentPresence",
         TP_STRUCT_TYPE_SIMPLE_PRESENCE);
       priv->presence = g_value_get_uint (g_value_array_get_nth (arr, 0));
+
+      g_free (priv->status);
+      priv->status = g_value_dup_string (g_value_array_get_nth (arr, 1));
+
+      g_free (priv->message);
+      priv->message = g_value_dup_string (g_value_array_get_nth (arr, 2));
     }
 
   if (g_hash_table_lookup (properties, "DisplayName") != NULL)
@@ -236,9 +256,9 @@ empathy_account_update (EmpathyAccount *account, GHashTable *properties)
       g_object_notify (G_OBJECT (account), "ready");
     }
 
-  if (priv->status != old_s)
+  if (priv->connection_status != old_s)
     {
-      if (priv->status == TP_CONNECTION_STATUS_CONNECTED)
+      if (priv->connection_status == TP_CONNECTION_STATUS_CONNECTED)
         {
           GTimeVal val;
           g_get_current_time (&val);
@@ -247,16 +267,18 @@ empathy_account_update (EmpathyAccount *account, GHashTable *properties)
         }
 
       g_signal_emit (account, signals[STATUS_CHANGED], 0,
-        old_s, priv->status, priv->reason);
+        old_s, priv->connection_status, priv->reason);
 
       g_object_notify (G_OBJECT (account), "status");
     }
 
-  if (priv->presence != old_p)
+  if (presence_changed)
     {
       g_signal_emit (account, signals[PRESENCE_CHANGED], 0,
-        old_p, priv->presence);
+        priv->presence, priv->status, priv->message);
       g_object_notify (G_OBJECT (account), "presence");
+      g_object_notify (G_OBJECT (account), "status");
+      g_object_notify (G_OBJECT (account), "status-message");
     }
 
   if (g_hash_table_lookup (properties, "Connection") != NULL)
@@ -417,8 +439,22 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
       TP_CONNECTION_PRESENCE_TYPE_UNSET,
       G_PARAM_STATIC_STRINGS | G_PARAM_READABLE));
 
+  g_object_class_install_property (object_class, PROP_STATUS,
+    g_param_spec_string ("status",
+      "Status",
+      "The Status string of the account",
+      NULL,
+      G_PARAM_STATIC_STRINGS | G_PARAM_READABLE));
+
+  g_object_class_install_property (object_class, PROP_STATUS_MESSAGE,
+    g_param_spec_string ("status-message",
+      "status-message",
+      "The Status message string of the account",
+      NULL,
+      G_PARAM_STATIC_STRINGS | G_PARAM_READABLE));
+
   g_object_class_install_property (object_class, PROP_CONNECTION_STATUS,
-    g_param_spec_uint ("status",
+    g_param_spec_uint ("connection-status",
       "ConnectionStatus",
       "The accounts connections status type",
       0,
@@ -474,8 +510,8 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
     G_TYPE_FROM_CLASS (object_class),
     G_SIGNAL_RUN_LAST,
     0, NULL, NULL,
-    _empathy_marshal_VOID__UINT_UINT,
-    G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
+    _empathy_marshal_VOID__UINT_STRING_STRING,
+    G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 void
@@ -508,6 +544,9 @@ empathy_account_finalize (GObject *object)
 {
   EmpathyAccountPriv *priv = GET_PRIV (object);
 
+  g_free (priv->status);
+  g_free (priv->message);
+
   g_free (priv->cm_name);
   g_free (priv->proto_name);
   g_free (priv->icon_name);
@@ -524,7 +563,7 @@ empathy_account_is_just_connected (EmpathyAccount *account)
   EmpathyAccountPriv *priv = GET_PRIV (account);
   GTimeVal val;
 
-  if (priv->status != TP_CONNECTION_STATUS_CONNECTED)
+  if (priv->connection_status != TP_CONNECTION_STATUS_CONNECTED)
     return FALSE;
 
   g_get_current_time (&val);

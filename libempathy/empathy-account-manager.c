@@ -21,11 +21,11 @@
 
 #include "config.h"
 
-#include <libmissioncontrol/mc-account-monitor.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 #include <telepathy-glib/defs.h>
+#include <telepathy-glib/interfaces.h>
 
 #include "empathy-account-manager.h"
 #include "empathy-marshal.h"
@@ -47,6 +47,13 @@ typedef struct {
   TpProxySignalConnection *proxy_signal;
   TpAccountManager *tp_manager;
   TpDBusDaemon *dbus;
+
+  /* global presence */
+  EmpathyAccount *global_account;
+
+  TpConnectionPresenceType global_presence;
+  gchar *global_status;
+  gchar *global_status_message;
 } EmpathyAccountManagerPriv;
 
 enum {
@@ -56,7 +63,7 @@ enum {
   ACCOUNT_DISABLED,
   ACCOUNT_CHANGED,
   ACCOUNT_CONNECTION_CHANGED,
-  ACCOUNT_PRESENCE_CHANGED,
+  GLOBAL_PRESENCE_CHANGED,
   NEW_CONNECTION,
   LAST_SIGNAL
 };
@@ -130,14 +137,82 @@ emp_account_status_changed_cb (EmpathyAccount *account,
 }
 
 static void
+emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  TpConnectionPresenceType presence = TP_CONNECTION_PRESENCE_TYPE_UNSET;
+  EmpathyAccount *account = NULL;
+  GHashTableIter iter;
+  gpointer value;
+
+  g_hash_table_iter_init (&iter, priv->accounts);
+  while (g_hash_table_iter_next (&iter, NULL, &value))
+    {
+      EmpathyAccount *a = EMPATHY_ACCOUNT (value);
+      TpConnectionPresenceType p;
+
+      g_object_get (a, "presence", &p, NULL);
+
+      if (tp_connection_presence_type_cmp_availability (p, presence) > 0)
+        {
+          account = a;
+          presence = p;
+        }
+    }
+
+  priv->global_account = account;
+  g_free (priv->global_status);
+  g_free (priv->global_status_message);
+
+  if (account == NULL)
+    {
+      priv->global_status = NULL;
+      priv->global_status_message = NULL;
+      return;
+    }
+
+  g_object_get (account,
+    "presence", &priv->global_presence,
+    "status", &priv->global_status,
+    "status-message", &priv->global_status_message,
+    NULL);
+}
+
+static void
 emp_account_presence_changed_cb (EmpathyAccount *account,
-  TpConnectionPresenceType old,
-  TpConnectionPresenceType new,
+  TpConnectionPresenceType presence,
+  const gchar *status,
+  const gchar *status_message,
   gpointer user_data)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
-  g_signal_emit (manager, signals[ACCOUNT_PRESENCE_CHANGED], 0,
-    account, new, old);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  if (tp_connection_presence_type_cmp_availability (presence,
+      priv->global_presence) > 0)
+    {
+      priv->global_account = account;
+
+      priv->global_presence = presence;
+
+      g_free (priv->global_status);
+      priv->global_status = g_strdup (status);
+
+      g_free (priv->global_status_message);
+      priv->global_status_message = g_strdup (status_message);
+
+      goto signal;
+    }
+  else if (priv->global_account == account)
+    {
+      emp_account_manager_update_global_presence (manager);
+      goto signal;
+    }
+
+  return;
+signal:
+    g_signal_emit (manager, signals[GLOBAL_PRESENCE_CHANGED], 0,
+      priv->global_presence, priv->global_status, priv->global_status_message);
 }
 
 static void
@@ -166,194 +241,6 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
   g_signal_connect (account, "presence-changed",
     G_CALLBACK (emp_account_presence_changed_cb), manager);
 }
-
-static EmpathyAccount *
-create_account (EmpathyAccountManager *manager,
-  const gchar *account_name,
-  McAccount *mc_account)
-{
-#if 0
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
-  TpConnectionStatus status;
-  TpConnectionPresenceType presence;
-  McPresence mc_presence;
-  TpConnection *connection;
-  GError *error = NULL;
-
-  if ((account = g_hash_table_lookup (priv->accounts, account_name)) != NULL)
-    return account;
-
-  account = _empathy_account_new (mc_account);
-  g_hash_table_insert (priv->accounts, g_strdup (account_name),
-    account);
-
-  _empathy_account_set_enabled (account,
-      mc_account_is_enabled (mc_account));
-
-  g_signal_emit (manager, signals[ACCOUNT_CREATED], 0, account);
-
-  g_signal_connect (account, "notify::connection",
-    G_CALLBACK (emp_account_connection_cb), manager);
-
-  connection = mission_control_get_tpconnection (priv->mc,
-    mc_account, NULL);
-  _empathy_account_set_connection (account, connection);
-
-  status = mission_control_get_connection_status (priv->mc,
-     mc_account, &error);
-
-  if (error != NULL)
-    {
-      status = TP_CONNECTION_STATUS_DISCONNECTED;
-      g_clear_error (&error);
-    }
-
-  mc_presence = mission_control_get_presence_actual (priv->mc, &error);
-  if (error != NULL)
-    {
-      presence = TP_CONNECTION_PRESENCE_TYPE_UNSET;
-      g_clear_error (&error);
-    }
-  else
-    {
-      presence = mc_presence_to_tp_presence (mc_presence);
-    }
-
-  g_signal_connect (account, "status-changed",
-    G_CALLBACK (emp_account_status_changed_cb), manager);
-
-  g_signal_connect (account, "presence-changed",
-    G_CALLBACK (emp_account_presence_changed_cb), manager);
-
-  _empathy_account_set_status (account, status,
-    TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED,
-    presence);
-
-  return account;
-#endif
-  return NULL;
-}
-
-#if 0
-static void
-account_created_cb (McAccountMonitor *mon,
-                    gchar *account_name,
-                    EmpathyAccountManager *manager)
-{
-  McAccount *mc_account = mc_account_lookup (account_name);
-
-  if (mc_account != NULL)
-    create_account (manager, account_name, mc_account);
-}
-
-static void
-account_deleted_cb (McAccountMonitor *mon,
-                    gchar *account_name,
-                    EmpathyAccountManager *manager)
-{
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
-
-  account = g_hash_table_lookup (priv->accounts, account_name);
-
-  if (account)
-    {
-      g_signal_emit (manager, signals[ACCOUNT_DELETED], 0, account);
-      g_hash_table_remove (priv->accounts, account_name);
-    }
-}
-
-static void
-account_changed_cb (McAccountMonitor *mon,
-                    gchar *account_name,
-                    EmpathyAccountManager *manager)
-{
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
-
-  account = g_hash_table_lookup (priv->accounts, account_name);
-
-  if (account != NULL)
-    g_signal_emit (manager, signals[ACCOUNT_CHANGED], 0, account);
-}
-
-
-typedef struct {
-  TpConnectionStatus status;
-  TpConnectionPresenceType presence;
-  TpConnectionStatusReason reason;
-  gchar *unique_name;
-  EmpathyAccountManager *manager;
-  McAccount *mc_account;
-} ChangedSignalData;
-
-static gboolean
-account_status_changed_idle_cb (ChangedSignalData *signal_data)
-{
-  EmpathyAccount *account;
-  EmpathyAccountManager *manager = signal_data->manager;
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-
-  account = g_hash_table_lookup (priv->accounts,
-    signal_data->unique_name);
-
-  if (account)
-    {
-      if (empathy_account_get_connection (account) == NULL)
-        {
-          TpConnection *connection;
-
-          connection = mission_control_get_tpconnection (priv->mc,
-             signal_data->mc_account, NULL);
-
-          if (connection != NULL)
-            {
-              _empathy_account_set_connection (account, connection);
-              g_object_unref (connection);
-            }
-        }
-
-      _empathy_account_set_status (account, signal_data->status,
-        signal_data->reason,
-        signal_data->presence);
-    }
-
-  g_object_unref (signal_data->manager);
-  g_object_unref (signal_data->mc_account);
-  g_free (signal_data->unique_name);
-  g_slice_free (ChangedSignalData, signal_data);
-
-  return FALSE;
-}
-#endif
-
-#if 0
-static void
-account_status_changed_cb (MissionControl *mc,
-                           TpConnectionStatus status,
-                           McPresence presence,
-                           TpConnectionStatusReason reason,
-                           const gchar *unique_name,
-                           EmpathyAccountManager *manager)
-{
-  ChangedSignalData *data;
-
-  DEBUG ("Status of account %s became "
-    "status: %d presence: %d reason: %d", unique_name, status,
-    presence, reason);
-
-  data = g_slice_new0 (ChangedSignalData);
-  data->status = status;
-  data->presence = mc_presence_to_tp_presence (presence);
-  data->reason = reason;
-  data->unique_name = g_strdup (unique_name);
-  data->manager = g_object_ref (manager);
-  data->mc_account = mc_account_lookup (unique_name);
-
-  g_idle_add ((GSourceFunc) account_status_changed_idle_cb, data);
-}
-#endif
 
 static void
 account_manager_got_all_cb (TpProxy *proxy,
@@ -424,6 +311,7 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
 
   manager->priv = priv;
   priv->connected = priv->connecting = 0;
+  priv->global_presence = TP_CONNECTION_PRESENCE_TYPE_UNSET;
 
   priv->accounts = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, (GDestroyNotify) g_object_unref);
@@ -575,17 +463,17 @@ empathy_account_manager_class_init (EmpathyAccountManagerClass *klass)
                   G_TYPE_UINT,  /* actual connection */
                   G_TYPE_UINT); /* previous connection */
 
-  signals[ACCOUNT_PRESENCE_CHANGED] =
-    g_signal_new ("account-presence-changed",
+  signals[GLOBAL_PRESENCE_CHANGED] =
+    g_signal_new ("global-presence-changed",
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   0,
                   NULL, NULL,
-                  _empathy_marshal_VOID__OBJECT_INT_INT,
+                  _empathy_marshal_VOID__UINT_STRING_STRING,
                   G_TYPE_NONE,
-                  3, EMPATHY_TYPE_ACCOUNT,
-                  G_TYPE_INT,  /* actual presence */
-                  G_TYPE_INT); /* previous presence */
+                  3, G_TYPE_UINT, /* Presence type */
+                  G_TYPE_STRING,  /* status */
+                  G_TYPE_STRING); /* stauts message*/
 
   signals[NEW_CONNECTION] =
     g_signal_new ("new-connection",
@@ -784,5 +672,21 @@ empathy_account_manager_request_global_presence (
       if (ready)
         empathy_account_request_presence (account, type, status, message);
     }
+}
+
+TpConnectionPresenceType
+empathy_account_manager_get_global_presence (
+  EmpathyAccountManager *manager,
+  gchar **status,
+  gchar **message)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  if (status != NULL)
+    *status = g_strdup (priv->global_status);
+  if (message != NULL)
+    *message = g_strdup (priv->global_status_message);
+
+  return priv->global_presence;
 }
 

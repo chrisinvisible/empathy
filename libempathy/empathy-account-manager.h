@@ -84,6 +84,11 @@ void empathy_account_manager_request_global_presence (
   const gchar *status,
   const gchar *message);
 
+TpConnectionPresenceType empathy_account_manager_get_global_presence (
+  EmpathyAccountManager *manager,
+  gchar **status,
+  gchar **message);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_MANAGER_H__ */
