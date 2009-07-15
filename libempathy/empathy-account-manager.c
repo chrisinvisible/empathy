@@ -66,30 +66,6 @@ static EmpathyAccountManager *manager_singleton = NULL;
 
 G_DEFINE_TYPE (EmpathyAccountManager, empathy_account_manager, G_TYPE_OBJECT);
 
-#if 0
-static TpConnectionPresenceType
-mc_presence_to_tp_presence (McPresence presence)
-{
-  switch (presence)
-    {
-      case MC_PRESENCE_OFFLINE:
-        return TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-      case MC_PRESENCE_AVAILABLE:
-        return TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
-      case MC_PRESENCE_AWAY:
-        return TP_CONNECTION_PRESENCE_TYPE_AWAY;
-      case MC_PRESENCE_EXTENDED_AWAY:
-        return TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY;
-      case MC_PRESENCE_HIDDEN:
-        return TP_CONNECTION_PRESENCE_TYPE_HIDDEN;
-      case MC_PRESENCE_DO_NOT_DISTURB:
-        return TP_CONNECTION_PRESENCE_TYPE_BUSY;
-      default:
-        return TP_CONNECTION_PRESENCE_TYPE_UNSET;
-    }
-}
-#endif
-
 static void
 emp_account_connection_cb (EmpathyAccount *account,
   GParamSpec *spec,
@@ -473,29 +449,6 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
   tp_cli_dbus_peer_call_ping (mc5_proxy, -1, NULL, NULL, NULL, NULL);
 
   g_object_unref (mc5_proxy);
-
-#if 0
-  for (l = mc_accounts; l; l = l->next)
-    account_created_cb (priv->monitor,
-      (char *) mc_account_get_unique_name (l->data), manager);
-
-  g_signal_connect (priv->monitor, "account-created",
-      G_CALLBACK (account_created_cb), manager);
-  g_signal_connect (priv->monitor, "account-deleted",
-      G_CALLBACK (account_deleted_cb), manager);
-  g_signal_connect (priv->monitor, "account-disabled",
-      G_CALLBACK (account_disabled_cb), manager);
-  g_signal_connect (priv->monitor, "account-enabled",
-      G_CALLBACK (account_enabled_cb), manager);
-  g_signal_connect (priv->monitor, "account-changed",
-      G_CALLBACK (account_changed_cb), manager);
-
-  dbus_g_proxy_connect_signal (DBUS_G_PROXY (priv->mc), "AccountStatusChanged",
-                               G_CALLBACK (account_status_changed_cb),
-                               manager, NULL);
-
-  mc_accounts_list_free (mc_accounts);
-#endif
 }
 
 static void
@@ -523,34 +476,6 @@ do_dispose (GObject *obj)
   if (priv->dbus == NULL)
     g_object_unref (priv->dbus);
   priv->dbus = NULL;
-
-#if 0
-  dbus_g_proxy_disconnect_signal (DBUS_G_PROXY (priv->mc),
-                                  "AccountStatusChanged",
-                                  G_CALLBACK (account_status_changed_cb),
-                                  obj);
-
-  if (priv->monitor)
-    {
-      g_signal_handlers_disconnect_by_func (priv->monitor,
-                                            account_created_cb, obj);
-      g_signal_handlers_disconnect_by_func (priv->monitor,
-                                            account_deleted_cb, obj);
-      g_signal_handlers_disconnect_by_func (priv->monitor,
-                                            account_disabled_cb, obj);
-      g_signal_handlers_disconnect_by_func (priv->monitor,
-                                            account_enabled_cb, obj);
-      g_signal_handlers_disconnect_by_func (priv->monitor,
-                                            account_changed_cb, obj);
-      g_object_unref (priv->monitor);
-      priv->monitor = NULL;
-    }
-
-  if (priv->mc)
-    g_object_unref (priv->mc);
-
-  g_hash_table_remove_all (priv->accounts);
-#endif
 
   G_OBJECT_CLASS (empathy_account_manager_parent_class)->dispose (obj);
 }
@@ -684,52 +609,13 @@ empathy_account_manager_dup_singleton (void)
 }
 
 EmpathyAccount *
-empathy_account_manager_create_by_profile (EmpathyAccountManager *manager,
-  McProfile *profile)
-{
-  McAccount *mc_account = mc_account_create (profile);
-  return g_object_ref (create_account (manager,
-      mc_account_get_unique_name (mc_account),
-      mc_account));
-}
-
-EmpathyAccount *
 empathy_account_manager_create (EmpathyAccountManager *manager,
 	const gchar *connection_manager,
 	const gchar *protocol,
 	const gchar *display_name)
 {
-	McProfile *profile;
-	gboolean found;
-	GList *profiles, *l;
-	EmpathyAccount *result = NULL;
-
-	profiles = mc_profiles_list_by_protocol (protocol);
-
-	for (l = profiles; l != NULL;  l = g_list_next (l)) {
-		McProtocol *protocol;
-		McManager *cm;
-
-		profile = MC_PROFILE (l->data);
-
-		protocol = mc_profile_get_protocol (profile);
-		cm = mc_protocol_get_manager (protocol);
-		found = !tp_strdiff (mc_manager_get_unique_name (cm),
-			connection_manager);
-		
-		g_object_unref (protocol);
-		g_object_unref (manager);
-		
-		if (found) {
-			result = empathy_account_manager_create_by_profile (manager, profile);
-			empathy_account_set_display_name (result, display_name);
-			break;
-		}
-	}
-
-	mc_profiles_free_list (profiles);
-	
-	return result;
+  /* FIXME */
+  return NULL;
 }
 
 int
