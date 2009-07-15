@@ -43,7 +43,10 @@
 #include <libempathy-gtk/empathy-conf.h>
 
 #include "empathy-accounts-dialog.h"
+#if 0
+/* FIXME MC-5 */
 #include "empathy-import-dialog.h"
+#endif
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -142,8 +145,11 @@ static void       accounts_dialog_button_help_clicked_cb    (GtkWidget          
 							     EmpathyAccountsDialog    *dialog);
 static void       accounts_dialog_button_remove_clicked_cb  (GtkWidget                *button,
 							     EmpathyAccountsDialog    *dialog);
+#if 0
+/* FIXME MC-5 */
 static void       accounts_dialog_button_import_clicked_cb  (GtkWidget                *button,
 							     EmpathyAccountsDialog    *dialog);
+#endif
 static void       accounts_dialog_response_cb               (GtkWidget                *widget,
 							     gint                      response,
 							     EmpathyAccountsDialog    *dialog);
@@ -957,12 +963,15 @@ accounts_dialog_button_remove_clicked_cb (GtkWidget            *button,
 	gtk_widget_destroy (message_dialog);
 }
 
+#if 0
+/* FIXME MC-5 */
 static void
 accounts_dialog_button_import_clicked_cb (GtkWidget             *button,
 					  EmpathyAccountsDialog *dialog)
 {
 	empathy_import_dialog_show (GTK_WINDOW (dialog->window), TRUE);
 }
+#endif
 
 static void
 accounts_dialog_response_cb (GtkWidget            *widget,
@@ -1072,7 +1081,10 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 			      "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
 			      "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
 			      "button_remove", "clicked", accounts_dialog_button_remove_clicked_cb,
+#if 0
+/* FIXME MC-5  */
 			      "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
+#endif
 			      "button_help", "clicked", accounts_dialog_button_help_clicked_cb,
 			      NULL);
 
@@ -1140,6 +1152,8 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 			       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
 
 
+#if 0
+/* FIXME MC-5 */
 	if (empathy_import_dialog_accounts_to_import ()) {
 
 		if (!import_asked) {
@@ -1151,6 +1165,7 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 	} else {
 		gtk_widget_set_sensitive (dialog->button_import, FALSE);
 	}
+#endif
 
 	return dialog->window;
 }
