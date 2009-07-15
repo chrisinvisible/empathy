@@ -158,7 +158,7 @@ empathy_account_get_property (GObject *object,
         g_value_set_boolean (value, priv->enabled);
         break;
       case PROP_READY:
-        g_value_set_boolean (value, priv->enabled);
+        g_value_set_boolean (value, priv->ready);
         break;
       case PROP_PRESENCE:
         g_value_set_uint (value, priv->presence);
