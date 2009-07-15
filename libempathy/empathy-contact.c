@@ -802,6 +802,30 @@ empathy_contact_can_voip (EmpathyContact *contact)
 }
 
 gboolean
+empathy_contact_can_voip_audio (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), FALSE);
+
+  priv = GET_PRIV (contact);
+
+  return priv->capabilities & EMPATHY_CAPABILITIES_AUDIO;
+}
+
+gboolean
+empathy_contact_can_voip_video (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), FALSE);
+
+  priv = GET_PRIV (contact);
+
+  return priv->capabilities & EMPATHY_CAPABILITIES_VIDEO;
+}
+
+gboolean
 empathy_contact_can_send_files (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv;
