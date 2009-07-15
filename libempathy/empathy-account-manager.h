@@ -58,6 +58,8 @@ EmpathyAccount *        empathy_account_manager_create (
     const gchar *protocol,
     const gchar *display_name);
 
+gboolean empathy_account_manager_is_ready (EmpathyAccountManager *manager);
+
 int                     empathy_account_manager_get_connected_accounts
                                 (EmpathyAccountManager *manager);
 int                     empathy_account_manager_get_connecting_accounts

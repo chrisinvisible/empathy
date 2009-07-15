@@ -44,6 +44,7 @@ typedef struct {
   int               connected;
   int               connecting;
   gboolean          dispose_run;
+  gboolean          ready;
   TpProxySignalConnection *proxy_signal;
   TpAccountManager *tp_manager;
   TpDBusDaemon *dbus;
@@ -66,6 +67,10 @@ enum {
   GLOBAL_PRESENCE_CHANGED,
   NEW_CONNECTION,
   LAST_SIGNAL
+};
+
+enum {
+  PROP_READY = 1,
 };
 
 static guint signals[LAST_SIGNAL];
@@ -216,6 +221,32 @@ signal:
 }
 
 static void
+empathy_account_manager_check_ready (EmpathyAccountManager *manager)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GHashTableIter iter;
+  gpointer value;
+
+  if (priv->ready)
+    return;
+
+  g_hash_table_iter_init (&iter, priv->accounts);
+  while (g_hash_table_iter_next (&iter, NULL, &value))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (value);
+      gboolean ready;
+
+      g_object_get (account, "ready", &ready, NULL);
+
+      if (!ready)
+        return;
+    }
+
+  priv->ready = TRUE;
+  g_object_notify (G_OBJECT (manager), "ready");
+}
+
+static void
 emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
@@ -240,6 +271,8 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
 
   g_signal_connect (account, "presence-changed",
     G_CALLBACK (emp_account_presence_changed_cb), manager);
+
+  empathy_account_manager_check_ready (manager);
 }
 
 static void
@@ -263,7 +296,6 @@ account_manager_got_all_cb (TpProxy *proxy,
   accounts = tp_asv_get_boxed (properties, "ValidAccounts",
     EMPATHY_ARRAY_TYPE_OBJECT);
 
-
   for (i = 0; i < accounts->len; i++)
     {
       EmpathyAccount *account;
@@ -275,6 +307,8 @@ account_manager_got_all_cb (TpProxy *proxy,
       g_signal_connect (account, "notify::ready",
         G_CALLBACK (emp_account_ready_cb), manager);
     }
+
+  empathy_account_manager_check_ready (manager);
 }
 
 static void
@@ -392,6 +426,26 @@ do_constructor (GType type,
 }
 
 static void
+do_get_property (GObject *object,
+    guint prop_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (object);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  switch (prop_id)
+    {
+      case PROP_READY:
+        g_value_set_boolean (value, priv->ready);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 empathy_account_manager_class_init (EmpathyAccountManagerClass *klass)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
@@ -399,6 +453,14 @@ empathy_account_manager_class_init (EmpathyAccountManagerClass *klass)
   oclass->finalize = do_finalize;
   oclass->dispose = do_dispose;
   oclass->constructor = do_constructor;
+  oclass->get_property = do_get_property;
+
+  g_object_class_install_property (oclass, PROP_READY,
+    g_param_spec_boolean ("ready",
+      "Ready",
+      "Whether the initial state dump from the account manager is finished",
+      FALSE,
+      G_PARAM_STATIC_STRINGS | G_PARAM_READABLE));
 
   signals[ACCOUNT_CREATED] =
     g_signal_new ("account-created",
@@ -504,6 +566,15 @@ empathy_account_manager_create (EmpathyAccountManager *manager,
 {
   /* FIXME */
   return NULL;
+}
+
+
+gboolean
+empathy_account_manager_is_ready (EmpathyAccountManager *manager)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  return priv->ready;
 }
 
 int
@@ -689,4 +760,3 @@ empathy_account_manager_get_global_presence (
 
   return priv->global_presence;
 }
-
