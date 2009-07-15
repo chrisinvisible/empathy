@@ -90,9 +90,10 @@ G_DEFINE_TYPE (EmpathyIdle, empathy_idle, G_TYPE_OBJECT);
 static EmpathyIdle * idle_singleton = NULL;
 
 static void
-idle_presence_changed_cb (MissionControl *mc,
+idle_presence_changed_cb (EmpathyAccountManager *manager,
 			  TpConnectionPresenceType state,
 			  gchar          *status,
+			  gchar          *status_message,
 			  EmpathyIdle    *idle)
 {
 	EmpathyIdlePriv *priv;
@@ -452,36 +453,9 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 	g_type_class_add_private (object_class, sizeof (EmpathyIdlePriv));
 }
 
-static TpConnectionPresenceType
-empathy_idle_get_actual_presence (EmpathyIdle *idle, GError **error)
-{
-	McPresence presence;
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
-
-	presence = mission_control_get_presence_actual (priv->mc, error);
-
-	switch (presence) {
-	case MC_PRESENCE_OFFLINE:
-		return TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-	case MC_PRESENCE_AVAILABLE:
-		return TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
-	case MC_PRESENCE_AWAY:
-		return TP_CONNECTION_PRESENCE_TYPE_AWAY;
-	case MC_PRESENCE_EXTENDED_AWAY:
-		return TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY;
-	case MC_PRESENCE_HIDDEN:
-		return TP_CONNECTION_PRESENCE_TYPE_HIDDEN;
-	case MC_PRESENCE_DO_NOT_DISTURB:
-		return TP_CONNECTION_PRESENCE_TYPE_BUSY;
-	default:
-		return TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-	}
-}
-
 static void
 empathy_idle_init (EmpathyIdle *idle)
 {
-	GError          *error = NULL;
 	EmpathyIdlePriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (idle,
 		EMPATHY_TYPE_IDLE, EmpathyIdlePriv);
 
@@ -490,31 +464,12 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->mc = empathy_mission_control_dup_singleton ();
 
 	priv->manager = empathy_account_manager_dup_singleton ();
-	priv->state = empathy_idle_get_actual_presence (idle, &error);
-	if (error) {
-		DEBUG ("Error getting actual presence: %s", error->message);
+	priv->state = empathy_account_manager_get_global_presence (priv->manager,
+		NULL, &priv->status);
 
-		/* Fallback to OFFLINE as that's what mission_control_get_presence_actual
-		does. This also ensure to always display the status icon (there is no
-		unset presence icon). */
-		priv->state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-		g_clear_error (&error);
-	}
-	priv->status = mission_control_get_presence_message_actual (priv->mc, &error);
-	if (error || EMP_STR_EMPTY (priv->status)) {
-		g_free (priv->status);
-		priv->status = NULL;
 
-		if (error) {
-			DEBUG ("Error getting actual presence message: %s", error->message);
-			g_clear_error (&error);
-		}
-	}
-
-	dbus_g_proxy_connect_signal (DBUS_G_PROXY (priv->mc),
-				     "PresenceChanged",
-				     G_CALLBACK (idle_presence_changed_cb),
-				     idle, NULL);
+	g_signal_connect (priv->manager, "global-presence-changed",
+		G_CALLBACK (idle_presence_changed_cb), idle);
 
 	priv->gs_proxy = dbus_g_proxy_new_for_name (tp_get_bus (),
 						    "org.gnome.SessionManager",
