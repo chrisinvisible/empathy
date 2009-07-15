@@ -577,15 +577,31 @@ empathy_idle_set_flash_state (EmpathyIdle *idle,
 
 static void
 empathy_idle_do_set_presence (EmpathyIdle *idle,
-			   TpConnectionPresenceType   state,
-			   const gchar *status)
+			   TpConnectionPresenceType status_type,
+			   const gchar *status_message)
 {
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	const gchar *statusses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
+		NULL,
+		"offline",
+		"available",
+		"away",
+		"xa",
+		"hidden",
+		"busy",
+		NULL,
+		NULL,
+	};
+	const gchar *status;
 
+	g_assert (status_type > 0 && status_type < NUM_TP_CONNECTION_PRESENCE_TYPES);
 
-	/* FIXME */
+	status = statusses[status_type];
+
+	g_return_if_fail (status != NULL);
+
 	empathy_account_manager_request_global_presence (priv->manager,
-		state, "available", status);
+		status_type, status, status_message);
 }
 
 void
