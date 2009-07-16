@@ -98,8 +98,8 @@ empathy_log_store_empathy_init (EmpathyLogStoreEmpathy *self)
 
   self->priv = priv;
 
-  priv->basedir = g_build_path (G_DIR_SEPARATOR_S, g_get_home_dir (),
-      ".gnome2", PACKAGE_NAME, "logs", NULL);
+  priv->basedir = g_build_path (G_DIR_SEPERATOR_S, g_get_user_data_dir (),
+    PACKAGE_NAME, "logs", NULL);
 
   priv->name = g_strdup ("Empathy");
   priv->account_manager = empathy_account_manager_dup_singleton ();
@@ -117,7 +117,8 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
 
   priv = GET_PRIV (self);
 
-  account_id = empathy_account_get_unique_name (account);
+  account_id = tp_escape_as_identifier (
+    empathy_account_get_unique_name (account));
 
   if (chatroom)
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, account_id,
@@ -125,6 +126,8 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
   else
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir,
         account_id, chat_id, NULL);
+
+  g_free (account_id);
 
   return basedir;
 }
