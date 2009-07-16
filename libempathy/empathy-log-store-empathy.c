@@ -426,8 +426,14 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
 
   /* Get the account from the filename */
   hit = log_store_empathy_search_hit_new (self, filename);
-  account = g_object_ref (hit->account);
+
+  if (hit->account != NULL)
+    account = g_object_ref (hit->account);
+
   empathy_log_manager_search_hit_free (hit);
+
+  if (hit->account == NULL)
+    return NULL;
 
   /* Create parser. */
   ctxt = xmlNewParserCtxt ();
