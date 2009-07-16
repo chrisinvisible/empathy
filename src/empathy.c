@@ -453,6 +453,22 @@ default_log_handler (const gchar *log_domain,
 }
 #endif /* ENABLE_DEBUG */
 
+static void
+account_manager_ready_cb (EmpathyAccountManager *manager,
+	GParamSpec *spec,
+	gpointer user_data)
+{
+	if (!empathy_account_manager_is_ready (manager))
+		return;
+
+	if (empathy_account_manager_get_count (manager) != 0)
+		{
+			empathy_accounts_dialog_show (GTK_WINDOW (empathy_main_window_get ()),
+				NULL);
+		}
+	create_salut_account ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -605,8 +621,8 @@ main (int argc, char *argv[])
 
 	/* account management */
 	account_manager = empathy_account_manager_dup_singleton ();
-
-	create_salut_account ();
+	g_signal_connect (account_manager, "notify::ready",
+		G_CALLBACK (account_manager_ready_cb), NULL);
 
 	/* Setting up UI */
 	window = empathy_main_window_show ();
@@ -666,4 +682,3 @@ main (int argc, char *argv[])
 
 	return EXIT_SUCCESS;
 }
-
