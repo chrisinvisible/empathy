@@ -113,23 +113,26 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
                            const gchar *chat_id,
                            gboolean chatroom)
 {
-  gchar *account_id;
   gchar *basedir;
+  gchar *escaped;
   EmpathyLogStoreEmpathyPriv *priv;
 
   priv = GET_PRIV (self);
 
-  account_id = tp_escape_as_identifier (
-    empathy_account_get_unique_name (account));
+  /* unique name is an object path, ignore the initial / and replace the others
+   * by % */
+  escaped = g_strdup (empathy_account_get_unique_name (account) + 1);
+
+  g_strdelimit(escaped, "/", '%');
 
   if (chatroom)
-    basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, account_id,
+    basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, escaped,
         LOG_DIR_CHATROOMS, chat_id, NULL);
   else
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir,
-        account_id, chat_id, NULL);
+        escaped, chat_id, NULL);
 
-  g_free (account_id);
+  g_free (escaped);
 
   return basedir;
 }
@@ -369,7 +372,8 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 {
   EmpathyLogStoreEmpathyPriv *priv = GET_PRIV (self);
   EmpathyLogSearchHit *hit;
-  const gchar *account_name;
+  gchar *unescaped;
+  gchar *account_name;
   const gchar *end;
   gchar **strv;
   guint len;
@@ -392,10 +396,13 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
   else
     account_name = strv[len-3];
 
+  unescaped = g_strdup_printf ("/%s", g_strdelimit (account_name, "%", '/'));
+
   hit->account = empathy_account_manager_lookup (priv->account_manager,
-    account_name);
+    unescaped);
   hit->filename = g_strdup (filename);
 
+  g_free (unescaped);
   g_strfreev (strv);
 
   return hit;
