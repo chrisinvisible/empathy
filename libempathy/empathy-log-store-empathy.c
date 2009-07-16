@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <glib/gstdio.h>
 
+#include <telepathy-glib/util.h>
+
 #include "empathy-log-store.h"
 #include "empathy-log-store-empathy.h"
 #include "empathy-log-manager.h"
@@ -98,7 +100,7 @@ empathy_log_store_empathy_init (EmpathyLogStoreEmpathy *self)
 
   self->priv = priv;
 
-  priv->basedir = g_build_path (G_DIR_SEPERATOR_S, g_get_user_data_dir (),
+  priv->basedir = g_build_path (G_DIR_SEPARATOR_S, g_get_user_data_dir (),
     PACKAGE_NAME, "logs", NULL);
 
   priv->name = g_strdup ("Empathy");
@@ -111,7 +113,7 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
                            const gchar *chat_id,
                            gboolean chatroom)
 {
-  const gchar *account_id;
+  gchar *account_id;
   gchar *basedir;
   EmpathyLogStoreEmpathyPriv *priv;
 
