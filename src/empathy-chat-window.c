@@ -1848,7 +1848,7 @@ empathy_chat_window_new (void)
  * be added.
  */
 EmpathyChatWindow *
-empathy_chat_window_get_default (void)
+empathy_chat_window_get_default (gboolean room_filter)
 {
 	GList    *l;
 	gboolean  separate_windows = TRUE;
@@ -1863,13 +1863,16 @@ empathy_chat_window_get_default (void)
 	}
 
 	for (l = chat_windows; l; l = l->next) {
+		EmpathyChatWindowPriv *priv;
 		EmpathyChatWindow *chat_window;
 		GtkWidget         *dialog;
 
 		chat_window = l->data;
+		priv = GET_PRIV (chat_window);
 
 		dialog = empathy_chat_window_get_dialog (chat_window);
-		if (empathy_window_get_is_visible (GTK_WINDOW (dialog))) {
+		if (empathy_window_get_is_visible (GTK_WINDOW (dialog)) &&
+				empathy_chat_is_room (priv->current_chat) == room_filter) {
 			/* Found a visible window on this desktop */
 			return chat_window;
 		}
@@ -2086,7 +2089,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat)
 
 	/* If the chat has no window, create one */
 	if (window == NULL) {
-		window = empathy_chat_window_get_default ();
+		window = empathy_chat_window_get_default (empathy_chat_is_room (chat));
 		if (!window) {
 			window = empathy_chat_window_new ();
 		}
