@@ -145,7 +145,7 @@ static void
 emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  TpConnectionPresenceType presence = TP_CONNECTION_PRESENCE_TYPE_UNSET;
+  TpConnectionPresenceType presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
   EmpathyAccount *account = NULL;
   GHashTableIter iter;
   gpointer value;
