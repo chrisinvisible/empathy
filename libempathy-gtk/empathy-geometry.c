@@ -77,9 +77,13 @@ empathy_geometry_save (const gchar *name,
 	gchar       *content;
 	gsize        length;
 	gchar       *str;
+	gchar       *escaped_name;
 
-	DEBUG ("Saving window geometry: x:%d, y:%d, w:%d, h:%d\n",
-		x, y, w, h);
+	/* escape the name so that unwanted characters such as # are removed */
+	escaped_name = g_uri_escape_string (name, NULL, TRUE);
+
+	DEBUG ("Saving window geometry: name:%s x:%d, y:%d, w:%d, h:%d\n",
+		escaped_name, x, y, w, h);
 
 	screen = gdk_screen_get_default ();
 	max_width = gdk_screen_get_width (screen);
@@ -98,7 +102,7 @@ empathy_geometry_save (const gchar *name,
 	filename = geometry_get_filename ();
 
 	g_key_file_load_from_file (key_file, filename, G_KEY_FILE_NONE, NULL);
-	g_key_file_set_string (key_file, GEOMETRY_GROUP_NAME, name, str);
+	g_key_file_set_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, str);
 
 	g_free (str);
 
@@ -111,6 +115,7 @@ empathy_geometry_save (const gchar *name,
 
 	g_free (content);
 	g_free (filename);
+	g_free (escaped_name);
 	g_key_file_free (key_file);
 }
 
@@ -124,6 +129,10 @@ empathy_geometry_load (const gchar *name,
 	GKeyFile    *key_file;
 	gchar       *filename;
 	gchar       *str = NULL;
+	gchar       *escaped_name;
+
+	/* escape the name so that unwanted characters such as # are removed */
+	escaped_name = g_uri_escape_string (name, NULL, TRUE);
 
 	if (x) {
 		*x = -1;
@@ -146,7 +155,7 @@ empathy_geometry_load (const gchar *name,
 	filename = geometry_get_filename ();
 
 	if (g_key_file_load_from_file (key_file, filename, G_KEY_FILE_NONE, NULL)) {
-		str = g_key_file_get_string (key_file, GEOMETRY_GROUP_NAME, name, NULL);
+		str = g_key_file_get_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, NULL);
 	}
 
 	if (str) {
@@ -177,6 +186,7 @@ empathy_geometry_load (const gchar *name,
 		x ? *x : -1, y ? *y : -1, w ? *w : -1, h ? *h : -1);
 
 	g_free (filename);
+	g_free (escaped_name);
 	g_key_file_free (key_file);
 }
 
