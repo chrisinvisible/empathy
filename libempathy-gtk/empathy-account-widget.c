@@ -394,7 +394,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 		g_free (param_name_formatted);
 	}
 
-	g_slist_free (params);
+	mc_protocol_free_params_list (params);
 	g_object_unref (profile);
 	g_object_unref (protocol);
 }
