@@ -41,6 +41,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-list-store.c		\
 	empathy-contact-list-view.c		\
 	empathy-contact-menu.c			\
+	empathy-share-my-desktop.c		\
 	empathy-contact-selector.c		\
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
@@ -101,6 +102,7 @@ libempathy_gtk_headers =			\
 	empathy-contact-list-store.h		\
 	empathy-contact-list-view.h		\
 	empathy-contact-menu.h			\
+	empathy-share-my-desktop.h		\
 	empathy-contact-selector.h		\
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
