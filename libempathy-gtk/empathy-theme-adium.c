@@ -184,12 +184,14 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 			       GtkMenu       *menu,
 			       gpointer       user_data)
 {
-	GtkWidget *item;
-	GList     *items;
-	GtkWidget *icon;
-	gchar     *stock_id;
-	gboolean   is_link = FALSE;
-	gboolean   developer_tools_enabled;
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (view);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	GtkWidget             *item;
+	GList                 *items;
+	GtkWidget             *icon;
+	gchar                 *stock_id;
+	gboolean               is_link = FALSE;
+	gboolean               developer_tools_enabled;
 
 	/* FIXME: WebKitGTK+'s context menu API clearly needs an
 	 * overhaul.  There is currently no way to know what is being
@@ -204,7 +206,7 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 		icon = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (item));
 		gtk_image_get_stock (GTK_IMAGE (icon), &stock_id, NULL);
 
-		if (!strcmp (stock_id, GTK_STOCK_OPEN))
+		if ((!strcmp (stock_id, GTK_STOCK_OPEN)) && priv->hovered_uri)
 			is_link = TRUE;
 	}
 
