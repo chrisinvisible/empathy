@@ -1341,6 +1341,8 @@ empathy_get_toplevel_window (GtkWidget *widget)
 static gchar *
 fixup_url (const gchar *url)
 {
+	g_return_val_if_fail (url != NULL, NULL);
+
 	if (g_str_has_prefix (url, "ghelp:") ||
 	    g_str_has_prefix (url, "mailto:") ||
 	    strstr (url, ":/")) {
@@ -1360,6 +1362,9 @@ empathy_url_show (GtkWidget *parent,
 {
 	gchar  *real_url;
 	GError *error = NULL;
+
+	g_return_if_fail (GTK_IS_WIDGET (parent));
+	g_return_if_fail (url != NULL);
 
 	real_url = fixup_url (url);
 	if (real_url) {
