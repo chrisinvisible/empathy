@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gossip.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-18 07:31+0300\n"
-"PO-Revision-Date: 2009-07-18 08:15+0300\n"
+"POT-Creation-Date: 2009-07-27 23:48+0300\n"
+"PO-Revision-Date: 2009-07-27 23:49+0300\n"
 "Last-Translator: Khaled Hosny <khaledhosny@eglug.org>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
 "Language: ar\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
-"X-Generator: Virtaal 0.4.0-beta1\n"
+"X-Generator: Virtaal 0.4.0-rc1\n"
 
 #: ../data/empathy.desktop.in.in.h:1
 msgid "Empathy Instant Messenger"
@@ -672,7 +672,7 @@ msgstr "الخواديم"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
 msgid "Override server settings"
-msgstr "تجاوز إعدادات الخادم"
+msgstr "تجاوز إعدادات الخادوم"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Pri_ority:"
@@ -684,11 +684,11 @@ msgstr "الم_ورد:"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Use old SS_L"
-msgstr "استعمل التشفير القديم SS_L"
+msgstr "استعمل SS_L القديم"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 msgid "_Encryption required (TLS/SSL)"
-msgstr "ال_تشفير مطلوب (TLS/SSL)"
+msgstr "ال_تعمية مطلوبة (TLS/SSL)"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
 msgid "_Ignore SSL certificate errors"
@@ -725,7 +725,7 @@ msgstr "اكتشف ال‍STUN"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
 msgid "STUN Server:"
-msgstr "خادم STUN:"
+msgstr "خادوم STUN:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:6
 msgid "STUN port:"
@@ -969,48 +969,52 @@ msgstr "هل ترغب حقا بإزالة المتراسل '%s'؟"
 msgid "Removing contact"
 msgstr "حذف المتراسل"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:187
+#: ../libempathy-gtk/empathy-contact-menu.c:195
 #: ../src/empathy-main-window.ui.h:11
 msgid "_Add Contact..."
 msgstr "أضِف متراسلا..."
 
-#: ../libempathy-gtk/empathy-contact-menu.c:214
+#: ../libempathy-gtk/empathy-contact-menu.c:222
 #: ../src/empathy-main-window.ui.h:12
 msgid "_Chat"
 msgstr "_دردشة"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:245
+#: ../libempathy-gtk/empathy-contact-menu.c:253
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_مكالمة صوتية"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:277
+#: ../libempathy-gtk/empathy-contact-menu.c:285
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_مكالمة مرئية"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:316
+#: ../libempathy-gtk/empathy-contact-menu.c:324
 msgid "_View Previous Conversations"
 msgstr "ا_عرض المحادثات السابقة"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:338
+#: ../libempathy-gtk/empathy-contact-menu.c:346
 msgid "Send file"
 msgstr "أرسل ملفا"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:366
+#: ../libempathy-gtk/empathy-contact-menu.c:369
+msgid "Share my desktop"
+msgstr "شارك سطح مكتبي"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:397
 msgid "Infor_mation"
 msgstr "_معلومات"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:410
+#: ../libempathy-gtk/empathy-contact-menu.c:441
 #: ../src/empathy-main-window.ui.h:16
 msgid "_Edit"
-msgstr "_حرّر"
+msgstr "ت_حرير"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:470
+#: ../libempathy-gtk/empathy-contact-menu.c:501
 msgid "Inviting to this room"
 msgstr "الدعوة لهذه الغرفة"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:501
+#: ../libempathy-gtk/empathy-contact-menu.c:532
 msgid "_Invite to chatroom"
 msgstr "ا_دع إلى غرفة المحادثة"
 
@@ -1152,7 +1156,7 @@ msgstr "<b>المكان</b> في (تاريخ)\t"
 #: ../src/empathy-chatrooms-window.ui.h:1
 #: ../src/empathy-new-chatroom-dialog.ui.h:1
 msgid "Account:"
-msgstr "حساب:"
+msgstr "الحساب:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
@@ -1194,7 +1198,7 @@ msgstr "المجموعات"
 #. Identifier to connect to Instant Messaging network
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:13
 msgid "Identifier:"
-msgstr "اسم:"
+msgstr "المعرف:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
 msgid "Information requested..."
@@ -1226,11 +1230,11 @@ msgstr "أ_ضف مجموعة"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:283
 msgid "new server"
-msgstr "خادم جديد"
+msgstr "خادوم جديد"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:510
 msgid "Server"
-msgstr "الخادم"
+msgstr "الخادوم"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:525
 msgid "Port"
@@ -1338,11 +1342,11 @@ msgstr "قطع المتراسل اتصاله"
 
 #: ../libempathy-gtk/empathy-sound.c:61
 msgid "Connected to server"
-msgstr "تم الاتصال بالخادم"
+msgstr "تم الاتصال بالخادوم"
 
 #: ../libempathy-gtk/empathy-sound.c:63
 msgid "Disconnected from server"
-msgstr "قُطع الاتصال بالخادم"
+msgstr "قُطع الاتصال بالخادوم"
 
 #: ../libempathy-gtk/empathy-sound.c:65
 msgid "Incoming voice call"
@@ -1628,19 +1632,19 @@ msgstr "التواجد"
 msgid "Set your own presence"
 msgstr "اضبط تواجدك"
 
-#: ../src/empathy.c:506
+#: ../src/empathy.c:567
 msgid "Don't connect on startup"
 msgstr "لا تتصل عند بدء التشغيل"
 
-#: ../src/empathy.c:510
+#: ../src/empathy.c:571
 msgid "Don't show the contact list on startup"
 msgstr "لا تعرض قائمة المتراسلين عند بدء التشغيل"
 
-#: ../src/empathy.c:514
+#: ../src/empathy.c:575
 msgid "Show the accounts dialog"
 msgstr "أعرض مربع حوار الحسابات"
 
-#: ../src/empathy.c:526
+#: ../src/empathy.c:587
 msgid "- Empathy Instant Messenger"
 msgstr "- المرسال إمباثي"
 
@@ -2059,7 +2063,7 @@ msgstr "يُلبّد \"%s\""
 
 #: ../src/empathy-ft-manager.c:1024
 msgid "%"
-msgstr "%"
+msgstr "٪"
 
 #: ../src/empathy-ft-manager.c:1036
 msgid "File"
@@ -2067,7 +2071,7 @@ msgstr "ملف"
 
 #: ../src/empathy-ft-manager.c:1058
 msgid "Remaining"
-msgstr "تغيير الاسم"
+msgstr "الباقي"
 
 #: ../src/empathy-ft-manager.ui.h:1
 msgid "File Transfers"
@@ -2307,7 +2311,7 @@ msgid ""
 "Enter the server which hosts the room, or leave it empty if the room is on "
 "the current account's server"
 msgstr ""
-"أدخِل الخادم الذي يستضيف الغرفة، أو اتركه فارغا إذا كانت الغرفة على خادوم "
+"أدخِل الخادوم الذي يستضيف الغرفة، أو اتركه فارغا إذا كانت الغرفة على خادوم "
 "الحساب الحالي"
 
 #: ../src/empathy-new-chatroom-dialog.ui.h:5
