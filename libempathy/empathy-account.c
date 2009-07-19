@@ -738,54 +738,6 @@ empathy_account_new (TpDBusDaemon *dbus, const gchar *unique_name)
     NULL));
 }
 
-#if 0
-EmpathyAccount *
-_empathy_account_new (McAccount *mc_account)
-{
-  EmpathyAccount *account;
-  EmpathyAccountPriv *priv;
-  McProfile *profile;
-  McProtocol *protocol;
-
-
-  account = g_object_new (EMPATHY_TYPE_ACCOUNT, NULL);
-  priv = GET_PRIV (account);
-  priv->mc_account = mc_account;
-
-  profile =  mc_account_get_profile (mc_account);
-  protocol = mc_profile_get_protocol (profile);
-
-  if (protocol != NULL)
-    {
-      McManager *manager = mc_protocol_get_manager (protocol);
-
-      priv->proto_name = g_strdup (mc_protocol_get_name (protocol));
-      priv->cm_name = g_strdup (mc_manager_get_unique_name (manager));
-
-      g_object_unref (protocol);
-      g_object_unref (manager);
-    }
-  g_object_unref (profile);
-
-  return account;
-}
-
-void
-_empathy_account_set_status (EmpathyAccount *account,
-    TpConnectionStatus status,
-    TpConnectionStatusReason reason,
-    TpConnectionPresenceType presence)
-{
-  EmpathyAccountPriv *priv = GET_PRIV (account);
-  TpConnectionStatus old_s = priv->status;
-  TpConnectionPresenceType old_p = priv->presence;
-
-  priv->status = status;
-  priv->presence = presence;
-
-}
-#endif
-
 static void
 empathy_account_connection_ready_cb (TpConnection *connection,
     const GError *error,
@@ -929,13 +881,3 @@ empathy_account_request_presence (EmpathyAccount *account,
 
   g_value_unset (&value);
 }
-
-#if 0
-McAccount *
-_empathy_account_get_mc_account (EmpathyAccount *account)
-{
-  EmpathyAccountPriv *priv = GET_PRIV (account);
-
-  return priv->mc_account;
-}
-#endif
