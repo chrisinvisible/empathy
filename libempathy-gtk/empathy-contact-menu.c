@@ -39,6 +39,7 @@
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
 #include "empathy-ui-utils.h"
+#include "empathy-share-my-desktop.h"
 
 GtkWidget *
 empathy_contact_menu_new (EmpathyContact             *contact,
@@ -97,6 +98,13 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 
 	/* File transfer */
 	item = empathy_contact_file_transfer_menu_item_new (contact);
+	gtk_menu_shell_append (shell, item);
+	gtk_widget_show (item);
+
+	/* Share my desktop */
+	/* FIXME we should add the "Share my desktop" menu item if Vino is
+	a registered handler in MC5 */
+	item = empathy_contact_share_my_desktop_menu_item_new (contact);
 	gtk_menu_shell_append (shell, item);
 	gtk_widget_show (item);
 
@@ -344,6 +352,29 @@ empathy_contact_file_transfer_menu_item_new (EmpathyContact *contact)
 
 	g_signal_connect_swapped (item, "activate",
 				  G_CALLBACK (empathy_send_file_with_file_chooser),
+				  contact);
+
+	return item;
+}
+
+/* FIXME  we should check if the contact supports vnc stream tube */
+GtkWidget *
+empathy_contact_share_my_desktop_menu_item_new (EmpathyContact *contact)
+{
+	GtkWidget         *item;
+	GtkWidget         *image;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	item = gtk_image_menu_item_new_with_mnemonic (_("Share my desktop"));
+	image = gtk_image_new_from_icon_name (GTK_STOCK_NETWORK,
+					      GTK_ICON_SIZE_MENU);
+	gtk_widget_set_sensitive (item, empathy_contact_can_use_stream_tube (contact));
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+	gtk_widget_show (image);
+
+	g_signal_connect_swapped (item, "activate",
+				  G_CALLBACK (empathy_share_my_desktop_share_with_contact),
 				  contact);
 
 	return item;
