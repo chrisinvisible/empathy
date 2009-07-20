@@ -25,6 +25,7 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 #include <telepathy-glib/defs.h>
+#include <telepathy-glib/dbus.h>
 #include <telepathy-glib/interfaces.h>
 
 #include "empathy-account-manager.h"
@@ -45,7 +46,6 @@ typedef struct {
   int               connecting;
   gboolean          dispose_run;
   gboolean          ready;
-  TpProxySignalConnection *proxy_signal;
   TpAccountManager *tp_manager;
   TpDBusDaemon *dbus;
 
@@ -322,18 +322,16 @@ account_manager_got_all_cb (TpProxy *proxy,
 }
 
 static void
-account_manager_name_owner_changed_cb (TpDBusDaemon *proxy,
-    const gchar *arg0,
-    const gchar *arg1,
-    const gchar *arg2,
-    gpointer user_data,
-    GObject *weak_object)
+account_manager_name_owner_cb (TpDBusDaemon *proxy,
+    const gchar *name,
+    const gchar *new_owner,
+    gpointer user_data)
 {
-  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
 
-  tp_proxy_signal_connection_disconnect (priv->proxy_signal);
-  priv->proxy_signal = NULL;
+  tp_dbus_daemon_cancel_name_owner_watch (proxy, name,
+    account_manager_name_owner_cb, user_data);
 
   priv->tp_manager = tp_account_manager_new (priv->dbus);
   tp_cli_dbus_properties_call_get_all (priv->tp_manager, -1,
@@ -362,12 +360,10 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
 
   priv->dbus = tp_dbus_daemon_dup (NULL);
 
-  priv->proxy_signal = tp_cli_dbus_daemon_connect_to_name_owner_changed (
-      priv->dbus,
-      account_manager_name_owner_changed_cb,
+  tp_dbus_daemon_watch_name_owner (priv->dbus,
       TP_ACCOUNT_MANAGER_BUS_NAME,
-      NULL,
-      G_OBJECT (manager),
+      account_manager_name_owner_cb,
+      manager,
       NULL);
 
   /* trigger MC5 starting */
@@ -404,6 +400,9 @@ do_dispose (GObject *obj)
     return;
 
   priv->dispose_run = TRUE;
+
+  tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
+      TP_ACCOUNT_MANAGER_BUS_NAME, account_manager_name_owner_cb, manager);
 
   if (priv->dbus == NULL)
     g_object_unref (priv->dbus);
