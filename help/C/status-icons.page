@@ -4,10 +4,12 @@
 
   <info>
     <link type="guide" xref="index#talk"/>
+    <link type="seealso" xref="set-custom-status"/>
     <desc>
       Understanding the various status icons.
     </desc>
-    <revision version="3.0" date="2009-07-18" status="stub"/>
+    <revision pkgversion="2.28" version="3.0" date="2009-07-18" status="stub"/>
+    <revision pkgversion="2.28" version="3.1" date="2009-07-21" status="draft"/>
 
     <credit type="author">
       <name>Milo Casagrande</name>
@@ -23,14 +25,33 @@
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
   </info>
 
+  <comment>
+    <cite date="2009-07-21"><name>Milo Casagrande</name></cite>
+    <p>
+      Need to understand when the extended away icon is used: how many minuts/hours should pass?
+    </p>
+    <p>
+      Need also to check for images to work!
+    </p>
+  </comment>
+
   <title>Status icons</title>
 
-  <figure>
-    <media type="image" mime="image/png" src="figures/empathy-main-window.png">
-    </media>
-  </figure>
-
   <table frame="all" rules="cols" shade="rows">
+    <thead>
+      <tr>
+        <td>
+          <p>
+            Icon
+          </p>
+        </td>
+        <td>
+          <p>
+            Description
+          </p>
+        </td>
+      </tr>
+    </thead>
     <tr>
       <td>
         <p>
@@ -41,7 +62,11 @@
       </td>
       <td>
         <p>
-          This is the default icon for the Available status.
+          This is the default icon for the <em>Available</em> status.
+        </p>
+        <p>
+          This icon indicates that a contact is availble to have conversations with other 
+          people.
         </p>
       </td>
     </tr>
@@ -55,7 +80,10 @@
       </td>
       <td>
         <p>
-          This is the default icon for the Busy status.
+          This is the default icon for the <em>Busy</em> status.
+        </p>
+        <p>
+          This icon idicates that a contact does not want to be disturbed.
         </p>
       </td>
     </tr>
@@ -69,7 +97,11 @@
       </td>
       <td>
         <p>
-          This is the default icon for the Away status.
+          This is the default icon for the <em>Away</em> status.
+        </p>
+        <p>
+          This icon indicates usally that a contact is not in front of the computer. This icon
+          is used also when you leave the computer and the screensaver turns on. 
         </p>
       </td>
     </tr>
@@ -83,7 +115,10 @@
       </td>
       <td>
         <p>
-          This is the default icon for the Extended Away status.
+          This is the default icon for the <em>Extended Away</em> status.
+        </p>
+        <p>
+          This icon is used when the <em>Away</em> status has been set a long time ago.
         </p>
       </td>
     </tr>
