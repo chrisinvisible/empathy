@@ -73,7 +73,7 @@ gboolean empathy_account_is_valid (EmpathyAccount *account);
 gboolean empathy_account_is_ready (EmpathyAccount *account);
 
 void empathy_account_update_settings_async (EmpathyAccount *account,
-  const GHashTable *parameters, const gchar **unset_parameters,
+  GHashTable *parameters, const gchar **unset_parameters,
   GAsyncReadyCallback callback, gpointer user_data);
 
 gboolean empathy_account_update_settings_finish (EmpathyAccount *account,

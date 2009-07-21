@@ -41,11 +41,11 @@ struct _EmpathyAccountSettings {
     gpointer priv;
 };
 
-GType empathy_account_settings_get_type(void);
+GType empathy_account_settings_get_type (void);
 
 /* TYPE MACROS */
 #define EMPATHY_TYPE_ACCOUNT_SETTINGS \
-  (empathy_account_settings_get_type())
+  (empathy_account_settings_get_type ())
 #define EMPATHY_ACCOUNT_SETTINGS(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), \
     EMPATHY_TYPE_ACCOUNT_SETTINGS, EmpathyAccountSettings))

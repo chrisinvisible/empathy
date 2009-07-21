@@ -39,11 +39,11 @@ struct _EmpathyConnectionManagers {
     gpointer priv;
 };
 
-GType empathy_connection_managers_get_type(void);
+GType empathy_connection_managers_get_type (void);
 
 /* TYPE MACROS */
 #define EMPATHY_TYPE_CONNECTION_MANAGERS \
-  (empathy_connection_managers_get_type())
+  (empathy_connection_managers_get_type ())
 #define EMPATHY_CONNECTION_MANAGERS(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), EMPATHY_TYPE_CONNECTION_MANAGERS, \
     EmpathyConnectionManagers))

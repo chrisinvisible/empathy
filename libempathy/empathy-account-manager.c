@@ -789,7 +789,7 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
 
   if (error != NULL)
     {
-      g_simple_async_result_set_from_error (result, (GError *)error);
+      g_simple_async_result_set_from_error (result, (GError *) error);
       g_simple_async_result_complete (result);
       g_object_unref (G_OBJECT (result));
       return;

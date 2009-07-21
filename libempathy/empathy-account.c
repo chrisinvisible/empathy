@@ -901,7 +901,7 @@ empathy_account_updated_cb (TpAccount *proxy,
 
   if (error != NULL)
     {
-      g_simple_async_result_set_from_error (result, (GError *)error);
+      g_simple_async_result_set_from_error (result, (GError *) error);
     }
 
   g_simple_async_result_complete (result);
@@ -910,7 +910,7 @@ empathy_account_updated_cb (TpAccount *proxy,
 
 void
 empathy_account_update_settings_async (EmpathyAccount *account,
-  const GHashTable *parameters, const gchar **unset_parameters,
+  GHashTable *parameters, const gchar **unset_parameters,
   GAsyncReadyCallback callback, gpointer user_data)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
@@ -919,7 +919,7 @@ empathy_account_update_settings_async (EmpathyAccount *account,
 
   tp_cli_account_call_update_parameters (priv->account,
       -1,
-      (GHashTable *)parameters,
+      parameters,
       unset_parameters,
       empathy_account_updated_cb,
       result,

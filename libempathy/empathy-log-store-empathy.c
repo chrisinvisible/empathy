@@ -123,7 +123,7 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
    * by % */
   escaped = g_strdup (empathy_account_get_unique_name (account) + 1);
 
-  g_strdelimit(escaped, "/", '%');
+  g_strdelimit (escaped, "/", '%');
 
   if (chatroom)
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, escaped,

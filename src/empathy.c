@@ -244,7 +244,7 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
 	GError     *error = NULL;
 
 
-	if (!should_create_salut_account())
+	if (!should_create_salut_account ())
 		return;
 
 	manager = empathy_connection_managers_get_cm (managers, "salut");
@@ -253,14 +253,14 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
 			DEBUG ("Salut not installed, not making a salut account");
 			return;
 		}
-	
+
 	protocol = tp_connection_manager_get_protocol (manager, "local-xmpp");
 	if (protocol == NULL)
 		{
 			DEBUG ("Salut doesn't support local-xmpp!!");
 			return;
 		}
-	
+
 	DEBUG ("Trying to add a salut account...");
 
 	/* Get self EContact from EDS */
@@ -325,7 +325,7 @@ create_salut_account (void)
 {
 	EmpathyConnectionManagers *managers;
 
-	if (!should_create_salut_account())
+	if (!should_create_salut_account ())
 		return;
 
 	managers = empathy_connection_managers_dup_singleton ();
