@@ -275,6 +275,22 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
   empathy_account_manager_check_ready (manager);
 }
 
+static EmpathyAccount *
+account_manager_add_account (EmpathyAccountManager *manager,
+  const gchar *path)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  EmpathyAccount *account;
+
+  account = empathy_account_new (priv->dbus, path);
+  g_hash_table_insert (priv->accounts, g_strdup (path), account);
+
+  g_signal_connect (account, "notify::ready",
+    G_CALLBACK (emp_account_ready_cb), manager);
+
+  return account;
+}
+
 static void
 account_manager_got_all_cb (TpProxy *proxy,
     GHashTable *properties,
@@ -283,7 +299,6 @@ account_manager_got_all_cb (TpProxy *proxy,
     GObject *weak_object)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   GPtrArray *accounts;
   int i;
 
@@ -298,14 +313,9 @@ account_manager_got_all_cb (TpProxy *proxy,
 
   for (i = 0; i < accounts->len; i++)
     {
-      EmpathyAccount *account;
       gchar *name = g_ptr_array_index (accounts, i);
 
-      account = empathy_account_new (priv->dbus, name);
-      g_hash_table_insert (priv->accounts, g_strdup (name), account);
-
-      g_signal_connect (account, "notify::ready",
-        G_CALLBACK (emp_account_ready_cb), manager);
+      account_manager_add_account (manager, name);
     }
 
   empathy_account_manager_check_ready (manager);
@@ -558,17 +568,6 @@ empathy_account_manager_dup_singleton (void)
   return g_object_new (EMPATHY_TYPE_ACCOUNT_MANAGER, NULL);
 }
 
-EmpathyAccount *
-empathy_account_manager_create (EmpathyAccountManager *manager,
-	const gchar *connection_manager,
-	const gchar *protocol,
-	const gchar *display_name)
-{
-  /* FIXME */
-  return NULL;
-}
-
-
 gboolean
 empathy_account_manager_is_ready (EmpathyAccountManager *manager)
 {
@@ -760,3 +759,83 @@ empathy_account_manager_get_global_presence (
 
   return priv->global_presence;
 }
+
+static void
+empathy_account_manager_created_ready_cb (EmpathyAccount *account,
+  GParamSpec *spec, gpointer user_data)
+{
+  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
+
+  if (!empathy_account_is_ready (account))
+    return;
+
+  g_simple_async_result_set_op_res_gpointer (
+    G_SIMPLE_ASYNC_RESULT (result), account, NULL);
+
+  g_simple_async_result_complete (result);
+  g_object_unref (G_OBJECT (result));
+}
+
+static void
+empathy_account_manager_created_cb (TpAccountManager *proxy,
+    const gchar *account_path,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
+  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
+  EmpathyAccount *account;
+
+  if (error != NULL)
+    {
+      g_simple_async_result_set_from_error (result, (GError *)error);
+      g_simple_async_result_complete (result);
+      g_object_unref (G_OBJECT (result));
+      return;
+    }
+
+  account = account_manager_add_account (manager, account_path);
+  g_signal_connect (account, "notify::ready",
+    G_CALLBACK (empathy_account_manager_created_ready_cb), result);
+}
+
+void
+empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
+  const gchar *connection_manager,
+  const gchar *protocol, const gchar *display_name,
+  GHashTable *parameters, GHashTable *properties,
+  GAsyncReadyCallback callback, gpointer user_data)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (manager),
+      callback, user_data, empathy_account_manager_create_account_finish);
+
+  tp_cli_account_manager_call_create_account (priv->tp_manager,
+      -1,
+      connection_manager,
+      protocol,
+      display_name,
+      parameters,
+      properties,
+      empathy_account_manager_created_cb,
+      result,
+      NULL,
+      G_OBJECT (manager));
+}
+
+EmpathyAccount *
+empathy_account_manager_create_account_finish (
+  EmpathyAccountManager *manager, GAsyncResult *result, GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+      error))
+    return NULL;
+
+  g_return_val_if_fail (g_simple_async_result_is_valid (result,
+    G_OBJECT (manager), empathy_account_manager_create_account_finish), NULL);
+
+  return EMPATHY_ACCOUNT (g_simple_async_result_get_op_res_gpointer (
+    G_SIMPLE_ASYNC_RESULT (result)));
+}
+

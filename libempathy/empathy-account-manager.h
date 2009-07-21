@@ -57,11 +57,6 @@ GType empathy_account_manager_get_type (void);
 /* public methods */
 
 EmpathyAccountManager * empathy_account_manager_dup_singleton (void);
-EmpathyAccount *        empathy_account_manager_create (
-    EmpathyAccountManager *manager,
-    const gchar *connection_manager,
-    const gchar *protocol,
-    const gchar *display_name);
 
 gboolean empathy_account_manager_is_ready (EmpathyAccountManager *manager);
 
@@ -95,6 +90,15 @@ TpConnectionPresenceType empathy_account_manager_get_global_presence (
   EmpathyAccountManager *manager,
   gchar **status,
   gchar **message);
+
+void empathy_account_manager_create_account_async (
+  EmpathyAccountManager *manager, const gchar *connection_manager,
+  const gchar *protocol, const gchar *display_name,
+  GHashTable *parameters, GHashTable *properties,
+  GAsyncReadyCallback callback, gpointer user_data);
+
+EmpathyAccount * empathy_account_manager_create_account_finish (
+  EmpathyAccountManager *settings, GAsyncResult *result, GError **error);
 
 G_END_DECLS
 
