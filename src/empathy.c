@@ -47,7 +47,9 @@
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-chatroom-manager.h>
+#include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-account-manager.h>
+#include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-debugger.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-dispatch-operation.h>
@@ -159,6 +161,7 @@ use_nm_notify_cb (EmpathyConf *conf,
 	}
 }
 
+/* Salut account creation */
 static gboolean
 should_create_salut_account (void)
 {
@@ -170,6 +173,12 @@ should_create_salut_account (void)
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
 			       &salut_created);
+
+	if (salut_created)
+		{
+			DEBUG ("Gconf says we already created a salut account once");
+			return FALSE;
+		}
 
 	manager = empathy_account_manager_dup_singleton ();
 	accounts = empathy_account_manager_dup_accounts (manager);
@@ -185,14 +194,46 @@ should_create_salut_account (void)
 
 	g_object_unref (manager);
 
+	if (salut_created)
+		{
+			DEBUG ("Existing salut account already exists, flagging so in gconf");
+			empathy_conf_set_bool (empathy_conf_get (),
+				EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+				TRUE);
+		}
+
 	return !salut_created;
 }
 
 static void
-create_salut_account_if_needed (void)
+salut_account_created (GObject *source,
+	GAsyncResult *result, gpointer user_data)
 {
-	EmpathyAccount  *account;
-	EmpathyAccountManager *account_manager;
+	EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
+	EmpathyAccount *account;
+	GError *error = NULL;
+
+	if (!empathy_account_settings_apply_finish (settings, result, &error))
+		{
+			DEBUG ("Failed to create salut account: %s", error->message);
+			g_error_free (error);
+			return;
+		}
+
+	account = empathy_account_settings_get_account (settings);
+
+	empathy_account_set_enabled (account, TRUE);
+	empathy_conf_set_bool (empathy_conf_get (),
+			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+			       TRUE);
+}
+
+static void
+create_salut_account_if_needed (EmpathyConnectionManagers *managers)
+{
+	EmpathyAccountSettings  *settings;
+	TpConnectionManager *manager;
+	const TpConnectionManagerProtocol *protocol;
 	EBook      *book;
 	EContact   *contact;
 	gchar      *nickname = NULL;
@@ -205,6 +246,20 @@ create_salut_account_if_needed (void)
 
 	if (!should_create_salut_account())
 		return;
+
+	manager = empathy_connection_managers_get_cm (managers, "salut");
+	if (manager == NULL)
+		{
+			DEBUG ("Salut not installed, not making a salut account");
+			return;
+		}
+	
+	protocol = tp_connection_manager_get_protocol (manager, "local-xmpp");
+	if (protocol == NULL)
+		{
+			DEBUG ("Salut doesn't support local-xmpp!!");
+			return;
+		}
 	
 	DEBUG ("Trying to add a salut account...");
 
@@ -216,11 +271,8 @@ create_salut_account_if_needed (void)
 		return;
 	}
 
-	account_manager = empathy_account_manager_dup_singleton ();
-	account = empathy_account_manager_create (account_manager,
-		"salut", "local-xmpp", _("People nearby"));
-	g_object_unref (account_manager);
-	empathy_account_set_enabled (account, TRUE);
+	settings = empathy_account_settings_new ("salut", "local-xmpp",
+		_("People nearby"));
 
 	nickname = e_contact_get (contact, E_CONTACT_NICKNAME);
 	first_name = e_contact_get (contact, E_CONTACT_GIVEN_NAME);
@@ -237,63 +289,57 @@ create_salut_account_if_needed (void)
 		"last-name=%s\nemail=%s\njid=%s\n",
 		nickname, first_name, last_name, email, jid);
 
-	empathy_account_set_param_string (account, "nickname", nickname ? nickname : "");
-	empathy_account_set_param_string (account, "first-name", first_name ? first_name : "");
-	empathy_account_set_param_string (account, "last-name", last_name ? last_name : "");
-	empathy_account_set_param_string (account, "email", email ? email : "");
-	empathy_account_set_param_string (account, "jid", jid ? jid : "");
+	empathy_account_settings_set_string (settings, "nickname", nickname ? nickname : "");
+	empathy_account_settings_set_string (settings, "first-name", first_name ? first_name : "");
+	empathy_account_settings_set_string (settings, "last-name", last_name ? last_name : "");
+	empathy_account_settings_set_string (settings, "email", email ? email : "");
+	empathy_account_settings_set_string (settings, "jid", jid ? jid : "");
+
+	empathy_account_settings_apply_async (settings,
+		salut_account_created, NULL);
 
 	g_free (nickname);
 	g_free (first_name);
 	g_free (last_name);
 	g_free (email);
 	g_free (jid);
-	g_object_unref (account);
+	g_object_unref (settings);
 	g_object_unref (contact);
 	g_object_unref (book);
-
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-			       TRUE);
-
 }
 
 static void
-connection_manager_listed (TpConnectionManager * const * cms,
-	gsize n_cms,
-	const GError *error,
-	gpointer user_data,
-	GObject *weak_object)
+connection_managers_ready_cb (EmpathyConnectionManagers *managers,
+	GParamSpec *spec, gpointer user_data)
 {
-	int i;
-	if (error != NULL) {
-		DEBUG ("Couldn't get the connection manager list: %s", error->message);
-		return;
-	}
-
-	for (i = 0; i < n_cms; i++) {
-		if (!tp_strdiff (tp_connection_manager_get_name (cms[i]), "salut")) {
-				/* salut installed, see if we need to create a new account */
-				create_salut_account_if_needed ();
-				return;
-			}
-	}
+	if (empathy_connection_managers_is_ready (managers))
+		{
+			create_salut_account_if_needed (managers);
+			g_object_unref (managers);
+			managers = NULL;
+		}
 }
 
 static void
 create_salut_account (void)
 {
-	TpDBusDaemon *d;
+	EmpathyConnectionManagers *managers;
 
 	if (!should_create_salut_account())
 		return;
 
-	d = tp_dbus_daemon_dup (NULL);
+	managers = empathy_connection_managers_dup_singleton ();
 
-	tp_list_connection_managers (d, connection_manager_listed, NULL,
-		NULL, NULL);
-
-	g_object_unref (d);
+	if (empathy_connection_managers_is_ready (managers))
+		{
+			create_salut_account_if_needed (managers);
+			g_object_unref (managers);
+		}
+	else
+		{
+			g_signal_connect (managers, "notify::ready",
+				G_CALLBACK (connection_managers_ready_cb), NULL);
+		}
 }
 
 /* The code that handles single-instance and startup notification is
@@ -461,7 +507,7 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
 	if (!empathy_account_manager_is_ready (manager))
 		return;
 
-	if (empathy_account_manager_get_count (manager) != 0)
+	if (empathy_account_manager_get_count (manager) == 0)
 		{
 			empathy_accounts_dialog_show (GTK_WINDOW (empathy_main_window_get ()),
 				NULL);
