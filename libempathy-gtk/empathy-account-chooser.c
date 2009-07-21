@@ -769,7 +769,7 @@ empathy_account_chooser_filter_is_connected (EmpathyAccount *account,
 {
 	TpConnectionStatus  status;
 
-	g_object_get (account, "status", &status, NULL);
+	g_object_get (account, "connection-status", &status, NULL);
 
 	return status == TP_CONNECTION_STATUS_CONNECTED;
 }
