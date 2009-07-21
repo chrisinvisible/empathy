@@ -669,6 +669,7 @@ accounts_dialog_model_remove_selected (EmpathyAccountsDialog *dialog)
 	GtkTreeModel     *model;
 	GtkTreeSelection *selection;
 	GtkTreeIter       iter;
+	EmpathyAccount *account;
 
 	view = GTK_TREE_VIEW (dialog->treeview);
 	selection = gtk_tree_view_get_selection (view);
@@ -676,6 +677,13 @@ accounts_dialog_model_remove_selected (EmpathyAccountsDialog *dialog)
 	if (!gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		return FALSE;
 	}
+
+	gtk_tree_model_get (model, &iter,
+			    COL_ACCOUNT_POINTER, &account,
+			    -1);
+
+	if (account != NULL)
+		empathy_account_remove_async (account, NULL, NULL);
 
 	return gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 }
