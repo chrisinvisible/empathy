@@ -27,28 +27,31 @@
 
 #include <gtk/gtk.h>
 
-#include <libempathy/empathy-account.h>
+#include <libempathy/empathy-account-settings.h>
 
 G_BEGIN_DECLS
 
-void       empathy_account_widget_handle_params     (EmpathyAccount   *account,
+void       empathy_account_widget_handle_params     (EmpathyAccountSettings   *settings,
 						     GtkBuilder  *gui,
 						     const gchar *first_widget,
 						     ...);
-void       empathy_account_widget_add_forget_button (EmpathyAccount   *account,
+void       empathy_account_widget_add_forget_button (EmpathyAccountSettings   *settings,
 						     GtkBuilder  *gui,
 						     const gchar *button,
 						     const gchar *entry);
+void empathy_account_widget_add_apply_button (EmpathyAccountSettings *settings,
+					      GtkWidget *vbox);
+
 void	   empathy_account_widget_set_default_focus (GtkBuilder  *gui,
 						     const gchar *entry);
-GtkWidget *empathy_account_widget_generic_new       (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_salut_new         (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_msn_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_jabber_new        (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_icq_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_aim_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_yahoo_new         (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_groupwise_new     (EmpathyAccount   *account);
+GtkWidget *empathy_account_widget_generic_new       (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_salut_new         (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_msn_new           (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_jabber_new        (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_icq_new           (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_aim_new           (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_yahoo_new         (EmpathyAccountSettings   *settings);
+GtkWidget *empathy_account_widget_groupwise_new     (EmpathyAccountSettings   *settings);
 
 G_END_DECLS
 

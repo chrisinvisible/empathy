@@ -33,6 +33,7 @@
 #include <libempathy/empathy-account.h>
 
 #include <telepathy-glib/connection-manager.h>
+#include <dbus/dbus-protocol.h>
 
 #include "empathy-account-widget.h"
 #include "empathy-ui-utils.h"
@@ -43,7 +44,7 @@
 static gboolean
 account_widget_entry_focus_cb (GtkWidget     *widget,
 			       GdkEventFocus *event,
-			       EmpathyAccount     *account)
+			       EmpathyAccountSettings *settings)
 {
 	const gchar *str;
 	const gchar *param_name;
@@ -54,14 +55,14 @@ account_widget_entry_focus_cb (GtkWidget     *widget,
 	if (EMP_STR_EMPTY (str)) {
 		const gchar *value = NULL;
 
-		empathy_account_unset_param (account, param_name);
-		value = empathy_account_get_param_string (account, param_name);
+		empathy_account_settings_unset (settings, param_name);
+		value = empathy_account_settings_get_string (settings, param_name);
 		DEBUG ("Unset %s and restore to %s", param_name, value);
 		gtk_entry_set_text (GTK_ENTRY (widget), value ? value : "");
 	} else {
 		DEBUG ("Setting %s to %s", param_name,
 			strstr (param_name, "password") ? "***" : str);
-		empathy_account_set_param_string (account, param_name, str);
+		empathy_account_settings_set_string (settings, param_name, str);
 	}
 
 	return FALSE;
@@ -69,28 +70,44 @@ account_widget_entry_focus_cb (GtkWidget     *widget,
 
 static void
 account_widget_int_changed_cb (GtkWidget *widget,
-			       EmpathyAccount *account)
+			       EmpathyAccountSettings *settings)
 {
 	const gchar *param_name;
 	gint         value;
+	const gchar *signature;
 
 	value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (widget));
 	param_name = g_object_get_data (G_OBJECT (widget), "param_name");
 
-	if (value == 0) {
-		empathy_account_unset_param (account, param_name);
-		value = empathy_account_get_param_int (account, param_name);
-		DEBUG ("Unset %s and restore to %d", param_name, value);
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), value);
-	} else {
-		DEBUG ("Setting %s to %d", param_name, value);
-		empathy_account_set_param_int (account, param_name, value);
-	}
+	signature = empathy_settings_get_dbus_signature (settings, param_name);
+	g_return_if_fail (signature != NULL);
+
+	DEBUG ("Setting %s to %d", param_name, value);
+
+	switch ((int)*signature)
+		{
+			case DBUS_TYPE_INT16:
+			case DBUS_TYPE_INT32:
+				empathy_account_settings_set_int32 (settings, param_name, value);
+				break;
+			case DBUS_TYPE_INT64:
+				empathy_account_settings_set_int64 (settings, param_name, value);
+				break;
+			case DBUS_TYPE_UINT16:
+			case DBUS_TYPE_UINT32:
+				empathy_account_settings_set_uint32 (settings, param_name, value);
+				break;
+			case DBUS_TYPE_UINT64:
+				empathy_account_settings_set_uint64 (settings, param_name, value);
+				break;
+			default:
+				g_return_if_reached ();
+		}
 }
 
 static void
 account_widget_checkbutton_toggled_cb (GtkWidget *widget,
-				       EmpathyAccount *account)
+				       EmpathyAccountSettings *settings)
 {
 	gboolean     value;
 	gboolean     default_value;
@@ -102,14 +119,14 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
 	/* FIXME: This is ugly! checkbox don't have a "not-set" value so we
 	 * always unset the param and set the value if different from the
 	 * default value. */
-	empathy_account_unset_param (account, param_name);
-	default_value = empathy_account_get_param_boolean (account, param_name);
+	empathy_account_settings_unset (settings, param_name);
+	default_value = empathy_account_settings_get_boolean (settings, param_name);
 
 	if (default_value == value) {
 		DEBUG ("Unset %s and restore to %d", param_name, default_value);
 	} else {
 		DEBUG ("Setting %s to %d", param_name, value);
-		empathy_account_set_param_boolean (account, param_name, value);
+		empathy_account_settings_set_boolean (settings, param_name, value);
 	}
 }
 
@@ -117,14 +134,14 @@ static void
 account_widget_forget_clicked_cb (GtkWidget *button,
 				  GtkWidget *entry)
 {
-	EmpathyAccount   *account;
+	EmpathyAccountSettings *settings;
 	const gchar *param_name;
 
 	param_name = g_object_get_data (G_OBJECT (entry), "param_name");
-	account = g_object_get_data (G_OBJECT (entry), "account");
+	settings = g_object_get_data (G_OBJECT (entry), "settings");
 
 	DEBUG ("Unset %s", param_name);
-	empathy_account_unset_param (account, param_name);
+	empathy_account_settings_unset (settings, param_name);
 	gtk_entry_set_text (GTK_ENTRY (entry), "");
 }
 
@@ -142,13 +159,13 @@ static void
 account_widget_jabber_ssl_toggled_cb (GtkWidget *checkbutton_ssl,
 				      GtkWidget *spinbutton_port)
 {
-	EmpathyAccount *account;
+	EmpathyAccountSettings *settings;
 	gboolean   value;
-	gint       port = 0;
+	gint32       port = 0;
 
 	value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_ssl));
-	account = g_object_get_data (G_OBJECT (spinbutton_port), "account");
-	port = empathy_account_get_param_int (account, "port");
+	settings = g_object_get_data (G_OBJECT (spinbutton_port), "settings");
+	port = empathy_account_settings_get_uint32 (settings, "port");
 
 	if (value) {
 		if (port == 5222 || port == 0) {
@@ -165,28 +182,51 @@ account_widget_jabber_ssl_toggled_cb (GtkWidget *checkbutton_ssl,
 
 static void
 account_widget_setup_widget (GtkWidget   *widget,
-			     EmpathyAccount   *account,
+			     EmpathyAccountSettings *settings,
 			     const gchar *param_name)
 {
 	g_object_set_data_full (G_OBJECT (widget), "param_name",
 				g_strdup (param_name), g_free);
-	g_object_set_data_full (G_OBJECT (widget), "account",
-				g_object_ref (account), g_object_unref);
+	g_object_set_data_full (G_OBJECT (widget), "settings",
+				g_object_ref (settings), g_object_unref);
 
 	if (GTK_IS_SPIN_BUTTON (widget)) {
 		gint value = 0;
+		const gchar *signature;
 
-		value = empathy_account_get_param_int (account, param_name);
+		signature = empathy_settings_get_dbus_signature (settings, param_name);
+		g_return_if_fail (signature != NULL);
+
+		switch ((int)*signature)
+			{
+				case DBUS_TYPE_INT16:
+				case DBUS_TYPE_INT32:
+					value = empathy_account_settings_get_int32 (settings, param_name);
+					break;
+				case DBUS_TYPE_INT64:
+					value = empathy_account_settings_get_int64 (settings, param_name);
+					break;
+				case DBUS_TYPE_UINT16:
+				case DBUS_TYPE_UINT32:
+					value = empathy_account_settings_get_uint32 (settings, param_name);
+					break;
+				case DBUS_TYPE_UINT64:
+					value = empathy_account_settings_get_uint64 (settings, param_name);
+					break;
+				default:
+					g_return_if_reached ();
+			}
+
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), value);
 
 		g_signal_connect (widget, "value-changed",
 				  G_CALLBACK (account_widget_int_changed_cb),
-				  account);
+				  settings);
 	}
 	else if (GTK_IS_ENTRY (widget)) {
 		const gchar *str = NULL;
 
-		str = empathy_account_get_param_string (account, param_name);
+		str = empathy_account_settings_get_string (settings, param_name);
 		gtk_entry_set_text (GTK_ENTRY (widget), str ? str : "");
 
 		if (strstr (param_name, "password")) {
@@ -195,17 +235,17 @@ account_widget_setup_widget (GtkWidget   *widget,
 
 		g_signal_connect (widget, "focus-out-event",
 				  G_CALLBACK (account_widget_entry_focus_cb),
-				  account);
+				  settings);
 	}
 	else if (GTK_IS_TOGGLE_BUTTON (widget)) {
 		gboolean value = FALSE;
 
-		value = empathy_account_get_param_boolean (account, param_name);
+		value = empathy_account_settings_get_boolean (settings, param_name);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
 		g_signal_connect (widget, "toggled",
 				  G_CALLBACK (account_widget_checkbutton_toggled_cb),
-				  account);
+				  settings);
 	} else {
 		DEBUG ("Unknown type of widget for param %s", param_name);
 	}
@@ -236,14 +276,15 @@ account_widget_generic_format_param_name (const gchar *param_name)
 }
 
 static void
-accounts_widget_generic_setup (EmpathyAccount *account,
-			       TpConnectionManagerParam *params,
+accounts_widget_generic_setup (EmpathyAccountSettings *settings,
 			       GtkWidget *table_common_settings,
 			       GtkWidget *table_advanced_settings)
 {
-	TpConnectionManagerParam *param;
+	TpConnectionManagerParam *params, *param;
 
-	for (param = params; param != NULL; param++) {
+	params = empathy_account_settings_get_tp_params (settings);
+
+	for (param = params; param != NULL && param->name != NULL; param++) {
 		GtkWidget       *table_settings;
 		guint            n_rows = 0;
 		GtkWidget       *widget = NULL;
@@ -350,7 +391,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 		}
 
 		if (widget) {
-			account_widget_setup_widget (widget, account, param->name);
+			account_widget_setup_widget (widget, settings, param->name);
 		}
 
 		g_free (param_name_formatted);
@@ -358,7 +399,7 @@ accounts_widget_generic_setup (EmpathyAccount *account,
 }
 
 static void
-account_widget_handle_params_valist (EmpathyAccount   *account,
+account_widget_handle_params_valist (EmpathyAccountSettings   *settings,
 				     GtkBuilder  *gui,
 				     const gchar *first_widget,
 				     va_list      args)
@@ -377,12 +418,12 @@ account_widget_handle_params_valist (EmpathyAccount   *account,
 			continue;
 		}
 
-		account_widget_setup_widget (GTK_WIDGET (object), account, param_name);
+		account_widget_setup_widget (GTK_WIDGET (object), settings, param_name);
 	}
 }
 
 void
-empathy_account_widget_handle_params (EmpathyAccount   *account,
+empathy_account_widget_handle_params (EmpathyAccountSettings   *settings,
 				      GtkBuilder  *gui,
 				      const gchar *first_widget,
 				      ...)
@@ -392,12 +433,35 @@ empathy_account_widget_handle_params (EmpathyAccount   *account,
 	g_return_if_fail (GTK_IS_BUILDER (gui));
 
 	va_start (args, first_widget);
-	account_widget_handle_params_valist (account, gui, first_widget, args);
+	account_widget_handle_params_valist (settings, gui, first_widget, args);
 	va_end (args);
 }
 
+static void
+account_widget_apply_clicked_cb (GtkWidget *button,
+				 EmpathyAccountSettings *settings)
+{
+  empathy_account_settings_apply_async (settings, NULL, NULL);
+}
+
 void
-empathy_account_widget_add_forget_button (EmpathyAccount   *account,
+empathy_account_widget_add_apply_button (EmpathyAccountSettings *settings,
+					 GtkWidget *vbox)
+{
+	GtkWidget *button;
+
+	button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
+
+	gtk_box_pack_end (GTK_BOX (vbox), button, FALSE, FALSE, 3);
+
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (account_widget_apply_clicked_cb),
+			  settings);
+	gtk_widget_show (button);
+}
+
+void
+empathy_account_widget_add_forget_button (EmpathyAccountSettings   *settings,
 					  GtkBuilder  *gui,
 					  const gchar *button,
 					  const gchar *entry)
@@ -409,7 +473,7 @@ empathy_account_widget_add_forget_button (EmpathyAccount   *account,
 	button_forget = GTK_WIDGET (gtk_builder_get_object (gui, button));
 	entry_password = GTK_WIDGET (gtk_builder_get_object (gui, entry));
 
-	password = empathy_account_get_param_string (account, "password");
+	password = empathy_account_settings_get_string (settings, "password");
 	gtk_widget_set_sensitive (button_forget, !EMP_STR_EMPTY (password));
 
 	g_signal_connect (button_forget, "clicked",
@@ -433,37 +497,33 @@ empathy_account_widget_set_default_focus (GtkBuilder  *gui,
 }
 
 static void
-account_widget_tp_cm_ready_cb (TpConnectionManager *cm, const GError *error,
-		gpointer user_data, GObject *weak_object)
+account_widget_setup_generic (EmpathyAccountSettings *settings,
+  GtkBuilder *builder)
 {
-	GtkBuilder *builder;
-	EmpathyAccount *account;
 	GtkWidget *table_common_settings;
 	GtkWidget *table_advanced_settings;
-	const TpConnectionManagerProtocol *protocol;
-
-	if (error != NULL) {
-		DEBUG ("CM wasn't happy: %s", error->message);
-		return;
-	}
-
-	account = EMPATHY_ACCOUNT (user_data);
-	builder = GTK_BUILDER (weak_object);
 
 	table_common_settings = GTK_WIDGET (gtk_builder_get_object (builder,
 		"table_common_settings"));
 	table_advanced_settings = GTK_WIDGET (gtk_builder_get_object (builder,
 		"table_advanced_settings"));
 
-	protocol = tp_connection_manager_get_protocol (cm,
-		empathy_account_get_protocol (account));
+	accounts_widget_generic_setup (settings, table_common_settings,
+		table_advanced_settings);
+}
 
-	accounts_widget_generic_setup (account, protocol->params,
-		table_common_settings, table_advanced_settings);
+static void
+account_widget_settings_ready_cb (EmpathyAccountSettings *settings,
+  GParamSpec *pspec, gpointer user_data)
+{
+	GtkBuilder *builder = GTK_BUILDER (user_data);
+
+	if (empathy_account_settings_is_ready (settings))
+		account_widget_setup_generic (settings, builder);
 }
 
 GtkWidget *
-empathy_account_widget_generic_new (EmpathyAccount *account)
+empathy_account_widget_generic_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -475,38 +535,19 @@ empathy_account_widget_generic_new (EmpathyAccount *account)
 					"vbox_generic_settings", &widget,
 					NULL);
 
-	/* If the profile isn't installed get_protocol will return NULL with MC4 */
-	if (empathy_account_get_protocol (account) != NULL) {
-		TpDBusDaemon *dbus;
-		TpConnectionManager *cm;
-		GError *error;
+	if (empathy_account_settings_is_ready (settings))
+		account_widget_setup_generic (settings, gui);
+	else
+		g_signal_connect (settings, "notify::ready",
+			G_CALLBACK (account_widget_settings_ready_cb), gui);
 
-		dbus = tp_dbus_daemon_dup (NULL);
-
-		cm = tp_connection_manager_new (dbus,
-			empathy_account_get_connection_manager (account), NULL, &error);
-
-		if (cm == NULL) {
-			DEBUG ("failed to get the cm: %s", error->message);
-			g_error_free (error);
-			g_object_unref (gui);
-			return NULL;
-		}
-
-		tp_connection_manager_call_when_ready (cm, account_widget_tp_cm_ready_cb,
-			account, g_object_unref, G_OBJECT (gui));
-
-		g_object_unref (dbus);
-	} else {
-		/* no protocol information available :(( */
-		return empathy_builder_unref_and_keep_widget (gui, widget);
-	}
+	empathy_account_widget_add_apply_button (settings, widget);
 
 	return g_object_ref (widget);
 }
 
 GtkWidget *
-empathy_account_widget_salut_new (EmpathyAccount *account)
+empathy_account_widget_salut_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -519,7 +560,7 @@ empathy_account_widget_salut_new (EmpathyAccount *account)
 					NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_published", "published-name",
 			"entry_nickname", "nickname",
 			"entry_first_name", "first-name",
@@ -534,7 +575,7 @@ empathy_account_widget_salut_new (EmpathyAccount *account)
 }
 
 GtkWidget *
-empathy_account_widget_msn_new (EmpathyAccount *account)
+empathy_account_widget_msn_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -547,14 +588,14 @@ empathy_account_widget_msn_new (EmpathyAccount *account)
 					NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_id", "account",
 			"entry_password", "password",
 			"entry_server", "server",
 			"spinbutton_port", "port",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
@@ -564,7 +605,7 @@ empathy_account_widget_msn_new (EmpathyAccount *account)
 }
 
 GtkWidget *
-empathy_account_widget_jabber_new (EmpathyAccount *account)
+empathy_account_widget_jabber_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -581,7 +622,7 @@ empathy_account_widget_jabber_new (EmpathyAccount *account)
 				        NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_id", "account",
 			"entry_password", "password",
 			"entry_resource", "resource",
@@ -593,7 +634,7 @@ empathy_account_widget_jabber_new (EmpathyAccount *account)
 			"checkbutton_encryption", "require-encryption",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
@@ -603,11 +644,13 @@ empathy_account_widget_jabber_new (EmpathyAccount *account)
 			  G_CALLBACK (account_widget_jabber_ssl_toggled_cb),
 			  spinbutton_port);
 
+	empathy_account_widget_add_apply_button (settings, widget);
+
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }
 
 GtkWidget *
-empathy_account_widget_icq_new (EmpathyAccount *account)
+empathy_account_widget_icq_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -622,7 +665,7 @@ empathy_account_widget_icq_new (EmpathyAccount *account)
 				        NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_uin", "account",
 			"entry_password", "password",
 			"entry_server", "server",
@@ -630,17 +673,19 @@ empathy_account_widget_icq_new (EmpathyAccount *account)
 			"entry_charset", "charset",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
 	empathy_account_widget_set_default_focus (gui, "entry_uin");
 
+	empathy_account_widget_add_apply_button (settings, widget);
+
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }
 
 GtkWidget *
-empathy_account_widget_aim_new (EmpathyAccount *account)
+empathy_account_widget_aim_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -655,24 +700,25 @@ empathy_account_widget_aim_new (EmpathyAccount *account)
 				        NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_screenname", "account",
 			"entry_password", "password",
 			"entry_server", "server",
 			"spinbutton_port", "port",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
 	empathy_account_widget_set_default_focus (gui, "entry_screenname");
+	empathy_account_widget_add_apply_button (settings, widget);
 
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }
 
 GtkWidget *
-empathy_account_widget_yahoo_new (EmpathyAccount *account)
+empathy_account_widget_yahoo_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -685,7 +731,7 @@ empathy_account_widget_yahoo_new (EmpathyAccount *account)
 					NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_id", "account",
 			"entry_password", "password",
 			"entry_server", "server",
@@ -696,17 +742,18 @@ empathy_account_widget_yahoo_new (EmpathyAccount *account)
 			"checkbutton_ignore_invites", "ignore-invites",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
 	empathy_account_widget_set_default_focus (gui, "entry_id");
+	empathy_account_widget_add_apply_button (settings, widget);
 
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }
 
 GtkWidget *
-empathy_account_widget_groupwise_new (EmpathyAccount *account)
+empathy_account_widget_groupwise_new (EmpathyAccountSettings *settings)
 {
 	GtkBuilder *gui;
 	GtkWidget *widget;
@@ -719,18 +766,19 @@ empathy_account_widget_groupwise_new (EmpathyAccount *account)
 					NULL);
 	g_free (filename);
 
-	empathy_account_widget_handle_params (account, gui,
+	empathy_account_widget_handle_params (settings, gui,
 			"entry_id", "account",
 			"entry_password", "password",
 			"entry_server", "server",
 			"spinbutton_port", "port",
 			NULL);
 
-	empathy_account_widget_add_forget_button (account, gui,
+	empathy_account_widget_add_forget_button (settings, gui,
 						  "button_forget",
 						  "entry_password");
 
 	empathy_account_widget_set_default_focus (gui, "entry_id");
+	empathy_account_widget_add_apply_button (settings, widget);
 
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }

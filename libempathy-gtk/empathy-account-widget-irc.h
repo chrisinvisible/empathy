@@ -22,11 +22,11 @@
 #define __EMPATHY_ACCOUNT_WIDGET_IRC_H__
 
 #include <gtk/gtk.h>
-#include <libempathy/empathy-account.h>
+#include <libempathy/empathy-account-settings.h>
 
 G_BEGIN_DECLS
 
-GtkWidget * empathy_account_widget_irc_new (EmpathyAccount *account);
+GtkWidget * empathy_account_widget_irc_new (EmpathyAccountSettings *settings);
 
 G_END_DECLS
 

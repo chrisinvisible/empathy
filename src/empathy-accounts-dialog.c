@@ -84,6 +84,9 @@ typedef struct {
 	gboolean          connecting_show;
 	guint             connecting_id;
 
+	gulong            settings_ready_id;
+	EmpathyAccountSettings *settings_ready;
+
 	EmpathyAccountManager *account_manager;
 } EmpathyAccountsDialog;
 
@@ -92,11 +95,12 @@ enum {
 	COL_NAME,
 	COL_STATUS,
 	COL_ACCOUNT_POINTER,
+	COL_ACCOUNT_SETTINGS_POINTER,
 	COL_COUNT
 };
 
-static void       accounts_dialog_update_account            (EmpathyAccountsDialog    *dialog,
-							     EmpathyAccount           *account);
+static void       accounts_dialog_update (EmpathyAccountsDialog    *dialog,
+							     EmpathyAccountSettings           *settings);
 static void       accounts_dialog_model_setup               (EmpathyAccountsDialog    *dialog);
 static void       accounts_dialog_model_add_columns         (EmpathyAccountsDialog    *dialog);
 static void       accounts_dialog_name_editing_started_cb   (GtkCellRenderer          *renderer,
@@ -109,14 +113,11 @@ static void       accounts_dialog_model_pixbuf_data_func    (GtkTreeViewColumn  
 							     GtkTreeModel             *model,
 							     GtkTreeIter              *iter,
 							     EmpathyAccountsDialog    *dialog);
-static EmpathyAccount *accounts_dialog_model_get_selected        (EmpathyAccountsDialog    *dialog);
 static void       accounts_dialog_model_set_selected        (EmpathyAccountsDialog    *dialog,
-							     EmpathyAccount           *account);
+							     EmpathyAccountSettings *settings);
 static gboolean   accounts_dialog_model_remove_selected     (EmpathyAccountsDialog    *dialog);
 static void       accounts_dialog_model_selection_changed   (GtkTreeSelection         *selection,
 							     EmpathyAccountsDialog    *dialog);
-static void       accounts_dialog_add_or_update_account     (EmpathyAccountsDialog    *dialog,
-							     EmpathyAccount           *account);
 static void       accounts_dialog_account_added_cb          (EmpathyAccountManager    *manager,
 							     EmpathyAccount           *account,
 							     EmpathyAccountsDialog    *dialog);
@@ -157,24 +158,24 @@ static void       accounts_dialog_destroy_cb                (GtkWidget          
 
 static void
 accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
-				   EmpathyAccount        *account)
+				   EmpathyAccountSettings *settings)
 {
 	gchar *text;
 
 	text = g_markup_printf_escaped ("<big><b>%s</b></big>",
-			empathy_account_get_display_name (account));
+			empathy_account_settings_get_display_name (settings));
 	gtk_label_set_markup (GTK_LABEL (dialog->label_name), text);
 
 	g_free (text);
 }
 
-typedef GtkWidget *CreateWidget (EmpathyAccount *);
+typedef GtkWidget *CreateWidget (EmpathyAccountSettings *);
 
 static GtkWidget *
-get_account_setup_widget (EmpathyAccount *account)
+get_account_setup_widget (EmpathyAccountSettings *settings)
 {
-	const gchar *cm = empathy_account_get_connection_manager (account);
-	const gchar *proto = empathy_account_get_protocol (account);
+	const gchar *cm = empathy_account_settings_get_cm (settings);
+	const gchar *proto = empathy_account_settings_get_protocol (settings);
 	struct {
 		const gchar *cm;
 		const gchar *proto;
@@ -196,18 +197,53 @@ get_account_setup_widget (EmpathyAccount *account)
 	for (i = 0; dialogs[i].cm != NULL; i++) {
 		if (!tp_strdiff (cm, dialogs[i].cm)
 			&& !tp_strdiff (proto, dialogs[i].proto))
-				return dialogs[i].cb(account);
+				return dialogs[i].cb (settings);
 	}
 
-	return empathy_account_widget_generic_new (account);
+	return empathy_account_widget_generic_new (settings);
 }
 
 
 static void
-accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
-				EmpathyAccount       *account)
+account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
+	EmpathyAccountSettings *settings)
 {
-	if (!account) {
+	dialog->settings_widget = get_account_setup_widget (settings);
+
+	gtk_container_add (GTK_CONTAINER (dialog->alignment_settings),
+			   dialog->settings_widget);
+	gtk_widget_show (dialog->settings_widget);
+
+
+	gtk_image_set_from_icon_name (GTK_IMAGE (dialog->image_type),
+				      empathy_account_settings_get_icon_name (settings),
+				      GTK_ICON_SIZE_DIALOG);
+	gtk_widget_set_tooltip_text (dialog->image_type,
+				     empathy_account_settings_get_protocol (settings));
+
+	accounts_dialog_update_name_label (dialog, settings);
+}
+
+static void
+account_dialog_settings_ready_cb (EmpathyAccountSettings *settings,
+	GParamSpec *spec, EmpathyAccountsDialog *dialog)
+{
+	if (empathy_account_settings_is_ready (settings))
+		account_dialog_create_settings_widget (dialog, settings);
+}
+
+static void
+accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
+				EmpathyAccountSettings       *settings)
+{
+	if (dialog->settings_ready != NULL) {
+			g_signal_handler_disconnect (dialog->settings_ready,
+				dialog->settings_ready_id);
+			dialog->settings_ready = NULL;
+			dialog->settings_ready_id = 0;
+	}
+
+	if (!settings) {
 		GtkTreeView  *view;
 		GtkTreeModel *model;
 
@@ -251,20 +287,18 @@ accounts_dialog_update_account (EmpathyAccountsDialog *dialog,
 		dialog->settings_widget = NULL;
 	}
 
-	dialog->settings_widget = get_account_setup_widget (account);
+	if (empathy_account_settings_is_ready (settings))
+		{
+			account_dialog_create_settings_widget (dialog, settings);
+		}
+	else
+		{
+			dialog->settings_ready = settings;
+			dialog->settings_ready_id =
+				g_signal_connect (settings, "notify::ready",
+					G_CALLBACK (account_dialog_settings_ready_cb), dialog);
+		}
 
-	gtk_container_add (GTK_CONTAINER (dialog->alignment_settings),
-			   dialog->settings_widget);
-	gtk_widget_show (dialog->settings_widget);
-
-
-	gtk_image_set_from_icon_name (GTK_IMAGE (dialog->image_type),
-				      empathy_account_get_icon_name (account),
-				      GTK_ICON_SIZE_DIALOG);
-	gtk_widget_set_tooltip_text (dialog->image_type,
-				     empathy_account_get_protocol (account));
-
-	accounts_dialog_update_name_label (dialog, account);
 }
 
 static void
@@ -277,7 +311,8 @@ accounts_dialog_model_setup (EmpathyAccountsDialog *dialog)
 				    G_TYPE_BOOLEAN,        /* enabled */
 				    G_TYPE_STRING,         /* name */
 				    G_TYPE_UINT,           /* status */
-				    EMPATHY_TYPE_ACCOUNT); /* account */
+				    EMPATHY_TYPE_ACCOUNT,   /* account */
+				    EMPATHY_TYPE_ACCOUNT_SETTINGS); /* settings */
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (dialog->treeview),
 				 GTK_TREE_MODEL (store));
@@ -303,7 +338,7 @@ accounts_dialog_name_edited_cb (GtkCellRendererText   *renderer,
 				gchar                 *new_text,
 				EmpathyAccountsDialog *dialog)
 {
-	EmpathyAccount    *account;
+	EmpathyAccountSettings    *settings;
 	GtkTreeModel *model;
 	GtkTreePath  *treepath;
 	GtkTreeIter   iter;
@@ -318,15 +353,16 @@ accounts_dialog_name_edited_cb (GtkCellRendererText   *renderer,
 	treepath = gtk_tree_path_new_from_string (path);
 	gtk_tree_model_get_iter (model, &iter, treepath);
 	gtk_tree_model_get (model, &iter,
-			    COL_ACCOUNT_POINTER, &account,
+			    COL_ACCOUNT_SETTINGS_POINTER, &settings,
 			    -1);
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 			    COL_NAME, new_text,
 			    -1);
 	gtk_tree_path_free (treepath);
 
-	empathy_account_set_display_name (account, new_text);
-	g_object_unref (account);
+	empathy_account_settings_set_display_name_async (settings, new_text,
+		NULL, NULL);
+	g_object_unref (settings);
 }
 
 static void
@@ -347,6 +383,9 @@ accounts_dialog_enable_toggled_cb (GtkCellRendererToggle *cell_renderer,
 			    COL_ACCOUNT_POINTER, &account,
 			    -1);
 	gtk_tree_path_free (treepath);
+
+	if (account == NULL)
+		return;
 
 	enabled = empathy_account_is_enabled (account);
 	empathy_account_set_enabled (account, !enabled);
@@ -438,7 +477,7 @@ accounts_dialog_model_select_first (EmpathyAccountsDialog *dialog)
 		selection = gtk_tree_view_get_selection (view);
 		gtk_tree_selection_select_iter (selection, &iter);
 	} else {
-		accounts_dialog_update_account (dialog, NULL);
+		accounts_dialog_update_settings (dialog, NULL);
 	}
 }
 
@@ -449,17 +488,17 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn    *tree_column,
 					GtkTreeIter          *iter,
 					EmpathyAccountsDialog *dialog)
 {
-	EmpathyAccount     *account;
+	EmpathyAccountSettings  *settings;
 	const gchar        *icon_name;
 	GdkPixbuf          *pixbuf;
 	TpConnectionStatus  status;
 
 	gtk_tree_model_get (model, iter,
 			    COL_STATUS, &status,
-			    COL_ACCOUNT_POINTER, &account,
+			    COL_ACCOUNT_SETTINGS_POINTER, &settings,
 			    -1);
 
-	icon_name = empathy_account_get_icon_name (account);
+	icon_name = empathy_account_settings_get_icon_name (settings);
 	pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON);
 
 	if (pixbuf) {
@@ -488,16 +527,52 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn    *tree_column,
 		      "pixbuf", pixbuf,
 		      NULL);
 
-	g_object_unref (account);
+	g_object_unref (settings);
 	if (pixbuf) {
 		g_object_unref (pixbuf);
 	}
 }
 
 static gboolean
-accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
-				 EmpathyAccount        *account,
+accounts_dialog_get_settings_iter (EmpathyAccountsDialog *dialog,
+				 EmpathyAccountSettings *settings,
 				 GtkTreeIter           *iter)
+{
+	GtkTreeView      *view;
+	GtkTreeSelection *selection;
+	GtkTreeModel     *model;
+	gboolean          ok;
+
+	/* Update the status in the model */
+	view = GTK_TREE_VIEW (dialog->treeview);
+	selection = gtk_tree_view_get_selection (view);
+	model = gtk_tree_view_get_model (view);
+
+	for (ok = gtk_tree_model_get_iter_first (model, iter);
+	     ok;
+	     ok = gtk_tree_model_iter_next (model, iter)) {
+		EmpathyAccountSettings *this_settings;
+		gboolean   equal;
+
+		gtk_tree_model_get (model, iter,
+				    COL_ACCOUNT_SETTINGS_POINTER, &this_settings,
+				    -1);
+
+		equal = (this_settings == settings);
+		g_object_unref (this_settings);
+
+		if (equal) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+static gboolean
+accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
+				 EmpathyAccount *account,
+				 GtkTreeIter    *iter)
 {
 	GtkTreeView      *view;
 	GtkTreeSelection *selection;
@@ -519,7 +594,7 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
 				    COL_ACCOUNT_POINTER, &this_account,
 				    -1);
 
-		equal = empathy_account_equal (this_account, account);
+		equal = (this_account == account);
 		g_object_unref (this_account);
 
 		if (equal) {
@@ -530,8 +605,31 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
 	return FALSE;
 }
 
+static EmpathyAccountSettings *
+accounts_dialog_model_get_selected_settings (EmpathyAccountsDialog *dialog)
+{
+	GtkTreeView      *view;
+	GtkTreeModel     *model;
+	GtkTreeSelection *selection;
+	GtkTreeIter       iter;
+	EmpathyAccountSettings   *settings;
+
+	view = GTK_TREE_VIEW (dialog->treeview);
+	selection = gtk_tree_view_get_selection (view);
+
+	if (!gtk_tree_selection_get_selected (selection, &model, &iter)) {
+		return NULL;
+	}
+
+	gtk_tree_model_get (model, &iter,
+		COL_ACCOUNT_SETTINGS_POINTER, &settings, -1);
+
+	return settings;
+}
+
+
 static EmpathyAccount *
-accounts_dialog_model_get_selected (EmpathyAccountsDialog *dialog)
+accounts_dialog_model_get_selected_account (EmpathyAccountsDialog *dialog)
 {
 	GtkTreeView      *view;
 	GtkTreeModel     *model;
@@ -553,13 +651,13 @@ accounts_dialog_model_get_selected (EmpathyAccountsDialog *dialog)
 
 static void
 accounts_dialog_model_set_selected (EmpathyAccountsDialog *dialog,
-				    EmpathyAccount        *account)
+				    EmpathyAccountSettings        *settings)
 {
 	GtkTreeSelection *selection;
 	GtkTreeIter       iter;
 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (dialog->treeview));
-	if (accounts_dialog_get_account_iter (dialog, account, &iter)) {
+	if (accounts_dialog_get_settings_iter (dialog, settings, &iter)) {
 		gtk_tree_selection_select_iter (selection, &iter);
 	}
 }
@@ -586,25 +684,48 @@ static void
 accounts_dialog_model_selection_changed (GtkTreeSelection     *selection,
 					 EmpathyAccountsDialog *dialog)
 {
-	EmpathyAccount    *account;
+	EmpathyAccountSettings *settings;
 	GtkTreeModel *model;
 	GtkTreeIter   iter;
 	gboolean      is_selection;
 
 	is_selection = gtk_tree_selection_get_selected (selection, &model, &iter);
 
-	account = accounts_dialog_model_get_selected (dialog);
-	accounts_dialog_update_account (dialog, account);
+	settings = accounts_dialog_model_get_selected_settings (dialog);
+	accounts_dialog_update_settings (dialog, settings);
 
-	if (account) {
-		g_object_unref (account);
+	if (settings) {
+		g_object_unref (settings);
 	}
 }
 
 static void
-accounts_dialog_add_or_update_account (EmpathyAccountsDialog *dialog,
+accounts_dialog_add (EmpathyAccountsDialog *dialog,
+				       EmpathyAccountSettings        *settings)
+{
+	GtkTreeModel       *model;
+	GtkTreeIter         iter;
+	const gchar        *name;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (dialog->treeview));
+	name = empathy_account_settings_get_display_name (settings);
+
+	gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+
+	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+			    COL_ENABLED, FALSE,
+			    COL_NAME, name,
+			    COL_STATUS, TP_CONNECTION_STATUS_DISCONNECTED,
+			    COL_ACCOUNT_SETTINGS_POINTER, settings,
+			    -1);
+}
+
+
+static void
+accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 				       EmpathyAccount        *account)
 {
+	EmpathyAccountSettings *settings;
 	GtkTreeModel       *model;
 	GtkTreeIter         iter;
 	TpConnectionStatus  status;
@@ -616,16 +737,16 @@ accounts_dialog_add_or_update_account (EmpathyAccountsDialog *dialog,
 	name = empathy_account_get_display_name (account);
 	enabled = empathy_account_is_enabled (account);
 
-	if (!accounts_dialog_get_account_iter (dialog, account, &iter)) {
-		DEBUG ("Adding new account");
-		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-	}
+	gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+
+	settings = empathy_account_settings_new_for_account (account);
 
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 			    COL_ENABLED, enabled,
 			    COL_NAME, name,
 			    COL_STATUS, status,
 			    COL_ACCOUNT_POINTER, account,
+			    COL_ACCOUNT_SETTINGS_POINTER, settings,
 			    -1);
 
 	accounts_dialog_connection_changed_cb (dialog->account_manager,
@@ -634,6 +755,39 @@ accounts_dialog_add_or_update_account (EmpathyAccountsDialog *dialog,
 					       status,
 					       TP_CONNECTION_STATUS_DISCONNECTED,
 					       dialog);
+
+	g_object_unref (settings);
+}
+
+static void
+accounts_dialog_update (EmpathyAccountsDialog *dialog,
+				       EmpathyAccountSettings        *settings)
+{
+	GtkTreeModel       *model;
+	GtkTreeIter         iter;
+	TpConnectionStatus  status = TP_CONNECTION_STATUS_DISCONNECTED;
+	const gchar        *name;
+	gboolean            enabled = FALSE;
+	EmpathyAccount     *account;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (dialog->treeview));
+	name = empathy_account_settings_get_display_name (settings);
+
+	account = empathy_account_settings_get_account (settings);
+	if (account != NULL)
+		{
+			enabled = empathy_account_is_enabled (account);
+			g_object_get (account, "connection-status", &status, NULL);
+		}
+
+	accounts_dialog_get_settings_iter (dialog, settings, &iter);
+	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+			    COL_ENABLED, enabled,
+			    COL_NAME, name,
+			    COL_STATUS, status,
+			    COL_ACCOUNT_POINTER, account,
+			    COL_ACCOUNT_SETTINGS_POINTER, settings,
+			    -1);
 }
 
 static void
@@ -641,43 +795,20 @@ accounts_dialog_account_added_cb (EmpathyAccountManager *manager,
 				  EmpathyAccount *account,
 				  EmpathyAccountsDialog *dialog)
 {
-	const gchar *current_name;
-	const gchar       *account_param = NULL;
-
-	accounts_dialog_add_or_update_account (dialog, account);
-
-	/* Change the display name to "%s (%s)" % (protocol, account).
-	 *  - The protocol is the display name of the profile.
-	 *  - The account should be the normalized name of the EmpathyAccount but
-	 *    it's not set until first connection, so we get the "account"
-	 *    parameter for CM that have it. */
-	current_name = empathy_account_get_display_name (account);
-	account_param = empathy_account_get_param_string (account, "account");
-	if (!EMP_STR_EMPTY (account_param)) {
-		gchar       *new_name;
-
-		new_name = g_strdup_printf ("%s (%s)",
-					    empathy_account_get_protocol (account),
-					    account_param);
-
-		DEBUG ("Setting new display name for account %s: '%s'",
-		       empathy_account_get_unique_name (account), new_name);
-
-		empathy_account_set_display_name (account, new_name);
-		g_free (new_name);
-	} else {
-		/* FIXME: This CM has no account parameter, what can be done? */
-	}
+	accounts_dialog_add_account (dialog, account);
 }
+
 
 static void
 accounts_dialog_account_removed_cb (EmpathyAccountManager *manager,
 				    EmpathyAccount       *account,
 				    EmpathyAccountsDialog *dialog)
 {
+	GtkTreeIter iter;
 
-	accounts_dialog_model_set_selected (dialog, account);
-	accounts_dialog_model_remove_selected (dialog);
+	if (accounts_dialog_get_account_iter (dialog, account, &iter))
+		gtk_list_store_remove (GTK_LIST_STORE (
+			gtk_tree_view_get_model (GTK_TREE_VIEW (dialog->treeview))), &iter);
 }
 
 static gboolean
@@ -791,20 +922,31 @@ accounts_dialog_account_changed_cb (EmpathyAccountManager *manager,
 				    EmpathyAccount        *account,
 				    EmpathyAccountsDialog  *dialog)
 {
-	EmpathyAccount *selected_account;
+	EmpathyAccountSettings *settings, *selected_settings;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
 
-	accounts_dialog_add_or_update_account (dialog, account);
-	selected_account = accounts_dialog_model_get_selected (dialog);
-	if (empathy_account_equal (account, selected_account)) {
-		accounts_dialog_update_name_label (dialog, account);
-	}
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (dialog->treeview));
+
+	if (!accounts_dialog_get_account_iter (dialog, account, &iter))
+		return;
+
+	gtk_tree_model_get (model, &iter,
+		COL_ACCOUNT_SETTINGS_POINTER, &settings,
+		-1);
+
+	accounts_dialog_update (dialog, settings);
+	selected_settings = accounts_dialog_model_get_selected_settings (dialog);
+
+	if (settings == selected_settings)
+		accounts_dialog_update_name_label (dialog, settings);
 }
 
 static void
 accounts_dialog_button_create_clicked_cb (GtkWidget             *button,
 					  EmpathyAccountsDialog  *dialog)
 {
-	EmpathyAccount *account;
+	EmpathyAccountSettings *settings;
 	gchar     *str;
 	TpConnectionManager *cm;
 	TpConnectionManagerProtocol *proto;
@@ -816,30 +958,23 @@ accounts_dialog_button_create_clicked_cb (GtkWidget             *button,
 	/* To translator: %s is the protocol name */
 	str = g_strdup_printf (_("New %s account"), proto->name);
 
-	account = empathy_account_manager_create (dialog->account_manager,
-		cm->name, proto->name, str);
+	settings = empathy_account_settings_new (cm->name, proto->name, str);
 
 	g_free (str);
-
-	if (account == NULL) {
-		/* We can't display an error to the user as MC doesn't give us
-		 * any clue about the reason of the failure... */
-		return;
-	}
 
 	if (tp_connection_manager_protocol_can_register (proto)) {
 		gboolean active;
 
 		active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register));
 		if (active) {
-			empathy_account_set_param_boolean (account, "register", TRUE);
+			empathy_account_settings_set_boolean (settings, "register", TRUE);
 		}
 	}
 
-	accounts_dialog_add_or_update_account (dialog, account);
-	accounts_dialog_model_set_selected (dialog, account);
+	accounts_dialog_add (dialog, settings);
+	accounts_dialog_model_set_selected (dialog, settings);
 
-	g_object_unref (account);
+	g_object_unref (settings);
 	g_object_unref (cm);
 }
 
@@ -847,10 +982,10 @@ static void
 accounts_dialog_button_back_clicked_cb (GtkWidget             *button,
 					EmpathyAccountsDialog  *dialog)
 {
-	EmpathyAccount *account;
+	EmpathyAccountSettings *settings;
 
-	account = accounts_dialog_model_get_selected (dialog);
-	accounts_dialog_update_account (dialog, account);
+	settings = accounts_dialog_model_get_selected_settings (dialog);
+	accounts_dialog_update (dialog, settings);
 }
 
 static void
@@ -921,9 +1056,9 @@ accounts_dialog_button_remove_clicked_cb (GtkWidget            *button,
 	GtkWidget *message_dialog;
 	gint       res;
 
-	account = accounts_dialog_model_get_selected (dialog);
+	account = accounts_dialog_model_get_selected_account (dialog);
 
-	if (!empathy_account_is_valid (account)) {
+	if (account == NULL || !empathy_account_is_valid (account)) {
 		accounts_dialog_model_remove_selected (dialog);
 		accounts_dialog_model_select_first (dialog);
 		return;
@@ -1127,13 +1262,19 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 	/* Add existing accounts */
 	accounts = empathy_account_manager_dup_accounts (dialog->account_manager);
 	for (l = accounts; l; l = l->next) {
-		accounts_dialog_add_or_update_account (dialog, l->data);
+		accounts_dialog_add_account (dialog, l->data);
 		g_object_unref (l->data);
 	}
 	g_list_free (accounts);
 
 	if (selected_account) {
-		accounts_dialog_model_set_selected (dialog, selected_account);
+		GtkTreeSelection *selection;
+		GtkTreeIter       iter;
+
+		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (dialog->treeview));
+		if (accounts_dialog_get_account_iter (dialog, selected_account, &iter)) {
+			gtk_tree_selection_select_iter (selection, &iter);
+		}
 	} else {
 		accounts_dialog_model_select_first (dialog);
 	}
