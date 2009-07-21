@@ -570,6 +570,7 @@ empathy_account_widget_salut_new (EmpathyAccountSettings *settings)
 			NULL);
 
 	empathy_account_widget_set_default_focus (gui, "entry_nickname");
+	empathy_account_widget_add_apply_button (settings, widget);
 
 	return empathy_builder_unref_and_keep_widget (gui, widget);
 }
