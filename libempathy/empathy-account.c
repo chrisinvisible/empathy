@@ -233,8 +233,14 @@ empathy_account_update (EmpathyAccount *account, GHashTable *properties)
       g_strdup (tp_asv_get_string (properties, "DisplayName"));
 
   if (g_hash_table_lookup (properties, "Enabled") != NULL)
-    empathy_account_set_enabled (account,
-      tp_asv_get_boolean (properties, "Enabled", NULL));
+    {
+      gboolean enabled = tp_asv_get_boolean (properties, "Enabled", NULL);
+      if (priv->enabled != enabled)
+        {
+          priv->enabled = enabled;
+          g_object_notify (G_OBJECT (account), "enabled");
+        }
+    }
 
   if (g_hash_table_lookup (properties, "Valid") != NULL)
     priv->valid = tp_asv_get_boolean (properties, "Valid", NULL);
@@ -326,6 +332,9 @@ empathy_account_got_all_cb (TpProxy *proxy,
     GObject *weak_object)
 {
   EmpathyAccount *account = EMPATHY_ACCOUNT (weak_object);
+
+  DEBUG ("Got initial set of properties for %s",
+    empathy_account_get_unique_name (account));
 
   if (error != NULL)
     {
@@ -780,12 +789,25 @@ empathy_account_set_enabled (EmpathyAccount *account,
     gboolean enabled)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
+  GValue value = {0, };
 
   if (priv->enabled == enabled)
     return;
 
-  priv->enabled = enabled;
-  g_object_notify (G_OBJECT (account), "enabled");
+  g_value_init (&value, G_TYPE_BOOLEAN);
+  g_value_set_boolean (&value, enabled);
+
+  tp_cli_dbus_properties_call_set (TP_PROXY (priv->account),
+    -1,
+    TP_IFACE_ACCOUNT,
+    "Enabled",
+    &value,
+    NULL,
+    NULL,
+    NULL,
+    NULL);
+
+  g_value_unset (&value);
 }
 
 static void
