@@ -709,7 +709,7 @@ dispatcher_connection_new_channel_with_properties (
   if (!valid)
     {
       g_message ("%s had an invalid Requested property", object_path);
-      return;
+      requested = FALSE;
     }
 
   dispatcher_connection_new_channel (dispatcher, connection,
