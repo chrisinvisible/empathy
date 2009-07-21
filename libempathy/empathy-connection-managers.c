@@ -67,15 +67,14 @@ struct _EmpathyConnectionManagersPriv
   TpDBusDaemon *dbus;
 };
 
-#define EMPATHY_CONNECTION_MANAGERS_GET_PRIVATE(o) \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-  EMPATHY_TYPE_CONNECTION_MANAGERS, EmpathyConnectionManagersPriv))
-
 static void
 empathy_connection_managers_init (EmpathyConnectionManagers *obj)
 {
   EmpathyConnectionManagersPriv *priv =
-      EMPATHY_CONNECTION_MANAGERS_GET_PRIVATE (obj);
+    G_TYPE_INSTANCE_GET_PRIVATE ((obj), \
+      EMPATHY_TYPE_CONNECTION_MANAGERS, EmpathyConnectionManagersPriv);
+
+  obj->priv = priv;
 
   priv->dbus = tp_dbus_daemon_dup (NULL);
   g_assert (priv->dbus != NULL);
