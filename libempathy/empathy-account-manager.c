@@ -221,6 +221,20 @@ signal:
 }
 
 static void
+emp_account_removed_cb (EmpathyAccount *account, gpointer user_data)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  g_object_ref (account);
+  g_hash_table_remove (priv->accounts,
+    empathy_account_get_unique_name (account));
+
+  g_signal_emit (manager, signals[ACCOUNT_DELETED], 0, account);
+  g_object_unref (account);
+}
+
+static void
 empathy_account_manager_check_ready (EmpathyAccountManager *manager)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
@@ -271,6 +285,9 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
 
   g_signal_connect (account, "presence-changed",
     G_CALLBACK (emp_account_presence_changed_cb), manager);
+
+  g_signal_connect (account, "removed",
+    G_CALLBACK (emp_account_removed_cb), manager);
 
   empathy_account_manager_check_ready (manager);
 }

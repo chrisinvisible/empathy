@@ -42,6 +42,7 @@
 enum {
   STATUS_CHANGED,
   PRESENCE_CHANGED,
+  REMOVED,
   LAST_SIGNAL
 };
 
@@ -84,6 +85,7 @@ struct _EmpathyAccountPriv
   gboolean enabled;
   gboolean valid;
   gboolean ready;
+  gboolean removed;
   /* Timestamp when the connection got connected in seconds since the epoch */
   glong connect_time;
 
@@ -325,6 +327,22 @@ empathy_account_properties_changed (TpAccount *proxy,
 }
 
 static void
+empathy_account_removed_cb (TpAccount *proxy,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyAccount *account = EMPATHY_ACCOUNT (weak_object);
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  if (priv->removed)
+    return;
+
+  priv->removed = TRUE;
+
+  g_signal_emit (account, signals[REMOVED], 0);
+}
+
+static void
 empathy_account_got_all_cb (TpProxy *proxy,
     GHashTable *properties,
     const GError *error,
@@ -421,12 +439,30 @@ empathy_account_parse_unique_name (const gchar *bus_name,
 }
 
 static void
+account_invalidated_cb (TpProxy *proxy, guint domain, gint code,
+  gchar *message, gpointer user_data)
+{
+  EmpathyAccount *account = EMPATHY_ACCOUNT (user_data);
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  if (priv->removed)
+    return;
+
+  priv->removed = TRUE;
+
+  g_signal_emit (account, signals[REMOVED], 0);
+}
+
+static void
 empathy_account_constructed (GObject *object)
 {
   EmpathyAccount *account = EMPATHY_ACCOUNT (object);
   EmpathyAccountPriv *priv = GET_PRIV (account);
 
   priv->account = tp_account_new (priv->dbus, priv->unique_name, NULL);
+
+  g_signal_connect (priv->account, "invalidated",
+    G_CALLBACK (account_invalidated_cb), object);
 
   empathy_account_parse_unique_name (priv->unique_name,
     &(priv->proto_name), &(priv->cm_name));
@@ -435,6 +471,10 @@ empathy_account_constructed (GObject *object)
 
   tp_cli_account_connect_to_account_property_changed (priv->account,
     empathy_account_properties_changed,
+    NULL, NULL, object, NULL);
+
+  tp_cli_account_connect_to_removed (priv->account,
+    empathy_account_removed_cb,
     NULL, NULL, object, NULL);
 
   tp_cli_dbus_properties_call_get_all (priv->account, -1,
@@ -558,6 +598,13 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
     0, NULL, NULL,
     _empathy_marshal_VOID__UINT_STRING_STRING,
     G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
+
+  signals[REMOVED] = g_signal_new ("removed",
+    G_TYPE_FROM_CLASS (object_class),
+    G_SIGNAL_RUN_LAST,
+    0, NULL, NULL,
+    g_cclosure_marshal_VOID__VOID,
+    G_TYPE_NONE, 0);
 }
 
 void
