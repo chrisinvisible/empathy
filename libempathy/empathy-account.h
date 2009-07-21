@@ -68,21 +68,6 @@ void empathy_account_set_enabled (EmpathyAccount *account,
   gboolean enabled);
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
 
-void empathy_account_unset_param (EmpathyAccount *account, const gchar *param);
-const gchar *empathy_account_get_param_string (EmpathyAccount *account,
-    const gchar *param);
-gint empathy_account_get_param_int (EmpathyAccount *account,
-    const gchar *param);
-gboolean empathy_account_get_param_boolean (EmpathyAccount *account,
-    const gchar *param);
-
-void empathy_account_set_param_string (EmpathyAccount *account,
-    const gchar *param, const gchar *value);
-void empathy_account_set_param_int (EmpathyAccount *account,
-    const gchar *param, gint value);
-void empathy_account_set_param_boolean (EmpathyAccount *account,
-    const gchar *param, gboolean value);
-
 gboolean empathy_account_is_valid (EmpathyAccount *account);
 gboolean empathy_account_is_ready (EmpathyAccount *account);
 
@@ -94,6 +79,8 @@ EmpathyAccount *empathy_account_new (TpDBusDaemon *bus_daemon,
 
 void empathy_account_request_presence (EmpathyAccount *account,
   TpConnectionPresenceType type, const gchar *status, const gchar *message);
+
+const GHashTable *empathy_account_get_parameters (EmpathyAccount *account);
 
 
 G_END_DECLS

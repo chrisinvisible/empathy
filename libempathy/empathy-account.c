@@ -653,6 +653,14 @@ empathy_account_get_icon_name (EmpathyAccount *account)
   return priv->icon_name;
 }
 
+const GHashTable *
+empathy_account_get_parameters (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  return priv->parameters;
+}
+
 gboolean
 empathy_account_is_enabled (EmpathyAccount *account)
 {
@@ -661,71 +669,12 @@ empathy_account_is_enabled (EmpathyAccount *account)
   return priv->enabled;
 }
 
-void
-empathy_account_unset_param (EmpathyAccount *account, const gchar *param)
-{
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
-
-  //mc_account_unset_param (priv->mc_account, param);
-}
-
-const gchar *
-empathy_account_get_param_string (EmpathyAccount *account, const gchar *param)
-{
-  EmpathyAccountPriv *priv = GET_PRIV (account);
-
-  return tp_asv_get_string (priv->parameters, param);
-}
-
-gint
-empathy_account_get_param_int (EmpathyAccount *account, const gchar *param)
-{
-  EmpathyAccountPriv *priv = GET_PRIV (account);
-
-  return tp_asv_get_int32 (priv->parameters, param, NULL);
-}
-
 gboolean
-empathy_account_get_param_boolean (EmpathyAccount *account, const gchar *param)
+empathy_account_is_ready (EmpathyAccount *account)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
 
-  return tp_asv_get_boolean (priv->parameters, param, NULL);
-}
-
-void
-empathy_account_set_param_string (EmpathyAccount *account,
-  const gchar *param,
-  const gchar *value)
-{
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
-  //mc_account_set_param_string (priv->mc_account, param, value);
-}
-
-void
-empathy_account_set_param_int (EmpathyAccount *account,
-  const gchar *param,
-  gint value)
-{
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
-  //mc_account_set_param_int (priv->mc_account, param, value);
-}
-
-void
-empathy_account_set_param_boolean (EmpathyAccount *account,
-  const gchar *param,
-  gboolean value)
-{
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
-  //mc_account_set_param_boolean (priv->mc_account, param, value);
-}
-
-void
-empathy_account_set_display_name (EmpathyAccount *account,
-    const gchar *display_name)
-{
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
-  //mc_account_set_display_name (priv->mc_account, display_name);
+  return priv->ready;
 }
 
 
