@@ -423,12 +423,13 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
   EmpathyAccountWidgetIrc *settings;
   gchar *dir, *user_file_with_path, *global_file_with_path;
   GtkBuilder *gui;
+  GtkWidget *widget;
   GtkListStore *store;
   GtkCellRenderer *renderer;
   gchar *filename;
 
   settings = g_slice_new0 (EmpathyAccountWidgetIrc);
-  settings->settings = g_object_ref (settings);
+  settings->settings = g_object_ref (account_settings);
 
   dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
   g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
@@ -454,7 +455,8 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
   filename = empathy_file_lookup ("empathy-account-widget-irc.ui",
       "libempathy-gtk");
   gui = empathy_builder_get_file (filename,
-      "vbox_irc_settings", &settings->vbox_settings,
+      "vbox_irc", &widget,
+      "table_irc_settings", &settings->vbox_settings,
       "combobox_network", &settings->combobox_network,
       NULL);
   g_free (filename);
@@ -489,7 +491,7 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
       NULL);
 
   empathy_builder_connect (gui, settings,
-      "vbox_irc_settings", "destroy", account_widget_irc_destroy_cb,
+      "table_irc_settings", "destroy", account_widget_irc_destroy_cb,
       "button_network", "clicked",
           account_widget_irc_button_edit_network_clicked_cb,
       "button_add_network", "clicked",
@@ -501,8 +503,7 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
       NULL);
 
   empathy_account_widget_set_default_focus (gui, "entry_nick");
-  empathy_account_widget_add_apply_button (account_settings,
-    settings->vbox_settings);
+  empathy_account_widget_add_apply_button (account_settings, widget);
 
-  return empathy_builder_unref_and_keep_widget (gui, settings->vbox_settings);
+  return empathy_builder_unref_and_keep_widget (gui, widget);
 }
