@@ -65,6 +65,7 @@ copy_xml_file (const gchar *orig,
   g_free (buffer);
 }
 
+#if 0
 EmpathyAccount *
 get_test_account (void)
 {
@@ -166,3 +167,4 @@ destroy_test_account (EmpathyAccount *account)
   g_object_unref (account);
   g_object_unref (manager);
 }
+#endif
