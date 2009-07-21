@@ -360,6 +360,10 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser);
 	account = empathy_account_chooser_dup_account (account_chooser);
+
+	if (account == NULL)
+		return;
+
 	protocol = empathy_account_get_protocol (account);
 
 	gtk_entry_set_text (GTK_ENTRY (dialog->entry_server), "");
