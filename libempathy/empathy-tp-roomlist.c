@@ -518,6 +518,10 @@ empathy_tp_roomlist_stop (EmpathyTpRoomlist *list)
 	EmpathyTpRoomlistPriv *priv = GET_PRIV (list);
 
 	g_return_if_fail (EMPATHY_IS_TP_ROOMLIST (list));
+
+	if (priv->channel == NULL)
+		return;
+
 	g_return_if_fail (TP_IS_CHANNEL (priv->channel));
 
 	tp_cli_channel_type_room_list_call_stop_listing (priv->channel, -1,
