@@ -716,10 +716,9 @@ empathy_account_get_display_name (EmpathyAccount *account)
 gboolean
 empathy_account_is_valid (EmpathyAccount *account)
 {
-  //EmpathyAccountPriv *priv = GET_PRIV (account);
+  EmpathyAccountPriv *priv = GET_PRIV (account);
 
-  /* FIXME */
-  return FALSE;
+  return priv->valid;
 }
 
 const gchar *
