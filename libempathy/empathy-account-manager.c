@@ -282,6 +282,10 @@ account_manager_add_account (EmpathyAccountManager *manager,
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   EmpathyAccount *account;
 
+  account = g_hash_table_lookup (priv->accounts, path);
+  if (account != NULL)
+    return account;
+
   account = empathy_account_new (priv->dbus, path);
   g_hash_table_insert (priv->accounts, g_strdup (path), account);
 
@@ -322,6 +326,21 @@ account_manager_got_all_cb (TpProxy *proxy,
 }
 
 static void
+account_validity_changed_cb (TpAccountManager *proxy,
+    const gchar *path,
+    gboolean valid,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
+
+  if (!valid)
+    return;
+
+  account_manager_add_account (manager, path);
+}
+
+static void
 account_manager_name_owner_cb (TpDBusDaemon *proxy,
     const gchar *name,
     const gchar *new_owner,
@@ -334,6 +353,15 @@ account_manager_name_owner_cb (TpDBusDaemon *proxy,
     account_manager_name_owner_cb, user_data);
 
   priv->tp_manager = tp_account_manager_new (priv->dbus);
+
+  tp_cli_account_manager_connect_to_account_validity_changed (
+      priv->tp_manager,
+      account_validity_changed_cb,
+      NULL,
+      NULL,
+      G_OBJECT (manager),
+      NULL);
+
   tp_cli_dbus_properties_call_get_all (priv->tp_manager, -1,
     TP_IFACE_ACCOUNT_MANAGER,
     account_manager_got_all_cb,
@@ -795,8 +823,11 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
     }
 
   account = account_manager_add_account (manager, account_path);
-  g_signal_connect (account, "notify::ready",
-    G_CALLBACK (empathy_account_manager_created_ready_cb), result);
+  if (empathy_account_is_ready (account))
+    empathy_account_manager_created_ready_cb (account, NULL, result);
+  else
+    g_signal_connect (account, "notify::ready",
+      G_CALLBACK (empathy_account_manager_created_ready_cb), result);
 }
 
 void
