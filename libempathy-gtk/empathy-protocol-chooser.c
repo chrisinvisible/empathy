@@ -137,8 +137,8 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
 
       icon_name = g_strdup_printf ("im-%s", proto->name);
 
-      if (!tp_strdiff (cm->name, "haze") && !tp_strdiff (proto->name, "msn"))
-        display_name = g_strdup_printf ("msn (Haze)");
+      if (!tp_strdiff (cm->name, "haze"))
+        display_name = g_strdup_printf ("%s (Haze)", proto->name);
       else
         display_name = g_strdup (proto->name);
 
