@@ -345,6 +345,41 @@ empathy_account_got_all_cb (TpProxy *proxy,
   empathy_account_update (account, properties);
 }
 
+static gchar *
+empathy_account_unescape_protocol (const gchar *protocol, gssize len)
+{
+  gchar  *result, *escape;
+  /* Bad implementation might accidentally use tp_escape_as_identifier,
+   * which escapes - in the wrong way... */
+  if ((escape = g_strstr_len (protocol, len, "_2d")) != NULL)
+    {
+      GString *str;
+      const gchar *input;
+
+      str = g_string_new ("");
+      input = protocol;
+      do {
+        g_string_append_len (str, input, escape - input);
+        g_string_append_c (str, '-');
+
+        len -= escape - input + 3;
+        input = escape + 3;
+      } while ((escape = g_strstr_len (input, len, "_2d")) != NULL);
+
+      g_string_append_len (str, input, len);
+
+      result = g_string_free (str, FALSE);
+    }
+  else
+    {
+      result = g_strndup (protocol, len);
+    }
+
+  g_strdelimit (result, "_", '-');
+
+  return result;
+}
+
 static gboolean
 empathy_account_parse_unique_name (const gchar *bus_name,
   gchar **protocol, gchar **manager)
@@ -375,7 +410,9 @@ empathy_account_parse_unique_name (const gchar *bus_name,
     return FALSE;
 
   if (protocol != NULL)
-    *protocol = g_strndup (proto, proto_end - proto);
+    {
+      *protocol = empathy_account_unescape_protocol (proto, proto_end - proto);
+    }
 
   if (manager != NULL)
     *manager = g_strndup (cm, cm_end - cm);
