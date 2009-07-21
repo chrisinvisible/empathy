@@ -79,6 +79,11 @@ void empathy_account_update_settings_async (EmpathyAccount *account,
 gboolean empathy_account_update_settings_finish (EmpathyAccount *account,
   GAsyncResult *result, GError **error);
 
+void empathy_account_remove_async (EmpathyAccount *account,
+  GAsyncReadyCallback callback, gpointer user_data);
+gboolean empathy_account_remove_finish (EmpathyAccount *account,
+  GAsyncResult *result, GError **error);
+
 void empathy_account_set_display_name (EmpathyAccount *account,
     const gchar *display_name);
 

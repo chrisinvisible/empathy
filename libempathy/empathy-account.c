@@ -987,3 +987,51 @@ empathy_account_update_settings_finish (EmpathyAccount *account,
 
   return TRUE;
 }
+
+static void
+empathy_account_remove_cb (TpAccount *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
+
+  if (error != NULL)
+    {
+      g_simple_async_result_set_from_error (result, (GError *) error);
+    }
+
+  g_simple_async_result_complete (result);
+  g_object_unref (G_OBJECT (result));
+}
+
+void
+empathy_account_remove_async (EmpathyAccount *account,
+  GAsyncReadyCallback callback, gpointer user_data)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+  GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (account),
+      callback, user_data, empathy_account_remove_finish);
+
+  tp_cli_account_call_remove (priv->account,
+      -1,
+      empathy_account_remove_cb,
+      result,
+      NULL,
+      G_OBJECT (account));
+}
+
+gboolean
+empathy_account_remove_finish (EmpathyAccount *account,
+  GAsyncResult *result, GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+      error))
+    return FALSE;
+
+  g_return_val_if_fail (g_simple_async_result_is_valid (result,
+    G_OBJECT (account), empathy_account_update_settings_finish), FALSE);
+
+  return TRUE;
+}
+
