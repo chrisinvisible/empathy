@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-17 10:59+0200\n"
-"PO-Revision-Date: 2009-07-17 11:01+0100\n"
+"POT-Creation-Date: 2009-07-22 23:53+0200\n"
+"PO-Revision-Date: 2009-07-22 23:53+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -758,7 +758,7 @@ msgstr "Infoga smilis"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1032
-#: ../libempathy-gtk/empathy-ui-utils.c:1475
+#: ../libempathy-gtk/empathy-ui-utils.c:1480
 msgid "_Send"
 msgstr "_Skicka"
 
@@ -832,13 +832,13 @@ msgstr "Ämne:"
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:262
+#: ../libempathy-gtk/empathy-theme-adium.c:264
 msgid "_Copy Link Address"
 msgstr "_Kopiera länkadress"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:270
+#: ../libempathy-gtk/empathy-theme-adium.c:272
 msgid "_Open Link"
 msgstr "_Öppna länk"
 
@@ -893,48 +893,52 @@ msgstr "Vill du verkligen ta bort kontakten \"%s\"?"
 msgid "Removing contact"
 msgstr "Tar bort kontakt"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:187
+#: ../libempathy-gtk/empathy-contact-menu.c:195
 #: ../src/empathy-main-window.ui.h:11
 msgid "_Add Contact..."
 msgstr "_Lägg till kontakt..."
 
-#: ../libempathy-gtk/empathy-contact-menu.c:214
+#: ../libempathy-gtk/empathy-contact-menu.c:222
 #: ../src/empathy-main-window.ui.h:12
 msgid "_Chat"
 msgstr "_Chatt"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:245
+#: ../libempathy-gtk/empathy-contact-menu.c:253
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Ljudsamtal"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:277
+#: ../libempathy-gtk/empathy-contact-menu.c:285
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Videosamtal"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:316
+#: ../libempathy-gtk/empathy-contact-menu.c:324
 msgid "_View Previous Conversations"
 msgstr "_Visa tidigare samtal"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:338
+#: ../libempathy-gtk/empathy-contact-menu.c:346
 msgid "Send file"
 msgstr "Skicka fil"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:366
+#: ../libempathy-gtk/empathy-contact-menu.c:369
+msgid "Share my desktop"
+msgstr "Dela ut mitt skrivbord"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:397
 msgid "Infor_mation"
 msgstr "Infor_mation"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:410
+#: ../libempathy-gtk/empathy-contact-menu.c:441
 #: ../src/empathy-main-window.ui.h:16
 msgid "_Edit"
 msgstr "R_edigera"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:470
+#: ../libempathy-gtk/empathy-contact-menu.c:501
 msgid "Inviting to this room"
 msgstr "Bjuder in till detta rum"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:501
+#: ../libempathy-gtk/empathy-contact-menu.c:532
 msgid "_Invite to chatroom"
 msgstr "_Bjud in till chattrum"
 
@@ -1317,15 +1321,15 @@ msgstr "Rent"
 msgid "Blue"
 msgstr "Blått"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1377
+#: ../libempathy-gtk/empathy-ui-utils.c:1382
 msgid "Unable to open URI"
 msgstr "Kunde inte öppna uri"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1467
+#: ../libempathy-gtk/empathy-ui-utils.c:1472
 msgid "Select a file"
 msgstr "Välj en fil"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1525
+#: ../libempathy-gtk/empathy-ui-utils.c:1530
 msgid "Select a destination"
 msgstr "Välj ett mål"
 
@@ -1548,19 +1552,19 @@ msgstr "Närvaro"
 msgid "Set your own presence"
 msgstr "Ställ in din egna närvaro"
 
-#: ../src/empathy.c:506
+#: ../src/empathy.c:567
 msgid "Don't connect on startup"
 msgstr "Anslut inte vid uppstart"
 
-#: ../src/empathy.c:510
+#: ../src/empathy.c:571
 msgid "Don't show the contact list on startup"
 msgstr "Visa inte kontaktlistan vid uppstart"
 
-#: ../src/empathy.c:514
+#: ../src/empathy.c:575
 msgid "Show the accounts dialog"
 msgstr "Visa kontodialogrutan"
 
-#: ../src/empathy.c:526
+#: ../src/empathy.c:587
 msgid "- Empathy Instant Messenger"
 msgstr "- Empathy snabbmeddelandeklient"
 
