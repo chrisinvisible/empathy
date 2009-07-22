@@ -9,15 +9,15 @@ int
 main (int argc,
     char **argv)
 {
-  GtkWidget *window;
-  GtkWidget *chooser;
+  GtkWidget *window, *c;
 
   gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  chooser = empathy_protocol_chooser_new ();
-  gtk_container_add (GTK_CONTAINER (window), chooser);
+  c = empathy_protocol_chooser_new ();
+
+  gtk_container_add (GTK_CONTAINER (window), c);
 
   /*  gtk_window_set_default_size (GTK_WINDOW (window), 150, -1);*/
   gtk_widget_show_all (window);

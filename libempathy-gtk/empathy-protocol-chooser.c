@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 
 #include <libempathy/empathy-utils.h>
+#include <libempathy/empathy-connection-managers.h>
 
 #include "empathy-protocol-chooser.h"
 #include "empathy-ui-utils.h"
@@ -59,6 +60,7 @@ typedef struct
 {
   GtkListStore *store;
   gboolean dispose_run;
+  EmpathyConnectionManagers *cms;
 
 } EmpathyProtocolChooserPriv;
 
@@ -154,27 +156,26 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
     }
 }
 
+static void
+protocol_chooser_add_cms_list (EmpathyProtocolChooser *protocol_chooser,
+    GList *cms)
+{
+  GList *l;
+
+  for (l = cms; l != NULL; l = l->next)
+    protocol_choosers_add_cm (protocol_chooser, l->data);
+
+  gtk_combo_box_set_active (GTK_COMBO_BOX (protocol_chooser), 0);
+}
 
 static void
-protocol_choosers_cms_listed (TpConnectionManager * const *cms,
-    gsize n_cms,
-    const GError *error,
-    gpointer user_data,
-    GObject *weak_object)
+protocol_chooser_cms_ready_cb (EmpathyConnectionManagers *cms,
+    GParamSpec *pspec,
+    EmpathyProtocolChooser *protocol_chooser)
 {
-  TpConnectionManager * const *iter;
-
-  if (error !=NULL)
-    {
-      DEBUG ("Failed to get connection managers: %s", error->message);
-      return;
-    }
-
-  for (iter = cms ; iter != NULL && *iter != NULL; iter++)
-    protocol_choosers_add_cm (EMPATHY_PROTOCOL_CHOOSER (weak_object),
-      *iter);
-
-  gtk_combo_box_set_active (GTK_COMBO_BOX (weak_object), 0);
+  if (empathy_connection_managers_is_ready (cms))
+    protocol_chooser_add_cms_list
+        (protocol_chooser, empathy_connection_managers_get_cms (cms));
 }
 
 static void
@@ -182,9 +183,7 @@ protocol_chooser_constructed (GObject *object)
 {
   EmpathyProtocolChooser *protocol_chooser;
   EmpathyProtocolChooserPriv *priv;
-
   GtkCellRenderer *renderer;
-  TpDBusDaemon *dbus;
 
   priv = GET_PRIV (object);
   protocol_chooser = EMPATHY_PROTOCOL_CHOOSER (object);
@@ -212,11 +211,6 @@ protocol_chooser_constructed (GObject *object)
       "text", COL_LABEL,
       NULL);
 
-  dbus = tp_dbus_daemon_dup (NULL);
-  tp_list_connection_managers (dbus, protocol_choosers_cms_listed,
-    NULL, NULL, object);
-  g_object_unref (dbus);
-
   /* Set the protocol sort function */
   gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
       COL_PROTOCOL,
@@ -225,6 +219,13 @@ protocol_chooser_constructed (GObject *object)
   gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (priv->store),
       COL_PROTOCOL,
       GTK_SORT_ASCENDING);
+
+  if (empathy_connection_managers_is_ready (priv->cms))
+    protocol_chooser_add_cms_list (protocol_chooser,
+        empathy_connection_managers_get_cms (priv->cms));
+  else
+    g_signal_connect (priv->cms, "notify::ready",
+        G_CALLBACK (protocol_chooser_cms_ready_cb), protocol_chooser);
 
   if (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed)
     G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed (object);
@@ -238,6 +239,7 @@ empathy_protocol_chooser_init (EmpathyProtocolChooser *protocol_chooser)
         EMPATHY_TYPE_PROTOCOL_CHOOSER, EmpathyProtocolChooserPriv);
 
   priv->dispose_run = FALSE;
+  priv->cms = empathy_connection_managers_dup_singleton ();
 
   protocol_chooser->priv = priv;
 }
@@ -259,6 +261,12 @@ protocol_chooser_dispose (GObject *object)
       priv->store = NULL;
     }
 
+  if (priv->cms)
+    {
+      g_object_unref (priv->cms);
+      priv->cms = NULL;
+    }
+
   (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->dispose) (object);
 }
 
@@ -272,6 +280,8 @@ empathy_protocol_chooser_class_init (EmpathyProtocolChooserClass *klass)
 
   g_type_class_add_private (object_class, sizeof (EmpathyProtocolChooserPriv));
 }
+
+/* public methods */
 
 /**
  * empathy_protocol_chooser_get_selected_protocol:
@@ -308,30 +318,13 @@ TpConnectionManager *empathy_protocol_chooser_dup_selected (
 }
 
 /**
- * empathy_protocol_chooser_n_protocols:
- * @protocol_chooser: an #EmpathyProtocolChooser
- *
- * Returns the number of protocols in @protocol_chooser.
- *
- * Return value: the number of protocols in @protocol_chooser
- */
-gint
-empathy_protocol_chooser_n_protocols (EmpathyProtocolChooser *protocol_chooser)
-{
-  EmpathyProtocolChooserPriv *priv = GET_PRIV (protocol_chooser);
-
-  g_return_val_if_fail (EMPATHY_IS_PROTOCOL_CHOOSER (protocol_chooser), 0);
-
-  return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->store), NULL);
-}
-
-/**
  * empathy_protocol_chooser_new:
  *
- * Creates a new #EmpathyProtocolChooser widget.
+ * Triggers the creation of a new #EmpathyProtocolChooser.
  *
  * Return value: a new #EmpathyProtocolChooser widget
  */
+
 GtkWidget *
 empathy_protocol_chooser_new (void)
 {
