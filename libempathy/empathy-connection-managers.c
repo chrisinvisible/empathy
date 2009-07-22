@@ -250,12 +250,14 @@ empathy_connection_managers_listed_cb (TpConnectionManager * const *cms,
     }
 
 out:
+  g_object_ref (weak_object);
   if (!priv->ready)
     {
       priv->ready = TRUE;
       g_object_notify (weak_object, "ready");
     }
   g_signal_emit (weak_object, signals[UPDATED], 0);
+  g_object_unref (weak_object);
 }
 
 void
