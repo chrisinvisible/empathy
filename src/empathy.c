@@ -698,7 +698,7 @@ main (int argc, char *argv[])
 		empathy_idle_set_state (idle, MC_PRESENCE_AVAILABLE);
 	}
 
-	
+
 	migrate_config_to_xdg_dir ();
 	create_salut_account ();
 
