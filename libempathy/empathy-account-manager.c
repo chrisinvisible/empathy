@@ -104,8 +104,16 @@ emp_account_enabled_cb (EmpathyAccount *account,
   GParamSpec *spec,
   gpointer manager)
 {
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  
   if (empathy_account_is_enabled (account))
-    g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
+    {
+      g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
+
+      /* set the desired global presence on the account */
+      empathy_account_request_presence (account, priv->desired_presence,
+          priv->desired_status, priv->desired_status_message);
+    }
   else
     g_signal_emit (manager, signals[ACCOUNT_DISABLED], 0, account);
 }
@@ -904,7 +912,6 @@ empathy_account_manager_create_account_finish (
   EmpathyAccountManager *manager, GAsyncResult *result, GError **error)
 {
   EmpathyAccount *retval;
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
 
   if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
       error))
@@ -915,12 +922,6 @@ empathy_account_manager_create_account_finish (
 
   retval = EMPATHY_ACCOUNT (g_simple_async_result_get_op_res_gpointer (
     G_SIMPLE_ASYNC_RESULT (result)));
-
-  /* if we have an account, it's ready, as we waited for it.
-   * request the global presence now.
-   */
-  empathy_account_request_presence (retval, priv->desired_presence,
-      priv->desired_status, priv->desired_status_message);
 
   return retval;
 }
