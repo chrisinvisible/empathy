@@ -66,6 +66,8 @@ void empathy_connection_managers_update (EmpathyConnectionManagers *managers);
 
 GList * empathy_connection_managers_get_cms (
     EmpathyConnectionManagers *managers);
+guint empathy_connection_managers_get_cms_num
+    (EmpathyConnectionManagers *managers);
 
 TpConnectionManager *empathy_connection_managers_get_cm (
   EmpathyConnectionManagers *managers, const gchar *cm);

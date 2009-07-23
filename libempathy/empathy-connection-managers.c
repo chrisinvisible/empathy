@@ -295,3 +295,15 @@ empathy_connection_managers_get_cm (EmpathyConnectionManagers *managers,
 
   return NULL;
 }
+
+guint
+empathy_connection_managers_get_cms_num (EmpathyConnectionManagers *managers)
+{
+  EmpathyConnectionManagersPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONNECTION_MANAGERS (managers), 0);
+
+  priv = GET_PRIV (managers);
+
+  return g_list_length (priv->cms);
+}
