@@ -1262,12 +1262,6 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 }
 
 static void
-do_finalize (GObject *obj)
-{
-
-}
-
-static void
 do_dispose (GObject *obj)
 {
 	EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
@@ -1306,6 +1300,8 @@ do_dispose (GObject *obj)
 		g_object_unref (priv->cms);
 		priv->cms = NULL;
 	}
+
+	G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->dispose (obj);
 }
 
 static GObject *
@@ -1457,7 +1453,6 @@ empathy_accounts_dialog_class_init (EmpathyAccountsDialogClass *klass)
 	GParamSpec *param_spec;
 
 	oclass->constructor = do_constructor;
-	oclass->finalize = do_finalize;
 	oclass->dispose = do_dispose;
 	oclass->constructed = do_constructed;
 	oclass->set_property = do_set_property;
