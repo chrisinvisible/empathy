@@ -1165,7 +1165,29 @@ accounts_dialog_response_cb (GtkWidget            *widget,
 			     gint                  response,
 			     EmpathyAccountsDialog *dialog)
 {
+	GList *accounts, *l;
+	EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
 	if (response == GTK_RESPONSE_CLOSE) {
+		/* Delete incomplete accounts */
+		accounts = empathy_account_manager_dup_accounts
+			(priv->account_manager);
+		for (l = accounts; l; l = l->next) {
+			EmpathyAccount *account;
+
+			account = l->data;
+			if (!empathy_account_is_valid (account)) {
+				/* FIXME: Warn the user the account is not
+				 * complete and is going to be removed.
+				 */
+				empathy_account_manager_remove
+					(priv->account_manager, account);
+			}
+
+			g_object_unref (account);
+		}
+		g_list_free (accounts);
+
 		gtk_widget_destroy (widget);
 	}
 }
@@ -1250,7 +1272,6 @@ do_dispose (GObject *obj)
 {
 	EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
 	EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-	GList *accounts, *l;
 
 	/* Disconnect signals */
 	g_signal_handlers_disconnect_by_func (priv->account_manager,
@@ -1272,27 +1293,19 @@ do_dispose (GObject *obj)
 					      accounts_dialog_connection_changed_cb,
 					      dialog);
 
-	/* Delete incomplete accounts */
-	accounts = empathy_account_manager_dup_accounts (priv->account_manager);
-	for (l = accounts; l; l = l->next) {
-		EmpathyAccount *account;
-
-		account = l->data;
-		if (!empathy_account_is_valid (account)) {
-			/* FIXME: Warn the user the account is not complete
-			 *        and is going to be removed. */
-			empathy_account_manager_remove (priv->account_manager, account);
-		}
-
-		g_object_unref (account);
-	}
-	g_list_free (accounts);
-
 	if (priv->connecting_id) {
 		g_source_remove (priv->connecting_id);
 	}
 
-	g_object_unref (priv->account_manager);
+	if (priv->account_manager != NULL) {
+		g_object_unref (priv->account_manager);
+		priv->account_manager = NULL;
+	}
+
+	if (priv->cms != NULL) {
+		g_object_unref (priv->cms);
+		priv->cms = NULL;
+	}
 }
 
 static GObject *
