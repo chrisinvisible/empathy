@@ -1193,6 +1193,15 @@ accounts_dialog_response_cb (GtkWidget            *widget,
 }
 
 static void
+accounts_dialog_destroy_cb (GtkObject *obj,
+			    EmpathyAccountsDialog *dialog)
+{
+	DEBUG ("%p", obj);
+
+	g_object_unref (dialog);
+}
+
+static void
 accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
 			      GParamSpec *pspec,
 			      EmpathyAccountsDialog *dialog)
@@ -1233,6 +1242,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 
 	empathy_builder_connect (gui, dialog,
 			      "accounts_dialog", "response", accounts_dialog_response_cb,
+			      "accounts_dialog", "destroy", accounts_dialog_destroy_cb,
 			      "button_create", "clicked", accounts_dialog_button_create_clicked_cb,
 			      "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
 			      "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
