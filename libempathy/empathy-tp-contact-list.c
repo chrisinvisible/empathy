@@ -471,7 +471,7 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 	/* We refuse to send our presence to those contacts, remove from pendings */
 	for (i = 0; i < removed->len; i++) {
 		tp_contact_list_remove_handle (list, priv->pendings,
-			g_array_index (added, TpHandle, i));
+			g_array_index (removed, TpHandle, i));
 	}
 
 	/* Those contacts want our presence, auto accept those that are already
@@ -618,7 +618,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 	/* Those contacts refuse to send us their presence, remove from members. */
 	for (i = 0; i < removed->len; i++) {
 		tp_contact_list_remove_handle (list, priv->members,
-			g_array_index (added, TpHandle, i));
+			g_array_index (removed, TpHandle, i));
 	}
 
 	/* We want those contacts in our contact list but we don't get their
