@@ -1142,7 +1142,7 @@ accounts_dialog_button_remove_clicked_cb (GtkWidget            *button,
 	res = gtk_dialog_run (GTK_DIALOG (message_dialog));
 
 	if (res == GTK_RESPONSE_YES) {
-		empathy_account_manager_remove (priv->account_manager, account);
+		accounts_dialog_model_remove_selected (dialog);
 		accounts_dialog_model_select_first (dialog);
 	}
 	gtk_widget_destroy (message_dialog);
