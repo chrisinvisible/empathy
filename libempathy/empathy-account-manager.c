@@ -439,6 +439,12 @@ do_finalize (GObject *obj)
 
   g_hash_table_destroy (priv->accounts);
 
+  g_free (priv->global_status);
+  g_free (priv->global_status_message);
+
+  g_free (priv->desired_status);
+  g_free (priv->desired_status_message);
+
   G_OBJECT_CLASS (empathy_account_manager_parent_class)->finalize (obj);
 }
 
