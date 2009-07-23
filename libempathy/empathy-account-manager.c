@@ -55,6 +55,13 @@ typedef struct {
   TpConnectionPresenceType global_presence;
   gchar *global_status;
   gchar *global_status_message;
+
+  /* desired global presence, could be different
+   * from the actual global one.
+   */
+  TpConnectionPresenceType desired_presence;
+  gchar *desired_status;
+  gchar *desired_status_message;
 } EmpathyAccountManagerPriv;
 
 enum {
@@ -769,8 +776,6 @@ empathy_account_manager_request_global_presence (
   const gchar *status,
   const gchar *message)
 {
-  /* FIXME should remember requested presence and set it on new accounts
-     as well */
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   GHashTableIter iter;
   gpointer value;
@@ -785,6 +790,23 @@ empathy_account_manager_request_global_presence (
 
       if (ready)
         empathy_account_request_presence (account, type, status, message);
+    }
+
+  /* save the requested global presence, to use it in case we create
+   * new accounts.
+   */
+  priv->desired_presence = type;
+
+  if (tp_strdiff (priv->desired_status, status))
+    {
+      g_free (priv->desired_status);
+      priv->desired_status = g_strdup (status);
+    }
+
+  if (tp_strdiff (priv->desired_status_message, message))
+    {
+      g_free (priv->desired_status_message);
+      priv->desired_status_message = g_strdup (message);
     }
 }
 
@@ -875,6 +897,9 @@ EmpathyAccount *
 empathy_account_manager_create_account_finish (
   EmpathyAccountManager *manager, GAsyncResult *result, GError **error)
 {
+  EmpathyAccount *retval;
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
   if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
       error))
     return NULL;
@@ -882,7 +907,15 @@ empathy_account_manager_create_account_finish (
   g_return_val_if_fail (g_simple_async_result_is_valid (result,
     G_OBJECT (manager), empathy_account_manager_create_account_finish), NULL);
 
-  return EMPATHY_ACCOUNT (g_simple_async_result_get_op_res_gpointer (
+  retval = EMPATHY_ACCOUNT (g_simple_async_result_get_op_res_gpointer (
     G_SIMPLE_ASYNC_RESULT (result)));
+
+  /* if we have an account, it's ready, as we waited for it.
+   * request the global presence now.
+   */
+  empathy_account_request_presence (retval, priv->desired_presence,
+      priv->desired_status, priv->desired_status_message);
+
+  return retval;
 }
 
