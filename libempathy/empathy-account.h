@@ -84,8 +84,11 @@ void empathy_account_remove_async (EmpathyAccount *account,
 gboolean empathy_account_remove_finish (EmpathyAccount *account,
   GAsyncResult *result, GError **error);
 
-void empathy_account_set_display_name (EmpathyAccount *account,
-    const gchar *display_name);
+void empathy_account_set_display_name_async (EmpathyAccount *account,
+    const gchar *display_name, GAsyncReadyCallback callback,
+    gpointer user_data);
+gboolean empathy_account_set_display_name_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error);
 
 EmpathyAccount *empathy_account_new (TpDBusDaemon *bus_daemon,
     const gchar *unique_name);

@@ -799,6 +799,26 @@ empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
   tp_asv_set_boolean (priv->parameters, param, value);
 }
 
+static void
+account_settings_display_name_set_cb (GObject *src,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+  EmpathyAccount *account = EMPATHY_ACCOUNT (src);
+  GSimpleAsyncResult *set_result = user_data;
+
+  empathy_account_set_display_name_finish (account, res, &error);
+
+  if (error != NULL)
+    {
+      g_simple_async_result_set_from_error (set_result, error);
+      g_error_free (error);
+    }
+
+  g_simple_async_result_complete (set_result);
+  g_object_unref (set_result);
+}
 
 void
 empathy_account_settings_set_display_name_async (
@@ -807,6 +827,26 @@ empathy_account_settings_set_display_name_async (
   GAsyncReadyCallback callback,
   gpointer user_data)
 {
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  GSimpleAsyncResult *result;
+
+  result = g_simple_async_result_new (G_OBJECT (settings),
+      callback, user_data, empathy_account_settings_set_display_name_finish);
+
+  if (priv->account == NULL)
+    {
+      if (priv->display_name != NULL)
+        g_free (priv->display_name);
+
+      priv->display_name = g_strdup (name);
+
+      g_simple_async_result_complete_in_idle (result);
+
+      return;
+    }
+
+  empathy_account_set_display_name_async (priv->account, name,
+      account_settings_display_name_set_cb, result);
 }
 
 gboolean
@@ -815,6 +855,12 @@ empathy_account_settings_set_display_name_finish (
   GAsyncResult *result,
   GError **error)
 {
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+      error))
+    return FALSE;
+
+  g_return_val_if_fail (g_simple_async_result_is_valid (result,
+    G_OBJECT (settings), empathy_account_settings_set_display_name_finish), FALSE);
 
   return TRUE;
 }

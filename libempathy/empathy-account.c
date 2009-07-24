@@ -32,6 +32,8 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
 
+#include <glib/gi18n-lib.h>
+
 #include "empathy-account.h"
 #include "empathy-utils.h"
 #include "empathy-marshal.h"
@@ -983,6 +985,63 @@ empathy_account_update_settings_finish (EmpathyAccount *account,
 
   g_return_val_if_fail (g_simple_async_result_is_valid (result,
     G_OBJECT (account), empathy_account_update_settings_finish), FALSE);
+
+  return TRUE;
+}
+
+static void
+account_display_name_set_cb (TpProxy *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  GSimpleAsyncResult *result = user_data;
+
+  if (error != NULL)
+    g_simple_async_result_set_from_error (result, (GError *) error);
+
+  g_simple_async_result_complete (result);
+  g_object_unref (result);
+}
+
+void
+empathy_account_set_display_name_async (EmpathyAccount *account,
+    const char *display_name,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
+{
+  GSimpleAsyncResult *result;
+  GValue value = {0, };
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  if (display_name == NULL)
+    {
+      g_simple_async_report_error_in_idle (G_OBJECT (account),
+          callback, user_data, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+          _("Can't set an empty display name"));
+      return;
+    }
+
+  result = g_simple_async_result_new (G_OBJECT (account), callback,
+      user_data, empathy_account_set_display_name_finish);
+
+  g_value_init (&value, G_TYPE_STRING);
+  g_value_set_string (&value, display_name);
+
+  tp_cli_dbus_properties_call_set (priv->account, -1, TP_IFACE_ACCOUNT,
+      "DisplayName", &value, account_display_name_set_cb, result, NULL,
+      G_OBJECT (account));
+}
+
+gboolean
+empathy_account_set_display_name_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error) ||
+      !g_simple_async_result_is_valid (result, G_OBJECT (account),
+          empathy_account_set_display_name_finish))
+    return FALSE;
 
   return TRUE;
 }
