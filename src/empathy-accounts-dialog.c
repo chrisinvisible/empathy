@@ -96,8 +96,8 @@ typedef struct {
 	EmpathyAccountManager *account_manager;
 	EmpathyConnectionManagers *cms;
 
-	EmpathyAccount *selected_account;
 	GtkWindow      *parent_window;
+	EmpathyAccount *initial_selection;
 } EmpathyAccountsDialogPriv;
 
 enum {
@@ -110,8 +110,7 @@ enum {
 };
 
 enum {
-	PROP_SELECTED_ACCOUNT = 1,
-	PROP_PARENT
+	PROP_PARENT = 1
 };
 
 static void       accounts_dialog_update (EmpathyAccountsDialog    *dialog,
@@ -1202,12 +1201,33 @@ accounts_dialog_destroy_cb (GtkObject *obj,
 }
 
 static void
+accounts_dialog_set_selected_account (EmpathyAccountsDialog *dialog,
+				      EmpathyAccount *account)
+{
+	GtkTreeSelection *selection;
+	GtkTreeIter       iter;
+	EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
+	if (accounts_dialog_get_account_iter (dialog, account, &iter)) {
+		gtk_tree_selection_select_iter (selection, &iter);
+	}
+}
+
+static void
 accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
 			      GParamSpec *pspec,
 			      EmpathyAccountsDialog *dialog)
 {
+	EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
 	if (empathy_connection_managers_is_ready (cms)) {
 		accounts_dialog_update_settings (dialog, NULL);
+
+       		if (priv->initial_selection != NULL) {
+			accounts_dialog_set_selected_account (dialog, priv->initial_selection);
+			priv->initial_selection = NULL;
+		}
 	}
 }
 
@@ -1346,9 +1366,6 @@ do_get_property (GObject *object,
 	case PROP_PARENT:
 		g_value_set_object (value, priv->parent_window);
 		break;
-	case PROP_SELECTED_ACCOUNT:
-		g_value_set_object (value, priv->selected_account);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
 	}
@@ -1365,9 +1382,6 @@ do_set_property (GObject *object,
 	switch (property_id) {
 	case PROP_PARENT:
 		priv->parent_window = g_value_get_object (value);
-		break;
-	case PROP_SELECTED_ACCOUNT:
-		priv->selected_account = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -1422,19 +1436,7 @@ do_constructed (GObject *object)
 				  G_CALLBACK (accounts_dialog_cms_ready_cb), dialog);
 	}
 
-	if (priv->selected_account) {
-		GtkTreeSelection *selection;
-		GtkTreeIter       iter;
-
-		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
-		if (accounts_dialog_get_account_iter (dialog, priv->selected_account, &iter)) {
-			gtk_tree_selection_select_iter (selection, &iter);
-		}
-
-		priv->selected_account = NULL;
-	} else {
-		accounts_dialog_model_select_first (dialog);
-	}
+	accounts_dialog_model_select_first (dialog);
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
@@ -1474,13 +1476,6 @@ empathy_accounts_dialog_class_init (EmpathyAccountsDialogClass *klass)
 					  G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (oclass, PROP_PARENT, param_spec);
 
-	param_spec = g_param_spec_object ("selected-account",
-					  "selected-account", "The account selected by default",
-					  EMPATHY_TYPE_ACCOUNT,
-					  G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
-	g_object_class_install_property (oclass, PROP_SELECTED_ACCOUNT, param_spec);
-
-
 	g_type_class_add_private (klass, sizeof (EmpathyAccountsDialogPriv));
 }
 
@@ -1505,9 +1500,18 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 	EmpathyAccountsDialogPriv *priv;
 
 	dialog = g_object_new (EMPATHY_TYPE_ACCOUNTS_DIALOG,
-	    "parent", parent, "selected-account", selected_account, NULL);
+	    "parent", parent, NULL);
 
 	priv = GET_PRIV (dialog);
+
+	if (selected_account && empathy_connection_managers_is_ready (priv->cms)) {
+		accounts_dialog_set_selected_account (dialog, selected_account);
+	} else {
+		/* save the selection to set it later when the cms
+		 * becomes ready.
+		 */
+		priv->initial_selection = selected_account;
+	}
 
 	gtk_window_present (GTK_WINDOW (priv->window));
 
