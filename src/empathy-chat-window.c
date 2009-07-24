@@ -1000,12 +1000,11 @@ chat_window_set_highlight_room_tab_label (EmpathyChat *chat)
 	gchar *markup;
 	GtkWidget *widget;
 
-	if (empathy_chat_is_room (chat) == FALSE)
+	if (!empathy_chat_is_room (chat))
 		return;
 
-	markup = g_markup_printf_escaped ("<span color=\"%s\">%s</span>",
-			"red",
-			empathy_chat_get_name (chat));
+	markup = g_markup_printf_escaped ("<span color=\"red\">%s</span>",
+		empathy_chat_get_name (chat));
 
 	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-label");
 	gtk_label_set_markup (GTK_LABEL (widget), markup);
