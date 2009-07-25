@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
 "POT-Creation-Date: 2009-07-20 15:33+0000\n"
-"PO-Revision-Date: 2009-07-25 02:52+0300\n"
+"PO-Revision-Date: 2009-07-25 10:48+0300\n"
 "Last-Translator: Alexander Nyakhaychyk <nyakhaychyk@gmail.com>\n"
 "Language-Team: Belarusian <i18n@mova.org>\n"
 "MIME-Version: 1.0\n"
@@ -136,7 +136,7 @@ msgstr "Неабходна выкарыстоўваць NetworkManager"
 
 #: ../data/empathy.schemas.in.h:25
 msgid "Nick completed character"
-msgstr ""
+msgstr "Сымбаль аўтадапаўненьня мянушкі"
 
 #: ../data/empathy.schemas.in.h:26
 msgid "Open new chats in separate windows"
@@ -147,10 +147,9 @@ msgid "Path of the adium theme to use"
 msgstr "Шлях да тэмы adium"
 
 #: ../data/empathy.schemas.in.h:28
-#, fuzzy
 #| msgid "Whether to use the theme for chat rooms or not."
 msgid "Path of the adium theme to use if the theme used for chat is adium."
-msgstr "Ці карыстацца тэмамі для пакояў?"
+msgstr "Шляш да тэмы adium, каб выкарыстоўваць з чатамі ў adium."
 
 #: ../data/empathy.schemas.in.h:29
 #| msgid "_Play sound when messages arrive"
@@ -255,17 +254,15 @@ msgstr ""
 "Ці мусяць быць уключаны сродкі распрацоўкі WebKit, такія як Web Inspector."
 
 #: ../data/empathy.schemas.in.h:52
-#, fuzzy
 #| msgid ""
 #| "Whether or not to show contacts that are offline in the contact list."
 msgid "Whether or not Empathy can publish the user's location to his contacts."
-msgstr "Ці паказваць у сьпісе офлайн-кантакты?"
+msgstr "Ці можа Empathy паведамляць знаходжаньне кантактам карыстальніка."
 
 #: ../data/empathy.schemas.in.h:53
-#, fuzzy
 #| msgid "Whether or not to play a sound when messages arrive."
 msgid "Whether or not Empathy can use the GPS to guess the location."
-msgstr "Ці граць гукі, калі атрымліваеш паведамленьне?"
+msgstr "Ці мусіць Empathy выкарыстоўваць GPS."
 
 #: ../data/empathy.schemas.in.h:54
 msgid ""
@@ -331,78 +328,67 @@ msgid ""
 msgstr "Ці канвэртаваць смайлы ў графічныя малюнкі ў размовах?"
 
 #: ../data/empathy.schemas.in.h:64
-#, fuzzy
 #| msgid ""
 #| "Whether or not to show avatars for contacts in the contact list and chat "
 #| "windows."
 msgid ""
 "Whether or not to play a sound to notify for contacts logging in the network."
-msgstr "Ці паказваць аватары ў сьпісе кантактаў і вокнах размовы?"
+msgstr "Ці граць гук, каб інфармаваць пра далучэньне кантактаў."
 
 #: ../data/empathy.schemas.in.h:65
-#, fuzzy
 #| msgid ""
 #| "Whether or not to show avatars for contacts in the contact list and chat "
 #| "windows."
 msgid ""
 "Whether or not to play a sound to notify for contacts logging off the "
 "network."
-msgstr "Ці паказваць аватары ў сьпісе кантактаў і вокнах размовы?"
+msgstr "Ці граць гук, каб інфармаваць пра адлучэньне кантактаў."
 
 #: ../data/empathy.schemas.in.h:66
-#, fuzzy
 #| msgid "Whether or not to play sounds when busy."
 msgid "Whether or not to play a sound to notify for events."
-msgstr "Ці граць гукі, калі я заняты?"
+msgstr "Ці граць гук, каб інфармаваць пра падзеі."
 
 #: ../data/empathy.schemas.in.h:67
-#, fuzzy
 #| msgid "Whether or not to play a sound when messages arrive."
 msgid "Whether or not to play a sound to notify for incoming messages."
-msgstr "Ці граць гукі, калі атрымліваеш паведамленьне?"
+msgstr "Ці граць гук, каб інфармаваць пра ўваходныя паведамленьні."
 
 #: ../data/empathy.schemas.in.h:68
-#, fuzzy
 #| msgid "Whether or not to play a sound when messages arrive."
 msgid "Whether or not to play a sound to notify for new conversations."
-msgstr "Ці граць гукі, калі атрымліваеш паведамленьне?"
+msgstr "Ці граць гук, каб інфармаваць пра новыя размовы."
 
 #: ../data/empathy.schemas.in.h:69
-#, fuzzy
 #| msgid "Whether or not to play a sound when messages arrive."
 msgid "Whether or not to play a sound to notify for outgoing messages."
-msgstr "Ці граць гукі, калі атрымліваеш паведамленьне?"
+msgstr "Ці граць гук, каб інфармаваць пра выходнае паведамленьне."
 
 #: ../data/empathy.schemas.in.h:70
-#, fuzzy
 #| msgid "Whether or not to play sounds when away."
 msgid "Whether or not to play a sound when logging in a network."
-msgstr "Ці граць гукі, калі я адыйшоў?"
+msgstr "Ці граць гук, калі далучаемся."
 
 #: ../data/empathy.schemas.in.h:71
-#, fuzzy
 #| msgid "Whether or not to play sounds when away."
 msgid "Whether or not to play a sound when logging off a network."
-msgstr "Ці граць гукі, калі я адыйшоў?"
+msgstr "Ці граць куг, калі адлучаемся."
 
 #: ../data/empathy.schemas.in.h:72
-#, fuzzy
 #| msgid "Whether or not to play sounds when away."
 msgid "Whether or not to play sound notifications when away or busy."
-msgstr "Ці граць гукі, калі я адыйшоў?"
+msgstr "Ці прайграваць гук, калі мяне няма ці заняты."
 
 #: ../data/empathy.schemas.in.h:73
-#, fuzzy
 #| msgid "Whether or not to show a popup when a contact becomes available."
 msgid ""
 "Whether or not to show a popup notification when a contact goes offline."
-msgstr "Ці паказваць выплыўное нагадваньне, калі кантакт становіцца даступным?"
+msgstr "Ці паказваць раптоўнае інфармаваньне, калі кантакт адлучаецца."
 
 #: ../data/empathy.schemas.in.h:74
-#, fuzzy
 #| msgid "Whether or not to show a popup when a contact becomes available."
 msgid "Whether or not to show a popup notification when a contact goes online."
-msgstr "Ці паказваць выплыўное нагадваньне, калі кантакт становіцца даступным?"
+msgstr "Ці паказваць раптоўнае інфармаваньне, калі кантакт далучаецца."
 
 #: ../data/empathy.schemas.in.h:75
 msgid ""
@@ -413,11 +399,11 @@ msgstr ""
 "паведамленьне, нават калі вакно гутаркі ўжо адркрыта, але ня мае фокусу."
 
 #: ../data/empathy.schemas.in.h:76
-#, fuzzy
 #| msgid "Whether or not to show a popup when a contact becomes available."
 msgid ""
 "Whether or not to show a popup notification when receiving a new message."
-msgstr "Ці паказваць выплыўное нагадваньне, калі кантакт становіцца даступным?"
+msgstr ""
+"Ці паказваць раптоўныя інфармаваньні, калі атрымліваю новае паведамленьне."
 
 #: ../data/empathy.schemas.in.h:77
 msgid ""
@@ -430,10 +416,9 @@ msgid "Whether or not to show contacts that are offline in the contact list."
 msgstr "Ці паказваць у сьпісе офлайн-кантакты?"
 
 #: ../data/empathy.schemas.in.h:79
-#, fuzzy
 #| msgid "Whether or not to play sounds when away."
 msgid "Whether or not to show popup notifications when away or busy."
-msgstr "Ці граць гукі, калі я адыйшоў?"
+msgstr "Ці адлюстроўваць раптоўныя інфармаваньні, калі мяне няма ці заняты."
 
 #: ../data/empathy.schemas.in.h:80
 #| msgid "Whether to show the contact list in compact mode or not."
@@ -445,6 +430,8 @@ msgid ""
 "Whether or not to show the message dialog about closing the main window with "
 "the 'x' button in the title bar."
 msgstr ""
+"Ці паказваць дыялёг з паведамленьнем пра закрыцьцё галоўнага вакна з кнопкай "
+"x у панэлі загалоўка."
 
 #: ../data/empathy.schemas.in.h:82
 msgid "Whether to show the contact list in compact mode or not."
@@ -460,6 +447,9 @@ msgid ""
 "by the contact's name with the value \"name\". A value of \"state\" will "
 "sort the contact list by state."
 msgstr ""
+"Які крытэр выкарыстоўваць для ўпарадкаваньня сьпісу кантактаў. "
+"Прадвызначанае значэньне - упарадковаць па назвах кантактаў - „name”. "
+"Значэньне „state” будзе ўпарадкоўваць знодна з станам кантактаў."
 
 #: ../libempathy/empathy-ft-handler.c:838
 msgid "The hash of the received file and the sent one do not match"
@@ -1651,10 +1641,12 @@ msgstr "Віетнамскі"
 msgid ""
 "The contact to display in the applet. Empty means no contact is displayed."
 msgstr ""
+"Кантакт, які адлюстроўваць у аплеце. „Empty” азначае, што кантакт не "
+"адлюстроўваецца."
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.schemas.in.h:2
 msgid "The contact's avatar token. Empty means contact has no avatar."
-msgstr ""
+msgstr "Аватар кантакта. „Empty” азначае што няма аватару."
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:1
 msgid "Megaphone"
@@ -1730,6 +1722,10 @@ msgid ""
 "FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more "
 "details."
 msgstr ""
+"Empathy распаўсюджваецца з надзеяй, што ён будзе карысны, але  БЕЗЬ НІЯКІХ "
+"ГАРАНТЫЯЎ; нават, без намёкаў гарантыі прадукта ці прдатнасьці для "
+"практычнага выкарыстоўваньня.  За падрабязнасьцямі зьвяртайцеся да GNU "
+"General Public License."
 
 #: ../src/empathy-about-dialog.c:91
 msgid ""
@@ -2490,34 +2486,29 @@ msgid "Chat Th_eme:"
 msgstr "_Тэма размовы:"
 
 #: ../src/empathy-preferences.ui.h:8
-#, fuzzy
 #| msgid "Display notifications when contacts come _online"
 msgid "Disable notifications when _away or busy"
-msgstr "Паказваць паведамленьні, калі кантакт зьяўляецца _анлайн"
+msgstr "Адключыць інфармаваньні, калі мяне н_яма ці заняты"
 
 #: ../src/empathy-preferences.ui.h:9
-#, fuzzy
 #| msgid "Enable sounds when _away"
 msgid "Disable sounds when _away or busy"
-msgstr "Уключыць гукі, калі мяне _няма"
+msgstr "Адключыць гукі, калі м_яне няма ці заняты"
 
 #: ../src/empathy-preferences.ui.h:10
-#, fuzzy
 #| msgid "Display notifications when contacts come _online"
 msgid "Enable notifications when a contact comes online"
-msgstr "Паказваць паведамленьні, калі кантакт зьяўляецца _анлайн"
+msgstr "Паказваць інфармаваньні, калі кантакт далучаецца"
 
 #: ../src/empathy-preferences.ui.h:11
-#, fuzzy
 #| msgid "Display notifications when contacts come _online"
 msgid "Enable notifications when a contact goes offline"
-msgstr "Паказваць паведамленьні, калі кантакт зьяўляецца _анлайн"
+msgstr "Паказваць інфармаваньні, калі кантакт адлучаецца"
 
 #: ../src/empathy-preferences.ui.h:12
-#, fuzzy
 #| msgid "Display notifications when contacts come _online"
 msgid "Enable notifications when the _chat is not focused"
-msgstr "Паказваць паведамленьні, калі кантакт зьяўляецца _анлайн"
+msgstr "Паказваць інфармаваньні, калі вакно _размоў ня мае фокусу"
 
 #: ../src/empathy-preferences.ui.h:13
 #| msgid "<b>Enable spell checking for languages:</b>"
@@ -2627,7 +2618,7 @@ msgstr "_Паказаць сьпіс кантактаў"
 #: ../src/empathy-tube-dispatch.c:375
 #, c-format
 msgid "Unable to start application for service %s: %s"
-msgstr ""
+msgstr "Немагчыма запусьціць дастасаваньне для службы %s: %s"
 
 #: ../src/empathy-tube-dispatch.c:446
 #, c-format
@@ -2635,6 +2626,8 @@ msgid ""
 "An invitation was offered for service %s, but you don't have the needed "
 "application to handle it"
 msgstr ""
+"Атрымана запрашэньне для службы %s, але вы ня маеце дастасаваньня, каб "
+"працаваць зь ёй."
 
 #: ../src/empathy-call-window-fullscreen.ui.h:1
 msgid "gtk-leave-fullscreen"
