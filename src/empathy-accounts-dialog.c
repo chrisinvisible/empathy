@@ -1,7 +1,6 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2005-2007 Imendio AB
- * Copyright (C) 2007-2008 Collabora Ltd.
+ * Copyright (C) 2007-2009 Collabora Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,6 +19,7 @@
  *
  * Authors: Martyn Russell <martyn@imendio.com>
  *          Xavier Claessens <xclaesse@gmail.com>
+ *          Cosimo Cecchi <cosimo.cecchi@collabora.co.uk>
  */
 
 #include <config.h>
@@ -119,8 +119,8 @@ static void accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
 
 #if 0
 /* FIXME MC-5 */
-static void       accounts_dialog_button_import_clicked_cb  (GtkWidget                *button,
-    EmpathyAccountsDialog    *dialog);
+static void accounts_dialog_button_import_clicked_cb  (GtkWidget *button,
+    EmpathyAccountsDialog *dialog);
 #endif
 
 static void
@@ -171,7 +171,6 @@ get_account_setup_widget (EmpathyAccountSettings *settings)
 
   return empathy_account_widget_generic_new (settings);
 }
-
 
 static void
 account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
@@ -501,7 +500,8 @@ accounts_dialog_name_edited_cb (GtkCellRendererText *renderer,
   GtkTreeIter   iter;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  if (empathy_account_manager_get_connecting_accounts (priv->account_manager) > 0)
+  if (empathy_account_manager_get_connecting_accounts
+      (priv->account_manager) > 0)
     {
       priv->connecting_id = g_timeout_add (FLASH_TIMEOUT,
           (GSourceFunc) accounts_dialog_flash_connecting_cb,
@@ -1033,7 +1033,8 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
     {
       gboolean active;
 
-      active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->radiobutton_register));
+      active = gtk_toggle_button_get_active
+          (GTK_TOGGLE_BUTTON (priv->radiobutton_register));
       if (active)
         empathy_account_settings_set_boolean (settings, "register", TRUE);
     }
@@ -1194,7 +1195,8 @@ accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
 
       if (priv->initial_selection != NULL)
         {
-          accounts_dialog_set_selected_account (dialog, priv->initial_selection);
+          accounts_dialog_set_selected_account
+              (dialog, priv->initial_selection);
           priv->initial_selection = NULL;
         }
     }
@@ -1316,8 +1318,9 @@ do_constructor (GType type,
     }
   else
     {
-      retval = G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->constructor
-        (type, n_props, props);
+      retval =
+        G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->constructor
+            (type, n_props, props);
 
       dialog_singleton = EMPATHY_ACCOUNTS_DIALOG (retval);
       g_object_add_weak_pointer (retval, (gpointer) &dialog_singleton);
