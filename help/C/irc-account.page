@@ -1,0 +1,123 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="irc-account">
+
+  <info>
+    <link type="guide" xref="irc-manage#manage"/>
+    <link type="seealso" xref="prob-conn-neterror"/>
+    <desc>Create a new IRC account.</desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-07-25" status="draft"/>
+
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+
+    <license>Creative Commons Share Alike 3.0</license>
+
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+  
+  <title>Create an IRC account</title>
+
+  <steps>
+    <item>
+      <p>
+	      From the <gui>Contact List</gui> window, perform one of the following:
+      </p>
+      <list>
+        <item>
+	        <p>
+	          Press <key>F4</key>
+	        </p>
+	      </item>
+	      <item>
+	        <p>
+	          Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>
+	        </p>
+      	</item>
+      </list>
+    </item>
+    <item>
+      <p>
+	      If it is the first time you launch <app>Empathy</app>:
+      </p>
+      <list>
+	      <item>
+	        <p>
+	          From the <gui>Type</gui> drop-down list choose
+	          <gui>IRC</gui>, then click on the <gui>Create</gui> button.
+	        </p>
+	      </item>
+      </list>
+      <p>
+	      Otherwise:
+      </p>
+      <steps>
+	      <item>
+	        <p>
+	          Click on the <gui>Add</gui> button.
+	        </p>
+	      </item>
+	      <item>
+	        <p>
+	          From the <gui>Type</gui> drop-down list choose
+	          <gui>IRC</gui>, then click on the <gui>Create</gui> button.
+	        </p>
+	      </item>
+	     </steps>
+	   </item>
+	   <item>
+	    <p>
+	      From the <gui>Network</gui> drop-down list, select the name of the network 
+	      you are creating the account for.
+	    </p>
+	   </item>
+	   <item>
+	   <!-- TODO: think of a simple way to talk about the nickname -->
+	    <p>
+	      In the <gui>Nickname</gui> text box, type the name... 
+	    </p>
+	   </item>
+	   <item>
+	    <p>
+	      In the <gui>Password</gui> text box, type the password you used to register 
+	      your nikcname. If you do not have one, leave this field blank.
+	    </p>
+	   </item>
+	   <item>
+	    <p>
+	      In the <gui>Real name</gui> text box, type your real name. 
+	    </p>
+	    <note>
+	      <p>
+	        It is not necessary to insert also your real name.
+	      </p>
+	    </note>
+	   </item>
+	   <item>
+	    <p>
+	      In the <gui>Quit message</gui> text box, type the text message that will be 
+	      sent when you close your session.
+	    </p>
+	   </item>
+	   <item>
+	    <p>
+	      To enable the new account, select the <gui>Enabled</gui> check-box 
+	      next to the name of the account in the box on the left of the dialog.
+      </p>
+    </item>
+	 </steps>
+
+  <note>
+    <p>
+      If you want to use different networks at the same time, you need to create an 
+      account with each of the networks you want to use.
+    </p>
+  </note>
+
+</page>
