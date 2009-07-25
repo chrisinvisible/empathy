@@ -62,6 +62,8 @@ typedef struct {
   TpConnectionPresenceType desired_presence;
   gchar *desired_status;
   gchar *desired_status_message;
+
+  GSimpleAsyncResult *create_result;
 } EmpathyAccountManagerPriv;
 
 enum {
@@ -276,9 +278,12 @@ empathy_account_manager_check_ready (EmpathyAccountManager *manager)
 }
 
 static void
-emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
+account_manager_account_ready_cb (GObject *obj,
+    GParamSpec *spec, 
+    gpointer user_data)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   EmpathyAccount *account = EMPATHY_ACCOUNT (obj);
   gboolean ready;
 
@@ -286,6 +291,15 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
 
   if (!ready)
     return;
+
+  if (priv->create_result)
+    {
+      g_simple_async_result_set_op_res_gpointer (
+          G_SIMPLE_ASYNC_RESULT (priv->create_result), account, NULL);
+
+      g_simple_async_result_complete (priv->create_result);
+      g_object_unref (priv->create_result);
+    }
 
   g_signal_emit (manager, signals[ACCOUNT_CREATED], 0, account);
 
@@ -307,7 +321,7 @@ emp_account_ready_cb (GObject *obj, GParamSpec *spec, gpointer user_data)
   empathy_account_manager_check_ready (manager);
 }
 
-static EmpathyAccount *
+static void
 account_manager_add_account (EmpathyAccountManager *manager,
   const gchar *path)
 {
@@ -316,15 +330,13 @@ account_manager_add_account (EmpathyAccountManager *manager,
 
   account = g_hash_table_lookup (priv->accounts, path);
   if (account != NULL)
-    return account;
+    return;
 
   account = empathy_account_new (priv->dbus, path);
   g_hash_table_insert (priv->accounts, g_strdup (path), account);
 
   g_signal_connect (account, "notify::ready",
-    G_CALLBACK (emp_account_ready_cb), manager);
-
-  return account;
+    G_CALLBACK (account_manager_account_ready_cb), manager);
 }
 
 static void
@@ -841,22 +853,6 @@ empathy_account_manager_get_global_presence (
 }
 
 static void
-empathy_account_manager_created_ready_cb (EmpathyAccount *account,
-  GParamSpec *spec, gpointer user_data)
-{
-  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
-
-  if (!empathy_account_is_ready (account))
-    return;
-
-  g_simple_async_result_set_op_res_gpointer (
-    G_SIMPLE_ASYNC_RESULT (result), account, NULL);
-
-  g_simple_async_result_complete (result);
-  g_object_unref (G_OBJECT (result));
-}
-
-static void
 empathy_account_manager_created_cb (TpAccountManager *proxy,
     const gchar *account_path,
     const GError *error,
@@ -864,23 +860,20 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
     GObject *weak_object)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
-  GSimpleAsyncResult *result = G_SIMPLE_ASYNC_RESULT (user_data);
-  EmpathyAccount *account;
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
 
   if (error != NULL)
     {
-      g_simple_async_result_set_from_error (result, (GError *) error);
-      g_simple_async_result_complete (result);
-      g_object_unref (G_OBJECT (result));
+      g_simple_async_result_set_from_error (priv->create_result,
+          (GError *) error);
+      g_simple_async_result_complete (priv->create_result);
+      g_object_unref (priv->create_result);
+      priv->create_result = NULL;
+
       return;
     }
 
-  account = account_manager_add_account (manager, account_path);
-  if (empathy_account_is_ready (account))
-    empathy_account_manager_created_ready_cb (account, NULL, result);
-  else
-    g_signal_connect (account, "notify::ready",
-      G_CALLBACK (empathy_account_manager_created_ready_cb), result);
+  account_manager_add_account (manager, account_path);
 }
 
 void
@@ -891,8 +884,10 @@ empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
   GAsyncReadyCallback callback, gpointer user_data)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (manager),
-      callback, user_data, empathy_account_manager_create_account_finish);
+
+  priv->create_result = g_simple_async_result_new
+    (G_OBJECT (manager), callback, user_data,
+     empathy_account_manager_create_account_finish);
 
   tp_cli_account_manager_call_create_account (priv->tp_manager,
       -1,
@@ -902,7 +897,7 @@ empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
       parameters,
       properties,
       empathy_account_manager_created_cb,
-      result,
+      NULL,
       NULL,
       G_OBJECT (manager));
 }
