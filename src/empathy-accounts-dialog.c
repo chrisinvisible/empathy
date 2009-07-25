@@ -613,15 +613,16 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
 	for (ok = gtk_tree_model_get_iter_first (model, iter);
 	     ok;
 	     ok = gtk_tree_model_iter_next (model, iter)) {
-		EmpathyAccount *this_account;
+		EmpathyAccountSettings *settings;
 		gboolean   equal;
 
 		gtk_tree_model_get (model, iter,
-				    COL_ACCOUNT_POINTER, &this_account,
+				    COL_ACCOUNT_SETTINGS_POINTER, &settings,
 				    -1);
 
-		equal = (this_account == account);
-		g_object_unref (this_account);
+		equal = empathy_account_settings_owns_account
+			     (settings, account);
+		g_object_unref (settings);
 
 		if (equal) {
 			return TRUE;
@@ -777,7 +778,9 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 	name = empathy_account_get_display_name (account);
 	enabled = empathy_account_is_enabled (account);
 
-	gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+	if (!accounts_dialog_get_account_iter (dialog, account, &iter)) {
+		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+	}
 
 	settings = empathy_account_settings_new_for_account (account);
 
