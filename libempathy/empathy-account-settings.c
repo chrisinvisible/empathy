@@ -1008,3 +1008,17 @@ empathy_account_settings_apply_finish (EmpathyAccountSettings *settings,
 
   return TRUE;
 }
+
+gboolean
+empathy_account_settings_owns_account (EmpathyAccountSettings *settings,
+    EmpathyAccount *account)
+{
+  EmpathyAccountSettingsPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), FALSE);
+  g_return_val_if_fail (EMPATHY_IS_ACCOUNT (account), FALSE);
+
+  priv = GET_PRIV (settings);
+
+  return (account == priv->account);
+}
