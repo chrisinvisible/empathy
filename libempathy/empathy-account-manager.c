@@ -299,6 +299,7 @@ account_manager_account_ready_cb (GObject *obj,
 
       g_simple_async_result_complete (priv->create_result);
       g_object_unref (priv->create_result);
+      priv->create_result = NULL;
     }
 
   g_signal_emit (manager, signals[ACCOUNT_CREATED], 0, account);
@@ -478,6 +479,16 @@ do_dispose (GObject *obj)
     return;
 
   priv->dispose_run = TRUE;
+
+  if (priv->create_result != NULL)
+    {
+      g_simple_async_result_set_error (priv->create_result, G_IO_ERROR,
+          G_IO_ERROR_CANCELLED, "The account manager was disposed while "
+          "creating the account");
+      g_simple_async_result_complete (priv->create_result);
+      g_object_unref (priv->create_result);
+      priv->create_result = NULL;
+    }
 
   tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
       TP_ACCOUNT_MANAGER_BUS_NAME, account_manager_name_owner_cb, manager);
