@@ -774,7 +774,7 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 	EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
-	g_object_get (account, "status", &status, NULL);
+	g_object_get (account, "connection-status", &status, NULL);
 	name = empathy_account_get_display_name (account);
 	enabled = empathy_account_is_enabled (account);
 
