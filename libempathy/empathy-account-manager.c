@@ -493,9 +493,11 @@ do_dispose (GObject *obj)
   tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
       TP_ACCOUNT_MANAGER_BUS_NAME, account_manager_name_owner_cb, manager);
 
-  if (priv->dbus == NULL)
-    g_object_unref (priv->dbus);
-  priv->dbus = NULL;
+  if (priv->dbus != NULL)
+    {
+      g_object_unref (priv->dbus);
+      priv->dbus = NULL;
+    }
 
   G_OBJECT_CLASS (empathy_account_manager_parent_class)->dispose (obj);
 }
