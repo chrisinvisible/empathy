@@ -22,8 +22,8 @@
  *          Martyn Russell <martyn@imendio.com>
  */
 
-#ifndef __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__
-#define __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__
+#ifndef __EMPATHY_ACCOUNT_WIDGET_H__
+#define __EMPATHY_ACCOUNT_WIDGET_H__
 
 #include <gtk/gtk.h>
 
@@ -55,4 +55,4 @@ GtkWidget *empathy_account_widget_groupwise_new     (EmpathyAccountSettings   *s
 
 G_END_DECLS
 
-#endif /* __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__ */
+#endif /* __EMPATHY_ACCOUNT_WIDGET_H__ */
