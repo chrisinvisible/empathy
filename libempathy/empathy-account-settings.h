@@ -153,6 +153,7 @@ gboolean empathy_account_settings_apply_finish (
   GAsyncResult *result,
   GError **error);
 
+gboolean empathy_account_settings_is_valid (EmpathyAccountSettings *settings);
 
 G_END_DECLS
 

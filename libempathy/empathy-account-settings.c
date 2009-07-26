@@ -72,6 +72,7 @@ struct _EmpathyAccountSettingsPriv
 
   GHashTable *parameters;
   GArray *unset_parameters;
+  GArray *required_params;
 
   gulong managers_ready_id;
   gulong account_ready_id;
@@ -358,6 +359,23 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
     {
       priv->manager = NULL;
       return;
+    }
+
+  if (priv->required_params == NULL)
+    {
+      TpConnectionManagerParam *cur;
+      char *val;
+
+      priv->required_params = g_array_new (TRUE, FALSE, sizeof (gchar *));
+
+      for (cur = priv->tp_protocol->params; cur->name != NULL; cur++)
+        {
+          if (tp_connection_manager_param_is_required (cur))
+            {
+              val = g_strdup (cur->name);
+              g_array_append_val (priv->required_params, val);
+            }
+        }
     }
 
   g_object_ref (priv->manager);
@@ -1021,4 +1039,46 @@ empathy_account_settings_owns_account (EmpathyAccountSettings *settings,
   priv = GET_PRIV (settings);
 
   return (account == priv->account);
+}
+
+gboolean
+empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
+{
+  EmpathyAccountSettingsPriv *priv;
+  int idx;
+  gchar *current;
+  gboolean missed = FALSE;
+
+  g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), FALSE);
+
+  priv = GET_PRIV (settings);
+
+  for (idx = 0; idx < priv->required_params->len; idx++)
+    {
+      current = g_array_index (priv->required_params, gchar *, idx);
+
+      /* first, look if it's set in our own parameters */
+      if (tp_asv_lookup (priv->parameters, current))
+        continue;
+
+      /* if we did not unset the parameter, look if it's in the account */
+      if (priv->account != NULL &&
+          !empathy_account_settings_is_unset (settings, current))
+        {
+          const GHashTable *account_params;
+
+          account_params = empathy_account_get_parameters (priv->account);
+          if (tp_asv_lookup (account_params, current))
+            continue;
+        }
+
+      /* see if there's a default value */
+      if (empathy_account_settings_get_default (settings, current))
+        continue;
+
+      missed = TRUE;
+      break;
+    }
+
+  return !missed;
 }
