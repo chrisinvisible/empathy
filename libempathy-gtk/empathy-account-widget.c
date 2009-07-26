@@ -832,6 +832,7 @@ do_constructed (GObject *obj)
   g_signal_connect (priv->apply_button, "clicked",
       G_CALLBACK (account_widget_apply_clicked_cb),
       self);
+  account_widget_handle_apply_sensitivity (self);
   gtk_widget_show (priv->apply_button);
 }
 
