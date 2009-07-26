@@ -68,6 +68,7 @@ libempathy_gtk_la_SOURCES =			\
 
 # do not distribute generated files
 nodist_libempathy_gtk_la_SOURCES =\
+	empathy-account-widget-private.h	\
 	$(BUILT_SOURCES)
 
 libempathy_gtk_la_LIBADD =			\
@@ -141,7 +142,7 @@ ui_DATA = 					\
 	empathy-account-widget-jabber.ui	\
 	empathy-account-widget-msn.ui		\
 	empathy-account-widget-sip.ui		\
-	empathy-account-widget-salut.ui		\
+	empathy-account-widget-local-xmpp.ui	\
 	empathy-account-widget-irc.ui		\
 	empathy-account-widget-icq.ui		\
 	empathy-account-widget-yahoo.ui		\

@@ -137,28 +137,27 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
   g_free (text);
 }
 
-typedef GtkWidget *CreateWidget (EmpathyAccountSettings *);
-
 static GtkWidget *
 get_account_setup_widget (EmpathyAccountSettings *settings)
 {
   const gchar *cm = empathy_account_settings_get_cm (settings);
   const gchar *proto = empathy_account_settings_get_protocol (settings);
+
+  g_print ("cm : %s, proto %s\n", cm, proto);
   struct {
     const gchar *cm;
     const gchar *proto;
-    CreateWidget *cb;
   } dialogs[] = {
-    { "gabble", "jabber", empathy_account_widget_jabber_new},
-    { "butterfly", "msn", empathy_account_widget_msn_new},
-    { "salut", "local-xmpp", empathy_account_widget_salut_new},
-    { "idle", "irc", empathy_account_widget_irc_new},
-    { "haze", "icq", empathy_account_widget_icq_new},
-    { "haze", "aim", empathy_account_widget_aim_new},
-    { "haze", "yahoo", empathy_account_widget_yahoo_new},
-    { "haze", "groupwise", empathy_account_widget_groupwise_new},
-    { "sofiasip", "sip", empathy_account_widget_sip_new},
-    { NULL, NULL, NULL }
+    { "gabble", "jabber" },
+    { "butterfly", "msn" },
+    { "salut", "local-xmpp" },
+    { "idle", "irc" },
+    { "haze", "icq" },
+    { "haze", "aim" },
+    { "haze", "yahoo" },
+    { "haze", "groupwise" },
+    { "sofiasip", "sip" },
+    { NULL, NULL }
   };
   int i;
 
@@ -166,10 +165,10 @@ get_account_setup_widget (EmpathyAccountSettings *settings)
     {
       if (!tp_strdiff (cm, dialogs[i].cm)
           && !tp_strdiff (proto, dialogs[i].proto))
-        return dialogs[i].cb (settings);
+        return empathy_account_widget_new_for_protocol (dialogs[i].proto, settings);
     }
 
-  return empathy_account_widget_generic_new (settings);
+  return empathy_account_widget_new_for_protocol ("generic", settings);
 }
 
 static void

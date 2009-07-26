@@ -31,12 +31,12 @@
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-account-widget.h"
+#include "empathy-account-widget-private.h"
 #include "empathy-account-widget-sip.h"
 #include "empathy-ui-utils.h"
 
 typedef struct {
-  EmpathyAccountSettings *settings;
-
+  EmpathyAccountWidget *self;
   GtkWidget *vbox_settings;
 
   GtkWidget *entry_stun_server;
@@ -48,7 +48,6 @@ static void
 account_widget_sip_destroy_cb (GtkWidget *widget,
                                EmpathyAccountWidgetSip *settings)
 {
-  g_object_unref (settings->settings);
   g_slice_free (EmpathyAccountWidgetSip, settings);
 }
 
@@ -64,35 +63,23 @@ account_widget_sip_discover_stun_toggled_cb (
   gtk_widget_set_sensitive (settings->spinbutton_stun_part, !active);
 }
 
-/**
- * empathy_account_widget_sip_new:
- * @account: the #EmpathyAccount to configure
- *
- * Creates a new SIP account widget to configure a given #EmpathyAccount
- *
- * Returns: The toplevel container of the configuration widget
- */
-GtkWidget *
-empathy_account_widget_sip_new (EmpathyAccountSettings *account_settings)
+void
+empathy_account_widget_sip_build (EmpathyAccountWidget *self,
+                                  const char *filename)
 {
   EmpathyAccountWidgetSip *settings;
-  GtkBuilder *gui;
-  gchar *filename;
 
   settings = g_slice_new0 (EmpathyAccountWidgetSip);
-  settings->settings = g_object_ref (account_settings);
+  settings->self = self;
 
-  filename = empathy_file_lookup ("empathy-account-widget-sip.ui",
-      "libempathy-gtk");
-  gui = empathy_builder_get_file (filename,
+  self->ui_details->gui = empathy_builder_get_file (filename,
       "vbox_sip_settings", &settings->vbox_settings,
       "entry_stun-server", &settings->entry_stun_server,
       "spinbutton_stun-port", &settings->spinbutton_stun_part,
       "checkbutton_discover-stun", &settings->checkbutton_discover_stun,
       NULL);
-  g_free (filename);
 
-  empathy_account_widget_handle_params (account_settings, gui,
+  empathy_account_widget_handle_params (self,
       "entry_userid", "account",
       "entry_password", "password",
       "checkbutton_discover-stun", "discover-stun",
@@ -100,23 +87,18 @@ empathy_account_widget_sip_new (EmpathyAccountSettings *account_settings)
       "spinbutton_stun-port", "stun-port",
       NULL);
 
-  empathy_account_widget_add_forget_button (account_settings, gui,
-                                            "button_forget",
-                                            "entry_password");
-
   account_widget_sip_discover_stun_toggled_cb (
     settings->checkbutton_discover_stun,
     settings);
 
-  empathy_builder_connect (gui, settings,
+  empathy_builder_connect (self->ui_details->gui, settings,
       "vbox_sip_settings", "destroy", account_widget_sip_destroy_cb,
       "checkbutton_discover-stun", "toggled",
           account_widget_sip_discover_stun_toggled_cb,
       NULL);
 
-  empathy_account_widget_set_default_focus (gui, "entry_userid");
-  empathy_account_widget_add_apply_button (account_settings,
-    settings->vbox_settings);
+  self->ui_details->add_forget = TRUE;
+  self->ui_details->default_focus = g_strdup ("entry_userid");
 
-  return empathy_builder_unref_and_keep_widget (gui, settings->vbox_settings);
+  self->ui_details->widget = settings->vbox_settings;
 }

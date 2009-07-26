@@ -32,6 +32,7 @@
 
 #include "empathy-irc-network-dialog.h"
 #include "empathy-account-widget.h"
+#include "empathy-account-widget-private.h"
 #include "empathy-account-widget-irc.h"
 #include "empathy-ui-utils.h"
 
@@ -41,7 +42,7 @@
 #define IRC_NETWORKS_FILENAME "irc-networks.xml"
 
 typedef struct {
-  EmpathyAccountSettings *settings;
+  EmpathyAccountWidget *self;
   EmpathyIrcNetworkManager *network_manager;
 
   GtkWidget *vbox_settings;
@@ -59,17 +60,19 @@ account_widget_irc_destroy_cb (GtkWidget *widget,
                                EmpathyAccountWidgetIrc *settings)
 {
   g_object_unref (settings->network_manager);
-  g_object_unref (settings->settings);
   g_slice_free (EmpathyAccountWidgetIrc, settings);
 }
 
 static void
 unset_server_params (EmpathyAccountWidgetIrc *settings)
 {
+  EmpathyAccountSettings *ac_settings;
+
+  g_object_get (settings->self, "settings", &ac_settings, NULL);
   DEBUG ("Unset server, port and use-ssl");
-  empathy_account_settings_unset (settings->settings, "server");
-  empathy_account_settings_unset (settings->settings, "port");
-  empathy_account_settings_unset (settings->settings, "use-ssl");
+  empathy_account_settings_unset (ac_settings, "server");
+  empathy_account_settings_unset (ac_settings, "port");
+  empathy_account_settings_unset (ac_settings, "use-ssl");
 }
 
 static void
@@ -80,6 +83,9 @@ update_server_params (EmpathyAccountWidgetIrc *settings)
   EmpathyIrcNetwork *network;
   GSList *servers;
   gchar *charset;
+  EmpathyAccountSettings *ac_settings;
+
+  g_object_get (settings->self, "settings", &ac_settings, NULL);
 
   if (!gtk_combo_box_get_active_iter (
         GTK_COMBO_BOX (settings->combobox_network), &iter))
@@ -95,7 +101,7 @@ update_server_params (EmpathyAccountWidgetIrc *settings)
 
   g_object_get (network, "charset", &charset, NULL);
   DEBUG ("Setting charset to %s", charset);
-  empathy_account_settings_set_string (settings->settings, "charset", charset);
+  empathy_account_settings_set_string (ac_settings, "charset", charset);
   g_free (charset);
 
   servers = empathy_irc_network_get_servers (network);
@@ -114,13 +120,11 @@ update_server_params (EmpathyAccountWidgetIrc *settings)
           NULL);
 
       DEBUG ("Setting server to %s", address);
-      empathy_account_settings_set_string (settings->settings,
-        "server", address);
+      empathy_account_settings_set_string (ac_settings, "server", address);
       DEBUG ("Setting port to %u", port);
-      empathy_account_settings_set_uint32 (settings->settings, "port", port);
+      empathy_account_settings_set_uint32 (ac_settings, "port", port);
       DEBUG ("Setting use-ssl to %s", ssl ? "TRUE": "FALSE" );
-      empathy_account_settings_set_boolean (settings->settings,
-        "use-ssl", ssl);
+      empathy_account_settings_set_boolean (ac_settings, "use-ssl", ssl);
 
       g_free (address);
     }
@@ -330,19 +334,22 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
   const gchar *charset;
   gboolean ssl = FALSE;
   EmpathyIrcNetwork *network = NULL;
+  EmpathyAccountSettings *ac_settings;
 
-  nick = empathy_account_settings_get_string (settings->settings, "account");
-  fullname = empathy_account_settings_get_string (settings->settings,
+  g_object_get (settings->self, "settings", &ac_settings, NULL);
+
+  nick = empathy_account_settings_get_string (ac_settings, "account");
+  fullname = empathy_account_settings_get_string (ac_settings,
       "fullname");
-  server = empathy_account_settings_get_string (settings->settings, "server");
-  charset = empathy_account_settings_get_string (settings->settings, "charset");
-  port = empathy_account_settings_get_uint32 (settings->settings, "port");
-  ssl = empathy_account_settings_get_boolean (settings->settings, "use-ssl");
+  server = empathy_account_settings_get_string (ac_settings, "server");
+  charset = empathy_account_settings_get_string (ac_settings, "charset");
+  port = empathy_account_settings_get_uint32 (ac_settings, "port");
+  ssl = empathy_account_settings_get_boolean (ac_settings, "use-ssl");
 
   if (!nick)
     {
       nick = g_strdup (g_get_user_name ());
-      empathy_account_settings_set_string (settings->settings,
+      empathy_account_settings_set_string (ac_settings,
         "account", nick);
     }
 
@@ -353,7 +360,7 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
         {
           fullname = g_strdup (nick);
         }
-      empathy_account_settings_set_string (settings->settings,
+      empathy_account_settings_set_string (ac_settings,
           "fullname", fullname);
     }
 
@@ -409,27 +416,17 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
   fill_networks_model (settings, network);
 }
 
-/**
- * empathy_account_widget_irc_new:
- * @settings: the #EmpathyAccountSettings to configure
- *
- * Creates a new IRC account widget to configure a given #EmpathyAccount
- *
- * Returns: The toplevel container of the configuration widget
- */
-GtkWidget *
-empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
+void
+empathy_account_widget_irc_build (EmpathyAccountWidget *self,
+                                const char *filename)
 {
   EmpathyAccountWidgetIrc *settings;
   gchar *dir, *user_file_with_path, *global_file_with_path;
-  GtkBuilder *gui;
-  GtkWidget *widget;
   GtkListStore *store;
   GtkCellRenderer *renderer;
-  gchar *filename;
 
   settings = g_slice_new0 (EmpathyAccountWidgetIrc);
-  settings->settings = g_object_ref (account_settings);
+  settings->self = self;
 
   dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
   g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
@@ -452,14 +449,11 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
   g_free (global_file_with_path);
   g_free (user_file_with_path);
 
-  filename = empathy_file_lookup ("empathy-account-widget-irc.ui",
-      "libempathy-gtk");
-  gui = empathy_builder_get_file (filename,
-      "vbox_irc", &widget,
+  self->ui_details->gui = empathy_builder_get_file (filename,
+      "vbox_irc", &self->ui_details->widget,
       "table_irc_settings", &settings->vbox_settings,
       "combobox_network", &settings->combobox_network,
       NULL);
-  g_free (filename);
 
   /* Fill the networks combobox */
   store = gtk_list_store_new (2, G_TYPE_OBJECT, G_TYPE_STRING);
@@ -483,14 +477,14 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
 
   account_widget_irc_setup (settings);
 
-  empathy_account_widget_handle_params (account_settings, gui,
+  empathy_account_widget_handle_params (self,
       "entry_nick", "account",
       "entry_fullname", "fullname",
       "entry_password", "password",
       "entry_quit_message", "quit-message",
       NULL);
 
-  empathy_builder_connect (gui, settings,
+  empathy_builder_connect (self->ui_details->gui, settings,
       "table_irc_settings", "destroy", account_widget_irc_destroy_cb,
       "button_network", "clicked",
           account_widget_irc_button_edit_network_clicked_cb,
@@ -502,8 +496,5 @@ empathy_account_widget_irc_new (EmpathyAccountSettings *account_settings)
           account_widget_irc_combobox_network_changed_cb,
       NULL);
 
-  empathy_account_widget_set_default_focus (gui, "entry_nick");
-  empathy_account_widget_add_apply_button (account_settings, widget);
-
-  return empathy_builder_unref_and_keep_widget (gui, widget);
+  self->ui_details->default_focus = g_strdup ("entry_nick");
 }

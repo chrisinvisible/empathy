@@ -22,11 +22,12 @@
 #define __EMPATHY_ACCOUNT_WIDGET_SIP_H__
 
 #include <gtk/gtk.h>
-#include <libempathy/empathy-account-settings.h>
+#include <libempathy-gtk/empathy-account-widget.h>
 
 G_BEGIN_DECLS
 
-GtkWidget * empathy_account_widget_sip_new (EmpathyAccountSettings *settings);
+void empathy_account_widget_sip_build (EmpathyAccountWidget *self,
+                                       const char *filename);
 
 G_END_DECLS
 
