@@ -143,7 +143,6 @@ get_account_setup_widget (EmpathyAccountSettings *settings)
   const gchar *cm = empathy_account_settings_get_cm (settings);
   const gchar *proto = empathy_account_settings_get_protocol (settings);
 
-  g_print ("cm : %s, proto %s\n", cm, proto);
   struct {
     const gchar *cm;
     const gchar *proto;
