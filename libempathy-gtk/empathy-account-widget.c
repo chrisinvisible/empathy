@@ -871,6 +871,8 @@ empathy_account_widget_init (EmpathyAccountWidget *self)
   self->ui_details = g_slice_new0 (EmpathyAccountWidgetUIDetails);
 }
 
+/* public methods */
+
 void
 empathy_account_widget_handle_params (EmpathyAccountWidget *self,
     const gchar *first_widget,
