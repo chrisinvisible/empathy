@@ -748,13 +748,14 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 	if (!(event->state & GDK_CONTROL_MASK) &&
 	    event->keyval == GDK_Page_Up) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
-		gtk_adjustment_set_value (adj, adj->value - adj->page_size);
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_value (adj) - gtk_adjustment_get_page_size (adj));
 		return TRUE;
 	}
 	if ((event->state & GDK_CONTROL_MASK) != GDK_CONTROL_MASK &&
 	    event->keyval == GDK_Page_Down) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
-		val = MIN (adj->value + adj->page_size, adj->upper - adj->page_size);
+		val = MIN (gtk_adjustment_get_value (adj) + gtk_adjustment_get_page_size (adj),
+			   gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj));
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
@@ -1161,6 +1162,56 @@ chat_contacts_completion_func (const gchar *s1,
 	return ret;
 }
 
+static gchar *
+build_part_message (guint           reason,
+		    const gchar    *name,
+		    EmpathyContact *actor,
+		    const gchar    *message)
+{
+	GString *s = g_string_new ("");
+	const gchar *actor_name = NULL;
+
+	if (actor != NULL) {
+		actor_name = empathy_contact_get_name (actor);
+	}
+
+	/* Having an actor only really makes sense for a few actions... */
+	switch (reason) {
+	case TP_CHANNEL_GROUP_CHANGE_REASON_OFFLINE:
+		g_string_append_printf (s, _("%s has disconnected"), name);
+		break;
+	case TP_CHANNEL_GROUP_CHANGE_REASON_KICKED:
+		if (actor_name != NULL) {
+			g_string_append_printf (s, _("%s was kicked by %s"),
+				name, actor_name);
+		} else {
+			g_string_append_printf (s, _("%s was kicked"), name);
+		}
+		break;
+	case TP_CHANNEL_GROUP_CHANGE_REASON_BANNED:
+		if (actor_name != NULL) {
+			g_string_append_printf (s, _("%s was banned by %s"),
+				name, actor_name);
+		} else {
+			g_string_append_printf (s, _("%s was banned"), name);
+		}
+		break;
+	default:
+		g_string_append_printf (s, _("%s has left the room"), name);
+	}
+
+	if (!EMP_STR_EMPTY (message)) {
+		/* Note to translators: this string is appended to
+		 * notifications like "foo has left the room", with the message
+		 * given by the user living the room. If this poses a problem,
+		 * please let us know. :-)
+		 */
+		g_string_append_printf (s, _(" (%s)"), message);
+	}
+
+	return g_string_free (s, FALSE);
+}
+
 static void
 chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 			 EmpathyContact *contact,
@@ -1171,20 +1222,21 @@ chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 			 EmpathyChat    *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
+	const gchar *name = empathy_contact_get_name (contact);
+	gchar *str;
 
-	if (priv->block_events_timeout_id == 0) {
-		gchar *str;
+	if (priv->block_events_timeout_id != 0)
+		return;
 
-		if (is_member) {
-			str = g_strdup_printf (_("%s has joined the room"),
-					       empathy_contact_get_name (contact));
-		} else {
-			str = g_strdup_printf (_("%s has left the room"),
-					       empathy_contact_get_name (contact));
-		}
-		empathy_chat_view_append_event (chat->view, str);
-		g_free (str);
+	if (is_member) {
+		str = g_strdup_printf (_("%s has joined the room"),
+				       name);
+	} else {
+		str = build_part_message (reason, name, actor, message);
 	}
+
+	empathy_chat_view_append_event (chat->view, str);
+	g_free (str);
 }
 
 static gboolean
@@ -1427,15 +1479,18 @@ chat_size_request (GtkWidget      *widget,
 		   GtkRequisition *requisition)
 {
   GtkBin *bin = GTK_BIN (widget);
+  GtkWidget *child;
 
-  requisition->width = GTK_CONTAINER (widget)->border_width * 2;
-  requisition->height = GTK_CONTAINER (widget)->border_width * 2;
+  requisition->width = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
+  requisition->height = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
 
-  if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
+  child = gtk_bin_get_child (bin);
+
+  if (child && GTK_WIDGET_VISIBLE (child))
     {
       GtkRequisition child_requisition;
 
-      gtk_widget_size_request (bin->child, &child_requisition);
+      gtk_widget_size_request (child, &child_requisition);
 
       requisition->width += child_requisition.width;
       requisition->height += child_requisition.height;
@@ -1448,17 +1503,20 @@ chat_size_allocate (GtkWidget     *widget,
 {
   GtkBin *bin = GTK_BIN (widget);
   GtkAllocation child_allocation;
+  GtkWidget *child;
 
   widget->allocation = *allocation;
 
-  if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
-    {
-      child_allocation.x = allocation->x + GTK_CONTAINER (widget)->border_width;
-      child_allocation.y = allocation->y + GTK_CONTAINER (widget)->border_width;
-      child_allocation.width = MAX (allocation->width - GTK_CONTAINER (widget)->border_width * 2, 0);
-      child_allocation.height = MAX (allocation->height - GTK_CONTAINER (widget)->border_width * 2, 0);
+  child = gtk_bin_get_child (bin);
 
-      gtk_widget_size_allocate (bin->child, &child_allocation);
+  if (child && GTK_WIDGET_VISIBLE (child))
+    {
+      child_allocation.x = allocation->x + gtk_container_get_border_width (GTK_CONTAINER (widget));
+      child_allocation.y = allocation->y + gtk_container_get_border_width (GTK_CONTAINER (widget));
+      child_allocation.width = MAX (allocation->width - gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2, 0);
+      child_allocation.height = MAX (allocation->height - gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2, 0);
+
+      gtk_widget_size_allocate (child, &child_allocation);
     }
 }
 

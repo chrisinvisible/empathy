@@ -50,10 +50,12 @@ struct _EmpathyContactManagerClass {
 };
 
 GType                  empathy_contact_manager_get_type (void) G_GNUC_CONST;
+gboolean               empathy_contact_manager_initialized (void);
 EmpathyContactManager *empathy_contact_manager_dup_singleton  (void);
 EmpathyTpContactList * empathy_contact_manager_get_list (EmpathyContactManager *manager,
 							 TpConnection          *connection);
-gboolean               empathy_contact_manager_can_add  (EmpathyContactManager *manager,
+EmpathyContactListFlags empathy_contact_manager_get_flags_for_connection (
+							 EmpathyContactManager *manager,
 							 TpConnection          *connection);
 
 G_END_DECLS

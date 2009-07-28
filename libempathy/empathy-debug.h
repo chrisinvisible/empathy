@@ -41,6 +41,7 @@ typedef enum
   EMPATHY_DEBUG_FT = 1 << 7,
   EMPATHY_DEBUG_LOCATION = 1 << 8,
   EMPATHY_DEBUG_OTHER = 1 << 9,
+  EMPATHY_DEBUG_SHARE_DESKTOP = 1 << 10,
 } EmpathyDebugFlags;
 
 gboolean empathy_debug_flag_is_set (EmpathyDebugFlags flag);

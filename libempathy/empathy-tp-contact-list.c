@@ -51,6 +51,8 @@ typedef struct {
 	GHashTable     *pendings; /* handle -> EmpathyContact */
 	GHashTable     *groups; /* group name -> TpChannel */
 	GHashTable     *add_to_group; /* group name -> GArray of handles */
+
+	EmpathyContactListFlags flags;
 } EmpathyTpContactListPriv;
 
 typedef enum {
@@ -470,7 +472,7 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 	/* We refuse to send our presence to those contacts, remove from pendings */
 	for (i = 0; i < removed->len; i++) {
 		tp_contact_list_remove_handle (list, priv->pendings,
-			g_array_index (added, TpHandle, i));
+			g_array_index (removed, TpHandle, i));
 	}
 
 	/* Those contacts want our presence, auto accept those that are already
@@ -507,6 +509,64 @@ tp_contact_list_publish_request_channel_cb (TpConnection *connection,
 	g_signal_connect (priv->publish, "group-members-changed",
 			  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
 			  list);
+}
+
+static void
+tp_contact_list_get_alias_flags_cb (TpConnection *connection,
+				    guint         flags,
+				    const GError *error,
+				    gpointer      user_data,
+				    GObject      *list)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+
+	if (error) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	if (flags & TP_CONNECTION_ALIAS_FLAG_USER_SET) {
+		priv->flags |= EMPATHY_CONTACT_LIST_CAN_ALIAS;
+	}
+}
+
+static void
+tp_contact_list_get_requestablechannelclasses_cb (TpProxy      *connection,
+						  const GValue *value,
+						  const GError *error,
+						  gpointer      user_data,
+						  GObject      *list)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	GPtrArray *classes;
+	int i;
+
+	if (error) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	classes = g_value_get_boxed (value);
+	for (i = 0; i < classes->len; i++) {
+		GValueArray *class = g_ptr_array_index (classes, i);
+		GHashTable *props;
+		const char *channel_type;
+		guint handle_type;
+
+		props = g_value_get_boxed (g_value_array_get_nth (class, 0));
+
+		channel_type = tp_asv_get_string (props,
+				TP_IFACE_CHANNEL ".ChannelType");
+		handle_type = tp_asv_get_uint32 (props,
+				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
+
+		if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST) &&
+		    handle_type == TP_HANDLE_TYPE_GROUP) {
+			DEBUG ("Got channel class for a contact group");
+			priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
+			break;
+		}
+	}
 }
 
 static void
@@ -559,7 +619,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 	/* Those contacts refuse to send us their presence, remove from members. */
 	for (i = 0; i < removed->len; i++) {
 		tp_contact_list_remove_handle (list, priv->members,
-			g_array_index (added, TpHandle, i));
+			g_array_index (removed, TpHandle, i));
 	}
 
 	/* We want those contacts in our contact list but we don't get their
@@ -722,6 +782,32 @@ tp_contact_list_constructed (GObject *list)
 	const gchar              *names[] = {NULL, NULL};
 
 	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
+
+	/* call GetAliasFlags */
+	if (tp_proxy_has_interface_by_id (priv->connection,
+				TP_IFACE_QUARK_CONNECTION_INTERFACE_ALIASING)) {
+		tp_cli_connection_interface_aliasing_call_get_alias_flags (
+				priv->connection,
+				-1,
+				tp_contact_list_get_alias_flags_cb,
+				NULL, NULL,
+				G_OBJECT (list));
+	}
+
+	/* lookup RequestableChannelClasses */
+	if (tp_proxy_has_interface_by_id (priv->connection,
+				TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS)) {
+		tp_cli_dbus_properties_call_get (priv->connection,
+				-1,
+				TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
+				"RequestableChannelClasses",
+				tp_contact_list_get_requestablechannelclasses_cb,
+				NULL, NULL,
+				G_OBJECT (list));
+	} else {
+		/* we just don't know... better mark the flag just in case */
+		priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
+	}
 
 	names[0] = "publish";
 	tp_cli_connection_call_request_handles (priv->connection,
@@ -1075,6 +1161,31 @@ tp_contact_list_remove_group (EmpathyContactList *list,
 	g_array_free (handles, TRUE);
 }
 
+static EmpathyContactListFlags
+tp_contact_list_get_flags (EmpathyContactList *list)
+{
+	EmpathyTpContactListPriv *priv;
+	EmpathyContactListFlags flags;
+	TpChannelGroupFlags group_flags;
+
+	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
+
+	priv = GET_PRIV (list);
+	flags = priv->flags;
+
+	group_flags = tp_channel_group_get_flags (priv->subscribe);
+
+	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) {
+		flags |= EMPATHY_CONTACT_LIST_CAN_ADD;
+	}
+
+	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_REMOVE) {
+		flags |= EMPATHY_CONTACT_LIST_CAN_REMOVE;
+	}
+
+	return flags;
+}
+
 static void
 tp_contact_list_iface_init (EmpathyContactListIface *iface)
 {
@@ -1088,23 +1199,7 @@ tp_contact_list_iface_init (EmpathyContactListIface *iface)
 	iface->remove_from_group = tp_contact_list_remove_from_group;
 	iface->rename_group      = tp_contact_list_rename_group;
 	iface->remove_group	 = tp_contact_list_remove_group;
-}
-
-gboolean
-empathy_tp_contact_list_can_add (EmpathyTpContactList *list)
-{
-	EmpathyTpContactListPriv *priv;
-	TpChannelGroupFlags       flags;
-
-	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
-
-	priv = GET_PRIV (list);
-
-	if (priv->subscribe == NULL)
-		return FALSE;
-
-	flags = tp_channel_group_get_flags (priv->subscribe);
-	return (flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) != 0;
+	iface->get_flags	 = tp_contact_list_get_flags;
 }
 
 void

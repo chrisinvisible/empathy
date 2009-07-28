@@ -280,7 +280,7 @@ megaphone_applet_show_preferences (MegaphoneApplet *applet)
 	gtk_window_set_default_size (GTK_WINDOW (dialog), 300, 500);
 	scroll = gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_add (GTK_CONTAINER (scroll), GTK_WIDGET (contact_list));
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), scroll);
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), scroll);
 	gtk_widget_show (scroll);
 	
 	g_object_set_data (G_OBJECT (dialog), "contact-list", contact_list);

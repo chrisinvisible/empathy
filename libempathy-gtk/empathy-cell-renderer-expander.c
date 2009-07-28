@@ -101,9 +101,11 @@ empathy_cell_renderer_expander_init (EmpathyCellRendererExpander *expander)
 	priv->activatable = TRUE;
 	priv->animation_node = NULL;
 
-	GTK_CELL_RENDERER (expander)->xpad = 2;
-	GTK_CELL_RENDERER (expander)->ypad = 2;
-	GTK_CELL_RENDERER (expander)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+	g_object_set (expander,
+		      "xpad", 2,
+		      "ypad", 2,
+		      "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,
+		      NULL);
 }
 
 static void
@@ -252,18 +254,27 @@ empathy_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 {
 	EmpathyCellRendererExpander     *expander;
 	EmpathyCellRendererExpanderPriv *priv;
+	gfloat xalign, yalign;
+	guint xpad, ypad;
 
 	expander = (EmpathyCellRendererExpander *) cell;
 	priv = GET_PRIV (expander);
 
+	g_object_get (cell,
+		      "xalign", &xalign,
+		      "yalign", &yalign,
+		      "xpad", &xpad,
+		      "ypad", &ypad,
+		      NULL);
+
 	if (cell_area) {
 		if (x_offset) {
-			*x_offset = cell->xalign * (cell_area->width - (priv->expander_size + (2 * cell->xpad)));
+			*x_offset = xalign * (cell_area->width - (priv->expander_size + (2 * xpad)));
 			*x_offset = MAX (*x_offset, 0);
 		}
 
 		if (y_offset) {
-			*y_offset = cell->yalign * (cell_area->height - (priv->expander_size + (2 * cell->ypad)));
+			*y_offset = yalign * (cell_area->height - (priv->expander_size + (2 * ypad)));
 			*y_offset = MAX (*y_offset, 0);
 		}
 	} else {
@@ -275,10 +286,10 @@ empathy_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 	}
 
 	if (width)
-		*width = cell->xpad * 2 + priv->expander_size;
+		*width = xpad * 2 + priv->expander_size;
 
 	if (height)
-		*height = cell->ypad * 2 + priv->expander_size;
+		*height = ypad * 2 + priv->expander_size;
 }
 
 static void
@@ -294,6 +305,8 @@ empathy_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	EmpathyCellRendererExpanderPriv *priv;
 	GtkExpanderStyle                expander_style;
 	gint                            x_offset, y_offset;
+	guint                           xpad, ypad;
+
 
 	expander = (EmpathyCellRendererExpander *) cell;
 	priv = GET_PRIV (expander);
@@ -319,14 +332,19 @@ empathy_cell_renderer_expander_render (GtkCellRenderer      *cell,
 						&x_offset, &y_offset,
 						NULL, NULL);
 
-	gtk_paint_expander (widget->style,
+	g_object_get (cell,
+		      "xpad", &xpad,
+		      "ypad", &ypad,
+		      NULL);
+
+	gtk_paint_expander (gtk_widget_get_style (widget),
 			    window,
 			    GTK_STATE_NORMAL,
 			    expose_area,
 			    widget,
 			    "treeview",
-			    cell_area->x + x_offset + cell->xpad + priv->expander_size / 2,
-			    cell_area->y + y_offset + cell->ypad + priv->expander_size / 2,
+			    cell_area->x + x_offset + xpad + priv->expander_size / 2,
+			    cell_area->y + y_offset + ypad + priv->expander_size / 2,
 			    expander_style);
 }
 

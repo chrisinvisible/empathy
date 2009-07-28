@@ -175,7 +175,7 @@ chat_tab_style_set_cb (GtkWidget *hbox,
 		"chat-window-tab-close-button");
 	context = gtk_widget_get_pango_context (hbox);
 
-	metrics = pango_context_get_metrics (context, hbox->style->font_desc,
+	metrics = pango_context_get_metrics (context, gtk_widget_get_style (hbox)->font_desc,
 		pango_context_get_language (context));
 	char_width = pango_font_metrics_get_approximate_char_width (metrics);
 	pango_font_metrics_unref (metrics);
@@ -994,6 +994,24 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 }
 
 static void
+chat_window_set_highlight_room_tab_label (EmpathyChat *chat)
+{
+	gchar *markup;
+	GtkWidget *widget;
+
+	if (empathy_chat_is_room (chat) == FALSE)
+		return;
+
+	markup = g_markup_printf_escaped ("<span color=\"%s\">%s</span>",
+			"red",
+			empathy_chat_get_name (chat));
+
+	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-label");
+	gtk_label_set_markup (GTK_LABEL (widget), markup);
+	g_free (markup);
+}
+
+static void
 chat_window_new_message_cb (EmpathyChat       *chat,
 			    EmpathyMessage    *message,
 			    EmpathyChatWindow *window)
@@ -1025,6 +1043,11 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 		return;
 	}
 
+	if (!g_list_find (priv->chats_new_msg, chat)) {
+		priv->chats_new_msg = g_list_prepend (priv->chats_new_msg, chat);
+		chat_window_update_chat_tab (chat);
+	}
+
 	/* If empathy_chat_is_room () returns TRUE, that means it's a named MUC.
 	 * If empathy_chat_get_remote_contact () returns NULL, that means it's
 	 * an unamed MUC (msn-like).
@@ -1038,17 +1061,14 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 	}
 
 	if (needs_urgency) {
-		if (!has_focus)
+		if (!has_focus) {
 			chat_window_set_urgency_hint (window, TRUE);
+			chat_window_set_highlight_room_tab_label (chat);
+		}
 
 		empathy_sound_play (GTK_WIDGET (priv->dialog),
 		    EMPATHY_SOUND_MESSAGE_INCOMING);
 		chat_window_show_or_update_notification (window, message, chat);
-	}
-
-	if (!g_list_find (priv->chats_new_msg, chat)) {
-		priv->chats_new_msg = g_list_prepend (priv->chats_new_msg, chat);
-		chat_window_update_chat_tab (chat);
 	}
 }
 
@@ -1241,7 +1261,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		const gchar           *account_id;
 		const gchar           *contact_id;
 
-		id = (const gchar*) selection->data;
+		id = (const gchar*) gtk_selection_data_get_data (selection);
 		account_manager = empathy_account_manager_dup_singleton ();
 
 		DEBUG ("DND contact from roster with id:'%s'", id);
@@ -1298,7 +1318,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 		DEBUG ("DND tab");
 
-		chat = (void *) selection->data;
+		chat = (void *) gtk_selection_data_get_data (selection);
 		old_window = chat_window_find_chat (*chat);
 
 		if (old_window) {

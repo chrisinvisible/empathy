@@ -403,7 +403,7 @@ empathy_video_widget_sync_message_cb (GstBus *bus, GstMessage *message,
     {
       g_assert (GTK_WIDGET_REALIZED (GTK_WIDGET (self)));
       gst_x_overlay_set_xwindow_id (GST_X_OVERLAY (priv->overlay),
-        GDK_WINDOW_XID (GTK_WIDGET (self)->window));
+        GDK_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (self))));
     }
 }
 
@@ -418,13 +418,13 @@ empathy_video_widget_expose_event (GtkWidget *widget, GdkEventExpose *event)
 
   if (priv->overlay == NULL)
     {
-      gdk_window_clear_area (widget->window, 0, 0,
+      gdk_window_clear_area (gtk_widget_get_window (widget), 0, 0,
         widget->allocation.width, widget->allocation.height);
       return TRUE;
     }
 
   gst_x_overlay_set_xwindow_id (GST_X_OVERLAY (priv->overlay),
-    GDK_WINDOW_XID (widget->window));
+    GDK_WINDOW_XID (gtk_widget_get_window (widget)));
 
   gst_x_overlay_expose (GST_X_OVERLAY (priv->overlay));
 

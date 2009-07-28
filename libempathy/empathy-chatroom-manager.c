@@ -411,7 +411,7 @@ empathy_chatroom_manager_constructor (GType type,
       /* Set the default file path */
       gchar *dir;
 
-      dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+      dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
       if (!g_file_test (dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
         g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 
