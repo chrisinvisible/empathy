@@ -20,7 +20,6 @@
  */
 
 #include <gtk/gtk.h>
-#include <libmissioncontrol/mc-profile.h>
 
 #ifndef __EMPATHY_IMPORT_DIALOG_H__
 #define __EMPATHY_IMPORT_DIALOG_H__
@@ -31,8 +30,10 @@ typedef struct
 {
   /* Table mapping CM param string to a GValue */
   GHashTable *settings;
-  /* The profile to use for this account */
-  McProfile *profile;
+  /* Protocol name */
+  gchar *protocol;
+  /* Connection manager name */
+  gchar *connection_manager;
   /* The name of the account import source */
   gchar *source;
 } EmpathyImportAccountData;

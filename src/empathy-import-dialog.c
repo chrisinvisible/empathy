@@ -36,7 +36,7 @@
 #include <libempathy/empathy-debug.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-account-manager.h>
-
+#include <libempathy/empathy-connection-managers.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 typedef struct
@@ -69,6 +69,8 @@ empathy_import_account_data_new (const gchar *source)
   data->settings = g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
     (GDestroyNotify) tp_g_value_slice_free);
   data->source = g_strdup (source);
+  data->protocol = NULL;
+  data->connection_manager = NULL;
 
   return data;
 }
@@ -78,8 +80,10 @@ empathy_import_account_data_free (EmpathyImportAccountData *data)
 {
   if (data == NULL)
     return;
-  if (data->profile != NULL)
-    g_object_unref (data->profile);
+  if (data->protocol != NULL)
+    g_free (data->protocol);
+  if (data->connection_manager != NULL)
+    g_free (data->connection_manager);
   if (data->settings != NULL)
     g_hash_table_destroy (data->settings);
   if (data->source != NULL)
@@ -89,66 +93,60 @@ empathy_import_account_data_free (EmpathyImportAccountData *data)
 }
 
 static void
-import_dialog_add_account (EmpathyImportAccountData *data)
+import_dialog_create_account_cb (GObject *source,
+  GAsyncResult *result,
+  gpointer user_data)
 {
-  EmpathyAccountManager *account_manager;
+  EmpathyImportAccountData *data = (EmpathyImportAccountData *) user_data;
   EmpathyAccount *account;
-  GHashTableIter iter;
-  gpointer key, value;
-  gchar *display_name;
-  GValue *username;
+  GError *error = NULL;
 
-  account_manager = empathy_account_manager_dup_singleton ();
-  account = empathy_account_manager_create_by_profile (account_manager,
-    data->profile);
+  account = empathy_account_manager_create_account_finish (
+    EMPATHY_ACCOUNT_MANAGER (source), result, &error);
 
-  g_object_unref (account_manager);
   if (account == NULL)
     {
-      DEBUG ("Failed to create account");
+      DEBUG ("Failed to create account: %s",
+          error ? error->message : "No error given");
+      g_clear_error (&error);
+      empathy_import_account_data_free (data);
       return;
     }
 
-  g_hash_table_iter_init (&iter, data->settings);
-  while (g_hash_table_iter_next (&iter, &key, &value))
-    {
-      const gchar *param = key;
-      GValue *gvalue = value;
+  DEBUG ("account created\n");
 
-      switch (G_VALUE_TYPE (gvalue))
-        {
-          case G_TYPE_STRING:
-            DEBUG ("Set param '%s' to '%s' (string)",
-                param, g_value_get_string (gvalue));
-            empathy_account_set_param_string (account,
-                param, g_value_get_string (gvalue));
-            break;
+  g_object_unref (account);
+}
 
-          case G_TYPE_BOOLEAN:
-            DEBUG ("Set param '%s' to %s (boolean)",
-                param, g_value_get_boolean (gvalue) ? "TRUE" : "FALSE");
-            empathy_account_set_param_boolean (account,
-                param, g_value_get_boolean (gvalue));
-            break;
+static void
+import_dialog_add_account (EmpathyImportAccountData *data)
+{
+  EmpathyAccountManager *account_manager;
+  gchar *display_name;
+  GHashTable *properties;
+  GValue *username;
 
-          case G_TYPE_INT:
-            DEBUG ("Set param '%s' to '%i' (integer)",
-                param, g_value_get_int (gvalue));
-            empathy_account_set_param_int (account,
-                param, g_value_get_int (gvalue));
-            break;
-        }
-    }
+  account_manager = empathy_account_manager_dup_singleton ();
+
+  DEBUG ("connection_manager: %s\n", data->connection_manager);
 
   /* Set the display name of the account */
   username = g_hash_table_lookup (data->settings, "account");
   display_name = g_strdup_printf ("%s (%s)",
-      mc_profile_get_display_name (data->profile),
+      data->protocol,
       g_value_get_string (username));
-  empathy_account_set_display_name (account, display_name);
 
+  DEBUG ("display name: %s\n", display_name);
+
+  properties = g_hash_table_new (NULL, NULL);
+
+  empathy_account_manager_create_account_async (account_manager,
+      (const gchar*) data->connection_manager, data->protocol, display_name,
+      data->settings, properties, import_dialog_create_account_cb, NULL);
+
+  g_hash_table_unref (properties);
   g_free (display_name);
-  g_object_unref (account);
+  g_object_unref (account_manager);
 }
 
 static gboolean
@@ -159,18 +157,22 @@ import_dialog_account_id_in_list (GList *accounts,
 
   for (l = accounts; l; l = l->next)
     {
-      McAccount *account = l->data;
-      gchar *value = NULL;
+      EmpathyAccount *account = l->data;
+      const gchar *account_string;
+      GValue *value;
       gboolean result;
+      const GHashTable *parameters;
 
-      mc_account_get_param_string (account, "account", &value);
+      parameters = empathy_account_get_parameters (account);
+
+      value = g_hash_table_lookup ((GHashTable *) parameters, "account");
 
       if (value == NULL)
         continue;
 
-      result = tp_strdiff (value, account_id);
+      account_string = g_value_get_string (value);
 
-      g_free (value);
+      result = tp_strdiff (account_string, account_id);
 
       if (!result)
         return TRUE;
@@ -179,12 +181,39 @@ import_dialog_account_id_in_list (GList *accounts,
   return FALSE;
 }
 
+static gboolean protocol_is_supported (EmpathyImportAccountData *data)
+{
+  EmpathyConnectionManagers *cm =
+      empathy_connection_managers_dup_singleton ();
+  GList *cms = empathy_connection_managers_get_cms (cm);
+  GList *l;
+  gboolean proto_is_supported = FALSE;
+
+  for (l = cms; l; l = l->next)
+    {
+      TpConnectionManager *tp_cm = l->data;
+      const gchar *cm_name = tp_connection_manager_get_name (tp_cm);
+      if (tp_connection_manager_has_protocol (tp_cm,
+          (const gchar*)data->protocol))
+        {
+          data->connection_manager = g_strdup (cm_name);
+          proto_is_supported = TRUE;
+          break;
+        }
+    }
+
+  g_object_unref (cm);
+
+  return proto_is_supported;
+}
+
 static void
 import_dialog_add_accounts_to_model (EmpathyImportDialog *dialog)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
   GList *l;
+  EmpathyAccountManager *manager = empathy_account_manager_dup_singleton ();
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (dialog->treeview));
 
@@ -195,27 +224,33 @@ import_dialog_add_accounts_to_model (EmpathyImportDialog *dialog)
       gboolean import;
       GList *accounts;
 
+      if (!protocol_is_supported (data))
+        continue;
+
       value = g_hash_table_lookup (data->settings, "account");
 
-      accounts = mc_accounts_list_by_profile (data->profile);
+      accounts = empathy_account_manager_dup_accounts (manager);
 
       /* Only set the "Import" cell to be active if there isn't already an
        * account set up with the same account id. */
       import = !import_dialog_account_id_in_list (accounts,
           g_value_get_string (value));
 
-      mc_accounts_list_free (accounts);
+      g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
+      g_list_free (accounts);
 
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
 
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           COL_IMPORT, import,
-          COL_PROTOCOL, mc_profile_get_display_name (data->profile),
+          COL_PROTOCOL, data->protocol,
           COL_NAME, g_value_get_string (value),
           COL_SOURCE, data->source,
           COL_ACCOUNT_DATA, data,
           -1);
     }
+
+  g_object_unref (manager);
 }
 
 static void
