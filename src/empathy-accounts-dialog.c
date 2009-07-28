@@ -134,34 +134,24 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 static GtkWidget *
 get_account_setup_widget (EmpathyAccountSettings *settings)
 {
-  const gchar *cm = empathy_account_settings_get_cm (settings);
   const gchar *proto = empathy_account_settings_get_protocol (settings);
+  EmpathyConnectionManagers *cm =
+      empathy_connection_managers_dup_singleton ();
+  GList *cms = empathy_connection_managers_get_cms (cm);
+  GList *l;
 
-  struct {
-    const gchar *cm;
-    const gchar *proto;
-  } dialogs[] = {
-    { "gabble", "jabber" },
-    { "butterfly", "msn" },
-    { "salut", "local-xmpp" },
-    { "idle", "irc" },
-    { "haze", "icq" },
-    { "haze", "aim" },
-    { "haze", "yahoo" },
-    { "haze", "groupwise" },
-    { "sofiasip", "sip" },
-    { NULL, NULL }
-  };
-  int i;
-
-  for (i = 0; dialogs[i].cm != NULL; i++)
+  for (l = cms; l; l = l->next)
     {
-      if (!tp_strdiff (cm, dialogs[i].cm)
-          && !tp_strdiff (proto, dialogs[i].proto))
-        return empathy_account_widget_new_for_protocol (dialogs[i].proto,
-          settings);
+      TpConnectionManager *tp_cm = l->data;
+      if (tp_connection_manager_has_protocol (tp_cm, proto))
+        {
+          g_object_unref (cm);
+          return empathy_account_widget_new_for_protocol
+              (proto, settings);
+        }
     }
 
+  g_object_unref (cm);
   return empathy_account_widget_new_for_protocol ("generic", settings);
 }
 
