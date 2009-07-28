@@ -45,10 +45,7 @@
 #include <libempathy-gtk/empathy-conf.h>
 
 #include "empathy-accounts-dialog.h"
-#if 0
-/* FIXME MC-5 */
 #include "empathy-import-dialog.h"
-#endif
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -117,11 +114,8 @@ enum {
 static void accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings);
 
-#if 0
-/* FIXME MC-5 */
 static void accounts_dialog_button_import_clicked_cb  (GtkWidget *button,
     EmpathyAccountsDialog *dialog);
-#endif
 
 static void
 accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
@@ -1114,8 +1108,6 @@ accounts_dialog_button_remove_clicked_cb (GtkWidget *button,
   gtk_widget_destroy (message_dialog);
 }
 
-#if 0
-/* FIXME MC-5 */
 static void
 accounts_dialog_button_import_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
@@ -1124,7 +1116,6 @@ accounts_dialog_button_import_clicked_cb (GtkWidget *button,
 
   empathy_import_dialog_show (GTK_WINDOW (priv->window), TRUE);
 }
-#endif
 
 static void
 accounts_dialog_response_cb (GtkWidget *widget,
@@ -1214,10 +1205,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
       "button_remove", "clicked", accounts_dialog_button_remove_clicked_cb,
-#if 0
-      /* FIXME MC-5  */
       "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
-#endif
       "button_help", "clicked", accounts_dialog_button_help_clicked_cb,
       NULL);
 
@@ -1400,8 +1388,6 @@ do_constructed (GObject *object)
       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
 
 
-#if 0
-  /* FIXME MC-5 */
   if (empathy_import_dialog_accounts_to_import ())
     {
 
@@ -1417,7 +1403,6 @@ do_constructed (GObject *object)
     {
       gtk_widget_set_sensitive (priv->button_import, FALSE);
     }
-#endif
 }
 
 static void
