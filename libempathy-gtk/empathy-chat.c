@@ -400,9 +400,18 @@ chat_send (EmpathyChat  *chat,
 	if (msg[0] == '/' &&
 	    !g_str_has_prefix (msg, "/me") &&
 	    !g_str_has_prefix (msg, "/say")) {
-		empathy_chat_view_append_event (chat->view,
-			_("Unsupported command"));
-		return;
+		/* Also allow messages with two slashes before the first space,
+		 * so it is possible to send an /unix/path */
+		int slash_count = 0, i;
+		for (i = 0; msg[i] && msg[i] != ' ' && slash_count < 2; i++) {
+			if (msg[i] == '/')
+				slash_count++;
+		}
+		if (slash_count == 1) {
+			empathy_chat_view_append_event (chat->view,
+				_("Unsupported command"));
+			return;
+		}
 	}
 
 	/* We can send the message */
