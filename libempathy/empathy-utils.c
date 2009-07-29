@@ -363,6 +363,12 @@ empathy_uint_compare (gconstpointer a,
 	return *(guint *) a - *(guint *) b;
 }
 
+gchar *
+empathy_protocol_icon_name (const gchar *protocol)
+{
+  return g_strdup_printf ("im-%s", protocol);
+}
+
 GType
 empathy_type_dbus_ao (void)
 {

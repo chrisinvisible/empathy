@@ -77,6 +77,8 @@ gboolean     empathy_check_available_state          (void);
 gint        empathy_uint_compare                    (gconstpointer a,
 						     gconstpointer b);
 
+gchar *empathy_protocol_icon_name (const gchar *protocol);
+
 #define EMPATHY_ARRAY_TYPE_OBJECT (empathy_type_dbus_ao ())
 GType empathy_type_dbus_ao (void);
 

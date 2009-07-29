@@ -467,7 +467,7 @@ empathy_account_constructed (GObject *object)
   empathy_account_parse_unique_name (priv->unique_name,
     &(priv->proto_name), &(priv->cm_name));
 
-  priv->icon_name = g_strdup_printf ("im-%s", priv->proto_name);
+  priv->icon_name = empathy_protocol_icon_name (priv->proto_name);
 
   tp_cli_account_connect_to_account_property_changed (priv->account,
     empathy_account_properties_changed,
