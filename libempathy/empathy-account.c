@@ -607,6 +607,21 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
     G_TYPE_NONE, 0);
 }
 
+static void
+empathy_account_free_connection (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  if (priv->connection_invalidated_id != 0)
+    g_signal_handler_disconnect (priv->connection,
+        priv->connection_invalidated_id);
+  priv->connection_invalidated_id = 0;
+
+  if (priv->connection != NULL)
+    g_object_unref (priv->connection);
+  priv->connection = NULL;
+}
+
 void
 empathy_account_dispose (GObject *object)
 {
@@ -618,14 +633,7 @@ empathy_account_dispose (GObject *object)
 
   priv->dispose_has_run = TRUE;
 
-  if (priv->connection_invalidated_id != 0)
-    g_signal_handler_disconnect (priv->connection,
-        priv->connection_invalidated_id);
-  priv->connection_invalidated_id = 0;
-
-  if (priv->connection != NULL)
-    g_object_unref (priv->connection);
-  priv->connection = NULL;
+  empathy_account_free_connection (self);
 
   /* release any references held by the object here */
   if (G_OBJECT_CLASS (empathy_account_parent_class)->dispose != NULL)
@@ -785,13 +793,12 @@ empathy_account_connection_ready_cb (TpConnection *connection,
     gpointer user_data)
 {
   EmpathyAccount *account = EMPATHY_ACCOUNT (user_data);
-  EmpathyAccountPriv *priv = GET_PRIV (account);
 
   if (error != NULL)
     {
       DEBUG ("(%s) Connection failed to become ready: %s",
         empathy_account_get_unique_name (account), error->message);
-      priv->connection = NULL;
+      empathy_account_free_connection (account);
     }
   else
     {
