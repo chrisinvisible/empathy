@@ -204,7 +204,7 @@ chat_new_connection_cb (EmpathyAccountManager *manager,
 	EmpathyAccount *account;
 
 	account = empathy_account_manager_get_account (manager, connection);
-	if (!priv->tp_chat && empathy_account_equal (account, priv->account) &&
+	if (!priv->tp_chat && account == priv->account &&
 	    priv->handle_type != TP_HANDLE_TYPE_NONE &&
 	    !EMP_STR_EMPTY (priv->id)) {
 

@@ -580,9 +580,8 @@ empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
 		this_account = empathy_chatroom_get_account (chatroom);
 		this_room = empathy_chatroom_get_room (chatroom);
 
-		if (this_account && this_room &&
-		    empathy_account_equal (account, this_account) &&
-		    strcmp (this_room, room) == 0) {
+		if (this_account && this_room && account == this_account
+				&& strcmp (this_room, room) == 0) {
 			return chatroom;
 		}
 	}
@@ -611,8 +610,7 @@ empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
 
 		chatroom = l->data;
 
-		if (empathy_account_equal (account,
-					  empathy_chatroom_get_account (chatroom))) {
+		if (account == empathy_chatroom_get_account (chatroom)) {
 			chatrooms = g_list_append (chatrooms, chatroom);
 		}
 	}
@@ -641,8 +639,7 @@ empathy_chatroom_manager_get_count (EmpathyChatroomManager *manager,
 
 		chatroom = l->data;
 
-		if (empathy_account_equal (account,
-					   empathy_chatroom_get_account (chatroom))) {
+		if (account == empathy_chatroom_get_account (chatroom)) {
 			count++;
 		}
 	}

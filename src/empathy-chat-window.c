@@ -1778,7 +1778,7 @@ empathy_chat_window_find_chat (EmpathyAccount   *account,
 
 			chat = ll->data;
 
-			if (empathy_account_equal (account, empathy_chat_get_account (chat)) &&
+			if (account == empathy_chat_get_account (chat) &&
 			    !tp_strdiff (id, empathy_chat_get_id (chat))) {
 				return chat;
 			}

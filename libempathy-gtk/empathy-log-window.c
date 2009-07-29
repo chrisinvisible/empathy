@@ -774,7 +774,7 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 				    COL_CHAT_IS_CHATROOM, &this_is_chatroom,
 				    -1);
 
-		if (empathy_account_equal (this_account, account) &&
+		if (this_account == account &&
 		    strcmp (this_chat_id, chat_id) == 0 &&
 		    this_is_chatroom == is_chatroom) {
 			gtk_tree_selection_select_iter (selection, &iter);

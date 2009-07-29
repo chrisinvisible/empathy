@@ -227,13 +227,6 @@ empathy_xml_node_find_child_prop_value (xmlNodePtr   node,
 	return found;
 }
 
-gboolean
-empathy_account_equal (gconstpointer a,
-		       gconstpointer b)
-{
-  return a == b;
-}
-
 const gchar *
 empathy_presence_get_default_message (TpConnectionPresenceType presence)
 {

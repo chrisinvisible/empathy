@@ -197,7 +197,7 @@ megaphone_applet_new_connection_cb (EmpathyAccountManager *manager,
 {
 	MegaphoneAppletPriv *priv = GET_PRIV (applet);
 
-	if (priv->contact || !empathy_account_equal (account, priv->account)) {
+	if (priv->contact || account != priv->account) {
 		return;
 	}
 

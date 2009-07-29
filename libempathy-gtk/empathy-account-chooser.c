@@ -545,7 +545,7 @@ account_chooser_find_account_foreach (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
-	if (empathy_account_equal (account, data->account)) {
+	if (account == data->account) {
 		data->found = TRUE;
 		*(data->iter) = *iter;
 		g_object_unref (account);
@@ -688,10 +688,8 @@ account_chooser_set_account_foreach (GtkTreeModel   *model,
 	if ((data->account == NULL) != (account == NULL)) {
 		equal = FALSE;
 	}
-	else if (data->account == account) {
-		equal = TRUE;
-	} else {
-		equal = empathy_account_equal (data->account, account);
+	else {
+		equal = (data->account == account);
 	}
 
 	if (account) {
