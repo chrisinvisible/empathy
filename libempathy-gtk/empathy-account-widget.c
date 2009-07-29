@@ -51,7 +51,7 @@ G_DEFINE_TYPE (EmpathyAccountWidget, empathy_account_widget, G_TYPE_OBJECT)
 typedef struct {
   char *protocol;
   EmpathyAccountSettings *settings;
-	
+
   GtkWidget *apply_button;
   GtkWidget *entry_password;
   GtkWidget *button_forget;
@@ -145,7 +145,7 @@ account_widget_int_changed_cb (GtkWidget *widget,
     default:
       g_return_if_reached ();
     }
-	
+
   account_widget_handle_apply_sensitivity (self);
 }
 
@@ -176,7 +176,7 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
       DEBUG ("Setting %s to %d", param_name, value);
       empathy_account_settings_set_boolean (priv->settings, param_name, value);
     }
-	
+
   account_widget_handle_apply_sensitivity (self);
 }
 
@@ -238,7 +238,7 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
     const gchar *param_name)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-	
+
   g_object_set_data_full (G_OBJECT (widget), "param_name",
       g_strdup (param_name), g_free);
 
@@ -495,7 +495,7 @@ account_widget_apply_clicked_cb (GtkWidget *button,
     EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-	
+
   empathy_account_settings_apply_async (priv->settings, NULL, NULL);
 }
 
@@ -758,7 +758,7 @@ do_get_property (GObject *object,
 
 static void
 do_constructed (GObject *obj)
-{      
+{
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   char *uiname, *filename;
@@ -826,7 +826,7 @@ do_constructed (GObject *obj)
           self);
       g_signal_connect (priv->entry_password, "changed",
           G_CALLBACK (account_widget_password_changed_cb),
-          self);  
+          self);
     }
 
   /* handle apply button */
@@ -904,7 +904,7 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
       "settings", "The settings of the account",
       EMPATHY_TYPE_ACCOUNT_SETTINGS,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
-  g_object_class_install_property (oclass, PROP_SETTINGS, param_spec);	
+  g_object_class_install_property (oclass, PROP_SETTINGS, param_spec);
 
   g_type_class_add_private (klass, sizeof (EmpathyAccountWidgetPriv));
 }
@@ -912,7 +912,7 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
 static void
 empathy_account_widget_init (EmpathyAccountWidget *self)
 {
-  EmpathyAccountWidgetPriv *priv = 
+  EmpathyAccountWidgetPriv *priv =
     G_TYPE_INSTANCE_GET_PRIVATE ((self), EMPATHY_TYPE_ACCOUNT_WIDGET,
         EmpathyAccountWidgetPriv);
 

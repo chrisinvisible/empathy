@@ -107,7 +107,7 @@ emp_account_enabled_cb (EmpathyAccount *account,
   gpointer manager)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  
+
   if (empathy_account_is_enabled (account))
     {
       g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
@@ -279,7 +279,7 @@ empathy_account_manager_check_ready (EmpathyAccountManager *manager)
 
 static void
 account_manager_account_ready_cb (GObject *obj,
-    GParamSpec *spec, 
+    GParamSpec *spec,
     gpointer user_data)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
@@ -436,7 +436,7 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
 
   priv->accounts = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, (GDestroyNotify) g_object_unref);
-  
+
   priv->create_results = g_hash_table_new (g_direct_hash, g_direct_equal);
 
   priv->dbus = tp_dbus_daemon_dup (NULL);

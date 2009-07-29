@@ -367,7 +367,7 @@ accounts_dialog_name_editing_started_cb (GtkCellRenderer *renderer,
 
   if (priv->connecting_id)
     g_source_remove (priv->connecting_id);
-  
+
   DEBUG ("Editing account name started; stopping flashing");
 }
 
@@ -591,7 +591,7 @@ accounts_dialog_model_get_selected_settings (EmpathyAccountsDialog *dialog)
 
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return NULL;
-  
+
   gtk_tree_model_get (model, &iter,
       COL_ACCOUNT_SETTINGS_POINTER, &settings, -1);
 
@@ -738,7 +738,7 @@ accounts_dialog_model_get_selected_account (EmpathyAccountsDialog *dialog)
 
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return NULL;
-  
+
   gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, &account, -1);
 
   return account;
@@ -772,7 +772,7 @@ accounts_dialog_model_remove_selected (EmpathyAccountsDialog *dialog)
 
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return FALSE;
-  
+
   gtk_tree_model_get (model, &iter,
       COL_ACCOUNT_POINTER, &account,
       -1);
@@ -867,7 +867,7 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 
   if (!accounts_dialog_get_account_iter (dialog, account, &iter))
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-  
+
   settings = empathy_account_settings_new_for_account (account);
 
   gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -1202,7 +1202,7 @@ accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
 
 static void
 accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
-{	
+{
   GtkBuilder                   *gui;
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
