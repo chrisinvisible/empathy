@@ -77,7 +77,7 @@ const gchar *empathy_account_settings_get_protocol (
 EmpathyAccount *empathy_account_settings_get_account (
     EmpathyAccountSettings *settings);
 
-gboolean empathy_account_settings_owns_account (
+gboolean empathy_account_settings_has_account (
     EmpathyAccountSettings *settings, EmpathyAccount *account);
 
 TpConnectionManagerParam *empathy_account_settings_get_tp_params (

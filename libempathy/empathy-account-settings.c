@@ -1028,7 +1028,7 @@ empathy_account_settings_apply_finish (EmpathyAccountSettings *settings,
 }
 
 gboolean
-empathy_account_settings_owns_account (EmpathyAccountSettings *settings,
+empathy_account_settings_has_account (EmpathyAccountSettings *settings,
     EmpathyAccount *account)
 {
   EmpathyAccountSettingsPriv *priv;

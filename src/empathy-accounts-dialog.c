@@ -712,7 +712,7 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
           COL_ACCOUNT_SETTINGS_POINTER, &settings,
           -1);
 
-      equal = empathy_account_settings_owns_account
+      equal = empathy_account_settings_has_account
         (settings, account);
       g_object_unref (settings);
 
