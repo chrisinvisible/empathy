@@ -62,7 +62,6 @@ xmlNodePtr   empathy_xml_node_find_child_prop_value (xmlNodePtr       node,
 						    const gchar     *prop_value);
 
 /* Others */
-guint        empathy_account_hash                   (gconstpointer    key);
 gboolean     empathy_account_equal                  (gconstpointer    a,
 						    gconstpointer    b);
 const gchar * empathy_presence_get_default_message  (TpConnectionPresenceType presence);

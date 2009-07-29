@@ -1254,8 +1254,8 @@ empathy_main_window_show (void)
 			  "account-connection-changed",
 			  G_CALLBACK (main_window_connection_changed_cb), window);
 
-	window->errors = g_hash_table_new_full (empathy_account_hash,
-						empathy_account_equal,
+	window->errors = g_hash_table_new_full (g_direct_hash,
+						g_direct_equal,
 						g_object_unref,
 						NULL);
 
