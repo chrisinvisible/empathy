@@ -63,7 +63,7 @@ typedef struct {
   gchar *desired_status;
   gchar *desired_status_message;
 
-  GSimpleAsyncResult *create_result;
+  GHashTable *create_results;
 } EmpathyAccountManagerPriv;
 
 enum {
@@ -285,6 +285,7 @@ account_manager_account_ready_cb (GObject *obj,
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   EmpathyAccount *account = EMPATHY_ACCOUNT (obj);
+  GSimpleAsyncResult *result;
   gboolean ready;
 
   g_object_get (account, "ready", &ready, NULL);
@@ -292,14 +293,17 @@ account_manager_account_ready_cb (GObject *obj,
   if (!ready)
     return;
 
-  if (priv->create_result)
+  /* see if there's any pending callbacks for this account */
+  result = g_hash_table_lookup (priv->create_results, account);
+  if (result != NULL)
     {
       g_simple_async_result_set_op_res_gpointer (
-          G_SIMPLE_ASYNC_RESULT (priv->create_result), account, NULL);
+          G_SIMPLE_ASYNC_RESULT (result), account, NULL);
 
-      g_simple_async_result_complete (priv->create_result);
-      g_object_unref (priv->create_result);
-      priv->create_result = NULL;
+      g_simple_async_result_complete (result);
+
+      g_hash_table_remove (priv->create_results, account);
+      g_object_unref (result);
     }
 
   g_signal_emit (manager, signals[ACCOUNT_CREATED], 0, account);
@@ -322,7 +326,7 @@ account_manager_account_ready_cb (GObject *obj,
   empathy_account_manager_check_ready (manager);
 }
 
-static void
+static EmpathyAccount *
 account_manager_add_account (EmpathyAccountManager *manager,
   const gchar *path)
 {
@@ -331,13 +335,15 @@ account_manager_add_account (EmpathyAccountManager *manager,
 
   account = g_hash_table_lookup (priv->accounts, path);
   if (account != NULL)
-    return;
+    return account;
 
   account = empathy_account_new (priv->dbus, path);
   g_hash_table_insert (priv->accounts, g_strdup (path), account);
 
   g_signal_connect (account, "notify::ready",
     G_CALLBACK (account_manager_account_ready_cb), manager);
+
+  return account;
 }
 
 static void
@@ -430,6 +436,8 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
 
   priv->accounts = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, (GDestroyNotify) g_object_unref);
+  
+  priv->create_results = g_hash_table_new (g_direct_hash, g_direct_equal);
 
   priv->dbus = tp_dbus_daemon_dup (NULL);
 
@@ -458,6 +466,7 @@ do_finalize (GObject *obj)
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (obj);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
 
+  g_hash_table_destroy (priv->create_results);
   g_hash_table_destroy (priv->accounts);
 
   g_free (priv->global_status);
@@ -480,14 +489,25 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
-  if (priv->create_result != NULL)
+  if (priv->create_results != NULL &&
+      g_hash_table_size (priv->create_results) > 0)
     {
-      g_simple_async_result_set_error (priv->create_result, G_IO_ERROR,
-          G_IO_ERROR_CANCELLED, "The account manager was disposed while "
-          "creating the account");
-      g_simple_async_result_complete (priv->create_result);
-      g_object_unref (priv->create_result);
-      priv->create_result = NULL;
+      /* the manager is being destroyed while there are account creation
+       * processes pending; this should not happen, but emit the callbacks
+       * with an error anyway.
+       */
+      GHashTableIter iter;
+      GSimpleAsyncResult *result;
+
+      g_hash_table_iter_init (&iter, priv->create_results);
+      while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &result))
+	{
+	  g_simple_async_result_set_error (result, G_IO_ERROR,
+              G_IO_ERROR_CANCELLED, "The account manager was disposed while "
+              "creating the account");
+	  g_simple_async_result_complete (result);
+	  g_object_unref (result);
+	}
     }
 
   tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
@@ -874,19 +894,22 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GSimpleAsyncResult *my_res = user_data;
+  EmpathyAccount *account;
 
   if (error != NULL)
     {
-      g_simple_async_result_set_from_error (priv->create_result,
+      g_simple_async_result_set_from_error (my_res,
           (GError *) error);
-      g_simple_async_result_complete (priv->create_result);
-      g_object_unref (priv->create_result);
-      priv->create_result = NULL;
+      g_simple_async_result_complete (my_res);
+      g_object_unref (my_res);
 
       return;
     }
 
-  account_manager_add_account (manager, account_path);
+  account = account_manager_add_account (manager, account_path);
+
+  g_hash_table_insert (priv->create_results, account, my_res);
 }
 
 void
@@ -897,8 +920,9 @@ empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
   GAsyncReadyCallback callback, gpointer user_data)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GSimpleAsyncResult *res;
 
-  priv->create_result = g_simple_async_result_new
+  res = g_simple_async_result_new
     (G_OBJECT (manager), callback, user_data,
      empathy_account_manager_create_account_finish);
 
@@ -910,7 +934,7 @@ empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
       parameters,
       properties,
       empathy_account_manager_created_cb,
-      NULL,
+      res,
       NULL,
       G_OBJECT (manager));
 }
