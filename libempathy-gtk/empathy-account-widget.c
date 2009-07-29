@@ -198,12 +198,13 @@ account_widget_forget_clicked_cb (GtkWidget *button,
 
 static void
 account_widget_password_changed_cb (GtkWidget *entry,
-    GtkWidget *button)
+    EmpathyAccountWidget *self)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   const gchar *str;
 
   str = gtk_entry_get_text (GTK_ENTRY (entry));
-  gtk_widget_set_sensitive (button, !EMP_STR_EMPTY (str));
+  gtk_widget_set_sensitive (priv->button_forget, !EMP_STR_EMPTY (str));
 }
 
 static void
