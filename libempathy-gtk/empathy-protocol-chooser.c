@@ -163,7 +163,7 @@ protocol_choosers_cms_listed (TpConnectionManager * const *cms,
 {
   TpConnectionManager * const *iter;
 
-  if (error !=NULL)
+  if (error != NULL)
     {
       DEBUG ("Failed to get connection managers: %s", error->message);
       return;
@@ -181,7 +181,6 @@ protocol_chooser_constructed (GObject *object)
 {
   EmpathyProtocolChooser *protocol_chooser;
   EmpathyProtocolChooserPriv *priv;
-
   GtkCellRenderer *renderer;
   TpDBusDaemon *dbus;
 
@@ -281,7 +280,8 @@ empathy_protocol_chooser_class_init (EmpathyProtocolChooserClass *klass)
  *
  * Return value: a pointer to the selected #TpConnectionManagerProtocol
  */
-TpConnectionManager *empathy_protocol_chooser_dup_selected (
+TpConnectionManager *
+empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol)
 {
