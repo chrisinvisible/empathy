@@ -1072,10 +1072,6 @@ empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
             continue;
         }
 
-      /* see if there's a default value */
-      if (empathy_account_settings_get_default (settings, current))
-        continue;
-
       missed = TRUE;
       break;
     }
