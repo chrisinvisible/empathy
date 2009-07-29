@@ -857,12 +857,6 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
-  if (self->ui_details->gui != NULL)
-    {
-      g_object_unref (self->ui_details->gui);
-      self->ui_details->gui = NULL;
-    }
-
   if (priv->settings != NULL)
     {
       g_object_unref (priv->settings);
