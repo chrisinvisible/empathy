@@ -708,6 +708,13 @@ account_widget_build_groupwise (EmpathyAccountWidget *self,
 }
 
 static void
+account_widget_destroy_cb (GtkWidget *widget,
+    EmpathyAccountWidget *self)
+{
+  g_object_unref (self);
+}
+
+static void
 do_set_property (GObject *object,
     guint prop_id,
     const GValue *value,
@@ -831,6 +838,10 @@ do_constructed (GObject *obj)
       self);
   account_widget_handle_apply_sensitivity (self);
   gtk_widget_show (priv->apply_button);
+
+  /* hook up to widget destruction to unref ourselves */
+  g_signal_connect (self->ui_details->widget, "destroy",
+      G_CALLBACK (account_widget_destroy_cb), self);
 
   empathy_builder_unref_and_keep_widget (self->ui_details->gui, self->ui_details->widget);
 }
