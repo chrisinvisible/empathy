@@ -510,6 +510,8 @@ account_widget_setup_generic (EmpathyAccountSettings *settings,
 
 	accounts_widget_generic_setup (settings, table_common_settings,
 		table_advanced_settings);
+
+	g_object_unref (builder);
 }
 
 static void
@@ -543,7 +545,11 @@ empathy_account_widget_generic_new (EmpathyAccountSettings *settings)
 
 	empathy_account_widget_add_apply_button (settings, widget);
 
-	return g_object_ref (widget);
+	g_free (filename);
+
+	g_object_ref (widget);
+	g_object_force_floating (G_OBJECT (widget));
+	return widget;
 }
 
 GtkWidget *
