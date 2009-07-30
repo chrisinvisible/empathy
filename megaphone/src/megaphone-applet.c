@@ -443,7 +443,7 @@ megaphone_applet_set_contact (MegaphoneApplet *applet,
 	/* Lookup the new contact */
 	if (str) {
 		strv = g_strsplit (str, "/", 2);
-		priv->account = empathy_account_manager_lookup (priv->account_manager, 
+		priv->account = empathy_account_manager_get_account (priv->account_manager,
 			strv[0]);
 		priv->id = strv[1];
 		g_free (strv[0]);
@@ -451,6 +451,7 @@ megaphone_applet_set_contact (MegaphoneApplet *applet,
 	}
 
 	if (priv->account) {
+		g_object_ref (priv->account);
 		connection = empathy_account_get_connection (priv->account);
 		if (connection) {
 			megaphone_applet_new_connection_cb (priv->account_manager,

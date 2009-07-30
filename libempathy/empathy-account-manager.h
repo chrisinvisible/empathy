@@ -66,10 +66,10 @@ int                     empathy_account_manager_get_connecting_accounts
                                 (EmpathyAccountManager *manager);
 int                     empathy_account_manager_get_count
                                 (EmpathyAccountManager *manager);
-EmpathyAccount *        empathy_account_manager_get_account
+EmpathyAccount *        empathy_account_manager_get_account_for_connection
                                 (EmpathyAccountManager *manager,
                                  TpConnection          *connection);
-EmpathyAccount *        empathy_account_manager_lookup
+EmpathyAccount *        empathy_account_manager_get_account
                                 (EmpathyAccountManager *manager,
                                  const gchar *unique_name);
 GList *                 empathy_account_manager_dup_accounts

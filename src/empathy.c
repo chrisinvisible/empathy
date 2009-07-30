@@ -113,7 +113,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 
 			manager = empathy_account_manager_dup_singleton ();
 			connection = empathy_tp_chat_get_connection (tp_chat);
-			account = empathy_account_manager_get_account (manager,
+			account = empathy_account_manager_get_account_for_connection (manager,
 								       connection);
 			chat = empathy_chat_window_find_chat (account, id);
 			g_object_unref (manager);

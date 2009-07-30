@@ -570,7 +570,8 @@ empathy_contact_get_account (EmpathyContact *contact)
       /* FIXME: This assume the account manager already exists */
       manager = empathy_account_manager_dup_singleton ();
       connection = tp_contact_get_connection (priv->tp_contact);
-      priv->account = empathy_account_manager_get_account (manager, connection);
+      priv->account = empathy_account_manager_get_account_for_connection (
+          manager, connection);
       g_object_ref (priv->account);
       g_object_unref (manager);
     }

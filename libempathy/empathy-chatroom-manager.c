@@ -223,7 +223,8 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 		xmlFree (str);
 	}
 
-	account = empathy_account_manager_lookup (priv->account_manager, account_id);
+	account = empathy_account_manager_get_account (priv->account_manager,
+		account_id);
 	if (!account) {
 		g_free (name);
 		g_free (room);
@@ -236,7 +237,6 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 	add_chatroom (manager, chatroom);
 	g_signal_emit (manager, signals[CHATROOM_ADDED], 0, chatroom);
 
-	g_object_unref (account);
 	g_free (name);
 	g_free (room);
 	g_free (account_id);
@@ -704,8 +704,8 @@ chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
   chat = EMPATHY_TP_CHAT (
     empathy_dispatch_operation_get_channel_wrapper (operation));
   connection = empathy_tp_chat_get_connection (chat);
-  account = empathy_account_manager_get_account (priv->account_manager,
-      connection);
+  account = empathy_account_manager_get_account_for_connection (
+      priv->account_manager, connection);
 
   roomname = empathy_tp_chat_get_id (chat);
 

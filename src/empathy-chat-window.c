@@ -1269,7 +1269,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		strv = g_strsplit (id, "/", 2);
 		account_id = strv[0];
 		contact_id = strv[1];
-		account = empathy_account_manager_lookup (account_manager, account_id);
+		account = empathy_account_manager_get_account (account_manager, account_id);
 		chat = empathy_chat_window_find_chat (account, contact_id);
 
 		if (!chat) {
@@ -1282,11 +1282,9 @@ chat_window_drag_data_received (GtkWidget        *widget,
 					connection, contact_id, NULL, NULL);
 			}
 
-			g_object_unref (account);
 			g_strfreev (strv);
 			return;
 		}
-		g_object_unref (account);
 		g_object_unref (account_manager);
 		g_strfreev (strv);
 

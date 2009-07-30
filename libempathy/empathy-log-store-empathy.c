@@ -405,8 +405,10 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 
   unescaped = g_strdup_printf ("/%s", g_strdelimit (account_name, "%", '/'));
 
-  hit->account = empathy_account_manager_lookup (priv->account_manager,
+  hit->account = empathy_account_manager_get_account (priv->account_manager,
     unescaped);
+  if (hit->account != NULL)
+    g_object_ref (hit->account);
   hit->filename = g_strdup (filename);
 
   g_free (unescaped);

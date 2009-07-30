@@ -302,7 +302,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 	account_id = strv[0];
 	contact_id = strv[1];
   account_manager = empathy_account_manager_dup_singleton ();
-	account = empathy_account_manager_lookup (account_manager, account_id);
+	account = empathy_account_manager_get_account (account_manager, account_id);
 	if (account) {
 		TpConnection *connection;
 
