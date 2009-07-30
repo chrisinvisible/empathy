@@ -356,7 +356,8 @@ empathy_account_got_all_cb (TpProxy *proxy,
 
   if (error != NULL)
     {
-      printf ("Unhappy\n");
+      DEBUG ("Failed to get the initial set of account properties: %s",
+        error->message);
       return;
     }
 
@@ -907,7 +908,7 @@ empathy_account_requested_presence_cb (TpProxy *proxy,
   GObject *weak_object)
 {
   if (error)
-    DEBUG (":( : %s", error->message);
+    DEBUG ("Failed to set the requested presence: %s", error->message);
 }
 
 
