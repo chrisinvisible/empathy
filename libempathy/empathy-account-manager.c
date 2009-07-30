@@ -150,6 +150,9 @@ emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
   GHashTableIter iter;
   gpointer value;
 
+  /* Make the global presence is equal to the presence of the account with the
+   * highest availability */
+
   g_hash_table_iter_init (&iter, priv->accounts);
   while (g_hash_table_iter_next (&iter, NULL, &value))
     {
