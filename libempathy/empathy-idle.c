@@ -577,7 +577,7 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 			   const gchar *status_message)
 {
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
-	const gchar *statusses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
+	const gchar *statuses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
 		NULL,
 		"offline",
 		"available",
@@ -592,7 +592,7 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 
 	g_assert (status_type > 0 && status_type < NUM_TP_CONNECTION_PRESENCE_TYPES);
 
-	status = statusses[status_type];
+	status = statuses[status_type];
 
 	g_return_if_fail (status != NULL);
 
