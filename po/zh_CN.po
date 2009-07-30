@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gossip\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-07-25 07:51+0000\n"
+"POT-Creation-Date: 2009-07-29 12:22+0000\n"
 "PO-Revision-Date: 2009-07-25 21:28+0000\n"
 "Last-Translator: Aron Xu <aronxu@gnome.org>\n"
 "Language-Team: Simplified Chinese <i18n-translation@lists.linux.net.cn>\n"
@@ -355,7 +355,7 @@ msgstr "当联系人上线时是否显示弹出通知"
 msgid ""
 "Whether or not to show a popup notification when receiving a new message "
 "even if the chat is already opened, but not focused."
-msgstr ""
+msgstr "当接收新消息时是否显示弹出提示，即使聊天窗口已开启，但未获得焦点时。"
 
 #: ../data/empathy.schemas.in.h:76
 msgid ""
@@ -859,13 +859,13 @@ msgstr "话题："
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:264
+#: ../libempathy-gtk/empathy-theme-adium.c:267
 msgid "_Copy Link Address"
 msgstr "复制链接地址(_C)"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:272
+#: ../libempathy-gtk/empathy-theme-adium.c:275
 msgid "_Open Link"
 msgstr "打开链接(_O)"
 
@@ -884,7 +884,7 @@ msgstr "编辑联系人信息"
 msgid "Personal Information"
 msgstr "个人信息"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:393
+#: ../libempathy-gtk/empathy-contact-dialogs.c:394
 msgid "New Contact"
 msgstr "新建联系人"
 
@@ -896,27 +896,27 @@ msgstr "以后再决定(_L)"
 msgid "Subscription Request"
 msgstr "订阅请求"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1400
+#: ../libempathy-gtk/empathy-contact-list-view.c:1404
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "您真的要删除群组“%s”吗？"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1402
+#: ../libempathy-gtk/empathy-contact-list-view.c:1406
 msgid "Removing group"
 msgstr "删除群组"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1449
-#: ../libempathy-gtk/empathy-contact-list-view.c:1526
+#: ../libempathy-gtk/empathy-contact-list-view.c:1453
+#: ../libempathy-gtk/empathy-contact-list-view.c:1530
 msgid "_Remove"
 msgstr "删除(_R)"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1479
+#: ../libempathy-gtk/empathy-contact-list-view.c:1483
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "您真的想要删除联系人“%s”吗？"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1481
+#: ../libempathy-gtk/empathy-contact-list-view.c:1485
 msgid "Removing contact"
 msgstr "删除联系人"
 
@@ -950,7 +950,7 @@ msgstr "发送文件"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:369
 msgid "Share my desktop"
-msgstr ""
+msgstr "共享我的桌面"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:397
 msgid "Infor_mation"
@@ -981,120 +981,120 @@ msgstr "保存头像"
 msgid "Unable to save avatar"
 msgstr "无法保存头像"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:992
+#: ../libempathy-gtk/empathy-contact-widget.c:996
 msgid "Select"
 msgstr "选择"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1001
+#: ../libempathy-gtk/empathy-contact-widget.c:1005
 #: ../src/empathy-main-window.c:1023
 msgid "Group"
 msgstr "群组"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1252
+#: ../libempathy-gtk/empathy-contact-widget.c:1256
 msgid "Country ISO Code:"
 msgstr "包括 ISO 编码"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1254
+#: ../libempathy-gtk/empathy-contact-widget.c:1258
 msgid "Country:"
 msgstr "国家"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1256
+#: ../libempathy-gtk/empathy-contact-widget.c:1260
 msgid "State:"
 msgstr "省"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1258
+#: ../libempathy-gtk/empathy-contact-widget.c:1262
 msgid "City:"
 msgstr "市"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1260
+#: ../libempathy-gtk/empathy-contact-widget.c:1264
 msgid "Area:"
 msgstr "地区"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1262
+#: ../libempathy-gtk/empathy-contact-widget.c:1266
 msgid "Postal Code:"
 msgstr "邮政编码"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1264
+#: ../libempathy-gtk/empathy-contact-widget.c:1268
 msgid "Street:"
 msgstr "街"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1266
+#: ../libempathy-gtk/empathy-contact-widget.c:1270
 msgid "Building:"
 msgstr "建筑物"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1268
+#: ../libempathy-gtk/empathy-contact-widget.c:1272
 msgid "Floor:"
 msgstr "楼层："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1270
+#: ../libempathy-gtk/empathy-contact-widget.c:1274
 msgid "Room:"
 msgstr "房间："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1272
+#: ../libempathy-gtk/empathy-contact-widget.c:1276
 msgid "Text:"
 msgstr "文本："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1274
+#: ../libempathy-gtk/empathy-contact-widget.c:1278
 msgid "Description:"
 msgstr "描述："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1276
+#: ../libempathy-gtk/empathy-contact-widget.c:1280
 msgid "URI:"
 msgstr "URI："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1278
+#: ../libempathy-gtk/empathy-contact-widget.c:1282
 msgid "Accuracy Level:"
 msgstr "准确程度："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1280
+#: ../libempathy-gtk/empathy-contact-widget.c:1284
 msgid "Error:"
 msgstr "错误："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1282
-msgid "Vertical Error (meters):"
-msgstr ""
-
-#: ../libempathy-gtk/empathy-contact-widget.c:1284
-msgid "Horizontal Error (meters):"
-msgstr ""
-
 #: ../libempathy-gtk/empathy-contact-widget.c:1286
-msgid "Speed:"
-msgstr "速度："
+msgid "Vertical Error (meters):"
+msgstr "垂直误差(米):"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1288
-msgid "Bearing:"
-msgstr ""
+msgid "Horizontal Error (meters):"
+msgstr "水平误差(米):"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1290
-msgid "Climb Speed:"
-msgstr "爬升速度："
+msgid "Speed:"
+msgstr "速度:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1292
+msgid "Bearing:"
+msgstr "方位朝向:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1294
+msgid "Climb Speed:"
+msgstr "爬升速度:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1296
 msgid "Last Updated on:"
 msgstr "最近更新于:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1294
+#: ../libempathy-gtk/empathy-contact-widget.c:1298
 msgid "Longitude:"
 msgstr "经度："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1296
+#: ../libempathy-gtk/empathy-contact-widget.c:1300
 msgid "Latitude:"
 msgstr "纬度："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1298
+#: ../libempathy-gtk/empathy-contact-widget.c:1302
 msgid "Altitude:"
 msgstr "海拔："
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1345
+#: ../libempathy-gtk/empathy-contact-widget.c:1349
 msgid "<b>Location</b>"
 msgstr "<b>位置</b>"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1358
+#: ../libempathy-gtk/empathy-contact-widget.c:1362
 msgid "<b>Location</b>, "
 msgstr "<b>位置</b>，"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1408
+#: ../libempathy-gtk/empathy-contact-widget.c:1412
 msgid "%B %e, %Y at %R UTC"
 msgstr ""
 
@@ -1234,16 +1234,18 @@ msgstr "联系人 ID："
 msgid "New Conversation"
 msgstr "新建对话"
 
+#. COL_STATUS_TEXT
 #. COL_STATE_ICON_NAME
 #. COL_STATE
-#. COL_STATUS_TEXT
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
 #: ../libempathy-gtk/empathy-presence-chooser.c:172
+#: ../libempathy-gtk/empathy-presence-chooser.c:208
 msgid "Custom Message..."
 msgstr "自定义消息..."
 
+#: ../libempathy-gtk/empathy-presence-chooser.c:225
 #: ../libempathy-gtk/empathy-presence-chooser.c:227
 msgid "Edit Custom Messages..."
 msgstr "编辑自定义消息..."
@@ -1262,7 +1264,7 @@ msgstr "设置状态"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:782
 msgid "Set your presence and current status"
-msgstr ""
+msgstr "设置您的状态信息和现在的状态"
 
 #. Custom messages
 #: ../libempathy-gtk/empathy-presence-chooser.c:1017
@@ -1319,11 +1321,11 @@ msgstr "编辑自定义消息"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:1
 msgid "Add _New Preset"
-msgstr ""
+msgstr "添加新自定义状态(_N)"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:2
 msgid "Saved Presets"
-msgstr ""
+msgstr "已保存的自定义状态"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:3
 msgid "gtk-add"
@@ -1633,7 +1635,6 @@ msgstr "一个 GNOME 即时消息客户端"
 #: ../src/empathy-about-dialog.c:125
 msgid "translator-credits"
 msgstr ""
-
 "YangZhang, <zyangmath@gmail.com>\n"
 "Aron Xu <aronxu@gnome.org>\n"
 ""
@@ -1753,7 +1754,7 @@ msgstr "侧边栏(_S)"
 
 #: ../src/empathy-call-window.c:765
 msgid "Dialpad"
-msgstr ""
+msgstr "电话键盘"
 
 #: ../src/empathy-call-window.c:771
 msgid "Audio input"
@@ -2004,12 +2005,12 @@ msgstr "正在等待其他参与者的回应"
 #: ../src/empathy-ft-manager.c:643 ../src/empathy-ft-manager.c:681
 #, c-format
 msgid "Checking integrity of \"%s\""
-msgstr ""
+msgstr "检查\"%s\"完整性"
 
 #: ../src/empathy-ft-manager.c:646 ../src/empathy-ft-manager.c:684
 #, c-format
 msgid "Hashing \"%s\""
-msgstr ""
+msgstr "校验中 \"%s\""
 
 #: ../src/empathy-ft-manager.c:1024
 msgid "%"
@@ -2124,7 +2125,7 @@ msgstr "联系人列表"
 
 #: ../src/empathy-main-window.ui.h:2
 msgid "Contacts on a _Map"
-msgstr ""
+msgstr "联系人地图(_M)"
 
 #: ../src/empathy-main-window.ui.h:3
 msgid "Context"
@@ -2140,15 +2141,15 @@ msgstr "管理收藏夹"
 
 #: ../src/empathy-main-window.ui.h:6
 msgid "N_ormal Size"
-msgstr "正常尺寸(_O)"
+msgstr "常规视图(_O)"
 
 #: ../src/empathy-main-window.ui.h:7
 msgid "Normal Size With _Avatars"
-msgstr ""
+msgstr "扩展视图(_A)"
 
 #: ../src/empathy-main-window.ui.h:8
 msgid "Sort by _Name"
-msgstr "按姓姓名序(_N)"
+msgstr "按姓名排序(_N)"
 
 #: ../src/empathy-main-window.ui.h:9
 msgid "Sort by _Status"
@@ -2160,7 +2161,7 @@ msgstr "账户(_A)"
 
 #: ../src/empathy-main-window.ui.h:13
 msgid "_Compact Size"
-msgstr "紧凑模式(_C)"
+msgstr "紧凑视图(_C)"
 
 #: ../src/empathy-main-window.ui.h:14
 msgid "_Contents"
@@ -2297,7 +2298,7 @@ msgstr "账户已连接"
 
 #: ../src/empathy-preferences.c:153
 msgid "Account disconnected"
-msgstr "账户已断开连接"
+msgstr "账户已断开"
 
 #: ../src/empathy-preferences.c:393
 msgid "Language"
@@ -2349,7 +2350,7 @@ msgstr "当联系人离线时允许提示"
 
 #: ../src/empathy-preferences.ui.h:12
 msgid "Enable notifications when the _chat is not focused"
-msgstr ""
+msgstr "当会话闲置时允许提示"
 
 #: ../src/empathy-preferences.ui.h:13
 msgid "Enable spell checking for languages:"
@@ -2410,7 +2411,7 @@ msgstr "拼写检查"
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
-msgstr ""
+msgstr "语言列表仅反映已安装的字典"
 
 #: ../src/empathy-preferences.ui.h:27
 msgid "Themes"
@@ -2451,14 +2452,14 @@ msgstr "显示联系人列表(_S)"
 #: ../src/empathy-tube-dispatch.c:375
 #, c-format
 msgid "Unable to start application for service %s: %s"
-msgstr ""
+msgstr "不能启动应用程序为%s：%s 服务"
 
 #: ../src/empathy-tube-dispatch.c:446
 #, c-format
 msgid ""
 "An invitation was offered for service %s, but you don't have the needed "
 "application to handle it"
-msgstr ""
+msgstr "一个由 %s 服务提供邀请，但是你不需要应用程序处理它"
 
 #: ../src/empathy-call-window-fullscreen.ui.h:1
 msgid "gtk-leave-fullscreen"
@@ -2474,7 +2475,7 @@ msgstr "错误"
 
 #: ../src/empathy-debug-dialog.c:114 ../src/empathy-debug-dialog.c:1077
 msgid "Critical"
-msgstr ""
+msgstr "危急"
 
 #: ../src/empathy-debug-dialog.c:117 ../src/empathy-debug-dialog.c:1071
 msgid "Warning"
@@ -2529,7 +2530,7 @@ msgstr "级别"
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
-msgstr ""
+msgstr "已选定的连接管理不支持远程调试扩展"
 
 #~ msgid "<b>Advanced</b>"
 #~ msgstr "<b>高级</b>"
