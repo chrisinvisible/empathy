@@ -314,18 +314,18 @@
   (return-type "int")
 )
 
-(define-method get_account
+(define-method get_account_for_connection
   (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_get_account")
+  (c-name "empathy_account_manager_get_account_for_connection")
   (return-type "EmpathyAccount*")
   (parameters
     '("TpConnection*" "connection")
   )
 )
 
-(define-method lookup
+(define-method get_account
   (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_lookup")
+  (c-name "empathy_account_manager_get_account")
   (return-type "EmpathyAccount*")
   (parameters
     '("const-gchar*" "unique_name")
