@@ -1057,7 +1057,6 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 
   g_type_class_add_private (object_class, sizeof (EmpathyDispatcherPriv));
 
-
   klass->dbus_props_class.interfaces = prop_interfaces;
   tp_dbus_properties_mixin_class_init (object_class,
     G_STRUCT_OFFSET (EmpathyDispatcherClass, dbus_props_class));

@@ -200,7 +200,8 @@ empathy_account_get_property (GObject *object,
 }
 
 static void
-empathy_account_update (EmpathyAccount *account, GHashTable *properties)
+empathy_account_update (EmpathyAccount *account,
+    GHashTable *properties)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
   const gchar *conn_path;
@@ -401,7 +402,7 @@ empathy_account_unescape_protocol (const gchar *protocol, gssize len)
 
 static gboolean
 empathy_account_parse_unique_name (const gchar *bus_name,
-  gchar **protocol, gchar **manager)
+    gchar **protocol, gchar **manager)
 {
   const gchar *proto, *proto_end;
   const gchar *cm, *cm_end;
@@ -780,7 +781,8 @@ empathy_account_is_ready (EmpathyAccount *account)
 
 
 EmpathyAccount *
-empathy_account_new (TpDBusDaemon *dbus, const gchar *unique_name)
+empathy_account_new (TpDBusDaemon *dbus,
+    const gchar *unique_name)
 {
   return EMPATHY_ACCOUNT (g_object_new (EMPATHY_TYPE_ACCOUNT,
     "dbus-daemon", dbus,

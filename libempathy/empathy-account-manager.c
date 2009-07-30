@@ -847,10 +847,13 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
 
 void
 empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
-  const gchar *connection_manager,
-  const gchar *protocol, const gchar *display_name,
-  GHashTable *parameters, GHashTable *properties,
-  GAsyncReadyCallback callback, gpointer user_data)
+    const gchar *connection_manager,
+    const gchar *protocol,
+    const gchar *display_name,
+    GHashTable *parameters,
+    GHashTable *properties,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (manager),

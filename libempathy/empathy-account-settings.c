@@ -301,7 +301,7 @@ empathy_account_settings_dispose (GObject *object)
 
 static void
 empathy_account_settings_free_unset_parameters (
-  EmpathyAccountSettings *settings)
+    EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   int i;
@@ -368,7 +368,8 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 
 static void
 empathy_account_settings_ready_cb (GObject *obj,
-  GParamSpec *spec, gpointer user_data)
+    GParamSpec *spec,
+    gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
 
@@ -458,7 +459,7 @@ empathy_account_settings_get_account (EmpathyAccountSettings *settings)
 
 static gboolean
 empathy_account_settings_is_unset (EmpathyAccountSettings *settings,
-  const gchar *param)
+    const gchar *param)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   GArray *a;
@@ -477,7 +478,7 @@ empathy_account_settings_is_unset (EmpathyAccountSettings *settings,
 
 static TpConnectionManagerParam *
 empathy_account_settings_get_tp_param (EmpathyAccountSettings *settings,
-  const gchar *param)
+    const gchar *param)
 {
   TpConnectionManagerParam *tp_params =
       empathy_account_settings_get_tp_params (settings);
@@ -496,7 +497,7 @@ empathy_account_settings_get_tp_param (EmpathyAccountSettings *settings,
 
 const GValue *
 empathy_account_settings_get_default (EmpathyAccountSettings *settings,
-  const gchar *param)
+    const gchar *param)
 {
   TpConnectionManagerParam *p;
 
@@ -510,7 +511,7 @@ empathy_account_settings_get_default (EmpathyAccountSettings *settings,
 
 const gchar *
 empathy_settings_get_dbus_signature (EmpathyAccountSettings *settings,
-  const gchar *param)
+    const gchar *param)
 {
   TpConnectionManagerParam *p;
 
@@ -524,7 +525,7 @@ empathy_settings_get_dbus_signature (EmpathyAccountSettings *settings,
 
 const GValue *
 empathy_account_settings_get (EmpathyAccountSettings *settings,
-  const gchar *param)
+    const gchar *param)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   const GValue *result = NULL;
@@ -821,7 +822,8 @@ empathy_account_settings_set_display_name_finish (
 
 static void
 empathy_account_settings_account_updated (GObject *source,
-  GAsyncResult *result, gpointer user_data)
+    GAsyncResult *result,
+    gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
@@ -844,8 +846,8 @@ empathy_account_settings_account_updated (GObject *source,
 
 static void
 empathy_account_settings_created_cb (GObject *source,
-  GAsyncResult *result,
-  gpointer user_data)
+    GAsyncResult *result,
+    gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
@@ -892,7 +894,8 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
 
 static void
 empathy_account_settings_manager_ready_cb (EmpathyAccountManager *manager,
-  GParamSpec *spec, gpointer user_data)
+    GParamSpec *spec,
+    gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
@@ -910,8 +913,8 @@ empathy_account_settings_manager_ready_cb (EmpathyAccountManager *manager,
 
 void
 empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
-  GAsyncReadyCallback callback,
-  gpointer user_data)
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
@@ -950,8 +953,8 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
 
 gboolean
 empathy_account_settings_apply_finish (EmpathyAccountSettings *settings,
-  GAsyncResult *result,
-  GError **error)
+    GAsyncResult *result,
+    GError **error)
 {
   if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
       error))
