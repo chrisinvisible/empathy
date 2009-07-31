@@ -81,7 +81,7 @@ G_DEFINE_TYPE_WITH_CODE (EmpathyDispatcher,
       empathy_dispatcher_client_handler_iface_init);
   );
 
-static const gchar *empathy_displatcher_interfaces[] = {
+static const gchar *empathy_dispatcher_interfaces[] = {
   TP_IFACE_CLIENT_HANDLER,
   NULL
 };
@@ -934,7 +934,7 @@ dispatcher_get_property (GObject *object,
   switch (property_id)
     {
       case PROP_INTERFACES:
-        g_value_set_boxed (value, empathy_displatcher_interfaces);
+        g_value_set_boxed (value, empathy_dispatcher_interfaces);
         break;
       case PROP_CHANNEL_FILTER:
         {
