@@ -9,13 +9,14 @@
 # YangZhang <zyangmath@gmail.com>, 2008.
 # Funda Wang <fundawang@gmail.com>, 2009.
 # Aron Xu <aronxu@gnome.org>, 2009.
+# Lyper Lai <lyp069@gmail.com>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gossip\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-07-29 12:22+0000\n"
+"POT-Creation-Date: 2009-07-30 18:04+0000\n"
 "PO-Revision-Date: 2009-07-25 21:28+0000\n"
 "Last-Translator: Aron Xu <aronxu@gnome.org>\n"
 "Language-Team: Simplified Chinese <i18n-translation@lists.linux.net.cn>\n"
@@ -25,11 +26,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/empathy.desktop.in.in.h:1
-msgid "Empathy Instant Messenger"
-msgstr "Empathy 即时通讯程序"
+msgid "Empathy IM Client"
+msgstr "Empathy IM 客户端"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Send and receive instant messages"
+msgid "Send and receive messages"
 msgstr "发送接收即时消息"
 
 #: ../data/empathy.schemas.in.h:1
@@ -109,11 +110,11 @@ msgstr "Empathy 是否使用联系人头像作为聊天窗口图标"
 
 #: ../data/empathy.schemas.in.h:19
 msgid "Enable WebKit Developer Tools"
-msgstr ""
+msgstr "启用 WebKit 开发工具"
 
 #: ../data/empathy.schemas.in.h:20
 msgid "Enable popup notifications for new messages"
-msgstr "启用弹出提示"
+msgstr "启用新消息弹出提示"
 
 #: ../data/empathy.schemas.in.h:21
 msgid "Enable spell checker"
@@ -145,7 +146,7 @@ msgstr "Adium 主题的路径"
 
 #: ../data/empathy.schemas.in.h:28
 msgid "Path of the adium theme to use if the theme used for chat is adium."
-msgstr ""
+msgstr "如果聊天使用 Adium 主题，使用 Adium 主题的路径"
 
 #: ../data/empathy.schemas.in.h:29
 msgid "Play a sound for incoming messages"
@@ -238,7 +239,7 @@ msgstr "为聊天室使用主题"
 #: ../data/empathy.schemas.in.h:51
 msgid ""
 "Whether WebKit developer tools, such as the Web Inspector, should be enabled."
-msgstr ""
+msgstr "WebKit 开发工具，例如 Web Inspector 是否应该启用。"
 
 #: ../data/empathy.schemas.in.h:52
 msgid "Whether or not Empathy can publish the user's location to his contacts."
@@ -355,7 +356,7 @@ msgstr "当联系人上线时是否显示弹出通知"
 msgid ""
 "Whether or not to show a popup notification when receiving a new message "
 "even if the chat is already opened, but not focused."
-msgstr "当接收新消息时是否显示弹出提示，即使聊天窗口已开启，但未获得焦点时。"
+msgstr "当接收新消息时是否显示弹出提示即聊天窗口已开启，但未闲置。"
 
 #: ../data/empathy.schemas.in.h:76
 msgid ""
@@ -400,8 +401,8 @@ msgid ""
 "by the contact's name with the value \"name\". A value of \"state\" will "
 "sort the contact list by state."
 msgstr ""
-"使用何种准则来排序联系人列表。默认情况下使用值“name”以按联系人姓名\n"
-"排序。取值为“state”时将按状态排序联系人列表。"
+"使用何种准则来排序联系人列表。默认情况下使用值\"name\"以按联系人姓名\n"
+"排序。取值为\"state\"时将按状态排序联系人列表。"
 
 #: ../libempathy/empathy-ft-handler.c:838
 msgid "The hash of the received file and the sent one do not match"
@@ -1096,11 +1097,11 @@ msgstr "<b>位置</b>，"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1412
 msgid "%B %e, %Y at %R UTC"
-msgstr ""
+msgstr "%B %e,%Y 于 %R UTC 时间"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:1
 msgid "<b>Location</b> at (date)\t"
-msgstr ""
+msgstr "<b>位置</b>于(日期）\t"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
@@ -1132,7 +1133,7 @@ msgstr "联系人"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:8
 msgid "Contact Details"
-msgstr ""
+msgstr "联系人详情"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:9
 msgid "Email:"
@@ -1144,7 +1145,7 @@ msgstr "全称："
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:11
 msgid "Groups"
-msgstr ""
+msgstr "组"
 
 #. Identifier to connect to Instant Messaging network
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:13
@@ -1243,20 +1244,20 @@ msgstr "新建对话"
 #: ../libempathy-gtk/empathy-presence-chooser.c:172
 #: ../libempathy-gtk/empathy-presence-chooser.c:208
 msgid "Custom Message..."
-msgstr "自定义消息..."
+msgstr "自定义状态..."
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:225
 #: ../libempathy-gtk/empathy-presence-chooser.c:227
 msgid "Edit Custom Messages..."
-msgstr "编辑自定义消息..."
+msgstr "编辑自定义状态..."
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:326
 msgid "Click to remove this status as a favorite"
-msgstr ""
+msgstr "点击移除自定义状态"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:335
 msgid "Click to make this status a favorite"
-msgstr ""
+msgstr "点击设置自定义状态"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:369
 msgid "Set status"
@@ -1264,12 +1265,12 @@ msgstr "设置状态"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:782
 msgid "Set your presence and current status"
-msgstr "设置您的状态信息和现在的状态"
+msgstr "设置你的状态信息和现在的状态"
 
 #. Custom messages
 #: ../libempathy-gtk/empathy-presence-chooser.c:1017
 msgid "Custom messages..."
-msgstr "自定义消息..."
+msgstr "自定义状态..."
 
 #: ../libempathy-gtk/empathy-sound.c:51
 msgid "Received an instant message"
@@ -1313,11 +1314,11 @@ msgstr "语音通话结束"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.c:362
 msgid "Enter Custom Message"
-msgstr "输入自定义消息"
+msgstr "输入自定义状态"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.c:521
 msgid "Edit Custom Messages"
-msgstr "编辑自定义消息"
+msgstr "编辑自定义状态"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:1
 msgid "Add _New Preset"
@@ -1329,11 +1330,11 @@ msgstr "已保存的自定义状态"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:3
 msgid "gtk-add"
-msgstr ""
+msgstr "gtk-add"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:4
 msgid "gtk-remove"
-msgstr ""
+msgstr "gtk-remove"
 
 #: ../libempathy-gtk/empathy-theme-manager.c:67
 msgid "Classic"
@@ -1595,8 +1596,8 @@ msgid "Show the accounts dialog"
 msgstr "显示账户对话框"
 
 #: ../src/empathy.c:587
-msgid "- Empathy Instant Messenger"
-msgstr "- Empathy 即时通讯程序"
+msgid "- Empathy IM Client"
+msgstr " - Empathy IM 客户端"
 
 #: ../src/empathy-about-dialog.c:83
 msgid ""
@@ -1635,9 +1636,8 @@ msgstr "一个 GNOME 即时消息客户端"
 #: ../src/empathy-about-dialog.c:125
 msgid "translator-credits"
 msgstr ""
-"YangZhang, <zyangmath@gmail.com>\n"
+"翻译-贡献者YangZhang, <zyangmath@gmail.com>\n"
 "Aron Xu <aronxu@gnome.org>\n"
-""
 "Launchpad Contributions:\n"
 "  =KK= https://launchpad.net/~sevkme\n"
 "  AnThOnYhO https://launchpad.net/~anthonyho\n"
@@ -2306,7 +2306,7 @@ msgstr "语言"
 
 #: ../src/empathy-preferences.ui.h:1
 msgid "Allow _GPS usage"
-msgstr "允许使用 _GPS 信息"
+msgstr "允许使用 GPS 信息(_G)"
 
 #: ../src/empathy-preferences.ui.h:2
 msgid "Allow _cellphone usage"
@@ -2362,7 +2362,7 @@ msgstr "常规"
 
 #: ../src/empathy-preferences.ui.h:15
 msgid "Geoclue Settings"
-msgstr ""
+msgstr "Geoclue 设置"
 
 #: ../src/empathy-preferences.ui.h:16
 msgid "Location"
@@ -2390,6 +2390,8 @@ msgid ""
 "state and country will be published.  GPS coordinates will have a random "
 "value added (&#xB1;0.25&#xB0;)."
 msgstr ""
+"降低位置精度意味着你公开的城市、州和国家信息不在精确。 GPS 座标会有一个随机数"
+"加入 (&#xB1;0.25&#xB0;) 。"
 
 #: ../src/empathy-preferences.ui.h:22
 msgid "Show _smileys as images"
@@ -2452,7 +2454,7 @@ msgstr "显示联系人列表(_S)"
 #: ../src/empathy-tube-dispatch.c:375
 #, c-format
 msgid "Unable to start application for service %s: %s"
-msgstr "不能启动应用程序为%s：%s 服务"
+msgstr "不能启动应用程序为 %s: %s 服务"
 
 #: ../src/empathy-tube-dispatch.c:446
 #, c-format
@@ -2463,11 +2465,11 @@ msgstr "一个由 %s 服务提供邀请，但是你不需要应用程序处理�
 
 #: ../src/empathy-call-window-fullscreen.ui.h:1
 msgid "gtk-leave-fullscreen"
-msgstr ""
+msgstr "gtk-leave-fullscreen"
 
 #: ../src/empathy-map-view.ui.h:1
 msgid "Contact Map View"
-msgstr ""
+msgstr "联系地图视图"
 
 #: ../src/empathy-debug-dialog.c:111 ../src/empathy-debug-dialog.c:1083
 msgid "Error"
@@ -2531,6 +2533,12 @@ msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr "已选定的连接管理不支持远程调试扩展"
+
+#~ msgid "Empathy Instant Messenger"
+#~ msgstr "Empathy 即时通讯程序"
+
+#~ msgid "- Empathy Instant Messenger"
+#~ msgstr "- Empathy 即时通讯程序"
 
 #~ msgid "<b>Advanced</b>"
 #~ msgstr "<b>高级</b>"
@@ -2798,14 +2806,8 @@ msgstr "已选定的连接管理不支持远程调试扩展"
 #~ msgid "_End Call"
 #~ msgstr "结束通话(_E)"
 
-#~ msgid "Empathy Call"
-#~ msgstr "Empathy 电话"
-
 #~ msgid "Readying"
 #~ msgstr "正在准备"
-
-#~ msgid "%s - Empathy Call"
-#~ msgstr "%s - Empathy 电话"
 
 #~ msgid "Ringing"
 #~ msgstr "正在响铃"
