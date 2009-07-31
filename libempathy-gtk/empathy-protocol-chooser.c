@@ -123,6 +123,36 @@ protocol_chooser_sort_func (GtkTreeModel *model,
   return cmp;
 }
 
+static const char *
+protocol_chooser_proto_name_to_display_name (const gchar *proto_name)
+{
+  int i;
+  
+  static struct {
+    const gchar *proto;
+    const gchar *display;
+  } names[] = {
+    { "jabber", "XMPP" },
+    { "msn", "MSN" },
+    { "local-xmpp", "Salut" },
+    { "irc", "IRC" },
+    { "icq", "ICQ" },
+    { "aim", "AIM" },
+    { "yahoo", "Yahoo" },
+    { "groupwise", "GroupWise" },
+    { "sip", "SIP" },
+    { NULL, NULL }
+  };
+
+  for (i = 0; names[i].proto != NULL; i++)
+    {
+      if (!tp_strdiff (proto_name, names[i].proto))
+        return names[i].display;
+    }
+
+  return NULL;
+}
+
 static void
 protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
     TpConnectionManager *cm)
@@ -134,24 +164,28 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
     {
       const TpConnectionManagerProtocol *proto = *iter;
       gchar *icon_name;
-      gchar *display_name;
-
+      const gchar *display_name;
+      gchar *display_name_set;
 
       icon_name = g_strdup_printf ("im-%s", proto->name);
+      display_name = protocol_chooser_proto_name_to_display_name (proto->name);
+
+      if (display_name == NULL)
+        display_name = proto->name;
 
       if (!tp_strdiff (cm->name, "haze"))
-        display_name = g_strdup_printf ("%s (Haze)", proto->name);
+        display_name_set = g_strdup_printf ("%s (Haze)", display_name);
       else
-        display_name = g_strdup (proto->name);
+        display_name_set = g_strdup (display_name);
 
       gtk_list_store_insert_with_values (priv->store, NULL, 0,
           COL_ICON, icon_name,
-          COL_LABEL, display_name,
+          COL_LABEL, display_name_set,
           COL_CM, cm,
           COL_PROTOCOL, proto,
           -1);
 
-      g_free (display_name);
+      g_free (display_name_set);
       g_free (icon_name);
     }
 }
