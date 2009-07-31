@@ -447,13 +447,16 @@ empathy_account_settings_get_protocol (EmpathyAccountSettings *settings)
   return priv->protocol;
 }
 
-const gchar *
+gchar *
 empathy_account_settings_get_icon_name (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   if (priv->account != NULL)
-    return empathy_account_get_icon_name (priv->account);
+    return g_strdup (empathy_account_get_icon_name (priv->account));
+
+  if (priv->tp_protocol != NULL)
+    return g_strdup_printf ("im-%s", priv->tp_protocol->name);
 
   return NULL;
 }

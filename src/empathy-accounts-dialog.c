@@ -175,6 +175,7 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  gchar *icon_name;
 
   priv->settings_widget = get_account_setup_widget (settings);
 
@@ -182,14 +183,16 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
       priv->settings_widget);
   gtk_widget_show (priv->settings_widget);
 
+  icon_name = empathy_account_settings_get_icon_name (settings);
 
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_type),
-      empathy_account_settings_get_icon_name (settings),
-      GTK_ICON_SIZE_DIALOG);
+      icon_name, GTK_ICON_SIZE_DIALOG);
   gtk_widget_set_tooltip_text (priv->image_type,
       empathy_account_settings_get_protocol (settings));
 
   accounts_dialog_update_name_label (dialog, settings);
+
+  g_free (icon_name);
 }
 
 static void
@@ -379,7 +382,7 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn *tree_column,
     EmpathyAccountsDialog *dialog)
 {
   EmpathyAccountSettings  *settings;
-  const gchar        *icon_name;
+  gchar              *icon_name;
   GdkPixbuf          *pixbuf;
   TpConnectionStatus  status;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
@@ -391,6 +394,8 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn *tree_column,
 
   icon_name = empathy_account_settings_get_icon_name (settings);
   pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON);
+
+  g_free (icon_name);
 
   if (pixbuf)
     {

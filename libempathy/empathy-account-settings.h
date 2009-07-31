@@ -127,7 +127,7 @@ void empathy_account_settings_set_uint64 (EmpathyAccountSettings *settings,
 void empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
     const gchar *param, gboolean value);
 
-const gchar *empathy_account_settings_get_icon_name (
+gchar *empathy_account_settings_get_icon_name (
   EmpathyAccountSettings *settings);
 
 const gchar *empathy_account_settings_get_display_name (
