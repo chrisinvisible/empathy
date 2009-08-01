@@ -23,7 +23,7 @@
 #include <glib/gi18n.h>
 
 #include "empathy-account-assistant.h"
-#include "empathy-ui-utils.h"
+#include <libempathy-gtk/empathy-ui-utils.h>
 
 G_DEFINE_TYPE (EmpathyAccountAssistant, empathy_account_assistant,
     GTK_TYPE_ASSISTANT)

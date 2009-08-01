@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
-#include <libempathy-gtk/empathy-account-assistant.h>
+#include "empathy-account-assistant.h"
 
 int main (int argc, char **argv)
 {
