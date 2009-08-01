@@ -858,7 +858,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	GtkTreeIter                 iter;
 	GList                      *groups = NULL, *l;
 	TpConnection               *connection;
-	EmpathyContactListFlags     flags;
+	EmpathyContactListFlags     flags = 0;
 
 	priv = GET_PRIV (store);
 
@@ -875,10 +875,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	if (EMPATHY_IS_CONTACT_MANAGER (priv->list)) {
 		flags = empathy_contact_manager_get_flags_for_connection (
 			EMPATHY_CONTACT_MANAGER (priv->list), connection);
-	} else {
-		flags = 0;
 	}
-
 	/* If no groups just add it at the top level. */
 	if (!groups) {
 		gtk_tree_store_append (GTK_TREE_STORE (store), &iter, NULL);

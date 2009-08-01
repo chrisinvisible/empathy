@@ -106,8 +106,11 @@ theme_adium_update_enable_webkit_developer_tools (EmpathyThemeAdium *theme)
 	WebKitWebView  *web_view = WEBKIT_WEB_VIEW (theme);
 	gboolean        enable_webkit_developer_tools;
 
-	if (empathy_conf_get_bool (empathy_conf_get (), "/apps/empathy/conversation/enable_webkit_developer_tools", &enable_webkit_developer_tools) == FALSE)
+	if (!empathy_conf_get_bool (empathy_conf_get (),
+				    EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS,
+				    &enable_webkit_developer_tools)) {
 		return;
+	}
 
 	g_object_set (G_OBJECT (webkit_web_view_get_settings (web_view)),
 		      "enable-developer-extras",
@@ -881,29 +884,22 @@ theme_adium_dispose (GObject *object)
 
 static gboolean
 theme_adium_inspector_show_window_cb (WebKitWebInspector *inspector,
-				      gpointer            user_data)
+				      EmpathyThemeAdium  *theme)
 {
-	EmpathyThemeAdium     *theme = user_data;
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 
-	gtk_widget_show_all (priv->inspector_window);
+	if (priv->inspector_window) {
+		gtk_widget_show_all (priv->inspector_window);
+	}
 
 	return TRUE;
 }
 
 static gboolean
 theme_adium_inspector_close_window_cb (WebKitWebInspector *inspector,
-				       gpointer            user_data)
+				       EmpathyThemeAdium  *theme)
 {
-	EmpathyThemeAdium     *theme = user_data;
-	EmpathyThemeAdiumPriv *priv;
-
-	/* We may be called too late - when the theme has already been
-	 * destroyed */
-	if (!theme)
-		return FALSE;
-
-	priv = GET_PRIV (theme);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 
 	if (priv->inspector_window) {
 		gtk_widget_hide (priv->inspector_window);
@@ -914,27 +910,36 @@ theme_adium_inspector_close_window_cb (WebKitWebInspector *inspector,
 
 static WebKitWebView *
 theme_adium_inspect_web_view_cb (WebKitWebInspector *inspector,
-				 WebKitWebView *web_view,
-				 gpointer data)
+				 WebKitWebView      *web_view,
+				 EmpathyThemeAdium  *theme)
 {
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (EMPATHY_THEME_ADIUM (web_view));
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 	GtkWidget             *scrolled_window;
 	GtkWidget             *inspector_web_view;
 
 	if (!priv->inspector_window) {
+		/* Create main window */
 		priv->inspector_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_default_size (GTK_WINDOW (priv->inspector_window),
 					     800, 600);
-
 		g_signal_connect (priv->inspector_window, "delete-event",
 				  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
 
+		/* Pack a scrolled window */
 		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-		gtk_container_add (GTK_CONTAINER (priv->inspector_window), scrolled_window);
+		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+						GTK_POLICY_AUTOMATIC,
+						GTK_POLICY_AUTOMATIC);
+		gtk_container_add (GTK_CONTAINER (priv->inspector_window),
+				   scrolled_window);
+		gtk_widget_show  (scrolled_window);
 
+		/* Pack a webview in the scrolled window. That webview will be
+		 * used to render the inspector tool.  */
 		inspector_web_view = webkit_web_view_new ();
-		gtk_container_add (GTK_CONTAINER (scrolled_window), inspector_web_view);
+		gtk_container_add (GTK_CONTAINER (scrolled_window),
+				   inspector_web_view);
+		gtk_widget_show (scrolled_window);
 
 		return WEBKIT_WEB_VIEW (inspector_web_view);
 	}
@@ -949,35 +954,42 @@ theme_adium_constructed (GObject *object)
 	gchar                 *basedir_uri;
 	const gchar           *font_family = NULL;
 	gint                   font_size = 0;
+	WebKitWebView         *webkit_view = WEBKIT_WEB_VIEW (object);
 	WebKitWebSettings     *webkit_settings;
+	WebKitWebInspector    *webkit_inspector;
 
 	/* Set default settings */
 	font_family = tp_asv_get_string (priv->data->info, "DefaultFontFamily");
 	font_size = tp_asv_get_int32 (priv->data->info, "DefaultFontSize", NULL);
-	webkit_settings = webkit_web_settings_new ();
+	webkit_settings = webkit_web_view_get_settings (webkit_view);
 	if (font_family) {
-		g_object_set (G_OBJECT (webkit_settings), "default-font-family", font_family, NULL);
+		g_object_set (webkit_settings,
+			      "default-font-family", font_family,
+			      NULL);
 	}
 	if (font_size) {
-		g_object_set (G_OBJECT (webkit_settings), "default-font-size", font_size, NULL);
+		g_object_set (webkit_settings,
+			      "default-font-size", font_size,
+			      NULL);
 	}
 
-	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "inspect-web-view",
-			  G_CALLBACK (theme_adium_inspect_web_view_cb), NULL);
-
-	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "show-window",
-			  G_CALLBACK (theme_adium_inspector_show_window_cb), object);
-
-	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "close-window",
-			  G_CALLBACK (theme_adium_inspector_close_window_cb), NULL);
+	/* Setup webkit inspector */
+	webkit_inspector = webkit_web_view_get_inspector (webkit_view);
+	g_signal_connect (webkit_inspector, "inspect-web-view",
+			  G_CALLBACK (theme_adium_inspect_web_view_cb),
+			  object);
+	g_signal_connect (webkit_inspector, "show-window",
+			  G_CALLBACK (theme_adium_inspector_show_window_cb),
+			  object);
+	g_signal_connect (webkit_inspector, "close-window",
+			  G_CALLBACK (theme_adium_inspector_close_window_cb),
+			  object);
 
 	/* Load template */
 	basedir_uri = g_strconcat ("file://", priv->data->basedir, NULL);
 	webkit_web_view_load_html_string (WEBKIT_WEB_VIEW (object),
 					  priv->data->template_html,
 					  basedir_uri);
-
-	g_object_unref (webkit_settings);
 	g_free (basedir_uri);
 }
 
@@ -1067,7 +1079,7 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 
 	priv->notify_enable_webkit_developer_tools_id =
 		empathy_conf_notify_add (empathy_conf_get (),
-					 "/apps/empathy/conversation/enable_webkit_developer_tools",
+					 EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS,
 					 theme_adium_notify_enable_webkit_developer_tools_cb,
 					 theme);
 

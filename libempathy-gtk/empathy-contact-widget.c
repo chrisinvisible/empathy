@@ -596,6 +596,10 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
 {
   /* Setup label_status as a KludgeLabel */
   information->label_status = empathy_kludge_label_new ("");
+  gtk_label_set_line_wrap_mode (GTK_LABEL (information->label_status),
+                                PANGO_WRAP_WORD_CHAR);
+  gtk_label_set_line_wrap (GTK_LABEL (information->label_status),
+                           TRUE);
   gtk_box_pack_start (GTK_BOX (information->hbox_presence),
         information->label_status, TRUE, TRUE, 0);
   gtk_widget_show (information->label_status);

@@ -1351,7 +1351,7 @@ empathy_url_show (GtkWidget *parent,
 	gchar  *real_url;
 	GError *error = NULL;
 
-	g_return_if_fail (GTK_IS_WIDGET (parent));
+	g_return_if_fail (parent == NULL || GTK_IS_WIDGET (parent));
 	g_return_if_fail (url != NULL);
 
 	real_url = fixup_url (url);
@@ -1359,7 +1359,7 @@ empathy_url_show (GtkWidget *parent,
 		url = real_url;
 	}
 
-	gtk_show_uri (gtk_widget_get_screen (parent), url,
+	gtk_show_uri (parent ? gtk_widget_get_screen (parent) : NULL, url,
 		      gtk_get_current_event_time (), &error);
 
 	if (error) {

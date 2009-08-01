@@ -1346,8 +1346,10 @@ empathy_call_window_connected (gpointer user_data)
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   EmpathyTpCall *call;
-  gboolean can_send_video = priv->video_input != NULL && priv->contact != NULL
-    && empathy_contact_can_voip_video (priv->contact);
+  gboolean can_send_video;
+
+  can_send_video = priv->video_input != NULL && priv->contact != NULL &&
+    empathy_contact_can_voip_video (priv->contact);
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
 

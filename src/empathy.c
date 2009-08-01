@@ -621,7 +621,7 @@ main (int argc, char *argv[])
 	empathy_init ();
 
 	if (!gtk_init_with_args (&argc, &argv,
-				 N_("- Empathy Instant Messenger"),
+				 N_("- Empathy IM Client"),
 				 options, GETTEXT_PACKAGE, &error)) {
 		g_warning ("Error in empathy init: %s", error->message);
 		return EXIT_FAILURE;

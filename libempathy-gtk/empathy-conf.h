@@ -68,6 +68,7 @@ struct _EmpathyConfClass {
 #define EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED   EMPATHY_PREFS_PATH "/conversation/spell_checker_enabled"
 #define EMPATHY_PREFS_CHAT_NICK_COMPLETION_CHAR    EMPATHY_PREFS_PATH "/conversation/nick_completion_char"
 #define EMPATHY_PREFS_CHAT_AVATAR_IN_ICON          EMPATHY_PREFS_PATH "/conversation/avatar_in_icon"
+#define EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS  EMPATHY_PREFS_PATH "/conversation/enable_webkit_developer_tools"
 #define EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS     EMPATHY_PREFS_PATH "/ui/separate_chat_windows"
 #define EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN        EMPATHY_PREFS_PATH "/ui/main_window_hidden"
 #define EMPATHY_PREFS_UI_AVATAR_DIRECTORY          EMPATHY_PREFS_PATH "/ui/avatar_directory"
