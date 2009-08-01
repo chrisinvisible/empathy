@@ -327,6 +327,10 @@ account_manager_account_ready_cb (GObject *obj,
     G_CALLBACK (emp_account_removed_cb), manager);
 
   empathy_account_manager_check_ready (manager);
+
+  /* update the account to the desired global presence */
+  empathy_account_request_presence (account, priv->desired_presence,
+    priv->desired_status, priv->desired_status_message);
 }
 
 static EmpathyAccount *
@@ -837,6 +841,9 @@ empathy_account_manager_request_global_presence (
   GHashTableIter iter;
   gpointer value;
 
+  DEBUG ("request global presence, type: %d, status: %s, message: %s",
+         type, status, message);
+
   g_hash_table_iter_init (&iter, priv->accounts);
   while (g_hash_table_iter_next (&iter, NULL, &value))
     {
@@ -850,7 +857,7 @@ empathy_account_manager_request_global_presence (
     }
 
   /* save the requested global presence, to use it in case we create
-   * new accounts.
+   * new accounts or some accounts become ready.
    */
   priv->desired_presence = type;
 
