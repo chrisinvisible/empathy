@@ -31,6 +31,8 @@
 
 #include <telepathy-farsight/channel.h>
 
+#include <gst/farsight/fs-element-added-notifier.h>
+
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-utils.h>
@@ -152,6 +154,8 @@ struct _EmpathyCallWindowPriv
 
   GstElement *funnel;
   GstElement *liveadder;
+
+  FsElementAddedNotifier *fsnotifier;
 
   guint context_id;
 
@@ -678,6 +682,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
   GtkWidget *page;
   GstBus *bus;
   gchar *filename;
+  GKeyFile *keyfile;
+  GError *error = NULL;
 
   filename = empathy_file_lookup ("empathy-call-window.ui", "src");
   gui = empathy_builder_get_file (filename,
@@ -694,6 +700,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
     NULL);
+  g_free (filename);
 
   empathy_builder_connect (gui, self,
     "menuhangup", "activate", empathy_call_window_hangup_cb,
@@ -721,6 +728,25 @@ empathy_call_window_init (EmpathyCallWindow *self)
   priv->pipeline = gst_pipeline_new (NULL);
   bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
   gst_bus_add_watch (bus, empathy_call_window_bus_message, self);
+
+  priv->fsnotifier = fs_element_added_notifier_new ();
+  fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
+
+  keyfile = g_key_file_new ();
+  filename = empathy_file_lookup ("element-properties", "data");
+  if (g_key_file_load_from_file (keyfile, filename, G_KEY_FILE_NONE, &error))
+    {
+      fs_element_added_notifier_set_properties_from_keyfile (priv->fsnotifier,
+          keyfile);
+    }
+  else
+    {
+      g_warning ("Could not load element-properties file: %s", error->message);
+      g_key_file_free (keyfile);
+      g_clear_error (&error);
+    }
+  g_free (filename);
+
 
   priv->remote_user_output_frame = gtk_frame_new (NULL);
   gtk_widget_set_size_request (priv->remote_user_output_frame,
@@ -800,7 +826,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   g_object_ref (priv->ui_manager);
   g_object_unref (gui);
-  g_free (filename);
 }
 
 /* Instead of specifying a width and a height, we specify only one size. That's
@@ -1063,6 +1088,10 @@ empathy_call_window_dispose (GObject *object)
   if (priv->video_tee != NULL)
     g_object_unref (priv->video_tee);
   priv->video_tee = NULL;
+
+  if (priv->fsnotifier != NULL)
+    g_object_unref (priv->fsnotifier);
+  priv->fsnotifier = NULL;
 
   if (priv->timer_id != 0)
     g_source_remove (priv->timer_id);

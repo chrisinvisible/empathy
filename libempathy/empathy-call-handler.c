@@ -27,8 +27,6 @@
 #include <telepathy-farsight/channel.h>
 #include <telepathy-farsight/stream.h>
 
-#include <gst/farsight/fs-element-added-notifier.h>
-
 #include "empathy-call-handler.h"
 #include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
@@ -65,7 +63,6 @@ typedef struct {
   TfChannel *tfchannel;
   gboolean initial_audio;
   gboolean initial_video;
-  FsElementAddedNotifier *fsnotifier;
 } EmpathyCallHandlerPriv;
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCallHandler)
@@ -97,12 +94,6 @@ empathy_call_handler_dispose (GObject *object)
     }
 
   priv->call = NULL;
-
-  if (priv->fsnotifier != NULL)
-    {
-      g_object_unref (priv->fsnotifier);
-    }
-  priv->fsnotifier = NULL;
 
   /* release any references held by the object here */
   if (G_OBJECT_CLASS (empathy_call_handler_parent_class)->dispose)
@@ -326,29 +317,6 @@ empathy_call_handler_tf_channel_session_created_cb (TfChannel *tfchannel,
   FsConference *conference, FsParticipant *participant,
   EmpathyCallHandler *self)
 {
-  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
-  GKeyFile *keyfile;
-  gchar *filename;
-  GError *error = NULL;
-
-  priv->fsnotifier = fs_element_added_notifier_new ();
-  fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (conference));
-
-  keyfile = g_key_file_new ();
-  filename = empathy_file_lookup ("element-properties", "data");
-  if (g_key_file_load_from_file (keyfile, filename, G_KEY_FILE_NONE, &error))
-    {
-      fs_element_added_notifier_set_properties_from_keyfile (priv->fsnotifier,
-          keyfile);
-    }
-  else
-    {
-      g_warning ("Could not load element-properties file: %s", error->message);
-      g_key_file_free (keyfile);
-      g_clear_error (&error);
-    }
-  g_free (filename);
-
   g_signal_emit (G_OBJECT (self), signals[CONFERENCE_ADDED], 0,
     GST_ELEMENT (conference));
 }
