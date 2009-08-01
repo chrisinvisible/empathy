@@ -20,20 +20,52 @@
 
 /* empathy-account-assistant.c */
 
+#include <glib/gi18n.h>
+
 #include "empathy-account-assistant.h"
 
 G_DEFINE_TYPE (EmpathyAccountAssistant, empathy_account_assistant,
     GTK_TYPE_ASSISTANT)
 
+static GtkWidget *
+account_assistant_build_introduction_page (void)
+{
+  GtkWidget *main_vbox, *hbox_1, *w;
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  gtk_widget_show (main_vbox);
+  
+  hbox_1 = gtk_hbox_new (FALSE, 12);
+  gtk_box_pack_start (GTK_BOX (main_vbox), hbox_1, TRUE, TRUE, 6);
+  gtk_widget_show (hbox_1);
+
+  w = gtk_label_new (_("With Empathy you can chat with people online nearby "
+          "and with friends and colleagues who use Google Talk, AIM, "
+          "Windows Live and many other chat programs. With a microphone "
+          "or a webcam you can also have audio or video calls."));
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 6);
+  gtk_widget_show (w);
+
+  w = gtk_image_new_from_icon_name ("empathy", GTK_ICON_SIZE_DIALOG);
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 6);
+  gtk_widget_show (w);
+
+  return main_vbox;
+}
 
 static void
 empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 {
+
 }
 
 static void
 empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
+  GtkWidget *page;
+
+  page = account_assistant_build_introduction_page ();
+  gtk_assistant_append_page (GTK_ASSISTANT (self), page);
 }
 
 EmpathyAccountAssistant*
