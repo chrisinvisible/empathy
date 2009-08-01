@@ -56,6 +56,7 @@
 typedef struct {
 	EmpathyAccountManager          *manager;
 	gboolean                        set_active_item;
+	gboolean			account_manually_set;
 	gboolean                        has_all_option;
 	EmpathyAccountChooserFilterFunc filter;
 	gpointer                        filter_data;
@@ -151,6 +152,7 @@ empathy_account_chooser_init (EmpathyAccountChooser *chooser)
 
 	chooser->priv = priv;
 	priv->set_active_item = FALSE;
+	priv->account_manually_set = FALSE;
 	priv->filter = NULL;
 	priv->filter_data = NULL;
 
@@ -320,12 +322,15 @@ gboolean
 empathy_account_chooser_set_account (EmpathyAccountChooser *chooser,
 				     EmpathyAccount *account)
 {
+	EmpathyAccountChooserPriv *priv;
 	GtkComboBox    *combobox;
 	GtkTreeModel   *model;
 	GtkTreeIter     iter;
 	SetAccountData  data;
 
 	g_return_val_if_fail (EMPATHY_IS_ACCOUNT_CHOOSER (chooser), FALSE);
+
+	priv = GET_PRIV (chooser);
 
 	combobox = GTK_COMBO_BOX (chooser);
 	model = gtk_combo_box_get_model (combobox);
@@ -337,6 +342,8 @@ empathy_account_chooser_set_account (EmpathyAccountChooser *chooser,
 	gtk_tree_model_foreach (model,
 				(GtkTreeModelForeachFunc) account_chooser_set_account_foreach,
 				&data);
+
+	priv->account_manually_set = data.set;
 
 	return data.set;
 }
@@ -538,7 +545,7 @@ account_chooser_find_account_foreach (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
-	if (empathy_account_equal (account, data->account)) {
+	if (account == data->account) {
 		data->found = TRUE;
 		*(data->iter) = *iter;
 		g_object_unref (account);
@@ -620,7 +627,8 @@ account_chooser_update_iter (EmpathyAccountChooser *chooser,
 			    -1);
 
 	/* set first connected account as active account */
-	if (priv->set_active_item == FALSE && is_enabled) {
+	if (priv->account_manually_set == FALSE &&
+	    priv->set_active_item == FALSE && is_enabled) {
 		priv->set_active_item = TRUE;
 		gtk_combo_box_set_active_iter (combobox, iter);
 	}
@@ -680,10 +688,8 @@ account_chooser_set_account_foreach (GtkTreeModel   *model,
 	if ((data->account == NULL) != (account == NULL)) {
 		equal = FALSE;
 	}
-	else if (data->account == account) {
-		equal = TRUE;
-	} else {
-		equal = empathy_account_equal (data->account, account);
+	else {
+		equal = (data->account == account);
 	}
 
 	if (account) {

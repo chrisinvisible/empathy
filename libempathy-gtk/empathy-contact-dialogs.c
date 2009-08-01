@@ -191,7 +191,7 @@ empathy_contact_information_dialog_show (EmpathyContact *contact,
 		EMPATHY_CONTACT_WIDGET_SHOW_LOCATION |
 		EMPATHY_CONTACT_WIDGET_EDIT_NONE);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	gtk_widget_show (contact_widget);
@@ -250,7 +250,7 @@ empathy_contact_edit_dialog_show (EmpathyContact *contact,
 		EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 		EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	gtk_widget_show (contact_widget);
@@ -302,7 +302,7 @@ empathy_contact_personal_dialog_show (GtkWindow *parent)
 		EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 		EMPATHY_CONTACT_WIDGET_EDIT_AVATAR);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (personal_dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (personal_dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	empathy_contact_widget_set_account_filter (contact_widget,
@@ -334,13 +334,15 @@ can_add_contact_to_account (EmpathyAccount *account,
 	gboolean               result;
 
 	connection = empathy_account_get_connection (account);
+	if (connection == NULL)
+		return FALSE;
 
 	if (connection == NULL) {
 		return FALSE;
 	}
 
 	contact_manager = empathy_contact_manager_dup_singleton ();
-	result = empathy_contact_manager_can_add (contact_manager, connection);
+	result = empathy_contact_manager_get_flags_for_connection (contact_manager, connection) & EMPATHY_CONTACT_LIST_CAN_ADD;
 	g_object_unref (contact_manager);
 
 	return result;
@@ -369,6 +371,13 @@ new_contact_response_cb (GtkDialog *dialog,
 
 void
 empathy_new_contact_dialog_show (GtkWindow *parent)
+{
+	empathy_new_contact_dialog_show_with_contact (parent, NULL);
+}
+
+void
+empathy_new_contact_dialog_show_with_contact (GtkWindow *parent,
+                                              EmpathyContact *contact)
 {
 	GtkWidget *dialog;
 	GtkWidget *button;
@@ -402,12 +411,12 @@ empathy_new_contact_dialog_show (GtkWindow *parent)
 	gtk_widget_show (button);
 
 	/* Contact info widget */
-	contact_widget = empathy_contact_widget_new (NULL,
+	contact_widget = empathy_contact_widget_new (contact,
 						     EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ACCOUNT |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ID |
 						     EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);
 	empathy_contact_widget_set_account_filter (contact_widget,

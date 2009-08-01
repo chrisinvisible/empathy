@@ -227,21 +227,6 @@ empathy_xml_node_find_child_prop_value (xmlNodePtr   node,
 	return found;
 }
 
-guint
-empathy_account_hash (gconstpointer key)
-{
-	g_return_val_if_fail (EMPATHY_IS_ACCOUNT (key), 0);
-
-	return g_str_hash (empathy_account_get_unique_name (EMPATHY_ACCOUNT (key)));
-}
-
-gboolean
-empathy_account_equal (gconstpointer a,
-		       gconstpointer b)
-{
-  return a == b;
-}
-
 const gchar *
 empathy_presence_get_default_message (TpConnectionPresenceType presence)
 {
@@ -361,6 +346,12 @@ empathy_uint_compare (gconstpointer a,
 		      gconstpointer b)
 {
 	return *(guint *) a - *(guint *) b;
+}
+
+gchar *
+empathy_protocol_icon_name (const gchar *protocol)
+{
+  return g_strdup_printf ("im-%s", protocol);
 }
 
 GType

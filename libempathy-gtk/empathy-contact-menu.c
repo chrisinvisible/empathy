@@ -28,15 +28,18 @@
 
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-log-manager.h>
+#include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-chatroom-manager.h>
+#include <libempathy/empathy-contact-manager.h>
 
 #include "empathy-contact-menu.h"
 #include "empathy-images.h"
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
 #include "empathy-ui-utils.h"
+#include "empathy-share-my-desktop.h"
 
 GtkWidget *
 empathy_contact_menu_new (EmpathyContact             *contact,
@@ -54,6 +57,13 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 
 	menu = gtk_menu_new ();
 	shell = GTK_MENU_SHELL (menu);
+
+	/* Add Contact */
+	item = empathy_contact_add_menu_item_new (contact);
+	if (item) {
+		gtk_menu_shell_append (shell, item);
+		gtk_widget_show (item);
+	}
 
 	/* Chat */
 	if (features & EMPATHY_CONTACT_FEATURE_CHAT) {
@@ -91,6 +101,13 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 	gtk_menu_shell_append (shell, item);
 	gtk_widget_show (item);
 
+	/* Share my desktop */
+	/* FIXME we should add the "Share my desktop" menu item if Vino is
+	a registered handler in MC5 */
+	item = empathy_contact_share_my_desktop_menu_item_new (contact);
+	gtk_menu_shell_append (shell, item);
+	gtk_widget_show (item);
+
 	/* Separator */
 	if (features & (EMPATHY_CONTACT_FEATURE_EDIT |
 			EMPATHY_CONTACT_FEATURE_INFO)) {
@@ -117,12 +134,82 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 }
 
 static void
+empathy_contact_add_menu_item_activated (GtkMenuItem *item,
+	EmpathyContact *contact)
+{
+	GtkWidget *toplevel;
+
+	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (item));
+	if (!GTK_WIDGET_TOPLEVEL (toplevel) || !GTK_IS_WINDOW (toplevel)) {
+		toplevel = NULL;
+	}
+
+	empathy_new_contact_dialog_show_with_contact (GTK_WINDOW (toplevel),
+						      contact);
+}
+
+GtkWidget *
+empathy_contact_add_menu_item_new (EmpathyContact *contact)
+{
+	GtkWidget *item;
+	GtkWidget *image;
+	EmpathyContactManager *manager;
+	TpConnection *connection;
+	GList *l, *members;
+	gboolean found = FALSE;
+	EmpathyContactListFlags flags;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	if (!empathy_contact_manager_initialized ()) {
+		return NULL;
+	}
+
+	manager = empathy_contact_manager_dup_singleton ();
+	connection = empathy_contact_get_connection (contact);
+
+	flags = empathy_contact_manager_get_flags_for_connection (manager,
+			connection);
+
+	if (!(flags & EMPATHY_CONTACT_LIST_CAN_ADD)) {
+		return NULL;
+	}
+
+	members = empathy_contact_list_get_members (EMPATHY_CONTACT_LIST (manager));
+	for (l = members; l; l = l->next) {
+		if (!found && empathy_contact_equal (l->data, contact)) {
+			found = TRUE;
+			/* we keep iterating so that we don't leak contact
+			 * refs */
+		}
+
+		g_object_unref (l->data);
+	}
+	g_list_free (members);
+	g_object_unref (manager);
+
+	if (found) {
+		return NULL;
+	}
+
+	item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact..."));
+	image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
+					      GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+
+	g_signal_connect (item, "activate",
+			G_CALLBACK (empathy_contact_add_menu_item_activated),
+			contact);
+
+	return item;
+}
+
+static void
 empathy_contact_chat_menu_item_activated (GtkMenuItem *item,
 	EmpathyContact *contact)
 {
   empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
 }
-
 
 GtkWidget *
 empathy_contact_chat_menu_item_new (EmpathyContact *contact)
@@ -167,7 +254,7 @@ empathy_contact_audio_call_menu_item_new (EmpathyContact *contact)
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-	gtk_widget_set_sensitive (item, empathy_contact_can_voip (contact));
+	gtk_widget_set_sensitive (item, empathy_contact_can_voip_audio (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -199,7 +286,7 @@ empathy_contact_video_call_menu_item_new (EmpathyContact *contact)
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VIDEO_CALL,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-	gtk_widget_set_sensitive (item, empathy_contact_can_voip (contact));
+	gtk_widget_set_sensitive (item, empathy_contact_can_voip_video (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -270,6 +357,29 @@ empathy_contact_file_transfer_menu_item_new (EmpathyContact *contact)
 	return item;
 }
 
+/* FIXME  we should check if the contact supports vnc stream tube */
+GtkWidget *
+empathy_contact_share_my_desktop_menu_item_new (EmpathyContact *contact)
+{
+	GtkWidget         *item;
+	GtkWidget         *image;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	item = gtk_image_menu_item_new_with_mnemonic (_("Share my desktop"));
+	image = gtk_image_new_from_icon_name (GTK_STOCK_NETWORK,
+					      GTK_ICON_SIZE_MENU);
+	gtk_widget_set_sensitive (item, empathy_contact_can_use_stream_tube (contact));
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+	gtk_widget_show (image);
+
+	g_signal_connect_swapped (item, "activate",
+				  G_CALLBACK (empathy_share_my_desktop_share_with_contact),
+				  contact);
+
+	return item;
+}
+
 static void
 contact_info_menu_item_activate_cb (EmpathyContact *contact)
 {
@@ -306,16 +416,35 @@ contact_edit_menu_item_activate_cb (EmpathyContact *contact)
 GtkWidget *
 empathy_contact_edit_menu_item_new (EmpathyContact *contact)
 {
+	EmpathyContactManager *manager;
 	GtkWidget *item;
 	GtkWidget *image;
+	gboolean enable = FALSE;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	if (empathy_contact_manager_initialized ()) {
+		TpConnection *connection;
+		EmpathyContactListFlags flags;
+
+		manager = empathy_contact_manager_dup_singleton ();
+		connection = empathy_contact_get_connection (contact);
+		flags = empathy_contact_manager_get_flags_for_connection (
+				manager, connection);
+
+		enable = (flags & EMPATHY_CONTACT_LIST_CAN_ALIAS ||
+		          flags & EMPATHY_CONTACT_LIST_CAN_GROUP);
+
+		g_object_unref (manager);
+	}
 
 	item = gtk_image_menu_item_new_with_mnemonic (_("_Edit"));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	gtk_widget_show (image);
+
+	gtk_widget_set_sensitive (item, enable);
 
 	g_signal_connect_swapped (item, "activate",
 				  G_CALLBACK (contact_edit_menu_item_activate_cb),

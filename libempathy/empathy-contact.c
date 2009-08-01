@@ -570,7 +570,8 @@ empathy_contact_get_account (EmpathyContact *contact)
       /* FIXME: This assume the account manager already exists */
       manager = empathy_account_manager_dup_singleton ();
       connection = tp_contact_get_connection (priv->tp_contact);
-      priv->account = empathy_account_manager_get_account (manager, connection);
+      priv->account = empathy_account_manager_get_account_for_connection (
+          manager, connection);
       g_object_ref (priv->account);
       g_object_unref (manager);
     }
@@ -799,6 +800,30 @@ empathy_contact_can_voip (EmpathyContact *contact)
 
   return priv->capabilities & (EMPATHY_CAPABILITIES_AUDIO |
       EMPATHY_CAPABILITIES_VIDEO);
+}
+
+gboolean
+empathy_contact_can_voip_audio (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), FALSE);
+
+  priv = GET_PRIV (contact);
+
+  return priv->capabilities & EMPATHY_CAPABILITIES_AUDIO;
+}
+
+gboolean
+empathy_contact_can_voip_video (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), FALSE);
+
+  priv = GET_PRIV (contact);
+
+  return priv->capabilities & EMPATHY_CAPABILITIES_VIDEO;
 }
 
 gboolean

@@ -67,7 +67,7 @@ empathy_contact_groups_get_all (void)
 		groups = NULL;
 	}
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	file_with_path = g_build_filename (dir, CONTACT_GROUPS_XML_FILENAME, NULL);
 	g_free (dir);
 
@@ -190,7 +190,7 @@ contact_groups_file_save (void)
 	gchar      *dir;
 	gchar      *file;
 
-	dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 	file = g_build_filename (dir, CONTACT_GROUPS_XML_FILENAME, NULL);
 	g_free (dir);

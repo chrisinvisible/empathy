@@ -223,7 +223,8 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 		xmlFree (str);
 	}
 
-	account = empathy_account_manager_lookup (priv->account_manager, account_id);
+	account = empathy_account_manager_get_account (priv->account_manager,
+		account_id);
 	if (!account) {
 		g_free (name);
 		g_free (room);
@@ -236,7 +237,6 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 	add_chatroom (manager, chatroom);
 	g_signal_emit (manager, signals[CHATROOM_ADDED], 0, chatroom);
 
-	g_object_unref (account);
 	g_free (name);
 	g_free (room);
 	g_free (account_id);
@@ -411,7 +411,7 @@ empathy_chatroom_manager_constructor (GType type,
       /* Set the default file path */
       gchar *dir;
 
-      dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+      dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
       if (!g_file_test (dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
         g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
 
@@ -580,9 +580,8 @@ empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
 		this_account = empathy_chatroom_get_account (chatroom);
 		this_room = empathy_chatroom_get_room (chatroom);
 
-		if (this_account && this_room &&
-		    empathy_account_equal (account, this_account) &&
-		    strcmp (this_room, room) == 0) {
+		if (this_account && this_room && account == this_account
+				&& strcmp (this_room, room) == 0) {
 			return chatroom;
 		}
 	}
@@ -611,8 +610,7 @@ empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
 
 		chatroom = l->data;
 
-		if (empathy_account_equal (account,
-					  empathy_chatroom_get_account (chatroom))) {
+		if (account == empathy_chatroom_get_account (chatroom)) {
 			chatrooms = g_list_append (chatrooms, chatroom);
 		}
 	}
@@ -641,8 +639,7 @@ empathy_chatroom_manager_get_count (EmpathyChatroomManager *manager,
 
 		chatroom = l->data;
 
-		if (empathy_account_equal (account,
-					   empathy_chatroom_get_account (chatroom))) {
+		if (account == empathy_chatroom_get_account (chatroom)) {
 			count++;
 		}
 	}
@@ -707,8 +704,8 @@ chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
   chat = EMPATHY_TP_CHAT (
     empathy_dispatch_operation_get_channel_wrapper (operation));
   connection = empathy_tp_chat_get_connection (chat);
-  account = empathy_account_manager_get_account (priv->account_manager,
-      connection);
+  account = empathy_account_manager_get_account_for_connection (
+      priv->account_manager, connection);
 
   roomname = empathy_tp_chat_get_id (chat);
 

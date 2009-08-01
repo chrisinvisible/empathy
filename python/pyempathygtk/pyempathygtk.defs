@@ -190,6 +190,7 @@
     '("is-separator" "EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR")
     '("can-audio-call" "EMPATHY_CONTACT_LIST_STORE_COL_CAN_AUDIO_CALL")
     '("can-video-call" "EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL")
+    '("flags" "EMPATHY_CONTACT_LIST_STORE_COL_FLAGS")
     '("count" "EMPATHY_CONTACT_LIST_STORE_COL_COUNT")
   )
 )
@@ -327,25 +328,34 @@
 
 ;; From empathy-account-widget.h
 
-(define-method widget_handle_params
-  (of-object "EmpathyAccount")
+(define-function account_widget_handle_params
   (c-name "empathy_account_widget_handle_params")
   (return-type "none")
   (parameters
+    '("EmpathyAccountSettings*" "settings")
     '("GtkBuilder*" "gui")
     '("const-gchar*" "first_widget")
   )
   (varargs #t)
 )
 
-(define-method widget_add_forget_button
-  (of-object "EmpathyAccount")
+(define-function account_widget_add_forget_button
   (c-name "empathy_account_widget_add_forget_button")
   (return-type "none")
   (parameters
+    '("EmpathyAccountSettings*" "settings")
     '("GtkBuilder*" "gui")
     '("const-gchar*" "button")
     '("const-gchar*" "entry")
+  )
+)
+
+(define-function account_widget_add_apply_button
+  (c-name "empathy_account_widget_add_apply_button")
+  (return-type "none")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+    '("GtkWidget*" "vbox")
   )
 )
 
@@ -358,72 +368,102 @@
   )
 )
 
-(define-method widget_generic_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_generic_new
   (c-name "empathy_account_widget_generic_new")
+  (is-constructor-of "EmpathyAccountWidgetGeneric")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_salut_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_salut_new
   (c-name "empathy_account_widget_salut_new")
+  (is-constructor-of "EmpathyAccountWidgetSalut")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_msn_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_msn_new
   (c-name "empathy_account_widget_msn_new")
+  (is-constructor-of "EmpathyAccountWidgetMsn")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_jabber_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_jabber_new
   (c-name "empathy_account_widget_jabber_new")
+  (is-constructor-of "EmpathyAccountWidgetJabber")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_icq_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_icq_new
   (c-name "empathy_account_widget_icq_new")
+  (is-constructor-of "EmpathyAccountWidgetIcq")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_aim_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_aim_new
   (c-name "empathy_account_widget_aim_new")
+  (is-constructor-of "EmpathyAccountWidgetAim")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_yahoo_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_yahoo_new
   (c-name "empathy_account_widget_yahoo_new")
+  (is-constructor-of "EmpathyAccountWidgetYahoo")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
-(define-method widget_groupwise_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_groupwise_new
   (c-name "empathy_account_widget_groupwise_new")
+  (is-constructor-of "EmpathyAccountWidgetGroupwise")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
 
 
 ;; From empathy-account-widget-irc.h
 
-(define-method widget_irc_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_irc_new
   (c-name "empathy_account_widget_irc_new")
+  (is-constructor-of "EmpathyAccountWidgetIrc")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
 
 
 ;; From empathy-account-widget-sip.h
 
-(define-method widget_sip_new
-  (of-object "EmpathyAccount")
+(define-function account_widget_sip_new
   (c-name "empathy_account_widget_sip_new")
+  (is-constructor-of "EmpathyAccountWidgetSip")
   (return-type "GtkWidget*")
+  (parameters
+    '("EmpathyAccountSettings*" "settings")
+  )
 )
 
 
@@ -972,6 +1012,15 @@
   )
 )
 
+(define-function new_contact_dialog_show_with_contact
+  (c-name "empathy_new_contact_dialog_show_with_contact")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("EmpathyContact*" "contact")
+  )
+)
+
 
 
 ;; From empathy-contact-list-store.h
@@ -1129,6 +1178,12 @@
   (return-type "EmpathyContact*")
 )
 
+(define-method get_flags
+  (of-object "EmpathyContactListView")
+  (c-name "empathy_contact_list_view_get_flags")
+  (return-type "EmpathyContactListFlags")
+)
+
 (define-method get_selected_group
   (of-object "EmpathyContactListView")
   (c-name "empathy_contact_list_view_get_selected_group")
@@ -1158,6 +1213,12 @@
   (parameters
     '("EmpathyContactFeatureFlags" "features")
   )
+)
+
+(define-method add_menu_item_new
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_add_menu_item_new")
+  (return-type "GtkWidget*")
 )
 
 (define-method chat_menu_item_new
@@ -1205,6 +1266,12 @@
 (define-method file_transfer_menu_item_new
   (of-object "EmpathyContact")
   (c-name "empathy_contact_file_transfer_menu_item_new")
+  (return-type "GtkWidget*")
+)
+
+(define-method share_my_desktop_menu_item_new
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_share_my_desktop_menu_item_new")
   (return-type "GtkWidget*")
 )
 
@@ -1714,6 +1781,11 @@
 (define-function theme_manager_get_themes
   (c-name "empathy_theme_manager_get_themes")
   (return-type "const-gchar**")
+)
+
+(define-function theme_manager_get_adium_themes
+  (c-name "empathy_theme_manager_get_adium_themes")
+  (return-type "GList*")
 )
 
 (define-method create_view

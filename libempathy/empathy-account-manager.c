@@ -167,6 +167,9 @@ emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
   GHashTableIter iter;
   gpointer value;
 
+  /* Make the global presence is equal to the presence of the account with the
+   * highest availability */
+
   g_hash_table_iter_init (&iter, priv->accounts);
   while (g_hash_table_iter_next (&iter, NULL, &value))
     {
@@ -731,8 +734,9 @@ empathy_account_manager_get_count (EmpathyAccountManager *manager)
 }
 
 EmpathyAccount *
-empathy_account_manager_get_account (EmpathyAccountManager *manager,
-                                     TpConnection          *connection)
+empathy_account_manager_get_account_for_connection (
+    EmpathyAccountManager *manager,
+    TpConnection          *connection)
 {
   EmpathyAccountManagerPriv *priv;
   GHashTableIter iter;
@@ -755,18 +759,12 @@ empathy_account_manager_get_account (EmpathyAccountManager *manager,
 }
 
 EmpathyAccount *
-empathy_account_manager_lookup (EmpathyAccountManager *manager,
+empathy_account_manager_get_account (EmpathyAccountManager *manager,
     const gchar *unique_name)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-  EmpathyAccount *account;
 
-  account = g_hash_table_lookup (priv->accounts, unique_name);
-
-  if (account != NULL)
-    g_object_ref (account);
-
-  return account;
+  return g_hash_table_lookup (priv->accounts, unique_name);
 }
 
 GList *
@@ -914,10 +912,13 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
 
 void
 empathy_account_manager_create_account_async (EmpathyAccountManager *manager,
-  const gchar *connection_manager,
-  const gchar *protocol, const gchar *display_name,
-  GHashTable *parameters, GHashTable *properties,
-  GAsyncReadyCallback callback, gpointer user_data)
+    const gchar *connection_manager,
+    const gchar *protocol,
+    const gchar *display_name,
+    GHashTable *parameters,
+    GHashTable *properties,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   GSimpleAsyncResult *res;

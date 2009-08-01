@@ -167,7 +167,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       const gchar *display_name;
       gchar *display_name_set;
 
-      icon_name = g_strdup_printf ("im-%s", proto->name);
+      icon_name = empathy_protocol_icon_name (proto->name);
       display_name = protocol_chooser_proto_name_to_display_name (proto->name);
 
       if (display_name == NULL)
@@ -326,7 +326,8 @@ empathy_protocol_chooser_class_init (EmpathyProtocolChooserClass *klass)
  *
  * Return value: a pointer to the selected #TpConnectionManagerProtocol
  */
-TpConnectionManager *empathy_protocol_chooser_dup_selected (
+TpConnectionManager *
+empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol)
 {

@@ -1,4 +1,4 @@
-AC_INIT(Empathy, 2.27.4, http://bugzilla.gnome.org/browse.cgi?product=empathy)
+AC_INIT(Empathy, 2.27.5, http://bugzilla.gnome.org/browse.cgi?product=empathy)
 AC_PREREQ(2.59)
 AC_COPYRIGHT([
   Copyright (C) 2003-2007 Imendio AB
@@ -9,11 +9,11 @@ AC_COPYRIGHT([
 #   (Interfaces removed:    CURRENT++, AGE=0, REVISION=0)
 #   (Interfaces added:      CURRENT++, AGE++, REVISION=0)
 #   (No interfaces changed:                   REVISION++)
-LIBEMPATHY_CURRENT=26
+LIBEMPATHY_CURRENT=27
 LIBEMPATHY_AGE=0
 LIBEMPATHY_REVISION=0
 
-LIBEMPATHY_GTK_CURRENT=24
+LIBEMPATHY_GTK_CURRENT=25
 LIBEMPATHY_GTK_AGE=0
 LIBEMPATHY_GTK_REVISION=0
 
@@ -158,7 +158,7 @@ AM_GLIB_GNU_GETTEXT
 AC_ARG_ENABLE(network-manager,
               AS_HELP_STRING([--enable-network-manager=@<:@no/yes/auto@:>@],
                              [build with network-manager support]), ,
-                             enable_webkit=auto)
+                             enable_network_manager=auto)
 
 if test "x$enable_network_manager" != "xno"; then
    PKG_CHECK_MODULES(NETWORK_MANAGER,

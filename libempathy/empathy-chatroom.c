@@ -480,8 +480,7 @@ empathy_chatroom_equal (gconstpointer v1,
 	room_a = empathy_chatroom_get_room (EMPATHY_CHATROOM (v1));
 	room_b = empathy_chatroom_get_room (EMPATHY_CHATROOM (v2));
 
-	return empathy_account_equal (account_a, account_b) &&
-	       !tp_strdiff (room_a, room_b);
+	return account_a == account_b && !tp_strdiff (room_a, room_b);
 }
 
 EmpathyTpChat *

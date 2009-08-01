@@ -206,6 +206,18 @@
   )
 )
 
+(define-flags ContactListFlags
+  (in-module "Empathy")
+  (c-name "EmpathyContactListFlags")
+  (gtype-id "EMPATHY_TYPE_CONTACT_LIST_FLAGS")
+  (values
+    '("add" "EMPATHY_CONTACT_LIST_CAN_ADD")
+    '("remove" "EMPATHY_CONTACT_LIST_CAN_REMOVE")
+    '("alias" "EMPATHY_CONTACT_LIST_CAN_ALIAS")
+    '("group" "EMPATHY_CONTACT_LIST_CAN_GROUP")
+  )
+)
+
 (define-flags DebugFlags
   (in-module "Empathy")
   (c-name "EmpathyDebugFlags")
@@ -220,6 +232,7 @@
     '("ft" "EMPATHY_DEBUG_FT")
     '("location" "EMPATHY_DEBUG_LOCATION")
     '("other" "EMPATHY_DEBUG_OTHER")
+    '("share-desktop" "EMPATHY_DEBUG_SHARE_DESKTOP")
   )
 )
 
@@ -277,24 +290,10 @@
   (return-type "EmpathyAccountManager*")
 )
 
-(define-method create
+(define-method is_ready
   (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_create")
-  (return-type "EmpathyAccount*")
-  (parameters
-    '("const-gchar*" "connection_manager")
-    '("const-gchar*" "protocol")
-    '("const-gchar*" "display_name")
-  )
-)
-
-(define-method create_by_profile
-  (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_create_by_profile")
-  (return-type "EmpathyAccount*")
-  (parameters
-    '("McProfile*" "profile")
-  )
+  (c-name "empathy_account_manager_is_ready")
+  (return-type "gboolean")
 )
 
 (define-method get_connected_accounts
@@ -315,18 +314,18 @@
   (return-type "int")
 )
 
-(define-method get_account
+(define-method get_account_for_connection
   (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_get_account")
+  (c-name "empathy_account_manager_get_account_for_connection")
   (return-type "EmpathyAccount*")
   (parameters
     '("TpConnection*" "connection")
   )
 )
 
-(define-method lookup
+(define-method get_account
   (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_lookup")
+  (c-name "empathy_account_manager_get_account")
   (return-type "EmpathyAccount*")
   (parameters
     '("const-gchar*" "unique_name")
@@ -351,6 +350,52 @@
   (return-type "none")
   (parameters
     '("EmpathyAccount*" "account")
+  )
+)
+
+(define-method request_global_presence
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_request_global_presence")
+  (return-type "none")
+  (parameters
+    '("TpConnectionPresenceType" "type")
+    '("const-gchar*" "status")
+    '("const-gchar*" "message")
+  )
+)
+
+(define-method get_global_presence
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_get_global_presence")
+  (return-type "TpConnectionPresenceType")
+  (parameters
+    '("gchar**" "status")
+    '("gchar**" "message")
+  )
+)
+
+(define-method create_account_async
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_create_account_async")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "connection_manager")
+    '("const-gchar*" "protocol")
+    '("const-gchar*" "display_name")
+    '("GHashTable*" "parameters")
+    '("GHashTable*" "properties")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method create_account_finish
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_create_account_finish")
+  (return-type "EmpathyAccount*")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
   )
 )
 
@@ -910,6 +955,18 @@
   (return-type "gboolean")
 )
 
+(define-method can_voip_audio
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_can_voip_audio")
+  (return-type "gboolean")
+)
+
+(define-method can_voip_video
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_can_voip_video")
+  (return-type "gboolean")
+)
+
 (define-method can_send_files
   (of-object "EmpathyContact")
   (c-name "empathy_contact_can_send_files")
@@ -1142,6 +1199,12 @@
   (return-type "EmpathyContactMonitor*")
 )
 
+(define-method get_flags
+  (of-object "EmpathyContactList")
+  (c-name "empathy_contact_list_get_flags")
+  (return-type "EmpathyContactListFlags")
+)
+
 
 
 ;; From empathy-contact-manager.h
@@ -1149,6 +1212,11 @@
 (define-function contact_manager_get_type
   (c-name "empathy_contact_manager_get_type")
   (return-type "GType")
+)
+
+(define-function contact_manager_initialized
+  (c-name "empathy_contact_manager_initialized")
+  (return-type "gboolean")
 )
 
 (define-function contact_manager_dup_singleton
@@ -1165,10 +1233,10 @@
   )
 )
 
-(define-method can_add
+(define-method get_flags_for_connection
   (of-object "EmpathyContactManager")
-  (c-name "empathy_contact_manager_can_add")
-  (return-type "gboolean")
+  (c-name "empathy_contact_manager_get_flags_for_connection")
+  (return-type "EmpathyContactListFlags")
   (parameters
     '("TpConnection*" "connection")
   )
@@ -2153,6 +2221,21 @@
   )
 )
 
+(define-method is_backlog
+  (of-object "EmpathyMessage")
+  (c-name "empathy_message_is_backlog")
+  (return-type "gboolean")
+)
+
+(define-method set_is_backlog
+  (of-object "EmpathyMessage")
+  (c-name "empathy_message_set_is_backlog")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_backlog")
+  )
+)
+
 (define-method should_highlight
   (of-object "EmpathyMessage")
   (c-name "empathy_message_should_highlight")
@@ -2867,28 +2950,6 @@
   )
 )
 
-(define-function account_hash
-  (c-name "empathy_account_hash")
-  (return-type "guint")
-  (parameters
-    '("gconstpointer" "key")
-  )
-)
-
-(define-function account_equal
-  (c-name "empathy_account_equal")
-  (return-type "gboolean")
-  (parameters
-    '("gconstpointer" "a")
-    '("gconstpointer" "b")
-  )
-)
-
-(define-function mission_control_dup_singleton
-  (c-name "empathy_mission_control_dup_singleton")
-  (return-type "MissionControl*")
-)
-
 (define-function presence_get_default_message
   (c-name "empathy_presence_get_default_message")
   (return-type "const-gchar*")
@@ -2951,6 +3012,19 @@
     '("gconstpointer" "a")
     '("gconstpointer" "b")
   )
+)
+
+(define-function protocol_icon_name
+  (c-name "empathy_protocol_icon_name")
+  (return-type "gchar*")
+  (parameters
+    '("const-gchar*" "protocol")
+  )
+)
+
+(define-function type_dbus_ao
+  (c-name "empathy_type_dbus_ao")
+  (return-type "GType")
 )
 
 

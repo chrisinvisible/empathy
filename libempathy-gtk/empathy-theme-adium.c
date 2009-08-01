@@ -51,8 +51,12 @@ typedef struct {
 	EmpathySmileyManager *smiley_manager;
 	EmpathyContact       *last_contact;
 	time_t                last_timestamp;
+	gboolean              last_is_backlog;
 	gboolean              page_loaded;
 	GList                *message_queue;
+	gchar                *hovered_uri;
+	guint                 notify_enable_webkit_developer_tools_id;
+	GtkWidget            *inspector_window;
 } EmpathyThemeAdiumPriv;
 
 struct _EmpathyAdiumData {
@@ -65,12 +69,20 @@ struct _EmpathyAdiumData {
 	gchar *template_html;
 	gchar *in_content_html;
 	gsize  in_content_len;
+	gchar *in_context_html;
+	gsize  in_context_len;
 	gchar *in_nextcontent_html;
 	gsize  in_nextcontent_len;
+	gchar *in_nextcontext_html;
+	gsize  in_nextcontext_len;
 	gchar *out_content_html;
 	gsize  out_content_len;
+	gchar *out_context_html;
+	gsize  out_context_len;
 	gchar *out_nextcontent_html;
 	gsize  out_nextcontent_len;
+	gchar *out_nextcontext_html;
+	gsize  out_nextcontext_len;
 	gchar *status_html;
 	gsize  status_len;
 	GHashTable *info;
@@ -88,6 +100,31 @@ G_DEFINE_TYPE_WITH_CODE (EmpathyThemeAdium, empathy_theme_adium,
 			 G_IMPLEMENT_INTERFACE (EMPATHY_TYPE_CHAT_VIEW,
 						theme_adium_iface_init));
 
+static void
+theme_adium_update_enable_webkit_developer_tools (EmpathyThemeAdium *theme)
+{
+	WebKitWebView  *web_view = WEBKIT_WEB_VIEW (theme);
+	gboolean        enable_webkit_developer_tools;
+
+	if (empathy_conf_get_bool (empathy_conf_get (), "/apps/empathy/conversation/enable_webkit_developer_tools", &enable_webkit_developer_tools) == FALSE)
+		return;
+
+	g_object_set (G_OBJECT (webkit_web_view_get_settings (web_view)),
+		      "enable-developer-extras",
+		      enable_webkit_developer_tools,
+		      NULL);
+}
+
+static void
+theme_adium_notify_enable_webkit_developer_tools_cb (EmpathyConf *conf,
+						     const gchar *key,
+						     gpointer     user_data)
+{
+	EmpathyThemeAdium  *theme = user_data;
+
+	theme_adium_update_enable_webkit_developer_tools (theme);
+}
+
 static WebKitNavigationResponse
 theme_adium_navigation_requested_cb (WebKitWebView        *view,
 				     WebKitWebFrame       *frame,
@@ -103,15 +140,81 @@ theme_adium_navigation_requested_cb (WebKitWebView        *view,
 }
 
 static void
+theme_adium_hovering_over_link_cb (EmpathyThemeAdium *theme,
+				   gchar             *title,
+				   gchar             *uri,
+				   gpointer           user_data)
+{
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	if (tp_strdiff (uri, priv->hovered_uri)) {
+		g_free (priv->hovered_uri);
+		priv->hovered_uri = g_strdup (uri);
+	}
+}
+
+static void
+theme_adium_copy_address_cb (GtkMenuItem *menuitem,
+			     gpointer     user_data)
+{
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	GtkClipboard          *clipboard;
+
+	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+
+	clipboard = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
+	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+}
+
+static void
+theme_adium_open_address_cb (GtkMenuItem *menuitem,
+			     gpointer     user_data)
+{
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	empathy_url_show (GTK_WIDGET (menuitem), priv->hovered_uri);
+}
+
+static void
 theme_adium_populate_popup_cb (WebKitWebView *view,
 			       GtkMenu       *menu,
 			       gpointer       user_data)
 {
-	GtkWidget *item;
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (view);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	GtkWidget             *item;
+	GList                 *items;
+	GtkWidget             *icon;
+	gchar                 *stock_id;
+	gboolean               is_link = FALSE;
+	gboolean               developer_tools_enabled;
+
+	/* FIXME: WebKitGTK+'s context menu API clearly needs an
+	 * overhaul.  There is currently no way to know what is being
+	 * clicked, to decide what features to provide. You either
+	 * take what it gives you as a menu, or use hacks to figure
+	 * out what to display. */
+	items = gtk_container_get_children (GTK_CONTAINER (menu));
+	item = GTK_WIDGET (g_list_nth_data (items, 0));
+	g_list_free (items);
+
+	if (GTK_IS_IMAGE_MENU_ITEM (item)) {
+		icon = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (item));
+		gtk_image_get_stock (GTK_IMAGE (icon), &stock_id, NULL);
+
+		if ((!strcmp (stock_id, GTK_STOCK_OPEN)) && priv->hovered_uri)
+			is_link = TRUE;
+	}
 
 	/* Remove default menu items */
-	gtk_container_foreach (GTK_CONTAINER (menu),
-		(GtkCallback) gtk_widget_destroy, NULL);
+	g_object_get (G_OBJECT (webkit_web_view_get_settings (view)),
+		      "enable-developer-extras", &developer_tools_enabled, NULL);
+	if (!developer_tools_enabled)
+		gtk_container_foreach (GTK_CONTAINER (menu),
+				       (GtkCallback) gtk_widget_destroy, NULL);
 
 	/* Select all item */
 	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_SELECT_ALL, NULL);
@@ -146,10 +249,31 @@ theme_adium_populate_popup_cb (WebKitWebView *view,
 				  G_CALLBACK (empathy_chat_view_clear),
 				  view);
 
-	/* FIXME: Add open_link and copy_link when those bugs are fixed:
-	 * https://bugs.webkit.org/show_bug.cgi?id=16092
-	 * https://bugs.webkit.org/show_bug.cgi?id=16562
-	 */
+	/* We will only add the following menu items if we are
+	 * right-clicking a link */
+	if (!is_link)
+		return;
+
+	/* Separator */
+	item = gtk_separator_menu_item_new ();
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
+
+	/* Copy Link Address menu item */
+	item = gtk_menu_item_new_with_mnemonic (_("_Copy Link Address"));
+	g_signal_connect (item, "activate",
+			  G_CALLBACK (theme_adium_copy_address_cb),
+			  view);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
+
+	/* Open Link menu item */
+	item = gtk_menu_item_new_with_mnemonic (_("_Open Link"));
+	g_signal_connect (item, "activate",
+			  G_CALLBACK (theme_adium_open_address_cb),
+			  view);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	gtk_widget_show (item);
 }
 
 static gchar *
@@ -402,7 +526,8 @@ theme_adium_append_message (EmpathyChatView *view,
 	gsize                  len = 0;
 	const gchar           *func;
 	const gchar           *service_name;
-	const gchar           *message_classes = NULL;
+	GString               *message_classes = NULL;
+	gboolean              is_backlog;
 
 	if (!priv->page_loaded) {
 		priv->message_queue = g_list_prepend (priv->message_queue,
@@ -455,45 +580,102 @@ theme_adium_append_message (EmpathyChatView *view,
 		}
 	}
 
+	is_backlog = empathy_message_is_backlog (msg);
+
 	/* Get the right html/func to add the message */
 	func = "appendMessage";
+
+	message_classes = g_string_new ("message");
+
+	/* eventually append the "history" class */
+	if (is_backlog) {
+		g_string_append (message_classes, " history");
+	}
+
+	/* check the sender of the message and append the appropriate class */
+	if (empathy_contact_is_user (sender)) {
+		g_string_append (message_classes, " outgoing");
+	}
+	else {
+		g_string_append (message_classes, " incoming");
+	}
+
 	/*
 	 * To mimick Adium's behavior, we only want to join messages
-	 * sent within a 5 minute time frame.
+	 * sent by the same contact within a 5 minute time frame.
 	 */
 	if (empathy_contact_equal (priv->last_contact, sender) &&
-	    (timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD)) {
+	    (timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) &&
+	    (is_backlog == priv->last_is_backlog)) {
+		/* the messages can be appended */
 		func = "appendNextMessage";
+		g_string_append (message_classes, " consecutive");
+
+		/* check who is the sender of the message to use the correct html file */
 		if (empathy_contact_is_user (sender)) {
-			message_classes = "consecutive incoming message";
-			html = priv->data->out_nextcontent_html;
-			len = priv->data->out_nextcontent_len;
+			/* check if this is a backlog message and use NextContext.html */
+			if (is_backlog) {
+				html = priv->data->out_nextcontext_html;
+				len = priv->data->out_nextcontext_len;
+			}
+
+			/*
+			 * html is null if this is not a backlog message or
+			 * if we have to fallback (NextContext.html missing).
+			 * use NextContent.html
+			 */
+			if (html == NULL) {
+				html = priv->data->out_nextcontent_html;
+				len = priv->data->out_nextcontent_len;
+			}
 		}
-		if (!html) {
-			message_classes = "consecutive message outgoing";
-			html = priv->data->in_nextcontent_html;
-			len = priv->data->in_nextcontent_len;
+		else {
+			if (is_backlog) {
+				html = priv->data->in_nextcontext_html;
+				len = priv->data->in_nextcontext_len;
+			}
+
+			if (html == NULL) {
+				html = priv->data->in_nextcontent_html;
+				len = priv->data->in_nextcontent_len;
+			}
 		}
 	}
-	if (!html) {
+
+	/*
+	 * we have html == NULL here if:
+	 * 1. the message didn't have to be appended because
+	 *    the sender was different or the timestamp was too far
+	 * 2. NextContent.html file does not exist, so we must
+	 *    not forget to fallback to the correct Content.html
+	 */
+	if (html == NULL) {
 		if (empathy_contact_is_user (sender)) {
-			if (!message_classes) {
-				message_classes = "incoming message";
+			if (is_backlog) {
+				html = priv->data->out_context_html;
+				len = priv->data->out_context_len;
 			}
-			html = priv->data->out_content_html;
-			len = priv->data->out_content_len;
+
+			if (html == NULL) {
+				html = priv->data->out_content_html;
+				len = priv->data->out_content_len;
+			}
 		}
-		if (!html) {
-			if (!message_classes) {
-				message_classes = "message outgoing";
+		else {
+			if (is_backlog) {
+				html = priv->data->in_context_html;
+				len = priv->data->in_context_len;
 			}
-			html = priv->data->in_content_html;
-			len = priv->data->in_content_len;
+
+			if (html == NULL) {
+				html = priv->data->in_content_html;
+				len = priv->data->in_content_len;
+			}
 		}
 	}
 
 	theme_adium_append_html (theme, func, html, len, body, avatar_filename,
-				 name, contact_id, service_name, message_classes,
+				 name, contact_id, service_name, message_classes->str,
 				 timestamp);
 
 	/* Keep the sender of the last displayed message */
@@ -502,8 +684,10 @@ theme_adium_append_message (EmpathyChatView *view,
 	}
 	priv->last_contact = g_object_ref (sender);
 	priv->last_timestamp = timestamp;
+	priv->last_is_backlog = is_backlog;
 
 	g_free (dup_body);
+	g_string_free (message_classes, TRUE);
 }
 
 static void
@@ -560,6 +744,13 @@ theme_adium_clear (EmpathyChatView *view)
 					  priv->data->template_html,
 					  basedir_uri);
 	g_free (basedir_uri);
+
+	/* Clear last contact to avoid trying to add a 'joined'
+	 * message when we don't have an insertion point. */
+	if (priv->last_contact) {
+		g_object_unref (priv->last_contact);
+		priv->last_contact = NULL;
+	}
 }
 
 static gboolean
@@ -657,6 +848,10 @@ theme_adium_finalize (GObject *object)
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (object);
 
 	empathy_adium_data_unref (priv->data);
+	g_free (priv->hovered_uri);
+
+	empathy_conf_notify_remove (empathy_conf_get (),
+				    priv->notify_enable_webkit_developer_tools_id);
 
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->finalize (object);
 }
@@ -676,7 +871,75 @@ theme_adium_dispose (GObject *object)
 		priv->last_contact = NULL;
 	}
 
+	if (priv->inspector_window) {
+		gtk_widget_destroy (priv->inspector_window);
+		priv->inspector_window = NULL;
+	}
+
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->dispose (object);
+}
+
+static gboolean
+theme_adium_inspector_show_window_cb (WebKitWebInspector *inspector,
+				      gpointer            user_data)
+{
+	EmpathyThemeAdium     *theme = user_data;
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	gtk_widget_show_all (priv->inspector_window);
+
+	return TRUE;
+}
+
+static gboolean
+theme_adium_inspector_close_window_cb (WebKitWebInspector *inspector,
+				       gpointer            user_data)
+{
+	EmpathyThemeAdium     *theme = user_data;
+	EmpathyThemeAdiumPriv *priv;
+
+	/* We may be called too late - when the theme has already been
+	 * destroyed */
+	if (!theme)
+		return FALSE;
+
+	priv = GET_PRIV (theme);
+
+	if (priv->inspector_window) {
+		gtk_widget_hide (priv->inspector_window);
+	}
+
+	return TRUE;
+}
+
+static WebKitWebView *
+theme_adium_inspect_web_view_cb (WebKitWebInspector *inspector,
+				 WebKitWebView *web_view,
+				 gpointer data)
+{
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (EMPATHY_THEME_ADIUM (web_view));
+	GtkWidget             *scrolled_window;
+	GtkWidget             *inspector_web_view;
+
+	if (!priv->inspector_window) {
+		priv->inspector_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		gtk_window_set_default_size (GTK_WINDOW (priv->inspector_window),
+					     800, 600);
+
+		g_signal_connect (priv->inspector_window, "delete-event",
+				  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+
+		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_container_add (GTK_CONTAINER (priv->inspector_window), scrolled_window);
+
+		inspector_web_view = webkit_web_view_new ();
+		gtk_container_add (GTK_CONTAINER (scrolled_window), inspector_web_view);
+
+		return WEBKIT_WEB_VIEW (inspector_web_view);
+	}
+
+	return NULL;
 }
 
 static void
@@ -698,7 +961,15 @@ theme_adium_constructed (GObject *object)
 	if (font_size) {
 		g_object_set (G_OBJECT (webkit_settings), "default-font-size", font_size, NULL);
 	}
-	webkit_web_view_set_settings (WEBKIT_WEB_VIEW (object), webkit_settings);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "inspect-web-view",
+			  G_CALLBACK (theme_adium_inspect_web_view_cb), NULL);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "show-window",
+			  G_CALLBACK (theme_adium_inspector_show_window_cb), object);
+
+	g_signal_connect (webkit_web_view_get_inspector (WEBKIT_WEB_VIEW (object)), "close-window",
+			  G_CALLBACK (theme_adium_inspector_close_window_cb), NULL);
 
 	/* Load template */
 	basedir_uri = g_strconcat ("file://", priv->data->basedir, NULL);
@@ -768,7 +1039,6 @@ empathy_theme_adium_class_init (EmpathyThemeAdiumClass *klass)
 							      G_PARAM_READWRITE |
 							      G_PARAM_STATIC_STRINGS));
 
-
 	g_type_class_add_private (object_class, sizeof (EmpathyThemeAdiumPriv));
 }
 
@@ -791,6 +1061,17 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 	g_signal_connect (theme, "populate-popup",
 			  G_CALLBACK (theme_adium_populate_popup_cb),
 			  NULL);
+	g_signal_connect (theme, "hovering-over-link",
+			  G_CALLBACK (theme_adium_hovering_over_link_cb),
+			  NULL);
+
+	priv->notify_enable_webkit_developer_tools_id =
+		empathy_conf_notify_add (empathy_conf_get (),
+					 "/apps/empathy/conversation/enable_webkit_developer_tools",
+					 theme_adium_notify_enable_webkit_developer_tools_cb,
+					 theme);
+
+	theme_adium_update_enable_webkit_developer_tools (theme);
 }
 
 EmpathyThemeAdium *
@@ -808,6 +1089,15 @@ empathy_adium_path_is_valid (const gchar *path)
 {
 	gboolean ret;
 	gchar   *file;
+
+	/* The theme is not valid if there is no Info.plist */
+	file = g_build_filename (path, "Contents", "Info.plist",
+				 NULL);
+	ret = g_file_test (file, G_FILE_TEST_EXISTS);
+	g_free (file);
+
+	if (ret == FALSE)
+		return ret;
 
 	/* We ship a default Template.html as fallback if there is any problem
 	 * with the one inside the theme. The only other required file is
@@ -834,10 +1124,15 @@ empathy_adium_info_new (const gchar *path)
 	value = empathy_plist_parse_from_file (file);
 	g_free (file);
 
-	if (value) {
-		info = g_value_dup_boxed (value);
-		tp_g_value_slice_free (value);
-	}
+	if (value == NULL)
+		return NULL;
+
+	info = g_value_dup_boxed (value);
+	tp_g_value_slice_free (value);
+
+	/* Insert the theme's path into the hash table,
+	 * keys have to be dupped */
+	tp_asv_set_string (info, g_strdup ("path"), path);
 
 	return info;
 }
@@ -890,12 +1185,28 @@ empathy_adium_data_new_with_info (const gchar *path, GHashTable *info)
 	g_file_get_contents (file, &data->in_nextcontent_html, &data->in_nextcontent_len, NULL);
 	g_free (file);
 
+	file = g_build_filename (data->basedir, "Incoming", "Context.html", NULL);
+	g_file_get_contents (file, &data->in_context_html, &data->in_context_len, NULL);
+	g_free (file);
+
+	file = g_build_filename (data->basedir, "Incoming", "NextContext.html", NULL);
+	g_file_get_contents (file, &data->in_nextcontext_html, &data->in_nextcontext_len, NULL);
+	g_free (file);
+
 	file = g_build_filename (data->basedir, "Outgoing", "Content.html", NULL);
 	g_file_get_contents (file, &data->out_content_html, &data->out_content_len, NULL);
 	g_free (file);
 
 	file = g_build_filename (data->basedir, "Outgoing", "NextContent.html", NULL);
 	g_file_get_contents (file, &data->out_nextcontent_html, &data->out_nextcontent_len, NULL);
+	g_free (file);
+
+	file = g_build_filename (data->basedir, "Outgoing", "Context.html", NULL);
+	g_file_get_contents (file, &data->out_context_html, &data->out_context_len, NULL);
+	g_free (file);
+
+	file = g_build_filename (data->basedir, "Outgoing", "NextContext.html", NULL);
+	g_file_get_contents (file, &data->out_nextcontext_html, &data->out_nextcontext_len, NULL);
 	g_free (file);
 
 	file = g_build_filename (data->basedir, "Status.html", NULL);
@@ -1001,7 +1312,7 @@ empathy_adium_data_ref (EmpathyAdiumData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 
-	data->ref_count++;
+	g_atomic_int_inc (&data->ref_count);
 
 	return data;
 }
@@ -1011,15 +1322,18 @@ empathy_adium_data_unref (EmpathyAdiumData *data)
 {
 	g_return_if_fail (data != NULL);
 
-	data->ref_count--;
-	if (data->ref_count == 0) {
+	if (g_atomic_int_dec_and_test (&data->ref_count)) {
 		g_free (data->path);
 		g_free (data->basedir);
 		g_free (data->template_html);
 		g_free (data->in_content_html);
 		g_free (data->in_nextcontent_html);
+		g_free (data->in_context_html);
+		g_free (data->in_nextcontext_html);
 		g_free (data->out_content_html);
 		g_free (data->out_nextcontent_html);
+		g_free (data->out_context_html);
+		g_free (data->out_nextcontext_html);
 		g_free (data->default_avatar_filename);
 		g_free (data->default_incoming_avatar_filename);
 		g_free (data->default_outgoing_avatar_filename);

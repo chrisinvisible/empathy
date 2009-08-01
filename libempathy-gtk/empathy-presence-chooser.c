@@ -79,9 +79,9 @@ enum {
 
 /* For combobox's model */
 enum {
+	COL_STATUS_TEXT,
 	COL_STATE_ICON_NAME,
 	COL_STATE,
-	COL_STATUS_TEXT,
 	COL_DISPLAY_MARKUP,
 	COL_STATUS_CUSTOMISABLE,
 	COL_TYPE,
@@ -162,9 +162,9 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 	int i;
 
 	store = gtk_list_store_new (N_COLUMNS,
+				    G_TYPE_STRING,    /* COL_STATUS_TEXT */
 				    G_TYPE_STRING,    /* COL_STATE_ICON_NAME */
 				    G_TYPE_UINT,      /* COL_STATE */
-				    G_TYPE_STRING,    /* COL_STATUS_TEXT */
 				    G_TYPE_STRING,    /* COL_DISPLAY_MARKUP */
 				    G_TYPE_BOOLEAN,   /* COL_STATUS_CUSTOMISABLE */
 				    G_TYPE_INT);      /* COL_TYPE */
@@ -179,9 +179,9 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 		icon_name = empathy_icon_name_for_presence (states[i].state);
 
 		gtk_list_store_insert_with_values (store, NULL, -1,
+			COL_STATUS_TEXT, status,
 			COL_STATE_ICON_NAME, icon_name,
 			COL_STATE, states[i].state,
-			COL_STATUS_TEXT, status,
 			COL_DISPLAY_MARKUP, status,
 			COL_STATUS_CUSTOMISABLE, states[i].customisable,
 			COL_TYPE, ENTRY_TYPE_BUILTIN,
@@ -194,9 +194,9 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 			for (l = list; l; l = l->next) {
 				gtk_list_store_insert_with_values (store,
 					NULL, -1,
+					COL_STATUS_TEXT, l->data,
 					COL_STATE_ICON_NAME, icon_name,
 					COL_STATE, states[i].state,
-					COL_STATUS_TEXT, l->data,
 					COL_DISPLAY_MARKUP, l->data,
 					COL_STATUS_CUSTOMISABLE, TRUE,
 					COL_TYPE, ENTRY_TYPE_SAVED,
@@ -205,9 +205,9 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 			g_list_free (list);
 
 			gtk_list_store_insert_with_values (store, NULL, -1,
+				COL_STATUS_TEXT, _("Custom Message..."),
 				COL_STATE_ICON_NAME, icon_name,
 				COL_STATE, states[i].state,
-				COL_STATUS_TEXT, "",
 				COL_DISPLAY_MARKUP, custom_message,
 				COL_STATUS_CUSTOMISABLE, TRUE,
 				COL_TYPE, ENTRY_TYPE_CUSTOM,
@@ -222,8 +222,8 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 			-1);
 
 	gtk_list_store_insert_with_values (store, NULL, -1,
+		COL_STATUS_TEXT, _("Edit Custom Messages..."),
 		COL_STATE_ICON_NAME, GTK_STOCK_EDIT,
-		COL_STATUS_TEXT, "",
 		COL_DISPLAY_MARKUP, _("Edit Custom Messages..."),
 		COL_TYPE, ENTRY_TYPE_EDIT_CUSTOM,
 		-1);

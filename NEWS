@@ -1,3 +1,69 @@
+NEW in 2.27.4
+==============
+Bugs fixed:
+ - Fixed #584703, Segfault when the contact selector dispose
+ - Fixed #459161, Remove should be insensitive for salut contact
+ - Fixed #494532, empathy should be able to take colours from the GTK theme
+ - Fixed #520972, IRC widget is cut (Matthias Clasen)
+ - Fixed #536383, Add option to hide muc roster
+ - Fixed #556237, time banner is added at each sentence when the remote contact is offline
+ - Fixed #560159, Should take a well-known bus name (Jonny Lamb)
+ - Fixed #562468, Contact list view options are scattered over "Chat" menu and "General" Preferences
+ - Fixed #563678, Doesn't poke block devices to figure out their file size. (Frédéric Péters)
+ - Fixed #565494, Remove libgnomevfs include in megaphone-applet.c
+ - Fixed #571989, "Video preview" menu item doesn't do anything
+ - Fixed #574771, Use call-stop icon (Frédéric Péters)
+ - Fixed #575008, Should play a sound when calling
+ - Fixed #575667, Favourite Chat Room tickybox doesn't work. (Abner Silva)
+ - Fixed #579151, Adds an Adium theme parsing to have a nicer theme selector
+ - Fixed #579893, EmpathyProfileChooser should extend GtkComboBox
+ - Fixed #579940, Show a notification when a buddy goes to offline or online
+ - Fixed #580631, Implement o.fd.Tp.Debug to publish debug messages (Jonny Lamb)
+ - Fixed #580777, Shouldn't be able to send video and enable preview if no webcam is plugged
+ - Fixed #582598, Call window: "send video" widgets should be enabled according the state of the call
+ - Fixed #582810, When we stop receiving video in a call, we should not see the last video frame.
+ - Fixed #585031, Crash when starting if status-presets.xml contains an 'unset' presence (Guillaume Desmottes)
+ - Fixed #585053, Crash when trying to add an 'unset' status as favorite (Guillaume Desmottes)
+ - Fixed #585380, Contact list doesn't appear in windows list when respawned
+ - Fixed #585475, %service% is not replaced in adium themes (Patryk Zawadzki)
+ - Fixed #585522, Use libchamplain 0.3.3's API
+ - Fixed #585601, Adium theme is not reloaded on /clear or Ctrl+L or clear menu item
+ - Fixed #585777, Empathy does not import from Pidgin on start
+ - Fixed #585788, Capitalisation incorrect
+ - Fixed #585882, Can't easily copy URL's when using Adium themes
+ - Fixed #585885, Lines are not smashed together when using Adium themes (Patryk Zawadzki)
+ - Fixed #585887, "Publish my location" causes a crash
+ - Fixed #586059, Remove markup from translatable strings
+ - Fixed #586102, Remove "new message from" from notification message (Guillaume Desmottes)
+ - Fixed #586133, don't autoscroll on new messages
+ - Fixed #586249, Display part reasons and messages.
+ - Fixed #586329, Imported Google account (from Pidgin) not connecting
+ - Fixed #586352, Adium theme should only join messages if time delta is less than 5 minutes (Patryk Zawadzki)
+ - Fixed #586368, Use themed avatar as fallback if provided
+ - Fixed #586382, "history" messageClasses is not set for backlogs
+ - Fixed #586387, We are not using Info.plist settings for adium themes (Patryk Zawadzki)
+ - Fixed #586481, telepathy-idle IRC chat window has no users or chat content
+ - Fixed #586645, Status icon not updated when going offline (Guillaume Desmottes)
+ - Fixed #586734, Modules linking cleanup
+ - Fixed #587365, empaty crashs whenever a file trasnfert request is received
+ - Fixed #587446, NM integration doesn't work if NM is started after empathy (Sjoerd Simons)
+ - Fixed #587508, Don't use McAccount (Sjoerd Simons)
+ - Fixed #587817, Crash when trying to add a contact while connecting (Guillaume Desmottes)
+ - Fixed #587953, Labels with RTL control code don't right-align
+ - Fixed #587958, please add bug-database to doap (Guillaume Desmottes)
+ - Fixed #588021, typo for enable_network_manager in configure.ac (Ken VanDine)
+ - Fixed #586284, Crasher: click on the microphone once disconnected
+
+Translations:
+ - Updated bn_IN Translation (Runa Bhattacharjee)
+ - Updated es Translation (Jorge Gonzalez)
+ - Updated fr Translation (Claude Paroz)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated or Translation (Manoj Kumar Giri)
+ - Updated pa Translation (A S Alam)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (drtvasudevan)
+
 NEW in 2.27.3
 ==============
 Bugs fixed:

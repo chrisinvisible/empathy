@@ -786,24 +786,24 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 	gchar    *target_type;
 	gboolean  handled = FALSE;
 
-	target_type = gdk_atom_name (selection_data->target);
+	target_type = gdk_atom_name (gtk_selection_data_get_target (selection_data));
 	if (!strcmp (target_type, URI_LIST_TYPE)) {
 		GFile            *file;
 		GFileInputStream *input_stream;
 		gchar            *nl;
 		gchar            *data = NULL;
 
-		nl = strstr (selection_data->data, "\r\n");
+		nl = strstr (gtk_selection_data_get_data (selection_data), "\r\n");
 		if (nl) {
 			gchar *uri;
 
-			uri = g_strndup (selection_data->data,
-					 nl - (gchar *) selection_data->data);
+			uri = g_strndup (gtk_selection_data_get_data (selection_data),
+					 nl - (gchar *) gtk_selection_data_get_data (selection_data));
 
 			file = g_file_new_for_uri (uri);
 			g_free (uri);
 		} else {
-			file = g_file_new_for_uri (selection_data->data);
+			file = g_file_new_for_uri (gtk_selection_data_get_data (selection_data));
 		}
 
 		input_stream = g_file_read (file, NULL, NULL);

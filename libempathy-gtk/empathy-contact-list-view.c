@@ -292,7 +292,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		goto OUT;
 	}
 
-	id = (const gchar*) selection->data;
+	id = (const gchar*) gtk_selection_data_get_data (selection);
 	DEBUG ("Received %s%s drag & drop contact from roster with id:'%s'",
 		context->action == GDK_ACTION_MOVE ? "move" : "",
 		context->action == GDK_ACTION_COPY ? "copy" : "",
@@ -302,7 +302,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 	account_id = strv[0];
 	contact_id = strv[1];
   account_manager = empathy_account_manager_dup_singleton ();
-	account = empathy_account_manager_lookup (account_manager, account_id);
+	account = empathy_account_manager_get_account (account_manager, account_id);
 	if (account) {
 		TpConnection *connection;
 
@@ -817,16 +817,20 @@ contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
 	gboolean is_group;
 	gboolean is_active;
 	gboolean show_status;
+	gchar *name;
 
 	gtk_tree_model_get (model, iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_ACTIVE, &is_active,
 			    EMPATHY_CONTACT_LIST_STORE_COL_STATUS_VISIBLE, &show_status,
+			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
 			    -1);
 
 	g_object_set (cell,
 		      "show-status", show_status,
+		      "text", name,
 		      NULL);
+	g_free (name);
 
 	contact_list_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -851,7 +855,7 @@ contact_list_view_expander_cell_data_func (GtkTreeViewColumn     *column,
 		gboolean     row_expanded;
 
 		path = gtk_tree_model_get_path (model, iter);
-		row_expanded = gtk_tree_view_row_expanded (GTK_TREE_VIEW (column->tree_view), path);
+		row_expanded = gtk_tree_view_row_expanded (GTK_TREE_VIEW (gtk_tree_view_column_get_tree_view (column)), path);
 		gtk_tree_path_free (path);
 
 		g_object_set (cell,
@@ -1302,6 +1306,31 @@ empathy_contact_list_view_dup_selected (EmpathyContactListView *view)
 	return contact;
 }
 
+EmpathyContactListFlags
+empathy_contact_list_view_get_flags (EmpathyContactListView *view)
+{
+	EmpathyContactListViewPriv *priv;
+	GtkTreeSelection          *selection;
+	GtkTreeIter                iter;
+	GtkTreeModel              *model;
+	EmpathyContactListFlags    flags;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT_LIST_VIEW (view), 0);
+
+	priv = GET_PRIV (view);
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+	if (!gtk_tree_selection_get_selected (selection, &model, &iter)) {
+		return 0;
+	}
+
+	gtk_tree_model_get (model, &iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, &flags,
+			    -1);
+
+	return flags;
+}
+
 gchar *
 empathy_contact_list_view_get_selected_group (EmpathyContactListView *view)
 {
@@ -1473,6 +1502,7 @@ empathy_contact_list_view_get_contact_menu (EmpathyContactListView *view)
 	GtkWidget                  *menu;
 	GtkWidget                  *item;
 	GtkWidget                  *image;
+	EmpathyContactListFlags     flags;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT_LIST_VIEW (view), NULL);
 
@@ -1480,25 +1510,23 @@ empathy_contact_list_view_get_contact_menu (EmpathyContactListView *view)
 	if (!contact) {
 		return NULL;
 	}
+	flags = empathy_contact_list_view_get_flags (view);
 
 	menu = empathy_contact_menu_new (contact, priv->contact_features);
 
-	if (!(priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_CONTACT_REMOVE)) {
-		g_object_unref (contact);
-		return menu;
-	}
-
-	if (menu) {
-		/* Separator */
-		item = gtk_separator_menu_item_new ();
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-		gtk_widget_show (item);
-	} else {
-		menu = gtk_menu_new ();
-	}
-
 	/* Remove contact */
-	if (priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_CONTACT_REMOVE) {
+	if (priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_CONTACT_REMOVE &&
+	    flags & EMPATHY_CONTACT_LIST_CAN_REMOVE) {
+		/* create the menu if required, or just add a separator */
+		if (!menu) {
+			menu = gtk_menu_new ();
+		} else {
+			item = gtk_separator_menu_item_new ();
+			gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+			gtk_widget_show (item);
+		}
+
+		/* Remove */
 		item = gtk_image_menu_item_new_with_mnemonic (_("_Remove"));
 		image = gtk_image_new_from_icon_name (GTK_STOCK_REMOVE,
 						      GTK_ICON_SIZE_MENU);

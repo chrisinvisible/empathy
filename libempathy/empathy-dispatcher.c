@@ -1057,7 +1057,6 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 
   g_type_class_add_private (object_class, sizeof (EmpathyDispatcherPriv));
 
-
   klass->dbus_props_class.interfaces = prop_interfaces;
   tp_dbus_properties_mixin_class_init (object_class,
     G_STRUCT_OFFSET (EmpathyDispatcherClass, dbus_props_class));
@@ -1801,7 +1800,7 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
   EmpathyAccount *account;
   TpConnection *connection;
 
-  account = empathy_account_manager_lookup (priv->account_manager,
+  account = empathy_account_manager_get_account (priv->account_manager,
     account_path);
   /* FIXME */
   g_assert (account != NULL);
@@ -1824,8 +1823,6 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
     }
 
   tp_svc_client_handler_return_from_handle_channels (context);
-
-  g_object_unref (account);
 }
 
 static void

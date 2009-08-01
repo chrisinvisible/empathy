@@ -204,6 +204,23 @@ contact_manager_constructor (GType type,
 	return retval;
 }
 
+/**
+ * empathy_contact_manager_initialized:
+ *
+ * Reports whether or not the singleton has already been created.
+ *
+ * There can be instances where you want to access the #EmpathyContactManager
+ * only if it has been set up for this process.
+ *
+ * Returns: %TRUE if the #EmpathyContactManager singleton has previously
+ * been initialized.
+ */
+gboolean
+empathy_contact_manager_initialized (void)
+{
+	return (manager_singleton != NULL);
+}
+
 static void
 empathy_contact_manager_class_init (EmpathyContactManagerClass *klass)
 {
@@ -527,19 +544,24 @@ contact_manager_iface_init (EmpathyContactListIface *iface)
 	iface->remove_group	 = contact_manager_remove_group;
 }
 
-gboolean
-empathy_contact_manager_can_add (EmpathyContactManager *manager,
-				 TpConnection          *connection)
+EmpathyContactListFlags
+empathy_contact_manager_get_flags_for_connection (
+				EmpathyContactManager *manager,
+				TpConnection          *connection)
 {
 	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
-	EmpathyTpContactList      *list;
+	EmpathyContactList        *list;
+	EmpathyContactListFlags    flags;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT_MANAGER (manager), FALSE);
+	g_return_val_if_fail (connection != NULL, FALSE);
 
 	list = g_hash_table_lookup (priv->lists, connection);
-	if (list == NULL)
+	if (list == NULL) {
 		return FALSE;
+	}
+	flags = empathy_contact_list_get_flags (list);
 
-	return empathy_tp_contact_list_can_add (list);
+	return flags;
 }
 

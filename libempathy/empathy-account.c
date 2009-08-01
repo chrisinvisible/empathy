@@ -202,7 +202,8 @@ empathy_account_get_property (GObject *object,
 }
 
 static void
-empathy_account_update (EmpathyAccount *account, GHashTable *properties)
+empathy_account_update (EmpathyAccount *account,
+    GHashTable *properties)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
   const gchar *conn_path;
@@ -358,7 +359,8 @@ empathy_account_got_all_cb (TpProxy *proxy,
 
   if (error != NULL)
     {
-      printf ("Unhappy\n");
+      DEBUG ("Failed to get the initial set of account properties: %s",
+        error->message);
       return;
     }
 
@@ -402,7 +404,7 @@ empathy_account_unescape_protocol (const gchar *protocol, gssize len)
 
 static gboolean
 empathy_account_parse_unique_name (const gchar *bus_name,
-  gchar **protocol, gchar **manager)
+    gchar **protocol, gchar **manager)
 {
   const gchar *proto, *proto_end;
   const gchar *cm, *cm_end;
@@ -469,7 +471,7 @@ empathy_account_constructed (GObject *object)
   empathy_account_parse_unique_name (priv->unique_name,
     &(priv->proto_name), &(priv->cm_name));
 
-  priv->icon_name = g_strdup_printf ("im-%s", priv->proto_name);
+  priv->icon_name = empathy_protocol_icon_name (priv->proto_name);
 
   tp_cli_account_connect_to_account_property_changed (priv->account,
     empathy_account_properties_changed,
@@ -609,6 +611,21 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
     G_TYPE_NONE, 0);
 }
 
+static void
+empathy_account_free_connection (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  if (priv->connection_invalidated_id != 0)
+    g_signal_handler_disconnect (priv->connection,
+        priv->connection_invalidated_id);
+  priv->connection_invalidated_id = 0;
+
+  if (priv->connection != NULL)
+    g_object_unref (priv->connection);
+  priv->connection = NULL;
+}
+
 void
 empathy_account_dispose (GObject *object)
 {
@@ -620,14 +637,7 @@ empathy_account_dispose (GObject *object)
 
   priv->dispose_has_run = TRUE;
 
-  if (priv->connection_invalidated_id != 0)
-    g_signal_handler_disconnect (priv->connection,
-        priv->connection_invalidated_id);
-  priv->connection_invalidated_id = 0;
-
-  if (priv->connection != NULL)
-    g_object_unref (priv->connection);
-  priv->connection = NULL;
+  empathy_account_free_connection (self);
 
   /* release any references held by the object here */
   if (G_OBJECT_CLASS (empathy_account_parent_class)->dispose != NULL)
@@ -773,7 +783,8 @@ empathy_account_is_ready (EmpathyAccount *account)
 
 
 EmpathyAccount *
-empathy_account_new (TpDBusDaemon *dbus, const gchar *unique_name)
+empathy_account_new (TpDBusDaemon *dbus,
+    const gchar *unique_name)
 {
   return EMPATHY_ACCOUNT (g_object_new (EMPATHY_TYPE_ACCOUNT,
     "dbus-daemon", dbus,
@@ -787,13 +798,12 @@ empathy_account_connection_ready_cb (TpConnection *connection,
     gpointer user_data)
 {
   EmpathyAccount *account = EMPATHY_ACCOUNT (user_data);
-  EmpathyAccountPriv *priv = GET_PRIV (account);
 
   if (error != NULL)
     {
       DEBUG ("(%s) Connection failed to become ready: %s",
         empathy_account_get_unique_name (account), error->message);
-      priv->connection = NULL;
+      empathy_account_free_connection (account);
     }
   else
     {
@@ -902,7 +912,7 @@ empathy_account_requested_presence_cb (TpProxy *proxy,
   GObject *weak_object)
 {
   if (error)
-    DEBUG (":( : %s", error->message);
+    DEBUG ("Failed to set the requested presence: %s", error->message);
 }
 
 

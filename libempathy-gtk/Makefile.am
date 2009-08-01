@@ -41,6 +41,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-list-store.c		\
 	empathy-contact-list-view.c		\
 	empathy-contact-menu.c			\
+	empathy-share-my-desktop.c		\
 	empathy-contact-selector.c		\
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
@@ -60,6 +61,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-theme-boxes.c			\
 	empathy-theme-irc.c			\
 	empathy-theme-manager.c			\
+	empathy-kludge-label.c			\
 	empathy-ui-utils.c
 
 libempathy_gtk_la_SOURCES =			\
@@ -101,6 +103,7 @@ libempathy_gtk_headers =			\
 	empathy-contact-list-store.h		\
 	empathy-contact-list-view.h		\
 	empathy-contact-menu.h			\
+	empathy-share-my-desktop.h		\
 	empathy-contact-selector.h		\
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
@@ -121,6 +124,7 @@ libempathy_gtk_headers =			\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\
+	empathy-kludge-label.h			\
 	empathy-ui-utils.h
 
 check_c_sources = \

@@ -113,7 +113,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 
 			manager = empathy_account_manager_dup_singleton ();
 			connection = empathy_tp_chat_get_connection (tp_chat);
-			account = empathy_account_manager_get_account (manager,
+			account = empathy_account_manager_get_account_for_connection (manager,
 								       connection);
 			chat = empathy_chat_window_find_chat (account, id);
 			g_object_unref (manager);
@@ -342,6 +342,67 @@ create_salut_account (void)
 		}
 }
 
+static void
+migrate_config_to_xdg_dir (void)
+{
+	gchar *xdg_dir, *old_dir, *xdg_filename, *old_filename;
+	int i;
+	GFile *xdg_file, *old_file;
+	static const gchar* filenames[] = {
+		"geometry.ini",
+		"irc-networks.xml",
+		"chatrooms.xml",
+		"contact-groups.xml",
+		"status-presets.xml",
+		"accels.txt",
+		NULL
+	};
+
+	xdg_dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
+	if (g_file_test (xdg_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
+		/* xdg config dir already exists */
+		g_free (xdg_dir);
+		return;
+	}
+
+	old_dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+	if (!g_file_test (old_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
+		/* old config dir didn't exist */
+		g_free (xdg_dir);
+		g_free (old_dir);
+		return;
+	}
+
+	if (g_mkdir_with_parents (xdg_dir, (S_IRUSR | S_IWUSR | S_IXUSR)) == -1) {
+		DEBUG ("Failed to create configuration directory; aborting migration");
+		g_free (xdg_dir);
+		g_free (old_dir);
+		return;
+	}
+
+	for (i = 0; filenames[i]; i++) {
+		old_filename = g_build_filename (old_dir, filenames[i], NULL);
+		if (!g_file_test (old_filename, G_FILE_TEST_EXISTS)) {
+			g_free (old_filename);
+			continue;
+		}
+		xdg_filename = g_build_filename (xdg_dir, filenames[i], NULL);
+		old_file = g_file_new_for_path (old_filename);
+		xdg_file = g_file_new_for_path (xdg_filename);
+		if (!g_file_move (old_file, xdg_file, G_FILE_COPY_NONE,
+				  NULL, NULL, NULL, NULL)) {
+			DEBUG ("Failed to migrate %s", filenames[i]);
+		}
+		g_free (old_filename);
+		g_free (xdg_filename);
+		g_object_unref (old_file);
+		g_object_unref (xdg_file);
+	}
+
+	g_free (xdg_dir);
+	g_free (old_dir);
+}
+
 /* The code that handles single-instance and startup notification is
  * copied from gedit.
  *
@@ -378,7 +439,7 @@ on_bacon_message_received (const char *message,
 				gtk_widget_realize (GTK_WIDGET (window));
 			}
 
-			startup_timestamp = gdk_x11_get_server_time (window->window);
+			startup_timestamp = gdk_x11_get_server_time (gtk_widget_get_window (window));
 		}
 
 		gtk_window_present_with_time (GTK_WINDOW (window), startup_timestamp);
@@ -669,6 +730,8 @@ main (int argc, char *argv[])
 	account_manager = empathy_account_manager_dup_singleton ();
 	g_signal_connect (account_manager, "notify::ready",
 		G_CALLBACK (account_manager_ready_cb), NULL);
+
+	migrate_config_to_xdg_dir ();
 
 	/* Setting up UI */
 	window = empathy_main_window_show ();

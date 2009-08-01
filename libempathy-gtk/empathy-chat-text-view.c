@@ -495,7 +495,9 @@ chat_text_view_size_allocate (GtkWidget     *widget,
 		GtkAdjustment *adj;
 
 		adj = GTK_TEXT_VIEW (widget)->vadjustment;
-		gtk_adjustment_set_value (adj, adj->upper - adj->page_size);
+		gtk_adjustment_set_value (adj,
+					  gtk_adjustment_get_upper (adj) -
+					  gtk_adjustment_get_page_size (adj));
 	}
 }
 
@@ -652,7 +654,7 @@ chat_text_view_scroll_cb (EmpathyChatTextView *view)
 
 	priv = GET_PRIV (view);
 	adj = GTK_TEXT_VIEW (view)->vadjustment;
-	max_val = adj->upper - adj->page_size;
+	max_val = gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj);
 
 	g_return_val_if_fail (priv->scroll_time != NULL, FALSE);
 
@@ -817,6 +819,10 @@ chat_text_view_clear (EmpathyChatView *view)
 	priv = GET_PRIV (view);
 
 	priv->last_timestamp = 0;
+	if (priv->last_contact) {
+		g_object_unref (priv->last_contact);
+		priv->last_contact = NULL;
+	}
 }
 
 static gboolean

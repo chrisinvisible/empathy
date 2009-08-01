@@ -27,7 +27,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+/* FIXME: g_mapped_file_free has been deprecated in GLib 2.22, but the
+ * replacement symbol, g_mapped_file_unref is not available in older Glib
+ * and we're not ready to bump our version requirement just for this. When
+ * we're ready to bump our version requirement, just revert this patch. */
+#undef G_DISABLE_DEPRECATED
 #include <glib/gstdio.h>
+#define G_DISABLE_DEPRECATED
 
 #include <telepathy-glib/util.h>
 
@@ -398,8 +405,10 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 
   unescaped = g_strdup_printf ("/%s", g_strdelimit (account_name, "%", '/'));
 
-  hit->account = empathy_account_manager_lookup (priv->account_manager,
+  hit->account = empathy_account_manager_get_account (priv->account_manager,
     unescaped);
+  if (hit->account != NULL)
+    g_object_ref (hit->account);
   hit->filename = g_strdup (filename);
 
   g_free (unescaped);
@@ -515,6 +524,7 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       empathy_message_set_sender (message, sender);
       empathy_message_set_timestamp (message, t);
       empathy_message_set_tptype (message, msg_type);
+      empathy_message_set_is_backlog (message, TRUE);
 
       if (cm_id_str)
         empathy_message_set_id (message, cm_id);
