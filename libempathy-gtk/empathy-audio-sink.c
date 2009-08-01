@@ -204,7 +204,15 @@ empathy_audio_sink_finalize (GObject *object)
 GstElement *
 empathy_audio_sink_new (void)
 {
-  return GST_ELEMENT (g_object_new (EMPATHY_TYPE_GST_AUDIO_SINK, NULL));
+  static gboolean registered = FALSE;
+
+  if (!registered) {
+    if (!gst_element_register (NULL, "empathyaudiosink",
+            GST_RANK_NONE, EMPATHY_TYPE_GST_AUDIO_SINK))
+      return NULL;
+    registered = TRUE;
+  }
+  return gst_element_factory_make ("empathyaudiosink", NULL);
 }
 
 void

@@ -343,7 +343,15 @@ out:
 GstElement *
 empathy_audio_src_new (void)
 {
-  return GST_ELEMENT (g_object_new (EMPATHY_TYPE_GST_AUDIO_SRC, NULL));
+  static gboolean registered = FALSE;
+
+  if (!registered) {
+    if (!gst_element_register (NULL, "empathyaudiosrc",
+            GST_RANK_NONE, EMPATHY_TYPE_GST_AUDIO_SRC))
+      return NULL;
+    registered = TRUE;
+  }
+  return gst_element_factory_make ("empathyaudiosrc", NULL);
 }
 
 void
@@ -375,3 +383,5 @@ empathy_audio_src_get_volume (EmpathyGstAudioSrc *src)
 
   return volume;
 }
+
+
