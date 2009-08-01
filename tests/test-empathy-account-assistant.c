@@ -5,7 +5,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-account-assistant.h>
 
-int main (int argc, char *argv)
+int main (int argc, char **argv)
 {
   GtkWidget *assistant;
 

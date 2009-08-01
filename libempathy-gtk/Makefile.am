@@ -24,6 +24,7 @@ BUILT_SOURCES = 					\
 lib_LTLIBRARIES = libempathy-gtk.la
 
 libempathy_gtk_handwritten_source =            	\
+	empathy-account-assistant.c		\
 	empathy-account-chooser.c		\
 	empathy-account-widget.c		\
 	empathy-account-widget-irc.c		\
@@ -86,6 +87,7 @@ libempathy_gtk_la_LDFLAGS =                \
        -export-symbols-regex ^empathy_
 
 libempathy_gtk_headers =			\
+	empathy-account-assistant.h		\
 	empathy-account-chooser.h		\
 	empathy-account-widget.h		\
 	empathy-account-widget-irc.h		\

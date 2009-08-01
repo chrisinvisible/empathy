@@ -53,7 +53,7 @@ typedef struct {
 
 GType empathy_account_assistant_get_type (void);
 
-EmpathyAccountAssistant* empathy_account_assistant_new (void);
+GtkWidget *empathy_account_assistant_new (void);
 
 G_END_DECLS
 

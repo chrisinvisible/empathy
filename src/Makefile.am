@@ -31,7 +31,6 @@ BUILT_SOURCES= \
 empathy_handwritten_source = \
 	empathy.c							\
 	empathy-about-dialog.c empathy-about-dialog.h			\
-	empathy-account-assistant.c empathy-account-assistant.h		\
 	empathy-accounts-dialog.c empathy-accounts-dialog.h		\
 	empathy-call-window.c empathy-call-window.h			\
 	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h			\
