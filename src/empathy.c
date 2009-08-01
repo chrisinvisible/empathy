@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <unique/unique.h>
 
 #if HAVE_LIBCHAMPLAIN
 #include <clutter-gtk/gtk-clutter-embed.h>
@@ -68,7 +69,6 @@
 #include "empathy-call-window.h"
 #include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
-#include "bacon-message-connection.h"
 
 #include "extensions/extensions.h"
 
@@ -77,7 +77,7 @@
 
 #include <gst/gst.h>
 
-static BaconMessageConnection *connection = NULL;
+#define COMMAND_ACCOUNTS_DIALOG 1
 
 static void
 dispatch_cb (EmpathyDispatcher *dispatcher,
@@ -403,85 +403,29 @@ migrate_config_to_xdg_dir (void)
 	g_free (old_dir);
 }
 
-/* The code that handles single-instance and startup notification is
- * copied from gedit.
- *
- * Copyright (C) 2005 - Paolo Maggi
- */
-static void
-on_bacon_message_received (const char *message,
-			   gpointer    data)
+static UniqueResponse
+unique_app_message_cb (UniqueApp *unique_app,
+                       gint command,
+                       UniqueMessageData *data,
+                       guint timestamp,
+                       gpointer user_data)
 {
-	GtkWidget *window = data;
-	guint32    startup_timestamp;
+	GtkWidget *window = user_data;
 
-	g_return_if_fail (message != NULL);
+	DEBUG ("Other instance launched, presenting the main window. "
+	       "Command=%d, timestamp %u", command, timestamp);
 
-	DEBUG ("Other instance launched, presenting the main window. message='%s'",
-		message);
-
-	if (strcmp (message, "accounts") == 0) {
-		/* accounts dialog requested */
+	if (command == COMMAND_ACCOUNTS_DIALOG) {
 		empathy_accounts_dialog_show (GTK_WINDOW (window), NULL);
 	} else {
-		startup_timestamp = atoi (message);
-
-		/* Set the proper interaction time on the window.
-		 * Fall back to roundtripping to the X server when we
-		 * don't have the timestamp, e.g. when launched from
-		 * terminal. We also need to make sure that the window
-		 * has been realized otherwise it will not work. lame. */
-		if (startup_timestamp == 0) {
-			/* Work if launched from the terminal */
-			DEBUG ("Using X server timestamp as a fallback");
-
-			if (!GTK_WIDGET_REALIZED (window)) {
-				gtk_widget_realize (GTK_WIDGET (window));
-			}
-
-			startup_timestamp = gdk_x11_get_server_time (gtk_widget_get_window (window));
-		}
-
-		gtk_window_present_with_time (GTK_WINDOW (window), startup_timestamp);
-	}
-}
-
-static guint32
-get_startup_timestamp ()
-{
-	const gchar *startup_id_env;
-	gchar       *startup_id = NULL;
-	gchar       *time_str;
-	gchar       *end;
-	gulong       retval = 0;
-
-	/* we don't unset the env, since startup-notification
-	 * may still need it */
-	startup_id_env = g_getenv ("DESKTOP_STARTUP_ID");
-	if (startup_id_env == NULL) {
-		goto out;
+		gtk_window_set_screen (GTK_WINDOW (window),
+		                       unique_message_data_get_screen (data));
+		gtk_window_set_startup_id (GTK_WINDOW (window),
+		                           unique_message_data_get_startup_id (data));
+		gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
 	}
 
-	startup_id = g_strdup (startup_id_env);
-
-	time_str = g_strrstr (startup_id, "_TIME");
-	if (time_str == NULL) {
-		goto out;
-	}
-
-	errno = 0;
-
-	/* Skip past the "_TIME" part */
-	time_str += 5;
-
-	retval = strtoul (time_str, &end, 0);
-	if (end == time_str || errno != 0)
-		retval = 0;
-
- out:
-	g_free (startup_id);
-
-	return (retval > 0) ? retval : 0;
+	return UNIQUE_RESPONSE_OK;
 }
 
 static gboolean
@@ -579,7 +523,6 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
 int
 main (int argc, char *argv[])
 {
-	guint32            startup_timestamp;
 #if HAVE_GEOCLUE
 	EmpathyLocationManager *location_manager = NULL;
 #endif
@@ -598,6 +541,7 @@ main (int argc, char *argv[])
 	gboolean           accounts_dialog = FALSE;
 	GError            *error = NULL;
 	TpDBusDaemon      *dbus_daemon;
+	UniqueApp         *unique_app;
 	GOptionEntry       options[] = {
 		{ "no-connect", 'n',
 		  0, G_OPTION_ARG_NONE, &no_connect,
@@ -645,39 +589,20 @@ main (int argc, char *argv[])
 	g_log_set_default_handler (default_log_handler, NULL);
 #endif
 
-        /* Setting up the bacon connection */
-	startup_timestamp = get_startup_timestamp ();
-	connection = bacon_message_connection_new ("empathy");
-	if (connection != NULL) {
-		if (!bacon_message_connection_get_is_server (connection)) {
-			gchar *message;
+	unique_app = unique_app_new_with_commands ("org.gnome.Empathy",
+	                                           NULL,
+	                                           "accounts_dialog",
+	                                           COMMAND_ACCOUNTS_DIALOG,
+	                                           NULL);
 
-			if (accounts_dialog) {
-				DEBUG ("Showing accounts dialog from existing Empathy instance");
-
-				message = g_strdup ("accounts");
-
-			} else {
-
-				DEBUG ("Activating existing instance");
-
-				message = g_strdup_printf ("%" G_GUINT32_FORMAT,
-							   startup_timestamp);
-			}
-
-			bacon_message_connection_send (connection, message);
-
-			/* We never popup a window, so tell startup-notification
-			 * that we are done. */
-			gdk_notify_startup_complete ();
-
-			g_free (message);
-			bacon_message_connection_free (connection);
-
-			return EXIT_SUCCESS;
-		}
-	} else {
-		g_warning ("Cannot create the 'empathy' bacon connection.");
+	if (unique_app_is_running (unique_app)) {
+		unique_app_send_message (unique_app,
+		                         accounts_dialog ?
+		                         COMMAND_ACCOUNTS_DIALOG :
+			                         UNIQUE_ACTIVATE,
+			                 NULL);
+		g_object_unref (unique_app);
+		return EXIT_SUCCESS;
 	}
 
 	/* Take well-known name */
@@ -737,12 +662,9 @@ main (int argc, char *argv[])
 	window = empathy_main_window_show ();
 	icon = empathy_status_icon_new (GTK_WINDOW (window), hide_contact_list);
 
-	if (connection) {
-		/* We se the callback here because we need window */
-		bacon_message_connection_set_callback (connection,
-						       on_bacon_message_received,
-						       window);
-	}
+	g_signal_connect (unique_app, "message-received",
+	                  G_CALLBACK (unique_app_message_cb),
+	                  window);
 
 	/* Handle channels */
 	dispatcher = empathy_dispatcher_dup_singleton ();
@@ -786,6 +708,7 @@ main (int argc, char *argv[])
 	g_object_unref (location_manager);
 #endif
 	g_object_unref (ft_factory);
+	g_object_unref (unique_app);
 
 	notify_uninit ();
 

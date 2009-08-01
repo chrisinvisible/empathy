@@ -126,6 +126,7 @@ PKG_CHECK_MODULES(EMPATHY,
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-farsight
    gstreamer-0.10
+   unique-1.0
 ])
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)

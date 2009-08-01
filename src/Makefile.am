@@ -49,7 +49,6 @@ empathy_handwritten_source = \
 
 empathy_SOURCES =							\
 	$(empathy_handwritten_source)					\
-	bacon-message-connection.c bacon-message-connection.h		\
 	ephy-spinner.c ephy-spinner.h
 
 nodist_empathy_SOURCES = $(BUILT_SOURCES)
