@@ -1404,6 +1404,8 @@ empathy_main_window_show (void)
 
 	main_window_update_status (window, window->account_manager);
 
+	gtk_widget_show (window->window);
+
 	return window->window;
 }
 
