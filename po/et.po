@@ -1,29 +1,30 @@
 # Empathy'i eesti keele tõlge.
-# Estonian translation of Pidgin.
+# Estonian translation of Empathy.
 #
 # Copyright (C) 2005-2008 Free Software Foundation, Inc.
+#
 # Ivar Smolin <okul at linux ee>, 2005-2008.
 # Mattias Põldaru <mahfiaz gmail com>, 2009.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: pidgin 2.5.2\n"
+"Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-06-30 17:22+0000\n"
-"PO-Revision-Date: 2009-07-29 11:06+0300\n"
-"Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
+"POT-Creation-Date: 2009-08-01 08:43+0000\n"
+"PO-Revision-Date: 2009-08-02 12:52+0300\n"
+"Last-Translator: Ivar Smolin <okul@linux.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#, fuzzy
-msgid "Empathy Instant Messenger"
-msgstr "Interneti sõnumivahetus"
+msgid "Empathy IM Client"
+msgstr ""
 
 #, fuzzy
-msgid "Send and receive instant messages"
+msgid "Send and receive messages"
 msgstr "Kõiki välksõnumeid _logitakse"
 
 msgid "Always open a separate chat window for new chats."
@@ -56,9 +57,8 @@ msgstr ""
 msgid "Disable popup notifications when away"
 msgstr "Tippimismärguande lubamine"
 
-#, fuzzy
 msgid "Disable sounds when away"
-msgstr "Keelatakse minu eemaloleku korral"
+msgstr "Heliteated on minu eemaloleku korral keelatud"
 
 msgid "Empathy can publish the user's location"
 msgstr ""
@@ -85,6 +85,9 @@ msgid "Empathy should reduce the location's accuracy"
 msgstr ""
 
 msgid "Empathy should use the avatar of the contact as the chat window icon"
+msgstr ""
+
+msgid "Enable WebKit Developer Tools"
 msgstr ""
 
 #, fuzzy
@@ -136,10 +139,10 @@ msgid "Play a sound when a contact logs out"
 msgstr ""
 
 msgid "Play a sound when we log in"
-msgstr "Sisselogimisel mängitakse heli"
+msgstr "Heli esitamine sisselogimisel"
 
 msgid "Play a sound when we log out"
-msgstr "Väljalogimisel mängitakse heli"
+msgstr "Heli esitamine väljalogimisel"
 
 msgid "Popup notifications if the chat isn't focused"
 msgstr ""
@@ -184,6 +187,10 @@ msgid "Use notification sounds"
 msgstr "Teatehelisid esitatakse"
 
 msgid "Use theme for chat rooms"
+msgstr ""
+
+msgid ""
+"Whether WebKit developer tools, such as the Web Inspector, should be enabled."
 msgstr ""
 
 msgid "Whether or not Empathy can publish the user's location to his contacts."
@@ -331,11 +338,9 @@ msgstr "Kasutajaprofiil on tühi."
 msgid "People nearby"
 msgstr ""
 
-#, fuzzy
 msgid "Socket type not supported"
-msgstr "Riik pole toetatud."
+msgstr "Sokli pole toetatud."
 
-#, fuzzy
 msgid "No reason was specified"
 msgstr "Põhjendust pole määratud."
 
@@ -424,9 +429,8 @@ msgstr "%s:"
 msgid "Advanced"
 msgstr "Laiendatud"
 
-#, fuzzy
 msgid "Pass_word:"
-msgstr "Parool:"
+msgstr "_Parool:"
 
 #, fuzzy
 msgid "Screen _Name:"
@@ -617,13 +621,43 @@ msgstr "_Saada"
 msgid "_Spelling Suggestions"
 msgstr ""
 
+#, fuzzy, c-format
+#| msgid "Contact disconnected"
+msgid "%s has disconnected"
+msgstr "Kontakt katkestas ühenduse"
+
 #, c-format
-msgid "%s has joined the room"
-msgstr "%s sisenes tuppa"
+msgid "%s was kicked by %s"
+msgstr ""
+
+#, c-format
+msgid "%s was kicked"
+msgstr ""
+
+#, c-format
+msgid "%s was banned by %s"
+msgstr ""
+
+#, c-format
+msgid "%s was banned"
+msgstr ""
 
 #, c-format
 msgid "%s has left the room"
 msgstr "%s väljus toast"
+
+#. Note to translators: this string is appended to
+#. * notifications like "foo has left the room", with the message
+#. * given by the user living the room. If this poses a problem,
+#. * please let us know. :-)
+#.
+#, c-format
+msgid " (%s)"
+msgstr ""
+
+#, c-format
+msgid "%s has joined the room"
+msgstr "%s sisenes tuppa"
 
 msgid "Disconnected"
 msgstr "Ühendus katkestatud"
@@ -637,9 +671,11 @@ msgstr "Vestlus"
 msgid "Topic:"
 msgstr "Teema:"
 
+#. Copy Link Address menu item
 msgid "_Copy Link Address"
 msgstr "_Kopeeri lingi aadress"
 
+#. Open Link menu item
 msgid "_Open Link"
 msgstr "_Ava link"
 
@@ -673,6 +709,7 @@ msgstr "Kas tahad tõesti eemaldada grupi '%s'?"
 msgid "Removing group"
 msgstr "Grupi eemaldamine"
 
+#. Remove
 msgid "_Remove"
 msgstr "_Eemalda"
 
@@ -683,6 +720,9 @@ msgstr "Kas sa soovid eemaldada kontot %s?"
 #, fuzzy
 msgid "Removing contact"
 msgstr "Kontakti eemaldamine"
+
+msgid "_Add Contact..."
+msgstr "Lisa _kontakt..."
 
 msgid "_Chat"
 msgstr "_Vestlus"
@@ -701,6 +741,9 @@ msgstr "_Uued vestlused:"
 
 msgid "Send file"
 msgstr "Saada fail"
+
+msgid "Share my desktop"
+msgstr ""
 
 #, fuzzy
 msgid "Infor_mation"
@@ -920,17 +963,17 @@ msgstr "Kontakti ID:"
 msgid "New Conversation"
 msgstr "Uus vestlus"
 
+#. COL_STATUS_TEXT
 #. COL_STATE_ICON_NAME
 #. COL_STATE
-#. COL_STATUS_TEXT
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
 msgid "Custom Message..."
-msgstr "Oma sõnum..."
+msgstr "Kohandatud sõnum..."
 
 msgid "Edit Custom Messages..."
-msgstr "Teadete redigeerimine..."
+msgstr "Kohandatud sõnumite redigeerimine..."
 
 msgid "Click to remove this status as a favorite"
 msgstr ""
@@ -1008,9 +1051,6 @@ msgstr "Puhas"
 msgid "Blue"
 msgstr "Sinine"
 
-msgid "Adium"
-msgstr "Adium"
-
 msgid "Unable to open URI"
 msgstr "URI-d pole võimalik avada"
 
@@ -1072,9 +1112,8 @@ msgstr ""
 msgid "Hebrew"
 msgstr "Heebrea"
 
-#, fuzzy
 msgid "Hebrew Visual"
-msgstr "Heebrea"
+msgstr ""
 
 msgid "Hindi"
 msgstr "Hindi"
@@ -1088,9 +1127,8 @@ msgstr "Jaapani"
 msgid "Korean"
 msgstr "Korea"
 
-#, fuzzy
 msgid "Nordic"
-msgstr "Sodiaagimärk"
+msgstr ""
 
 msgid "Persian"
 msgstr "Pärsia"
@@ -1150,13 +1188,11 @@ msgstr "Vali kontakt..."
 msgid "Presence"
 msgstr ""
 
-#, fuzzy
 msgid "Set your own presence"
-msgstr "Oma kodutelefoni numbri määramine."
+msgstr ""
 
-#, fuzzy
 msgid "Don't connect on startup"
-msgstr "Hostiga pole võimalik ühenduda"
+msgstr ""
 
 msgid "Don't show the contact list on startup"
 msgstr ""
@@ -1166,7 +1202,7 @@ msgid "Show the accounts dialog"
 msgstr "accounts: Kontode akna näitamine."
 
 #, fuzzy
-msgid "- Empathy Instant Messenger"
+msgid "- Empathy IM Client"
 msgstr "Interneti sõnumivahetus"
 
 msgid ""
@@ -1233,13 +1269,11 @@ msgstr "Algata"
 msgid "Gmail"
 msgstr "Gmail"
 
-#, fuzzy
 msgid "Import Accounts..."
-msgstr "_Impordi..."
+msgstr "Impordi kontod..."
 
-#, fuzzy
 msgid "No protocol installed"
-msgstr "Protokollide pluginaid pole paigaldatud."
+msgstr "Ühtegi protokolli pole paigaldatud"
 
 msgid "Settings"
 msgstr "Sätted"
@@ -1331,6 +1365,63 @@ msgstr "Vestlused (%d)"
 msgid "Typing a message."
 msgstr "Saadetakse sõnum"
 
+#, fuzzy
+#| msgid "Clean"
+msgid "C_lear"
+msgstr "Puhas"
+
+#, fuzzy
+#| msgid "_Chat"
+msgid "Chat"
+msgstr "_Vestlus"
+
+#, fuzzy
+#| msgid "Insert Smiley"
+msgid "Insert _Smiley"
+msgstr "Tujunäo lisamine"
+
+msgid "Move Tab _Left"
+msgstr ""
+
+msgid "Move Tab _Right"
+msgstr ""
+
+#, fuzzy
+#| msgid "Contact"
+msgid "_Contact"
+msgstr "Kontakt"
+
+msgid "_Contents"
+msgstr "_Sisukord"
+
+#, fuzzy
+msgid "_Conversation"
+msgstr "_Vestlus"
+
+msgid "_Detach Tab"
+msgstr ""
+
+#, fuzzy
+msgid "_Favorite Chatroom"
+msgstr "Konverentsile kutsumine"
+
+msgid "_Help"
+msgstr "_Abi"
+
+msgid "_Next Tab"
+msgstr ""
+
+#, fuzzy
+#| msgid "_Previous Conversations"
+msgid "_Previous Tab"
+msgstr "_Eelmised vestlused"
+
+msgid "_Show Contact List"
+msgstr "_Sõbranimekirja näidatakse"
+
+msgid "_Tabs"
+msgstr ""
+
 msgid "Name"
 msgstr "Nimi"
 
@@ -1406,14 +1497,14 @@ msgstr ""
 "Sõnum: %s"
 
 #. someone is logging off
-#, fuzzy, c-format
+#, c-format
 msgid "%s is now offline."
-msgstr "Kasutaja pole ühendatud."
+msgstr "%s pole enam ühendatud."
 
 #. someone is logging in
-#, fuzzy, c-format
+#, c-format
 msgid "%s is now online."
-msgstr "%s pole enam jõude."
+msgstr "%s on nüüd ühendatud."
 
 #. Translators: time left, when it is more than one hour
 #, c-format
@@ -1509,7 +1600,7 @@ msgstr ""
 
 #. Translators: this is the header of a treeview column
 msgid "Import"
-msgstr "Importimine"
+msgstr "Importida"
 
 msgid "Protocol"
 msgstr "Protokoll"
@@ -1529,7 +1620,7 @@ msgid "_Edit account"
 msgstr "_Redigeeri kontot"
 
 msgid "No error specified"
-msgstr "Vea põhjust ei määratud"
+msgstr "Vea põhjust pole määratud"
 
 msgid "Network error"
 msgstr "Võrgu viga"
@@ -1543,37 +1634,29 @@ msgstr "Krüpteerimise viga"
 msgid "Name in use"
 msgstr "Nimi on juba kasutusel"
 
-#, fuzzy
 msgid "Certificate not provided"
-msgstr "Sertifikaadi importimise viga"
+msgstr ""
 
-#, fuzzy
 msgid "Certificate untrusted"
-msgstr "Sertifitseerimiskeskused"
+msgstr "Sertifikaat pole usaldusväärne"
 
-#, fuzzy
 msgid "Certificate expired"
-msgstr "Sertifikaadi importimine"
+msgstr "Sertifikaat on aegunud"
 
-#, fuzzy
 msgid "Certificate not activated"
-msgstr "Sertifikaadi andmed"
+msgstr "Sertifikaat pole aktiveeritud"
 
-#, fuzzy
 msgid "Certificate hostname mismatch"
-msgstr "Sertifitseerimiskeskused"
+msgstr "Sertifikaadi hostinimi pole vastavuses"
 
-#, fuzzy
 msgid "Certificate fingerprint mismatch"
-msgstr "\"%s\" sertifikaat"
+msgstr ""
 
-#, fuzzy
 msgid "Certificate self-signed"
-msgstr "Sertifikaadid"
+msgstr ""
 
-#, fuzzy
 msgid "Certificate error"
-msgstr "SSL-sertifikaadi viga"
+msgstr "Sertifikaadi viga"
 
 msgid "Unknown error"
 msgstr "Tundmatu viga"
@@ -1581,9 +1664,8 @@ msgstr "Tundmatu viga"
 msgid "Show and edit accounts"
 msgstr ""
 
-#, fuzzy
 msgid "Contact List"
-msgstr "Kontaktandmed"
+msgstr "Kontaktide nimekiri"
 
 #, fuzzy
 msgid "Contacts on a _Map"
@@ -1600,24 +1682,33 @@ msgstr "Lemmikasjad"
 msgid "Manage Favorites"
 msgstr ""
 
+msgid "N_ormal Size"
+msgstr ""
+
+msgid "Normal Size With _Avatars"
+msgstr ""
+
+#, fuzzy
+#| msgid "Sort by _name"
+msgid "Sort by _Name"
+msgstr "Sortimine _nime järgi"
+
+#, fuzzy
+#| msgid "Sort by s_tate"
+msgid "Sort by _Status"
+msgstr "Sortimine _oleku järgi"
+
 msgid "_Accounts"
 msgstr "_Kontod"
 
-msgid "_Add Contact..."
-msgstr "Lisa _kontakt..."
-
-#, fuzzy
-msgid "_Contents"
-msgstr "Ühendu"
+msgid "_Compact Size"
+msgstr ""
 
 msgid "_Debug"
 msgstr ""
 
 msgid "_File Transfers"
 msgstr "_Failiülekanded"
-
-msgid "_Help"
-msgstr "_Abi"
 
 msgid "_Join..."
 msgstr "_Ühine..."
@@ -1715,9 +1806,6 @@ msgstr "Konto ühendus katkestatud"
 msgid "Language"
 msgstr "Keel"
 
-msgid "Adium theme to use:"
-msgstr ""
-
 msgid "Allow _GPS usage"
 msgstr ""
 
@@ -1728,22 +1816,18 @@ msgid "Allow _network usage"
 msgstr ""
 
 msgid "Appearance"
-msgstr ""
+msgstr "Välimus"
 
 #, fuzzy
 msgid "Automatically _connect on startup "
 msgstr ""
 "Sõbranimekirjast puuduvate kasutajate failidest keeldutakse automaatselt"
 
-msgid "Avatars are user chosen images shown in the contact list"
-msgstr ""
-
 msgid "Behavior"
-msgstr ""
+msgstr "Käitumine"
 
-#, fuzzy
 msgid "Chat Th_eme:"
-msgstr "Vestluse _nimi:"
+msgstr "Vestluse _teema:"
 
 #, fuzzy
 msgid "Disable notifications when _away or busy"
@@ -1763,27 +1847,22 @@ msgid "Enable notifications when the _chat is not focused"
 msgstr ""
 
 msgid "Enable spell checking for languages:"
-msgstr ""
+msgstr "Õigekirjakontroll on lubatud järgmistele keeltele:"
 
 msgid "General"
 msgstr "Üldine"
 
-#, fuzzy
 msgid "Geoclue Settings"
-msgstr "Sätete redigeerimine"
+msgstr ""
 
 msgid "Location"
 msgstr "Asukoht"
-
-#, fuzzy
-msgid "Not a valid adium theme"
-msgstr "%s pole korrektne toa nimi"
 
 msgid "Notifications"
 msgstr "Teavitamisviisid"
 
 msgid "Play sound for events"
-msgstr "Sündmuste puhul mängitakse heli"
+msgstr "Sündmuste puhul esitatakse heli"
 
 msgid "Preferences"
 msgstr "Eelistused"
@@ -1797,43 +1876,33 @@ msgid ""
 "value added (&#xB1;0.25&#xB0;)."
 msgstr ""
 
-msgid "Show _avatars"
-msgstr ""
-
 msgid "Show _smileys as images"
 msgstr "_Tujunägusid näidatakse piltidena"
 
-msgid "Show co_mpact contact list"
-msgstr ""
-
 msgid "Show contact _list in rooms"
 msgstr ""
-
-msgid "Sort by _name"
-msgstr "Sortimine _nime järgi"
-
-msgid "Sort by s_tate"
-msgstr "Sortimine _oleku järgi"
 
 msgid "Sounds"
 msgstr "Helid"
 
 msgid "Spell Checking"
-msgstr ""
+msgstr "Õigekirjakontroll"
 
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
 msgstr ""
+"Keelte nimekiri kajastab ainult neid keeli, mille jaoks on sõnastik "
+"paigaldatud."
 
 msgid "Themes"
 msgstr "Teemad"
 
 msgid "_Enable bubble notifications"
-msgstr "_Teatemullid lubatud"
+msgstr "_Teatemullid on lubatud"
 
 msgid "_Enable sound notifications"
-msgstr "_Heliteated lubatud"
+msgstr "_Heliteated on lubatud"
 
 msgid "_Open new chats in separate windows"
 msgstr "_Uued vestlused avanevad eraldi akendes"
@@ -1849,9 +1918,6 @@ msgstr "Olek"
 
 msgid "_Quit"
 msgstr "_Lõpeta"
-
-msgid "_Show Contact List"
-msgstr "_Sõbranimekirja näidatakse"
 
 #, c-format
 msgid "Unable to start application for service %s: %s"
