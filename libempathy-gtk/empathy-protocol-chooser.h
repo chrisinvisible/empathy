@@ -58,10 +58,6 @@ struct _EmpathyProtocolChooserClass
   GtkComboBoxClass parent_class;
 };
 
-typedef void (* EmpathyProtocolChooserReadyCb) (GtkWidget *chooser,
-    GError *error,
-    gpointer user_data);
-
 GType empathy_protocol_chooser_get_type (void) G_GNUC_CONST;
 GtkWidget * empathy_protocol_chooser_new (void);
 TpConnectionManager *empathy_protocol_chooser_dup_selected (
