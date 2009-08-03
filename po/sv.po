@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-07-22 23:53+0200\n"
-"PO-Revision-Date: 2009-07-22 23:53+0100\n"
+"POT-Creation-Date: 2009-08-03 12:30+0200\n"
+"PO-Revision-Date: 2009-08-03 12:34+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -20,12 +20,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/empathy.desktop.in.in.h:1
-msgid "Empathy Instant Messenger"
-msgstr "Snabbmeddelandeklienten Empathy"
+msgid "Empathy IM Client"
+msgstr "Empathy snabbmeddelandeklient"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Send and receive instant messages"
-msgstr "Skicka och ta emot snabbmeddelanden"
+msgid "Send and receive messages"
+msgstr "Skicka och ta emot meddelanden"
 
 #: ../data/empathy.schemas.in.h:1
 msgid "Always open a separate chat window for new chats."
@@ -832,13 +832,13 @@ msgstr "Ämne:"
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:264
+#: ../libempathy-gtk/empathy-theme-adium.c:267
 msgid "_Copy Link Address"
 msgstr "_Kopiera länkadress"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:272
+#: ../libempathy-gtk/empathy-theme-adium.c:275
 msgid "_Open Link"
 msgstr "_Öppna länk"
 
@@ -857,7 +857,7 @@ msgstr "Redigera kontaktinformation"
 msgid "Personal Information"
 msgstr "Personlig information"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:393
+#: ../libempathy-gtk/empathy-contact-dialogs.c:394
 msgid "New Contact"
 msgstr "Ny kontakt"
 
@@ -869,27 +869,27 @@ msgstr "Bestäm _senare"
 msgid "Subscription Request"
 msgstr "Prenumerationsbegäran"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1400
+#: ../libempathy-gtk/empathy-contact-list-view.c:1404
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Vill du verkligen ta bort gruppen \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1402
+#: ../libempathy-gtk/empathy-contact-list-view.c:1406
 msgid "Removing group"
 msgstr "Tar bort grupp"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1449
-#: ../libempathy-gtk/empathy-contact-list-view.c:1526
+#: ../libempathy-gtk/empathy-contact-list-view.c:1453
+#: ../libempathy-gtk/empathy-contact-list-view.c:1530
 msgid "_Remove"
 msgstr "_Ta bort"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1479
+#: ../libempathy-gtk/empathy-contact-list-view.c:1483
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Vill du verkligen ta bort kontakten \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1481
+#: ../libempathy-gtk/empathy-contact-list-view.c:1485
 msgid "Removing contact"
 msgstr "Tar bort kontakt"
 
@@ -930,6 +930,7 @@ msgid "Infor_mation"
 msgstr "Infor_mation"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
+#: ../src/empathy-chat-window.ui.h:10
 #: ../src/empathy-main-window.ui.h:16
 msgid "_Edit"
 msgstr "R_edigera"
@@ -954,120 +955,120 @@ msgstr "Spara avatar"
 msgid "Unable to save avatar"
 msgstr "Kunde inte spara avatar"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:992
+#: ../libempathy-gtk/empathy-contact-widget.c:996
 msgid "Select"
 msgstr "Markera"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1001
+#: ../libempathy-gtk/empathy-contact-widget.c:1005
 #: ../src/empathy-main-window.c:1023
 msgid "Group"
 msgstr "Grupp"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1252
+#: ../libempathy-gtk/empathy-contact-widget.c:1256
 msgid "Country ISO Code:"
 msgstr "Landets ISO-kod:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1254
+#: ../libempathy-gtk/empathy-contact-widget.c:1258
 msgid "Country:"
 msgstr "Land:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1256
+#: ../libempathy-gtk/empathy-contact-widget.c:1260
 msgid "State:"
 msgstr "Län:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1258
+#: ../libempathy-gtk/empathy-contact-widget.c:1262
 msgid "City:"
 msgstr "Stad:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1260
+#: ../libempathy-gtk/empathy-contact-widget.c:1264
 msgid "Area:"
 msgstr "Område:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1262
+#: ../libempathy-gtk/empathy-contact-widget.c:1266
 msgid "Postal Code:"
 msgstr "Postnummer:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1264
+#: ../libempathy-gtk/empathy-contact-widget.c:1268
 msgid "Street:"
 msgstr "Gata:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1266
+#: ../libempathy-gtk/empathy-contact-widget.c:1270
 msgid "Building:"
 msgstr "Byggnad:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1268
+#: ../libempathy-gtk/empathy-contact-widget.c:1272
 msgid "Floor:"
 msgstr "Våning:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1270
+#: ../libempathy-gtk/empathy-contact-widget.c:1274
 msgid "Room:"
 msgstr "Rum:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1272
+#: ../libempathy-gtk/empathy-contact-widget.c:1276
 msgid "Text:"
 msgstr "Text:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1274
+#: ../libempathy-gtk/empathy-contact-widget.c:1278
 msgid "Description:"
 msgstr "Beskrivning:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1276
+#: ../libempathy-gtk/empathy-contact-widget.c:1280
 msgid "URI:"
 msgstr "URI:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1278
+#: ../libempathy-gtk/empathy-contact-widget.c:1282
 msgid "Accuracy Level:"
 msgstr "Precisionsnivå:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1280
+#: ../libempathy-gtk/empathy-contact-widget.c:1284
 msgid "Error:"
 msgstr "Fel:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1282
+#: ../libempathy-gtk/empathy-contact-widget.c:1286
 msgid "Vertical Error (meters):"
 msgstr "Vertikalt fel (meter):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1284
+#: ../libempathy-gtk/empathy-contact-widget.c:1288
 msgid "Horizontal Error (meters):"
 msgstr "Horisontellt fel (meter):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1286
+#: ../libempathy-gtk/empathy-contact-widget.c:1290
 msgid "Speed:"
 msgstr "Hastighet:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1288
+#: ../libempathy-gtk/empathy-contact-widget.c:1292
 msgid "Bearing:"
 msgstr "Riktning:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1290
+#: ../libempathy-gtk/empathy-contact-widget.c:1294
 msgid "Climb Speed:"
 msgstr "Höjdökning:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1292
+#: ../libempathy-gtk/empathy-contact-widget.c:1296
 msgid "Last Updated on:"
 msgstr "Senast uppdaterad:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1294
+#: ../libempathy-gtk/empathy-contact-widget.c:1298
 msgid "Longitude:"
 msgstr "Longitud:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1296
+#: ../libempathy-gtk/empathy-contact-widget.c:1300
 msgid "Latitude:"
 msgstr "Latitud:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1298
+#: ../libempathy-gtk/empathy-contact-widget.c:1302
 msgid "Altitude:"
 msgstr "Höjd:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1345
+#: ../libempathy-gtk/empathy-contact-widget.c:1349
 msgid "<b>Location</b>"
 msgstr "<b>Plats</b>"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1358
+#: ../libempathy-gtk/empathy-contact-widget.c:1362
 msgid "<b>Location</b>, "
 msgstr "<b>Plats</b>, "
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1408
+#: ../libempathy-gtk/empathy-contact-widget.c:1412
 msgid "%B %e, %Y at %R UTC"
 msgstr "%e %B, %Y klockan %H.%M UTC"
 
@@ -1206,16 +1207,18 @@ msgstr "Kontakt-id:"
 msgid "New Conversation"
 msgstr "Nytt samtal"
 
+#. COL_STATUS_TEXT
 #. COL_STATE_ICON_NAME
 #. COL_STATE
-#. COL_STATUS_TEXT
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
 #: ../libempathy-gtk/empathy-presence-chooser.c:172
+#: ../libempathy-gtk/empathy-presence-chooser.c:208
 msgid "Custom Message..."
 msgstr "Anpassat meddelande..."
 
+#: ../libempathy-gtk/empathy-presence-chooser.c:225
 #: ../libempathy-gtk/empathy-presence-chooser.c:227
 msgid "Edit Custom Messages..."
 msgstr "Redigera anpassade meddelanden..."
@@ -1565,7 +1568,7 @@ msgid "Show the accounts dialog"
 msgstr "Visa kontodialogrutan"
 
 #: ../src/empathy.c:587
-msgid "- Empathy Instant Messenger"
+msgid "- Empathy IM Client"
 msgstr "- Empathy snabbmeddelandeklient"
 
 #: ../src/empathy-about-dialog.c:83
@@ -1760,6 +1763,69 @@ msgstr "Samtal (%d)"
 #: ../src/empathy-chat-window.c:476
 msgid "Typing a message."
 msgstr "Skriver ett meddelande."
+
+#: ../src/empathy-chat-window.ui.h:1
+msgid "C_lear"
+msgstr "T_öm"
+
+#: ../src/empathy-chat-window.ui.h:2
+msgid "Chat"
+msgstr "Chatta"
+
+#: ../src/empathy-chat-window.ui.h:3
+msgid "Insert _Smiley"
+msgstr "Infoga _smilis"
+
+#: ../src/empathy-chat-window.ui.h:4
+msgid "Move Tab _Left"
+msgstr "Flytta flik till _vänster"
+
+#: ../src/empathy-chat-window.ui.h:5
+msgid "Move Tab _Right"
+msgstr "Flytta flik till _höger"
+
+#: ../src/empathy-chat-window.ui.h:6
+msgid "_Contact"
+msgstr "_Kontakt"
+
+#: ../src/empathy-chat-window.ui.h:7
+#: ../src/empathy-main-window.ui.h:14
+msgid "_Contents"
+msgstr "I_nnehåll"
+
+#: ../src/empathy-chat-window.ui.h:8
+msgid "_Conversation"
+msgstr "_Samtal"
+
+#: ../src/empathy-chat-window.ui.h:9
+msgid "_Detach Tab"
+msgstr "_Koppla loss flik"
+
+#: ../src/empathy-chat-window.ui.h:11
+msgid "_Favorite Chatroom"
+msgstr "_Favoritchattrum"
+
+#: ../src/empathy-chat-window.ui.h:12
+#: ../src/empathy-main-window.ui.h:18
+msgid "_Help"
+msgstr "_Hjälp"
+
+#: ../src/empathy-chat-window.ui.h:13
+msgid "_Next Tab"
+msgstr "_Nästa flik"
+
+#: ../src/empathy-chat-window.ui.h:14
+msgid "_Previous Tab"
+msgstr "_Föregående flik"
+
+#: ../src/empathy-chat-window.ui.h:15
+#: ../src/empathy-status-icon.ui.h:4
+msgid "_Show Contact List"
+msgstr "_Visa kontaktlista"
+
+#: ../src/empathy-chat-window.ui.h:16
+msgid "_Tabs"
+msgstr "_Flikar"
 
 #: ../src/empathy-chatrooms-window.c:258
 msgid "Name"
@@ -2110,10 +2176,6 @@ msgstr "_Konton"
 msgid "_Compact Size"
 msgstr "_Kompakt storlek"
 
-#: ../src/empathy-main-window.ui.h:14
-msgid "_Contents"
-msgstr "I_nnehåll"
-
 #: ../src/empathy-main-window.ui.h:15
 msgid "_Debug"
 msgstr "_Felsökning"
@@ -2121,10 +2183,6 @@ msgstr "_Felsökning"
 #: ../src/empathy-main-window.ui.h:17
 msgid "_File Transfers"
 msgstr "Fi_löverföringar"
-
-#: ../src/empathy-main-window.ui.h:18
-msgid "_Help"
-msgstr "_Hjälp"
 
 #: ../src/empathy-main-window.ui.h:19
 msgid "_Join..."
@@ -2383,10 +2441,6 @@ msgstr "Status"
 msgid "_Quit"
 msgstr "_Avsluta"
 
-#: ../src/empathy-status-icon.ui.h:4
-msgid "_Show Contact List"
-msgstr "_Visa kontaktlista"
-
 #: ../src/empathy-tube-dispatch.c:375
 #, c-format
 msgid "Unable to start application for service %s: %s"
@@ -2472,6 +2526,10 @@ msgstr "Nivå"
 msgid "The selected connection manager does not support the remote debugging extension."
 msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfelsökning."
 
+#~ msgid "Empathy Instant Messenger"
+#~ msgstr "Snabbmeddelandeklienten Empathy"
+#~ msgid "- Empathy Instant Messenger"
+#~ msgstr "- Empathy snabbmeddelandeklient"
 #~ msgid "Avatars are user chosen images shown in the contact list"
 #~ msgstr "Avatarer är användarvalda bilder som visas i kontaktlistan"
 #~ msgid "Show _avatars"
@@ -2528,38 +2586,14 @@ msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfe
 #~ msgstr "<b>Nytt konto</b>"
 #~ msgid "I already have an account I want to use"
 #~ msgstr "Jag har redan ett konto som jag vill använda"
-#~ msgid "C_lear"
-#~ msgstr "T_öm"
-#~ msgid "Chat"
-#~ msgstr "Chatta"
-#~ msgid "Insert _Smiley"
-#~ msgstr "Infoga _smilis"
 #~ msgid "Invitation _message:"
 #~ msgstr "Inbjudnings_meddelande:"
 #~ msgid "Invite"
 #~ msgstr "Bjud in"
-#~ msgid "Move Tab _Left"
-#~ msgstr "Flytta flik till _vänster"
-#~ msgid "Move Tab _Right"
-#~ msgstr "Flytta flik till _höger"
 #~ msgid "Select who would you like to invite:"
 #~ msgstr "Välj vem du vill bjuda in:"
 #~ msgid "You have been invited to join a chat conference."
 #~ msgstr "Du har blivit inbjuden till en chattkonferens."
-#~ msgid "_Contact"
-#~ msgstr "_Kontakt"
-#~ msgid "_Conversation"
-#~ msgstr "_Samtal"
-#~ msgid "_Detach Tab"
-#~ msgstr "_Koppla loss flik"
-#~ msgid "_Favorite Chatroom"
-#~ msgstr "_Favoritchattrum"
-#~ msgid "_Next Tab"
-#~ msgstr "_Nästa flik"
-#~ msgid "_Previous Tab"
-#~ msgstr "_Föregående flik"
-#~ msgid "_Tabs"
-#~ msgstr "_Flikar"
 #~ msgid "Edit Favorite Room"
 #~ msgstr "Redigera favoritrum"
 #~ msgid "Join room on start_up"
@@ -2619,12 +2653,8 @@ msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfe
 #~ msgstr "Avsluta samtalet?"
 #~ msgid "Closing this window will end the call in progress."
 #~ msgstr "Stängning av detta fönster gör att alla pågående samtal avslutas."
-#~ msgid "Empathy Call"
-#~ msgstr "Empathy-samtal"
 #~ msgid "Readying"
 #~ msgstr "Förbereder"
-#~ msgid "%s - Empathy Call"
-#~ msgstr "%s - Empathy-samtal"
 #~ msgid "Ringing"
 #~ msgstr "Ringer"
 #~ msgid "Connecting"
