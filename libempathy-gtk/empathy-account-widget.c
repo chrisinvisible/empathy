@@ -166,7 +166,8 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
    * always unset the param and set the value if different from the
    * default value. */
   empathy_account_settings_unset (priv->settings, param_name);
-  default_value = empathy_account_settings_get_boolean (priv->settings, param_name);
+  default_value = empathy_account_settings_get_boolean (priv->settings,
+      param_name);
 
   if (default_value == value)
     {
@@ -188,7 +189,8 @@ account_widget_forget_clicked_cb (GtkWidget *button,
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   const gchar *param_name;
 
-  param_name = g_object_get_data (G_OBJECT (priv->entry_password), "param_name");
+  param_name = g_object_get_data (G_OBJECT (priv->entry_password),
+      "param_name");
 
   DEBUG ("Unset %s", param_name);
   empathy_account_settings_unset (priv->settings, param_name);
@@ -302,7 +304,8 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
     {
       gboolean value = FALSE;
 
-      value = empathy_account_settings_get_boolean (priv->settings, param_name);
+      value = empathy_account_settings_get_boolean (priv->settings,
+          param_name);
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
 
       g_signal_connect (widget, "toggled",
@@ -362,7 +365,8 @@ accounts_widget_generic_setup (EmpathyAccountWidget *self,
       else
         table_settings = table_advanced_settings;
 
-      param_name_formatted = account_widget_generic_format_param_name (param->name);
+      param_name_formatted = account_widget_generic_format_param_name
+        (param->name);
       g_object_get (table_settings, "n-rows", &n_rows, NULL);
       gtk_table_resize (GTK_TABLE (table_settings), ++n_rows, 2);
 
@@ -422,7 +426,8 @@ accounts_widget_generic_setup (EmpathyAccountWidget *self,
             case 'u': minint = 0;          maxint = G_MAXUINT32; break;
             case 'x': minint = G_MININT64; maxint = G_MAXINT64;  break;
             case 't': minint = 0;          maxint = G_MAXUINT64; break;
-            case 'd': minint = G_MININT32; maxint = G_MAXINT32; step = 0.1; break;
+            case 'd': minint = G_MININT32; maxint = G_MAXINT32;
+              step = 0.1; break;
             }
 
           str = g_strdup_printf (_("%s:"), param_name_formatted);
@@ -511,10 +516,10 @@ account_widget_setup_generic (EmpathyAccountWidget *self)
   GtkWidget *table_common_settings;
   GtkWidget *table_advanced_settings;
 
-  table_common_settings = GTK_WIDGET (gtk_builder_get_object (self->ui_details->gui,
-          "table_common_settings"));
-  table_advanced_settings = GTK_WIDGET (gtk_builder_get_object (self->ui_details->gui,
-          "table_advanced_settings"));
+  table_common_settings = GTK_WIDGET (gtk_builder_get_object
+      (self->ui_details->gui, "table_common_settings"));
+  table_advanced_settings = GTK_WIDGET (gtk_builder_get_object
+      (self->ui_details->gui, "table_advanced_settings"));
 
   accounts_widget_generic_setup (self, table_common_settings,
       table_advanced_settings);
@@ -814,11 +819,15 @@ do_constructed (GObject *obj)
     {
       const gchar *password = NULL;
 
-      priv->button_forget = GTK_WIDGET (gtk_builder_get_object (self->ui_details->gui, "button_forget"));
-      priv->entry_password = GTK_WIDGET (gtk_builder_get_object (self->ui_details->gui, "entry_password"));
+      priv->button_forget = GTK_WIDGET (gtk_builder_get_object
+          (self->ui_details->gui, "button_forget"));
+      priv->entry_password = GTK_WIDGET (gtk_builder_get_object
+          (self->ui_details->gui, "entry_password"));
 
-      password = empathy_account_settings_get_string (priv->settings, "password");
-      gtk_widget_set_sensitive (priv->button_forget, !EMP_STR_EMPTY (password));
+      password = empathy_account_settings_get_string (priv->settings,
+          "password");
+      gtk_widget_set_sensitive (priv->button_forget,
+          !EMP_STR_EMPTY (password));
 
       g_signal_connect (priv->button_forget, "clicked",
           G_CALLBACK (account_widget_forget_clicked_cb),
