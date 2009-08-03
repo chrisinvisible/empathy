@@ -72,19 +72,23 @@ account_assistant_build_introduction_page (void)
   gtk_container_add (GTK_CONTAINER (w), vbox_1);
   gtk_widget_show (vbox_1);
 
-  radio = gtk_radio_button_new_with_label (NULL, _("Yes, import my account details from "));
+  radio = gtk_radio_button_new_with_label (NULL,
+      _("Yes, import my account details from "));
   gtk_box_pack_start (GTK_BOX (vbox_1), radio, TRUE, TRUE, 0);
   gtk_widget_show (radio);
 
-  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio), _("Yes, I'll enter my account details now"));
+  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio),
+      _("Yes, I'll enter my account details now"));
   gtk_box_pack_start (GTK_BOX (vbox_1), w, TRUE, TRUE, 0);
   gtk_widget_show (w);
 
-  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio), _("No, I want a new account"));
+  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio),
+      _("No, I want a new account"));
   gtk_box_pack_start (GTK_BOX (vbox_1), w, TRUE, TRUE, 0);
   gtk_widget_show (w);
 
-  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio), _("No, I just want to see people online nearby for now"));
+  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio),
+      _("No, I just want to see people online nearby for now"));
   gtk_box_pack_start (GTK_BOX (vbox_1), w, TRUE, TRUE, 0);
   gtk_widget_show (w);
 
@@ -102,10 +106,13 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
   GtkWidget *page;
 
+  /* first page */
   page = account_assistant_build_introduction_page ();
   gtk_assistant_append_page (GTK_ASSISTANT (self), page);
-  gtk_assistant_set_page_title (GTK_ASSISTANT (self), page, _("Welcome to Empathy"));
-  gtk_assistant_set_page_type (GTK_ASSISTANT (self), page, GTK_ASSISTANT_PAGE_INTRO);
+  gtk_assistant_set_page_title (GTK_ASSISTANT (self), page,
+      _("Welcome to Empathy"));
+  gtk_assistant_set_page_type (GTK_ASSISTANT (self), page,
+      GTK_ASSISTANT_PAGE_INTRO);
   gtk_assistant_set_page_complete (GTK_ASSISTANT (self), page, TRUE);
 }
 
