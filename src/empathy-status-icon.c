@@ -23,6 +23,8 @@
 
 #include <string.h>
 
+#include <glib.h>
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -136,16 +138,18 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 	}
 
 	if (priv->event) {
+		gchar *message_esc = g_markup_escape_text (priv->event->message, -1);
+
 		pixbuf = empathy_misc_get_pixbuf_for_notification (priv->event->contact,
 								   priv->event->icon_name);
 
 		if (priv->notification) {
 			notify_notification_update (priv->notification,
-						    priv->event->header, priv->event->message,
+						    priv->event->header, message_esc,
 						    NULL);
 		} else {
 			priv->notification = notify_notification_new_with_status_icon
-				(priv->event->header, priv->event->message, NULL, priv->icon);
+				(priv->event->header, message_esc, NULL, priv->icon);
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
@@ -160,6 +164,7 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 		notify_notification_show (priv->notification, NULL);
 
 		g_object_unref (pixbuf);
+		g_free (message_esc);
 	} else {
 		notification_close_helper (priv);
 	}
@@ -173,12 +178,12 @@ status_icon_update_tooltip (EmpathyStatusIcon *icon)
 
 	if (priv->event) {
 		if (priv->event->message != NULL)
-				tooltip = g_strdup_printf ("<i>%s</i>\n%s",
-							   priv->event->header,
-							   priv->event->message);
+				tooltip = g_markup_printf_escaped ("<i>%s</i>\n%s",
+								   priv->event->header,
+								   priv->event->message);
 		else
-				tooltip = g_strdup_printf ("<i>%s</i>",
-							   priv->event->header);
+				tooltip = g_markup_printf_escaped ("<i>%s</i>",
+								   priv->event->header);
 		gtk_status_icon_set_tooltip_markup (priv->icon, tooltip);
 	} else {
 		tooltip = g_strdup (empathy_idle_get_status (priv->idle));
