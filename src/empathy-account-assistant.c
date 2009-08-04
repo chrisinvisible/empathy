@@ -21,6 +21,7 @@
 /* empathy-account-assistant.c */
 
 #include <glib/gi18n.h>
+#include <telepathy-glib/util.h>
 
 #include "empathy-account-assistant.h"
 
@@ -194,7 +195,10 @@ account_assistant_chooser_enter_details_filter_func (
     TpConnectionManagerProtocol *protocol,
     gpointer user_data)
 {
-  /* TODO */
+  if (!tp_strdiff (protocol->name, "local-xmpp") ||
+      !tp_strdiff (protocol->name, "irc"))
+    return FALSE;
+
   return TRUE;
 }
 
