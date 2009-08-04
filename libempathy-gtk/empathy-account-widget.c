@@ -76,6 +76,7 @@ enum {
 static guint signals[LAST_SIGNAL] = { 0 };
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountWidget)
+#define CHANGED_TIMEOUT 300
 
 static void
 account_widget_handle_apply_sensitivity (EmpathyAccountWidget *self)
@@ -91,26 +92,30 @@ account_widget_handle_apply_sensitivity (EmpathyAccountWidget *self)
   g_signal_emit (self, signals[HANDLE_APPLY], 0, is_valid);
 }
 
-static gboolean
-account_widget_entry_focus_cb (GtkWidget *widget,
-    GdkEventFocus *event,
-    EmpathyAccountWidget *self)
+static void
+account_widget_entry_changed_common (EmpathyAccountWidget *self,
+    GtkEntry *entry, gboolean focus)
 {
   const gchar *str;
   const gchar *param_name;
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
-  str = gtk_entry_get_text (GTK_ENTRY (widget));
-  param_name = g_object_get_data (G_OBJECT (widget), "param_name");
+  str = gtk_entry_get_text (entry);
+  param_name = g_object_get_data (G_OBJECT (entry), "param_name");
 
   if (EMP_STR_EMPTY (str))
     {
       const gchar *value = NULL;
 
       empathy_account_settings_unset (priv->settings, param_name);
-      value = empathy_account_settings_get_string (priv->settings, param_name);
-      DEBUG ("Unset %s and restore to %s", param_name, value);
-      gtk_entry_set_text (GTK_ENTRY (widget), value ? value : "");
+
+      if (focus)
+        {
+          value = empathy_account_settings_get_string (priv->settings,
+              param_name);
+          DEBUG ("Unset %s and restore to %s", param_name, value);
+          gtk_entry_set_text (entry, value ? value : "");
+        }
     }
   else
     {
@@ -120,8 +125,23 @@ account_widget_entry_focus_cb (GtkWidget *widget,
     }
 
   account_widget_handle_apply_sensitivity (self);
+}
+
+static gboolean
+account_widget_entry_focus_cb (GtkWidget *widget,
+    GdkEventFocus *event,
+    EmpathyAccountWidget *self)
+{
+  account_widget_entry_changed_common (self, GTK_ENTRY (widget), TRUE);
 
   return FALSE;
+}
+
+static void
+account_widget_entry_changed_cb (GtkEditable *entry,
+    EmpathyAccountWidget *self)
+{
+  account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
 }
 
 static void
@@ -314,6 +334,8 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
       g_signal_connect (widget, "focus-out-event",
           G_CALLBACK (account_widget_entry_focus_cb),
           self);
+      g_signal_connect (widget, "changed",
+          G_CALLBACK (account_widget_entry_changed_cb), self);
     }
   else if (GTK_IS_TOGGLE_BUTTON (widget))
     {
