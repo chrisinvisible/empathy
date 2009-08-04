@@ -24,8 +24,11 @@
 
 #include "empathy-account-assistant.h"
 
+#include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-utils.h>
 
+#include <libempathy-gtk/empathy-account-widget.h>
+#include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 G_DEFINE_TYPE (EmpathyAccountAssistant, empathy_account_assistant,
@@ -42,7 +45,26 @@ typedef enum {
 
 typedef struct {
   FirstPageResponse first_resp;
+
+  GtkWidget *add_existing_page;
 } EmpathyAccountAssistantPriv;
+
+static gint
+account_assistant_page_forward_func (gint current_page,
+    gpointer user_data)
+{
+  EmpathyAccountAssistant *self = user_data;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  gint retval;
+
+  retval = current_page;
+
+  if (current_page == 0)
+    retval = priv->first_resp;
+
+  g_print ("retval = %d\n", retval);
+  return retval;
+}
 
 static void
 account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
@@ -146,6 +168,117 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
   return main_vbox;
 }
 
+static GtkWidget *
+account_assistant_build_import_page (EmpathyAccountAssistant *self)
+{
+  /* TODO: import page */
+  GtkWidget *main_vbox, *w;
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  w = gtk_label_new ("Import your accounts!");
+  gtk_widget_show (w);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 6);
+
+  gtk_widget_show (main_vbox);
+
+  return main_vbox;
+}
+
+static gboolean
+account_assistant_chooser_enter_details_filter_func (
+    TpConnectionManager *cm,
+    TpConnectionManagerProtocol *protocol,
+    gpointer user_data)
+{
+  /* TODO */
+  return TRUE;
+}
+
+static void
+account_assistant_protocol_changed_cb (GtkComboBox *chooser,
+    EmpathyAccountAssistant *self)
+{
+  TpConnectionManager *cm;
+  TpConnectionManagerProtocol *proto;
+  EmpathyAccountSettings *settings;
+  EmpathyAccountAssistantPriv *priv;
+  char *str;
+  GtkWidget *account_widget;
+
+  priv = GET_PRIV (self);
+
+  cm = empathy_protocol_chooser_dup_selected (
+      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto);
+
+  if (cm == NULL || proto == NULL)
+    /* we are not ready yet */
+    return;
+
+  /* Create account */
+  /* To translator: %s is the protocol name */
+  str = g_strdup_printf (_("New %s account"), proto->name);
+
+  settings = empathy_account_settings_new (cm->name, proto->name, str);
+  account_widget = empathy_account_widget_simple_new_for_protocol
+    (proto->name, settings);
+
+  gtk_box_pack_start (GTK_BOX (priv->add_existing_page), account_widget, FALSE,
+      FALSE, 0);
+  gtk_widget_show (account_widget);
+
+  g_free (str);
+}
+
+static GtkWidget *
+account_assistant_build_enter_details_page (EmpathyAccountAssistant *self)
+{
+  GtkWidget *main_vbox, *w, *chooser;
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
+  gtk_widget_show (main_vbox);
+
+  w = gtk_label_new (_("What kind of chat account do you have?"));
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
+
+  w = gtk_alignment_new (0, 0, 0, 0);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (w), 0, 0, 12, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  chooser = empathy_protocol_chooser_new ();
+  empathy_protocol_chooser_set_visible (EMPATHY_PROTOCOL_CHOOSER (chooser),
+      account_assistant_chooser_enter_details_filter_func, self);
+  gtk_container_add (GTK_CONTAINER (w), chooser);
+  gtk_widget_show (chooser);
+
+  g_signal_connect (chooser, "changed",
+      G_CALLBACK (account_assistant_protocol_changed_cb), self);
+
+  /* trigger show the first account widget */
+  account_assistant_protocol_changed_cb (GTK_COMBO_BOX (chooser), self);
+
+  return main_vbox;
+}
+
+static GtkWidget *
+account_assistant_build_create_account_page (EmpathyAccountAssistant *self)
+{
+  GtkWidget *main_vbox, *w;
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
+  gtk_widget_show (main_vbox);
+
+  w = gtk_label_new (_("What kind of chat account do you want to create?"));
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  return main_vbox;
+}
+
 static void
 empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 {
@@ -156,20 +289,47 @@ static void
 empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv;
+  GtkAssistant *assistant = GTK_ASSISTANT (self);
   GtkWidget *page;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EMPATHY_TYPE_ACCOUNT_ASSISTANT,
       EmpathyAccountAssistantPriv);
   self->priv = priv;
 
-  /* first page */
+  gtk_assistant_set_forward_page_func (assistant,
+      account_assistant_page_forward_func, self, NULL);
+
+  /* first page (introduction) */
   page = account_assistant_build_introduction_page (self);
-  gtk_assistant_append_page (GTK_ASSISTANT (self), page);
-  gtk_assistant_set_page_title (GTK_ASSISTANT (self), page,
+  gtk_assistant_append_page (assistant, page);
+  gtk_assistant_set_page_title (assistant, page,
       _("Welcome to Empathy"));
-  gtk_assistant_set_page_type (GTK_ASSISTANT (self), page,
+  gtk_assistant_set_page_type (assistant, page,
       GTK_ASSISTANT_PAGE_INTRO);
-  gtk_assistant_set_page_complete (GTK_ASSISTANT (self), page, TRUE);
+  gtk_assistant_set_page_complete (assistant, page, TRUE);
+
+  /* set a default answer */
+  priv->first_resp = RESPONSE_IMPORT;
+
+  /* second page (import accounts) */
+  page = account_assistant_build_import_page (self);
+  gtk_assistant_append_page (assistant, page);
+  gtk_assistant_set_page_title (assistant, page,
+      _("Import your existing accounts"));
+  gtk_assistant_set_page_complete (assistant, page, TRUE);
+
+  /* third page (enter account details) */
+  page = account_assistant_build_enter_details_page (self);
+  gtk_assistant_append_page (assistant, page);
+  gtk_assistant_set_page_title (assistant, page,
+      _("Enter your account details"));
+  priv->add_existing_page = page;
+
+  /* fourth page (create a new account) */
+  page = account_assistant_build_create_account_page (self);
+  gtk_assistant_append_page (assistant, page);
+  gtk_assistant_set_page_title (assistant, page,
+      _("Enter the details of the new account"));  
 }
 
 GtkWidget *
