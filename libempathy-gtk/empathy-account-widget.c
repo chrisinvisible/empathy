@@ -68,15 +68,27 @@ enum {
   PROP_SIMPLE
 };
 
+enum {
+  HANDLE_APPLY,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountWidget)
 
 static void
 account_widget_handle_apply_sensitivity (EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  gboolean is_valid;
 
-  gtk_widget_set_sensitive (priv->apply_button,
-      empathy_account_settings_is_valid (priv->settings));
+  is_valid = empathy_account_settings_is_valid (priv->settings);
+
+  if (!priv->simple)
+    gtk_widget_set_sensitive (priv->apply_button, is_valid);
+
+  g_signal_emit (self, signals[HANDLE_APPLY], 0, is_valid);
 }
 
 static gboolean
@@ -950,6 +962,13 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (oclass, PROP_SIMPLE, param_spec);
 
+  signals[HANDLE_APPLY] =
+    g_signal_new ("handle-apply", G_TYPE_FROM_CLASS (klass),
+        G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+        g_cclosure_marshal_VOID__BOOLEAN,
+        G_TYPE_NONE,
+        1, G_TYPE_BOOLEAN);
+
   g_type_class_add_private (klass, sizeof (EmpathyAccountWidgetPriv));
 }
 
@@ -1000,7 +1019,7 @@ empathy_account_widget_new_for_protocol (const char *protocol,
 
 GtkWidget *
 empathy_account_widget_simple_new_for_protocol (const char *protocol,
-    EmpathyAccountSettings *settings)
+    EmpathyAccountSettings *settings, EmpathyAccountWidget **object)
 {
   EmpathyAccountWidget *self;
 
@@ -1010,6 +1029,8 @@ empathy_account_widget_simple_new_for_protocol (const char *protocol,
   self = g_object_new
     (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
         "settings", settings, "simple", TRUE, NULL);
+
+  *object = self;
 
   return self->ui_details->widget;
 }
