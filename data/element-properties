@@ -15,3 +15,18 @@ dct8x8=0
 
 [ffenc_h263]
 rtp-payload-size=1
+
+# Work around bug in the re-timestamp slaving method in
+# GStreamer (2 is skew)
+[alsasrc]
+slave-method=2
+
+[osssrc]
+slave-method=2
+
+[oss4src]
+slave-method=2
+
+[sunaudiosrc]
+slave-method=2
+
