@@ -47,6 +47,8 @@ typedef struct {
   FirstPageResponse first_resp;
 
   GtkWidget *add_existing_page;
+  GtkWidget *current_account_widget;
+  EmpathyAccountWidget *current_widget_object;
 } EmpathyAccountAssistantPriv;
 
 static gint
@@ -94,23 +96,25 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), hbox_1, TRUE, TRUE, 0);
   gtk_widget_show (hbox_1);
 
-  w = gtk_label_new (_("With Empathy you can chat with people \nonline nearby "
-          "and with friends and colleagues \nwho use Google Talk, AIM, "
-          "Windows Live \nand many other chat programs. With a microphone \n"
-          "or a webcam you can also have audio or video calls."));
+  w = gtk_label_new (
+      _("With Empathy you can chat with people\n"
+        "online nearby and with friends and colleagues\n"
+        "who use Google Talk, AIM, Windows Live\n"
+        "and many other chat programs. With a microphone\n"
+        "or a webcam you can also have audio or video calls."));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
   gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 0);
   gtk_widget_show (w);
 
-  pix = empathy_pixbuf_from_icon_name_sized ("empathy", 96);
+  pix = empathy_pixbuf_from_icon_name_sized ("empathy", 80);
   w = gtk_image_new_from_pixbuf (pix);
   gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 6);
   gtk_widget_show (w);
 
   g_object_unref (pix);
 
-  w = gtk_label_new (_("Do you have an account you've been using with another "
-          "chat program?"));
+  w = gtk_label_new (_("Do you have an account you've been using "
+          "with another\nchat program?"));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0);
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
@@ -195,6 +199,17 @@ account_assistant_chooser_enter_details_filter_func (
 }
 
 static void
+account_assistant_handle_apply_cb (EmpathyAccountWidget *widget_object,
+    gboolean is_valid,
+    EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+
+  gtk_assistant_set_page_complete (GTK_ASSISTANT (self),
+      priv->add_existing_page, is_valid);
+}
+
+static void
 account_assistant_protocol_changed_cb (GtkComboBox *chooser,
     EmpathyAccountAssistant *self)
 {
@@ -204,6 +219,7 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   EmpathyAccountAssistantPriv *priv;
   char *str;
   GtkWidget *account_widget;
+  EmpathyAccountWidget *widget_object = NULL;
 
   priv = GET_PRIV (self);
 
@@ -220,7 +236,20 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
   account_widget = empathy_account_widget_simple_new_for_protocol
-    (proto->name, settings);
+    (proto->name, settings, &widget_object);
+
+  if (priv->current_account_widget != NULL)
+    {
+      g_signal_handlers_disconnect_by_func (priv->current_widget_object,
+          account_assistant_handle_apply_cb, self);
+      gtk_widget_destroy (priv->current_account_widget);
+    }
+
+  priv->current_account_widget = account_widget;
+  priv->current_widget_object = widget_object;
+
+  g_signal_connect (priv->current_widget_object, "handle-apply",
+      G_CALLBACK (account_assistant_handle_apply_cb), self);
 
   gtk_box_pack_start (GTK_BOX (priv->add_existing_page), account_widget, FALSE,
       FALSE, 0);
@@ -232,7 +261,8 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 static GtkWidget *
 account_assistant_build_enter_details_page (EmpathyAccountAssistant *self)
 {
-  GtkWidget *main_vbox, *w, *chooser;
+  GtkWidget *main_vbox, *w, *chooser, *hbox;
+  PangoAttrList *list;
 
   main_vbox = gtk_vbox_new (FALSE, 12);
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
@@ -258,6 +288,23 @@ account_assistant_build_enter_details_page (EmpathyAccountAssistant *self)
 
   /* trigger show the first account widget */
   account_assistant_protocol_changed_cb (GTK_COMBO_BOX (chooser), self);
+
+  hbox = gtk_hbox_new (FALSE, 6);
+  gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, FALSE, 0);
+  gtk_widget_show (hbox);
+
+  w = gtk_image_new_from_icon_name ("gtk-dialog-info", GTK_ICON_SIZE_BUTTON);
+  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  w = gtk_label_new (_("If you have other accounts to set up, you can do "
+          "that at any time\nfrom the Edit menu."));
+  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
+  list = pango_attr_list_new ();
+  pango_attr_list_insert (list, pango_attr_scale_new (PANGO_SCALE_SMALL));
+  gtk_label_set_attributes (GTK_LABEL (w), list);
+  gtk_widget_show (w);
+  pango_attr_list_unref (list);
 
   return main_vbox;
 }
@@ -323,6 +370,7 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_append_page (assistant, page);
   gtk_assistant_set_page_title (assistant, page,
       _("Enter your account details"));
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->add_existing_page = page;
 
   /* fourth page (create a new account) */
