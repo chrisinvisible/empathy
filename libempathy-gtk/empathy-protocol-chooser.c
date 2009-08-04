@@ -59,9 +59,12 @@
 typedef struct
 {
   GtkListStore *store;
+  GtkTreeModel *filter_model;
   gboolean dispose_run;
   EmpathyConnectionManagers *cms;
 
+  EmpathyProtocolChooserFilterFunc filter_func;
+  gpointer filter_user_data;
 } EmpathyProtocolChooserPriv;
 
 enum
@@ -177,7 +180,8 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       else
         display_name_set = g_strdup (display_name);
 
-      gtk_list_store_insert_with_values (priv->store, NULL, 0,
+      gtk_list_store_insert_with_values (priv->store,
+          NULL, 0,
           COL_ICON, icon_name,
           COL_LABEL, display_name_set,
           COL_CM, cm,
@@ -228,8 +232,20 @@ protocol_chooser_constructed (GObject *object)
           G_TYPE_OBJECT,    /* CM */
           G_TYPE_POINTER);  /* protocol   */
 
+  priv->filter_model = gtk_tree_model_filter_new (GTK_TREE_MODEL (priv->store),
+      NULL);
+
+  /* Set the protocol sort function */
+  gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
+      COL_PROTOCOL,
+      protocol_chooser_sort_func,
+      NULL, NULL);
+  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (priv->store),
+      COL_PROTOCOL,
+      GTK_SORT_ASCENDING);
+
   gtk_combo_box_set_model (GTK_COMBO_BOX (object),
-      GTK_TREE_MODEL (priv->store));
+      GTK_TREE_MODEL (priv->filter_model));
 
   renderer = gtk_cell_renderer_pixbuf_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (object), renderer, FALSE);
@@ -243,15 +259,6 @@ protocol_chooser_constructed (GObject *object)
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (object), renderer,
       "text", COL_LABEL,
       NULL);
-
-  /* Set the protocol sort function */
-  gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
-      COL_PROTOCOL,
-      protocol_chooser_sort_func,
-      NULL, NULL);
-  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (priv->store),
-      COL_PROTOCOL,
-      GTK_SORT_ASCENDING);
 
   if (empathy_connection_managers_is_ready (priv->cms))
     protocol_chooser_add_cms_list (protocol_chooser,
@@ -288,6 +295,12 @@ protocol_chooser_dispose (GObject *object)
 
   priv->dispose_run = TRUE;
 
+  if (priv->filter_model)
+    {
+      g_object_unref (priv->filter_model);
+      priv->filter_model = NULL;
+    }
+
   if (priv->store)
     {
       g_object_unref (priv->store);
@@ -314,6 +327,28 @@ empathy_protocol_chooser_class_init (EmpathyProtocolChooserClass *klass)
   g_type_class_add_private (object_class, sizeof (EmpathyProtocolChooserPriv));
 }
 
+static gboolean
+protocol_chooser_filter_visible_func (GtkTreeModel *model,
+    GtkTreeIter *iter,
+    gpointer user_data)
+{
+  EmpathyProtocolChooser *protocol_chooser = user_data;
+  EmpathyProtocolChooserPriv *priv = GET_PRIV (protocol_chooser);
+  TpConnectionManager *cm = NULL;
+  TpConnectionManagerProtocol *protocol = NULL;
+  gboolean visible = FALSE;
+
+  gtk_tree_model_get (model, iter, COL_CM, &cm, COL_PROTOCOL, &protocol, -1);
+
+  if (cm != NULL && protocol != NULL)
+    {
+      visible = priv->filter_func (cm, protocol, priv->filter_user_data);
+      g_object_unref (cm);
+    }
+
+  return visible;
+}
+
 /* public methods */
 
 /**
@@ -338,12 +373,12 @@ empathy_protocol_chooser_dup_selected (
 
   if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (protocol_chooser), &iter))
     {
-      gtk_tree_model_get (GTK_TREE_MODEL (priv->store), &iter,
+      gtk_tree_model_get (GTK_TREE_MODEL (priv->filter_model), &iter,
           COL_CM, &cm,
           -1);
 
       if (protocol != NULL)
-        gtk_tree_model_get (GTK_TREE_MODEL (priv->store), &iter,
+        gtk_tree_model_get (GTK_TREE_MODEL (priv->filter_model), &iter,
             COL_PROTOCOL, protocol,
             -1);
     }
@@ -363,4 +398,24 @@ GtkWidget *
 empathy_protocol_chooser_new (void)
 {
   return GTK_WIDGET (g_object_new (EMPATHY_TYPE_PROTOCOL_CHOOSER, NULL));
+}
+
+void
+empathy_protocol_chooser_set_visible (EmpathyProtocolChooser *protocol_chooser,
+    EmpathyProtocolChooserFilterFunc func,
+    gpointer user_data)
+{
+  EmpathyProtocolChooserPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_PROTOCOL_CHOOSER (protocol_chooser));
+
+  priv = GET_PRIV (protocol_chooser);
+  priv->filter_func = func;
+  priv->filter_user_data = user_data;
+
+  gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER
+      (priv->filter_model), protocol_chooser_filter_visible_func,
+      protocol_chooser, NULL);
+
+  gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (priv->filter_model));
 }

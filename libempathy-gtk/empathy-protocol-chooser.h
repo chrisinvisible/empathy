@@ -39,7 +39,7 @@ G_BEGIN_DECLS
     EMPATHY_TYPE_PROTOCOL_CHOOSER))
 #define EMPATHY_IS_PROTOCOL_CHOOSER_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), \
     EMPATHY_TYPE_PROTOCOL_CHOOSER))
-#define EMPATHY_PROTOCOL_CHOOSER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
+#define EMPATHY_PROTOCOL_CHOOSER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o),\
     EMPATHY_TYPE_PROTOCOL_CHOOSER, EmpathyProtocolChooserClass))
 
 typedef struct _EmpathyProtocolChooser EmpathyProtocolChooser;
@@ -58,11 +58,20 @@ struct _EmpathyProtocolChooserClass
   GtkComboBoxClass parent_class;
 };
 
+typedef gboolean (*EmpathyProtocolChooserFilterFunc) (TpConnectionManager *cm,
+    TpConnectionManagerProtocol *protocol, gpointer user_data);
+
 GType empathy_protocol_chooser_get_type (void) G_GNUC_CONST;
 GtkWidget * empathy_protocol_chooser_new (void);
 TpConnectionManager *empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol);
+
+void empathy_protocol_chooser_set_visible (
+    EmpathyProtocolChooser *protocol_chooser,
+    EmpathyProtocolChooserFilterFunc func,
+    gpointer user_data);
+
 
 G_END_DECLS
 #endif /*  __EMPATHY_PROTOCOL_CHOOSER_H__ */
