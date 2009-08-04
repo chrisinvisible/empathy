@@ -596,19 +596,37 @@ static void
 account_widget_build_msn (EmpathyAccountWidget *self,
     const char *filename)
 {
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_msn_settings", &self->ui_details->widget,
-      NULL);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
-  empathy_account_widget_handle_params (self,
-      "entry_id", "account",
-      "entry_password", "password",
-      "entry_server", "server",
-      "spinbutton_port", "port",
-      NULL);
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_msn_simple", &self->ui_details->widget,
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_id");
-  self->ui_details->add_forget = TRUE;
+      empathy_account_widget_handle_params (self,
+          "entry_id_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_id_simple");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_msn_settings", &self->ui_details->widget,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_id", "account",
+          "entry_password", "password",
+          "entry_server", "server",
+          "spinbutton_port", "port",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_id");
+      self->ui_details->add_forget = TRUE;
+    }
 }
 
 static void
@@ -626,11 +644,11 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           NULL);
       
       empathy_account_widget_handle_params (self,
-          "entry_simple_id", "account",
-          "entry_simple_password", "password",
+          "entry_id_simple", "account",
+          "entry_password_simple", "password",
           NULL);
 
-      self->ui_details->default_focus = g_strdup ("entry_simple_id");
+      self->ui_details->default_focus = g_strdup ("entry_id_simple");
     }
   else
     {
@@ -666,87 +684,157 @@ static void
 account_widget_build_icq (EmpathyAccountWidget *self,
     const char *filename)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   GtkWidget *spinbutton_port;
 
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_icq_settings", &self->ui_details->widget,
-      "spinbutton_port", &spinbutton_port,
-      NULL);
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_icq_simple", &self->ui_details->widget,
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_uin", "account",
-      "entry_password", "password",
-      "entry_server", "server",
-      "spinbutton_port", "port",
-      "entry_charset", "charset",
-      NULL);
+      empathy_account_widget_handle_params (self,
+          "entry_uin_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_uin");
-  self->ui_details->add_forget = TRUE;
+      self->ui_details->default_focus = g_strdup ("entry_uin_simple");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_icq_settings", &self->ui_details->widget,
+          "spinbutton_port", &spinbutton_port,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_uin", "account",
+          "entry_password", "password",
+          "entry_server", "server",
+          "spinbutton_port", "port",
+          "entry_charset", "charset",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_uin");
+      self->ui_details->add_forget = TRUE;
+    }
 }
 
 static void
 account_widget_build_aim (EmpathyAccountWidget *self,
     const char *filename)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   GtkWidget *spinbutton_port;
 
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_aim_settings", &self->ui_details->widget,
-      "spinbutton_port", &spinbutton_port,
-      NULL);
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_aim_simple", &self->ui_details->widget,
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_screenname", "account",
-      "entry_password", "password",
-      "entry_server", "server",
-      "spinbutton_port", "port",
-      NULL);
+      empathy_account_widget_handle_params (self,
+          "entry_screenname_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_screenname");
-  self->ui_details->add_forget = TRUE;
+      self->ui_details->default_focus = g_strdup ("entry_screenname_simple");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_aim_settings", &self->ui_details->widget,
+          "spinbutton_port", &spinbutton_port,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_screenname", "account",
+          "entry_password", "password",
+          "entry_server", "server",
+          "spinbutton_port", "port",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_screenname");
+      self->ui_details->add_forget = TRUE;
+    }
 }
 
 static void
 account_widget_build_yahoo (EmpathyAccountWidget *self,
     const char *filename)
 {
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_yahoo_settings", &self->ui_details->widget,
-      NULL);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_yahoo_simple", &self->ui_details->widget,
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_id", "account",
-      "entry_password", "password",
-      "entry_server", "server",
-      "entry_locale", "room-list-locale",
-      "entry_charset", "charset",
-      "spinbutton_port", "port",
-      "checkbutton_yahoojp", "yahoojp",
-      "checkbutton_ignore_invites", "ignore-invites",
-      NULL);
+      empathy_account_widget_handle_params (self,
+          "entry_id_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_id");
-  self->ui_details->add_forget = TRUE;
+      self->ui_details->default_focus = g_strdup ("entry_id_simple");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_yahoo_settings", &self->ui_details->widget,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_id", "account",
+          "entry_password", "password",
+          "entry_server", "server",
+          "entry_locale", "room-list-locale",
+          "entry_charset", "charset",
+          "spinbutton_port", "port",
+          "checkbutton_yahoojp", "yahoojp",
+          "checkbutton_ignore_invites", "ignore-invites",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_id");
+      self->ui_details->add_forget = TRUE;
+    }
 }
 
 static void
 account_widget_build_groupwise (EmpathyAccountWidget *self,
     const char *filename)
 {
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_groupwise_settings", &self->ui_details->widget,
-      NULL);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_groupwise_simple", &self->ui_details->widget,
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_id", "account",
-      "entry_password", "password",
-      "entry_server", "server",
-      "spinbutton_port", "port",
-      NULL);
+      empathy_account_widget_handle_params (self,
+          "entry_id_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_id");
-  self->ui_details->add_forget = TRUE;
+      self->ui_details->default_focus = g_strdup ("entry_id_simple");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_groupwise_settings", &self->ui_details->widget,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_id", "account",
+          "entry_password", "password",
+          "entry_server", "server",
+          "spinbutton_port", "port",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_id");
+      self->ui_details->add_forget = TRUE;
+    }
 }
 
 static void
