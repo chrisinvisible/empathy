@@ -68,37 +68,58 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
                                   const char *filename)
 {
   EmpathyAccountWidgetSip *settings;
+  GtkWidget *vbox_settings;
+  gboolean is_simple;
 
-  settings = g_slice_new0 (EmpathyAccountWidgetSip);
-  settings->self = self;
+  g_object_get (self, "simple", &is_simple, NULL);
 
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_sip_settings", &settings->vbox_settings,
-      "entry_stun-server", &settings->entry_stun_server,
-      "spinbutton_stun-port", &settings->spinbutton_stun_part,
-      "checkbutton_discover-stun", &settings->checkbutton_discover_stun,
-      NULL);
+  if (is_simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_sip_simple", &vbox_settings,
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_userid", "account",
-      "entry_password", "password",
-      "checkbutton_discover-stun", "discover-stun",
-      "entry_stun-server", "stun-server",
-      "spinbutton_stun-port", "stun-port",
-      NULL);
+      empathy_account_widget_handle_params (self,
+          "entry_userid_simple", "account",
+          "entry_password_simple", "password",
+          NULL);
 
-  account_widget_sip_discover_stun_toggled_cb (
-    settings->checkbutton_discover_stun,
-    settings);
+      self->ui_details->default_focus = g_strdup ("entry_userid_simple");
+    }
+  else
+    {
+      settings = g_slice_new0 (EmpathyAccountWidgetSip);
+      settings->self = self;
 
-  empathy_builder_connect (self->ui_details->gui, settings,
-      "vbox_sip_settings", "destroy", account_widget_sip_destroy_cb,
-      "checkbutton_discover-stun", "toggled",
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_sip_settings", &vbox_settings,
+          "entry_stun-server", &settings->entry_stun_server,
+          "spinbutton_stun-port", &settings->spinbutton_stun_part,
+          "checkbutton_discover-stun", &settings->checkbutton_discover_stun,
+          NULL);
+      settings->vbox_settings = vbox_settings;
+
+      empathy_account_widget_handle_params (self,
+          "entry_userid", "account",
+          "entry_password", "password",
+          "checkbutton_discover-stun", "discover-stun",
+          "entry_stun-server", "stun-server",
+          "spinbutton_stun-port", "stun-port",
+          NULL);
+
+      account_widget_sip_discover_stun_toggled_cb (
+          settings->checkbutton_discover_stun,
+          settings);
+
+      empathy_builder_connect (self->ui_details->gui, settings,
+          "vbox_sip_settings", "destroy", account_widget_sip_destroy_cb,
+          "checkbutton_discover-stun", "toggled",
           account_widget_sip_discover_stun_toggled_cb,
-      NULL);
+          NULL);
 
-  self->ui_details->add_forget = TRUE;
-  self->ui_details->default_focus = g_strdup ("entry_userid");
+      self->ui_details->add_forget = TRUE;
+      self->ui_details->default_focus = g_strdup ("entry_userid");
+    }
 
-  self->ui_details->widget = settings->vbox_settings;
+  self->ui_details->widget = vbox_settings;
 }
