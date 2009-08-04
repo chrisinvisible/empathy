@@ -26,7 +26,7 @@
 
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
-#include <clutter-gtk/gtk-clutter-embed.h>
+#include <clutter-gtk/clutter-gtk.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-contact.h>
@@ -190,7 +190,8 @@ map_view_contacts_foreach (GtkTreeModel *model,
   if (avatar != NULL)
     {
       texture = clutter_texture_new ();
-      gtk_clutter_texture_set_from_pixbuf (CLUTTER_TEXTURE (texture), avatar);
+      gtk_clutter_texture_set_from_pixbuf (CLUTTER_TEXTURE (texture), avatar,
+          NULL);
       champlain_marker_set_image (CHAMPLAIN_MARKER (marker), texture);
       g_object_unref (avatar);
     }

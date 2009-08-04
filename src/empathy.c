@@ -32,7 +32,7 @@
 #include <gdk/gdkx.h>
 
 #if HAVE_LIBCHAMPLAIN
-#include <clutter-gtk/gtk-clutter-embed.h>
+#include <clutter-gtk/clutter-gtk.h>
 #endif
 
 #include <libebook/e-book.h>
