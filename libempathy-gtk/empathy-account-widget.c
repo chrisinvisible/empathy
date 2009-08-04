@@ -377,6 +377,8 @@ accounts_widget_generic_setup (EmpathyAccountWidget *self,
 
       if (param->flags & TP_CONN_MGR_PARAM_FLAG_REQUIRED)
         table_settings = table_common_settings;
+      else if (priv->simple)
+        return;
       else
         table_settings = table_advanced_settings;
 
@@ -559,9 +561,15 @@ account_widget_build_generic (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  GtkWidget *expander_advanced;
+
   self->ui_details->gui = empathy_builder_get_file (filename,
       "vbox_generic_settings", &self->ui_details->widget,
+      "expander_advanced_settings", &expander_advanced,
       NULL);
+
+  if (priv->simple)
+    gtk_widget_hide (expander_advanced);
 
   g_object_ref (self->ui_details->gui);
 
@@ -805,7 +813,7 @@ account_widget_build_groupwise (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  
+
   if (priv->simple)
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
@@ -886,6 +894,7 @@ do_get_property (GObject *object,
       break;
     case PROP_SIMPLE:
       g_value_set_boolean (value, priv->simple);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -921,7 +930,13 @@ do_constructed (GObject *obj)
   else if (!tp_strdiff (priv->protocol, "sip"))
     empathy_account_widget_sip_build (self, filename);
   else
-    account_widget_build_generic (self, filename);
+    {
+      g_free (filename);
+
+      filename = empathy_file_lookup (
+          "empathy-account-widget-generic.ui", "libempathy-gtk");
+      account_widget_build_generic (self, filename);
+    }
 
   g_free (uiname);
   g_free (filename);
