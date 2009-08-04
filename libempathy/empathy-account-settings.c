@@ -515,6 +515,29 @@ empathy_account_settings_get_tp_param (EmpathyAccountSettings *settings,
   return NULL;
 }
 
+static void
+account_settings_remove_from_unset (EmpathyAccountSettings *settings,
+    const gchar *param)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  int idx;
+  gchar *val;
+
+  for (idx = 0; idx < priv->unset_parameters->len; idx++)
+    {
+      val = g_array_index (priv->unset_parameters, gchar *, idx);
+
+      if (!tp_strdiff (val, param))
+        {
+          priv->unset_parameters =
+            g_array_remove_index (priv->unset_parameters, idx);
+          g_free (val);
+
+          break;
+        }
+    }
+}
+
 const GValue *
 empathy_account_settings_get_default (EmpathyAccountSettings *settings,
     const gchar *param)
@@ -571,7 +594,6 @@ empathy_account_settings_get (EmpathyAccountSettings *settings,
   /* fallback to the default */
   return empathy_account_settings_get_default (settings, param);
 }
-
 
 void
 empathy_account_settings_unset (EmpathyAccountSettings *settings,
@@ -768,6 +790,8 @@ empathy_account_settings_set_string (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_string (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 void
@@ -778,6 +802,8 @@ empathy_account_settings_set_int32 (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_int32 (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 void
@@ -788,6 +814,8 @@ empathy_account_settings_set_int64 (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_int64 (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 void
@@ -798,6 +826,8 @@ empathy_account_settings_set_uint32 (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_uint32 (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 void
@@ -808,6 +838,8 @@ empathy_account_settings_set_uint64 (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_uint64 (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 void
@@ -818,6 +850,8 @@ empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_boolean (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
 }
 
 static void
