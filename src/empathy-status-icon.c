@@ -140,9 +140,6 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 	if (priv->event) {
 		gchar *message_esc = g_markup_escape_text (priv->event->message, -1);
 
-		pixbuf = empathy_misc_get_pixbuf_for_notification (priv->event->contact,
-								   priv->event->icon_name);
-
 		if (priv->notification) {
 			notify_notification_update (priv->notification,
 						    priv->event->header, message_esc,
@@ -155,15 +152,19 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 
 			g_signal_connect (priv->notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
+		}
 
- 		}
-		/* if icon doesn't exist libnotify will crash */
-		if (pixbuf != NULL)
+		pixbuf = empathy_misc_get_pixbuf_for_notification (priv->event->contact,
+								   priv->event->icon_name);
+
+		if (pixbuf != NULL) {
 			notify_notification_set_icon_from_pixbuf (priv->notification,
 							  pixbuf);
+			g_object_unref (pixbuf);
+		}
+
 		notify_notification_show (priv->notification, NULL);
 
-		g_object_unref (pixbuf);
 		g_free (message_esc);
 	} else {
 		notification_close_helper (priv);

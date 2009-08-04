@@ -969,28 +969,26 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	body = empathy_message_get_body (message);
 	escaped = g_markup_escape_text (body, -1);
 
-	pixbuf = empathy_misc_get_pixbuf_for_notification (sender, EMPATHY_IMAGE_NEW_MESSAGE);
-
 	if (priv->notification != NULL) {
 		notify_notification_update (priv->notification,
 					    header, escaped, NULL);
-		/* if icon doesn't exist libnotify will crash */
-		if (pixbuf != NULL)
-			notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
 	} else {
 		priv->notification = notify_notification_new (header, escaped, NULL, NULL);
 		notify_notification_set_timeout (priv->notification, NOTIFY_EXPIRES_DEFAULT);
-		/* if icon doesn't exist libnotify will crash */
-		if (pixbuf != NULL)
-			notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
 
 		g_signal_connect (priv->notification, "closed",
 				  G_CALLBACK (chat_window_notification_closed_cb), cb_data);
 	}
 
+	pixbuf = empathy_misc_get_pixbuf_for_notification (sender, EMPATHY_IMAGE_NEW_MESSAGE);
+
+	if (pixbuf != NULL) {
+		notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
+		g_object_unref (pixbuf);
+	}
+
 	notify_notification_show (priv->notification, NULL);
 
-	g_object_unref (pixbuf);
 	g_free (escaped);
 }
 
