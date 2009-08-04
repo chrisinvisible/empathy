@@ -57,12 +57,15 @@ typedef struct {
   GtkWidget *button_forget;
   GtkWidget *spinbutton_port;
 
+  gboolean simple;
+
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
 
 enum {
   PROP_PROTOCOL = 1,
-  PROP_SETTINGS
+  PROP_SETTINGS,
+  PROP_SIMPLE
 };
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountWidget)
@@ -604,31 +607,47 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *spinbutton_port;
   GtkWidget *checkbutton_ssl;
 
-  self->ui_details->gui = empathy_builder_get_file (filename,
-      "vbox_jabber_settings", &self->ui_details->widget,
-      "spinbutton_port", &spinbutton_port,
-      "checkbutton_ssl", &checkbutton_ssl,
-      NULL);
+  if (priv->simple)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_jabber_simple", &self->ui_details->widget,
+          NULL);
+      
+      empathy_account_widget_handle_params (self,
+          "entry_simple_id", "account",
+          "entry_simple_password", "password",
+          NULL);
 
-  empathy_account_widget_handle_params (self,
-      "entry_id", "account",
-      "entry_password", "password",
-      "entry_resource", "resource",
-      "entry_server", "server",
-      "spinbutton_port", "port",
-      "spinbutton_priority", "priority",
-      "checkbutton_ssl", "old-ssl",
-      "checkbutton_ignore_ssl_errors", "ignore-ssl-errors",
-      "checkbutton_encryption", "require-encryption",
-      NULL);
+      self->ui_details->default_focus = g_strdup ("entry_simple_id");
+    }
+  else
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_jabber_settings", &self->ui_details->widget,
+          "spinbutton_port", &spinbutton_port,
+          "checkbutton_ssl", &checkbutton_ssl,
+          NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_id");
-  self->ui_details->add_forget = TRUE;
-  priv->spinbutton_port = spinbutton_port;
+      empathy_account_widget_handle_params (self,
+          "entry_id", "account",
+          "entry_password", "password",
+          "entry_resource", "resource",
+          "entry_server", "server",
+          "spinbutton_port", "port",
+          "spinbutton_priority", "priority",
+          "checkbutton_ssl", "old-ssl",
+          "checkbutton_ignore_ssl_errors", "ignore-ssl-errors",
+          "checkbutton_encryption", "require-encryption",
+          NULL);
 
-  g_signal_connect (checkbutton_ssl, "toggled",
-      G_CALLBACK (account_widget_jabber_ssl_toggled_cb),
-      self);
+      self->ui_details->default_focus = g_strdup ("entry_id");
+      self->ui_details->add_forget = TRUE;
+      priv->spinbutton_port = spinbutton_port;
+
+      g_signal_connect (checkbutton_ssl, "toggled",
+          G_CALLBACK (account_widget_jabber_ssl_toggled_cb),
+          self);
+    }
 }
 
 static void
@@ -741,6 +760,9 @@ do_set_property (GObject *object,
     case PROP_SETTINGS:
       priv->settings = g_value_dup_object (value);
       break;
+    case PROP_SIMPLE:
+      priv->simple = g_value_get_boolean (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -762,6 +784,8 @@ do_get_property (GObject *object,
     case PROP_SETTINGS:
       g_value_set_object (value, priv->settings);
       break;
+    case PROP_SIMPLE:
+      g_value_set_boolean (value, priv->simple);
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -838,20 +862,25 @@ do_constructed (GObject *obj)
     }
 
   /* handle apply button */
-  priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
-  gtk_box_pack_end (GTK_BOX (self->ui_details->widget), priv->apply_button, FALSE, FALSE, 3);
+  if (!priv->simple)
+    {
+      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
+      gtk_box_pack_end (GTK_BOX (self->ui_details->widget), priv->apply_button,
+          FALSE, FALSE, 3);
 
-  g_signal_connect (priv->apply_button, "clicked",
-      G_CALLBACK (account_widget_apply_clicked_cb),
-      self);
-  account_widget_handle_apply_sensitivity (self);
-  gtk_widget_show (priv->apply_button);
+      g_signal_connect (priv->apply_button, "clicked",
+          G_CALLBACK (account_widget_apply_clicked_cb),
+          self);
+      account_widget_handle_apply_sensitivity (self);
+      gtk_widget_show (priv->apply_button);
+    }
 
   /* hook up to widget destruction to unref ourselves */
   g_signal_connect (self->ui_details->widget, "destroy",
       G_CALLBACK (account_widget_destroy_cb), self);
 
-  empathy_builder_unref_and_keep_widget (self->ui_details->gui, self->ui_details->widget);
+  empathy_builder_unref_and_keep_widget (self->ui_details->gui,
+      self->ui_details->widget);
   self->ui_details->gui = NULL;
 }
 
@@ -915,6 +944,12 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (oclass, PROP_SETTINGS, param_spec);
 
+  param_spec = g_param_spec_boolean ("simple",
+      "simple", "Whether the account widget is a simple or an advanced one",
+      FALSE,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_SIMPLE, param_spec);
+
   g_type_class_add_private (klass, sizeof (EmpathyAccountWidgetPriv));
 }
 
@@ -959,6 +994,22 @@ empathy_account_widget_new_for_protocol (const char *protocol,
     (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
         "settings", settings, NULL);
   priv = GET_PRIV (self);
+
+  return self->ui_details->widget;
+}
+
+GtkWidget *
+empathy_account_widget_simple_new_for_protocol (const char *protocol,
+    EmpathyAccountSettings *settings)
+{
+  EmpathyAccountWidget *self;
+
+  g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), NULL);
+  g_return_val_if_fail (protocol != NULL, NULL);
+
+  self = g_object_new
+    (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
+        "settings", settings, "simple", TRUE, NULL);
 
   return self->ui_details->widget;
 }
