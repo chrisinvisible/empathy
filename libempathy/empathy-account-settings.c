@@ -915,7 +915,8 @@ empathy_account_settings_set_display_name_finish (
     return FALSE;
 
   g_return_val_if_fail (g_simple_async_result_is_valid (result,
-    G_OBJECT (settings), empathy_account_settings_set_display_name_finish), FALSE);
+    G_OBJECT (settings), empathy_account_settings_set_display_name_finish),
+      FALSE);
 
   return TRUE;
 }
