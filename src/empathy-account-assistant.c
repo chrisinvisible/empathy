@@ -66,7 +66,23 @@ typedef struct {
   GtkWidget *second_label;
   GtkWidget *chooser;
   EmpathyAccountSettings *settings;
+
+  GtkWindow *parent_window;
 } EmpathyAccountAssistantPriv;
+
+static void
+account_assistant_apply_account_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  empathy_account_settings_apply_finish (EMPATHY_ACCOUNT_SETTINGS (source),
+      result, &error);
+
+  if (error != NULL)
+    g_print ("error applying %s\n", error->message);
+}
 
 static void
 account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self)
@@ -76,7 +92,8 @@ account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self)
   if (priv->settings == NULL)
     return;
 
-  empathy_account_settings_apply_async (priv->settings, NULL, NULL);
+  empathy_account_settings_apply_async (priv->settings,
+      account_assistant_apply_account_cb, self);
 }
 
 static void
