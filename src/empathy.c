@@ -116,8 +116,8 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 
           manager = empathy_account_manager_dup_singleton ();
           connection = empathy_tp_chat_get_connection (tp_chat);
-          account = empathy_account_manager_get_account_for_connection (manager,
-              connection);
+          account = empathy_account_manager_get_account_for_connection (
+              manager, connection);
           chat = empathy_chat_window_find_chat (account, id);
           g_object_unref (manager);
         }
@@ -380,7 +380,8 @@ migrate_config_to_xdg_dir (void)
       return;
     }
 
-  old_dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
+  old_dir = g_build_filename (g_get_home_dir (), ".gnome2",
+      PACKAGE_NAME, NULL);
   if (!g_file_test (old_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
     {
       /* old config dir didn't exist */
