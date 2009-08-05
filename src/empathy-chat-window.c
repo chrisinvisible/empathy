@@ -1003,7 +1003,8 @@ chat_window_set_highlight_room_tab_label (EmpathyChat *chat)
 	if (!empathy_chat_is_room (chat))
 		return;
 
-	markup = g_markup_printf_escaped ("<span color=\"red\">%s</span>",
+	markup = g_markup_printf_escaped (
+		"<span color=\"red\" weight=\"bold\">%s</span>",
 		empathy_chat_get_name (chat));
 
 	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-label");
