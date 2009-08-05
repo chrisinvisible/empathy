@@ -12,7 +12,7 @@ int main (int argc, char **argv)
   gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
-  assistant = empathy_account_assistant_new ();
+  assistant = empathy_account_assistant_new (NULL);
 
   gtk_widget_show_all (assistant);
 

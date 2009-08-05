@@ -63,6 +63,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-location-manager.h>
 
+#include "empathy-account-assistant.h"
 #include "empathy-accounts-dialog.h"
 #include "empathy-main-window.h"
 #include "empathy-status-icon.h"
@@ -532,12 +533,17 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
     GParamSpec *spec,
     gpointer user_data)
 {
+  GtkWidget *assistant;
+
   if (!empathy_account_manager_is_ready (manager))
     return;
 
   if (empathy_account_manager_get_count (manager) == 0)
-    empathy_accounts_dialog_show (GTK_WINDOW (empathy_main_window_get ()),
-        NULL);
+    {
+      assistant = empathy_account_assistant_new (
+          GTK_WINDOW (empathy_main_window_get ()));
+      gtk_window_present (GTK_WINDOW (assistant));
+    }
 
   create_salut_account ();
 }

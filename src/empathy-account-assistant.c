@@ -51,6 +51,10 @@ enum {
   PAGE_SALUT_ONLY = 3
 };
 
+enum {
+  PROP_PARENT = 1
+};
+
 typedef struct {
   FirstPageResponse first_resp;
 
@@ -433,8 +437,70 @@ account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
 }
 
 static void
+do_get_property (GObject *object,
+    guint property_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (object);
+
+  switch (property_id)
+    {
+    case PROP_PARENT:
+      g_value_set_object (value, priv->parent_window);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
+do_set_property (GObject *object,
+    guint property_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (object);
+
+  switch (property_id)
+    {
+    case PROP_PARENT:
+      priv->parent_window = g_value_get_object (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
+do_constructed (GObject *object)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (object);
+
+  /* set us as transient for the parent window if any */
+  if (priv->parent_window)
+    gtk_window_set_transient_for (GTK_WINDOW (object),
+        priv->parent_window);
+
+  gtk_window_set_type_hint (GTK_WINDOW (object), GDK_WINDOW_TYPE_HINT_DIALOG);
+}
+
+static void
 empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 {
+  GObjectClass *oclass = G_OBJECT_CLASS (klass);
+  GParamSpec *param_spec;
+
+  oclass->get_property = do_get_property;
+  oclass->set_property = do_set_property;
+  oclass->constructed = do_constructed;
+
+  param_spec = g_param_spec_object ("parent-window",
+      "parent-window", "The parent window",
+      GTK_TYPE_WINDOW,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_PARENT, param_spec);
+
   g_type_class_add_private (klass, sizeof (EmpathyAccountAssistantPriv));
 }
 
@@ -484,7 +550,8 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
 }
 
 GtkWidget *
-empathy_account_assistant_new (void)
+empathy_account_assistant_new (GtkWindow *window)
 {
-  return g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT, NULL);
+  return g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT, "parent-window",
+      window, NULL);
 }
