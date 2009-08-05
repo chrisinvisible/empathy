@@ -281,6 +281,12 @@ account_assistant_page_forward_func (gint current_page,
         retval = PAGE_ENTER_CREATE;
     }
 
+  if (current_page == PAGE_ENTER_CREATE)
+    {
+      /* don't forward anymore */
+      retval = -1;
+    }
+
   g_print ("retval = %d\n", retval);
   return retval;
 }
