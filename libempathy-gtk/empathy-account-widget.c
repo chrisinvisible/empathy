@@ -666,12 +666,26 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   GtkWidget *spinbutton_port;
   GtkWidget *checkbutton_ssl;
+  GtkWidget *label_id, *label_password;
+  GtkWidget *label_id_create, *label_password_create;
 
   if (priv->simple)
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
           "vbox_jabber_simple", &self->ui_details->widget,
+          "label_id_simple", &label_id,
+          "label_id_create", &label_id_create,
+          "label_password_simple", &label_password,
+          "label_password_create", &label_password_create,
           NULL);
+
+      if (empathy_account_settings_get_boolean (priv->settings, "register"))
+        {
+          gtk_widget_hide (label_id);
+          gtk_widget_hide (label_password);
+          gtk_widget_show (label_id_create);
+          gtk_widget_show (label_password_create);
+        }
       
       empathy_account_widget_handle_params (self,
           "entry_id_simple", "account",
