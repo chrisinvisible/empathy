@@ -141,6 +141,10 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 
   priv->current_account_widget = account_widget;
   priv->current_widget_object = widget_object;
+
+  if (priv->settings != NULL)
+    g_object_unref (priv->settings);
+
   priv->settings = settings;
 
   g_signal_connect (priv->current_widget_object, "handle-apply",
