@@ -66,6 +66,7 @@ typedef struct {
   GtkWidget *second_label;
   GtkWidget *chooser;
   EmpathyAccountSettings *settings;
+  gboolean is_creating;
 
   GtkWindow *parent_window;
 
@@ -185,16 +186,39 @@ account_assistant_present_error_page (EmpathyAccountAssistant *self,
 }
 
 static void
+account_assistant_account_enabled_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+  EmpathyAccountAssistant *self = user_data;
+
+  empathy_account_set_enabled_finish (EMPATHY_ACCOUNT (source),
+      result, &error);
+
+  if (error)
+    {
+      g_warning ("Error enabling an account: %s", error->message);
+      g_error_free (error);
+    }
+
+  g_signal_emit_by_name (self, "close");
+}
+
+static void
 account_assistant_apply_account_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
   GError *error = NULL;
   EmpathyAccountAssistant *self = user_data;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
   EmpathyAccount *account;
 
   empathy_account_settings_apply_finish (settings, result, &error);
+
+  priv->is_creating = FALSE;
 
   if (error != NULL)
     {
@@ -205,7 +229,8 @@ account_assistant_apply_account_cb (GObject *source,
 
   /* enable the newly created account */
   account = empathy_account_settings_get_account (settings);
-  empathy_account_set_enabled (account, TRUE);
+  empathy_account_set_enabled_async (account, TRUE,
+      account_assistant_account_enabled_cb, self);
 }
 
 static void
@@ -215,6 +240,8 @@ account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self)
 
   if (priv->settings == NULL)
     return;
+
+  priv->is_creating = TRUE;
 
   empathy_account_settings_apply_async (priv->settings,
       account_assistant_apply_account_cb, self);
@@ -560,21 +587,29 @@ account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
 }
 
 static void
+account_assistant_close_cb (GtkAssistant *assistant,
+    gpointer user_data)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (assistant);
+
+  if (priv->is_creating)
+    return;
+
+  gtk_widget_destroy (GTK_WIDGET (assistant));
+}
+
+static void
 impl_signal_apply (GtkAssistant *assistant)
 {
   EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
+  //  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   gint current_page;
 
+  g_print ("apply!!\n");
   current_page = gtk_assistant_get_current_page (assistant);
 
   if (current_page == RESPONSE_ENTER_ACCOUNT)
     account_assistant_apply_account_and_finish (self);
-}
-
-static void
-impl_signal_close (GtkAssistant *assistant)
-{
-  gtk_widget_destroy (GTK_WIDGET (assistant));
 }
 
 static void
@@ -687,7 +722,6 @@ empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 
   gtkclass->apply = impl_signal_apply;
   gtkclass->prepare = impl_signal_prepare;
-  gtkclass->close = impl_signal_close;
   gtkclass->cancel = impl_signal_cancel;
 
   param_spec = g_param_spec_object ("parent-window",
@@ -709,6 +743,9 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EMPATHY_TYPE_ACCOUNT_ASSISTANT,
       EmpathyAccountAssistantPriv);
   self->priv = priv;
+
+  g_signal_connect (self, "close",
+      G_CALLBACK (account_assistant_close_cb), NULL);
 
   gtk_assistant_set_forward_page_func (assistant,
       account_assistant_page_forward_func, self, NULL);
