@@ -364,6 +364,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	gboolean               is_row;
 	gboolean               is_different = FALSE;
 	gboolean               cleanup = TRUE;
+	int                    action = 0;
 
 	is_row = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
 						x,
@@ -381,6 +382,13 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	} else {
 		cleanup &= FALSE;
 	}
+
+	if (context->actions == GDK_ACTION_COPY) {
+		action = context->suggested_action;
+	} else if (context->actions & GDK_ACTION_MOVE) {
+		action = GDK_ACTION_MOVE;
+	}
+	gdk_drag_status (context, action, time);
 
 	if (!is_different && !cleanup) {
 		return TRUE;
