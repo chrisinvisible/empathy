@@ -602,8 +602,8 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
                            TRUE);
 
   if (!(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
-  	gtk_label_set_selectable (GTK_LABEL (information->label_status), TRUE);
-  
+    gtk_label_set_selectable (GTK_LABEL (information->label_status), TRUE);
+
   gtk_box_pack_start (GTK_BOX (information->hbox_presence),
         information->label_status, TRUE, TRUE, 0);
   gtk_widget_show (information->label_status);
