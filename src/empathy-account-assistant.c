@@ -70,18 +70,134 @@ typedef struct {
   GtkWindow *parent_window;
 } EmpathyAccountAssistantPriv;
 
+static GtkWidget *
+account_assistant_build_error_page (EmpathyAccountAssistant *self,
+    GError *error, gint page_num)
+{
+  GtkWidget *main_vbox, *w, *hbox;
+  GString *str;
+  char *message;
+  PangoAttrList *list;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
+  gtk_widget_show (main_vbox);
+
+  hbox = gtk_hbox_new (FALSE, 12);
+  gtk_box_pack_start (GTK_BOX (main_vbox), hbox, FALSE, FALSE, 0);
+  gtk_widget_show (hbox);
+
+  w = gtk_image_new_from_stock (GTK_STOCK_DIALOG_ERROR,
+      GTK_ICON_SIZE_DIALOG);
+  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  /* translators: this is followed by the "while ..." strings some lines
+   * down this file.
+   */
+  str = g_string_new (_("There has been an error\n"));
+
+  if (page_num == PAGE_IMPORT)
+    /* translators: this follows the "There has been an error " string */
+    str = g_string_append (str, _("while importing the accounts."));
+  else if (page_num == PAGE_ENTER_CREATE &&
+      priv->first_resp == RESPONSE_ENTER_ACCOUNT)
+    /* translators: this follows the "There has been an error " string */
+    str = g_string_append (str, _("while parsing the account details."));
+  else if (page_num == PAGE_ENTER_CREATE &&
+      priv->first_resp == RESPONSE_CREATE_ACCOUNT)
+    /* translators: this follows the "There has been an error " string */
+    str = g_string_append (str, _("while creating the account."));
+
+  message = g_string_free (str, FALSE);
+
+  w = gtk_label_new (message);
+  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
+  list = pango_attr_list_new ();
+  pango_attr_list_insert (list, pango_attr_scale_new (PANGO_SCALE_LARGE));
+  pango_attr_list_insert (list, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
+  gtk_label_set_attributes (GTK_LABEL (w), list);
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_widget_show (w);
+
+  g_free (message);
+  pango_attr_list_unref (list);
+
+  message = g_markup_printf_escaped
+    (_("The error message was: <span style=\"italic\">%s</span>"),
+        error->message);
+  w = gtk_label_new (message);
+  gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_widget_show (w);
+
+  w = gtk_label_new (_("You can either go back and try to enter your "
+          "accounts' details\nagain or quit this wizard and add accounts "
+          "later from the Edit menu."));
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 6);
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_widget_show (w);
+
+  return main_vbox;
+}
+
+static void
+account_assistant_back_button_clicked_cb (GtkButton *button,
+    EmpathyAccountAssistant *self)
+{
+  gint page_num;
+
+  page_num = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
+          "page-num"));
+  gtk_assistant_remove_action_widget (GTK_ASSISTANT (self),
+      GTK_WIDGET (button));
+  gtk_assistant_set_current_page (GTK_ASSISTANT (self), page_num);
+}
+
+static void
+account_assistant_present_error_page (EmpathyAccountAssistant *self,
+    GError *error, gint page_num)
+{
+  GtkWidget *error_page, *back_button;
+  gint num;
+
+  error_page = account_assistant_build_error_page (self, error,
+      page_num);
+  num = gtk_assistant_append_page (GTK_ASSISTANT (self), error_page);
+  gtk_assistant_set_page_title (GTK_ASSISTANT (self), error_page,
+      _("An error occurred"));
+  gtk_assistant_set_page_type (GTK_ASSISTANT (self), error_page,
+      GTK_ASSISTANT_PAGE_SUMMARY);
+
+  back_button = gtk_button_new_from_stock (GTK_STOCK_GO_BACK);
+  gtk_assistant_add_action_widget (GTK_ASSISTANT (self), back_button);
+  g_object_set_data (G_OBJECT (back_button),
+      "page-num", GINT_TO_POINTER (page_num));
+  g_signal_connect (back_button, "clicked",
+      G_CALLBACK (account_assistant_back_button_clicked_cb), self);
+  gtk_widget_show (back_button);
+
+  gtk_assistant_set_current_page (GTK_ASSISTANT (self), num);
+}
+
 static void
 account_assistant_apply_account_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
   GError *error = NULL;
+  EmpathyAccountAssistant *self = user_data;
 
   empathy_account_settings_apply_finish (EMPATHY_ACCOUNT_SETTINGS (source),
       result, &error);
 
   if (error != NULL)
-    g_print ("error applying %s\n", error->message);
+    {
+      account_assistant_present_error_page (self, error, PAGE_ENTER_CREATE);
+      g_error_free (error);
+    }
 }
 
 static void
