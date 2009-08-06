@@ -221,19 +221,6 @@ account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self)
 }
 
 static void
-account_assistant_apply_cb (GtkAssistant *assistant,
-    gpointer user_data)
-{
-  EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
-  gint current_page;
-
-  current_page = gtk_assistant_get_current_page (assistant);
-
-  if (current_page == RESPONSE_ENTER_ACCOUNT)
-    account_assistant_apply_account_and_finish (self);
-}
-
-static void
 account_assistant_handle_apply_cb (EmpathyAccountWidget *widget_object,
     gboolean is_valid,
     EmpathyAccountAssistant *self)
@@ -367,27 +354,6 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
   account_assistant_protocol_changed_cb (GTK_COMBO_BOX (priv->chooser), self);
 }
 
-static void
-account_assistant_prepare_cb (GtkAssistant *assistant,
-    GtkWidget *current_page,
-    gpointer user_data)
-{
-  EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
-  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
-  gint current_idx;
-
-  current_idx = gtk_assistant_get_current_page (assistant);
-
-  g_print ("prepare, current idx = %d\n", current_idx);
-
-  if (current_idx == PAGE_ENTER_CREATE)
-    {
-      account_assistant_finish_enter_or_create_page (self,
-          priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
-          TRUE : FALSE);
-    }
-}
-
 static gint
 account_assistant_page_forward_func (gint current_page,
     gpointer user_data)
@@ -421,12 +387,22 @@ account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
 {
   FirstPageResponse response;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  GtkWidget *intro_page;
 
   response = GPOINTER_TO_INT (g_object_get_data
       (G_OBJECT (button), "response"));
 
-  g_print ("choice %d toggled\n", response);
   priv->first_resp = response;
+
+  intro_page = gtk_assistant_get_nth_page (GTK_ASSISTANT (self),
+      PAGE_INTRO);
+
+  if (response == RESPONSE_SALUT_ONLY)
+    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
+        GTK_ASSISTANT_PAGE_SUMMARY);
+  else
+    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
+        GTK_ASSISTANT_PAGE_INTRO);
 }
 
 static GtkWidget *
@@ -584,6 +560,50 @@ account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
 }
 
 static void
+impl_signal_apply (GtkAssistant *assistant)
+{
+  EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
+  gint current_page;
+
+  current_page = gtk_assistant_get_current_page (assistant);
+
+  if (current_page == RESPONSE_ENTER_ACCOUNT)
+    account_assistant_apply_account_and_finish (self);
+}
+
+static void
+impl_signal_close (GtkAssistant *assistant)
+{
+  gtk_widget_destroy (GTK_WIDGET (assistant));
+}
+
+static void
+impl_signal_cancel (GtkAssistant *assistant)
+{
+  gtk_widget_destroy (GTK_WIDGET (assistant));
+}
+
+static void
+impl_signal_prepare (GtkAssistant *assistant,
+    GtkWidget *current_page)
+{
+  EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  gint current_idx;
+
+  current_idx = gtk_assistant_get_current_page (assistant);
+
+  g_print ("prepare, current idx = %d\n", current_idx);
+
+  if (current_idx == PAGE_ENTER_CREATE)
+    {
+      account_assistant_finish_enter_or_create_page (self,
+          priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
+          TRUE : FALSE);
+    }
+}
+
+static void
 do_get_property (GObject *object,
     guint property_id,
     GValue *value,
@@ -657,12 +677,18 @@ static void
 empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
+  GtkAssistantClass *gtkclass = GTK_ASSISTANT_CLASS (klass);
   GParamSpec *param_spec;
 
   oclass->get_property = do_get_property;
   oclass->set_property = do_set_property;
   oclass->constructed = do_constructed;
   oclass->dispose = do_dispose;
+
+  gtkclass->apply = impl_signal_apply;
+  gtkclass->prepare = impl_signal_prepare;
+  gtkclass->close = impl_signal_close;
+  gtkclass->cancel = impl_signal_cancel;
 
   param_spec = g_param_spec_object ("parent-window",
       "parent-window", "The parent window",
@@ -686,11 +712,6 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
 
   gtk_assistant_set_forward_page_func (assistant,
       account_assistant_page_forward_func, self, NULL);
-
-  g_signal_connect (self, "apply",
-      G_CALLBACK (account_assistant_apply_cb), NULL);
-  g_signal_connect (self, "prepare",
-      G_CALLBACK (account_assistant_prepare_cb), NULL);
 
   /* first page (introduction) */
   page = account_assistant_build_introduction_page (self);
