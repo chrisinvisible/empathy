@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2009-07-30 11:36+0000\n"
-"PO-Revision-Date: 2009-08-06 06:10+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
+"POT-Creation-Date: 2009-08-06 04:15+0000\n"
+"PO-Revision-Date: 2009-08-06 06:18+0100\n"
 "Last-Translator: Denis\n"
 "Language-Team: Brenux <brenux@free.fr>\n"
 "MIME-Version: 1.0\n"
@@ -17,12 +17,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 
 #: ../data/empathy.desktop.in.in.h:1
-msgid "Empathy Instant Messenger"
-msgstr "Postelerezh prim Empathy"
+msgid "Empathy IM Client"
+msgstr "Arval postelerezh prim Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Send and receive instant messages"
-msgstr "Kas ha degemer posteloù prim"
+#, fuzzy
+msgid "Send and receive kemenadenoù"
+msgstr "Kas ha resev posteloù prim"
 
 #: ../data/empathy.schemas.in.h:1
 msgid "Always open a separate chat window for new chats."
@@ -41,8 +42,9 @@ msgid "Comma separated list of spell checker languages to use (e.g. en, fr, nl).
 msgstr ""
 
 #: ../data/empathy.schemas.in.h:5
+#, fuzzy
 msgid "Compact contact list"
-msgstr ""
+msgstr "Roll an darempredoù"
 
 #: ../data/empathy.schemas.in.h:6
 msgid "Contact list sort criterium"
@@ -106,7 +108,7 @@ msgstr ""
 
 #: ../data/empathy.schemas.in.h:21
 msgid "Enable spell checker"
-msgstr ""
+msgstr "Gweredekaat an difazier"
 
 #: ../data/empathy.schemas.in.h:22
 msgid "Hide main window"
@@ -185,8 +187,9 @@ msgid "Show avatars"
 msgstr "Diskouez an avataroù"
 
 #: ../data/empathy.schemas.in.h:41
+#, fuzzy
 msgid "Show contact list in rooms"
-msgstr ""
+msgstr "Diskouez roll ar darempredoù "
 
 #: ../data/empathy.schemas.in.h:42
 msgid "Show hint about closing the main window"
@@ -194,11 +197,11 @@ msgstr ""
 
 #: ../data/empathy.schemas.in.h:43
 msgid "Show offline contacts"
-msgstr ""
+msgstr "Diskouez an darempredoù ezlinenn"
 
 #: ../data/empathy.schemas.in.h:44
 msgid "Spell checking languages"
-msgstr ""
+msgstr "Yezhoù an difazier"
 
 #: ../data/empathy.schemas.in.h:45
 msgid "The default folder to save file transfers in."
@@ -218,7 +221,7 @@ msgstr ""
 
 #: ../data/empathy.schemas.in.h:49
 msgid "Use notification sounds"
-msgstr ""
+msgstr "Arverañ sonioù rebuziñ"
 
 #: ../data/empathy.schemas.in.h:50
 msgid "Use theme for chat rooms"
@@ -544,21 +547,20 @@ msgstr "Henna_der (ID) :"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:2
 msgid "ICQ _UIN:"
-msgstr ""
+msgstr "Hennader (ID) _ICQ :"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "_Charset:"
-msgstr ""
+msgstr "Spletad a_rouezennoù :"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.c:240
-#, fuzzy
 msgid "New Network"
-msgstr "Kaledonia nevez"
+msgstr "Rouedad nevez"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:1
 msgid "Charset:"
-msgstr "Spletad arouezennoù"
+msgstr "Spletad arouezennoù :"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:2
 msgid "Network"
@@ -594,7 +596,7 @@ msgstr ""
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Pri_ority:"
-msgstr ""
+msgstr "K_entañ-wellañ :"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 msgid "Reso_urce:"
@@ -617,18 +619,16 @@ msgid "_Email:"
 msgstr "Post_el :"
 
 #: ../libempathy-gtk/empathy-account-widget-salut.ui.h:3
-#, fuzzy
 msgid "_First Name:"
-msgstr "Anv ar gont"
+msgstr "Anv-b_ihan :"
 
 #: ../libempathy-gtk/empathy-account-widget-salut.ui.h:4
 msgid "_Jabber ID:"
 msgstr "Hennader(ID) Jabber :"
 
 #: ../libempathy-gtk/empathy-account-widget-salut.ui.h:5
-#, fuzzy
 msgid "_Last Name:"
-msgstr "Anv ar gont"
+msgstr "Anv-fami_lh :"
 
 #: ../libempathy-gtk/empathy-account-widget-salut.ui.h:6
 msgid "_Nickname:"
@@ -702,10 +702,9 @@ msgstr "Klikit evit brasaat"
 
 #: ../libempathy-gtk/empathy-chat.c:186
 msgid "Failed to reconnect this chat"
-msgstr ""
+msgstr "N'haller ket adkennaskañ ar flap-mañ"
 
 #: ../libempathy-gtk/empathy-chat.c:404
-#, fuzzy
 msgid "Unsupported command"
 msgstr "Arc'had anskoret"
 
@@ -719,7 +718,7 @@ msgstr "didalvoudek eo an darempred"
 
 #: ../libempathy-gtk/empathy-chat.c:545
 msgid "permission denied"
-msgstr "Aotre nac'het"
+msgstr "aotre nac'het"
 
 #: ../libempathy-gtk/empathy-chat.c:548
 msgid "too long message"
@@ -727,7 +726,7 @@ msgstr "Re hir eo ar gemennadenn"
 
 #: ../libempathy-gtk/empathy-chat.c:551
 msgid "not implemented"
-msgstr "Ket kefloueret"
+msgstr "ket kefloueret"
 
 #: ../libempathy-gtk/empathy-chat.c:554
 msgid "unknown"
@@ -736,7 +735,7 @@ msgstr "dianav"
 #: ../libempathy-gtk/empathy-chat.c:558
 #, c-format
 msgid "Error sending message '%s': %s"
-msgstr ""
+msgstr "Fazi en ur gas ar gemennadenn '%s' : %s "
 
 #: ../libempathy-gtk/empathy-chat.c:588
 #, fuzzy, c-format
@@ -746,7 +745,7 @@ msgstr "Danvez arventennet da : %s"
 #: ../libempathy-gtk/empathy-chat.c:590
 #, fuzzy
 msgid "No topic defined"
-msgstr "Aucun change défini"
+msgstr "N'eo ket erspizet an danvez"
 
 #: ../libempathy-gtk/empathy-chat.c:960
 #, fuzzy
@@ -765,7 +764,7 @@ msgstr "Ka_s"
 
 #: ../libempathy-gtk/empathy-chat.c:1066
 msgid "_Spelling Suggestions"
-msgstr ""
+msgstr "Kinnigoù an di_fazier"
 
 #: ../libempathy-gtk/empathy-chat.c:1181
 #, c-format
@@ -783,14 +782,14 @@ msgid "%s was kicked"
 msgstr ""
 
 #: ../libempathy-gtk/empathy-chat.c:1193
-#, c-format
+#, fussy, c-format
 msgid "%s was banned by %s"
-msgstr ""
+msgstr "%s oa bet baniset gant %s"
 
 #: ../libempathy-gtk/empathy-chat.c:1196
-#, c-format
+#, fuzzy, c-format
 msgid "%s was banned"
-msgstr ""
+msgstr "%s oa bet baniset"
 
 #: ../libempathy-gtk/empathy-chat.c:1200
 #, c-format
@@ -828,7 +827,6 @@ msgstr ""
 
 #: ../libempathy-gtk/empathy-chat.ui.h:1
 #: ../src/empathy-chat-window.c:472
-#, fuzzy
 msgid "Topic:"
 msgstr "Danvez :"
 
@@ -853,14 +851,13 @@ msgstr "%A %B %d %Y"
 #: ../libempathy-gtk/empathy-contact-dialogs.c:179
 #: ../libempathy-gtk/empathy-contact-dialogs.c:238
 msgid "Edit Contact Information"
-msgstr ""
+msgstr "Kemmañ titouroù an darempred"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:289
 msgid "Personal Information"
 msgstr "Titouroù personel"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:394
-#, fuzzy
 msgid "New Contact"
 msgstr "Darempred nevez"
 
@@ -878,9 +875,8 @@ msgid "Do you really want to remove the group '%s'?"
 msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1406
-#, fuzzy
 msgid "Removing group"
-msgstr "Organisation des niveaux de regroupement"
+msgstr "O tilemel ar strollad"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:1453
@@ -894,15 +890,13 @@ msgid "Do you really want to remove the contact '%s'?"
 msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1485
-#, fuzzy
 msgid "Removing contact"
-msgstr ""
+msgstr "O tilemel an darempred"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:195
 #: ../src/empathy-main-window.ui.h:11
-#, fuzzy
 msgid "_Add Contact..."
-msgstr ""
+msgstr "Ouzhpennañ un darempred..."
 
 #: ../libempathy-gtk/empathy-contact-menu.c:222
 #: ../src/empathy-main-window.ui.h:12
@@ -934,9 +928,10 @@ msgstr "Rannañ ma burev"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:397
 msgid "Infor_mation"
-msgstr "Titouroù"
+msgstr "Tit_ouroù"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
+#: ../src/empathy-chat-window.ui.h:10
 #: ../src/empathy-main-window.ui.h:16
 msgid "_Edit"
 msgstr "K_emmañ"
@@ -950,7 +945,6 @@ msgid "_Invite to chatroom"
 msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-selector.c:129
-#, fuzzy
 msgid "Select a contact"
 msgstr "Diuzañ ur darempred"
 
@@ -977,7 +971,7 @@ msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1258
 msgid "Country:"
-msgstr ""
+msgstr "Bro :"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1260
 msgid "State:"
@@ -992,9 +986,8 @@ msgid "Area:"
 msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1266
-#, fuzzy
 msgid "Postal Code:"
-msgstr "Kod ISO :"
+msgstr ""
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1268
 msgid "Street:"
@@ -1046,7 +1039,7 @@ msgstr "Tizh :"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1292
 msgid "Bearing:"
-msgstr ""
+msgstr "Emzalc'h :"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1294
 msgid "Climb Speed:"
@@ -1110,13 +1103,12 @@ msgstr "Arval :"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:7
 #: ../src/empathy-main-window.c:1006
-#, fuzzy
 msgid "Contact"
 msgstr "Darempred"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:8
 msgid "Contact Details"
-msgstr "Munudoù ar darempred"
+msgstr "Munudoù an darempred"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:9
 msgid "Email:"
@@ -1124,7 +1116,7 @@ msgstr "Postel :"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:10
 msgid "Fullname:"
-msgstr ""
+msgstr "Anv a-bezh :"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:11
 msgid "Groups"
@@ -1137,11 +1129,11 @@ msgstr "Hennader :"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
 msgid "Information requested..."
-msgstr ""
+msgstr "Titouroù goulennet..."
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:15
 msgid "OS:"
-msgstr "RK :"
+msgstr "Reizhiad korvoiñ :"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:16
 msgid "Select the groups you want this contact to appear in.  Note that you can select more than one group or no groups."
@@ -1165,7 +1157,7 @@ msgstr "dafariad nevez"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:510
 msgid "Server"
-msgstr "dafariad"
+msgstr "Dafariad"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:525
 msgid "Port"
@@ -1186,12 +1178,12 @@ msgstr "Deiziad"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:1
 msgid "Conversations"
-msgstr "Kaozoù"
+msgstr "Kaozadennoù"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:2
 #, fuzzy
 msgid "Previous Conversations"
-msgstr "Kaozoù kent"
+msgstr "Kaozadennoù kent"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:3
 msgid "Search"
@@ -1199,7 +1191,7 @@ msgstr "Klask"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:4
 msgid "_For:"
-msgstr ""
+msgstr "_Evit :"
 
 #: ../libempathy-gtk/empathy-new-message-dialog.ui.h:2
 msgid "C_all"
@@ -1215,7 +1207,7 @@ msgstr "Hennader (ID) an darempred :"
 
 #: ../libempathy-gtk/empathy-new-message-dialog.ui.h:5
 msgid "New Conversation"
-msgstr "Kaoz nevez"
+msgstr "Kaozadenn nevez"
 
 #. COL_STATUS_TEXT
 #. COL_STATE_ICON_NAME
@@ -1256,22 +1248,22 @@ msgstr "Personalaat ar c'hemennadennoù..."
 
 #: ../libempathy-gtk/empathy-sound.c:51
 msgid "Received an instant message"
-msgstr "Degemered eo an postel prim"
+msgstr "resevet eo an postel prim"
 
 #: ../libempathy-gtk/empathy-sound.c:53
 msgid "Sent an instant message"
 msgstr "Kaset eo ar postel prim"
 
 #: ../libempathy-gtk/empathy-sound.c:55
+#, fuzzy
 msgid "Incoming chat request"
-msgstr ""
+msgstr "Goulenn flap"
 
 #: ../libempathy-gtk/empathy-sound.c:57
 msgid "Contact connected"
 msgstr "Darempred kennasket"
 
 #: ../libempathy-gtk/empathy-sound.c:59
-#, fuzzy
 msgid "Contact disconnected"
 msgstr "Darempred digennasket"
 
@@ -1284,12 +1276,14 @@ msgid "Disconnected from server"
 msgstr "Digennasket ouzh an dafariad"
 
 #: ../libempathy-gtk/empathy-sound.c:65
+#, fuzzy
 msgid "Incoming voice call"
-msgstr ""
+msgstr "Galv mouezh"
 
 #: ../libempathy-gtk/empathy-sound.c:67
+#, fuzzy
 msgid "Outgoing voice call"
-msgstr ""
+msgstr "Galv mouezh"
 
 #: ../libempathy-gtk/empathy-sound.c:69
 msgid "Voice call ended"
@@ -1330,7 +1324,7 @@ msgstr "Eeun"
 # adj
 #: ../libempathy-gtk/empathy-theme-manager.c:69
 msgid "Clean"
-msgstr ""
+msgstr "Naet"
 
 #: ../libempathy-gtk/empathy-theme-manager.c:70
 msgid "Blue"
@@ -1407,9 +1401,8 @@ msgid "Cyrillic"
 msgstr ""
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:224
-#, fuzzy
 msgid "Cyrillic/Russian"
-msgstr "Roubl rusian"
+msgstr ""
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:227
 #: ../libempathy-gtk/totem-subtitle-encoding.c:229
@@ -1456,9 +1449,8 @@ msgstr ""
 #: ../libempathy-gtk/totem-subtitle-encoding.c:266
 #: ../libempathy-gtk/totem-subtitle-encoding.c:268
 #: ../libempathy-gtk/totem-subtitle-encoding.c:270
-#, fuzzy
 msgid "Japanese"
-msgstr "Yen japanat"
+msgstr ""
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:273
 #: ../libempathy-gtk/totem-subtitle-encoding.c:275
@@ -1481,9 +1473,8 @@ msgid "Romanian"
 msgstr "Romaneg"
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:293
-#, fuzzy
 msgid "South European"
-msgstr "Afrika Su"
+msgstr ""
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:296
 msgid "Thai"
@@ -1536,18 +1527,17 @@ msgstr ""
 #: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:2
 #: ../megaphone/src/megaphone-applet.c:519
 msgid "Talk!"
-msgstr ""
+msgstr "Komz !"
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:1
 #: ../nothere/data/GNOME_NotHere_Applet.xml.h:1
-#, fuzzy
 msgid "_About"
 msgstr "Diw_ar-benn"
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:2
 #, fuzzy
 msgid "_Information"
-msgstr "Stlennoù"
+msgstr "T_itouroù"
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:3
 #: ../src/empathy-main-window.ui.h:23
@@ -1559,13 +1549,12 @@ msgid "Please configure a contact."
 msgstr "Kefluniañ ur darempred marplij."
 
 #: ../megaphone/src/megaphone-applet.c:258
-#, fuzzy
 msgid "Select contact..."
-msgstr "Diuzañ ur darempred..."
+msgstr "Diuzañ an darempred..."
 
 #: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:1
 msgid "Presence"
-msgstr ""
+msgstr "Bezañs"
 
 #: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:2
 #: ../nothere/src/nothere-applet.c:106
@@ -1574,19 +1563,19 @@ msgstr ""
 
 #: ../src/empathy.c:567
 msgid "Don't connect on startup"
-msgstr ""
+msgstr "Na kennaskañ ket e-pad al loc'hañ"
 
 #: ../src/empathy.c:571
 msgid "Don't show the contact list on startup"
-msgstr ""
+msgstr "Na diskouez ket roll an darempredoù e-pad al loc'hañ"
 
 #: ../src/empathy.c:575
 msgid "Show the accounts dialog"
 msgstr ""
 
 #: ../src/empathy.c:587
-msgid "- Empathy Instant Messenger"
-msgstr " - Postelerezh prim Empathy"
+msgid "- Empathy IM Client"
+msgstr " - Arval postelerezh prim Empathy"
 
 #: ../src/empathy-about-dialog.c:83
 msgid "Empathy is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version."
@@ -1746,9 +1735,8 @@ msgid "Send Audio"
 msgstr ""
 
 #: ../src/empathy-call-window.ui.h:4
-#, fuzzy
 msgid "Send video"
-msgstr "Kas Video"
+msgstr "Kas ar Video"
 
 #: ../src/empathy-call-window.ui.h:5
 msgid "Video preview"
@@ -1766,12 +1754,74 @@ msgstr "G_welout"
 #: ../src/empathy-chat-window.c:344
 #, c-format
 msgid "Conversations (%d)"
-msgstr ""
+msgstr "Kaozadennoù (%d)"
 
 #: ../src/empathy-chat-window.c:476
-#, fuzzy
 msgid "Typing a message."
-msgstr "Message de log"
+msgstr "O skrivañ ur gemennadenn."
+
+#: ../src/empathy-chat-window.ui.h:1
+msgid "C_lear"
+msgstr "S_karzhañ"
+
+#: ../src/empathy-chat-window.ui.h:2
+msgid "Chat"
+msgstr "Flapañ"
+
+#: ../src/empathy-chat-window.ui.h:3
+msgid "Insert _Smiley"
+msgstr ""
+
+#: ../src/empathy-chat-window.ui.h:4
+msgid "Move Tab _Left"
+msgstr ""
+
+#: ../src/empathy-chat-window.ui.h:5
+msgid "Move Tab _Right"
+msgstr ""
+
+#: ../src/empathy-chat-window.ui.h:6
+msgid "_Contact"
+msgstr "_Darempred"
+
+#: ../src/empathy-chat-window.ui.h:7
+#: ../src/empathy-main-window.ui.h:14
+msgid "_Contents"
+msgstr "Endal_c'hadoù"
+
+#: ../src/empathy-chat-window.ui.h:8
+msgid "_Conversation"
+msgstr "_Kaozadennoù"
+
+#: ../src/empathy-chat-window.ui.h:9
+msgid "_Detach Tab"
+msgstr ""
+
+#: ../src/empathy-chat-window.ui.h:11
+msgid "_Favorite Chatroom"
+msgstr ""
+
+#: ../src/empathy-chat-window.ui.h:12
+#: ../src/empathy-main-window.ui.h:18
+msgid "_Help"
+msgstr "_Skoazell"
+
+#: ../src/empathy-chat-window.ui.h:13
+msgid "_Next Tab"
+msgstr "Ivinell da-_heul"
+
+#: ../src/empathy-chat-window.ui.h:14
+msgid "_Previous Tab"
+msgstr "Ivinell _kent"
+
+#: ../src/empathy-chat-window.ui.h:15
+#: ../src/empathy-status-icon.ui.h:4
+msgid "_Show Contact List"
+msgstr "Di_skouez roll an darempredoù"
+
+#: ../src/empathy-chat-window.ui.h:16
+msgid "_Tabs"
+msgstr "Ivinelloù"
 
 #: ../src/empathy-chatrooms-window.c:258
 msgid "Name"
@@ -1916,7 +1966,7 @@ msgstr ""
 #: ../src/empathy-ft-manager.c:310
 #, c-format
 msgid "Sending \"%s\" to %s"
-msgstr ""
+msgstr "O kas \"%s\" da %s"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
@@ -1926,20 +1976,17 @@ msgid "Error receiving \"%s\" from %s"
 msgstr ""
 
 #: ../src/empathy-ft-manager.c:343
-#, fuzzy
 msgid "Error receiving a file"
 msgstr ""
-"Erreur pour le fichier « %s » :\n"
-"%s"
 
 #: ../src/empathy-ft-manager.c:348
 #, c-format
 msgid "Error sending \"%s\" to %s"
-msgstr ""
+msgstr "Fazi en ur gas an \"%s\" da %s"
 
 #: ../src/empathy-ft-manager.c:351
 msgid "Error sending a file"
-msgstr ""
+msgstr "Fazi en ur gas ur restr"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
@@ -2115,14 +2162,12 @@ msgid "Normal Size With _Avatars"
 msgstr ""
 
 #: ../src/empathy-main-window.ui.h:8
-#, fuzzy
 msgid "Sort by _Name"
-msgstr "Tri par date"
+msgstr ""
 
 #: ../src/empathy-main-window.ui.h:9
-#, fuzzy
 msgid "Sort by _Status"
-msgstr "Tri par date"
+msgstr ""
 
 #: ../src/empathy-main-window.ui.h:10
 msgid "_Accounts"
@@ -2132,23 +2177,13 @@ msgstr "_Kontoù"
 msgid "_Compact Size"
 msgstr ""
 
-#: ../src/empathy-main-window.ui.h:14
-msgid "_Contents"
-msgstr "Endal_c'hadoù"
-
 #: ../src/empathy-main-window.ui.h:15
-#, fuzzy
 msgid "_Debug"
-msgstr "dizreinañ ar restr"
+msgstr "_Diveugañ"
 
 #: ../src/empathy-main-window.ui.h:17
-#, fuzzy
 msgid "_File Transfers"
-msgstr "Restr savete"
-
-#: ../src/empathy-main-window.ui.h:18
-msgid "_Help"
-msgstr "_Skoazell"
+msgstr ""
 
 #: ../src/empathy-main-window.ui.h:19
 msgid "_Join..."
@@ -2156,23 +2191,20 @@ msgstr ""
 
 #: ../src/empathy-main-window.ui.h:20
 #: ../src/empathy-status-icon.ui.h:2
-#, fuzzy
 msgid "_New Conversation..."
-msgstr "Kaledonia nevez"
+msgstr "Kaozadenn _nevez..."
 
 #: ../src/empathy-main-window.ui.h:21
 msgid "_Offline Contacts"
-msgstr ""
+msgstr "Darempredoù e_zlinenn"
 
 #: ../src/empathy-main-window.ui.h:22
-#, fuzzy
 msgid "_Personal Information"
-msgstr "Imputations budgétaires"
+msgstr "Tituroù personel"
 
 #: ../src/empathy-main-window.ui.h:24
-#, fuzzy
 msgid "_Previous Conversations"
-msgstr "Mois précédent"
+msgstr "Kaozadennoù _kent"
 
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Room"
@@ -2184,7 +2216,7 @@ msgstr ""
 
 #: ../src/empathy-new-chatroom-dialog.c:347
 msgid "Members"
-msgstr ""
+msgstr "Izili"
 
 #: ../src/empathy-new-chatroom-dialog.c:496
 #, c-format
@@ -2195,17 +2227,20 @@ msgid ""
 "Password required: %s\n"
 "Members: %s"
 msgstr ""
+"<b>%s</b>\n"
+"Pedadenn rekis : %s\n"
+"Ger-tremen rekis : %s\n"
+"Izili : %s"
 
 #: ../src/empathy-new-chatroom-dialog.c:498
 #: ../src/empathy-new-chatroom-dialog.c:499
 msgid "Yes"
-msgstr ""
+msgstr "Ya"
 
 #: ../src/empathy-new-chatroom-dialog.c:498
 #: ../src/empathy-new-chatroom-dialog.c:499
-#, fuzzy
 msgid "No"
-msgstr "Rummad ebet"
+msgstr "ket"
 
 #: ../src/empathy-new-chatroom-dialog.c:526
 msgid "Could not start room listing"
@@ -2243,17 +2278,15 @@ msgstr ""
 #: ../src/empathy-preferences.c:147
 #, fuzzy
 msgid "Message received"
-msgstr "Message de log"
+msgstr "Kemennadenn resevet"
 
 #: ../src/empathy-preferences.c:148
-#, fuzzy
 msgid "Message sent"
-msgstr "Message de log"
+msgstr "Kemennadenn kaset"
 
 #: ../src/empathy-preferences.c:149
-#, fuzzy
 msgid "New conversation"
-msgstr "Kaledonia nevez"
+msgstr "Kaozadenn nevez"
 
 #: ../src/empathy-preferences.c:150
 msgid "Contact goes online"
@@ -2295,7 +2328,7 @@ msgstr "Neuz"
 
 #: ../src/empathy-preferences.ui.h:5
 msgid "Automatically _connect on startup "
-msgstr ""
+msgstr "Kennaskañ emgefreek e-pad al loc'hañ"
 
 #: ../src/empathy-preferences.ui.h:6
 msgid "Behavior"
@@ -2327,7 +2360,7 @@ msgstr ""
 
 #: ../src/empathy-preferences.ui.h:13
 msgid "Enable spell checking for languages:"
-msgstr ""
+msgstr "Gweredekaat an difazier evit ar yezhoù :"
 
 #: ../src/empathy-preferences.ui.h:14
 #, fuzzy
@@ -2415,11 +2448,6 @@ msgstr "Stad"
 msgid "_Quit"
 msgstr "_Kuitaat"
 
-#: ../src/empathy-status-icon.ui.h:4
-#, fuzzy
-msgid "_Show Contact List"
-msgstr "Di_skouez roll an darempred"
-
 #: ../src/empathy-tube-dispatch.c:375
 #, c-format
 msgid "Unable to start application for service %s: %s"
@@ -2504,4 +2532,7 @@ msgstr "Live"
 #: ../src/empathy-debug-dialog.c:1140
 msgid "The selected connection manager does not support the remote debugging extension."
 msgstr ""
+
+#~ msgid "Empathy Instant Messenger"
+#~ msgstr "Postelerezh prim Empathy"
 
