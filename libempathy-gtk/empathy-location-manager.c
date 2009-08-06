@@ -197,13 +197,13 @@ publish_location (EmpathyLocationManager *location_manager,
   if (!conn)
     return;
 
-  if (force_publication == FALSE)
+  if (!force_publication)
     {
       if (!empathy_conf_get_bool (conf, EMPATHY_PREFS_LOCATION_PUBLISH,
             &can_publish))
         return;
 
-      if (can_publish == FALSE)
+      if (!can_publish)
         return;
     }
 
@@ -546,15 +546,15 @@ publish_cb (EmpathyConf *conf,
   DEBUG ("Publish Conf changed");
 
 
-  if (empathy_conf_get_bool (conf, key, &can_publish) == FALSE)
+  if (!empathy_conf_get_bool (conf, key, &can_publish))
     return;
 
-  if (can_publish == TRUE)
+  if (can_publish)
     {
-      if (priv->geoclue_is_setup == FALSE)
+      if (!priv->geoclue_is_setup)
         setup_geoclue (manager);
       /* if still not setup than the init failed */
-      if (priv->geoclue_is_setup == FALSE)
+      if (!priv->geoclue_is_setup)
         return;
 
       geoclue_address_get_address_async (priv->gc_address,
@@ -588,11 +588,11 @@ resource_cb (EmpathyConf  *conf,
   if (!empathy_conf_get_bool (conf, key, &resource_enabled))
     return;
 
-  if (tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK) == FALSE)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK))
     resource = GEOCLUE_RESOURCE_NETWORK;
-  if (tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_CELL) == FALSE)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_CELL))
     resource = GEOCLUE_RESOURCE_CELL;
-  if (tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_GPS) == FALSE)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_GPS))
     resource = GEOCLUE_RESOURCE_GPS;
 
   if (resource_enabled)
