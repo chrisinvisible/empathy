@@ -191,15 +191,21 @@ account_assistant_apply_account_cb (GObject *source,
 {
   GError *error = NULL;
   EmpathyAccountAssistant *self = user_data;
+  EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
+  EmpathyAccount *account;
 
-  empathy_account_settings_apply_finish (EMPATHY_ACCOUNT_SETTINGS (source),
-      result, &error);
+  empathy_account_settings_apply_finish (settings, result, &error);
 
   if (error != NULL)
     {
       account_assistant_present_error_page (self, error, PAGE_ENTER_CREATE);
       g_error_free (error);
+      return;
     }
+
+  /* enable the newly created account */
+  account = empathy_account_settings_get_account (settings);
+  empathy_account_set_enabled (account, TRUE);
 }
 
 static void
