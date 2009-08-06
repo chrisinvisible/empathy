@@ -216,7 +216,7 @@ salut_account_created (GObject *source,
 
   account = empathy_account_settings_get_account (settings);
 
-  empathy_account_set_enabled (account, TRUE);
+  empathy_account_set_enabled_async (account, TRUE, NULL, NULL);
   empathy_conf_set_bool (empathy_conf_get (),
       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
       TRUE);

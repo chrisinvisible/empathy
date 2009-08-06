@@ -446,7 +446,7 @@ accounts_dialog_enable_toggled_cb (GtkCellRendererToggle *cell_renderer,
     return;
 
   enabled = empathy_account_is_enabled (account);
-  empathy_account_set_enabled (account, !enabled);
+  empathy_account_set_enabled_async (account, !enabled, NULL, NULL);
 
   DEBUG ("%s account %s", enabled ? "Disabled" : "Enable",
       empathy_account_get_display_name (account));
