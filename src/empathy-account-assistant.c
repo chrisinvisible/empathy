@@ -68,6 +68,8 @@ typedef struct {
   EmpathyAccountSettings *settings;
 
   GtkWindow *parent_window;
+
+  gboolean dispose_run;
 } EmpathyAccountAssistantPriv;
 
 static GtkWidget *
@@ -625,6 +627,26 @@ do_constructed (GObject *object)
 }
 
 static void
+do_dispose (GObject *obj)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (obj);
+
+  if (priv->dispose_run)
+    return;
+
+  priv->dispose_run = TRUE;
+
+  if (priv->settings != NULL)
+    {
+      g_object_unref (priv->settings);
+      priv->settings = NULL;
+    }
+
+  if (G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose != NULL)
+    G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose (obj);
+}
+
+static void
 empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
@@ -633,6 +655,7 @@ empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
   oclass->get_property = do_get_property;
   oclass->set_property = do_set_property;
   oclass->constructed = do_constructed;
+  oclass->dispose = do_dispose;
 
   param_spec = g_param_spec_object ("parent-window",
       "parent-window", "The parent window",
