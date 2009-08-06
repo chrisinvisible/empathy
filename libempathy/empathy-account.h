@@ -67,8 +67,11 @@ const gchar *empathy_account_get_connection_manager (EmpathyAccount *account);
 const gchar *empathy_account_get_protocol (EmpathyAccount *account);
 const gchar *empathy_account_get_icon_name (EmpathyAccount *account);
 
-void empathy_account_set_enabled (EmpathyAccount *account,
-  gboolean enabled);
+void empathy_account_set_enabled_async (EmpathyAccount *account,
+    gboolean enabled, GAsyncReadyCallback callback, gpointer user_data);
+gboolean empathy_account_set_enabled_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error);
+
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
 
 gboolean empathy_account_is_valid (EmpathyAccount *account);

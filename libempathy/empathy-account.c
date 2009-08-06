@@ -132,7 +132,8 @@ empathy_account_set_property (GObject *object,
   switch (prop_id)
     {
       case PROP_ENABLED:
-        empathy_account_set_enabled (account, g_value_get_boolean (value));
+        empathy_account_set_enabled_async (account,
+            g_value_get_boolean (value), NULL, NULL);
         break;
       case PROP_UNIQUE_NAME:
         priv->unique_name = g_value_dup_string (value);
@@ -915,30 +916,58 @@ _empathy_account_set_connection (EmpathyAccount *account,
    g_object_notify (G_OBJECT (account), "connection");
 }
 
+static void
+account_enabled_set_cb (TpProxy *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  GSimpleAsyncResult *result = user_data;
+
+  if (error != NULL)
+    g_simple_async_result_set_from_error (result, (GError *) error);
+
+  g_simple_async_result_complete (result);
+  g_object_unref (result);
+}
+
+gboolean
+empathy_account_set_enabled_finish (EmpathyAccount *account,
+    GAsyncResult *result,
+    GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error) ||
+      !g_simple_async_result_is_valid (result, G_OBJECT (account),
+          empathy_account_set_enabled_finish))
+    return FALSE;
+
+  return TRUE;
+}
+
 void
-empathy_account_set_enabled (EmpathyAccount *account,
-    gboolean enabled)
+empathy_account_set_enabled_async (EmpathyAccount *account,
+    gboolean enabled,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
   GValue value = {0, };
+  GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (account),
+      callback, user_data, empathy_account_set_enabled_finish);
 
   if (priv->enabled == enabled)
-    return;
+    {
+      g_simple_async_result_complete_in_idle (result);
+      return;
+    }
 
   g_value_init (&value, G_TYPE_BOOLEAN);
   g_value_set_boolean (&value, enabled);
 
   tp_cli_dbus_properties_call_set (TP_PROXY (priv->account),
-    -1,
-    TP_IFACE_ACCOUNT,
-    "Enabled",
-    &value,
-    NULL,
-    NULL,
-    NULL,
-    NULL);
-
-  g_value_unset (&value);
+      -1, TP_IFACE_ACCOUNT, "Enabled", &value,
+      account_enabled_set_cb, result, NULL, G_OBJECT (account));
 }
 
 static void
