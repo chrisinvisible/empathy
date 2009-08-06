@@ -141,6 +141,7 @@ struct _EmpathyCallWindowPriv
   gulong video_output_motion_handler_id;
 
   gdouble volume;
+  GtkWidget *volume_scale;
   GtkWidget *volume_progress_bar;
   GtkAdjustment *audio_input_adj;
 
@@ -489,7 +490,10 @@ empathy_call_window_mic_volume_changed_cb (GtkAdjustment *adj,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   gdouble volume;
 
-  volume =  gtk_adjustment_get_value (adj)/100.0;
+  if (priv->audio_input == NULL)
+    return;
+
+  volume = gtk_adjustment_get_value (adj)/100.0;
 
   /* Don't store the volume because of muting */
   if (volume > 0 || gtk_toggle_tool_button_get_active (
@@ -522,27 +526,27 @@ static GtkWidget *
 empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
-  GtkWidget *hbox, *vbox, *scale, *label;
-  GtkAdjustment *adj;
+  GtkWidget *hbox, *vbox, *label;
 
   hbox = gtk_hbox_new (TRUE, 3);
 
   vbox = gtk_vbox_new (FALSE, 3);
   gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 3);
 
-  scale = gtk_vscale_new_with_range (0, 150, 100);
-  gtk_range_set_inverted (GTK_RANGE (scale), TRUE);
+  priv->volume_scale = gtk_vscale_new_with_range (0, 150, 100);
+  gtk_range_set_inverted (GTK_RANGE (priv->volume_scale), TRUE);
   label = gtk_label_new (_("Volume"));
 
-  priv->audio_input_adj = adj = gtk_range_get_adjustment (GTK_RANGE (scale));
+  priv->audio_input_adj = gtk_range_get_adjustment (
+    GTK_RANGE (priv->volume_scale));
   priv->volume =  empathy_audio_src_get_volume (EMPATHY_GST_AUDIO_SRC
     (priv->audio_input));
-  gtk_adjustment_set_value (adj, priv->volume * 100);
+  gtk_adjustment_set_value (priv->audio_input_adj, priv->volume * 100);
 
-  g_signal_connect (G_OBJECT (adj), "value-changed",
+  g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
     G_CALLBACK (empathy_call_window_mic_volume_changed_cb), self);
 
-  gtk_box_pack_start (GTK_BOX (vbox), scale, TRUE, TRUE, 3);
+  gtk_box_pack_start (GTK_BOX (vbox), priv->volume_scale, TRUE, TRUE, 3);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 3);
 
   priv->volume_progress_bar = gtk_progress_bar_new ();
@@ -1198,6 +1202,9 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
         g_object_unref (priv->audio_input);
       priv->audio_input = NULL;
 
+      g_signal_handlers_disconnect_by_func (priv->audio_input_adj,
+          empathy_call_window_mic_volume_changed_cb, self);
+
       if (priv->audio_output != NULL)
         g_object_unref (priv->audio_output);
       priv->audio_output = NULL;
@@ -1271,6 +1278,9 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
           FALSE);
       gtk_action_set_sensitive (priv->show_preview, FALSE);
+
+      gtk_progress_bar_set_fraction (
+          GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
 
       gtk_widget_hide (priv->video_output);
       gtk_widget_show (priv->remote_user_avatar_widget);
@@ -1984,6 +1994,14 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 
   empathy_call_window_setup_remote_frame (bus, window);
   empathy_call_window_setup_self_frame (bus, window);
+
+  g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
+      G_CALLBACK (empathy_call_window_mic_volume_changed_cb), window);
+
+  /* While the call was disconnected, the input volume might have changed.
+   * However, since the audio_input source was destroyed, its volume has not
+   * been updated during that time. That's why we manually update it here */
+  empathy_call_window_mic_volume_changed_cb (priv->audio_input_adj, window);
 
   g_object_unref (bus);
 
