@@ -139,6 +139,7 @@ struct _EmpathyCallWindowPriv
   GtkWidget *vbox;
 
   gulong video_output_motion_handler_id;
+  guint bus_message_source_id;
 
   gdouble volume;
   GtkWidget *volume_scale;
@@ -731,7 +732,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   priv->pipeline = gst_pipeline_new (NULL);
   bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-  gst_bus_add_watch (bus, empathy_call_window_bus_message, self);
+  priv->bus_message_source_id = gst_bus_add_watch (bus,
+      empathy_call_window_bus_message, self);
 
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
@@ -1070,7 +1072,6 @@ empathy_call_window_dispose (GObject *object)
 
   if (priv->handler != NULL)
     g_object_unref (priv->handler);
-
   priv->handler = NULL;
 
   if (priv->pipeline != NULL)
@@ -1131,6 +1132,9 @@ empathy_call_window_finalize (GObject *object)
       priv->video_output_motion_handler_id = 0;
     }
 
+  if (priv->bus_message_source_id != 0)
+    g_source_remove (priv->bus_message_source_id);
+
   /* free any data held directly by the object here */
   g_mutex_free (priv->lock);
 
@@ -1185,6 +1189,8 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
   if (priv->pipeline == NULL)
     return TRUE;
 
+  if (priv->bus_message_source_id != 0)
+    g_source_remove (priv->bus_message_source_id);
   state_change_return = gst_element_set_state (priv->pipeline, GST_STATE_NULL);
 
   if (state_change_return == GST_STATE_CHANGE_SUCCESS ||
@@ -1695,7 +1701,12 @@ empathy_call_window_delete_cb (GtkWidget *widget, GdkEvent*event,
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
   if (priv->pipeline != NULL)
-    gst_element_set_state (priv->pipeline, GST_STATE_NULL);
+    {
+      if (priv->bus_message_source_id != 0)
+        g_source_remove (priv->bus_message_source_id);
+
+      gst_element_set_state (priv->pipeline, GST_STATE_NULL);
+    }
 
   if (priv->call_state == CONNECTING)
     empathy_sound_stop (EMPATHY_SOUND_PHONE_OUTGOING);
@@ -1990,7 +2001,8 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 
   priv->pipeline = gst_pipeline_new (NULL);
   bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-  gst_bus_add_watch (bus, empathy_call_window_bus_message, window);
+  priv->bus_message_source_id = gst_bus_add_watch (bus,
+      empathy_call_window_bus_message, window);
 
   empathy_call_window_setup_remote_frame (bus, window);
   empathy_call_window_setup_self_frame (bus, window);
