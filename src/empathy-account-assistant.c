@@ -828,6 +828,8 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_append_page (assistant, page);
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->enter_or_create_page = page;
+
+  gtk_window_set_resizable (GTK_WINDOW (self), FALSE);
 }
 
 GtkWidget *
