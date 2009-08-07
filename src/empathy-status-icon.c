@@ -138,7 +138,10 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 	}
 
 	if (priv->event) {
-		gchar *message_esc = g_markup_escape_text (priv->event->message, -1);
+		gchar *message_esc = NULL;
+
+		if (priv->event->message != NULL)
+			message_esc = g_markup_escape_text (priv->event->message, -1);
 
 		if (priv->notification) {
 			notify_notification_update (priv->notification,
