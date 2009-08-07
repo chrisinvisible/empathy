@@ -1103,8 +1103,10 @@ accounts_dialog_button_import_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkWidget *import_dialog;
 
-  empathy_import_dialog_show (GTK_WINDOW (priv->window), TRUE);
+  import_dialog = empathy_import_dialog_new (GTK_WINDOW (priv->window), TRUE);
+  gtk_widget_show (import_dialog);
 }
 
 static void
@@ -1383,10 +1385,13 @@ do_constructed (GObject *object)
 
       if (!import_asked)
         {
+	  GtkWidget *import_dialog;
+ 
           empathy_conf_set_bool (empathy_conf_get (),
               EMPATHY_PREFS_IMPORT_ASKED, TRUE);
-          empathy_import_dialog_show (GTK_WINDOW (priv->window),
+          import_dialog = empathy_import_dialog_new (GTK_WINDOW (priv->window),
               FALSE);
+	  gtk_widget_show (import_dialog);
         }
     }
   else
