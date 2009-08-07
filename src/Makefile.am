@@ -41,6 +41,7 @@ empathy_handwritten_source = \
 	empathy-event-manager.c empathy-event-manager.h			\
 	empathy-ft-manager.c empathy-ft-manager.h			\
 	empathy-import-dialog.c empathy-import-dialog.h			\
+	empathy-import-widget.c empathy-import-widget.h			\
 	empathy-import-pidgin.c empathy-import-pidgin.h			\
 	empathy-main-window.c empathy-main-window.h			\
 	empathy-misc.c empathy-misc.h					\
