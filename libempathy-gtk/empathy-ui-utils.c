@@ -1488,6 +1488,8 @@ empathy_send_file_with_file_chooser (EmpathyContact *contact)
 	gtk_dialog_set_default_response (GTK_DIALOG (widget),
 					 GTK_RESPONSE_OK);
 
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (widget), FALSE);
+
 	g_signal_connect (widget, "response",
 			  G_CALLBACK (file_manager_send_file_response_cb),
 			  contact);
