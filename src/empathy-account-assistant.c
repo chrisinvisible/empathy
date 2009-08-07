@@ -104,7 +104,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   /* translators: this is followed by the "while ..." strings some lines
    * down this file.
    */
-  str = g_string_new (_("There has been an error\n"));
+  str = g_string_new (_("There has been an error "));
 
   if (page_num == PAGE_IMPORT)
     /* translators: this follows the "There has been an error " string */
@@ -127,6 +127,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   pango_attr_list_insert (list, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
   gtk_label_set_attributes (GTK_LABEL (w), list);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_widget_show (w);
 
   g_free (message);
@@ -142,10 +143,11 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_widget_show (w);
 
   w = gtk_label_new (_("You can either go back and try to enter your "
-          "accounts' details\nagain or quit this wizard and add accounts "
+          "accounts' details again or quit this wizard and add accounts "
           "later from the Edit menu."));
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 6);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_widget_show (w);
 
   return main_vbox;
@@ -355,7 +357,7 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
           _("What kind of chat account do you have?"));
       gtk_label_set_label (GTK_LABEL (priv->second_label),
           _("If you have other accounts to set up, you can do "
-              "that at any time\nfrom the Edit menu."));
+              "that at any time from the Edit menu."));
       empathy_protocol_chooser_set_visible (
           EMPATHY_PROTOCOL_CHOOSER (priv->chooser),
           account_assistant_chooser_enter_details_filter_func, self);
@@ -368,7 +370,7 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
       gtk_label_set_label (GTK_LABEL (priv->first_label),
           _("What kind of chat account do you want to create?"));
       gtk_label_set_label (GTK_LABEL (priv->second_label),
-          _("You can register other accounts, or setup\n"
+          _("You can register other accounts, or setup "
               "an existing one at any time from the Edit menu."));
       empathy_protocol_chooser_set_visible (
           EMPATHY_PROTOCOL_CHOOSER (priv->chooser),
@@ -456,25 +458,27 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
   gtk_widget_show (hbox_1);
 
   w = gtk_label_new (
-      _("With Empathy you can chat with people\n"
-        "online nearby and with friends and colleagues\n"
-        "who use Google Talk, AIM, Windows Live\n"
-        "and many other chat programs. With a microphone\n"
+      _("With Empathy you can chat with people "
+        "online nearby and with friends and colleagues "
+        "who use Google Talk, AIM, Windows Live "
+        "and many other chat programs. With a microphone "
         "or a webcam you can also have audio or video calls."));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
-  gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 0);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
 
   pix = empathy_pixbuf_from_icon_name_sized ("empathy", 80);
   w = gtk_image_new_from_pixbuf (pix);
-  gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 6);
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 6);
   gtk_widget_show (w);
 
   g_object_unref (pix);
 
   w = gtk_label_new (_("Do you have an account you've been using "
-          "with another\nchat program?"));
+          "with another chat program?"));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
 
@@ -626,6 +630,8 @@ account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
   list = pango_attr_list_new ();
   pango_attr_list_insert (list, pango_attr_scale_new (PANGO_SCALE_SMALL));
   gtk_label_set_attributes (GTK_LABEL (w), list);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
+  gtk_misc_set_alignment (GTK_MISC (w), 0.0, 0.5);
   gtk_widget_show (w);
   priv->second_label = w;
   pango_attr_list_unref (list);
