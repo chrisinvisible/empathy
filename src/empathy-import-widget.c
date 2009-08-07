@@ -1,0 +1,464 @@
+/*
+ * Copyright (C) 2008-2009 Collabora Ltd.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA  02110-1301  USA
+ *
+ * Authors: Jonny Lamb <jonny.lamb@collabora.co.uk>
+ *          Cosimo Cecchi <cosimo.cecchi@collabora.co.uk>
+ */
+
+/* empathy-import-widget.c */
+
+#include "empathy-import-dialog.h"
+#include "empathy-import-widget.h"
+#include "empathy-import-pidgin.h"
+
+#define DEBUG_FLAG EMPATHY_DEBUG_OTHER
+#include <libempathy/empathy-debug.h>
+#include <libempathy/empathy-account.h>
+#include <libempathy/empathy-account-manager.h>
+#include <libempathy/empathy-connection-managers.h>
+#include <libempathy/empathy-utils.h>
+
+#include <libempathy-gtk/empathy-ui-utils.h>
+
+#include <telepathy-glib/util.h>
+
+#include <glib/gi18n.h>
+
+G_DEFINE_TYPE (EmpathyImportWidget, empathy_import_widget, G_TYPE_OBJECT)
+
+#define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyImportWidget)
+
+enum
+{
+  COL_IMPORT = 0,
+  COL_PROTOCOL,
+  COL_NAME,
+  COL_SOURCE,
+  COL_ACCOUNT_DATA,
+  COL_COUNT
+};
+
+typedef struct {
+  GtkWidget *vbox;
+  GtkWidget *treeview;
+
+  GList *accounts;
+
+  EmpathyConnectionManagers *cms;
+
+  gboolean dispose_run;
+} EmpathyImportWidgetPriv;
+
+static gboolean
+import_widget_account_id_in_list (GList *accounts,
+    const gchar *account_id)
+{
+  GList *l;
+
+  for (l = accounts; l; l = l->next)
+    {
+      EmpathyAccount *account = l->data;
+      const gchar *account_string;
+      GValue *value;
+      gboolean result;
+      const GHashTable *parameters;
+
+      parameters = empathy_account_get_parameters (account);
+
+      value = g_hash_table_lookup ((GHashTable *)parameters, "account");
+
+      if (value == NULL)
+        continue;
+
+      account_string = g_value_get_string (value);
+
+      result = tp_strdiff (account_string, account_id);
+
+      if (!result)
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+protocol_is_supported (EmpathyImportWidget *self,
+    EmpathyImportAccountData *data)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+  GList *cms = empathy_connection_managers_get_cms (priv->cms);
+  GList *l;
+  gboolean proto_is_supported = FALSE;
+
+  for (l = cms; l; l = l->next)
+    {
+      TpConnectionManager *tp_cm = l->data;
+      const gchar *cm_name = tp_connection_manager_get_name (tp_cm);
+      if (tp_connection_manager_has_protocol (tp_cm,
+          (const gchar*) data->protocol))
+        {
+          data->connection_manager = g_strdup (cm_name);
+          proto_is_supported = TRUE;
+          break;
+        }
+    }
+
+  return proto_is_supported;
+}
+
+static void
+import_widget_add_accounts_to_model (EmpathyImportWidget *self)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GList *l;
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+  EmpathyAccountManager *manager = empathy_account_manager_dup_singleton ();
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+
+  for (l = priv->accounts; l; l = l->next)
+    {
+      GValue *value;
+      EmpathyImportAccountData *data = l->data;
+      gboolean import;
+      GList *accounts;
+
+      if (!protocol_is_supported (self, data))
+        continue;
+
+      value = g_hash_table_lookup (data->settings, "account");
+
+      accounts = empathy_account_manager_dup_accounts (manager);
+
+      /* Only set the "Import" cell to be active if there isn't already an
+       * account set up with the same account id. */
+      import = !import_widget_account_id_in_list (accounts,
+          g_value_get_string (value));
+
+      g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
+      g_list_free (accounts);
+
+      gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+
+      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+          COL_IMPORT, import,
+          COL_PROTOCOL, data->protocol,
+          COL_NAME, g_value_get_string (value),
+          COL_SOURCE, data->source,
+          COL_ACCOUNT_DATA, data,
+          -1);
+    }
+
+  g_object_unref (manager);
+}
+
+static void
+import_widget_create_account_cb (GObject *source,
+  GAsyncResult *result,
+  gpointer user_data)
+{
+  EmpathyAccount *account;
+  GError *error = NULL;
+  EmpathyImportWidget *self = user_data;
+
+  account = empathy_account_manager_create_account_finish (
+    EMPATHY_ACCOUNT_MANAGER (source), result, &error);
+
+  if (account == NULL)
+    {
+      DEBUG ("Failed to create account: %s",
+          error ? error->message : "No error given");
+      g_clear_error (&error);
+      return;
+    }
+
+  DEBUG ("account created\n");
+
+  g_object_unref (self);
+}
+
+static void
+import_widget_add_account (EmpathyImportWidget *self,
+    EmpathyImportAccountData *data)
+{
+  EmpathyAccountManager *account_manager;
+  gchar *display_name;
+  GHashTable *properties;
+  GValue *username;
+
+  account_manager = empathy_account_manager_dup_singleton ();
+
+  DEBUG ("connection_manager: %s\n", data->connection_manager);
+
+  /* Set the display name of the account */
+  username = g_hash_table_lookup (data->settings, "account");
+  display_name = g_strdup_printf ("%s (%s)",
+      data->protocol,
+      g_value_get_string (username));
+
+  DEBUG ("display name: %s\n", display_name);
+
+  properties = g_hash_table_new (NULL, NULL);
+
+  empathy_account_manager_create_account_async (account_manager,
+      (const gchar*) data->connection_manager, data->protocol, display_name,
+      data->settings, properties, import_widget_create_account_cb,
+      g_object_ref (self));
+
+  g_hash_table_unref (properties);
+  g_free (display_name);
+  g_object_unref (account_manager);
+}
+
+static gboolean
+import_widget_tree_model_foreach (GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkTreeIter *iter,
+    gpointer user_data)
+{
+  gboolean to_import;
+  EmpathyImportAccountData *data;
+  EmpathyImportWidget *self = user_data;
+
+  gtk_tree_model_get (model, iter,
+      COL_IMPORT, &to_import,
+      COL_ACCOUNT_DATA, &data,
+      -1);
+
+  if (to_import)
+    import_widget_add_account (self, data);
+
+  return FALSE;
+}
+
+static void
+import_widget_cell_toggled_cb (GtkCellRendererToggle *cell_renderer,
+    const gchar *path_str,
+    EmpathyImportWidget *self)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+
+  path = gtk_tree_path_new_from_string (path_str);
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+
+  gtk_tree_model_get_iter (model, &iter, path);
+
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+      COL_IMPORT, !gtk_cell_renderer_toggle_get_active (cell_renderer),
+      -1);
+
+  gtk_tree_path_free (path);
+}
+
+static void
+import_widget_set_up_account_list (EmpathyImportWidget *self)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+  GtkListStore *store;
+  GtkTreeView *view;
+  GtkTreeViewColumn *column;
+  GtkCellRenderer *cell;
+
+  store = gtk_list_store_new (COL_COUNT, G_TYPE_BOOLEAN, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (priv->treeview),
+      GTK_TREE_MODEL (store));
+
+  g_object_unref (store);
+
+  view = GTK_TREE_VIEW (priv->treeview);
+  gtk_tree_view_set_headers_visible (view, TRUE);
+
+  /* Import column */
+  cell = gtk_cell_renderer_toggle_new ();
+  gtk_tree_view_insert_column_with_attributes (view, -1,
+      /* Translators: this is the header of a treeview column */
+      _("Import"), cell,
+      "active", COL_IMPORT,
+      NULL);
+
+  g_signal_connect (cell, "toggled",
+      G_CALLBACK (import_widget_cell_toggled_cb), self);
+
+  /* Protocol column */
+  column = gtk_tree_view_column_new ();
+  gtk_tree_view_column_set_title (column, _("Protocol"));
+  gtk_tree_view_column_set_expand (column, TRUE);
+  gtk_tree_view_append_column (view, column);
+
+  cell = gtk_cell_renderer_text_new ();
+  g_object_set (cell, "editable", FALSE, NULL);
+  gtk_tree_view_column_pack_start (column, cell, TRUE);
+  gtk_tree_view_column_add_attribute (column, cell, "text", COL_PROTOCOL);
+
+  /* Account column */
+  column = gtk_tree_view_column_new ();
+  gtk_tree_view_column_set_title (column, _("Account"));
+  gtk_tree_view_column_set_expand (column, TRUE);
+  gtk_tree_view_append_column (view, column);
+
+  cell = gtk_cell_renderer_text_new ();
+  g_object_set (cell, "editable", FALSE, NULL);
+  gtk_tree_view_column_pack_start (column, cell, TRUE);
+  gtk_tree_view_column_add_attribute (column, cell, "text", COL_NAME);
+
+  /* Source column */
+  column = gtk_tree_view_column_new ();
+  gtk_tree_view_column_set_title (column, _("Source"));
+  gtk_tree_view_column_set_expand (column, TRUE);
+  gtk_tree_view_append_column (view, column);
+
+  cell = gtk_cell_renderer_text_new ();
+  g_object_set (cell, "editable", FALSE, NULL);
+  gtk_tree_view_column_pack_start (column, cell, TRUE);
+  gtk_tree_view_column_add_attribute (column, cell, "text", COL_SOURCE);
+
+  import_widget_add_accounts_to_model (self);
+}
+
+static void
+import_widget_cms_ready_cb (EmpathyConnectionManagers *cms,
+    GParamSpec *pspec,
+    EmpathyImportWidget *self)
+{
+  if (empathy_connection_managers_is_ready (cms))
+    import_widget_set_up_account_list (self);
+}
+
+static void
+import_widget_destroy_cb (GtkWidget *w,
+    EmpathyImportWidget *self)
+{
+  g_object_unref (self);
+}
+
+static void
+do_finalize (GObject *obj)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (obj);
+
+  g_list_foreach (priv->accounts, (GFunc) empathy_import_account_data_free,
+      NULL);
+  g_list_free (priv->accounts);
+
+  if (G_OBJECT_CLASS (empathy_import_widget_parent_class)->finalize != NULL)
+    G_OBJECT_CLASS (empathy_import_widget_parent_class)->finalize (obj);
+}
+
+static void
+do_dispose (GObject *obj)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (obj);
+
+  if (priv->dispose_run)
+    return;
+
+  priv->dispose_run = TRUE;
+
+  if (priv->cms != NULL)
+    {
+      g_object_unref (priv->cms);
+      priv->cms = NULL;
+    }
+
+  if (G_OBJECT_CLASS (empathy_import_widget_parent_class)->dispose != NULL)
+    G_OBJECT_CLASS (empathy_import_widget_parent_class)->dispose (obj);
+}
+
+static void
+do_constructed (GObject *obj)
+{
+  EmpathyImportWidget *self = EMPATHY_IMPORT_WIDGET (obj);
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+  GtkBuilder *gui;
+  gchar *filename;
+
+  filename = empathy_file_lookup ("empathy-import-dialog.ui", "src");
+  gui = empathy_builder_get_file (filename,
+      "widget_vbox", &priv->vbox,
+      "treeview", &priv->treeview,
+      NULL);
+
+  g_free (filename);
+  empathy_builder_unref_and_keep_widget (gui, priv->vbox);
+
+  g_signal_connect (priv->vbox, "destroy",
+      G_CALLBACK (import_widget_destroy_cb), self);
+
+  if (empathy_connection_managers_is_ready (priv->cms))
+    import_widget_set_up_account_list (self);
+  else
+    g_signal_connect (priv->cms, "notify::ready",
+        G_CALLBACK (import_widget_cms_ready_cb), self);
+}
+
+static void
+empathy_import_widget_class_init (EmpathyImportWidgetClass *klass)
+{
+  GObjectClass *oclass = G_OBJECT_CLASS (klass);
+
+  oclass->constructed = do_constructed;
+  oclass->finalize = do_finalize;
+  oclass->dispose = do_dispose;
+
+  g_type_class_add_private (klass, sizeof (EmpathyImportWidgetPriv));
+}
+
+static void
+empathy_import_widget_init (EmpathyImportWidget *self)
+{
+  EmpathyImportWidgetPriv *priv =
+    G_TYPE_INSTANCE_GET_PRIVATE (self, EMPATHY_TYPE_IMPORT_WIDGET,
+        EmpathyImportWidgetPriv);
+
+  self->priv = priv;
+
+  /* Load all accounts from all supported applications */
+  priv->accounts = empathy_import_pidgin_load ();
+
+  priv->cms = empathy_connection_managers_dup_singleton ();
+}
+
+EmpathyImportWidget *
+empathy_import_widget_new (void)
+{
+  return g_object_new (EMPATHY_TYPE_IMPORT_WIDGET, NULL);
+}
+
+GtkWidget *
+empathy_import_widget_get_widget (EmpathyImportWidget *self)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+
+  return priv->vbox;
+}
+
+void
+empathy_import_widget_add_selected_accounts (EmpathyImportWidget *self)
+{
+  GtkTreeModel *model;
+  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  gtk_tree_model_foreach (model, import_widget_tree_model_foreach, self);
+}
