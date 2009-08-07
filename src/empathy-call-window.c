@@ -1133,7 +1133,10 @@ empathy_call_window_finalize (GObject *object)
     }
 
   if (priv->bus_message_source_id != 0)
-    g_source_remove (priv->bus_message_source_id);
+    {
+      g_source_remove (priv->bus_message_source_id);
+      priv->bus_message_source_id = 0;
+    }
 
   /* free any data held directly by the object here */
   g_mutex_free (priv->lock);
@@ -1190,7 +1193,11 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
     return TRUE;
 
   if (priv->bus_message_source_id != 0)
-    g_source_remove (priv->bus_message_source_id);
+    {
+      g_source_remove (priv->bus_message_source_id);
+      priv->bus_message_source_id = 0;
+    }
+
   state_change_return = gst_element_set_state (priv->pipeline, GST_STATE_NULL);
 
   if (state_change_return == GST_STATE_CHANGE_SUCCESS ||
@@ -1703,7 +1710,10 @@ empathy_call_window_delete_cb (GtkWidget *widget, GdkEvent*event,
   if (priv->pipeline != NULL)
     {
       if (priv->bus_message_source_id != 0)
-        g_source_remove (priv->bus_message_source_id);
+        {
+          g_source_remove (priv->bus_message_source_id);
+          priv->bus_message_source_id = 0;
+        }
 
       gst_element_set_state (priv->pipeline, GST_STATE_NULL);
     }
