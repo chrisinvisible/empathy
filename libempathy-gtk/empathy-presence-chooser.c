@@ -1049,6 +1049,7 @@ presence_chooser_menu_add_item (GtkWidget   *menu,
 	gtk_widget_show (image);
 
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+	gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (item), TRUE);
 	gtk_widget_show (item);
 
 	g_object_set_data_full (G_OBJECT (item),
