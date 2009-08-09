@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <string.h>
-
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -37,8 +35,6 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-account-manager.h>
-#include <libempathy/empathy-connection-managers.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 enum {

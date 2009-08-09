@@ -22,6 +22,7 @@
 
 #include <glib/gi18n.h>
 #include <telepathy-glib/util.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "empathy-account-assistant.h"
 #include "empathy-import-dialog.h"
