@@ -42,18 +42,6 @@ G_BEGIN_DECLS
   (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_IMPORT_DIALOG,\
       EmpathyImportDialogClass))
 
-typedef struct
-{
-  /* Table mapping CM param string to a GValue */
-  GHashTable *settings;
-  /* Protocol name */
-  gchar *protocol;
-  /* Connection manager name */
-  gchar *connection_manager;
-  /* The name of the account import source */
-  gchar *source;
-} EmpathyImportAccountData;
-
 typedef struct {
   GtkDialog parent;
 
@@ -69,12 +57,6 @@ GType empathy_import_dialog_get_type (void);
 
 GtkWidget* empathy_import_dialog_new (GtkWindow *parent_window,
     gboolean show_warning);
-
-EmpathyImportAccountData *empathy_import_account_data_new (
-    const gchar *source);
-void empathy_import_account_data_free (EmpathyImportAccountData *data);
-
-gboolean empathy_import_dialog_accounts_to_import (void);
 
 G_END_DECLS
 

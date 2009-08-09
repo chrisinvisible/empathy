@@ -46,6 +46,7 @@
 
 #include "empathy-accounts-dialog.h"
 #include "empathy-import-dialog.h"
+#include "empathy-import-utils.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -1380,7 +1381,7 @@ do_constructed (GObject *object)
       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
 
 
-  if (empathy_import_dialog_accounts_to_import ())
+  if (empathy_import_accounts_to_import ())
     {
 
       if (!import_asked)

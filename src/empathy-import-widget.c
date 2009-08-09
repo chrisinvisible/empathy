@@ -53,11 +53,16 @@ enum
   COL_COUNT
 };
 
+enum {
+  PROP_APPLICATION_ID = 1
+};
+
 typedef struct {
   GtkWidget *vbox;
   GtkWidget *treeview;
 
   GList *accounts;
+  EmpathyImportApplication app_id;
 
   EmpathyConnectionManagers *cms;
 
@@ -322,16 +327,19 @@ import_widget_set_up_account_list (EmpathyImportWidget *self)
   gtk_tree_view_column_pack_start (column, cell, TRUE);
   gtk_tree_view_column_add_attribute (column, cell, "text", COL_NAME);
 
-  /* Source column */
-  column = gtk_tree_view_column_new ();
-  gtk_tree_view_column_set_title (column, _("Source"));
-  gtk_tree_view_column_set_expand (column, TRUE);
-  gtk_tree_view_append_column (view, column);
+  if (priv->app_id == EMPATHY_IMPORT_APPLICATION_ALL)
+    {
+      /* Source column */
+      column = gtk_tree_view_column_new ();
+      gtk_tree_view_column_set_title (column, _("Source"));
+      gtk_tree_view_column_set_expand (column, TRUE);
+      gtk_tree_view_append_column (view, column);
 
-  cell = gtk_cell_renderer_text_new ();
-  g_object_set (cell, "editable", FALSE, NULL);
-  gtk_tree_view_column_pack_start (column, cell, TRUE);
-  gtk_tree_view_column_add_attribute (column, cell, "text", COL_SOURCE);
+      cell = gtk_cell_renderer_text_new ();
+      g_object_set (cell, "editable", FALSE, NULL);
+      gtk_tree_view_column_pack_start (column, cell, TRUE);
+      gtk_tree_view_column_add_attribute (column, cell, "text", COL_SOURCE);
+    }
 
   import_widget_add_accounts_to_model (self);
 }
@@ -350,6 +358,42 @@ import_widget_destroy_cb (GtkWidget *w,
     EmpathyImportWidget *self)
 {
   g_object_unref (self);
+}
+
+static void
+do_get_property (GObject *object,
+    guint property_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (object);
+
+  switch (property_id)
+    {
+    case PROP_APPLICATION_ID:
+      g_value_set_int (value, priv->app_id);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
+}
+
+static void
+do_set_property (GObject *object,
+    guint property_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyImportWidgetPriv *priv = GET_PRIV (object);
+
+  switch (property_id)
+    {
+    case PROP_APPLICATION_ID:
+      priv->app_id = g_value_get_int (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+    }
 }
 
 static void
@@ -393,6 +437,8 @@ do_constructed (GObject *obj)
   GtkBuilder *gui;
   gchar *filename;
 
+  priv->accounts = empathy_import_accounts_load (priv->app_id);
+  
   filename = empathy_file_lookup ("empathy-import-dialog.ui", "src");
   gui = empathy_builder_get_file (filename,
       "widget_vbox", &priv->vbox,
@@ -416,10 +462,19 @@ static void
 empathy_import_widget_class_init (EmpathyImportWidgetClass *klass)
 {
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
+  GParamSpec *param_spec;
 
   oclass->constructed = do_constructed;
   oclass->finalize = do_finalize;
   oclass->dispose = do_dispose;
+  oclass->set_property = do_set_property;
+  oclass->get_property = do_get_property;
+
+  param_spec = g_param_spec_int ("application-id",
+      "application-id", "The application id to import from",
+      0, EMPATHY_IMPORT_APPLICATION_INVALID, EMPATHY_IMPORT_APPLICATION_ALL,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_APPLICATION_ID, param_spec);
 
   g_type_class_add_private (klass, sizeof (EmpathyImportWidgetPriv));
 }
@@ -433,16 +488,13 @@ empathy_import_widget_init (EmpathyImportWidget *self)
 
   self->priv = priv;
 
-  /* Load all accounts from all supported applications */
-  priv->accounts = empathy_import_pidgin_load ();
-
   priv->cms = empathy_connection_managers_dup_singleton ();
 }
 
 EmpathyImportWidget *
-empathy_import_widget_new (void)
+empathy_import_widget_new (EmpathyImportApplication id)
 {
-  return g_object_new (EMPATHY_TYPE_IMPORT_WIDGET, NULL);
+  return g_object_new (EMPATHY_TYPE_IMPORT_WIDGET, "application-id", id, NULL);
 }
 
 GtkWidget *

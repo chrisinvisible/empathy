@@ -25,8 +25,8 @@
 #include <gdk/gdkkeysyms.h>
 
 #include "empathy-account-assistant.h"
-#include "empathy-import-dialog.h"
 #include "empathy-import-widget.h"
+#include "empathy-import-utils.h"
 
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-utils.h>
@@ -492,7 +492,7 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
   gtk_container_add (GTK_CONTAINER (w), vbox_1);
   gtk_widget_show (vbox_1);
 
-  if (empathy_import_dialog_accounts_to_import ())
+  if (empathy_import_accounts_to_import ())
     {
       hbox_1 = gtk_hbox_new (FALSE, 0);
       gtk_box_pack_start (GTK_BOX (vbox_1), hbox_1, TRUE, TRUE, 0);
@@ -578,7 +578,8 @@ account_assistant_build_import_page (EmpathyAccountAssistant *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
 
-  iw = empathy_import_widget_new ();
+  /* NOTE: this is hardcoded as we support pidgin only */
+  iw = empathy_import_widget_new (EMPATHY_IMPORT_APPLICATION_PIDGIN);
   import = empathy_import_widget_get_widget (iw);
   gtk_container_add (GTK_CONTAINER (w), import);
   gtk_widget_show (import);

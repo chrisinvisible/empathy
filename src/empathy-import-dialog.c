@@ -53,46 +53,6 @@ typedef struct {
 G_DEFINE_TYPE (EmpathyImportDialog, empathy_import_dialog, GTK_TYPE_DIALOG)
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyImportDialog)
 
-EmpathyImportAccountData *
-empathy_import_account_data_new (const gchar *source)
-{
-  EmpathyImportAccountData *data;
-
-  g_return_val_if_fail (!EMP_STR_EMPTY (source), NULL);
-
-  data = g_slice_new0 (EmpathyImportAccountData);
-  data->settings = g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
-    (GDestroyNotify) tp_g_value_slice_free);
-  data->source = g_strdup (source);
-  data->protocol = NULL;
-  data->connection_manager = NULL;
-
-  return data;
-}
-
-void
-empathy_import_account_data_free (EmpathyImportAccountData *data)
-{
-  if (data == NULL)
-    return;
-  if (data->protocol != NULL)
-    g_free (data->protocol);
-  if (data->connection_manager != NULL)
-    g_free (data->connection_manager);
-  if (data->settings != NULL)
-    g_hash_table_destroy (data->settings);
-  if (data->source != NULL)
-    g_free (data->source);
-
-  g_slice_free (EmpathyImportAccountData, data);
-}
-
-gboolean
-empathy_import_dialog_accounts_to_import (void)
-{
-  return empathy_import_pidgin_accounts_to_import ();
-}
-
 static void
 import_dialog_add_import_widget (EmpathyImportDialog *self)
 {
@@ -102,7 +62,7 @@ import_dialog_add_import_widget (EmpathyImportDialog *self)
 
   area = gtk_dialog_get_content_area (GTK_DIALOG (self));
   
-  iw = empathy_import_widget_new ();
+  iw = empathy_import_widget_new (EMPATHY_IMPORT_APPLICATION_ALL);
   widget = empathy_import_widget_get_widget (iw);
   gtk_box_pack_start (GTK_BOX (area), widget, FALSE, FALSE, 0);
   gtk_widget_show (widget);
@@ -207,7 +167,7 @@ do_constructed (GObject *obj)
   EmpathyImportDialogPriv *priv = GET_PRIV (self);
   gboolean have_accounts;
 
-  have_accounts = empathy_import_dialog_accounts_to_import ();
+  have_accounts = empathy_import_accounts_to_import ();
 
   if (!have_accounts)
     {

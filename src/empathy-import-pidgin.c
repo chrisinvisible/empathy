@@ -32,7 +32,7 @@
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
 
-#include "empathy-import-dialog.h"
+#include "empathy-import-utils.h"
 #include "empathy-import-pidgin.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER

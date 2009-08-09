@@ -40,7 +40,7 @@ test_empathy_account_assistant_SOURCES = test-empathy-account-assistant.c
 test_empathy_account_assistant_CFLAGS = -I$(top_srcdir)/src
 test_empathy_account_assistant_LDADD = 			\
 	$(top_builddir)/src/empathy-account-assistant.o	\
-	$(top_builddir)/src/empathy-import-dialog.o	\
+	$(top_builddir)/src/empathy-import-utils.o	\
 	$(top_builddir)/src/empathy-import-pidgin.o	\
 	$(top_builddir)/src/empathy-import-widget.o	\
 	$(LDADD)

@@ -27,6 +27,8 @@
 
 #include <glib-object.h>
 
+#include "empathy-import-utils.h"
+
 G_BEGIN_DECLS
 
 #define EMPATHY_TYPE_IMPORT_WIDGET empathy_import_widget_get_type()
@@ -57,7 +59,7 @@ typedef struct {
 
 GType empathy_import_widget_get_type (void);
 
-EmpathyImportWidget* empathy_import_widget_new (void);
+EmpathyImportWidget* empathy_import_widget_new (EmpathyImportApplication id);
 
 GtkWidget * empathy_import_widget_get_widget (EmpathyImportWidget *self);
 
