@@ -1,7 +1,7 @@
 include $(top_srcdir)/gnome-doc-utils.make
 
 DOC_ID = empathy
-DOC_ENTITIES = legal.xml
+DOC_INCLUDES = legal.xml
 DOC_FIGURES = \
 	figures/audio-input-microphone.png \
 	figures/available.png \
