@@ -47,11 +47,15 @@ typedef enum {
   RESPONSE_SALUT_ONLY = 4
 } FirstPageResponse;
 
+typedef enum {
+  RESPONSE_CREATE_AGAIN = 1,
+  RESPONSE_CREATE_STOP = 2
+} CreateEnterPageResponse;
+
 enum {
   PAGE_INTRO = 0,
   PAGE_IMPORT = 1,
   PAGE_ENTER_CREATE = 2,
-  PAGE_SALUT_ONLY = 3
 };
 
 enum {
@@ -60,6 +64,8 @@ enum {
 
 typedef struct {
   FirstPageResponse first_resp;
+  CreateEnterPageResponse create_enter_resp;
+  gboolean enter_create_forward;
 
   /* enter or create page */
   GtkWidget *enter_or_create_page;
@@ -68,6 +74,7 @@ typedef struct {
   GtkWidget *first_label;
   GtkWidget *second_label;
   GtkWidget *chooser;
+  GtkWidget *create_again_radio;
   EmpathyAccountSettings *settings;
   gboolean is_creating;
 
@@ -78,6 +85,12 @@ typedef struct {
 
   gboolean dispose_run;
 } EmpathyAccountAssistantPriv;
+
+static GtkWidget * account_assistant_build_enter_or_create_page (
+    EmpathyAccountAssistant *self);
+static void account_assistant_finish_enter_or_create_page (
+    EmpathyAccountAssistant *self,
+    gboolean is_enter);
 
 static GtkWidget *
 account_assistant_build_error_page (EmpathyAccountAssistant *self,
@@ -110,11 +123,11 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   if (page_num == PAGE_IMPORT)
     /* translators: this follows the "There has been an error " string */
     str = g_string_append (str, _("while importing the accounts."));
-  else if (page_num == PAGE_ENTER_CREATE &&
+  else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_ENTER_ACCOUNT)
     /* translators: this follows the "There has been an error " string */
     str = g_string_append (str, _("while parsing the account details."));
-  else if (page_num == PAGE_ENTER_CREATE &&
+  else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     /* translators: this follows the "There has been an error " string */
     str = g_string_append (str, _("while creating the account."));
@@ -194,12 +207,33 @@ account_assistant_present_error_page (EmpathyAccountAssistant *self,
 }
 
 static void
+account_assistant_reset_enter_create_page (EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  GtkWidget *page;
+  gint idx;
+
+  page = account_assistant_build_enter_or_create_page (self);
+  idx = gtk_assistant_append_page (GTK_ASSISTANT (self), page);
+  gtk_assistant_set_page_type (GTK_ASSISTANT (self), page,
+      GTK_ASSISTANT_PAGE_CONFIRM);
+  priv->enter_or_create_page = page;
+
+  gtk_assistant_set_current_page (GTK_ASSISTANT (self), idx);
+
+  account_assistant_finish_enter_or_create_page (self,
+      priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
+      TRUE : FALSE);
+}
+
+static void
 account_assistant_account_enabled_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
   GError *error = NULL;
   EmpathyAccountAssistant *self = user_data;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
   empathy_account_set_enabled_finish (EMPATHY_ACCOUNT (source),
       result, &error);
@@ -210,7 +244,10 @@ account_assistant_account_enabled_cb (GObject *source,
       g_error_free (error);
     }
 
-  g_signal_emit_by_name (self, "close");
+  if (priv->create_enter_resp == RESPONSE_CREATE_STOP)
+    g_signal_emit_by_name (self, "close");
+  else
+    account_assistant_reset_enter_create_page (self);
 }
 
 static void
@@ -230,7 +267,8 @@ account_assistant_apply_account_cb (GObject *source,
 
   if (error != NULL)
     {
-      account_assistant_present_error_page (self, error, PAGE_ENTER_CREATE);
+      account_assistant_present_error_page (self, error,
+          gtk_assistant_get_current_page (GTK_ASSISTANT (self)));
       g_error_free (error);
       return;
     }
@@ -356,9 +394,12 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
     {
       gtk_label_set_label (GTK_LABEL (priv->first_label),
           _("What kind of chat account do you have?"));
-      gtk_label_set_label (GTK_LABEL (priv->second_label),
+      /*      gtk_label_set_label (GTK_LABEL (priv->second_label),
           _("If you have other accounts to set up, you can do "
               "that at any time from the Edit menu."));
+      */
+      gtk_label_set_label (GTK_LABEL (priv->second_label),
+          _("Do you have any other chat accounts you want to set up?"));
       empathy_protocol_chooser_set_visible (
           EMPATHY_PROTOCOL_CHOOSER (priv->chooser),
           account_assistant_chooser_enter_details_filter_func, self);
@@ -370,9 +411,12 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
     {
       gtk_label_set_label (GTK_LABEL (priv->first_label),
           _("What kind of chat account do you want to create?"));
-      gtk_label_set_label (GTK_LABEL (priv->second_label),
+      /*      gtk_label_set_label (GTK_LABEL (priv->second_label),
           _("You can register other accounts, or setup "
               "an existing one at any time from the Edit menu."));
+      */
+      gtk_label_set_label (GTK_LABEL (priv->second_label),
+          _("Do you want to create other chat accounts?"));
       empathy_protocol_chooser_set_visible (
           EMPATHY_PROTOCOL_CHOOSER (priv->chooser),
           account_assistant_chooser_create_account_filter_func, self);
@@ -399,7 +443,7 @@ account_assistant_page_forward_func (gint current_page,
 
   retval = current_page;
 
-  if (current_page == 0)
+  if (current_page == PAGE_INTRO)
     {
       if (priv->first_resp == RESPONSE_ENTER_ACCOUNT ||
           priv->first_resp == RESPONSE_CREATE_ACCOUNT)
@@ -408,11 +452,16 @@ account_assistant_page_forward_func (gint current_page,
         retval = PAGE_IMPORT;
     }
 
-  if (current_page == PAGE_ENTER_CREATE ||
-      current_page == PAGE_IMPORT)
+  if (current_page == PAGE_IMPORT ||
+      current_page >= PAGE_ENTER_CREATE)
+    /* don't forward anymore */
+    retval = -1;
+
+  if (current_page >= PAGE_ENTER_CREATE &&
+      priv->create_enter_resp == RESPONSE_CREATE_AGAIN)
     {
-      /* don't forward anymore */
-      retval = -1;
+      priv->enter_create_forward = TRUE;
+      retval = current_page;
     }
 
   return retval;
@@ -591,13 +640,29 @@ account_assistant_build_import_page (EmpathyAccountAssistant *self)
   return main_vbox;
 }
 
+static void
+account_assistant_radio_create_again_clicked_cb (GtkButton *button,
+    EmpathyAccountAssistant *self)
+{
+  CreateEnterPageResponse response;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+
+  response = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
+          "response"));
+
+  priv->create_enter_resp = response;
+
+  gtk_assistant_set_page_type (GTK_ASSISTANT (self),
+      priv->enter_or_create_page,
+      (response == RESPONSE_CREATE_AGAIN) ?
+      GTK_ASSISTANT_PAGE_CONTENT : GTK_ASSISTANT_PAGE_CONFIRM);
+}
+
 static GtkWidget *
-account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
-    gboolean is_enter)
+account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
-  GtkWidget *main_vbox, *w, *chooser, *hbox;
-  PangoAttrList *list;
+  GtkWidget *main_vbox, *w, *chooser, *vbox, *hbox, *radio;
 
   main_vbox = gtk_vbox_new (FALSE, 12);
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
@@ -619,24 +684,46 @@ account_assistant_build_enter_or_create_page (EmpathyAccountAssistant *self,
   gtk_widget_show (chooser);
   priv->chooser = chooser;
 
-  hbox = gtk_hbox_new (FALSE, 6);
-  gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, FALSE, 0);
-  gtk_widget_show (hbox);
-
-  w = gtk_image_new_from_icon_name ("gtk-dialog-info", GTK_ICON_SIZE_BUTTON);
-  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
-  gtk_widget_show (w);
+  vbox = gtk_vbox_new (FALSE, 6);
+  gtk_box_pack_end (GTK_BOX (main_vbox), vbox, FALSE, FALSE, 0);
+  gtk_widget_show (vbox);
 
   w = gtk_label_new (NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
-  list = pango_attr_list_new ();
-  pango_attr_list_insert (list, pango_attr_scale_new (PANGO_SCALE_SMALL));
-  gtk_label_set_attributes (GTK_LABEL (w), list);
+  gtk_box_pack_start (GTK_BOX (vbox), w, FALSE, FALSE, 0);
   gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_misc_set_alignment (GTK_MISC (w), 0.0, 0.5);
   gtk_widget_show (w);
   priv->second_label = w;
-  pango_attr_list_unref (list);
+
+  w = gtk_alignment_new (0, 0, 0, 0);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (w), 0, 0, 12, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  hbox = gtk_hbox_new (FALSE, 6);
+  gtk_container_add (GTK_CONTAINER (w), hbox);
+  gtk_widget_show (hbox);
+
+  radio = gtk_radio_button_new_with_label (NULL, _("Yes"));
+  gtk_box_pack_start (GTK_BOX (hbox), radio, FALSE, FALSE, 0);
+  g_object_set_data (G_OBJECT (radio), "response",
+      GINT_TO_POINTER (RESPONSE_CREATE_AGAIN));
+  gtk_widget_show (radio);
+
+  w = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (radio),
+      _("No, that's all for now"));
+  gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
+  g_object_set_data (G_OBJECT (w), "response",
+      GINT_TO_POINTER (RESPONSE_CREATE_STOP));
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), TRUE);
+  priv->create_enter_resp = RESPONSE_CREATE_STOP;
+  priv->create_again_radio = w;
+  gtk_widget_show (w);
+
+  g_signal_connect (w, "clicked",
+      G_CALLBACK (account_assistant_radio_create_again_clicked_cb), self);
+  g_signal_connect (radio, "clicked",
+      G_CALLBACK (account_assistant_radio_create_again_clicked_cb), self);
 
   return main_vbox;
 }
@@ -662,10 +749,10 @@ impl_signal_apply (GtkAssistant *assistant)
 
   current_page = gtk_assistant_get_current_page (assistant);
 
-  if (current_page == RESPONSE_ENTER_ACCOUNT)
+  if (current_page >= PAGE_ENTER_CREATE)
     account_assistant_apply_account_and_finish (self);
 
-  if (current_page == RESPONSE_IMPORT)
+  if (current_page == PAGE_IMPORT)
     empathy_import_widget_add_selected_accounts (priv->iw);
 }
 
@@ -684,12 +771,20 @@ impl_signal_prepare (GtkAssistant *assistant,
   gint current_idx;
 
   current_idx = gtk_assistant_get_current_page (assistant);
-
-  if (current_idx == PAGE_ENTER_CREATE)
+  
+  if (current_idx >= PAGE_ENTER_CREATE)
     {
-      account_assistant_finish_enter_or_create_page (self,
-          priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
-          TRUE : FALSE);
+      if (!priv->enter_create_forward)
+        {
+          account_assistant_finish_enter_or_create_page (self,
+              priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
+              TRUE : FALSE);
+        }
+      else
+        {
+          priv->enter_create_forward = FALSE;
+          account_assistant_apply_account_and_finish (self);
+        }
     }
 }
 
@@ -826,7 +921,7 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
 
   /* third page (enter account details) */
-  page = account_assistant_build_enter_or_create_page (self, TRUE);
+  page = account_assistant_build_enter_or_create_page (self);
   gtk_assistant_append_page (assistant, page);
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->enter_or_create_page = page;
