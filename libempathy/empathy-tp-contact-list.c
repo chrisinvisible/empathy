@@ -1165,21 +1165,24 @@ tp_contact_list_get_flags (EmpathyContactList *list)
 {
 	EmpathyTpContactListPriv *priv;
 	EmpathyContactListFlags flags;
-	TpChannelGroupFlags group_flags;
 
 	g_return_val_if_fail (EMPATHY_IS_TP_CONTACT_LIST (list), FALSE);
 
 	priv = GET_PRIV (list);
 	flags = priv->flags;
 
-	group_flags = tp_channel_group_get_flags (priv->subscribe);
+	if (priv->subscribe != NULL) {
+		TpChannelGroupFlags group_flags;
 
-	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) {
-		flags |= EMPATHY_CONTACT_LIST_CAN_ADD;
-	}
+		group_flags = tp_channel_group_get_flags (priv->subscribe);
 
-	if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_REMOVE) {
-		flags |= EMPATHY_CONTACT_LIST_CAN_REMOVE;
+		if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD) {
+			flags |= EMPATHY_CONTACT_LIST_CAN_ADD;
+		}
+
+		if (group_flags & TP_CHANNEL_GROUP_FLAG_CAN_REMOVE) {
+			flags |= EMPATHY_CONTACT_LIST_CAN_REMOVE;
+		}
 	}
 
 	return flags;
