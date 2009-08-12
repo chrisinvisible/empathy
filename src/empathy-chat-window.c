@@ -946,7 +946,6 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	char *escaped;
 	const char *body;
 	GdkPixbuf *pixbuf;
-	NotificationData *cb_data;
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
 	gboolean res;
 
@@ -960,10 +959,6 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		}
 	}
 
-	cb_data = g_slice_new0 (NotificationData);
-	cb_data->chat = g_object_ref (chat);
-	cb_data->window = window;
-
 	sender = empathy_message_get_sender (message);
 	header = empathy_contact_get_name (sender);
 	body = empathy_message_get_body (message);
@@ -973,6 +968,11 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		notify_notification_update (priv->notification,
 					    header, escaped, NULL);
 	} else {
+		NotificationData *cb_data = cb_data = g_slice_new0 (NotificationData);
+
+		cb_data->chat = g_object_ref (chat);
+		cb_data->window = window;
+
 		priv->notification = notify_notification_new (header, escaped, NULL, NULL);
 		notify_notification_set_timeout (priv->notification, NOTIFY_EXPIRES_DEFAULT);
 
