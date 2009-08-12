@@ -55,6 +55,7 @@ EXTRA_DIST = 				\
 	$(desktop_DATA)			\
 	$(schemas_in_files)		\
 	$(schemas_DATA)			\
+	$(streamingprefs_DATA)		\
 	$(html_DATA)
 
 DISTCLEANFILES = 			\
