@@ -1,0 +1,137 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic"
+      id="create-account">
+
+  <info>
+    <link type="guide" xref="index#accounts"/>
+    <link type="seealso" xref="add-account"/>
+    <link type="seealso" xref="irc-account"/>
+    <desc>
+      Register an account with one of the supported messaging services.
+    </desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-06-21" status="draft"/>
+    <revision pkgversion="2.28" version="0.2" date="2009-08-07" status="review"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Register for a new account</title>
+
+  <p>
+    You can freely create an account on any of the services listed below.
+    Follow the instructions reported on each website on
+    how to register your new account.
+  </p>
+  <p>
+    At the end of the registration process you should have a <em>user
+      name</em> (or an <em>account ID</em>) and a <em>password</em>
+      that you will use to add the account to <app>Empathy</app>.
+  </p>
+  <p>
+    Click on the name of the service to visit its website.
+  </p>
+
+  <section id="im-services">
+    <title>Instant Messaging Services</title>
+
+    <list>
+      <item>
+        <p>
+          <link href="http://dashboard.aim.com/aim">AIM</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="http://www.google.com/talk/">Google Talk</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://www.icq.com/register/">ICQ</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="http://register.jabber.org/">Jabber</link>
+        </p>
+        <note>
+          <p>
+            It is possible to use the automatic creation of accounts
+            with this service. Not all the service providers support it.
+             One service provider known to work is <em>jabber.org</em>,
+             the default one of the application.
+          </p>
+        </note>
+      </item>
+      <item>
+        <p>
+          <link href="https://accountservices.passport.net">MSN</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://login.yahoo.com/config/login">Yahoo!</link>
+        </p>
+      </item>
+    </list>
+  </section>
+
+  <section id="local-service">
+    <title>Local Instant Messaging Services</title>
+    <p>
+      This service works when you are connected to a local network,
+      you do not need an Internet connection in order to use it.
+    </p>
+    <list>
+      <item>
+        <p>
+          <em>Salut</em>
+        </p>
+      </item>
+    </list>
+
+    <p>
+      For more information, see <link xref="salut-protocol" />.
+    </p>
+
+  </section>
+
+  <section id ="sip-services">
+    <title>Telephony Services</title>
+
+    <p>
+      These services will let you do voice call over the Internet with
+      other people using the same service or even to normal phones.
+    </p>
+
+    <list>
+      <item>
+        <p>
+          <link href="https://www.ekiga.net/index.php?page=register">Ekiga</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://signup.sipphone.com/new-users/app?class=NewUser;proc=start">Sipphone</link>
+        </p>
+      </item>
+    </list>
+
+    <note>
+      <p>
+        In order to call normal phones over the Internet, you may need
+        to subscribe to a paid service. For more information, please
+        refer to the instructions provided on the website of the
+        service you will use.
+      </p>
+    </note>
+
+  </section>
+</page>

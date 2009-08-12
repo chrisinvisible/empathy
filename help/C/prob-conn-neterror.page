@@ -1,0 +1,67 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="prob-conn-neterror">
+
+  <info>
+    <link type="guide" xref="prob-conn"/>
+    <link type="guide" xref="irc-manage#problems" />
+    <desc>
+        An error message appears in the main <app>Empathy</app> window which says
+        "Network error".
+    </desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-06-17" status="draft"/>
+    <credit type="author">
+      <name>Phil Bull</name>
+      <email>philbull@gmail.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
+  </info>
+
+<!--
+  TODO: rework this page in order to talk about the IRC problem: if you
+  don't set your nickname, this is the kind of error that will be shown.
+ -->
+
+<title>I get a message that says "Network error"</title>
+
+<p>
+If you try to connect and an error message appears in the main Empathy
+window which says "Network error", Empathy cannot communicate with
+the instant messaging service for some reason.
+</p>
+
+<list>
+<item>
+    <p>
+    Check that you are connected to the Internet or network.
+    </p>
+</item>
+<item>
+    <steps>
+        <item>
+        <p>
+        Click the <gui>Edit Account</gui> button in the error message.
+        </p>
+        </item>
+        <item>
+        <p>
+        Expand the <gui>Advanced</gui> section and make sure that the details
+        such as server address and port are correct. You should be able to find
+        these details from the website of the messaging service.
+        </p>
+        </item>
+        <item>
+        <p>
+        Uncheck the <gui>Enabled</gui> box next to the name of your account and
+        then check it again to try to connect to the service again.
+        </p>
+        </item>
+    </steps>
+</item>
+</list>
+
+</page>
