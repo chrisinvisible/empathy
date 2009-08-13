@@ -86,6 +86,9 @@ TpConnectionManagerParam *empathy_account_settings_get_tp_params (
 void empathy_account_settings_unset (EmpathyAccountSettings *settings,
     const gchar *param);
 
+void empathy_account_settings_discard_changes (
+    EmpathyAccountSettings *settings);
+
 const GValue *empathy_account_settings_get (EmpathyAccountSettings *settings,
   const gchar *param);
 

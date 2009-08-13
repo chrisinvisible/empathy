@@ -40,6 +40,7 @@ enum {
   PROP_CM_NAME,
   PROP_PROTOCOL,
   PROP_DISPLAY_NAME,
+  PROP_DISPLAY_NAME_OVERRIDDEN,
   PROP_READY
 };
 
@@ -61,6 +62,7 @@ struct _EmpathyAccountSettingsPriv
   gchar *protocol;
   gchar *display_name;
   gchar *icon_name;
+  gboolean display_name_overridden;
   gboolean ready;
 
   GHashTable *parameters;
@@ -86,7 +88,7 @@ empathy_account_settings_init (EmpathyAccountSettings *obj)
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
   priv->parameters = g_hash_table_new_full (g_str_hash, g_str_equal,
-     g_free, (GDestroyNotify) tp_g_value_slice_free);
+    g_free, (GDestroyNotify) tp_g_value_slice_free);
 
   priv->unset_parameters = g_array_new (TRUE, FALSE, sizeof (gchar *));
 }
@@ -121,6 +123,9 @@ empathy_account_settings_set_property (GObject *object,
       case PROP_DISPLAY_NAME:
         priv->display_name = g_value_dup_string (value);
         break;
+      case PROP_DISPLAY_NAME_OVERRIDDEN:
+        priv->display_name_overridden = g_value_get_boolean (value);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
@@ -149,6 +154,9 @@ empathy_account_settings_get_property (GObject *object,
         break;
       case PROP_DISPLAY_NAME:
         g_value_set_string (value, priv->display_name);
+        break;
+      case PROP_DISPLAY_NAME_OVERRIDDEN:
+        g_value_set_boolean (value, priv->display_name_overridden);
         break;
       case PROP_READY:
         g_value_set_boolean (value, priv->ready);
@@ -239,6 +247,13 @@ empathy_account_settings_class_init (
       "The display name account these settings belong to",
       NULL,
       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class, PROP_DISPLAY_NAME_OVERRIDDEN,
+      g_param_spec_boolean ("display-name-overridden",
+        "display-name-overridden",
+        "Whether the display name for this account has been manually overridden",
+        FALSE,
+        G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
 
   g_object_class_install_property (object_class, PROP_READY,
     g_param_spec_boolean ("ready",
@@ -560,9 +575,6 @@ empathy_account_settings_get_dbus_signature (EmpathyAccountSettings *settings,
 
   p = empathy_account_settings_get_tp_param (settings, param);
 
-  if (p == NULL)
-    return NULL;
-
   return p->dbus_signature;
 }
 
@@ -608,6 +620,21 @@ empathy_account_settings_unset (EmpathyAccountSettings *settings,
 
   g_array_append_val (priv->unset_parameters, v);
   g_hash_table_remove (priv->parameters, param);
+}
+
+void
+empathy_account_settings_discard_changes (EmpathyAccountSettings *settings)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  if (g_hash_table_size (priv->parameters) > 0)
+    g_hash_table_remove_all (priv->parameters);
+
+  if (priv->unset_parameters->len > 0)
+    {
+      g_array_remove_range (priv->unset_parameters, 0,
+          priv->unset_parameters->len);
+    }
 }
 
 const gchar *
@@ -960,13 +987,9 @@ empathy_account_settings_created_cb (GObject *source,
     EMPATHY_ACCOUNT_MANAGER (source), result, &error);
 
   if (account == NULL)
-    {
-      g_simple_async_result_set_from_error (priv->apply_result, error);
-    }
+    g_simple_async_result_set_from_error (priv->apply_result, error);
   else
-    {
-      priv->account = g_object_ref (account);
-    }
+    priv->account = g_object_ref (account);
 
   r = priv->apply_result;
   priv->apply_result = NULL;
@@ -1065,6 +1088,12 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
 
   if (priv->account == NULL)
     {
+      const gchar *default_display_name;
+      default_display_name = empathy_account_settings_get_string (settings,
+          "account");
+      empathy_account_settings_set_display_name_async (settings,
+          default_display_name, NULL, NULL);
+
       if (empathy_account_manager_is_ready (priv->account_manager))
         empathy_account_settings_do_create_account (settings);
       else

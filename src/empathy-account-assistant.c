@@ -334,8 +334,9 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     empathy_account_settings_set_boolean (settings, "register", TRUE);
 
-  account_widget = empathy_account_widget_simple_new_for_protocol
-    (proto->name, settings, &widget_object);
+  widget_object = empathy_account_widget_new_for_protocol (proto->name,
+      settings, TRUE);
+  account_widget = empathy_account_widget_get_widget (widget_object);
 
   if (priv->current_account_widget != NULL)
     {

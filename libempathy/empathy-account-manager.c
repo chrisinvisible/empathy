@@ -372,11 +372,14 @@ account_manager_got_all_cb (TpProxy *proxy,
   accounts = tp_asv_get_boxed (properties, "ValidAccounts",
     EMPATHY_ARRAY_TYPE_OBJECT);
 
-  for (i = 0; i < accounts->len; i++)
+  if (accounts != NULL)
     {
-      gchar *name = g_ptr_array_index (accounts, i);
+      for (i = 0; i < accounts->len; i++)
+        {
+          gchar *name = g_ptr_array_index (accounts, i);
 
-      empathy_account_manager_get_account (manager, name);
+          empathy_account_manager_get_account (manager, name);
+        }
     }
 
   empathy_account_manager_check_ready (manager);

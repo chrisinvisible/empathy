@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2006-2007 Imendio AB
  * Copyright (C) 2007-2009 Collabora Ltd.
@@ -21,6 +20,7 @@
  * Authors: Xavier Claessens <xclaesse@gmail.com>
  *          Martyn Russell <martyn@imendio.com>
  *          Cosimo Cecchi <cosimo.cecchi@collabora.co.uk>
+ *          Jonathan Tellier <jonathan.tellier@gmail.com>
  */
 
 #include <config.h>
@@ -52,12 +52,26 @@ typedef struct {
   char *protocol;
   EmpathyAccountSettings *settings;
 
+  GtkWidget *table_common_settings;
   GtkWidget *apply_button;
+  GtkWidget *cancel_button;
   GtkWidget *entry_password;
   GtkWidget *button_forget;
   GtkWidget *spinbutton_port;
+  GtkWidget *enabled_checkbox;
 
   gboolean simple;
+
+  /* An EmpathyAccountWidget can be used to either create an account or
+   * modify it. When we are creating an account, this member is set to TRUE */
+  gboolean creating_account;
+
+  /* After having applied changes to a user account, we automatically
+   * disconnect him. Once he's disconnected, he will be reconnected,
+   * depending on the value of this member which should be set to the checked
+   * state of the "Enabled" checkbox. This is done so the new information
+   * entered by the user is validated on the server. */
+  gboolean re_enable_accound;
 
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
@@ -65,11 +79,14 @@ typedef struct {
 enum {
   PROP_PROTOCOL = 1,
   PROP_SETTINGS,
-  PROP_SIMPLE
+  PROP_SIMPLE,
+  PROP_CREATING_ACCOUNT
 };
 
 enum {
   HANDLE_APPLY,
+  ACCOUNT_CREATED,
+  CANCELLED,
   LAST_SIGNAL
 };
 
@@ -79,7 +96,20 @@ static guint signals[LAST_SIGNAL] = { 0 };
 #define CHANGED_TIMEOUT 300
 
 static void
-account_widget_handle_apply_sensitivity (EmpathyAccountWidget *self)
+account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
+    gboolean sensitive)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  if (!priv->simple)
+    {
+      gtk_widget_set_sensitive (priv->apply_button, sensitive);
+      gtk_widget_set_sensitive (priv->cancel_button, sensitive);
+    }
+}
+
+static void
+account_widget_handle_control_buttons_sensitivity (EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   gboolean is_valid;
@@ -87,7 +117,10 @@ account_widget_handle_apply_sensitivity (EmpathyAccountWidget *self)
   is_valid = empathy_account_settings_is_valid (priv->settings);
 
   if (!priv->simple)
-    gtk_widget_set_sensitive (priv->apply_button, is_valid);
+    {
+      gtk_widget_set_sensitive (priv->apply_button, is_valid);
+      gtk_widget_set_sensitive (priv->cancel_button, is_valid);
+    }
 
   g_signal_emit (self, signals[HANDLE_APPLY], 0, is_valid);
 }
@@ -120,11 +153,9 @@ account_widget_entry_changed_common (EmpathyAccountWidget *self,
   else
     {
       DEBUG ("Setting %s to %s", param_name,
-          strstr (param_name, "password") ? "***" : str);
+          tp_strdiff (param_name, "password") ? str : "***");
       empathy_account_settings_set_string (priv->settings, param_name, str);
     }
-
-  account_widget_handle_apply_sensitivity (self);
 }
 
 static gboolean
@@ -142,6 +173,7 @@ account_widget_entry_changed_cb (GtkEditable *entry,
     EmpathyAccountWidget *self)
 {
   account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
+  account_widget_handle_control_buttons_sensitivity (self);
 }
 
 static void
@@ -182,7 +214,7 @@ account_widget_int_changed_cb (GtkWidget *widget,
       g_return_if_reached ();
     }
 
-  account_widget_handle_apply_sensitivity (self);
+  account_widget_handle_control_buttons_sensitivity (self);
 }
 
 static void
@@ -214,7 +246,7 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
       empathy_account_settings_set_boolean (priv->settings, param_name, value);
     }
 
-  account_widget_handle_apply_sensitivity (self);
+  account_widget_handle_control_buttons_sensitivity (self);
 }
 
 static void
@@ -231,7 +263,7 @@ account_widget_forget_clicked_cb (GtkWidget *button,
   empathy_account_settings_unset (priv->settings, param_name);
   gtk_entry_set_text (GTK_ENTRY (priv->entry_password), "");
 
-  account_widget_handle_apply_sensitivity (self);
+  account_widget_handle_control_buttons_sensitivity (self);
 }
 
 static void
@@ -541,12 +573,96 @@ account_widget_handle_params_valist (EmpathyAccountWidget *self,
 }
 
 static void
+account_widget_cancel_clicked_cb (GtkWidget *button,
+    EmpathyAccountWidget *self)
+{
+  g_signal_emit (self, signals[CANCELLED], 0);
+}
+
+static void
+account_widget_account_enabled_cb (GObject *source_object,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+  EmpathyAccount *account = EMPATHY_ACCOUNT (source_object);
+  EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
+
+  empathy_account_set_enabled_finish (account, res, &error);
+
+  if (error != NULL)
+    {
+      DEBUG ("Could not automatically enable new account: %s", error->message);
+      g_error_free (error);
+    }
+  else
+    {
+      g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
+    }
+}
+
+static void
+account_widget_applied_cb (GObject *source_object,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+  EmpathyAccount *account;
+  EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source_object);
+  EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+
+  empathy_account_settings_apply_finish (settings, res, &error);
+
+  if (error != NULL)
+    {
+      DEBUG ("Could not apply changes to account: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  account = empathy_account_settings_get_account (priv->settings);
+
+  if (priv->creating_account)
+    {
+      /* By default, when an account is created, we enable it. */
+      empathy_account_set_enabled_async (account, TRUE,
+          account_widget_account_enabled_cb, widget);
+    }
+  else if (account != NULL && priv->enabled_checkbox != NULL)
+    {
+      gboolean enabled_checked;
+
+      enabled_checked = gtk_toggle_button_get_active (
+          GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
+
+      if (empathy_account_is_enabled (account))
+        {
+          /* We want to disable the account (and possibly re-enable it) to make
+           * sure that the new settings are effective */
+          priv->re_enable_accound = enabled_checked;
+          empathy_account_set_enabled_async (account, FALSE, NULL, NULL);
+        }
+      else
+        {
+          /* The account is already disable so we just enable it according
+           * to the value of the "Enabled" checkbox */
+          empathy_account_set_enabled_async (account, enabled_checked,
+              NULL, NULL);
+        }
+    }
+
+  account_widget_set_control_buttons_sensitivity (widget, FALSE);
+}
+
+static void
 account_widget_apply_clicked_cb (GtkWidget *button,
     EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
-  empathy_account_settings_apply_async (priv->settings, NULL, NULL);
+  empathy_account_settings_apply_async (priv->settings,
+      account_widget_applied_cb, self);
 }
 
 static void
@@ -686,7 +802,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           gtk_widget_show (label_id_create);
           gtk_widget_show (label_password_create);
         }
-      
+
       empathy_account_widget_handle_params (self,
           "entry_id_simple", "account",
           "entry_password_simple", "password",
@@ -697,6 +813,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_settings", &priv->table_common_settings,
           "vbox_jabber_settings", &self->ui_details->widget,
           "spinbutton_port", &spinbutton_port,
           "checkbutton_ssl", &checkbutton_ssl,
@@ -808,7 +925,7 @@ account_widget_build_yahoo (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  
+
   if (priv->simple)
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
@@ -889,6 +1006,37 @@ account_widget_destroy_cb (GtkWidget *widget,
 }
 
 static void
+empathy_account_widget_enabled_cb (EmpathyAccount *account,
+      GParamSpec *spec,
+      gpointer user_data)
+{
+  EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+  gboolean enabled = empathy_account_is_enabled (account);
+
+  if (!enabled && priv->re_enable_accound)
+    {
+      /* The account has been disabled because we were applying changes.
+       * However, the user wants the account to be enabled so let's re-enable
+       * it */
+      empathy_account_set_enabled_async (account, TRUE, NULL, NULL);
+    }
+  else if (priv->enabled_checkbox != NULL)
+    {
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
+          enabled);
+    }
+}
+
+static void
+account_widget_enabled_toggled_cb (GtkToggleButton *toggle_button,
+    gpointer user_data)
+{
+  account_widget_handle_control_buttons_sensitivity (
+      EMPATHY_ACCOUNT_WIDGET (user_data));
+}
+
+static void
 do_set_property (GObject *object,
     guint prop_id,
     const GValue *value,
@@ -906,6 +1054,9 @@ do_set_property (GObject *object,
       break;
     case PROP_SIMPLE:
       priv->simple = g_value_get_boolean (value);
+      break;
+    case PROP_CREATING_ACCOUNT:
+      priv->creating_account = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -931,6 +1082,9 @@ do_get_property (GObject *object,
     case PROP_SIMPLE:
       g_value_set_boolean (value, priv->simple);
       break;
+    case PROP_CREATING_ACCOUNT:
+      g_value_set_boolean (value, priv->creating_account);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -941,6 +1095,7 @@ do_constructed (GObject *obj)
 {
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  EmpathyAccount *account;
   char *uiname, *filename;
 
   uiname = g_strconcat ("empathy-account-widget-", priv->protocol,
@@ -1012,18 +1167,64 @@ do_constructed (GObject *obj)
           self);
     }
 
-  /* handle apply button */
+  /* handle apply and cancel button */
   if (!priv->simple)
     {
-      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
-      gtk_box_pack_end (GTK_BOX (self->ui_details->widget), priv->apply_button,
-          FALSE, FALSE, 3);
+      GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
 
+      priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
+      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
+
+      gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
+          TRUE, 3);
+      gtk_box_pack_end (GTK_BOX (hbox), priv->cancel_button, TRUE,
+          TRUE, 3);
+
+      gtk_box_pack_end (GTK_BOX (self->ui_details->widget), hbox, FALSE,
+          FALSE, 3);
+
+      g_signal_connect (priv->cancel_button, "clicked",
+          G_CALLBACK (account_widget_cancel_clicked_cb),
+          self);
       g_signal_connect (priv->apply_button, "clicked",
           G_CALLBACK (account_widget_apply_clicked_cb),
           self);
-      account_widget_handle_apply_sensitivity (self);
-      gtk_widget_show (priv->apply_button);
+      gtk_widget_show_all (hbox);
+      account_widget_set_control_buttons_sensitivity(self, FALSE);
+    }
+
+  account = empathy_account_settings_get_account (priv->settings);
+
+  if (account != NULL)
+    {
+      g_signal_connect (account, "notify::enabled",
+          G_CALLBACK (empathy_account_widget_enabled_cb), self);
+    }
+
+  /* handle the "Enabled" checkbox. We only add it when modifying an account */
+  if (!priv->creating_account && priv->table_common_settings != NULL)
+    {
+      guint nb_rows, nb_columns;
+
+      priv->enabled_checkbox =
+          gtk_check_button_new_with_label (_("Enabled"));
+      gtk_toggle_button_set_active (
+          GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
+          empathy_account_is_enabled (account));
+
+      g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
+          "n-columns", &nb_columns, NULL);
+
+      gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
+          nb_columns);
+
+      gtk_table_attach_defaults (GTK_TABLE (priv->table_common_settings),
+          priv->enabled_checkbox, 0, nb_columns, nb_rows - 1, nb_rows);
+
+      gtk_widget_show (priv->enabled_checkbox);
+
+      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "toggled",
+          G_CALLBACK (account_widget_enabled_toggled_cb), self);
     }
 
   /* hook up to widget destruction to unref ourselves */
@@ -1046,8 +1247,19 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
+  empathy_account_settings_is_ready (priv->settings);
+
   if (priv->settings != NULL)
     {
+      EmpathyAccount *account;
+      account = empathy_account_settings_get_account (priv->settings);
+
+      if (account != NULL)
+        {
+          g_signal_handlers_disconnect_by_func (account,
+              empathy_account_widget_enabled_cb, self);
+        }
+
       g_object_unref (priv->settings);
       priv->settings = NULL;
     }
@@ -1101,12 +1313,34 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (oclass, PROP_SIMPLE, param_spec);
 
+  param_spec = g_param_spec_boolean ("creating-account",
+      "creating-account",
+      "TRUE if we're creating an account, FALSE if we're modifying it",
+      FALSE,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_CREATING_ACCOUNT, param_spec);
+
   signals[HANDLE_APPLY] =
     g_signal_new ("handle-apply", G_TYPE_FROM_CLASS (klass),
         G_SIGNAL_RUN_LAST, 0, NULL, NULL,
         g_cclosure_marshal_VOID__BOOLEAN,
         G_TYPE_NONE,
         1, G_TYPE_BOOLEAN);
+
+  /* This signal is emitted when an account has been created and enabled. */
+  signals[ACCOUNT_CREATED] =
+      g_signal_new ("account-created", G_TYPE_FROM_CLASS (klass),
+          G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+          g_cclosure_marshal_VOID__VOID,
+          G_TYPE_NONE,
+          0);
+
+  signals[CANCELLED] =
+      g_signal_new ("cancelled", G_TYPE_FROM_CLASS (klass),
+          G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+          g_cclosure_marshal_VOID__VOID,
+          G_TYPE_NONE,
+          0);
 
   g_type_class_add_private (klass, sizeof (EmpathyAccountWidgetPriv));
 }
@@ -1139,26 +1373,15 @@ empathy_account_widget_handle_params (EmpathyAccountWidget *self,
 }
 
 GtkWidget *
-empathy_account_widget_new_for_protocol (const char *protocol,
-    EmpathyAccountSettings *settings)
+empathy_account_widget_get_widget (EmpathyAccountWidget *widget)
 {
-  EmpathyAccountWidget *self;
-  EmpathyAccountWidgetPriv *priv;
-
-  g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), NULL);
-  g_return_val_if_fail (settings != NULL, NULL);
-
-  self = g_object_new
-    (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
-        "settings", settings, NULL);
-  priv = GET_PRIV (self);
-
-  return self->ui_details->widget;
+  return widget->ui_details->widget;
 }
 
-GtkWidget *
-empathy_account_widget_simple_new_for_protocol (const char *protocol,
-    EmpathyAccountSettings *settings, EmpathyAccountWidget **object)
+EmpathyAccountWidget *
+empathy_account_widget_new_for_protocol (const char *protocol,
+    EmpathyAccountSettings *settings,
+    gboolean simple)
 {
   EmpathyAccountWidget *self;
 
@@ -1167,9 +1390,10 @@ empathy_account_widget_simple_new_for_protocol (const char *protocol,
 
   self = g_object_new
     (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
-        "settings", settings, "simple", TRUE, NULL);
+        "settings", settings, "simple", simple,
+        "creating-account",
+        empathy_account_settings_get_account (settings) == NULL,
+        NULL);
 
-  *object = self;
-
-  return self->ui_details->widget;
+  return self;
 }

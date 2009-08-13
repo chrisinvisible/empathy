@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2006-2007 Imendio AB
  * Copyright (C) 2007-2008 Collabora Ltd.
@@ -60,12 +59,15 @@ typedef struct {
 
 GType empathy_account_widget_get_type (void);
 
-GtkWidget *empathy_account_widget_new_for_protocol (const char *protocol,
-                                                    EmpathyAccountSettings *settings);
-GtkWidget * empathy_account_widget_simple_new_for_protocol
-    (const char *protocol,
-     EmpathyAccountSettings *settings,
-     EmpathyAccountWidget **object);
+GtkWidget *empathy_account_widget_get_widget (EmpathyAccountWidget *widget);
+
+//EmpathyAccountWidget *empathy_account_widget_new_for_protocol (
+//    const char *protocol,
+//    EmpathyAccountSettings *settings);
+EmpathyAccountWidget * empathy_account_widget_new_for_protocol (
+    const char *protocol,
+    EmpathyAccountSettings *settings,
+    gboolean simple);
 
 G_END_DECLS
 
