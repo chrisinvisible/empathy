@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy.help.HEAD\n"
-"POT-Creation-Date: 2009-08-14 16:40+0000\n"
-"PO-Revision-Date: 2009-08-14 21:17+0200\n"
+"POT-Creation-Date: 2009-08-14 19:21+0000\n"
+"PO-Revision-Date: 2009-08-14 21:30+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,22 +41,23 @@ msgstr "Iniciar una conversación de vídeo con uno de sus contactos."
 msgid "Start a video conversation"
 msgstr "Comenzar una conversación de vídeo"
 
-#: C/video-call.page:19(gui) C/share-desktop.page:43(gui)
-#: C/set-custom-status.page:39(gui) C/set-custom-status.page:75(gui)
-#: C/set-custom-status.page:157(gui) C/send-message.page:27(gui)
-#: C/send-file.page:32(gui) C/remove-account.page:35(gui)
-#: C/offline-contacts.page:37(gui) C/irc-nick-password.page:40(gui)
-#: C/irc-join-room.page:27(gui) C/irc-account.page:28(gui)
+#: C/video-call.page:19(gui) C/start-conversation.page:27(gui)
+#: C/share-desktop.page:43(gui) C/set-custom-status.page:39(gui)
+#: C/set-custom-status.page:75(gui) C/set-custom-status.page:157(gui)
+#: C/send-message.page:27(gui) C/send-file.page:32(gui)
+#: C/remove-account.page:35(gui) C/offline-contacts.page:37(gui)
+#: C/irc-start-conversation.page:48(gui) C/irc-nick-password.page:46(gui)
+#: C/irc-join-room.page:26(gui) C/irc-account.page:28(gui)
 #: C/disable-account.page:38(gui) C/change-status.page:29(gui)
 #: C/audio-video.page:18(gui) C/audio-call.page:21(gui)
 #: C/add-account.page:27(gui)
 msgid "Contact List"
 msgstr "Lista de contactos"
 
-#: C/video-call.page:18(p) C/share-desktop.page:42(p)
-#: C/send-message.page:26(p) C/send-file.page:31(p)
+#: C/video-call.page:18(p) C/start-conversation.page:26(p)
+#: C/share-desktop.page:42(p) C/send-message.page:26(p) C/send-file.page:31(p)
 #: C/remove-account.page:34(p) C/offline-contacts.page:36(p)
-#: C/irc-nick-password.page:39(p) C/irc-account.page:27(p)
+#: C/irc-nick-password.page:45(p) C/irc-account.page:27(p)
 #: C/disable-account.page:37(p) C/audio-call.page:20(p)
 #: C/add-account.page:26(p)
 msgid "From the <placeholder-1/> window, perform one of the following:"
@@ -75,7 +76,8 @@ msgstr ""
 msgid "Video Call"
 msgstr "Llamada de vídeo"
 
-#: C/video-call.page:29(p) C/send-message.page:37(p) C/audio-call.page:31(p)
+#: C/video-call.page:29(p) C/send-message.page:37(p)
+#: C/irc-start-conversation.page:36(p) C/audio-call.page:31(p)
 msgid ""
 "Right-click on the name of the contact you want to have a conversation with, "
 "and select <placeholder-1/>."
@@ -105,7 +107,8 @@ msgstr "Colgar"
 msgid "To close the conversation, click on <placeholder-1/>."
 msgstr "Para cerrar la conversación pulse en <placeholder-1/>"
 
-#: C/video-call.page:52(gui) C/audio-call.page:54(gui)
+#: C/video-call.page:52(gui) C/start-conversation.page:66(gui)
+#: C/audio-call.page:54(gui)
 msgid "Call"
 msgstr "Llamar"
 
@@ -128,12 +131,15 @@ msgid "Understanding the various status icons."
 msgstr "Entender los diversos iconos de estado."
 
 #: C/status-icons.page:13(name) C/status-icons.page:27(cite)
-#: C/share-desktop.page:13(name) C/send-file.page:16(name)
-#: C/salut-protocol.page:13(name) C/salut-protocol.page:27(cite)
-#: C/remove-account.page:11(name) C/prob-conn.page:36(cite)
-#: C/prob-conn-name.page:14(name) C/prob-conn-auth.page:32(cite)
+#: C/start-conversation.page:12(name) C/share-desktop.page:13(name)
+#: C/send-file.page:16(name) C/salut-protocol.page:13(name)
+#: C/salut-protocol.page:27(cite) C/remove-account.page:11(name)
+#: C/prob-conn.page:36(cite) C/prob-conn-neterror.page:18(name)
+#: C/prob-conn-name.page:14(name) C/prob-conn-auth.page:19(name)
+#: C/prob-conn-auth.page:32(cite) C/prob-conn-acctdisabled.page:18(name)
 #: C/offline-contacts.page:14(name) C/offline-contacts.page:28(cite)
-#: C/irc-nick-password.page:12(name) C/irc-manage.page:11(name)
+#: C/irc-start-conversation.page:10(name) C/irc-sending-file.page:11(name)
+#: C/irc-nick-password.page:12(name) C/irc-manage.page:12(name)
 #: C/irc-manage.page:25(cite) C/irc-join-room.page:11(name)
 #: C/irc-join-pwd.page:12(name) C/irc-account.page:13(name)
 #: C/index.page:10(name) C/disable-account.page:15(name)
@@ -141,44 +147,51 @@ msgstr "Entender los diversos iconos de estado."
 msgid "Milo Casagrande"
 msgstr "Milo Casagrande"
 
-#: C/status-icons.page:14(email) C/share-desktop.page:14(email)
-#: C/send-file.page:17(email) C/salut-protocol.page:14(email)
-#: C/remove-account.page:12(email) C/prob-conn-name.page:15(email)
-#: C/offline-contacts.page:15(email) C/irc-nick-password.page:13(email)
-#: C/irc-manage.page:12(email) C/irc-join-room.page:12(email)
+#: C/status-icons.page:14(email) C/start-conversation.page:13(email)
+#: C/share-desktop.page:14(email) C/send-file.page:17(email)
+#: C/salut-protocol.page:14(email) C/remove-account.page:12(email)
+#: C/prob-conn-neterror.page:19(email) C/prob-conn-name.page:15(email)
+#: C/prob-conn-auth.page:20(email) C/prob-conn-acctdisabled.page:19(email)
+#: C/offline-contacts.page:15(email) C/irc-start-conversation.page:11(email)
+#: C/irc-sending-file.page:12(email) C/irc-nick-password.page:13(email)
+#: C/irc-manage.page:13(email) C/irc-join-room.page:12(email)
 #: C/irc-join-pwd.page:13(email) C/irc-account.page:14(email)
 #: C/index.page:11(email) C/disable-account.page:16(email)
 #: C/create-account.page:16(email) C/add-account.page:13(email)
 msgid "milo@ubuntu.com"
 msgstr "milo@ubuntu.com"
 
-#: C/status-icons.page:17(year) C/share-desktop.page:17(year)
-#: C/set-custom-status.page:19(year) C/send-message.page:15(year)
-#: C/send-file.page:20(year) C/salut-protocol.page:17(year)
-#: C/remove-account.page:15(year) C/prob-conn.page:17(year)
-#: C/prob-conn-neterror.page:18(year) C/prob-conn-name.page:18(year)
-#: C/prob-conn-auth.page:22(year) C/prob-conn-acctdisabled.page:17(year)
-#: C/offline-contacts.page:18(year) C/irc-nick-password.page:16(year)
-#: C/irc-manage.page:15(year) C/irc-join-room.page:15(year)
-#: C/irc-join-pwd.page:16(year) C/irc-account.page:17(year)
-#: C/index.page:14(year) C/disable-account.page:19(year)
-#: C/create-account.page:19(year) C/change-status.page:18(year)
-#: C/add-contact.page:16(year) C/add-account.page:16(year)
+#: C/status-icons.page:17(year) C/start-conversation.page:16(year)
+#: C/share-desktop.page:17(year) C/set-custom-status.page:19(year)
+#: C/send-message.page:15(year) C/send-file.page:20(year)
+#: C/salut-protocol.page:17(year) C/remove-account.page:15(year)
+#: C/prob-conn.page:17(year) C/prob-conn-neterror.page:22(year)
+#: C/prob-conn-name.page:18(year) C/prob-conn-auth.page:23(year)
+#: C/prob-conn-acctdisabled.page:22(year) C/offline-contacts.page:18(year)
+#: C/irc-start-conversation.page:14(year) C/irc-sending-file.page:15(year)
+#: C/irc-nick-password.page:16(year) C/irc-manage.page:16(year)
+#: C/irc-join-room.page:15(year) C/irc-join-pwd.page:16(year)
+#: C/irc-account.page:17(year) C/index.page:14(year)
+#: C/disable-account.page:19(year) C/create-account.page:19(year)
+#: C/change-status.page:18(year) C/add-contact.page:16(year)
+#: C/add-account.page:16(year)
 msgid "2009"
 msgstr "2009"
 
-#: C/status-icons.page:18(name) C/share-desktop.page:18(name)
-#: C/set-custom-status.page:20(name) C/send-message.page:16(name)
-#: C/send-file.page:21(name) C/salut-protocol.page:18(name)
-#: C/remove-account.page:16(name) C/prob-conn.page:18(name)
-#: C/prob-conn-neterror.page:19(name) C/prob-conn-name.page:19(name)
-#: C/prob-conn-auth.page:23(name) C/prob-conn-acctdisabled.page:18(name)
-#: C/offline-contacts.page:19(name) C/irc-nick-password.page:17(name)
-#: C/irc-manage.page:16(name) C/irc-join-room.page:16(name)
-#: C/irc-join-pwd.page:17(name) C/irc-account.page:18(name)
-#: C/index.page:15(name) C/disable-account.page:20(name)
-#: C/create-account.page:20(name) C/change-status.page:19(name)
-#: C/add-contact.page:17(name) C/add-account.page:17(name)
+#: C/status-icons.page:18(name) C/start-conversation.page:17(name)
+#: C/share-desktop.page:18(name) C/set-custom-status.page:20(name)
+#: C/send-message.page:16(name) C/send-file.page:21(name)
+#: C/salut-protocol.page:18(name) C/remove-account.page:16(name)
+#: C/prob-conn.page:18(name) C/prob-conn-neterror.page:23(name)
+#: C/prob-conn-name.page:19(name) C/prob-conn-auth.page:24(name)
+#: C/prob-conn-acctdisabled.page:23(name) C/offline-contacts.page:19(name)
+#: C/irc-start-conversation.page:15(name) C/irc-sending-file.page:16(name)
+#: C/irc-nick-password.page:17(name) C/irc-manage.page:17(name)
+#: C/irc-join-room.page:16(name) C/irc-join-pwd.page:17(name)
+#: C/irc-account.page:18(name) C/index.page:15(name)
+#: C/disable-account.page:20(name) C/create-account.page:20(name)
+#: C/change-status.page:19(name) C/add-contact.page:17(name)
+#: C/add-account.page:17(name)
 msgid "GNOME Documentation Project"
 msgstr "Proyecto de documentación de GNOME"
 
@@ -254,6 +267,98 @@ msgstr ""
 "Use este icono cuando vaya a estar ausente del equipo. Este icono se usa "
 "cuando deja el equipo y se activa el salvapantallas."
 
+#: C/start-conversation.page:9(desc)
+msgid "General method to start a conversation."
+msgstr "Método general para iniciar una conversación."
+
+#: C/start-conversation.page:22(title) C/irc-start-conversation.page:20(title)
+#| msgid "Start a video conversation"
+msgid "Start a conversation"
+msgstr "Iniciar una conversación"
+
+#: C/start-conversation.page:32(gui) C/start-conversation.page:65(gui)
+#: C/send-message.page:39(gui) C/irc-start-conversation.page:38(gui)
+#: C/add-contact.page:33(gui)
+msgid "Chat"
+msgstr "Charla"
+
+#: C/start-conversation.page:32(gui)
+#| msgid "Text conversations"
+msgid "New conversation"
+msgstr "Conversación nueva"
+
+#: C/start-conversation.page:31(p) C/remove-account.page:44(p)
+#: C/offline-contacts.page:41(p) C/irc-nick-password.page:55(p)
+#: C/irc-account.page:37(p) C/disable-account.page:47(p)
+#: C/add-contact.page:32(p) C/add-account.page:36(p)
+msgid "Choose <guiseq><placeholder-1/><placeholder-2/></guiseq>."
+msgstr "Elija <guiseq><placeholder-1/><placeholder-2/></guiseq>."
+
+#: C/start-conversation.page:37(key) C/offline-contacts.page:47(key)
+msgid "Ctrl"
+msgstr "Ctrl"
+
+#: C/start-conversation.page:37(key)
+msgid "N"
+msgstr "N"
+
+#: C/start-conversation.page:36(p) C/offline-contacts.page:46(p)
+msgid "Press <keyseq><placeholder-1/><placeholder-2/></keyseq>."
+msgstr "Pulse <keyseq><placeholder-1/><placeholder-2/></keyseq>."
+
+#: C/start-conversation.page:44(gui) C/irc-join-room.page:32(gui)
+#: C/add-contact.page:38(gui)
+msgid "Account"
+msgstr "Cuenta"
+
+#: C/start-conversation.page:43(p)
+#| msgid ""
+#| "From the <placeholder-1/> drop-down list, select the IRC account that "
+#| "corresponds to the network you want to use."
+msgid ""
+"From the <placeholder-1/> drop-down list, select the account you want to use "
+"for the conversation."
+msgstr ""
+"Desde la lista desplegable <placeholder-1/> seleccione la cuenta que quiere "
+"usar para la conversación."
+
+#: C/start-conversation.page:47(p)
+#| msgid "Send a message to one of your contacts."
+msgid "This one is one of your accounts."
+msgstr "Ésta es una de sus cuentas."
+
+#: C/start-conversation.page:53(gui)
+#| msgid "Contact"
+msgid "Contact ID"
+msgstr "ID del contacto"
+
+#: C/start-conversation.page:52(p)
+#| msgid ""
+#| "In the <placeholder-1/> text box, type the email address or the username "
+#| "of the person you want to add to your contacts list."
+msgid ""
+"In the <placeholder-1/> text box, type the identifier of the contact you "
+"want to have a conversation with."
+msgstr ""
+"En la caja de texto <placeholder-1/> escriba el identificador del contacto "
+"con el que quiere tener una conversación."
+
+#: C/start-conversation.page:56(p)
+msgid ""
+"You have to enter the identifier as it has been inserted when adding a new "
+"contact to your contact list. If you are trying to start a conversation "
+"using one of your IRC accounts or a SIP account, you have to enter the exact "
+"nickname or the exact SIP address of the contact."
+msgstr ""
+
+#: C/start-conversation.page:64(p)
+msgid ""
+"To start a text conversation, click on <placeholder-1/>; to start an audio "
+"conversation, click on <placeholder-2/>."
+msgstr ""
+"Para iniciar una conversación de texto pulse <placeholder-1/>; para iniciar "
+"una conversación de sonido pulse <placeholder-2/>."
+
 #: C/share-desktop.page:7(desc)
 msgid "Share the desktop with your contacts."
 msgstr "Compartir el escritorio con sus contactos."
@@ -285,8 +390,8 @@ msgstr ""
 "instalada en su sistema."
 
 #: C/share-desktop.page:49(gui) C/send-file.page:42(gui)
-#: C/remove-account.page:45(gui) C/prob-conn-acctdisabled.page:34(gui)
-#: C/irc-nick-password.page:50(gui) C/irc-account.page:38(gui)
+#: C/remove-account.page:45(gui) C/prob-conn-acctdisabled.page:44(gui)
+#: C/irc-nick-password.page:56(gui) C/irc-account.page:38(gui)
 #: C/disable-account.page:48(gui) C/add-account.page:37(gui)
 msgid "Edit"
 msgstr "Editar"
@@ -344,9 +449,9 @@ msgstr ""
 "ralentización del rendimiento del sistema y una baja velocidad de Internet."
 
 #: C/share-desktop.page:81(app) C/set-custom-status.page:63(app)
-#: C/remove-account.page:7(app) C/prob-conn-neterror.page:9(app)
-#: C/prob-conn-name.page:9(app) C/irc-nick-password.page:33(app)
-#: C/irc-nick-password.page:87(app) C/irc-manage.page:7(app)
+#: C/remove-account.page:7(app) C/prob-conn-neterror.page:31(app)
+#: C/irc-start-conversation.page:48(app) C/irc-nick-password.page:33(app)
+#: C/irc-nick-password.page:92(app) C/irc-manage.page:8(app)
 #: C/irc-account.page:45(app) C/disable-account.page:10(app)
 #: C/create-account.page:35(app) C/add-account.page:8(app)
 #: C/add-account.page:44(app)
@@ -556,7 +661,7 @@ msgstr "Enviar un mensaje a uno de sus contactos."
 #: C/send-message.page:11(name) C/send-file.page:12(name)
 #: C/prob-conn.page:13(name) C/prob-conn.page:27(cite)
 #: C/prob-conn.page:33(cite) C/prob-conn-neterror.page:14(name)
-#: C/prob-conn-auth.page:17(name) C/prob-conn-acctdisabled.page:13(name)
+#: C/prob-conn-auth.page:15(name) C/prob-conn-acctdisabled.page:14(name)
 #: C/change-status.page:14(name) C/add-contact.page:12(name)
 #: C/add-contact.page:25(cite)
 msgid "Phil Bull"
@@ -564,7 +669,7 @@ msgstr "Phil Bull"
 
 #: C/send-message.page:12(email) C/send-file.page:13(email)
 #: C/prob-conn.page:14(email) C/prob-conn-neterror.page:15(email)
-#: C/prob-conn-auth.page:18(email) C/prob-conn-acctdisabled.page:14(email)
+#: C/prob-conn-auth.page:16(email) C/prob-conn-acctdisabled.page:15(email)
 #: C/change-status.page:15(email) C/add-contact.page:13(email)
 msgid "philbull@gmail.com"
 msgstr "philbull@gmail.com"
@@ -580,10 +685,6 @@ msgid ""
 msgstr ""
 "Pulse dos veces sobre el nombre del contacto con el que quiere conversar."
 
-#: C/send-message.page:39(gui) C/add-contact.page:33(gui)
-msgid "Chat"
-msgstr "Charla"
-
 #: C/send-message.page:45(p)
 msgid ""
 "A new window will open. Type a message into the box at the bottom of the "
@@ -596,7 +697,7 @@ msgstr ""
 msgid "Send a file from your computer to one of your contacts."
 msgstr "Enviar un archivo desde su equipo a uno de sus contactos."
 
-#: C/send-file.page:27(title)
+#: C/send-file.page:27(title) C/irc-sending-file.page:21(title)
 msgid "Send files"
 msgstr "Enviar archivos"
 
@@ -628,7 +729,7 @@ msgstr "Enviar"
 msgid "Select the file to send, and click on <placeholder-1/>."
 msgstr "Seleccione el archivo para enviar y pulse <placeholder-1/>."
 
-#: C/send-file.page:55(gui) C/send-file.page:77(gui)
+#: C/send-file.page:55(gui) C/send-file.page:84(gui)
 msgid "File Transfers"
 msgstr "Transferencias de archivos"
 
@@ -646,15 +747,18 @@ msgstr ""
 "transferencia."
 
 #: C/send-file.page:63(em) C/create-account.page:62(link)
+#: C/audio-video.page:115(td)
 msgid "Jabber"
 msgstr "Jabber"
 
 #: C/send-file.page:64(em) C/create-account.page:52(link)
+#: C/audio-video.page:105(td)
 msgid "Google Talk"
 msgstr "Google Talk"
 
 #: C/send-file.page:64(em) C/salut-protocol.page:8(em)
 #: C/salut-protocol.page:35(em) C/create-account.page:95(em)
+#: C/audio-video.page:125(td)
 msgid "Salut"
 msgstr "Salut"
 
@@ -666,7 +770,15 @@ msgstr ""
 "Sólo es posible enviar archivos usando los siguientes servicios: "
 "<placeholder-1/>, <placeholder-2/> y <placeholder-3/>."
 
-#: C/send-file.page:68(p)
+#: C/send-file.page:69(p)
+msgid ""
+"In order to send a file to someone, you need to be connected to the "
+"Internet, or to a local area network."
+msgstr ""
+"Para poder enviar un archivo a alguien necesita estar conectado a Internet o "
+"a una red de área local."
+
+#: C/send-file.page:75(p)
 msgid ""
 "If your contact accepts the file transfer, you can watch the progress of the "
 "transfer and see the estimated amount of time remaining before it is "
@@ -675,11 +787,11 @@ msgstr ""
 "Si su contacto acepta la transferencia del archivo puede ver el progreso de "
 "la transferencia y el tiempo restante estimado antes de que se complete."
 
-#: C/send-file.page:73(gui)
+#: C/send-file.page:80(gui)
 msgid "File transfer cancelled"
 msgstr "Transferencia de archivo cancelada"
 
-#: C/send-file.page:72(p)
+#: C/send-file.page:79(p)
 msgid ""
 "If they do not accept it, the status of the transfer will change to "
 "<placeholder-1/>, and the file will not be sent."
@@ -687,11 +799,11 @@ msgstr ""
 "Si no la aceptan, el estado de la transferencia del archivo cambiará a "
 "<placeholder-1/> y no se enviará el archivo."
 
-#: C/send-file.page:79(gui)
+#: C/send-file.page:86(gui)
 msgid "Clear"
 msgstr "Limpiar"
 
-#: C/send-file.page:76(p)
+#: C/send-file.page:83(p)
 msgid ""
 "Once a transfer is finished, you can close the <placeholder-1/> window. If "
 "you have multiple finished transfers listed in the window, click on "
@@ -702,14 +814,6 @@ msgstr ""
 "<placeholder-1/>. Si tiene múltiples transferencias finalizadas listas en la "
 "ventana pulse <placeholder-2/> para vaciar la lista. Esto sólo quitará los "
 "archivos de la lista y no los borrará de su equipo."
-
-#: C/send-file.page:84(p)
-msgid ""
-"In order to send a file to someone, you need to be connected to the "
-"Internet, or to a local area network."
-msgstr ""
-"Para poder enviar un archivo a alguien necesita estar conectado a Internet o "
-"a una red de área local."
 
 #: C/salut-protocol.page:7(desc)
 msgid "Undesrtanding the <placeholder-1/> protocol."
@@ -786,32 +890,24 @@ msgstr ""
 "Después de quitar una cuenta no podrá recuperarla o recuperar las "
 "conversaciones que tuvo con ella."
 
-#: C/remove-account.page:40(key) C/irc-nick-password.page:45(key)
+#: C/remove-account.page:40(key) C/irc-nick-password.page:51(key)
 #: C/irc-account.page:33(key) C/disable-account.page:43(key)
 #: C/add-account.page:32(key)
 msgid "F4"
 msgstr "F4"
 
-#: C/remove-account.page:39(p) C/irc-nick-password.page:44(p)
+#: C/remove-account.page:39(p) C/irc-nick-password.page:50(p)
 #: C/irc-account.page:32(p) C/disable-account.page:42(p)
 #: C/add-account.page:31(p)
 msgid "Press <placeholder-1/>."
 msgstr "Pulse <placeholder-1/>."
 
-#: C/remove-account.page:45(gui) C/prob-conn-acctdisabled.page:34(gui)
-#: C/prob-conn-acctdisabled.page:45(app) C/irc-nick-password.page:50(gui)
-#: C/irc-account.page:38(gui) C/irc-account.page:116(gui)
-#: C/disable-account.page:48(gui) C/add-account.page:37(gui)
-#: C/add-account.page:89(gui)
+#: C/remove-account.page:45(gui) C/prob-conn-acctdisabled.page:44(gui)
+#: C/irc-nick-password.page:56(gui) C/irc-account.page:38(gui)
+#: C/irc-account.page:116(gui) C/disable-account.page:48(gui)
+#: C/add-account.page:37(gui) C/add-account.page:89(gui)
 msgid "Accounts"
 msgstr "Cuentas"
-
-#: C/remove-account.page:44(p) C/offline-contacts.page:41(p)
-#: C/irc-nick-password.page:49(p) C/irc-account.page:37(p)
-#: C/disable-account.page:47(p) C/add-contact.page:32(p)
-#: C/add-account.page:36(p)
-msgid "Choose <guiseq><placeholder-1/><placeholder-2/></guiseq>."
-msgstr "Elija <guiseq><placeholder-1/><placeholder-2/></guiseq>."
 
 #: C/remove-account.page:51(p)
 msgid ""
@@ -859,130 +955,161 @@ msgstr ""
 "Puede... pero el resultado no es muy bueno: el título está en azul y el "
 "elemento del IGU en gris."
 
-#: C/prob-conn-neterror.page:8(desc)
-msgid ""
-"An error message appears in the main <placeholder-1/> window which says "
-"\"Network error\"."
-msgstr ""
-"Un mensaje de error aparece en la ventana principal de <placeholder-1/> y "
-"muestra «Error de red»."
+#: C/prob-conn-neterror.page:9(gui)
+#| msgid "Network"
+msgid "Network error"
+msgstr "Error de red"
 
-#. TODO: rework this page in order to talk about the IRC problem: if you
-#.   don't set your nickname, this is the kind of error that will be shown.
-#: C/prob-conn-neterror.page:29(title)
+#: C/prob-conn-neterror.page:8(desc) C/prob-conn-name.page:8(desc)
+#: C/prob-conn-auth.page:8(desc)
+#| msgid ""
+#| "An error message appears in the main <placeholder-1/> window which says "
+#| "\"Name in use\"."
+msgid ""
+"An error message which says \"<placeholder-1/>\" appears in the main window."
+msgstr ""
+"Aparece un mensaje de error en la ventana principal que muestra «<placeholder-"
+"1/>»."
+
+#: C/prob-conn-neterror.page:28(title)
 msgid "I get a message that says \"Network error\""
 msgstr "Obtengo un mensaje que muestra «Error de red»"
 
-#: C/prob-conn-neterror.page:31(p)
+#: C/prob-conn-neterror.page:30(p)
+#| msgid ""
+#| "If you try to connect and an error message appears in the main Empathy "
+#| "window which says \"Network error\", Empathy cannot communicate with the "
+#| "instant messaging service for some reason."
 msgid ""
-"If you try to connect and an error message appears in the main Empathy "
-"window which says \"Network error\", Empathy cannot communicate with the "
+"This kind of error happens when <placeholder-1/> cannot communicate with the "
 "instant messaging service for some reason."
 msgstr ""
-"Si intenta conectarse y aparece un mensaje de error en la ventana principal "
-"de Empathy que muestra «Error de red», Empathy no se puede comunicar con el "
-"servicio de mensajería instantánea por alguna razón."
+"Este tipo de error sucede cuando <placeholder-1/> no puede comunicarse con "
+"el servicio de mensajería instantánea por alguna razón."
 
-#: C/prob-conn-neterror.page:39(p)
-msgid "Check that you are connected to the Internet or network."
-msgstr "Compruebe que está conectado a Internet o a una red."
+#: C/prob-conn-neterror.page:34(p)
+msgid ""
+"Also, this kind of error happens when you try to use an IRC account without "
+"setting a nickname."
+msgstr ""
+"Este tipo de error también sucede cuando intenta usar una cuenta IRC sin "
+"establecer un apodo."
 
-#: C/prob-conn-neterror.page:47(gui) C/prob-conn-name.page:40(gui)
-#: C/prob-conn-auth.page:55(gui)
+#: C/prob-conn-neterror.page:41(p) C/prob-conn-auth.page:46(p)
+#: C/prob-conn-acctdisabled.page:38(p)
+#| msgid "Check that you are connected to the Internet or network."
+msgid ""
+"Make sure that you are connected to the Internet, or to a local area network."
+msgstr "Asegúrese de que está conectado a Internet o a una red de área local."
+
+#: C/prob-conn-neterror.page:47(gui) C/prob-conn-name.page:35(gui)
+#: C/prob-conn-auth.page:59(gui)
 msgid "Edit Account"
 msgstr "Editar una cuenta"
 
-#: C/prob-conn-neterror.page:46(p)
-msgid "Click the <placeholder-1/> button in the error message."
+#: C/prob-conn-neterror.page:46(p) C/prob-conn-name.page:34(p)
+#: C/prob-conn-auth.page:58(p)
+#| msgid "Click the <placeholder-1/> button in the error message."
+msgid "Click on the <placeholder-1/> button in the error message."
 msgstr "Pulse el botón <placeholder-1/> en el mensaje de error."
 
-#: C/prob-conn-neterror.page:52(gui) C/prob-conn-acctdisabled.page:45(gui)
+#: C/prob-conn-neterror.page:54(gui) C/prob-conn-acctdisabled.page:55(gui)
 msgid "Advanced"
 msgstr "Avanzadas"
 
-#: C/prob-conn-neterror.page:51(p)
+#: C/prob-conn-neterror.page:53(p) C/prob-conn-acctdisabled.page:54(p)
+#, fuzzy
+#| msgid ""
+#| "Expand the <placeholder-1/> section and make sure that the details such "
+#| "as server address and port are correct. You should be able to find these "
+#| "details from the website of the messaging service."
 msgid ""
-"Expand the <placeholder-1/> section and make sure that the details such as "
-"server address and port are correct. You should be able to find these "
-"details from the website of the messaging service."
+"Check in the <placeholder-1/> section that all the details are correct. You "
+"should be able to find these details from the website of the messaging "
+"service."
 msgstr ""
 "Expanda la sección <placeholder-1/> y asegúrese de que los detalles tales "
 "como la dirección y el puerto del servidor son correctos. Debería poder "
 "encontrar estos detalles en la página web del servicio de mensajería."
 
-#: C/prob-conn-neterror.page:59(gui) C/prob-conn-auth.page:57(gui)
-#: C/prob-conn-acctdisabled.page:35(gui) C/irc-nick-password.page:74(gui)
-#: C/irc-account.page:109(gui) C/disable-account.page:61(gui)
-#: C/add-account.page:82(gui)
+#: C/prob-conn-neterror.page:60(gui) C/prob-conn-name.page:42(gui)
+#: C/irc-account.page:81(gui)
+msgid "Nickname"
+msgstr "Apodo"
+
+#: C/prob-conn-neterror.page:59(p)
+msgid ""
+"In the case of an IRC account, type your nickname in the <placeholder-1/> "
+"text box."
+msgstr ""
+
+#: C/prob-conn-neterror.page:68(gui) C/prob-conn-name.page:56(gui)
+#: C/prob-conn-auth.page:69(gui) C/prob-conn-acctdisabled.page:61(gui)
+#: C/irc-nick-password.page:80(gui) C/irc-account.page:109(gui)
+#: C/disable-account.page:61(gui) C/add-account.page:82(gui)
 msgid "Enabled"
 msgstr "Activada"
 
-#: C/prob-conn-neterror.page:58(p)
+#: C/prob-conn-neterror.page:67(p) C/prob-conn-name.page:55(p)
+#: C/prob-conn-auth.page:68(p)
+#, fuzzy
+#| msgid ""
+#| "Uncheck the <placeholder-1/> box next to the name of your account and "
+#| "then check it again to try to connect to the service again."
 msgid ""
-"Uncheck the <placeholder-1/> box next to the name of your account and then "
-"check it again to try to connect to the service again."
+"Deselect the <placeholder-1/> check-box next to the name of your account, "
+"and then select it again to try to reconnect to the service."
 msgstr ""
 "Desmarque la caja <placeholder-1/> junto al nombre de su cuenta y después "
 "márquela de nuevo para intentar conectar con el servicio de nuevo."
 
-#: C/prob-conn-name.page:8(desc)
-msgid ""
-"An error message appears in the main <placeholder-1/> window which says "
-"\"Name in use\"."
+#: C/prob-conn-name.page:9(gui)
+msgid "Name in use"
 msgstr ""
-"Aparece un mensaje de error en la ventana principal de <placeholder-1/> que "
-"muestra «Nombre en uso»."
 
-#. TODO: work on this page. This error appears with the IRC account
-#.     when you set a nickname that is already in use on that network. We need
-#.     to write topics for changing your nickname and to set the password of your
-#.     nickname.
-#: C/prob-conn-name.page:31(title)
+#: C/prob-conn-name.page:24(title)
 msgid "I get a message that says \"Name in use\""
 msgstr "Obtengo un mensaje de error que muestra «Nombre en uso»"
 
-#: C/prob-conn-name.page:33(p)
+#: C/prob-conn-name.page:26(p)
+#, fuzzy
+#| msgid ""
+#| "This kind of error happens when you try to connect to your IRC account "
+#| "and you are using a nickname that is being used by someone else on that "
+#| "particular network."
 msgid ""
 "This kind of error happens when you try to connect to your IRC account and "
-"you are using a nickname that is being used by someone else on that "
+"you are using a nickname that is already being used by someone else on that "
 "particular network."
 msgstr ""
 "Este tipo de error sucede cuando intenta conectarse a su cuenta de IRC y "
 "está usando un apodo que ya está usando otra persona en esa red en "
 "particular."
 
-#: C/prob-conn-name.page:39(p)
-msgid ""
-"To resolve this problem, click on the <placeholder-1/> button and perform "
-"one of the following:"
-msgstr ""
-"Para resolver este problema pulse el botón <placeholder-1/> y realice una de "
-"las siguientes acciones:"
+#: C/prob-conn-name.page:41(p)
+#, fuzzy
+#| msgid "In the <placeholder-1/> text box, type their name."
+msgid "In the <placeholder-1/> text box, type a new nickname."
+msgstr "En la caja de texto <placeholder-1/> escriba su nombre."
 
 #: C/prob-conn-name.page:46(p)
-msgid "Change your nickname."
-msgstr "Cambie su apodo."
-
-#: C/prob-conn-name.page:51(p)
+#, fuzzy
+#| msgid ""
+#| "Set the password for that nickname, if you have registered that nickname "
+#| "within the network you are using. For more information, see <link xref="
+#| "\"irc-nick-password\"/>."
 msgid ""
-"Set the password for that nickname, if you have registered that nickname "
-"within the network you are using. For more information, see <link xref=\"irc-"
+"If you have registered that nickname within the network you are using, set "
+"the password for that nickname. For more information, see <link xref=\"irc-"
 "nick-password\"/>."
 msgstr ""
 "Establezca la contraseña para ese apodo, si ha registrado ese apodo en la "
 "red que está usando. Para obtener más información consulte la <link xref="
 "\"irc-nick-password\"/>."
 
-#: C/prob-conn-auth.page:10(gui) C/prob-conn-auth.page:40(gui)
+#: C/prob-conn-auth.page:9(gui)
 msgid "Authentication failed"
 msgstr "Falló la autenticación"
-
-#: C/prob-conn-auth.page:8(desc)
-msgid ""
-"An error message appears in the main window saying that \"<placeholder-1/>\"."
-msgstr ""
-"Aparece un mensaje de error en la ventana principal diciendo «<placeholder-1/"
-">»."
 
 #: C/prob-conn-auth.page:29(title)
 msgid "I get a message that says \"Authentication failed\""
@@ -997,18 +1124,28 @@ msgstr ""
 "Se debe escribir esa sección."
 
 #: C/prob-conn-auth.page:39(p)
+#, fuzzy
+#| msgid ""
+#| "If you try to connect and you get a message saying <placeholder-1/>, your "
+#| "instant messaging service is not allowing you to connect because it does "
+#| "not recognize your username or password for some reason."
 msgid ""
-"If you try to connect and you get a message saying <placeholder-1/>, your "
-"instant messaging service is not allowing you to connect because it does not "
-"recognize your username or password for some reason."
+"This kind of error happens when your instant messaging service is not "
+"allowing you to connect because it does not recognize your username or "
+"password for some reason."
 msgstr ""
 "Si intenta conectarse y obtiene un mensaje mostrando <placeholder-1/>, su "
 "servicio de mensajería instantánea no le está permitiendo que se conecte "
 "porque por algún motivo no reconoce su nombre de usuario o su contraseña."
 
-#: C/prob-conn-auth.page:47(p)
+#: C/prob-conn-auth.page:51(p)
+#, fuzzy
+#| msgid ""
+#| "Make sure that you have registered for an account with the service you "
+#| "are trying to connect to. If you do not have an account, most services "
+#| "will not allow you to connect."
 msgid ""
-"Make sure that you have registered for an account with the service you are "
+"Make sure that you have registered an account with the service you are "
 "trying to connect to. If you do not have an account, most services will not "
 "allow you to connect."
 msgstr ""
@@ -1016,17 +1153,12 @@ msgstr ""
 "intentando conectarse. Si no tiene una cuenta la mayoría de los servicios no "
 "le permitirán que se conecte."
 
-#: C/prob-conn-auth.page:54(p)
+#: C/prob-conn-auth.page:63(p) C/prob-conn-acctdisabled.page:49(p)
+#, fuzzy
+#| msgid "Make sure that your username and password are correct."
 msgid ""
-"Click the <placeholder-1/> button in the error message. Type your username "
-"and password again to make sure that they are correct. Deselect the "
-"<placeholder-2/> box next to the name of your account and then select it to "
-"try to connect to the service again."
-msgstr ""
-"Pulse el botón <placeholder-1/> en el mensaje de error. Escriba de nuevo su "
-"nombre de usuario y contraseña para asegurarse de que son correctos. "
-"Desmarque la caja <placeholder-2/> junto al nombre de la cuenta y después "
-"márquela para intentar conectarse de nuevo con el servicio."
+"Type your username and password again to make sure that they are correct."
+msgstr "Asegúrese de que su nombre de usuario y contraseña son correctos."
 
 #: C/prob-conn-acctdisabled.page:7(desc)
 msgid ""
@@ -1036,40 +1168,45 @@ msgstr ""
 "La cuenta de mensajería instantánea que quiere usar no está activada en la "
 "lista de cuentas."
 
-#: C/prob-conn-acctdisabled.page:23(title)
+#: C/prob-conn-acctdisabled.page:28(title)
 msgid "My account is not enabled"
 msgstr "Mi cuenta no está activada"
 
-#: C/prob-conn-acctdisabled.page:25(p)
+#: C/prob-conn-acctdisabled.page:30(p)
+#, fuzzy
+#| msgid ""
+#| "If the instant messaging account that you want to use is not enabled in "
+#| "the drop-down account list when you try to start a new conversation or "
+#| "join a chat, your account details may not be correct."
 msgid ""
 "If the instant messaging account that you want to use is not enabled in the "
 "drop-down account list when you try to start a new conversation or join a "
-"chat, your account details may not be correct."
+"room, your account details may not be correct."
 msgstr ""
 "Si la cuenta de mensajería instantánea que quiere usar no está activada en "
 "la lista desplegable de cuentas cuando intenta iniciar una conversación "
 "nueva o unirse a una charla, puede que los detalles de su cuenta no sean "
 "correctos."
 
-#: C/prob-conn-acctdisabled.page:33(p)
+#: C/prob-conn-acctdisabled.page:43(p)
+#, fuzzy
+#| msgid "Choose <guiseq><placeholder-1/><placeholder-2/></guiseq>."
 msgid ""
-"Click <guiseq><placeholder-1/><placeholder-2/></guiseq> and make sure that "
-"the <placeholder-3/> checkbox is checked."
-msgstr ""
-"Pulse <guiseq><placeholder-1/><placeholder-2/></guiseq> y asegúrese de que "
-"la casilla de verificación de <placeholder-3/> está marcada."
+"Choose <guiseq><placeholder-1/><placeholder-2/></guiseq> and select the "
+"account that is not working."
+msgstr "Elija <guiseq><placeholder-1/><placeholder-2/></guiseq>."
 
-#: C/prob-conn-acctdisabled.page:39(p)
-msgid "Make sure that your username and password are correct."
-msgstr "Asegúrese de que su nombre de usuario y contraseña son correctos."
-
-#: C/prob-conn-acctdisabled.page:44(p)
+#: C/prob-conn-acctdisabled.page:60(p)
+#, fuzzy
+#| msgid ""
+#| "Uncheck the <placeholder-1/> box next to the name of your account and "
+#| "then check it again to try to connect to the service again."
 msgid ""
-"Expand the <placeholder-1/> section of the <placeholder-2/> window and make "
-"sure that all of the server settings are correct."
+"Check that the <placeholder-1/> check-box next to the name of your account "
+"is selected. If it is not, select the check-box to enalbe the account."
 msgstr ""
-"Expanda la sección <placeholder-1/> de la ventana <placeholder-2/> y "
-"asegúrese de que todos los ajustes del servidor son correctos."
+"Desmarque la caja <placeholder-1/> junto al nombre de su cuenta y después "
+"márquela de nuevo para intentar conectar con el servicio de nuevo."
 
 #: C/offline-contacts.page:7(desc)
 msgid "How to see the contacts that are not online."
@@ -1092,22 +1229,75 @@ msgid "Offline Contacts"
 msgstr "Contactos desconectados"
 
 #: C/offline-contacts.page:47(key)
-msgid "Ctrl"
-msgstr "Ctrl"
-
-#: C/offline-contacts.page:47(key)
 msgid "H"
 msgstr "H"
-
-#: C/offline-contacts.page:46(p)
-msgid "Press <keyseq><placeholder-1/><placeholder-2/></keyseq>."
-msgstr "Pulse <keyseq><placeholder-1/><placeholder-2/></keyseq>."
 
 #: C/offline-contacts.page:53(p)
 msgid "To hide the offline contacts again, repeat the same procedure above."
 msgstr ""
 "Para ocultar los contactos desconectados de nuevo, repita el mismo "
 "procedimiento anterior."
+
+#: C/irc-start-conversation.page:7(desc)
+#| msgid "Start a group conversation with your contacts."
+msgid "Start a conversation witn an IRC contact."
+msgstr "Iniciar una conversación con un contacto del IRC."
+
+#: C/irc-start-conversation.page:24(p)
+msgid ""
+"To start a private conversation with one of the IRC contacts that are in a "
+"room, after you joined a room, from the IRC room contact list perform one of "
+"the following:"
+msgstr ""
+
+#: C/irc-start-conversation.page:31(p)
+#| msgid ""
+#| "Double-click the name of the contact that you want to have a conversation "
+#| "with."
+msgid "Double-click the name of contact you want to have a conversation with."
+msgstr ""
+"Pulse dos veces sobre el nombre del contacto con el que quiere conversar."
+
+#: C/irc-start-conversation.page:47(p)
+msgid ""
+"The IRC room contact list is not the same as <placeholder-1/><placeholder-2/"
+">, and is relative only to the IRC room you joined. Different rooms can have "
+"different contacts listed."
+msgstr ""
+
+#: C/irc-start-conversation.page:57(gui)
+#| msgid "Text conversations"
+msgid "Conversation"
+msgstr "Conversación"
+
+#: C/irc-start-conversation.page:57(gui)
+#| msgid "Contact List"
+msgid "Show Contact List"
+msgstr "Mostrar la lista de contactos"
+
+#: C/irc-start-conversation.page:54(p)
+#, fuzzy
+#| msgid ""
+#| "Select the contact you want to share your desktop with, and choose "
+#| "<guiseq><placeholder-1/><placeholder-2/><placeholder-3/></guiseq>."
+msgid ""
+"The IRC room contact list is usually on the right side of the IRC room "
+"window. If you do not see it, choose <guiseq><placeholder-1/><placeholder-2/"
+"></guiseq>."
+msgstr ""
+"Seleccione el contacto con el que quiera compartir su escritorio y pulse "
+"<guiseq><placeholder-1/><placeholder-2/><placeholder-3/></guiseq>."
+
+#: C/irc-sending-file.page:8(desc)
+#, fuzzy
+#| msgid "Send a file from your computer to one of your contacts."
+msgid "Send a file from your computer to one of the IRC contacts."
+msgstr "Enviar un archivo desde su equipo a uno de sus contactos."
+
+#: C/irc-sending-file.page:23(p)
+#| msgid "At the moment it is not possible to join a password protected room."
+msgid "At the moment it is not possible to send files using IRC."
+msgstr "Por el momento no es posible enviar archivos usando el IRC."
 
 #: C/irc-nick-password.page:8(desc)
 msgid "How to set the password of a nickname."
@@ -1118,34 +1308,48 @@ msgid "Set the nickname password"
 msgstr "Establecer la contraseña para un apodo."
 
 #: C/irc-nick-password.page:25(p)
+#, fuzzy
+#| msgid ""
+#| "Registering a nickname is useful to preserve your identity on IRC and you "
+#| "will be able to use always the same nickname. In some cirtumstances, some "
+#| "IRC channels may be configured to accept only registered nickname."
 msgid ""
-"Registering a nickname is useful to preserve your identity on IRC and you "
-"will be able to use always the same nickname. In some cirtumstances, some "
-"IRC channels may be configured to accept only registered nickname."
+"Registering a nickname is useful to preserve your identity on IRC, and to be "
+"able to use always the same nickname. In some cirtumstances, some IRC "
+"channels may be configured to accept only registered nickname."
 msgstr ""
 "Registrar un apodo es útil para preservar su identidad en el IRC y siempre "
 "podrá usar ese apodo. En algunas circunstancias, algunos canales de IRC "
 "pueden estar configurados para aceptar sólo apodos registrados."
 
 #: C/irc-nick-password.page:31(p)
+#, fuzzy
+#| msgid ""
+#| "If you have registered your nickname with a password on a network that "
+#| "supports nickname registration, you can use that password with "
+#| "<placeholder-1/> to identify yourself as the owner of the nickname."
 msgid ""
 "If you have registered your nickname with a password on a network that "
 "supports nickname registration, you can use that password with <placeholder-"
-"1/> to identify yourself as the owner of the nickname."
+"1/> to identify yourself as the owner of that nickname."
 msgstr ""
 "Si ha registrado su apodo con una contraseña en una red que soporta registro "
 "de apodos, puede usar esa contraseña con <placeholder-1/> para identificarse "
 "como el propietario del apodo."
 
-#: C/irc-nick-password.page:56(p)
+#: C/irc-nick-password.page:38(p)
+msgid "Not all the IRC servers support nickname registration."
+msgstr "No todos los servidores de IRC soportan registro de apodos."
+
+#: C/irc-nick-password.page:62(p)
 msgid "Select the IRC account from the box on the left of the dialog."
 msgstr "Seleccione la cuenta de IRC en la caja a la izquierda del diálogo."
 
-#: C/irc-nick-password.page:62(gui)
+#: C/irc-nick-password.page:68(gui)
 msgid "Enable"
 msgstr "Activar"
 
-#: C/irc-nick-password.page:61(p)
+#: C/irc-nick-password.page:67(p)
 msgid ""
 "If the account is enabled, disable it by deselecting the <placeholder-1/> "
 "check-box next to the name of the account."
@@ -1153,11 +1357,11 @@ msgstr ""
 "Si la cuenta está activada, desactívela deseleccionando la casilla de "
 "verificación <placeholder-1/> junto al nombre de la cuenta."
 
-#: C/irc-nick-password.page:68(gui) C/irc-account.page:87(gui)
+#: C/irc-nick-password.page:74(gui) C/irc-account.page:87(gui)
 msgid "Password"
 msgstr "Contraseña"
 
-#: C/irc-nick-password.page:67(p)
+#: C/irc-nick-password.page:73(p)
 msgid ""
 "In the <placeholder-1/> text box, type the password you used to register "
 "your nikcname."
@@ -1165,7 +1369,7 @@ msgstr ""
 "En la caja de texto <placeholder-1/> escriba la contraseña que quiere usar "
 "para registrar su apodo."
 
-#: C/irc-nick-password.page:73(p)
+#: C/irc-nick-password.page:79(p)
 msgid ""
 "Enable the account by selecting the <placeholder-1/> check-box next to the "
 "name of the account."
@@ -1173,15 +1377,18 @@ msgstr ""
 "Active la cuenta seleccionando la casilla de verificación <placeholder-1/> "
 "junto al nombre de la cuenta."
 
-#: C/irc-nick-password.page:80(p)
+#: C/irc-nick-password.page:83(p)
+#| msgid ""
+#| "Once you are connected, you will receive a message from the nickname "
+#| "server that will tell you of the established identification."
 msgid ""
-"Once you are connected, you will receive a message from the nickname server "
-"that will tell you of the established identification."
+"Once connected, you will receive a message from the nickname server that "
+"will tell you of the established identification."
 msgstr ""
-"Una vez que está conectado recibirá un mensaje desde el servidor de apodos "
+"Una vez que esté conectado recibirá un mensaje desde el servidor de apodos "
 "que le informará acerca del establecimiento de la identificación."
 
-#: C/irc-nick-password.page:86(p)
+#: C/irc-nick-password.page:91(p)
 msgid ""
 "At the moment it is not possible to register an IRC nickname with "
 "<placeholder-1/>, it is only possible to use the password of an already "
@@ -1190,9 +1397,10 @@ msgstr ""
 "Por el momento no es posible registrar apodos en el IRC con <placeholder-1/"
 ">, sólo es posible usar una contraseña de un apodo ya registrado."
 
-#: C/irc-manage.page:7(desc)
-msgid "Manage IRC accounts with <placeholder-1/>."
-msgstr "Gestionar cuentas IRC con <placeholder-1/>."
+#: C/irc-manage.page:8(desc)
+#| msgid "Manage IRC accounts with <placeholder-1/>."
+msgid "Hot to use IRC with <placeholder-1/>."
+msgstr "Cómo usar el IRC con <placeholder-1/>."
 
 #: C/irc-manage.page:22(title)
 msgid "Use IRC"
@@ -1209,31 +1417,32 @@ msgstr ""
 "mucho contenido para esta página, trabajar más en otras."
 
 #: C/irc-manage.page:34(title)
-msgid "Manage IRC accounts"
-msgstr "Gestionar cuentas IRC"
+#| msgid "Icon for audio conversation"
+msgid "IRC rooms and conversations"
+msgstr "Salas y conversaciones en el IRC"
 
-#. TODO: see prob-conn-neterror.page
-#: C/irc-manage.page:39(title) C/index.page:40(title)
+#: C/irc-manage.page:38(title) C/index.page:40(title)
 msgid "Fix common problems"
 msgstr "Solucionar problemas comunes"
 
 #: C/irc-join-room.page:7(desc)
-msgid "Entering an IRC channel."
-msgstr "Entrar en un canal IRC."
+#| msgid "Entering an IRC channel."
+msgid "Join an IRC channel."
+msgstr "Unirse a un canal IRC."
 
-#: C/irc-join-room.page:22(title)
+#: C/irc-join-room.page:21(title)
 msgid "Join a room"
 msgstr "Unirse a una sala"
 
-#: C/irc-join-room.page:28(gui) C/irc-join-room.page:39(gui)
+#: C/irc-join-room.page:27(gui) C/irc-join-room.page:38(gui)
 msgid "Room"
 msgstr "Sala"
 
-#: C/irc-join-room.page:28(gui) C/irc-join-room.page:45(gui)
+#: C/irc-join-room.page:27(gui) C/irc-join-room.page:44(gui)
 msgid "Join"
 msgstr "Unirse"
 
-#: C/irc-join-room.page:26(p)
+#: C/irc-join-room.page:25(p)
 msgid ""
 "From the <placeholder-1/> window, choose <guiseq><placeholder-2/"
 "><placeholder-3/></guiseq>."
@@ -1241,11 +1450,7 @@ msgstr ""
 "Desde la ventana <placeholder-1/> elija <guiseq><placeholder-2/><placeholder-"
 "3/></guiseq>."
 
-#: C/irc-join-room.page:33(gui) C/add-contact.page:38(gui)
-msgid "Account"
-msgstr "Cuenta"
-
-#: C/irc-join-room.page:32(p)
+#: C/irc-join-room.page:31(p)
 msgid ""
 "From the <placeholder-1/> drop-down list, select the IRC account that "
 "corresponds to the network you want to use."
@@ -1253,11 +1458,11 @@ msgstr ""
 "Desde la lista desplegable <placeholder-1/> elija la cuenta IRC que "
 "corresponda con la red que quiere usar."
 
-#: C/irc-join-room.page:40(sys)
+#: C/irc-join-room.page:39(sys)
 msgid "#"
 msgstr "#"
 
-#: C/irc-join-room.page:38(p)
+#: C/irc-join-room.page:37(p)
 msgid ""
 "In the <placeholder-1/> text box, type the name of the channel you want to "
 "join. Prefix the name with the hash character (<placeholder-2/>)."
@@ -1266,11 +1471,11 @@ msgstr ""
 "quiere unirse. Preceda el nombre con el carácter almohadilla (<placeholder-2/"
 ">)."
 
-#: C/irc-join-room.page:44(p)
+#: C/irc-join-room.page:43(p)
 msgid "Click on <placeholder-1/> to enter the room."
 msgstr "Pulse <placeholder-1/> para entrar en la sala."
 
-#: C/irc-join-room.page:51(p)
+#: C/irc-join-room.page:50(p)
 msgid ""
 "To join multiple rooms, you need to repeat the steps above for each room."
 msgstr ""
@@ -1338,10 +1543,6 @@ msgid ""
 msgstr ""
 "De la lista desplegable <placeholder-1/> seleccione el nombre de la red para "
 "la que está creando la cuenta."
-
-#: C/irc-account.page:81(gui)
-msgid "Nickname"
-msgstr "Apodo"
 
 #. TODO: rethink the description of the nickname
 #: C/irc-account.page:80(p)
@@ -1522,11 +1723,11 @@ msgstr "Pulse en el nombre del servicio para visitar su página web."
 msgid "Instant Messaging Services"
 msgstr "Servicios de mensajería instantánea"
 
-#: C/create-account.page:47(link)
+#: C/create-account.page:47(link) C/audio-video.page:100(td)
 msgid "AIM"
 msgstr "AIM"
 
-#: C/create-account.page:57(link)
+#: C/create-account.page:57(link) C/audio-video.page:110(td)
 msgid "ICQ"
 msgstr "ICQ"
 
@@ -1544,11 +1745,11 @@ msgstr ""
 "los proveedores de servicios lo soportan. Un proveedor de servicios que se "
 "sabe que funciona es <placeholder-1/>, el predeterminado para la aplicación."
 
-#: C/create-account.page:75(link)
+#: C/create-account.page:75(link) C/audio-video.page:120(td)
 msgid "MSN"
 msgstr "MSN"
 
-#: C/create-account.page:80(link)
+#: C/create-account.page:80(link) C/audio-video.page:130(td)
 msgid "Yahoo!"
 msgstr "Yahoo!"
 
@@ -1674,6 +1875,54 @@ msgstr ""
 "Este es el icono que representa la posibilidad de tener una conversación de "
 "vídeo."
 
+#: C/audio-video.page:70(p)
+msgid ""
+"In order to have a video conversation, you need to have a web-cam that is "
+"supported by your operating system, and a working microphone."
+msgstr ""
+"Para poder tener una conversación de vídeo necesita tener una cámara web que "
+"esté soportada por su sistema operativo y un micrófono que funcione."
+
+#: C/audio-video.page:74(p)
+msgid ""
+"In order to have an audio conversation, you need to have a sound-card that "
+"is supported by your operating system, and a working microphone."
+msgstr ""
+"Para poder tener una conversación de sonido necesita tener una tarjeta de "
+"sonido que esté soportada por su sistema operativo y un micrófono que "
+"funcione."
+
+#: C/audio-video.page:82(title)
+msgid "Supported services"
+msgstr "Servicios soportados"
+
+#: C/audio-video.page:87(td)
+msgid "Protocol / Service"
+msgstr "Protocolo / servicio"
+
+#: C/audio-video.page:90(td)
+#| msgid "Text conversations"
+msgid "Video conversations"
+msgstr "Conversaciones de vídeo"
+
+#: C/audio-video.page:93(td)
+#| msgid "Audio and video conversations"
+msgid "Audio conversations"
+msgstr "Conversaciones de sonido"
+
+#: C/audio-video.page:101(td) C/audio-video.page:102(td)
+#: C/audio-video.page:111(td) C/audio-video.page:112(td)
+#: C/audio-video.page:121(td) C/audio-video.page:122(td)
+#: C/audio-video.page:126(td) C/audio-video.page:127(td)
+#: C/audio-video.page:131(td) C/audio-video.page:132(td)
+msgid "No"
+msgstr "No"
+
+#: C/audio-video.page:106(td) C/audio-video.page:107(td)
+#: C/audio-video.page:116(td) C/audio-video.page:117(td)
+msgid "Yes"
+msgstr "Sí"
+
 #: C/audio-call.page:8(desc)
 msgid "Start an audio conversation with one of your contacts."
 msgstr "Iniciar una conversación de sonido con uno de sus contactos."
@@ -1791,6 +2040,58 @@ msgstr ""
 #: C/index.page:0(None)
 msgid "translator-credits"
 msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2008-2009"
+
+#~ msgid ""
+#~ "An error message appears in the main <placeholder-1/> window which says "
+#~ "\"Network error\"."
+#~ msgstr ""
+#~ "Un mensaje de error aparece en la ventana principal de <placeholder-1/> y "
+#~ "muestra «Error de red»."
+
+#~ msgid ""
+#~ "To resolve this problem, click on the <placeholder-1/> button and perform "
+#~ "one of the following:"
+#~ msgstr ""
+#~ "Para resolver este problema pulse el botón <placeholder-1/> y realice una "
+#~ "de las siguientes acciones:"
+
+#~ msgid "Change your nickname."
+#~ msgstr "Cambie su apodo."
+
+#~ msgid ""
+#~ "An error message appears in the main window saying that \"<placeholder-1/>"
+#~ "\"."
+#~ msgstr ""
+#~ "Aparece un mensaje de error en la ventana principal diciendo «<placeholder-"
+#~ "1/>»."
+
+#~ msgid ""
+#~ "Click the <placeholder-1/> button in the error message. Type your "
+#~ "username and password again to make sure that they are correct. Deselect "
+#~ "the <placeholder-2/> box next to the name of your account and then select "
+#~ "it to try to connect to the service again."
+#~ msgstr ""
+#~ "Pulse el botón <placeholder-1/> en el mensaje de error. Escriba de nuevo "
+#~ "su nombre de usuario y contraseña para asegurarse de que son correctos. "
+#~ "Desmarque la caja <placeholder-2/> junto al nombre de la cuenta y después "
+#~ "márquela para intentar conectarse de nuevo con el servicio."
+
+#~ msgid ""
+#~ "Click <guiseq><placeholder-1/><placeholder-2/></guiseq> and make sure "
+#~ "that the <placeholder-3/> checkbox is checked."
+#~ msgstr ""
+#~ "Pulse <guiseq><placeholder-1/><placeholder-2/></guiseq> y asegúrese de "
+#~ "que la casilla de verificación de <placeholder-3/> está marcada."
+
+#~ msgid ""
+#~ "Expand the <placeholder-1/> section of the <placeholder-2/> window and "
+#~ "make sure that all of the server settings are correct."
+#~ msgstr ""
+#~ "Expanda la sección <placeholder-1/> de la ventana <placeholder-2/> y "
+#~ "asegúrese de que todos los ajustes del servidor son correctos."
+
+#~ msgid "Manage IRC accounts"
+#~ msgstr "Gestionar cuentas IRC"
 
 #~ msgid ""
 #~ "@@image: 'figures/empathy-main-window.png'; "
