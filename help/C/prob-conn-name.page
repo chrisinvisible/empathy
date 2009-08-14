@@ -6,10 +6,10 @@
     <link type="guide" xref="prob-conn"/>
     <link type="guide" xref="irc-manage#problems"/>
     <desc>
-      An error message appears in the main <app>Empathy</app> window which says
-      "Name in use".
+      An error message which says "<gui>Name in use</gui>" appears in the main window.
     </desc>
     <revision pkgversion="2.28" version="0.1" date="2009-07-26" status="draft"/>
+    <revision pkgversion="2.28" version="0.2" date="2009-08-14" status="review"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
@@ -21,39 +21,42 @@
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude" />
   </info>
 
-  <!--
-    TODO: work on this page. This error appears with the IRC account
-    when you set a nickname that is already in use on that network. We need
-    to write topics for changing your nickname and to set the password of your
-    nickname.
-   -->
-
   <title>I get a message that says "Name in use"</title>
 
   <p>
     This kind of error happens when you try to connect to your IRC account and
-    you are using a nickname that is being used by someone else on that particular
+    you are using a nickname that is already being used by someone else on that particular
     network.
   </p>
 
-  <p>
-    To resolve this problem, click on the <gui>Edit Account</gui> button and
-    perform one of the following:
-  </p>
-
-  <list>
+  <steps>
     <item>
       <p>
-        Change your nickname.
+        Click on the <gui>Edit Account</gui> button in the error message.
       </p>
     </item>
     <item>
+      <list>
+        <item>
+          <p>
+            In the <gui>Nickname</gui> text box, type a new nickname.
+          </p>
+        </item>
+        <item>
+          <p>
+            If you have registered that nickname within the network you are using,
+            set the password for that nickname. For more information,
+            see <link xref="irc-nick-password"/>.            
+          </p>
+        </item>
+      </list>
+    </item>
+    <item>
       <p>
-        Set the password for that nickname, if you have registered that nickname
-        within the network you are using. For more information,
-        see <link xref="irc-nick-password"/>.
+        Deselect the <gui>Enabled</gui> check-box next to the name of your account, 
+        and then select it again to try to reconnect to the service.
       </p>
     </item>
-  </list>
+  </steps>
 
 </page>

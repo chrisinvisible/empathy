@@ -26,6 +26,8 @@ DOC_PAGES = \
 	irc-join-room.page \
 	irc-manage.page \
 	irc-nick-password.page \
+	irc-sending-file.page \
+	irc-start-conversation.page \
 	offline-contacts.page \
 	prob-conn-acctdisabled.page \
 	prob-conn-auth.page \
@@ -38,6 +40,7 @@ DOC_PAGES = \
 	send-message.page \
 	set-custom-status.page \
 	share-desktop.page \
+	start-conversation.page \
 	status-icons.page \
 	video-call.page
 
