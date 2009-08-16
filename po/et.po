@@ -11,9 +11,9 @@ msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-01 08:43+0000\n"
-"PO-Revision-Date: 2009-08-12 22:18+0300\n"
-"Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
+"POT-Creation-Date: 2009-08-12 19:28+0000\n"
+"PO-Revision-Date: 2009-08-16 17:49+0300\n"
+"Last-Translator: Ivar Smolin <okul@linux.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -606,7 +606,6 @@ msgid "_Spelling Suggestions"
 msgstr "_Õigekirja soovitused"
 
 #, c-format
-#| msgid "Contact disconnected"
 msgid "%s has disconnected"
 msgstr "%s lahkus"
 
@@ -666,7 +665,7 @@ msgstr "_Ava link"
 #. Translators: timestamp displayed between conversations in
 #. * chat windows (strftime format string)
 msgid "%A %B %d %Y"
-msgstr ""
+msgstr "%A, %d. %B %Y"
 
 msgid "Edit Contact Information"
 msgstr "Kontakti andmete redigeerimine"
@@ -830,7 +829,7 @@ msgid "<b>Location</b>, "
 msgstr "<b>Asukoht</b>,"
 
 msgid "%B %e, %Y at %R UTC"
-msgstr ""
+msgstr "%e. %B %Y kell %R UTC"
 
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Asukoht</b> kuupäeval\t"
@@ -873,7 +872,7 @@ msgid "Information requested..."
 msgstr "Andmepäring..."
 
 msgid "OS:"
-msgstr ""
+msgstr "OS:"
 
 msgid ""
 "Select the groups you want this contact to appear in.  Note that you can "
@@ -1076,19 +1075,19 @@ msgid "Gujarati"
 msgstr "Gujarati"
 
 msgid "Gurmukhi"
-msgstr ""
+msgstr "Gurmuki"
 
 msgid "Hebrew"
 msgstr "Heebrea"
 
 msgid "Hebrew Visual"
-msgstr ""
+msgstr "Heebrea visuaalne"
 
 msgid "Hindi"
 msgstr "Hindi"
 
 msgid "Icelandic"
-msgstr ""
+msgstr "Islandi"
 
 msgid "Japanese"
 msgstr "Jaapani"
@@ -1097,7 +1096,7 @@ msgid "Korean"
 msgstr "Korea"
 
 msgid "Nordic"
-msgstr ""
+msgstr "Põhjamaade"
 
 msgid "Persian"
 msgstr "Pärsia"
@@ -1345,25 +1344,21 @@ msgstr "Vestlused (%d)"
 msgid "Typing a message."
 msgstr "Kirjutab sõnumit."
 
-#| msgid "Clean"
 msgid "C_lear"
 msgstr "_Puhasta"
 
-#| msgid "_Chat"
 msgid "Chat"
 msgstr "Vestlus"
 
-#| msgid "Insert Smiley"
 msgid "Insert _Smiley"
 msgstr "Lisa _tujunägu"
 
 msgid "Move Tab _Left"
-msgstr "Tõsta sakk _vasakule"
+msgstr "Tõsta kaart _vasakule"
 
 msgid "Move Tab _Right"
-msgstr "Tõsta sakk _paremale"
+msgstr "Tõsta kaart _paremale"
 
-#| msgid "Contact"
 msgid "_Contact"
 msgstr "_Kontakt"
 
@@ -1374,7 +1369,7 @@ msgid "_Conversation"
 msgstr "_Vestlus"
 
 msgid "_Detach Tab"
-msgstr ""
+msgstr "_Haagi kaart lahti"
 
 msgid "_Favorite Chatroom"
 msgstr "_Lemmikjututuba"
@@ -1383,11 +1378,10 @@ msgid "_Help"
 msgstr "_Abi"
 
 msgid "_Next Tab"
-msgstr "_Järgmine sakk"
+msgstr "_Järgmine kaart"
 
-#| msgid "_Previous Conversations"
 msgid "_Previous Tab"
-msgstr "_Eelmine sakk"
+msgstr "_Eelmine kaart"
 
 msgid "_Show Contact List"
 msgstr "_Sõbranimekirja näidatakse"
@@ -1547,7 +1541,7 @@ msgstr "Ootamine teise osalise vastuse järel"
 msgid "Checking integrity of \"%s\""
 msgstr "\"%s\" tervikluse kontroll"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hashing \"%s\""
 msgstr "Räsi arvutamine failile \"%s\""
 
@@ -1655,11 +1649,9 @@ msgstr "N_ormaalsuurus"
 msgid "Normal Size With _Avatars"
 msgstr "Normaalsuurus _avataridega"
 
-#| msgid "Sort by _name"
 msgid "Sort by _Name"
 msgstr "Sortimine _nime järgi"
 
-#| msgid "Sort by s_tate"
 msgid "Sort by _Status"
 msgstr "Sortimine _oleku järgi"
 
@@ -1797,10 +1789,10 @@ msgid "Chat Th_eme:"
 msgstr "Vestluse _teema:"
 
 msgid "Disable notifications when _away or busy"
-msgstr "Eemal- või hõivatud oleku korral on teated keelatud"
+msgstr "Eemal- või hõivatud oleku korral on _teated keelatud"
 
 msgid "Disable sounds when _away or busy"
-msgstr "Eemal- või hõivatud oleku korral on helid keelatud"
+msgstr "Eemal- või hõivatud oleku korral on _helid keelatud"
 
 msgid "Enable notifications when a contact comes online"
 msgstr "Teatatakse kontakti sisenemisest"
@@ -1837,11 +1829,11 @@ msgstr "Privaatsus"
 
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
-"state and country will be published.  GPS coordinates will have a random "
-"value added (&#xB1;0.25&#xB0;)."
+"state and country will be published.  GPS coordinates will be accurate to 1 "
+"decimal place."
 msgstr ""
 "Vähendatud asukoha täpsuse korral avaldatakse ainult linn, maakond ja riik. "
-"GPS-koordinaatidele liidetakse juhuslik väärtus (&#xB1;0.25&#xB0;)."
+"GPS-koordinaatidele liidetakse juhuslik ühe komakoha täpsusega väärtus."
 
 msgid "Show _smileys as images"
 msgstr "_Tujunägusid näidatakse piltidena"
@@ -1899,7 +1891,7 @@ msgstr ""
 "rakendust"
 
 msgid "gtk-leave-fullscreen"
-msgstr ""
+msgstr "gtk-leave-fullscreen"
 
 msgid "Contact Map View"
 msgstr "Kontaktide kaardivaade"
