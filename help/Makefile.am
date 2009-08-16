@@ -21,6 +21,7 @@ DOC_PAGES = \
 	disable-account.page \
 	group-conversations.page \
 	index.page \
+	introduction.page \
 	irc-account.page \
 	irc-join-pwd.page \
 	irc-join-room.page \
