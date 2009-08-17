@@ -507,13 +507,13 @@ do_dispose (GObject *obj)
 
       g_hash_table_iter_init (&iter, priv->create_results);
       while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &result))
-	{
-	  g_simple_async_result_set_error (result, G_IO_ERROR,
+        {
+          g_simple_async_result_set_error (result, G_IO_ERROR,
               G_IO_ERROR_CANCELLED, "The account manager was disposed while "
               "creating the account");
-	  g_simple_async_result_complete (result);
-	  g_object_unref (result);
-	}
+          g_simple_async_result_complete (result);
+          g_object_unref (result);
+        }
     }
 
   tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
