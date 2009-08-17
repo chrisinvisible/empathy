@@ -337,10 +337,6 @@ can_add_contact_to_account (EmpathyAccount *account,
 	if (connection == NULL)
 		return FALSE;
 
-	if (connection == NULL) {
-		return FALSE;
-	}
-
 	contact_manager = empathy_contact_manager_dup_singleton ();
 	result = empathy_contact_manager_get_flags_for_connection (
 		contact_manager, connection) & EMPATHY_CONTACT_LIST_CAN_ADD;
