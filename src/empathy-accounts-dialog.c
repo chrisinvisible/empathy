@@ -164,7 +164,8 @@ get_account_setup_widget (EmpathyAccountSettings *settings)
     {
       if (!tp_strdiff (cm, dialogs[i].cm)
           && !tp_strdiff (proto, dialogs[i].proto))
-        return empathy_account_widget_new_for_protocol (dialogs[i].proto, settings);
+        return empathy_account_widget_new_for_protocol (dialogs[i].proto,
+          settings);
     }
 
   return empathy_account_widget_new_for_protocol ("generic", settings);
@@ -717,8 +718,7 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
           COL_ACCOUNT_SETTINGS_POINTER, &settings,
           -1);
 
-      equal = empathy_account_settings_has_account
-        (settings, account);
+      equal = empathy_account_settings_has_account (settings, account);
       g_object_unref (settings);
 
       if (equal)
