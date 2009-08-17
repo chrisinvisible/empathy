@@ -8,8 +8,7 @@ DOC_FIGURES = \
 	figures/away.png \
 	figures/busy.png \
 	figures/camera-web.png \
-	figures/empathy-main-window.png \
-	figures/extended-away.png
+	figures/empathy-main-window.png
 
 DOC_PAGES = \
 	add-account.page \
