@@ -819,14 +819,6 @@ empathy_account_manager_dup_connections (EmpathyAccountManager *manager)
 }
 
 void
-empathy_account_manager_remove (EmpathyAccountManager *manager,
-    EmpathyAccount *account)
-{
-  /* FIXME */
-}
-
-
-void
 empathy_account_manager_request_global_presence (
   EmpathyAccountManager *manager,
   TpConnectionPresenceType type,
