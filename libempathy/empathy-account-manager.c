@@ -490,32 +490,28 @@ do_dispose (GObject *obj)
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (obj);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  GHashTableIter iter;
+  GSimpleAsyncResult *result;
 
   if (priv->dispose_run)
     return;
 
   priv->dispose_run = TRUE;
 
-  if (priv->create_results != NULL)
+  /* the manager is being destroyed while there are account creation
+   * processes pending; this should not happen, but emit the callbacks
+   * with an error anyway.
+   */
+  g_hash_table_iter_init (&iter, priv->create_results);
+  while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &result))
     {
-      /* the manager is being destroyed while there are account creation
-       * processes pending; this should not happen, but emit the callbacks
-       * with an error anyway.
-       */
-      GHashTableIter iter;
-      GSimpleAsyncResult *result;
-
-      g_hash_table_iter_init (&iter, priv->create_results);
-      while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &result))
-        {
-          g_simple_async_result_set_error (result, G_IO_ERROR,
-              G_IO_ERROR_CANCELLED, "The account manager was disposed while "
-              "creating the account");
-          g_simple_async_result_complete (result);
-          g_object_unref (result);
-        }
+      g_simple_async_result_set_error (result, G_IO_ERROR,
+          G_IO_ERROR_CANCELLED, "The account manager was disposed while "
+          "creating the account");
+      g_simple_async_result_complete (result);
+      g_object_unref (result);
     }
-
+  g_hash_table_remove_all (priv->create_results);
 
   if (priv->dbus != NULL)
     {
