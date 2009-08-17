@@ -238,6 +238,7 @@ empathy_account_update (EmpathyAccount *account,
       g_free (priv->display_name);
       priv->display_name =
         g_strdup (tp_asv_get_string (properties, "DisplayName"));
+      g_object_notify (G_OBJECT (account), "display-name");
     }
 
   if (g_hash_table_lookup (properties, "Enabled") != NULL)
