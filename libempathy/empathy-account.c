@@ -287,7 +287,8 @@ empathy_account_update (EmpathyAccount *account,
       g_signal_emit (account, signals[STATUS_CHANGED], 0,
         old_s, priv->connection_status, priv->reason);
 
-      g_object_notify (G_OBJECT (account), "status");
+      g_object_notify (G_OBJECT (account), "connection-status");
+      g_object_notify (G_OBJECT (account), "connection-status-reason");
     }
 
   if (presence_changed)
@@ -560,7 +561,7 @@ empathy_account_class_init (EmpathyAccountClass *empathy_account_class)
       G_PARAM_STATIC_STRINGS | G_PARAM_READABLE));
 
   g_object_class_install_property (object_class, PROP_CONNECTION_STATUS_REASON,
-    g_param_spec_uint ("status-reason",
+    g_param_spec_uint ("connection-status-reason",
       "ConnectionStatusReason",
       "The account connections status reason",
       0,
