@@ -785,15 +785,8 @@ do_constructed (GObject *obj)
     empathy_account_widget_irc_build (self, filename);
   else if (!tp_strdiff (priv->protocol, "sip"))
     empathy_account_widget_sip_build (self, filename);
-  else if (!tp_strdiff (priv->protocol, "generic"))
-    account_widget_build_generic (self, filename);
   else
-    {
-      g_free (uiname);
-      g_free (filename);
-      g_critical ("Unknown protocol, can't build the account widget");
-      return;
-    }
+    account_widget_build_generic (self, filename);
 
   g_free (uiname);
   g_free (filename);
