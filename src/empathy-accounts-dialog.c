@@ -1152,8 +1152,7 @@ accounts_dialog_response_cb (GtkWidget *widget,
             /* FIXME: Warn the user the account is not
              * complete and is going to be removed.
              */
-            empathy_account_manager_remove
-              (priv->account_manager, account);
+            empathy_account_remove_async (account, NULL, NULL);
 
           g_object_unref (account);
         }
