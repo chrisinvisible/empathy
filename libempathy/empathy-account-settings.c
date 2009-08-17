@@ -33,16 +33,6 @@
 
 G_DEFINE_TYPE(EmpathyAccountSettings, empathy_account_settings, G_TYPE_OBJECT)
 
-/* signal enum */
-#if 0
-enum
-{
-    LAST_SIGNAL
-};
-
-static guint signals[LAST_SIGNAL] = {0};
-#endif
-
 enum {
   PROP_ACCOUNT = 1,
   PROP_CM_NAME,
