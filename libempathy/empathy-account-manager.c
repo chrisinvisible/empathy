@@ -496,8 +496,7 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
-  if (priv->create_results != NULL &&
-      g_hash_table_size (priv->create_results) > 0)
+  if (priv->create_results != NULL)
     {
       /* the manager is being destroyed while there are account creation
        * processes pending; this should not happen, but emit the callbacks
