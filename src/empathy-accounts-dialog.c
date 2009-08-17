@@ -1318,6 +1318,7 @@ do_constructor (GType type,
   if (dialog_singleton)
     {
       retval = G_OBJECT (dialog_singleton);
+      g_object_ref (retval);
     }
   else
     {
