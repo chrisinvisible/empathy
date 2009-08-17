@@ -837,6 +837,7 @@ do_constructed (GObject *obj)
       G_CALLBACK (account_widget_destroy_cb), self);
 
   empathy_builder_unref_and_keep_widget (self->ui_details->gui, self->ui_details->widget);
+  self->ui_details->gui = NULL;
 }
 
 static void
