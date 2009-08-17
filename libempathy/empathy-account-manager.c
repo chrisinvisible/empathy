@@ -516,11 +516,12 @@ do_dispose (GObject *obj)
         }
     }
 
-  tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
-      TP_ACCOUNT_MANAGER_BUS_NAME, account_manager_name_owner_cb, manager);
 
   if (priv->dbus != NULL)
     {
+      tp_dbus_daemon_cancel_name_owner_watch (priv->dbus,
+        TP_ACCOUNT_MANAGER_BUS_NAME, account_manager_name_owner_cb, manager);
+
       g_object_unref (priv->dbus);
       priv->dbus = NULL;
     }
