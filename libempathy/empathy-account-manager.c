@@ -56,12 +56,12 @@ typedef struct {
   gchar *global_status;
   gchar *global_status_message;
 
-  /* desired global presence, could be different
+  /* requested global presence, could be different
    * from the actual global one.
    */
-  TpConnectionPresenceType desired_presence;
-  gchar *desired_status;
-  gchar *desired_status_message;
+  TpConnectionPresenceType requested_presence;
+  gchar *requested_status;
+  gchar *requested_status_message;
 
   GHashTable *create_results;
 } EmpathyAccountManagerPriv;
@@ -112,9 +112,9 @@ emp_account_enabled_cb (EmpathyAccount *account,
     {
       g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
 
-      /* set the desired global presence on the account */
-      empathy_account_request_presence (account, priv->desired_presence,
-          priv->desired_status, priv->desired_status_message);
+      /* set the requested global presence on the account */
+      empathy_account_request_presence (account, priv->requested_presence,
+          priv->requested_status, priv->requested_status_message);
     }
   else
     g_signal_emit (manager, signals[ACCOUNT_DISABLED], 0, account);
@@ -328,9 +328,9 @@ account_manager_account_ready_cb (GObject *obj,
 
   empathy_account_manager_check_ready (manager);
 
-  /* update the account to the desired global presence */
-  empathy_account_request_presence (account, priv->desired_presence,
-    priv->desired_status, priv->desired_status_message);
+  /* update the account to the requested global presence */
+  empathy_account_request_presence (account, priv->requested_presence,
+    priv->requested_status, priv->requested_status_message);
 }
 
 static EmpathyAccount *
@@ -479,8 +479,8 @@ do_finalize (GObject *obj)
   g_free (priv->global_status);
   g_free (priv->global_status_message);
 
-  g_free (priv->desired_status);
-  g_free (priv->desired_status_message);
+  g_free (priv->requested_status);
+  g_free (priv->requested_status_message);
 
   G_OBJECT_CLASS (empathy_account_manager_parent_class)->finalize (obj);
 }
@@ -847,18 +847,18 @@ empathy_account_manager_request_global_presence (
   /* save the requested global presence, to use it in case we create
    * new accounts or some accounts become ready.
    */
-  priv->desired_presence = type;
+  priv->requested_presence = type;
 
-  if (tp_strdiff (priv->desired_status, status))
+  if (tp_strdiff (priv->requested_status, status))
     {
-      g_free (priv->desired_status);
-      priv->desired_status = g_strdup (status);
+      g_free (priv->requested_status);
+      priv->requested_status = g_strdup (status);
     }
 
-  if (tp_strdiff (priv->desired_status_message, message))
+  if (tp_strdiff (priv->requested_status_message, message))
     {
-      g_free (priv->desired_status_message);
-      priv->desired_status_message = g_strdup (message);
+      g_free (priv->requested_status_message);
+      priv->requested_status_message = g_strdup (message);
     }
 }
 
