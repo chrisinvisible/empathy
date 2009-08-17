@@ -234,8 +234,11 @@ empathy_account_update (EmpathyAccount *account,
     }
 
   if (g_hash_table_lookup (properties, "DisplayName") != NULL)
-    priv->display_name =
-      g_strdup (tp_asv_get_string (properties, "DisplayName"));
+    {
+      g_free (priv->display_name);
+      priv->display_name =
+        g_strdup (tp_asv_get_string (properties, "DisplayName"));
+    }
 
   if (g_hash_table_lookup (properties, "Enabled") != NULL)
     {
@@ -256,6 +259,9 @@ empathy_account_update (EmpathyAccount *account,
 
       parameters = tp_asv_get_boxed (properties, "Parameters",
         TP_HASH_TYPE_STRING_VARIANT_MAP);
+
+      if (priv->parameters != NULL)
+        g_hash_table_unref (priv->parameters);
 
       priv->parameters = g_boxed_copy (TP_HASH_TYPE_STRING_VARIANT_MAP,
         parameters);
