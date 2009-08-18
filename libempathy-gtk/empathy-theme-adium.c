@@ -299,33 +299,6 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
 			       &use_smileys);
 
-	if (use_smileys) {
-		/* Replace smileys by a <img/> tag */
-		string = g_string_sized_new (strlen (text));
-		smileys = empathy_smiley_manager_parse (priv->smiley_manager, text);
-		for (l = smileys; l; l = l->next) {
-			EmpathySmiley *smiley;
-
-			smiley = l->data;
-			if (smiley->path) {
-				g_string_append_printf (string,
-							"<abbr title='%s'><img src=\"%s\"/ alt=\"%s\"/></abbr>",
-							smiley->str, smiley->path, smiley->str);
-			} else {
-				gchar *str;
-
-				str = g_markup_escape_text (smiley->str, -1);
-				g_string_append (string, str);
-				g_free (str);
-			}
-			empathy_smiley_free (smiley);
-		}
-		g_slist_free (smileys);
-
-		g_free (ret);
-		text = ret = g_string_free (string, FALSE);
-	}
-
 	/* Add <a href></a> arround links */
 	uri_regex = empathy_uri_regex_dup_singleton ();
 	match = g_regex_match (uri_regex, text, 0, &match_info);
@@ -360,7 +333,33 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 
 		g_free (ret);
 		text = ret = g_string_free (string, FALSE);
+	} else if (use_smileys) {
+		/* Replace smileys by a <img/> tag */
+		string = g_string_sized_new (strlen (text));
+		smileys = empathy_smiley_manager_parse (priv->smiley_manager, text);
+		for (l = smileys; l; l = l->next) {
+			EmpathySmiley *smiley;
+
+			smiley = l->data;
+			if (smiley->path) {
+				g_string_append_printf (string,
+							"<abbr title='%s'><img src=\"%s\"/ alt=\"%s\"/></abbr>",
+							smiley->str, smiley->path, smiley->str);
+			} else {
+				gchar *str;
+
+				str = g_markup_escape_text (smiley->str, -1);
+				g_string_append (string, str);
+				g_free (str);
+			}
+			empathy_smiley_free (smiley);
+		}
+		g_slist_free (smileys);
+
+		g_free (ret);
+		text = ret = g_string_free (string, FALSE);
 	}
+
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 
