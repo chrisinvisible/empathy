@@ -59,6 +59,12 @@ GType empathy_connectivity_get_type (void);
 
 EmpathyConnectivity * empathy_connectivity_dup_singleton (void);
 
+gboolean empathy_connectivity_is_online (EmpathyConnectivity *connectivity);
+
+gboolean empathy_connectivity_get_use_conn (EmpathyConnectivity *connectivity);
+void empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
+    gboolean use_conn);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_CONNECTIVITY_H__ */
