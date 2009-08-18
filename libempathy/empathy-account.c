@@ -28,6 +28,7 @@
 #include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/defs.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -37,8 +38,6 @@
 #include "empathy-account.h"
 #include "empathy-utils.h"
 #include "empathy-marshal.h"
-
-#define UNIQUE_NAME_PREFIX "/org/freedesktop/Telepathy/Account/"
 
 /* signals */
 enum {
@@ -418,9 +417,9 @@ empathy_account_parse_unique_name (const gchar *bus_name,
   const gchar *cm, *cm_end;
 
   g_return_val_if_fail (
-    g_str_has_prefix (bus_name, UNIQUE_NAME_PREFIX), FALSE);
+    g_str_has_prefix (bus_name, TP_ACCOUNT_OBJECT_PATH_BASE), FALSE);
 
-  cm = bus_name + strlen (UNIQUE_NAME_PREFIX);
+  cm = bus_name + strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
 
   for (cm_end = cm; *cm_end != '/' && *cm_end != '\0'; cm_end++)
     /* pass */;
