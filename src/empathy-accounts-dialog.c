@@ -1199,6 +1199,7 @@ accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
         {
           accounts_dialog_set_selected_account
               (dialog, priv->initial_selection);
+          g_object_unref (priv->initial_selection);
           priv->initial_selection = NULL;
         }
     }
@@ -1303,6 +1304,10 @@ do_dispose (GObject *obj)
       g_object_unref (priv->cms);
       priv->cms = NULL;
     }
+
+  if (priv->initial_selection != NULL)
+    g_object_unref (priv->initial_selection);
+  priv->initial_selection = NULL;
 
   G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->dispose (obj);
 }
@@ -1488,13 +1493,16 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 
   priv = GET_PRIV (dialog);
 
-  if (selected_account && empathy_connection_managers_is_ready (priv->cms))
-    accounts_dialog_set_selected_account (dialog, selected_account);
-  else
-    /* save the selection to set it later when the cms
-     * becomes ready.
-     */
-    priv->initial_selection = selected_account;
+  if (selected_account)
+    {
+      if (empathy_connection_managers_is_ready (priv->cms))
+        accounts_dialog_set_selected_account (dialog, selected_account);
+      else
+        /* save the selection to set it later when the cms
+         * becomes ready.
+         */
+        priv->initial_selection = g_object_ref (selected_account);
+    }
 
   gtk_window_present (GTK_WINDOW (priv->window));
 
