@@ -171,7 +171,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
   gchar *date;
   gchar *label;
   GValue *gtime;
-  time_t time;
+  time_t loctime;
 
   gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
      &contact, -1);
@@ -202,10 +202,18 @@ map_view_contacts_foreach (GtkTreeModel *model,
   gtime = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
   if (gtime != NULL)
     {
-      time = g_value_get_int64 (gtime);
-      date = empathy_time_to_string_relative (time);
+      time_t now;
+
+      loctime = g_value_get_int64 (gtime);
+      date = empathy_time_to_string_relative (loctime);
       label = g_strconcat ("<b>", name, "</b>\n<small>", date, "</small>", NULL);
       g_free (date);
+
+      now = time (NULL);
+
+      /* if location is older than a week */
+      if (now - loctime > (60 * 60 * 24 * 7))
+        clutter_actor_set_opacity (CLUTTER_ACTOR (marker), 0.75 * 255);
     }
   else
     {
