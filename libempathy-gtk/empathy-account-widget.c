@@ -248,27 +248,32 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
       gint value = 0;
       const gchar *signature;
 
-      signature = empathy_settings_get_dbus_signature (priv->settings, param_name);
+      signature = empathy_account_settings_get_dbus_signature (priv->settings,
+          param_name);
       g_return_if_fail (signature != NULL);
 
       switch ((int)*signature)
         {
-        case DBUS_TYPE_INT16:
-        case DBUS_TYPE_INT32:
-          value = empathy_account_settings_get_int32 (priv->settings, param_name);
-          break;
-        case DBUS_TYPE_INT64:
-          value = empathy_account_settings_get_int64 (priv->settings, param_name);
-          break;
-        case DBUS_TYPE_UINT16:
-        case DBUS_TYPE_UINT32:
-          value = empathy_account_settings_get_uint32 (priv->settings, param_name);
-          break;
-        case DBUS_TYPE_UINT64:
-          value = empathy_account_settings_get_uint64 (priv->settings, param_name);
-          break;
-        default:
-          g_return_if_reached ();
+          case DBUS_TYPE_INT16:
+          case DBUS_TYPE_INT32:
+            value = empathy_account_settings_get_int32 (priv->settings,
+              param_name);
+            break;
+          case DBUS_TYPE_INT64:
+            value = empathy_account_settings_get_int64 (priv->settings,
+              param_name);
+            break;
+          case DBUS_TYPE_UINT16:
+          case DBUS_TYPE_UINT32:
+            value = empathy_account_settings_get_uint32 (priv->settings,
+              param_name);
+            break;
+          case DBUS_TYPE_UINT64:
+            value = empathy_account_settings_get_uint64 (priv->settings,
+                param_name);
+            break;
+          default:
+            g_return_if_reached ();
         }
 
       gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), value);
