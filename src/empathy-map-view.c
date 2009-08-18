@@ -181,7 +181,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
 
   location = empathy_contact_get_location (contact);
 
-  if (location == NULL)
+  if (location == NULL || g_hash_table_size (location) == 0)
     return FALSE;
 
   marker = champlain_marker_new ();
