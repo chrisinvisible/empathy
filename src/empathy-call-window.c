@@ -863,6 +863,8 @@ set_window_title (EmpathyCallWindow *self)
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   gchar *tmp;
 
+  /* translators: Call is a noun and %s is the contact name. This string is used
+   * in the window title */
   tmp = g_strdup_printf (_("Call with %s"),
       empathy_contact_get_name (priv->contact));
   gtk_window_set_title (GTK_WINDOW (self), tmp);
@@ -932,6 +934,7 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
   else
     {
       g_warning ("call handler doesn't have a contact");
+      /* translators: Call is a noun. This string is used in the window title */
       gtk_window_set_title (GTK_WINDOW (self), _("Call"));
 
       /* Since we can't access the remote contact, we can't get a connection
