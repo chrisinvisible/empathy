@@ -308,6 +308,8 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 
 		string = g_string_sized_new (strlen (text));
 		do {
+			gchar *real_url;
+
 			g_match_info_fetch_pos (match_info, 0, &s, &e);
 
 			if (s > last) {
@@ -317,12 +319,15 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			}
 
 			/* Append the link inside <a href=""></a> tag */
+			real_url = empathy_make_absolute_url (text + s);
+
 			g_string_append (string, "<a href=\"");
-			g_string_append_len (string, text + s, e - s);
+			g_string_append (string, real_url);
 			g_string_append (string, "\">");
 			g_string_append_len (string, text + s, e - s);
 			g_string_append (string, "</a>");
 
+			g_free (real_url);
 			last = e;
 		} while (g_match_info_next (match_info, NULL));
 
