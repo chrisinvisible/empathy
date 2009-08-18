@@ -102,14 +102,15 @@ idle_presence_changed_cb (EmpathyAccountManager *manager,
 		/* Assume our presence is offline if MC reports UNSET */
 		state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
 
-	DEBUG ("Presence changed to '%s' (%d)", status, state);
+	DEBUG ("Presence changed to '%s' (%d) \"%s\"", status, state,
+		status_message);
 
 	g_free (priv->status);
 	priv->state = state;
-	priv->status = NULL;
-	if (!EMP_STR_EMPTY (status)) {
-		priv->status = g_strdup (status);
-	}
+	if (EMP_STR_EMPTY (status_message))
+		priv->status = NULL;
+	else
+		priv->status = g_strdup (status_message);
 
 	g_object_notify (G_OBJECT (idle), "state");
 	g_object_notify (G_OBJECT (idle), "status");
