@@ -64,9 +64,6 @@ void         empathy_idle_set_presence        (EmpathyIdle *idle,
 gboolean     empathy_idle_get_auto_away       (EmpathyIdle *idle);
 void         empathy_idle_set_auto_away       (EmpathyIdle *idle,
 					       gboolean     auto_away);
-gboolean     empathy_idle_get_use_nm          (EmpathyIdle *idle);
-void         empathy_idle_set_use_nm          (EmpathyIdle *idle,
-					       gboolean     use_nm);
 
 G_END_DECLS
 
