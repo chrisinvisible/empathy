@@ -121,7 +121,8 @@ account_widget_int_changed_cb (GtkWidget *widget,
   value = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (widget));
   param_name = g_object_get_data (G_OBJECT (widget), "param_name");
 
-  signature = empathy_settings_get_dbus_signature (priv->settings, param_name);
+  signature = empathy_account_settings_get_dbus_signature (priv->settings,
+    param_name);
   g_return_if_fail (signature != NULL);
 
   DEBUG ("Setting %s to %d", param_name, value);

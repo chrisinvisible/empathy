@@ -90,7 +90,7 @@ const GValue *empathy_account_settings_get (EmpathyAccountSettings *settings,
   const gchar *param);
 
 const gchar *
-empathy_settings_get_dbus_signature (EmpathyAccountSettings *setting,
+empathy_account_settings_get_dbus_signature (EmpathyAccountSettings *setting,
   const gchar *param);
 
 const GValue *

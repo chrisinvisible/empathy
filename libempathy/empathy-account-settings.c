@@ -521,7 +521,7 @@ empathy_account_settings_get_default (EmpathyAccountSettings *settings,
 }
 
 const gchar *
-empathy_settings_get_dbus_signature (EmpathyAccountSettings *settings,
+empathy_account_settings_get_dbus_signature (EmpathyAccountSettings *settings,
     const gchar *param)
 {
   TpConnectionManagerParam *p;
