@@ -164,18 +164,14 @@ empathy_account_settings_constructed (GObject *object)
     {
       g_free (priv->cm_name);
       g_free (priv->protocol);
-      g_free (priv->display_name);
 
       priv->cm_name =
         g_strdup (empathy_account_get_connection_manager (priv->account));
       priv->protocol =
         g_strdup (empathy_account_get_protocol (priv->account));
-      priv->display_name =
-        g_strdup (empathy_account_get_display_name (priv->account));
     }
 
-  g_assert (priv->cm_name != NULL && priv->protocol != NULL
-    && priv->display_name != NULL);
+  g_assert (priv->cm_name != NULL && priv->protocol != NULL);
 
   empathy_account_settings_check_readyness (self);
 
@@ -341,6 +337,13 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 
   if (priv->manager == NULL)
     return;
+
+  if (priv->account != NULL)
+    {
+      g_free (priv->display_name);
+      priv->display_name =
+        g_strdup (empathy_account_get_display_name (priv->account));
+    }
 
   priv->tp_protocol = tp_connection_manager_get_protocol (priv->manager,
     priv->protocol);
