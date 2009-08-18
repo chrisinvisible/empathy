@@ -201,6 +201,9 @@ emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
     "status", &priv->global_status,
     "status-message", &priv->global_status_message,
     NULL);
+
+  DEBUG ("Updated global presence to: %s (%d) \"%s\"",
+    priv->global_status, priv->global_presence, priv->global_status_message);
 }
 
 static void
