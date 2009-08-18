@@ -1333,20 +1333,26 @@ empathy_get_toplevel_window (GtkWidget *widget)
 	return NULL;
 }
 
-/* The URL opening code can't handle schemeless strings, so we try to be
+/** empathy_make_absolute_url:
+ * @url: an url
+ *
+ * The URL opening code can't handle schemeless strings, so we try to be
  * smart and add http if there is no scheme or doesn't look like a mail
  * address. This should work in most cases, and let us click on strings
  * like "www.gnome.org".
+ *
+ * Returns: a newly allocated url with proper mailto: or http:// prefix, use
+ * g_free when your are done with it
  */
-static gchar *
-fixup_url (const gchar *url)
+gchar *
+empathy_make_absolute_url (const gchar *url)
 {
 	g_return_val_if_fail (url != NULL, NULL);
 
 	if (g_str_has_prefix (url, "ghelp:") ||
 	    g_str_has_prefix (url, "mailto:") ||
 	    strstr (url, ":/")) {
-		return NULL;
+		return g_strdup (url);
 	}
 
 	if (strstr (url, "@")) {
@@ -1366,12 +1372,9 @@ empathy_url_show (GtkWidget *parent,
 	g_return_if_fail (parent == NULL || GTK_IS_WIDGET (parent));
 	g_return_if_fail (url != NULL);
 
-	real_url = fixup_url (url);
-	if (real_url) {
-		url = real_url;
-	}
+	real_url = empathy_make_absolute_url (url);
 
-	gtk_show_uri (parent ? gtk_widget_get_screen (parent) : NULL, url,
+	gtk_show_uri (parent ? gtk_widget_get_screen (parent) : NULL, real_url,
 		      gtk_get_current_event_time (), &error);
 
 	if (error) {
