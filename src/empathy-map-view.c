@@ -83,7 +83,7 @@ map_view_marker_update_position (ChamplainMarker *marker,
   if (location == NULL ||
       g_hash_table_size (location) == 0)
   {
-    clutter_actor_hide (CLUTTER_ACTOR (marker));
+    champlain_base_marker_animate_out (CHAMPLAIN_BASE_MARKER (marker));
     return;
   }
 
@@ -103,8 +103,8 @@ map_view_marker_update_position (ChamplainMarker *marker,
     }
   lon = g_value_get_double (value);
 
-  clutter_actor_show (CLUTTER_ACTOR (marker));
   champlain_base_marker_set_position (CHAMPLAIN_BASE_MARKER (marker), lat, lon);
+  champlain_base_marker_animate_in (CHAMPLAIN_BASE_MARKER (marker));
 }
 
 static void
