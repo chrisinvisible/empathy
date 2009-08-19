@@ -302,12 +302,9 @@ empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
   if (use_conn)
     {
       connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
-#else
-  if (FALSE)
-    {
-#endif
     }
   else
+#endif
     {
       connectivity_change_state (connectivity, TRUE);
     }
