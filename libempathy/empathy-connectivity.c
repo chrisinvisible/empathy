@@ -37,6 +37,7 @@
 typedef struct {
 #ifdef HAVE_NM
   NMClient *nm_client;
+  gulong state_change_signal_id;
 #endif
 
   gboolean connected;
@@ -116,7 +117,8 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
   priv->nm_client = nm_client_new ();
   if (priv->nm_client != NULL)
     {
-      g_signal_connect (priv->nm_client, "notify::" NM_CLIENT_STATE,
+      priv->state_change_signal_id = g_signal_connect (priv->nm_client,
+          "notify::" NM_CLIENT_STATE,
           G_CALLBACK (connectivity_nm_state_change_cb), connectivity);
 
       connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
@@ -139,8 +141,9 @@ connectivity_finalize (GObject *object)
 
   if (priv->nm_client != NULL)
     {
-      g_signal_handlers_disconnect_by_func (priv->nm_client,
-          connectivity_nm_state_change_cb, connectivity);
+      g_signal_handler_disconnect (priv->nm_client,
+          priv->state_change_signal_id);
+      priv->state_change_signal_id = 0;
       g_object_unref (priv->nm_client);
       priv->nm_client = NULL;
     }

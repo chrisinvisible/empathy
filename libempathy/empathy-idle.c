@@ -45,6 +45,7 @@ typedef struct {
 	MissionControl *mc;
 	DBusGProxy     *gs_proxy;
 	EmpathyConnectivity *connectivity;
+	gulong state_change_signal_id;
 
 	TpConnectionPresenceType      state;
 	gchar          *status;
@@ -270,8 +271,9 @@ idle_finalize (GObject *object)
 		g_object_unref (priv->gs_proxy);
 	}
 
-	g_signal_handlers_disconnect_by_func (priv->connectivity,
-					      idle_state_change_cb, object);
+	g_signal_handler_disconnect (priv->connectivity,
+				     priv->state_change_signal_id);
+	priv->state_change_signal_id = 0;
 
 	g_object_unref (priv->connectivity);
 
@@ -482,8 +484,8 @@ empathy_idle_init (EmpathyIdle *idle)
 	}
 
 	priv->connectivity = empathy_connectivity_dup_singleton ();
-	g_signal_connect (priv->connectivity, "state-change",
-	    G_CALLBACK (idle_state_change_cb), idle);
+	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
+	    "state-change", G_CALLBACK (idle_state_change_cb), idle);
 }
 
 EmpathyIdle *

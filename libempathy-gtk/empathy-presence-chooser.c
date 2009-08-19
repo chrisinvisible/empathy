@@ -101,6 +101,8 @@ typedef struct {
 	EmpathyIdle *idle;
 	EmpathyConnectivity *connectivity;
 
+	gulong state_change_signal_id;
+
 	gboolean     editing_status;
 	int          block_set_editing;
 	int          block_changed;
@@ -792,7 +794,8 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 		_("Set your presence and current status"));
 
 	priv->connectivity = empathy_connectivity_dup_singleton ();
-	g_signal_connect (priv->connectivity, "state-change",
+	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
+		"state-change",
 		G_CALLBACK (presence_chooser_connectivity_state_change),
 		chooser);
 	presence_chooser_connectivity_state_change (priv->connectivity,
@@ -819,9 +822,9 @@ presence_chooser_finalize (GObject *object)
 					      object);
 	g_object_unref (priv->idle);
 
-	g_signal_handlers_disconnect_by_func (priv->connectivity,
-					      presence_chooser_connectivity_state_change,
-					      object);
+	g_signal_handler_disconnect (priv->connectivity,
+				     priv->state_change_signal_id);
+	priv->state_change_signal_id = 0;
 
 	g_object_unref (priv->connectivity);
 
