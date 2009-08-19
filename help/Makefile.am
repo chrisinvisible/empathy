@@ -18,6 +18,12 @@ DOC_PAGES = \
 	change-status.page \
 	create-account.page \
 	disable-account.page \
+	geolocation.page \
+	geolocation-not-showing.page \
+	geolocation-privacy.page \
+	geolocation-supported.page \
+	geolocation-turn.page \
+	geolocation-what-is.page \
 	group-conversations.page \
 	index.page \
 	introduction.page \
@@ -29,6 +35,7 @@ DOC_PAGES = \
 	irc-sending-file.page \
 	irc-start-conversation.page \
 	offline-contacts.page \
+	prev-conv.page \
 	prob-conn-acctdisabled.page \
 	prob-conn-auth.page \
 	prob-conn-name.page \
