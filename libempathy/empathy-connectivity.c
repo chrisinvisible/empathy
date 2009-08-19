@@ -111,6 +111,8 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
     {
       DEBUG ("Failed to get NetworkManager proxy");
     }
+#else
+  priv->connected = TRUE;
 #endif
 }
 
@@ -257,11 +259,7 @@ empathy_connectivity_is_online (EmpathyConnectivity *connectivity)
 
   if (priv->use_conn)
     {
-#ifdef HAVE_NM
       return priv->connected;
-#else
-      return TRUE;
-#endif
     }
   else
     {
