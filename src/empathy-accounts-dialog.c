@@ -1135,31 +1135,8 @@ accounts_dialog_response_cb (GtkWidget *widget,
     gint response,
     EmpathyAccountsDialog *dialog)
 {
-  GList *accounts, *l;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-
   if (response == GTK_RESPONSE_CLOSE)
-    {
-      /* Delete incomplete accounts */
-      accounts = empathy_account_manager_dup_accounts
-        (priv->account_manager);
-      for (l = accounts; l; l = l->next)
-        {
-          EmpathyAccount *account;
-
-          account = l->data;
-          if (!empathy_account_is_valid (account))
-            /* FIXME: Warn the user the account is not
-             * complete and is going to be removed.
-             */
-            empathy_account_remove_async (account, NULL, NULL);
-
-          g_object_unref (account);
-        }
-      g_list_free (accounts);
-
-      gtk_widget_destroy (widget);
-    }
+    gtk_widget_destroy (widget);
 }
 
 static void
