@@ -77,7 +77,6 @@ connectivity_nm_state_change_cb (NMClient *client,
 
   state = nm_client_get_state (priv->nm_client);
   old_nm_connected = priv->connected;
-  new_nm_connected = state == NM_STATE_CONNECTED;
   new_nm_connected = !(state == NM_STATE_CONNECTING
       || state == NM_STATE_DISCONNECTED);
 
