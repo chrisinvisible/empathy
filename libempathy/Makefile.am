@@ -10,7 +10,8 @@ AM_CPPFLAGS =                                           \
 	-DG_LOG_DOMAIN=\"empathy\"			\
 	$(LIBEMPATHY_CFLAGS)				\
 	$(GEOCLUE_CFLAGS)				\
-	$(NETWORK_MANAGER_CFLAGS) \
+	$(NETWORK_MANAGER_CFLAGS)			\
+	$(CONNMAN_CFLAGS)				\
 	$(WARN_CFLAGS)					\
 	$(DISABLE_DEPRECATED)
 
@@ -70,7 +71,8 @@ libempathy_la_LIBADD =		\
 	$(top_builddir)/extensions/libemp-extensions.la \
 	$(LIBEMPATHY_LIBS) \
 	$(GEOCLUE_LIBS) \
-	$(NETWORK_MANAGER_LIBS)
+	$(NETWORK_MANAGER_LIBS) \
+	$(CONNMAN_LIBS)
 
 libempathy_la_LDFLAGS =		\
        -version-info ${LIBEMPATHY_CURRENT}:${LIBEMPATHY_REVISION}:${LIBEMPATHY_AGE} \
