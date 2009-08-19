@@ -119,13 +119,13 @@ static void
 connectivity_finalize (GObject *object)
 {
 #ifdef HAVE_NM
-  EmpathyConnectivity *manager = EMPATHY_CONNECTIVITY (object);
-  EmpathyConnectivityPriv *priv = GET_PRIV (manager);
+  EmpathyConnectivity *connectivity = EMPATHY_CONNECTIVITY (object);
+  EmpathyConnectivityPriv *priv = GET_PRIV (connectivity);
 
   if (priv->nm_client != NULL)
     {
       g_signal_handlers_disconnect_by_func (priv->nm_client,
-          connectivity_nm_state_change_cb, manager);
+          connectivity_nm_state_change_cb, connectivity);
       g_object_unref (priv->nm_client);
       priv->nm_client = NULL;
     }
@@ -137,8 +137,8 @@ connectivity_finalize (GObject *object)
 static void
 connectivity_dispose (GObject *object)
 {
-  EmpathyConnectivity *manager = EMPATHY_CONNECTIVITY (object);
-  EmpathyConnectivityPriv *priv = GET_PRIV (manager);
+  EmpathyConnectivity *connectivity = EMPATHY_CONNECTIVITY (object);
+  EmpathyConnectivityPriv *priv = GET_PRIV (connectivity);
 
   if (priv->dispose_run)
     return;
