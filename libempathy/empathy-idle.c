@@ -258,22 +258,6 @@ idle_state_change_cb (EmpathyConnectivity *connectivity,
 }
 
 static void
-idle_use_conn_cb (GObject *object,
-		  GParamSpec *pspec,
-		  EmpathyIdle *idle)
-{
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
-
-	if (!empathy_connectivity_get_use_conn (priv->connectivity)) {
-		if (priv->saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
-			empathy_idle_set_state (idle, priv->saved_state);
-		}
-
-		priv->saved_state = TP_CONNECTION_PRESENCE_TYPE_UNSET;
-	}
-}
-
-static void
 idle_finalize (GObject *object)
 {
 	EmpathyIdlePriv *priv;
@@ -289,8 +273,6 @@ idle_finalize (GObject *object)
 
 	g_signal_handlers_disconnect_by_func (priv->connectivity,
 					      idle_state_change_cb, object);
-	g_signal_handlers_disconnect_by_func (priv->connectivity,
-					      idle_use_conn_cb, object);
 
 	g_object_unref (priv->connectivity);
 
@@ -503,8 +485,6 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->connectivity = empathy_connectivity_dup_singleton ();
 	g_signal_connect (priv->connectivity, "state-change",
 	    G_CALLBACK (idle_state_change_cb), idle);
-	g_signal_connect (priv->connectivity, "notify::use-conn",
-	    G_CALLBACK (idle_use_conn_cb), idle);
 }
 
 EmpathyIdle *
