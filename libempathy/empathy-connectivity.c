@@ -100,12 +100,16 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
   connectivity->priv = priv;
   priv->dispose_run = FALSE;
 
+  priv->use_conn = TRUE;
+
 #ifdef HAVE_NM
   priv->nm_client = nm_client_new ();
   if (priv->nm_client != NULL)
     {
       g_signal_connect (priv->nm_client, "notify::" NM_CLIENT_STATE,
           G_CALLBACK (connectivity_nm_state_change_cb), connectivity);
+
+      connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
     }
   else
     {
