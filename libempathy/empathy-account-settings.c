@@ -58,6 +58,7 @@ struct _EmpathyAccountSettingsPriv
   gchar *cm_name;
   gchar *protocol;
   gchar *display_name;
+  gchar *icon_name;
   gboolean ready;
 
   GHashTable *parameters;
@@ -170,6 +171,8 @@ empathy_account_settings_constructed (GObject *object)
       priv->protocol =
         g_strdup (empathy_account_get_protocol (priv->account));
     }
+
+  priv->icon_name = g_strdup_printf ("im-%s", priv->protocol);
 
   g_assert (priv->cm_name != NULL && priv->protocol != NULL);
 
@@ -309,6 +312,7 @@ empathy_account_settings_finalize (GObject *object)
   g_free (priv->cm_name);
   g_free (priv->protocol);
   g_free (priv->display_name);
+  g_free (priv->icon_name);
 
   g_hash_table_destroy (priv->parameters);
 
@@ -343,6 +347,10 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
       g_free (priv->display_name);
       priv->display_name =
         g_strdup (empathy_account_get_display_name (priv->account));
+
+      g_free (priv->icon_name);
+      priv->icon_name =
+        (gchar *) empathy_account_get_icon_name (priv->account);
     }
 
   priv->tp_protocol = tp_connection_manager_get_protocol (priv->manager,
@@ -446,13 +454,7 @@ empathy_account_settings_get_icon_name (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  if (priv->account != NULL)
-    return g_strdup (empathy_account_get_icon_name (priv->account));
-
-  if (priv->tp_protocol != NULL)
-    return g_strdup_printf ("im-%s", priv->tp_protocol->name);
-
-  return NULL;
+  return priv->icon_name;
 }
 
 const gchar *

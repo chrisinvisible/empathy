@@ -192,8 +192,6 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
       empathy_account_settings_get_protocol (settings));
 
   accounts_dialog_update_name_label (dialog, settings);
-
-  g_free (icon_name);
 }
 
 static void
@@ -395,8 +393,6 @@ accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn *tree_column,
 
   icon_name = empathy_account_settings_get_icon_name (settings);
   pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON);
-
-  g_free (icon_name);
 
   if (pixbuf)
     {
