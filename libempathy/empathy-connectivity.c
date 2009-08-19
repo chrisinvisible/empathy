@@ -41,7 +41,6 @@ typedef struct {
 
   gboolean connected;
   gboolean use_conn;
-  gboolean dispose_run;
 } EmpathyConnectivityPriv;
 
 enum {
@@ -98,7 +97,6 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
       EMPATHY_TYPE_CONNECTIVITY, EmpathyConnectivityPriv);
 
   connectivity->priv = priv;
-  priv->dispose_run = FALSE;
 
   priv->use_conn = TRUE;
 
@@ -142,14 +140,6 @@ connectivity_finalize (GObject *object)
 static void
 connectivity_dispose (GObject *object)
 {
-  EmpathyConnectivity *connectivity = EMPATHY_CONNECTIVITY (object);
-  EmpathyConnectivityPriv *priv = GET_PRIV (connectivity);
-
-  if (priv->dispose_run)
-    return;
-
-  priv->dispose_run = TRUE;
-
   G_OBJECT_CLASS (empathy_connectivity_parent_class)->dispose (object);
 }
 
