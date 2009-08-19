@@ -151,6 +151,8 @@ connectivity_connman_check_state_cb (DBusGProxy *proxy,
   else
     {
       DEBUG ("Failed to call GetState: %s", error->message);
+      connectivity_connman_state_changed_cb (proxy, "offline",
+          connectivity);
     }
 }
 
