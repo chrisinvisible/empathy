@@ -26,6 +26,12 @@
 #include <nm-client.h>
 #endif
 
+#ifdef HAVE_CONNMAN
+#include <dbus/dbus-glib.h>
+#endif
+
+#include <telepathy-glib/util.h>
+
 #include "empathy-utils.h"
 #include "empathy-marshal.h"
 
@@ -38,6 +44,10 @@ typedef struct {
 #ifdef HAVE_NM
   NMClient *nm_client;
   gulong state_change_signal_id;
+#endif
+
+#ifdef HAVE_CONNMAN
+  DBusGProxy *proxy;
 #endif
 
   gboolean connected;
@@ -101,10 +111,70 @@ connectivity_nm_state_change_cb (NMClient *client,
 }
 #endif
 
+#ifdef HAVE_CONNMAN
+static void
+connectivity_connman_state_changed_cb (DBusGProxy *proxy,
+    const gchar *new_state,
+    EmpathyConnectivity *connectivity)
+{
+  EmpathyConnectivityPriv *priv;
+  gboolean new_connected;
+
+  priv = GET_PRIV (connectivity);
+
+  if (!priv->use_conn)
+    return;
+
+  new_connected = !tp_strdiff (new_state, "online");
+
+  DEBUG ("New ConnMan network state %s", new_state);
+
+  connectivity_change_state (connectivity, new_connected);
+}
+
+static void
+connectivity_connman_check_state_cb (DBusGProxy *proxy,
+    DBusGProxyCall *call_id,
+    gpointer user_data)
+{
+  EmpathyConnectivity *connectivity = (EmpathyConnectivity *) user_data;
+  GError *error = NULL;
+  gchar *state;
+
+  if (dbus_g_proxy_end_call (proxy, call_id, &error,
+          G_TYPE_STRING, &state, G_TYPE_INVALID))
+    {
+      connectivity_connman_state_changed_cb (proxy, state,
+          connectivity);
+      g_free (state);
+    }
+  else
+    {
+      DEBUG ("Failed to call GetState: %s", error->message);
+    }
+}
+
+static void
+connectivity_connman_check_state (EmpathyConnectivity *connectivity)
+{
+  EmpathyConnectivityPriv *priv;
+
+  priv = GET_PRIV (connectivity);
+
+  dbus_g_proxy_begin_call (priv->proxy, "GetState",
+      connectivity_connman_check_state_cb, connectivity, NULL,
+      G_TYPE_INVALID);
+}
+#endif
+
 static void
 empathy_connectivity_init (EmpathyConnectivity *connectivity)
 {
   EmpathyConnectivityPriv *priv;
+#ifdef HAVE_CONNMAN
+  DBusGConnection *connection;
+  GError *error = NULL;
+#endif
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (connectivity,
       EMPATHY_TYPE_CONNECTIVITY, EmpathyConnectivityPriv);
@@ -127,7 +197,37 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
     {
       DEBUG ("Failed to get NetworkManager proxy");
     }
-#else
+#endif
+
+#ifdef HAVE_CONNMAN
+  connection = dbus_g_bus_get (DBUS_BUS_SYSTEM, &error);
+  if (connection != NULL)
+    {
+      priv->proxy = dbus_g_proxy_new_for_name (connection,
+          "org.moblin.connman", "/",
+          "org.moblin.connman.Manager");
+
+      dbus_g_object_register_marshaller (
+          _empathy_marshal_VOID__STRING,
+          G_TYPE_NONE, G_TYPE_STRING, G_TYPE_INVALID);
+
+      dbus_g_proxy_add_signal (priv->proxy, "StateChanged",
+          G_TYPE_STRING, G_TYPE_INVALID);
+
+      dbus_g_proxy_connect_signal (priv->proxy, "StateChanged",
+          G_CALLBACK (connectivity_connman_state_changed_cb),
+          connectivity, NULL);
+
+      connectivity_connman_check_state (connectivity);
+    }
+  else
+    {
+      DEBUG ("Failed to get system bus connection: %s", error->message);
+      g_error_free (error);
+    }
+#endif
+
+#if !defined(HAVE_NM) || !defined(HAVE_CONNMAN)
   priv->connected = TRUE;
 #endif
 }
@@ -146,6 +246,20 @@ connectivity_finalize (GObject *object)
       priv->state_change_signal_id = 0;
       g_object_unref (priv->nm_client);
       priv->nm_client = NULL;
+    }
+#endif
+
+#ifdef HAVE_CONNMAN
+  EmpathyConnectivity *connectivity = EMPATHY_CONNECTIVITY (object);
+  EmpathyConnectivityPriv *priv = GET_PRIV (connectivity);
+
+  if (priv->proxy != NULL)
+    {
+      dbus_g_proxy_disconnect_signal (priv->proxy, "StateChanged",
+          G_CALLBACK (connectivity_connman_state_changed_cb), connectivity);
+
+      g_object_unref (priv->proxy);
+      priv->proxy = NULL;
     }
 #endif
 
@@ -298,10 +412,14 @@ empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
 
   priv->use_conn = use_conn;
 
-#ifdef HAVE_NM
+#if defined(HAVE_NM) || defined(HAVE_CONNMAN)
   if (use_conn)
     {
+#if defined(HAVE_NM)
       connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
+#elif defined(HAVE_CONNMAN)
+      connectivity_connman_check_state (connectivity);
+#endif
     }
   else
 #endif
