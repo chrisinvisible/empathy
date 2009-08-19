@@ -973,10 +973,13 @@ tp_contact_list_add (EmpathyContactList *list,
 		tp_cli_channel_interface_group_call_add_members (priv->subscribe,
 			-1, &handles, message, NULL, NULL, NULL, NULL);
 	}
-	if (priv->publish &&
-	    g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle))) {
-		tp_cli_channel_interface_group_call_add_members (priv->publish,
-			-1, &handles, message, NULL, NULL, NULL, NULL);
+	if (priv->publish) {
+		TpChannelGroupFlags flags = tp_channel_group_get_flags (priv->subscribe);
+		if (flags & TP_CHANNEL_GROUP_FLAG_CAN_ADD ||
+		    g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle))) {
+			tp_cli_channel_interface_group_call_add_members (priv->publish,
+				-1, &handles, message, NULL, NULL, NULL, NULL);
+		}
 	}
 }
 
