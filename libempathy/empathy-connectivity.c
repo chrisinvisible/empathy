@@ -118,6 +118,7 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
 static void
 connectivity_finalize (GObject *object)
 {
+#ifdef HAVE_NM
   EmpathyConnectivity *manager = EMPATHY_CONNECTIVITY (object);
   EmpathyConnectivityPriv *priv = GET_PRIV (manager);
 
@@ -126,6 +127,7 @@ connectivity_finalize (GObject *object)
       g_object_unref (priv->nm_client);
       priv->nm_client = NULL;
     }
+#endif
 
   G_OBJECT_CLASS (empathy_connectivity_parent_class)->finalize (object);
 }
