@@ -290,8 +290,18 @@ empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
 
 #ifdef HAVE_NM
   if (use_conn)
-    connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
+    {
+      connectivity_nm_state_change_cb (priv->nm_client, NULL, connectivity);
+#else
+  if (FALSE)
+    {
 #endif
+    }
+  else
+    {
+      g_signal_emit (connectivity, signals[STATE_CHANGE], 0,
+          FALSE, TRUE);
+    }
 
   g_object_notify (G_OBJECT (connectivity), "use-conn");
 }
