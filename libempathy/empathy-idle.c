@@ -226,7 +226,6 @@ idle_session_status_changed_cb (DBusGProxy    *gs_proxy,
 
 static void
 idle_state_change_cb (EmpathyConnectivity *connectivity,
-		      gboolean old_online,
 		      gboolean new_online,
 		      EmpathyIdle *idle)
 {
@@ -234,7 +233,7 @@ idle_state_change_cb (EmpathyConnectivity *connectivity,
 
 	priv = GET_PRIV (idle);
 
-	if (old_online && !new_online) {
+	if (!new_online) {
 		/* We are no longer connected */
 		DEBUG ("Disconnected: Save state %d (%s)",
 				priv->state, priv->status);
@@ -243,7 +242,7 @@ idle_state_change_cb (EmpathyConnectivity *connectivity,
 		priv->saved_status = g_strdup (priv->status);
 		empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 	}
-	else if (!old_online && new_online
+	else if (new_online
 			&& priv->saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
 		/* We are now connected */
 		DEBUG ("Reconnected: Restore state %d (%s)",

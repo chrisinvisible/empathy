@@ -58,6 +58,23 @@ static EmpathyConnectivity *connectivity_singleton = NULL;
 
 G_DEFINE_TYPE (EmpathyConnectivity, empathy_connectivity, G_TYPE_OBJECT);
 
+static void
+connectivity_change_state (EmpathyConnectivity *connectivity,
+    gboolean new_state)
+{
+  EmpathyConnectivityPriv *priv;
+
+  priv = GET_PRIV (connectivity);
+
+  if (priv->connected == new_state)
+    return;
+
+  priv->connected = new_state;
+
+  g_signal_emit (connectivity, signals[STATE_CHANGE], 0,
+      priv->connected);
+}
+
 #ifdef HAVE_NM
 static void
 connectivity_nm_state_change_cb (NMClient *client,
@@ -65,7 +82,6 @@ connectivity_nm_state_change_cb (NMClient *client,
     EmpathyConnectivity *connectivity)
 {
   EmpathyConnectivityPriv *priv;
-  gboolean old_nm_connected;
   gboolean new_nm_connected;
   NMState state;
 
@@ -75,16 +91,12 @@ connectivity_nm_state_change_cb (NMClient *client,
     return;
 
   state = nm_client_get_state (priv->nm_client);
-  old_nm_connected = priv->connected;
   new_nm_connected = !(state == NM_STATE_CONNECTING
       || state == NM_STATE_DISCONNECTED);
 
   DEBUG ("New NetworkManager network state %d", state);
 
-  priv->connected = new_nm_connected;
-
-  g_signal_emit (connectivity, signals[STATE_CHANGE], 0,
-      old_nm_connected, new_nm_connected);
+  connectivity_change_state (connectivity, new_nm_connected);
 }
 #endif
 
@@ -223,9 +235,9 @@ empathy_connectivity_class_init (EmpathyConnectivityClass *klass)
         G_SIGNAL_RUN_LAST,
         0,
         NULL, NULL,
-        _empathy_marshal_VOID__BOOLEAN_BOOLEAN,
+        _empathy_marshal_VOID__BOOLEAN,
         G_TYPE_NONE,
-        2, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, NULL);
+        1, G_TYPE_BOOLEAN, NULL);
 
   g_object_class_install_property (oclass,
       PROP_USE_CONN,
@@ -294,8 +306,7 @@ empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
     }
   else
     {
-      g_signal_emit (connectivity, signals[STATE_CHANGE], 0,
-          FALSE, TRUE);
+      connectivity_change_state (connectivity, TRUE);
     }
 
   g_object_notify (G_OBJECT (connectivity), "use-conn");

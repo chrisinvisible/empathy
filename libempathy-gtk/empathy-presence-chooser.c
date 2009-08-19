@@ -713,7 +713,6 @@ presence_chooser_entry_focus_out_cb (EmpathyPresenceChooser *chooser,
 
 static void
 presence_chooser_connectivity_state_change (EmpathyConnectivity *connectivity,
-					    gboolean old_online,
 					    gboolean new_online,
 					    EmpathyPresenceChooser *chooser)
 {
@@ -796,7 +795,7 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	g_signal_connect (priv->connectivity, "state-change",
 		G_CALLBACK (presence_chooser_connectivity_state_change),
 		chooser);
-	presence_chooser_connectivity_state_change (priv->connectivity, FALSE,
+	presence_chooser_connectivity_state_change (priv->connectivity,
 		empathy_connectivity_is_online (priv->connectivity), chooser);
 }
 
