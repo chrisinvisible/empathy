@@ -753,6 +753,7 @@ main (int argc, char *argv[])
 
 	g_object_unref (mc);
 	g_object_unref (idle);
+	g_object_unref (connectivity);
 	g_object_unref (icon);
 	g_object_unref (log_manager);
 	g_object_unref (dispatcher);
