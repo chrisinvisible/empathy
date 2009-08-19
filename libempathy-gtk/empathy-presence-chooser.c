@@ -35,6 +35,7 @@
 
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-status-presets.h>
@@ -98,6 +99,7 @@ typedef enum  {
 
 typedef struct {
 	EmpathyIdle *idle;
+	EmpathyConnectivity *connectivity;
 
 	gboolean     editing_status;
 	int          block_set_editing;
@@ -710,6 +712,15 @@ presence_chooser_entry_focus_out_cb (EmpathyPresenceChooser *chooser,
 }
 
 static void
+presence_chooser_connectivity_state_change (EmpathyConnectivity *connectivity,
+					    gboolean old_online,
+					    gboolean new_online,
+					    EmpathyPresenceChooser *chooser)
+{
+	gtk_widget_set_sensitive (GTK_WIDGET (chooser), new_online);
+}
+
+static void
 empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (chooser,
@@ -780,6 +791,13 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	/* FIXME: this string sucks */
 	gtk_widget_set_tooltip_text (GTK_WIDGET (chooser),
 		_("Set your presence and current status"));
+
+	priv->connectivity = empathy_connectivity_dup_singleton ();
+	g_signal_connect (priv->connectivity, "state-change",
+		G_CALLBACK (presence_chooser_connectivity_state_change),
+		chooser);
+	presence_chooser_connectivity_state_change (priv->connectivity, FALSE,
+		empathy_connectivity_is_online (priv->connectivity), chooser);
 }
 
 static void
@@ -801,6 +819,12 @@ presence_chooser_finalize (GObject *object)
 					      presence_chooser_presence_changed_cb,
 					      object);
 	g_object_unref (priv->idle);
+
+	g_signal_handlers_disconnect_by_func (priv->connectivity,
+					      presence_chooser_connectivity_state_change,
+					      object);
+
+	g_object_unref (priv->connectivity);
 
 	G_OBJECT_CLASS (empathy_presence_chooser_parent_class)->finalize (object);
 }
