@@ -124,6 +124,8 @@ connectivity_finalize (GObject *object)
 
   if (priv->nm_client != NULL)
     {
+      g_signal_handlers_disconnect_by_func (priv->nm_client,
+          connectivity_nm_state_change_cb, manager);
       g_object_unref (priv->nm_client);
       priv->nm_client = NULL;
     }
