@@ -164,38 +164,33 @@ AC_ARG_WITH(connectivity,
                              [build with connectivity support]), ,
                              with_connectivity=auto)
 
-PKG_CHECK_MODULES(NETWORK_MANAGER,
-[
-   libnm_glib >= $NETWORK_MANAGER_REQUIRED
-], have_nm="yes", have_nm="no")
-
-PKG_CHECK_MODULES(CONNMAN,
-[
-   dbus-glib-1
-], have_connman="yes", have_connman="no")
-
 if test "x$with_connectivity" = "xno"; then
    have_nm=no
    have_connman=no
 
-elif test "x$with_connectivity" = "xnm"; then
-   if test "x$have_nm" = "xyes"; then
-      AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
-      have_connman=no
-   fi
-
 elif test "x$with_connectivity" = "xconnman"; then
+
+   PKG_CHECK_MODULES(CONNMAN,
+   [
+      dbus-glib-1
+   ], have_connman="yes", have_connman="no")
+
    if test "x$have_connman" = "xyes"; then
       AC_DEFINE(HAVE_CONNMAN, 1, [Define if you have connman dependencies])
       have_nm=no
    fi
 
 else
+
+   PKG_CHECK_MODULES(NETWORK_MANAGER,
+   [
+      libnm_glib >= $NETWORK_MANAGER_REQUIRED
+   ], have_nm="yes", have_nm="no")
+
    if test "x$have_nm" = "xyes"; then
       AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
       have_connman=no
    fi
-
 fi
 
 if test "x$with_connectivity" = "xconnman" -a "x$have_connman" != "xyes"; then
