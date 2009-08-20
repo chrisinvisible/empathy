@@ -866,6 +866,22 @@ empathy_account_manager_request_global_presence (
 }
 
 TpConnectionPresenceType
+empathy_account_manager_get_requested_global_presence (
+  EmpathyAccountManager *manager,
+  gchar **status,
+  gchar **message)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  if (status != NULL)
+    *status = g_strdup (priv->requested_status);
+  if (message != NULL)
+    *message = g_strdup (priv->requested_status_message);
+
+  return priv->requested_presence;
+}
+
+TpConnectionPresenceType
 empathy_account_manager_get_global_presence (
   EmpathyAccountManager *manager,
   gchar **status,
