@@ -1437,6 +1437,9 @@ contact_widget_location_update (EmpathyContactWidget *information)
               label, 1, 2, row, row + 1);
           gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
           gtk_widget_show (label);
+
+          if (!(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
+            gtk_label_set_selectable (GTK_LABEL (label), TRUE);
         }
 
       g_free (svalue);
