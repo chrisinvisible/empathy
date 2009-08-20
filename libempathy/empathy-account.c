@@ -105,7 +105,7 @@ struct _EmpathyAccountPriv
 #define GET_PRIV(obj)  EMPATHY_GET_PRIV (obj, EmpathyAccount)
 
 static void _empathy_account_set_connection (EmpathyAccount *account,
-    TpConnection *connection);
+    const gchar *path);
 
 static void
 empathy_account_init (EmpathyAccount *obj)
@@ -205,7 +205,6 @@ empathy_account_update (EmpathyAccount *account,
     GHashTable *properties)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
-  const gchar *conn_path;
   GValueArray *arr;
   TpConnectionStatus old_s = priv->connection_status;
   gboolean presence_changed = FALSE;
@@ -301,23 +300,10 @@ empathy_account_update (EmpathyAccount *account,
 
   if (g_hash_table_lookup (properties, "Connection") != NULL)
     {
-      conn_path = tp_asv_get_object_path (properties, "Connection");
+      const gchar *conn_path =
+        tp_asv_get_object_path (properties, "Connection");
 
-      if (tp_strdiff (conn_path, "/") && priv->connection == NULL)
-        {
-          TpConnection *conn;
-          GError *error = NULL;
-          conn = tp_connection_new (priv->dbus, NULL, conn_path, &error);
-
-          if (conn == NULL)
-            {
-              DEBUG ("Failed to create a new TpConnection: %s",
-                error->message);
-              g_error_free (error);
-            }
-
-          _empathy_account_set_connection (account, conn);
-        }
+      _empathy_account_set_connection (account, conn_path);
     }
 }
 
@@ -705,6 +691,35 @@ empathy_account_get_connection (EmpathyAccount *account)
 }
 
 /**
+ * empathy_account_get_connection_for:
+ * @account: a #EmpathyAccount
+ * @patch: the path to connection object for #EmpathyAccount
+ *
+ * Get the connection of the account on path. This function does not return a
+ * new ref. It is not guaranteed that the returned connection object is ready
+ *
+ * Returns: the connection of the account.
+ **/
+TpConnection *
+empathy_account_get_connection_for (EmpathyAccount *account,
+  const gchar *path)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  /* double-check that the object path is valid */
+  if (!tp_dbus_check_valid_object_path (path, NULL))
+    return NULL;
+
+  /* Should be a full object path, not the special "/" value */
+  if (strlen (path) == 1)
+    return NULL;
+
+  _empathy_account_set_connection (account, path);
+
+  return priv->connection;
+}
+
+/**
  * empathy_account_get_unique_name:
  * @account: a #EmpathyAccount
  *
@@ -850,18 +865,20 @@ _empathy_account_connection_invalidated_cb (TpProxy *self,
 
 static void
 _empathy_account_set_connection (EmpathyAccount *account,
-    TpConnection *connection)
+    const gchar *path)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
 
-  if (priv->connection == connection)
-    return;
+  if (priv->connection != NULL)
+    {
+      const gchar *current;
 
-  /* Connection already set, don't set the new one */
-  if (connection != NULL && priv->connection != NULL)
-    return;
+      current = tp_proxy_get_object_path (priv->connection);
+      if (!tp_strdiff (current, path))
+        return;
+    }
 
-  if (connection == NULL)
+  if (priv->connection != NULL)
     {
       g_signal_handler_disconnect (priv->connection,
         priv->connection_invalidated_id);
@@ -869,21 +886,32 @@ _empathy_account_set_connection (EmpathyAccount *account,
 
       g_object_unref (priv->connection);
       priv->connection = NULL;
-      g_object_notify (G_OBJECT (account), "connection");
     }
-  else
+
+  if (tp_strdiff ("/", path))
     {
-      priv->connection = g_object_ref (connection);
+      GError *error = NULL;
+      priv->connection = tp_connection_new (priv->dbus, NULL, path, &error);
+
+      if (priv->connection == NULL)
+        {
+          DEBUG ("Failed to create a new TpConnection: %s",
+                error->message);
+          g_error_free (error);
+        }
+
       priv->connection_invalidated_id = g_signal_connect (priv->connection,
           "invalidated",
-          G_CALLBACK (_empathy_account_connection_invalidated_cb),
-          account);
+           G_CALLBACK (_empathy_account_connection_invalidated_cb),
+        account);
 
       DEBUG ("Readying connection for %s", priv->unique_name);
       /* notify a change in the connection property when it's ready */
       tp_connection_call_when_ready (priv->connection,
-        empathy_account_connection_ready_cb, account);
+           empathy_account_connection_ready_cb, account);
     }
+
+   g_object_notify (G_OBJECT (account), "connection");
 }
 
 void
