@@ -479,15 +479,15 @@
     </schema>
 
     <schema>
-      <key>/schemas/apps/empathy/use_nm</key>
-      <applyto>/apps/empathy/use_nm</applyto>
+      <key>/schemas/apps/empathy/use_conn</key>
+      <applyto>/apps/empathy/use_conn</applyto>
       <owner>empathy</owner>
       <type>bool</type>
       <default>true</default>
       <locale name="C">
-        <short>NetworkManager should be used</short>
+        <short>Connection managers should be used</short>
         <long>
-        Whether or not the network manager should be used to automatically
+        Whether or not connectivity managers should be used to automatically
         disconnect/reconnect.
         </long>
       </locale>

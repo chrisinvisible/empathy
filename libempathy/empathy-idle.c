@@ -25,9 +25,6 @@
 
 #include <glib/gi18n-lib.h>
 #include <dbus/dbus-glib.h>
-#ifdef HAVE_NM
-#include <nm-client.h>
-#endif
 
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
@@ -35,6 +32,7 @@
 
 #include "empathy-idle.h"
 #include "empathy-utils.h"
+#include "empathy-connectivity.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include "empathy-debug.h"
@@ -46,22 +44,19 @@
 typedef struct {
 	MissionControl *mc;
 	DBusGProxy     *gs_proxy;
-#ifdef HAVE_NM
-	NMClient       *nm_client;
-#endif
+	EmpathyConnectivity *connectivity;
+	gulong state_change_signal_id;
 
 	TpConnectionPresenceType      state;
 	gchar          *status;
 	TpConnectionPresenceType      flash_state;
 	gboolean        auto_away;
-	gboolean        use_nm;
 
 	TpConnectionPresenceType      away_saved_state;
-	TpConnectionPresenceType      nm_saved_state;
-	gchar          *nm_saved_status;
+	TpConnectionPresenceType      saved_state;
+	gchar          *saved_status;
 
 	gboolean        is_idle;
-	gboolean        nm_connected;
 	guint           ext_away_timeout;
 } EmpathyIdlePriv;
 
@@ -78,8 +73,7 @@ enum {
 	PROP_STATE,
 	PROP_STATUS,
 	PROP_FLASH_STATE,
-	PROP_AUTO_AWAY,
-	PROP_USE_NM
+	PROP_AUTO_AWAY
 };
 
 G_DEFINE_TYPE (EmpathyIdle, empathy_idle, G_TYPE_OBJECT);
@@ -172,7 +166,7 @@ idle_session_status_changed_cb (DBusGProxy    *gs_proxy,
 		is_idle ? "yes" : "no");
 
 	if (!priv->auto_away ||
-	    (priv->nm_saved_state == TP_CONNECTION_PRESENCE_TYPE_UNSET &&
+	    (priv->saved_state == TP_CONNECTION_PRESENCE_TYPE_UNSET &&
 	     (priv->state <= TP_CONNECTION_PRESENCE_TYPE_OFFLINE ||
 	      priv->state == TP_CONNECTION_PRESENCE_TYPE_HIDDEN))) {
 		/* We don't want to go auto away OR we explicitely asked to be
@@ -187,11 +181,11 @@ idle_session_status_changed_cb (DBusGProxy    *gs_proxy,
 
 		idle_ext_away_start (idle);
 
-		if (priv->nm_saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
+		if (priv->saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
 		    	/* We are disconnected, when coming back from away
 		    	 * we want to restore the presence before the
 		    	 * disconnection. */
-			priv->away_saved_state = priv->nm_saved_state;
+			priv->away_saved_state = priv->saved_state;
 		} else {
 			priv->away_saved_state = priv->state;
 		}
@@ -231,56 +225,37 @@ idle_session_status_changed_cb (DBusGProxy    *gs_proxy,
 	priv->is_idle = is_idle;
 }
 
-#ifdef HAVE_NM
 static void
-idle_nm_state_change_cb (NMClient         *client,
-			 const GParamSpec *pspec,
-			 EmpathyIdle      *idle)
+idle_state_change_cb (EmpathyConnectivity *connectivity,
+		      gboolean new_online,
+		      EmpathyIdle *idle)
 {
 	EmpathyIdlePriv *priv;
-	gboolean         old_nm_connected;
-	gboolean         new_nm_connected;
-	NMState          state;
 
 	priv = GET_PRIV (idle);
 
-	if (!priv->use_nm) {
-		return;
-	}
-
-	state = nm_client_get_state (priv->nm_client);
-	old_nm_connected = priv->nm_connected;
-	new_nm_connected = !(state == NM_STATE_CONNECTING ||
-			     state == NM_STATE_DISCONNECTED);
-	priv->nm_connected = TRUE; /* To be sure _set_state will work */
-
-	DEBUG ("New network state %d", state);
-
-	if (old_nm_connected && !new_nm_connected) {
-		/* We are no more connected */
+	if (!new_online) {
+		/* We are no longer connected */
 		DEBUG ("Disconnected: Save state %d (%s)",
 				priv->state, priv->status);
-		priv->nm_saved_state = priv->state;
-		g_free (priv->nm_saved_status);
-		priv->nm_saved_status = g_strdup (priv->status);
+		priv->saved_state = priv->state;
+		g_free (priv->saved_status);
+		priv->saved_status = g_strdup (priv->status);
 		empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 	}
-	else if (!old_nm_connected && new_nm_connected
-			&& priv->nm_saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
+	else if (new_online
+			&& priv->saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
 		/* We are now connected */
 		DEBUG ("Reconnected: Restore state %d (%s)",
-				priv->nm_saved_state, priv->nm_saved_status);
+				priv->saved_state, priv->saved_status);
 		empathy_idle_set_presence (idle,
-				priv->nm_saved_state,
-				priv->nm_saved_status);
-		priv->nm_saved_state = TP_CONNECTION_PRESENCE_TYPE_UNSET;
-		g_free (priv->nm_saved_status);
-		priv->nm_saved_status = NULL;
+				priv->saved_state,
+				priv->saved_status);
+		priv->saved_state = TP_CONNECTION_PRESENCE_TYPE_UNSET;
+		g_free (priv->saved_status);
+		priv->saved_status = NULL;
 	}
-
-	priv->nm_connected = new_nm_connected;
 }
-#endif
 
 static void
 idle_finalize (GObject *object)
@@ -296,11 +271,11 @@ idle_finalize (GObject *object)
 		g_object_unref (priv->gs_proxy);
 	}
 
-#ifdef HAVE_NM
-	if (priv->nm_client) {
-		g_object_unref (priv->nm_client);
-	}
-#endif
+	g_signal_handler_disconnect (priv->connectivity,
+				     priv->state_change_signal_id);
+	priv->state_change_signal_id = 0;
+
+	g_object_unref (priv->connectivity);
 
 	idle_ext_away_stop (EMPATHY_IDLE (object));
 }
@@ -350,9 +325,6 @@ idle_get_property (GObject    *object,
 	case PROP_AUTO_AWAY:
 		g_value_set_boolean (value, empathy_idle_get_auto_away (idle));
 		break;
-	case PROP_USE_NM:
-		g_value_set_boolean (value, empathy_idle_get_use_nm (idle));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
@@ -383,9 +355,6 @@ idle_set_property (GObject      *object,
 		break;
 	case PROP_AUTO_AWAY:
 		empathy_idle_set_auto_away (idle, g_value_get_boolean (value));
-		break;
-	case PROP_USE_NM:
-		empathy_idle_set_use_nm (idle, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -434,14 +403,6 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 								"Should it set presence to away if inactive",
 								FALSE,
 								G_PARAM_READWRITE));
-
-	 g_object_class_install_property (object_class,
-					  PROP_USE_NM,
-					  g_param_spec_boolean ("use-nm",
-								"Use Network Manager",
-								"Set presence according to Network Manager",
-								TRUE,
-								G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 
 	g_type_class_add_private (object_class, sizeof (EmpathyIdlePriv));
 }
@@ -522,16 +483,9 @@ empathy_idle_init (EmpathyIdle *idle)
 		DEBUG ("Failed to get gs proxy");
 	}
 
-#ifdef HAVE_NM
-	priv->nm_client = nm_client_new ();
-	if (priv->nm_client) {
-		g_signal_connect (priv->nm_client, "notify::" NM_CLIENT_STATE,
-				  G_CALLBACK (idle_nm_state_change_cb),
-				  idle);
-	} else {
-		DEBUG ("Failed to get nm proxy");
-	}
-#endif
+	priv->connectivity = empathy_connectivity_dup_singleton ();
+	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
+	    "state-change", G_CALLBACK (idle_state_change_cb), idle);
 }
 
 EmpathyIdle *
@@ -664,10 +618,9 @@ empathy_idle_set_presence (EmpathyIdle *idle,
 		status = NULL;
 	}
 
-	if (!priv->nm_connected) {
-		DEBUG ("NM not connected");
+	if (!empathy_connectivity_is_online (priv->connectivity)) {
+		DEBUG ("Empathy is not online");
 
-		priv->nm_saved_state = state;
 		if (tp_strdiff (priv->status, status)) {
 			g_free (priv->status);
 			priv->status = NULL;
@@ -676,8 +629,6 @@ empathy_idle_set_presence (EmpathyIdle *idle,
 			}
 			g_object_notify (G_OBJECT (idle), "status");
 		}
-
-		return;
 	}
 
 	empathy_idle_do_set_presence (idle, state, status);
@@ -700,44 +651,5 @@ empathy_idle_set_auto_away (EmpathyIdle *idle,
 	priv->auto_away = auto_away;
 
 	g_object_notify (G_OBJECT (idle), "auto-away");
-}
-
-gboolean
-empathy_idle_get_use_nm (EmpathyIdle *idle)
-{
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
-
-	return priv->use_nm;
-}
-
-void
-empathy_idle_set_use_nm (EmpathyIdle *idle,
-			 gboolean     use_nm)
-{
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
-
-#ifdef HAVE_NM
-	if (!priv->nm_client || use_nm == priv->use_nm) {
-		return;
-	}
-#endif
-
-	priv->use_nm = use_nm;
-
-#ifdef HAVE_NM
-	if (use_nm) {
-		idle_nm_state_change_cb (priv->nm_client, NULL, idle);
-#else
-	if (0) {
-#endif
-	} else {
-		priv->nm_connected = TRUE;
-		if (priv->nm_saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
-			empathy_idle_set_state (idle, priv->nm_saved_state);
-		}
-		priv->nm_saved_state = TP_CONNECTION_PRESENCE_TYPE_UNSET;
-	}
-
-	g_object_notify (G_OBJECT (idle), "use-nm");
 }
 
