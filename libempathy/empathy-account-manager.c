@@ -106,16 +106,8 @@ emp_account_enabled_cb (EmpathyAccount *account,
   GParamSpec *spec,
   gpointer manager)
 {
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-
   if (empathy_account_is_enabled (account))
-    {
-      g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
-
-      /* set the requested global presence on the account */
-      empathy_account_request_presence (account, priv->requested_presence,
-          priv->requested_status, priv->requested_status_message);
-    }
+    g_signal_emit (manager, signals[ACCOUNT_ENABLED], 0, account);
   else
     g_signal_emit (manager, signals[ACCOUNT_DISABLED], 0, account);
 }
@@ -279,6 +271,14 @@ empathy_account_manager_check_ready (EmpathyAccountManager *manager)
         return;
     }
 
+  /* Rerequest global presence on the initial set of accounts for cases where a
+   * global presence was requested before the manager was ready */
+  if (priv->requested_presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
+    empathy_account_manager_request_global_presence (manager,
+      priv->requested_presence,
+      priv->requested_status,
+      priv->requested_status_message);
+
   priv->ready = TRUE;
   g_object_notify (G_OBJECT (manager), "ready");
 }
@@ -330,10 +330,6 @@ account_manager_account_ready_cb (GObject *obj,
     G_CALLBACK (emp_account_removed_cb), manager);
 
   empathy_account_manager_check_ready (manager);
-
-  /* update the account to the requested global presence */
-  empathy_account_request_presence (account, priv->requested_presence,
-    priv->requested_status, priv->requested_status_message);
 }
 
 static EmpathyAccount *
