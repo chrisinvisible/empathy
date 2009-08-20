@@ -1802,12 +1802,16 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
 
   account = empathy_account_manager_get_account (priv->account_manager,
     account_path);
-  /* FIXME */
   g_assert (account != NULL);
 
-  connection = empathy_account_get_connection (account);
-  /* FIXME */
-  g_assert (connection != NULL);
+  connection = empathy_account_get_connection_for (account, connection_path);
+  if (connection == NULL)
+    {
+      GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
+        "Invalid connection argument" };
+      dbus_g_method_return_error (context, &error);
+      return;
+    }
 
   for (i = 0; i < channels->len ; i++)
     {
