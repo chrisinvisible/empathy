@@ -332,8 +332,8 @@ account_manager_account_ready_cb (GObject *obj,
   empathy_account_manager_check_ready (manager);
 }
 
-static EmpathyAccount *
-account_manager_add_account (EmpathyAccountManager *manager,
+EmpathyAccount *
+empathy_account_manager_get_account (EmpathyAccountManager *manager,
   const gchar *path)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
@@ -376,7 +376,7 @@ account_manager_got_all_cb (TpProxy *proxy,
     {
       gchar *name = g_ptr_array_index (accounts, i);
 
-      account_manager_add_account (manager, name);
+      empathy_account_manager_get_account (manager, name);
     }
 
   empathy_account_manager_check_ready (manager);
@@ -394,7 +394,7 @@ account_validity_changed_cb (TpAccountManager *proxy,
   if (!valid)
     return;
 
-  account_manager_add_account (manager, path);
+  empathy_account_manager_get_account (manager, path);
 }
 
 static void
@@ -757,15 +757,6 @@ empathy_account_manager_get_account_for_connection (
   return NULL;
 }
 
-EmpathyAccount *
-empathy_account_manager_get_account (EmpathyAccountManager *manager,
-    const gchar *unique_name)
-{
-  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
-
-  return g_hash_table_lookup (priv->accounts, unique_name);
-}
-
 GList *
 empathy_account_manager_dup_accounts (EmpathyAccountManager *manager)
 {
@@ -915,7 +906,7 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
       return;
     }
 
-  account = account_manager_add_account (manager, account_path);
+  account = empathy_account_manager_get_account (manager, account_path);
 
   g_hash_table_insert (priv->create_results, account, my_res);
 }
