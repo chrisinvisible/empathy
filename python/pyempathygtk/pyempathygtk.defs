@@ -190,6 +190,7 @@
     '("is-separator" "EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR")
     '("can-audio-call" "EMPATHY_CONTACT_LIST_STORE_COL_CAN_AUDIO_CALL")
     '("can-video-call" "EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL")
+    '("flags" "EMPATHY_CONTACT_LIST_STORE_COL_FLAGS")
     '("count" "EMPATHY_CONTACT_LIST_STORE_COL_COUNT")
   )
 )
@@ -251,25 +252,6 @@
     '("empathy-gst-video-src-channel-brightness" "EMPATHY_GST_VIDEO_SRC_CHANNEL_BRIGHTNESS")
     '("empathy-gst-video-src-channel-gamma" "EMPATHY_GST_VIDEO_SRC_CHANNEL_GAMMA")
     '("nr-empathy-gst-video-src-channels" "NR_EMPATHY_GST_VIDEO_SRC_CHANNELS")
-  )
-)
-
-(define-enum Sound
-  (in-module "Empathy")
-  (c-name "EmpathySound")
-  (gtype-id "EMPATHY_TYPE_SOUND")
-  (values
-    '("empathy-sound-message-incoming" "EMPATHY_SOUND_MESSAGE_INCOMING")
-    '("empathy-sound-message-outgoing" "EMPATHY_SOUND_MESSAGE_OUTGOING")
-    '("empathy-sound-conversation-new" "EMPATHY_SOUND_CONVERSATION_NEW")
-    '("empathy-sound-contact-connected" "EMPATHY_SOUND_CONTACT_CONNECTED")
-    '("empathy-sound-contact-disconnected" "EMPATHY_SOUND_CONTACT_DISCONNECTED")
-    '("empathy-sound-account-connected" "EMPATHY_SOUND_ACCOUNT_CONNECTED")
-    '("empathy-sound-account-disconnected" "EMPATHY_SOUND_ACCOUNT_DISCONNECTED")
-    '("empathy-sound-phone-incoming" "EMPATHY_SOUND_PHONE_INCOMING")
-    '("empathy-sound-phone-outgoing" "EMPATHY_SOUND_PHONE_OUTGOING")
-    '("empathy-sound-phone-hangup" "EMPATHY_SOUND_PHONE_HANGUP")
-    '("last-empathy-sound" "LAST_EMPATHY_SOUND")
   )
 )
 
@@ -991,6 +973,15 @@
   )
 )
 
+(define-function new_contact_dialog_show_with_contact
+  (c-name "empathy_new_contact_dialog_show_with_contact")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("EmpathyContact*" "contact")
+  )
+)
+
 
 
 ;; From empathy-contact-list-store.h
@@ -1148,6 +1139,12 @@
   (return-type "EmpathyContact*")
 )
 
+(define-method get_flags
+  (of-object "EmpathyContactListView")
+  (c-name "empathy_contact_list_view_get_flags")
+  (return-type "EmpathyContactListFlags")
+)
+
 (define-method get_selected_group
   (of-object "EmpathyContactListView")
   (c-name "empathy_contact_list_view_get_selected_group")
@@ -1177,6 +1174,12 @@
   (parameters
     '("EmpathyContactFeatureFlags" "features")
   )
+)
+
+(define-method add_menu_item_new
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_add_menu_item_new")
+  (return-type "GtkWidget*")
 )
 
 (define-method chat_menu_item_new
@@ -1224,6 +1227,12 @@
 (define-method file_transfer_menu_item_new
   (of-object "EmpathyContact")
   (c-name "empathy_contact_file_transfer_menu_item_new")
+  (return-type "GtkWidget*")
+)
+
+(define-method share_my_desktop_menu_item_new
+  (of-object "EmpathyContact")
+  (c-name "empathy_contact_share_my_desktop_menu_item_new")
   (return-type "GtkWidget*")
 )
 
@@ -1732,6 +1741,11 @@
   (return-type "const-gchar**")
 )
 
+(define-function theme_manager_get_adium_themes
+  (c-name "empathy_theme_manager_get_adium_themes")
+  (return-type "GList*")
+)
+
 (define-method create_view
   (of-object "EmpathyThemeManager")
   (c-name "empathy_theme_manager_create_view")
@@ -1985,30 +1999,12 @@
   )
 )
 
-(define-function sound_play
-  (c-name "empathy_sound_play")
-  (return-type "none")
+(define-function make_absolute_url
+  (c-name "empathy_make_absolute_url")
+  (return-type "gchar*")
   (parameters
-    '("GtkWidget*" "widget")
-    '("EmpathySound" "sound_id")
+    '("const-gchar*" "url")
   )
-)
-
-(define-function sound_play_full
-  (c-name "empathy_sound_play_full")
-  (return-type "gboolean")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("EmpathySound" "sound_id")
-    '("ca_finish_callback_t" "callback")
-    '("gpointer" "user_data")
-  )
-)
-
-(define-method stop
-  (of-object "EmpathySound")
-  (c-name "empathy_sound_stop")
-  (return-type "none")
 )
 
 
