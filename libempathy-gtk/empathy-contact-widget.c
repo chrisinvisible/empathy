@@ -1320,8 +1320,16 @@ contact_widget_location_update (EmpathyContactWidget *information)
   gboolean has_position = TRUE;
   GtkWidget *label;
   guint row = 0;
-  GHashTableIter iter;
-  gpointer key, pvalue;
+  static const gchar* ordered_geolocation_keys[] = {
+    EMPATHY_LOCATION_STREET,
+    EMPATHY_LOCATION_AREA,
+    EMPATHY_LOCATION_LOCALITY,
+    EMPATHY_LOCATION_REGION,
+    EMPATHY_LOCATION_COUNTRY,
+    NULL
+  };
+  int i;
+  const gchar *skey;
 
   if (!(information->flags & EMPATHY_CONTACT_WIDGET_SHOW_LOCATION))
     {
@@ -1379,18 +1387,18 @@ contact_widget_location_update (EmpathyContactWidget *information)
   gtk_box_pack_start (GTK_BOX (information->subvbox_location),
       information->table_location, FALSE, FALSE, 5);
 
-  g_hash_table_iter_init (&iter, location);
-  while (g_hash_table_iter_next (&iter, &key, &pvalue))
+
+  for (i = 0; (skey = ordered_geolocation_keys[i]); i++)
     {
-      const gchar *skey;
       const gchar* user_label;
       GValue *gvalue;
       char *svalue = NULL;
 
-      skey = (const gchar *) key;
+      gvalue = g_hash_table_lookup (location, (gpointer) skey);
+      if (gvalue == NULL)
+        continue;
 
       user_label = location_key_to_label (skey);
-      gvalue = (GValue *) pvalue;
 
       label = gtk_label_new (user_label);
       gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
@@ -1427,6 +1435,12 @@ contact_widget_location_update (EmpathyContactWidget *information)
 
       g_free (svalue);
       row++;
+    }
+
+  if (row == 0)
+    {
+      gtk_widget_hide (information->vbox_location);
+      return;
     }
 
   gtk_widget_show (information->table_location);
