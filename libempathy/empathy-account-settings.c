@@ -23,6 +23,8 @@
 #include <stdlib.h>
 
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/gtypes.h>
 
 #include "empathy-account-settings.h"
 #include "empathy-account-manager.h"
@@ -942,8 +944,41 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   GHashTable *properties;
+  TpConnectionPresenceType type;
+  gchar *status;
+  gchar *message;
 
-  properties = g_hash_table_new (NULL, NULL);
+  properties = tp_asv_new (NULL, NULL);
+
+  type = empathy_account_manager_get_requested_global_presence
+    (priv->account_manager, &status, &message);
+
+  if (type != TP_CONNECTION_PRESENCE_TYPE_UNSET)
+    {
+      /* Create the account with the requested presence the same as the current
+        * global requested presence, but don't enable it */
+      GValueArray *presence;
+      GValue vtype = { 0, };
+      GValue vstatus = { 0, };
+      GValue vmessage = { 0, };
+
+      presence = g_value_array_new (3);
+
+      g_value_init (&vtype, G_TYPE_UINT);
+      g_value_set_uint (&vtype, type);
+      g_value_array_append (presence, &vtype);
+
+      g_value_init (&vstatus, G_TYPE_STRING);
+      g_value_take_string (&vstatus, status);
+      g_value_array_append (presence, &vstatus);
+
+      g_value_init (&vmessage, G_TYPE_STRING);
+      g_value_take_string (&vmessage, message);
+      g_value_array_append (presence, &vmessage);
+
+      tp_asv_take_boxed (properties, TP_IFACE_ACCOUNT ".RequestedPresence",
+        TP_STRUCT_TYPE_SIMPLE_PRESENCE, presence);
+    }
 
   empathy_account_manager_create_account_async (priv->account_manager,
     priv->cm_name, priv->protocol, priv->display_name,
