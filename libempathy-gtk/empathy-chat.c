@@ -1191,7 +1191,10 @@ build_part_message (guint           reason,
 		break;
 	case TP_CHANNEL_GROUP_CHANGE_REASON_KICKED:
 		if (actor_name != NULL) {
-			g_string_append_printf (s, _("%s was kicked by %s"),
+			/* translators: reverse the order of these arguments
+			 * if the kicked should come before the kicker in your locale.
+			 */
+			g_string_append_printf (s, _("%1$s was kicked by %2$s"),
 				name, actor_name);
 		} else {
 			g_string_append_printf (s, _("%s was kicked"), name);
@@ -1199,7 +1202,10 @@ build_part_message (guint           reason,
 		break;
 	case TP_CHANNEL_GROUP_CHANGE_REASON_BANNED:
 		if (actor_name != NULL) {
-			g_string_append_printf (s, _("%s was banned by %s"),
+			/* translators: reverse the order of these arguments
+			 * if the banned should come before the banner in your locale.
+			 */
+			g_string_append_printf (s, _("%1$s was banned by %2$s"),
 				name, actor_name);
 		} else {
 			g_string_append_printf (s, _("%s was banned"), name);
