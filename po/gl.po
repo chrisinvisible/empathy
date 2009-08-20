@@ -1,4 +1,4 @@
-# translation of empathy-master-po-gl-57278.po to Galician
+# translation of empathy.master.po to Galician
 # This file is distributed under the same license as the EMPATHY package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 #
@@ -8,10 +8,10 @@
 # Antón Méixome <meixome@mancomun.org>, 2009.
 msgid ""
 msgstr ""
-"Project-Id-Version: empathy-master-po-gl-57278\n"
+"Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-19 14:47+0200\n"
-"PO-Revision-Date: 2009-08-19 10:29+0200\n"
+"POT-Creation-Date: 2009-08-20 14:42+0200\n"
+"PO-Revision-Date: 2009-08-20 12:03+0200\n"
 "Last-Translator: Antón Méixome <meixome@mancomun.org>\n"
 "Language-Team: Galician <gnome@mancomun.org>\n"
 "MIME-Version: 1.0\n"
@@ -966,27 +966,33 @@ msgstr "Suxestións de _ortografía"
 msgid "%s has disconnected"
 msgstr "%s desconectou"
 
-#: ../libempathy-gtk/empathy-chat.c:1194
-#, c-format
-msgid "%s was kicked by %s"
-msgstr "%s foi expulsado por %s"
-
+#. translators: reverse the order of these arguments
+#. * if the kicked should come before the kicker in your locale.
+#.
 #: ../libempathy-gtk/empathy-chat.c:1197
+#, c-format
+msgid "%1$s was kicked by %2$s"
+msgstr "%1$s foi expulsado por %2$s"
+
+#: ../libempathy-gtk/empathy-chat.c:1200
 #, c-format
 msgid "%s was kicked"
 msgstr "%s foi expulsado"
 
-#: ../libempathy-gtk/empathy-chat.c:1202
+#. translators: reverse the order of these arguments
+#. * if the banned should come before the banner in your locale.
+#.
+#: ../libempathy-gtk/empathy-chat.c:1208
 #, c-format
-msgid "%s was banned by %s"
-msgstr "%s foi excluído por %s"
+msgid "%1$s was banned by %2$s"
+msgstr "%1$s foi vetado por %2$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1205
+#: ../libempathy-gtk/empathy-chat.c:1211
 #, c-format
 msgid "%s was banned"
 msgstr "%s foi excluído"
 
-#: ../libempathy-gtk/empathy-chat.c:1209
+#: ../libempathy-gtk/empathy-chat.c:1215
 #, c-format
 msgid "%s has left the room"
 msgstr "%s deixou a sala"
@@ -996,26 +1002,26 @@ msgstr "%s deixou a sala"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1218
+#: ../libempathy-gtk/empathy-chat.c:1224
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
 # rever
-#: ../libempathy-gtk/empathy-chat.c:1241
+#: ../libempathy-gtk/empathy-chat.c:1247
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s uniuse á sala"
 
-#: ../libempathy-gtk/empathy-chat.c:1374 ../src/empathy-call-window.c:1277
+#: ../libempathy-gtk/empathy-chat.c:1380 ../src/empathy-call-window.c:1277
 msgid "Disconnected"
 msgstr "Desconectado"
 
-#: ../libempathy-gtk/empathy-chat.c:1809
+#: ../libempathy-gtk/empathy-chat.c:1815
 msgid "Connected"
 msgstr "Conectado"
 
-#: ../libempathy-gtk/empathy-chat.c:1859
+#: ../libempathy-gtk/empathy-chat.c:1865
 #: ../libempathy-gtk/empathy-log-window.c:502
 msgid "Conversation"
 msgstr "Conversa"
@@ -1524,14 +1530,6 @@ msgstr "Engada _nova configuración preestablecida"
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:2
 msgid "Saved Presets"
 msgstr "Configuración personalizada gardada"
-
-#: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:3
-msgid "gtk-add"
-msgstr "gtk-add"
-
-#: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:4
-msgid "gtk-remove"
-msgstr "gtk-remove"
 
 #: ../libempathy-gtk/empathy-theme-manager.c:67
 msgid "Classic"
@@ -2829,10 +2827,6 @@ msgid ""
 msgstr ""
 "Foille ofrecido un convite para o servizo %s, mais non ten o aplicativo "
 "necesario para manipulalo"
-
-#: ../src/empathy-call-window-fullscreen.ui.h:1
-msgid "gtk-leave-fullscreen"
-msgstr "gtk-leave-fullscreen"
 
 #: ../src/empathy-map-view.ui.h:1
 msgid "Contact Map View"
