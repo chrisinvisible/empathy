@@ -1321,6 +1321,12 @@ contact_widget_location_update (EmpathyContactWidget *information)
   GtkWidget *label;
   guint row = 0;
   static const gchar* ordered_geolocation_keys[] = {
+    EMPATHY_LOCATION_TEXT,
+    EMPATHY_LOCATION_URI,
+    EMPATHY_LOCATION_DESCRIPTION,
+    EMPATHY_LOCATION_BUILDING,
+    EMPATHY_LOCATION_FLOOR,
+    EMPATHY_LOCATION_ROOM,
     EMPATHY_LOCATION_STREET,
     EMPATHY_LOCATION_AREA,
     EMPATHY_LOCATION_LOCALITY,
