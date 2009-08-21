@@ -65,7 +65,8 @@ account_widget_sip_discover_stun_toggled_cb (
 
 void
 empathy_account_widget_sip_build (EmpathyAccountWidget *self,
-                                  const char *filename)
+    const char *filename,
+    GtkWidget **table_common_settings)
 {
   EmpathyAccountWidgetSip *settings;
   GtkWidget *vbox_settings;
@@ -92,6 +93,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       settings->self = self;
 
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_settings", table_common_settings,
           "vbox_sip_settings", &vbox_settings,
           "entry_stun-server", &settings->entry_stun_server,
           "spinbutton_stun-port", &settings->spinbutton_stun_part,

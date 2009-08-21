@@ -418,7 +418,8 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
 
 void
 empathy_account_widget_irc_build (EmpathyAccountWidget *self,
-                                const char *filename)
+    const char *filename,
+    GtkWidget **table_common_settings)
 {
   EmpathyAccountWidgetIrc *settings;
   gchar *dir, *user_file_with_path, *global_file_with_path;
@@ -450,6 +451,7 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
   g_free (user_file_with_path);
 
   self->ui_details->gui = empathy_builder_get_file (filename,
+      "table_irc_settings", table_common_settings,
       "vbox_irc", &self->ui_details->widget,
       "table_irc_settings", &settings->vbox_settings,
       "combobox_network", &settings->combobox_network,

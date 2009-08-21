@@ -702,6 +702,7 @@ account_widget_build_generic (EmpathyAccountWidget *self,
   GtkWidget *expander_advanced;
 
   self->ui_details->gui = empathy_builder_get_file (filename,
+      "table_common_settings", &priv->table_common_settings,
       "vbox_generic_settings", &self->ui_details->widget,
       "expander_advanced_settings", &expander_advanced,
       NULL);
@@ -722,7 +723,10 @@ static void
 account_widget_build_salut (EmpathyAccountWidget *self,
     const char *filename)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
   self->ui_details->gui = empathy_builder_get_file (filename,
+      "table_common_settings", &priv->table_common_settings,
       "vbox_salut_settings", &self->ui_details->widget,
       NULL);
 
@@ -760,6 +764,7 @@ account_widget_build_msn (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_msn_settings", &priv->table_common_settings,
           "vbox_msn_settings", &self->ui_details->widget,
           NULL);
 
@@ -864,6 +869,7 @@ account_widget_build_icq (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_settings", &priv->table_common_settings,
           "vbox_icq_settings", &self->ui_details->widget,
           "spinbutton_port", &spinbutton_port,
           NULL);
@@ -904,6 +910,7 @@ account_widget_build_aim (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_settings", &priv->table_common_settings,
           "vbox_aim_settings", &self->ui_details->widget,
           "spinbutton_port", &spinbutton_port,
           NULL);
@@ -942,6 +949,7 @@ account_widget_build_yahoo (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_settings", &priv->table_common_settings,
           "vbox_yahoo_settings", &self->ui_details->widget,
           NULL);
 
@@ -983,6 +991,7 @@ account_widget_build_groupwise (EmpathyAccountWidget *self,
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
+          "table_common_groupwise_settings", &priv->table_common_settings,
           "vbox_groupwise_settings", &self->ui_details->widget,
           NULL);
 
@@ -1117,9 +1126,13 @@ do_constructed (GObject *obj)
   else if (!tp_strdiff (priv->protocol, "groupwise"))
     account_widget_build_groupwise (self, filename);
   else if (!tp_strdiff (priv->protocol, "irc"))
-    empathy_account_widget_irc_build (self, filename);
+    empathy_account_widget_irc_build (self, filename,
+        &priv->table_common_settings);
   else if (!tp_strdiff (priv->protocol, "sip"))
-    empathy_account_widget_sip_build (self, filename);
+    empathy_account_widget_sip_build (self, filename,
+        &priv->table_common_settings);
+  else if (!tp_strdiff (priv->protocol, "generic"))
+    account_widget_build_generic (self, filename);
   else
     {
       g_free (filename);

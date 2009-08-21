@@ -27,7 +27,8 @@
 G_BEGIN_DECLS
 
 void empathy_account_widget_sip_build (EmpathyAccountWidget *self,
-                                       const char *filename);
+    const char *filename,
+    GtkWidget **table_common_settings);
 
 G_END_DECLS
 
