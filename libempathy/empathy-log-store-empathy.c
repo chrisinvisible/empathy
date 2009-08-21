@@ -608,7 +608,7 @@ log_store_empathy_search_new (EmpathyLogStore *self,
       contents = g_mapped_file_get_contents (file);
       contents_casefold = g_utf8_casefold (contents, length);
 
-      g_mapped_file_unref (file);
+      g_mapped_file_free (file);
 
       if (strstr (contents_casefold, text_casefold))
         {
