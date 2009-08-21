@@ -45,13 +45,13 @@ typedef struct _EmpathyDebugDialogClass EmpathyDebugDialogClass;
 
 struct _EmpathyDebugDialog
 {
-  GtkDialog parent;
+  GtkWindow parent;
   gpointer priv;
 };
 
 struct _EmpathyDebugDialogClass
 {
-  GtkDialogClass parent_class;
+  GtkWindowClass parent_class;
 };
 
 GType empathy_debug_dialog_get_type (void) G_GNUC_CONST;
