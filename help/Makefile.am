@@ -18,6 +18,7 @@ DOC_PAGES = \
 	change-status.page \
 	create-account.page \
 	disable-account.page \
+	favorite-rooms.page \
 	geolocation.page \
 	geolocation-not-showing.page \
 	geolocation-privacy.page \
