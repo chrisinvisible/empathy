@@ -352,7 +352,7 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 
       g_free (priv->icon_name);
       priv->icon_name =
-        (gchar *) empathy_account_get_icon_name (priv->account);
+        g_strdup (empathy_account_get_icon_name (priv->account));
     }
 
   priv->tp_protocol = tp_connection_manager_get_protocol (priv->manager,
