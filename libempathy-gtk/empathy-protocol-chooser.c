@@ -59,7 +59,7 @@
 typedef struct
 {
   GtkListStore *store;
-  
+
   gboolean dispose_run;
   EmpathyConnectionManagers *cms;
 

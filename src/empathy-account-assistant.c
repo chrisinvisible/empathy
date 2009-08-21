@@ -390,7 +390,7 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
     gboolean is_enter)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
-  
+
   if (is_enter)
     {
       gtk_label_set_label (GTK_LABEL (priv->first_label),
@@ -426,10 +426,10 @@ account_assistant_finish_enter_or_create_page (EmpathyAccountAssistant *self,
           priv->enter_or_create_page,
           _("Enter the details for the new account"));
     }
-    
+
   g_signal_connect (priv->chooser, "changed",
       G_CALLBACK (account_assistant_protocol_changed_cb), self);
- 
+
   /* trigger show the first account widget */
   account_assistant_protocol_changed_cb (GTK_COMBO_BOX (priv->chooser), self);
 }
@@ -568,7 +568,7 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
   str = _("Yes, I'll enter my account details now");
 
   if (radio == NULL)
-    {      
+    {
       radio = gtk_radio_button_new_with_label (NULL, str);
       w = radio;
     }
@@ -772,7 +772,7 @@ impl_signal_prepare (GtkAssistant *assistant,
   gint current_idx;
 
   current_idx = gtk_assistant_get_current_page (assistant);
-  
+
   if (current_idx >= PAGE_ENTER_CREATE)
     {
       if (!priv->enter_create_forward)

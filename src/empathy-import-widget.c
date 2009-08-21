@@ -85,7 +85,7 @@ import_widget_account_id_in_list (GList *accounts,
 
       parameters = empathy_account_get_parameters (account);
 
-      value = g_hash_table_lookup ((GHashTable *)parameters, "account");
+      value = g_hash_table_lookup ((GHashTable *) parameters, "account");
 
       if (value == NULL)
         continue;
@@ -438,7 +438,7 @@ do_constructed (GObject *obj)
   gchar *filename;
 
   priv->accounts = empathy_import_accounts_load (priv->app_id);
-  
+
   filename = empathy_file_lookup ("empathy-import-dialog.ui", "src");
   gui = empathy_builder_get_file (filename,
       "widget_vbox", &priv->vbox,

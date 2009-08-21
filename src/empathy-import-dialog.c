@@ -61,14 +61,14 @@ import_dialog_add_import_widget (EmpathyImportDialog *self)
   GtkWidget *widget, *area;
 
   area = gtk_dialog_get_content_area (GTK_DIALOG (self));
-  
+
   iw = empathy_import_widget_new (EMPATHY_IMPORT_APPLICATION_ALL);
   widget = empathy_import_widget_get_widget (iw);
   gtk_box_pack_start (GTK_BOX (area), widget, FALSE, FALSE, 0);
   gtk_widget_show (widget);
 
   priv->iw = iw;
-  
+
   gtk_dialog_add_buttons (GTK_DIALOG (self), GTK_STOCK_CANCEL,
       GTK_RESPONSE_CANCEL, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
 }

@@ -243,7 +243,7 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
       empathy_account_settings_get_protocol (settings));
 
   accounts_dialog_update_name_label (dialog,
-      empathy_account_settings_get_display_name(settings));
+      empathy_account_settings_get_display_name (settings));
 
   g_free (icon_name);
 }
@@ -1061,7 +1061,7 @@ accounts_dialog_account_changed_cb (EmpathyAccountManager *manager,
 
   if (settings == selected_settings)
     accounts_dialog_update_name_label (dialog,
-        empathy_account_settings_get_display_name(settings));
+        empathy_account_settings_get_display_name (settings));
 
   if (settings)
     g_object_unref (settings);

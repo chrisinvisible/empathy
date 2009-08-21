@@ -1190,7 +1190,7 @@ do_constructed (GObject *obj)
           G_CALLBACK (account_widget_apply_clicked_cb),
           self);
       gtk_widget_show_all (hbox);
-      account_widget_set_control_buttons_sensitivity(self, FALSE);
+      account_widget_set_control_buttons_sensitivity (self, FALSE);
     }
 
   account = empathy_account_settings_get_account (priv->settings);
