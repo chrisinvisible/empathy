@@ -365,6 +365,16 @@
   )
 )
 
+(define-method get_requested_global_presence
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_get_requested_global_presence")
+  (return-type "TpConnectionPresenceType")
+  (parameters
+    '("gchar**" "status")
+    '("gchar**" "message")
+  )
+)
+
 (define-method get_global_presence
   (of-object "EmpathyAccountManager")
   (c-name "empathy_account_manager_get_global_presence")

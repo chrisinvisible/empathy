@@ -7,6 +7,13 @@
   (gtype-id "EMPATHY_TYPE_ACCOUNT_CHOOSER")
 )
 
+(define-object AccountWidget
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyAccountWidget")
+  (gtype-id "EMPATHY_TYPE_ACCOUNT_WIDGET")
+)
+
 (define-object AvatarChooser
   (in-module "Empathy")
   (parent "GtkButton")
@@ -328,114 +335,16 @@
 
 ;; From empathy-account-widget.h
 
-(define-function account_widget_handle_params
-  (c-name "empathy_account_widget_handle_params")
-  (return-type "none")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-    '("GtkBuilder*" "gui")
-    '("const-gchar*" "first_widget")
-  )
-  (varargs #t)
+(define-function account_widget_get_type
+  (c-name "empathy_account_widget_get_type")
+  (return-type "GType")
 )
 
-(define-function account_widget_add_forget_button
-  (c-name "empathy_account_widget_add_forget_button")
-  (return-type "none")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-    '("GtkBuilder*" "gui")
-    '("const-gchar*" "button")
-    '("const-gchar*" "entry")
-  )
-)
-
-(define-function account_widget_add_apply_button
-  (c-name "empathy_account_widget_add_apply_button")
-  (return-type "none")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-    '("GtkWidget*" "vbox")
-  )
-)
-
-(define-function account_widget_set_default_focus
-  (c-name "empathy_account_widget_set_default_focus")
-  (return-type "none")
-  (parameters
-    '("GtkBuilder*" "gui")
-    '("const-gchar*" "entry")
-  )
-)
-
-(define-function account_widget_generic_new
-  (c-name "empathy_account_widget_generic_new")
-  (is-constructor-of "EmpathyAccountWidgetGeneric")
+(define-function account_widget_new_for_protocol
+  (c-name "empathy_account_widget_new_for_protocol")
   (return-type "GtkWidget*")
   (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_salut_new
-  (c-name "empathy_account_widget_salut_new")
-  (is-constructor-of "EmpathyAccountWidgetSalut")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_msn_new
-  (c-name "empathy_account_widget_msn_new")
-  (is-constructor-of "EmpathyAccountWidgetMsn")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_jabber_new
-  (c-name "empathy_account_widget_jabber_new")
-  (is-constructor-of "EmpathyAccountWidgetJabber")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_icq_new
-  (c-name "empathy_account_widget_icq_new")
-  (is-constructor-of "EmpathyAccountWidgetIcq")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_aim_new
-  (c-name "empathy_account_widget_aim_new")
-  (is-constructor-of "EmpathyAccountWidgetAim")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_yahoo_new
-  (c-name "empathy_account_widget_yahoo_new")
-  (is-constructor-of "EmpathyAccountWidgetYahoo")
-  (return-type "GtkWidget*")
-  (parameters
-    '("EmpathyAccountSettings*" "settings")
-  )
-)
-
-(define-function account_widget_groupwise_new
-  (c-name "empathy_account_widget_groupwise_new")
-  (is-constructor-of "EmpathyAccountWidgetGroupwise")
-  (return-type "GtkWidget*")
-  (parameters
+    '("const-char*" "protocol")
     '("EmpathyAccountSettings*" "settings")
   )
 )
@@ -444,12 +353,12 @@
 
 ;; From empathy-account-widget-irc.h
 
-(define-function account_widget_irc_new
-  (c-name "empathy_account_widget_irc_new")
-  (is-constructor-of "EmpathyAccountWidgetIrc")
-  (return-type "GtkWidget*")
+(define-method irc_build
+  (of-object "EmpathyAccountWidget")
+  (c-name "empathy_account_widget_irc_build")
+  (return-type "none")
   (parameters
-    '("EmpathyAccountSettings*" "settings")
+    '("const-char*" "filename")
   )
 )
 
@@ -457,12 +366,12 @@
 
 ;; From empathy-account-widget-sip.h
 
-(define-function account_widget_sip_new
-  (c-name "empathy_account_widget_sip_new")
-  (is-constructor-of "EmpathyAccountWidgetSip")
-  (return-type "GtkWidget*")
+(define-method sip_build
+  (of-object "EmpathyAccountWidget")
+  (c-name "empathy_account_widget_sip_build")
+  (return-type "none")
   (parameters
-    '("EmpathyAccountSettings*" "settings")
+    '("const-char*" "filename")
   )
 )
 
@@ -1609,12 +1518,6 @@
   (parameters
     '("TpConnectionManagerProtocol**" "protocol")
   )
-)
-
-(define-method n_protocols
-  (of-object "EmpathyProtocolChooser")
-  (c-name "empathy_protocol_chooser_n_protocols")
-  (return-type "gint")
 )
 
 
