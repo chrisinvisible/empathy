@@ -298,7 +298,46 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
 			       &use_smileys);
 
-	if (use_smileys) {
+	/* Add <a href></a> arround links */
+	uri_regex = empathy_uri_regex_dup_singleton ();
+	match = g_regex_match (uri_regex, text, 0, &match_info);
+	if (match) {
+		gint last = 0;
+		gint s = 0, e = 0;
+
+		string = g_string_sized_new (strlen (text));
+		do {
+			gchar *real_url;
+
+			g_match_info_fetch_pos (match_info, 0, &s, &e);
+
+			if (s > last) {
+				/* Append the text between last link (or the
+				 * start of the message) and this link */
+				g_string_append_len (string, text + last, s - last);
+			}
+
+			/* Append the link inside <a href=""></a> tag */
+			real_url = empathy_make_absolute_url (text + s);
+
+			g_string_append (string, "<a href=\"");
+			g_string_append (string, real_url);
+			g_string_append (string, "\">");
+			g_string_append_len (string, text + s, e - s);
+			g_string_append (string, "</a>");
+
+			g_free (real_url);
+			last = e;
+		} while (g_match_info_next (match_info, NULL));
+
+		if (e < strlen (text)) {
+			/* Append the text after the last link */
+			g_string_append_len (string, text + e, strlen (text) - e);
+		}
+
+		g_free (ret);
+		text = ret = g_string_free (string, FALSE);
+	} else if (use_smileys) {
 		/* Replace smileys by a <img/> tag */
 		string = g_string_sized_new (strlen (text));
 		smileys = empathy_smiley_manager_parse (priv->smiley_manager, text);
@@ -325,41 +364,6 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 		text = ret = g_string_free (string, FALSE);
 	}
 
-	/* Add <a href></a> arround links */
-	uri_regex = empathy_uri_regex_dup_singleton ();
-	match = g_regex_match (uri_regex, text, 0, &match_info);
-	if (match) {
-		gint last = 0;
-		gint s = 0, e = 0;
-
-		string = g_string_sized_new (strlen (text));
-		do {
-			g_match_info_fetch_pos (match_info, 0, &s, &e);
-
-			if (s > last) {
-				/* Append the text between last link (or the
-				 * start of the message) and this link */
-				g_string_append_len (string, text + last, s - last);
-			}
-
-			/* Append the link inside <a href=""></a> tag */
-			g_string_append (string, "<a href=\"");
-			g_string_append_len (string, text + s, e - s);
-			g_string_append (string, "\">");
-			g_string_append_len (string, text + s, e - s);
-			g_string_append (string, "</a>");
-
-			last = e;
-		} while (g_match_info_next (match_info, NULL));
-
-		if (e < strlen (text)) {
-			/* Append the text after the last link */
-			g_string_append_len (string, text + e, strlen (text) - e);
-		}
-
-		g_free (ret);
-		text = ret = g_string_free (string, FALSE);
-	}
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 

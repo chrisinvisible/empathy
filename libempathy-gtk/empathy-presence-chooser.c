@@ -35,6 +35,7 @@
 
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-status-presets.h>
@@ -98,6 +99,9 @@ typedef enum  {
 
 typedef struct {
 	EmpathyIdle *idle;
+	EmpathyConnectivity *connectivity;
+
+	gulong state_change_signal_id;
 
 	gboolean     editing_status;
 	int          block_set_editing;
@@ -710,6 +714,14 @@ presence_chooser_entry_focus_out_cb (EmpathyPresenceChooser *chooser,
 }
 
 static void
+presence_chooser_connectivity_state_change (EmpathyConnectivity *connectivity,
+					    gboolean new_online,
+					    EmpathyPresenceChooser *chooser)
+{
+	gtk_widget_set_sensitive (GTK_WIDGET (chooser), new_online);
+}
+
+static void
 empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (chooser,
@@ -780,6 +792,14 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	/* FIXME: this string sucks */
 	gtk_widget_set_tooltip_text (GTK_WIDGET (chooser),
 		_("Set your presence and current status"));
+
+	priv->connectivity = empathy_connectivity_dup_singleton ();
+	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
+		"state-change",
+		G_CALLBACK (presence_chooser_connectivity_state_change),
+		chooser);
+	presence_chooser_connectivity_state_change (priv->connectivity,
+		empathy_connectivity_is_online (priv->connectivity), chooser);
 }
 
 static void
@@ -801,6 +821,12 @@ presence_chooser_finalize (GObject *object)
 					      presence_chooser_presence_changed_cb,
 					      object);
 	g_object_unref (priv->idle);
+
+	g_signal_handler_disconnect (priv->connectivity,
+				     priv->state_change_signal_id);
+	priv->state_change_signal_id = 0;
+
+	g_object_unref (priv->connectivity);
 
 	G_OBJECT_CLASS (empathy_presence_chooser_parent_class)->finalize (object);
 }
@@ -1049,6 +1075,7 @@ presence_chooser_menu_add_item (GtkWidget   *menu,
 	gtk_widget_show (image);
 
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+	gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (item), TRUE);
 	gtk_widget_show (item);
 
 	g_object_set_data_full (G_OBJECT (item),

@@ -29,14 +29,14 @@ GLIB_REQUIRED=2.16.0
 GTK_REQUIRED=2.16.0
 GCONF_REQUIRED=1.2.0
 LIBPANELAPPLET_REQUIRED=2.10.0
-TELEPATHY_GLIB_REQUIRED=0.7.31
+TELEPATHY_GLIB_REQUIRED=0.7.34
 ENCHANT_REQUIRED=1.2.0
 ISO_CODES_REQUIRED=0.35
 LIBNOTIFY_REQUIRED=0.4.4
 LIBCANBERRA_GTK_REQUIRED=0.4
-LIBCHAMPLAIN_REQUIRED=0.3.3
-LIBCHAMPLAIN_GTK_REQUIRED=0.3.3
-CLUTTER_GTK_REQUIRED=0.8.2
+LIBCHAMPLAIN_REQUIRED=0.3.6
+LIBCHAMPLAIN_GTK_REQUIRED=0.3.6
+CLUTTER_GTK_REQUIRED=0.10
 GEOCLUE_REQUIRED=0.11
 WEBKIT_REQUIRED=1.1.7
 NETWORK_MANAGER_REQUIRED=0.7.0
@@ -154,14 +154,31 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Gettext package name])
 AM_GLIB_GNU_GETTEXT
 
 # -----------------------------------------------------------
-# NM integration
+# Connectivity integration
 # -----------------------------------------------------------
-AC_ARG_ENABLE(network-manager,
-              AS_HELP_STRING([--enable-network-manager=@<:@no/yes/auto@:>@],
-                             [build with network-manager support]), ,
-                             enable_network_manager=auto)
+AC_ARG_WITH(connectivity,
+              AS_HELP_STRING([--with-connectivity=@<:@nm/connman/auto/no@:>@],
+                             [build with connectivity support]), ,
+                             with_connectivity=auto)
 
-if test "x$enable_network_manager" != "xno"; then
+if test "x$with_connectivity" = "xno"; then
+   have_nm=no
+   have_connman=no
+
+elif test "x$with_connectivity" = "xconnman"; then
+
+   PKG_CHECK_MODULES(CONNMAN,
+   [
+      dbus-glib-1
+   ], have_connman="yes", have_connman="no")
+
+   if test "x$have_connman" = "xyes"; then
+      AC_DEFINE(HAVE_CONNMAN, 1, [Define if you have connman dependencies])
+      have_nm=no
+   fi
+
+else
+
    PKG_CHECK_MODULES(NETWORK_MANAGER,
    [
       libnm_glib >= $NETWORK_MANAGER_REQUIRED
@@ -169,15 +186,20 @@ if test "x$enable_network_manager" != "xno"; then
 
    if test "x$have_nm" = "xyes"; then
       AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
+      have_connman=no
    fi
-else
-   have_nm=no
 fi
 
-if test "x$enable_network_manager" = "xyes" -a "x$have_nm" != "xyes"; then
+if test "x$with_connectivity" = "xconnman" -a "x$have_connman" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find connman dependencies.])
+fi
+
+if test "x$with_connectivity" = "xnm" -a "x$have_nm" != "xyes"; then
    AC_MSG_ERROR([Couldn't find libnm-glib dependencies.])
 fi
-AM_CONDITIONAL(HAVE_NM, test "x$have_NM" = "xyes")
+
+AM_CONDITIONAL(HAVE_NM, test "x$have_nm" = "xyes")
+AM_CONDITIONAL(HAVE_CONNMAN, test "x$have_connman" = "xyes")
 
 # -----------------------------------------------------------
 # Webkit
@@ -256,7 +278,7 @@ if test "x$enable_map" != "xno"; then
    [
       champlain-0.3 >= $LIBCHAMPLAIN_REQUIRED,
       champlain-gtk-0.3 >= $LIBCHAMPLAIN_GTK_REQUIRED
-      clutter-gtk-0.8 >= $CLUTTER_GTK_REQUIRED
+      clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
    ], have_libchamplain="yes", have_libchamplain="no")
 
    if test "x$have_libchamplain" = "xyes"; then
@@ -475,7 +497,10 @@ Configure summary:
 	Display maps (libchamplain).:  ${have_libchamplain}
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
+
+    Connectivity:
 	NetworkManager integration..:  ${have_nm}
+	ConnMan integration.........:  ${have_connman}
 
     Extras:
 	Documentation...............:  ${enable_gtk_doc}

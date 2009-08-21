@@ -21,6 +21,10 @@
 
 #include "config.h"
 
+/* Needed for trunc */
+#define _ISOC9X_SOURCE 1
+#define _ISOC99_SOURCE 1
+#include <math.h>
 #include <string.h>
 #include <time.h>
 
@@ -63,7 +67,6 @@ typedef struct {
     GeoclueAddress *gc_address;
 
     gboolean reduce_accuracy;
-    gdouble reduce_value;
     EmpathyAccountManager *account_manager;
 
     /* The idle id for publish_on_idle func */
@@ -194,13 +197,13 @@ publish_location (EmpathyLocationManager *location_manager,
   if (!conn)
     return;
 
-  if (force_publication == FALSE)
+  if (!force_publication)
     {
       if (!empathy_conf_get_bool (conf, EMPATHY_PREFS_LOCATION_PUBLISH,
             &can_publish))
         return;
 
-      if (can_publish == FALSE)
+      if (!can_publish)
         return;
     }
 
@@ -312,7 +315,8 @@ address_changed_cb (GeoclueAddress *address,
     {
       GValue *new_value;
       /* Discard street information if reduced accuracy is on */
-      if (priv->reduce_accuracy && strcmp (key, EMPATHY_LOCATION_STREET) == 0)
+      if (priv->reduce_accuracy &&
+          !tp_strdiff (key, EMPATHY_LOCATION_STREET))
         continue;
 
       new_value = tp_g_value_slice_new_string (value);
@@ -368,7 +372,11 @@ position_changed_cb (GeocluePosition *position,
 
   if (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE)
     {
-      longitude += priv->reduce_value;
+
+      if (priv->reduce_accuracy)
+        /* Truncate at 1 decimal place */
+        longitude = trunc (longitude * 10.0) / 10.0;
+
       new_value = tp_g_value_slice_new_double (longitude);
       g_hash_table_insert (priv->location, g_strdup (EMPATHY_LOCATION_LON),
           new_value);
@@ -381,7 +389,10 @@ position_changed_cb (GeocluePosition *position,
 
   if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE)
     {
-      latitude += priv->reduce_value;
+      if (priv->reduce_accuracy)
+        /* Truncate at 1 decimal place */
+        latitude = trunc (latitude * 10.0) / 10.0;
+
       new_value = tp_g_value_slice_new_double (latitude);
       g_hash_table_replace (priv->location, g_strdup (EMPATHY_LOCATION_LAT),
           new_value);
@@ -535,15 +546,15 @@ publish_cb (EmpathyConf *conf,
   DEBUG ("Publish Conf changed");
 
 
-  if (empathy_conf_get_bool (conf, key, &can_publish) == FALSE)
+  if (!empathy_conf_get_bool (conf, key, &can_publish))
     return;
 
-  if (can_publish == TRUE)
+  if (can_publish)
     {
-      if (priv->geoclue_is_setup == FALSE)
+      if (!priv->geoclue_is_setup)
         setup_geoclue (manager);
       /* if still not setup than the init failed */
-      if (priv->geoclue_is_setup == FALSE)
+      if (!priv->geoclue_is_setup)
         return;
 
       geoclue_address_get_address_async (priv->gc_address,
@@ -577,11 +588,11 @@ resource_cb (EmpathyConf  *conf,
   if (!empathy_conf_get_bool (conf, key, &resource_enabled))
     return;
 
-  if (strcmp (key, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK) == 0)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK))
     resource = GEOCLUE_RESOURCE_NETWORK;
-  if (strcmp (key, EMPATHY_PREFS_LOCATION_RESOURCE_CELL) == 0)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_CELL))
     resource = GEOCLUE_RESOURCE_CELL;
-  if (strcmp (key, EMPATHY_PREFS_LOCATION_RESOURCE_GPS) == 0)
+  if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_GPS))
     resource = GEOCLUE_RESOURCE_GPS;
 
   if (resource_enabled)
@@ -608,17 +619,6 @@ accuracy_cb (EmpathyConf  *conf,
   if (!empathy_conf_get_bool (conf, key, &enabled))
     return;
   priv->reduce_accuracy = enabled;
-
-  if (enabled)
-    {
-      GRand *rand = g_rand_new_with_seed (time (NULL));
-      priv->reduce_value = g_rand_double_range (rand, -0.25, 0.25);
-      g_rand_free (rand);
-    }
-  else
-    {
-      priv->reduce_value = 0.0;
-    }
 
   if (!priv->geoclue_is_setup)
     return;

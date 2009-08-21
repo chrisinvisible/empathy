@@ -233,6 +233,7 @@
     '("location" "EMPATHY_DEBUG_LOCATION")
     '("other" "EMPATHY_DEBUG_OTHER")
     '("share-desktop" "EMPATHY_DEBUG_SHARE_DESKTOP")
+    '("connectivity" "EMPATHY_DEBUG_CONNECTIVITY")
   )
 )
 
@@ -1737,21 +1738,6 @@
   (return-type "none")
   (parameters
     '("gboolean" "auto_away")
-  )
-)
-
-(define-method get_use_nm
-  (of-object "EmpathyIdle")
-  (c-name "empathy_idle_get_use_nm")
-  (return-type "gboolean")
-)
-
-(define-method set_use_nm
-  (of-object "EmpathyIdle")
-  (c-name "empathy_idle_set_use_nm")
-  (return-type "none")
-  (parameters
-    '("gboolean" "use_nm")
   )
 )
 

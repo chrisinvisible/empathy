@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 
 #include <libempathy/empathy-contact.h>
+#include <libempathy/empathy-enum-types.h>
 
 #include "empathy-contact-list-store.h"
 #include "empathy-contact-menu.h"

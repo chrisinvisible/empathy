@@ -28,8 +28,6 @@
 #include <telepathy-farsight/channel.h>
 #include <telepathy-farsight/stream.h>
 
-#include <gst/farsight/fs-element-added-notifier.h>
-
 #include "empathy-call-handler.h"
 #include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
@@ -66,7 +64,6 @@ typedef struct {
   TfChannel *tfchannel;
   gboolean initial_audio;
   gboolean initial_video;
-  FsElementAddedNotifier *fsnotifier;
 } EmpathyCallHandlerPriv;
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCallHandler)
@@ -98,12 +95,6 @@ empathy_call_handler_dispose (GObject *object)
     }
 
   priv->call = NULL;
-
-  if (priv->fsnotifier != NULL)
-    {
-      g_object_unref (priv->fsnotifier);
-    }
-  priv->fsnotifier = NULL;
 
   /* release any references held by the object here */
   if (G_OBJECT_CLASS (empathy_call_handler_parent_class)->dispose)
@@ -323,49 +314,10 @@ empathy_call_handler_bus_message (EmpathyCallHandler *handler,
 }
 
 static void
-conference_element_added (FsElementAddedNotifier *notifier,
-    GstBin *bin,
-    GstElement *element,
-    gpointer user_data)
-{
-  GstElementFactory *factory;
-  const gchar *name;
-
-  factory = gst_element_get_factory (element);
-  name = gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory));
-
-  if (!tp_strdiff (name, "x264enc"))
-    {
-      /* Ensure that the encoder creates the baseline profile */
-      g_object_set (element,
-          "byte-stream", TRUE,
-          "bframes", 0,
-          "b-adapt", FALSE,
-          "cabac", FALSE,
-          "dct8x8", FALSE,
-          NULL);
-    }
-  else if (!tp_strdiff (name, "gstrtpbin"))
-    {
-      /* Lower the jitterbuffer latency to make it more suitable for video
-       * conferencing */
-      g_object_set (element, "latency", 100, NULL);
-    }
-}
-
-static void
 empathy_call_handler_tf_channel_session_created_cb (TfChannel *tfchannel,
   FsConference *conference, FsParticipant *participant,
   EmpathyCallHandler *self)
 {
-  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
-
-  priv->fsnotifier = fs_element_added_notifier_new ();
-  fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (conference));
-
-  g_signal_connect (priv->fsnotifier, "element-added",
-    G_CALLBACK (conference_element_added), NULL);
-
   g_signal_emit (G_OBJECT (self), signals[CONFERENCE_ADDED], 0,
     GST_ELEMENT (conference));
 }
@@ -428,53 +380,24 @@ empathy_call_handler_tf_channel_closed_cb (TfChannel *tfchannel,
 }
 
 static GList *
-empathy_call_handler_tf_channel_codec_config_get_defaults (FsCodec *codecs)
-{
-  GList *l = NULL;
-  int i;
-
-  for (i = 0; codecs[i].encoding_name != NULL; i++)
-      l = g_list_append (l, fs_codec_copy (codecs + i));
-
-  return l;
-}
-
-static GList *
 empathy_call_handler_tf_channel_codec_config_cb (TfChannel *channel,
   guint stream_id, FsMediaType media_type, guint direction, gpointer user_data)
 {
-  FsCodec audio_codecs[] = {
-    { FS_CODEC_ID_ANY, "SPEEX", FS_MEDIA_TYPE_AUDIO, 16000, },
-    { FS_CODEC_ID_ANY, "SPEEX", FS_MEDIA_TYPE_AUDIO, 8000, },
+  gchar *filename = empathy_file_lookup ("codec-preferences", "data");
+  GList *codecs;
+  GError *error = NULL;
 
-    { FS_CODEC_ID_DISABLE, "DV",     FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "MPA",    FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "VORBIS", FS_MEDIA_TYPE_AUDIO, },
-    { FS_CODEC_ID_DISABLE, "MP3",    FS_MEDIA_TYPE_AUDIO, },
-    { 0, NULL, 0,}
-  };
-  FsCodec video_codecs[] = {
-    { FS_CODEC_ID_ANY, "H264",   FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_ANY, "THEORA", FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_ANY, "H263",   FS_MEDIA_TYPE_VIDEO, },
+  codecs = fs_codec_list_from_keyfile (filename, &error);
+  g_free (filename);
 
-    { FS_CODEC_ID_DISABLE, "DV",   FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_DISABLE, "JPEG", FS_MEDIA_TYPE_VIDEO, },
-    { FS_CODEC_ID_DISABLE, "MPV",  FS_MEDIA_TYPE_VIDEO, },
-    { 0, NULL, 0}
-  };
-
-  switch (media_type)
+  if (!codecs)
     {
-      case FS_MEDIA_TYPE_AUDIO:
-        return empathy_call_handler_tf_channel_codec_config_get_defaults
-          (audio_codecs);
-      case FS_MEDIA_TYPE_VIDEO:
-        return empathy_call_handler_tf_channel_codec_config_get_defaults
-          (video_codecs);
+      g_warning ("No codec-preferences file: %s",
+          error ? error->message : "No error message");
     }
+  g_clear_error (&error);
 
-  return NULL;
+  return codecs;
 }
 
 static void

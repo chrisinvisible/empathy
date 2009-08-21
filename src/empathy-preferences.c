@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
 
@@ -557,7 +558,7 @@ preferences_languages_load_foreach (GtkTreeModel  *model,
 	}
 
 	for (i = 0, lang = languages[i]; lang; lang = languages[++i]) {
-		if (strcmp (lang, code) == 0) {
+		if (!tp_strdiff (lang, code)) {
 			found = TRUE;
 		}
 	}
@@ -616,7 +617,7 @@ preferences_widget_sync_string (const gchar *key, GtkWidget *widget)
 		if (GTK_IS_ENTRY (widget)) {
 			gtk_entry_set_text (GTK_ENTRY (widget), value);
 		} else if (GTK_IS_RADIO_BUTTON (widget)) {
-			if (strcmp (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM) == 0) {
+			if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
 				GType        type;
 				GEnumClass  *enum_class;
 				GEnumValue  *enum_value;
@@ -877,7 +878,7 @@ preferences_radio_button_toggled_cb (GtkWidget *button,
 
 	key = g_object_get_data (G_OBJECT (button), "key");
 
-	if (key && strcmp (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM) == 0) {
+	if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
 		GSList      *group;
 		GType        type;
 		GEnumClass  *enum_class;
@@ -897,7 +898,7 @@ preferences_radio_button_toggled_cb (GtkWidget *button,
 		}
 
 		value = enum_value->value_nick;
-	} else if (key && strcmp (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM) == 0) {
+	} else if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
            return;
 	}
 
@@ -941,9 +942,9 @@ preferences_theme_notify_cb (EmpathyConf *conf,
 					    COL_COMBO_PATH, &path,
 					    -1);
 
-			if (strcmp (name, conf_name) == 0) {
-				if (strcmp (name, "adium") != 0 ||
-				    strcmp (path, conf_path) == 0) {
+			if (!tp_strdiff (name, conf_name)) {
+				if (tp_strdiff (name, "adium") ||
+				    !tp_strdiff (path, conf_path)) {
 					found = TRUE;
 					gtk_combo_box_set_active_iter (combo, &iter);
 					g_free (name);

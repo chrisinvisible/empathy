@@ -109,6 +109,8 @@ GtkWidget * empathy_link_button_new                     (const gchar      *url,
 void        empathy_send_file_with_file_chooser         (EmpathyContact   *contact);
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
 
+gchar *     empathy_make_absolute_url                   (const gchar *url);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UI_UTILS_H__ */

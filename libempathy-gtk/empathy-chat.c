@@ -401,9 +401,18 @@ chat_send (EmpathyChat  *chat,
 	if (msg[0] == '/' &&
 	    !g_str_has_prefix (msg, "/me") &&
 	    !g_str_has_prefix (msg, "/say")) {
-		empathy_chat_view_append_event (chat->view,
-			_("Unsupported command"));
-		return;
+		/* Also allow messages with two slashes before the first space,
+		 * so it is possible to send an /unix/path */
+		int slash_count = 0, i;
+		for (i = 0; msg[i] && msg[i] != ' ' && slash_count < 2; i++) {
+			if (msg[i] == '/')
+				slash_count++;
+		}
+		if (slash_count == 1) {
+			empathy_chat_view_append_event (chat->view,
+				_("Unsupported command"));
+			return;
+		}
 	}
 
 	/* We can send the message */
@@ -1183,7 +1192,10 @@ build_part_message (guint           reason,
 		break;
 	case TP_CHANNEL_GROUP_CHANGE_REASON_KICKED:
 		if (actor_name != NULL) {
-			g_string_append_printf (s, _("%s was kicked by %s"),
+			/* translators: reverse the order of these arguments
+			 * if the kicked should come before the kicker in your locale.
+			 */
+			g_string_append_printf (s, _("%1$s was kicked by %2$s"),
 				name, actor_name);
 		} else {
 			g_string_append_printf (s, _("%s was kicked"), name);
@@ -1191,7 +1203,10 @@ build_part_message (guint           reason,
 		break;
 	case TP_CHANNEL_GROUP_CHANGE_REASON_BANNED:
 		if (actor_name != NULL) {
-			g_string_append_printf (s, _("%s was banned by %s"),
+			/* translators: reverse the order of these arguments
+			 * if the banned should come before the banner in your locale.
+			 */
+			g_string_append_printf (s, _("%1$s was banned by %2$s"),
 				name, actor_name);
 		} else {
 			g_string_append_printf (s, _("%s was banned"), name);

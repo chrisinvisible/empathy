@@ -1,0 +1,96 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="add-account">
+
+  <info>
+    <link type="guide" xref="index#accounts"/>
+    <link type="seealso" xref="remove-account"/>
+    <desc>Add a new account to <app>Empathy</app>.</desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-06-24" status="draft"/>
+    <revision pkgversion="2.28" version="0.1" date="2009-08-10" status="review"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Add a new account</title>
+
+  <steps>
+    <item>
+      <p>
+	      From the <gui>Contact List</gui> window, perform one of the following:
+      </p>
+      <list>
+	      <item>
+	        <p>
+	          Press <key>F4</key>.
+          </p>
+        </item>
+        <item>
+          <p>
+            Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>.
+          </p>
+        </item>
+      </list>
+    </item>
+    <item>
+      <p>
+	      If it is the first time you launch <app>Empathy</app>:
+      </p>
+      <list>
+	      <item>
+	        <p>
+	          From the <gui>Type</gui> drop-down list choose
+	          the service you wish to add an account for, then click
+	          on the <gui>Create</gui> button.
+	       </p>
+        </item>
+      </list>
+      <p>
+        Otherwise:
+      </p>
+      <steps>
+        <item>
+          <p>
+            Click on the <gui>Add</gui> button.
+          </p>
+        </item>
+        <item>
+          <p>
+            From the <gui>Type</gui> drop-down list choose
+             the service you wish to add an account for, then click
+             on the <gui>Create</gui> button.
+	        </p>
+	      </item>
+      </steps>
+    </item>
+    <item>
+      <p>
+        Fill the required fields with your <em>user
+         name</em> and	<em>password</em>.
+      </p>
+    </item>
+    <item>
+      <p>
+        To enable the new account, select the
+         <gui>Enabled</gui> check-box next to
+         the name of the account in the box on the left of the dialog.
+      </p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>
+      If you want to change the name that identifies the account in the <gui>Accounts</gui>
+      dialog, double-click on the name of the account in the box on the left of the dialog
+      and type the new name.
+    </p>
+  </note>
+
+</page>

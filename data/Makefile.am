@@ -10,6 +10,11 @@ schemas_in_files = empathy.schemas.in
 schemas_DATA 	 = $(schemas_in_files:.schemas.in=.schemas)
 @INTLTOOL_SCHEMAS_RULE@
 
+streamingprefsdir =  $(datadir)/empathy
+streamingprefs_DATA =		\
+	codec-preferences	\
+	element-properties
+
 if GCONF_SCHEMAS_INSTALL
 install-data-local:
 	if test -z "$(DESTDIR)" ; then \
@@ -29,6 +34,7 @@ EXTRA_DIST = 				\
 	$(desktop_DATA)			\
 	$(schemas_in_files)		\
 	$(schemas_DATA)			\
+	$(streamingprefs_DATA)		\
 	$(html_DATA)
 
 DISTCLEANFILES = 			\

@@ -1,0 +1,59 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="geolocation-turn">
+
+  <info>
+    <link type="guide" xref="geolocation#geoloc"/>
+    <link type="seealso" xref="geolocation-privacy"/>
+    <desc>
+      How to activate and deactivate geolocation in <app>Empathy</app>.
+    </desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-08-19" status="review"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Activate/Deactivate geolocation</title>
+
+  <steps>
+    <item>
+      <p>
+        Choose <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq>.
+      </p>
+    </item>
+    <item>
+      <p>
+        Select the <gui>Location</gui> tab.
+      </p>
+    </item>
+    <item>
+      <p>
+        Select <gui>Publish location to my contacts</gui> to activate geolocation.
+      </p>
+      <p>
+        To deactivate geolocation, deselect it.
+      </p>
+    </item>
+    <item>
+      <p>
+        To increase the accuracy of your position, deselect
+        <gui>Reduce location accuracy</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        If you have an external device like a GPS or want to send a more accurate
+        position, select the appropriate option in the <gui>Geoclue Settings</gui>
+        section. 
+      </p>
+    </item>
+  </steps>
+
+</page>

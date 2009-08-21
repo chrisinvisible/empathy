@@ -2033,4 +2033,12 @@
   )
 )
 
+(define-function make_absolute_url
+  (c-name "empathy_make_absolute_url")
+  (return-type "gchar*")
+  (parameters
+    '("const-gchar*" "url")
+  )
+)
+
 

@@ -212,7 +212,7 @@ empathy_share_my_desktop_connection_ready (TpConnection *connection,
   g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandle", value);
 
   /* org.freedesktop.Telepathy.Channel.Type.StreamTube.Service */
-  value = tp_g_value_slice_new_static_string ("x_vnc");
+  value = tp_g_value_slice_new_static_string ("rfb");
   g_hash_table_insert (request,
       TP_IFACE_CHANNEL_TYPE_STREAM_TUBE  ".Service",
       value);

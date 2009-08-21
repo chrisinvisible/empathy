@@ -33,7 +33,7 @@
 #include <unique/unique.h>
 
 #if HAVE_LIBCHAMPLAIN
-#include <clutter-gtk/gtk-clutter-embed.h>
+#include <clutter-gtk/clutter-gtk.h>
 #endif
 
 #include <libebook/e-book.h>
@@ -49,6 +49,7 @@
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-account-settings.h>
+#include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-debugger.h>
@@ -148,19 +149,6 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 	}
 }
 
-static void
-use_nm_notify_cb (EmpathyConf *conf,
-		  const gchar *key,
-		  gpointer     user_data)
-{
-	EmpathyIdle *idle = user_data;
-	gboolean     use_nm;
-
-	if (empathy_conf_get_bool (conf, key, &use_nm)) {
-		empathy_idle_set_use_nm (idle, use_nm);
-	}
-}
-
 /* Salut account creation */
 static gboolean
 should_create_salut_account (void)
@@ -226,6 +214,19 @@ salut_account_created (GObject *source,
 	empathy_conf_set_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
 			       TRUE);
+}
+
+static void
+use_conn_notify_cb (EmpathyConf *conf,
+		    const gchar *key,
+		    gpointer     user_data)
+{
+	EmpathyConnectivity *connectivity = user_data;
+	gboolean     use_conn;
+
+	if (empathy_conf_get_bool (conf, key, &use_conn)) {
+		empathy_connectivity_set_use_conn (connectivity, use_conn);
+	}
 }
 
 static void
@@ -535,6 +536,7 @@ main (int argc, char *argv[])
 	EmpathyFTFactory  *ft_factory;
 	GtkWidget         *window;
 	EmpathyIdle       *idle;
+	EmpathyConnectivity *connectivity;
 	gboolean           autoconnect = TRUE;
 	gboolean           no_connect = FALSE;
 	gboolean           hide_contact_list = FALSE;
@@ -637,9 +639,13 @@ main (int argc, char *argv[])
 	/* Setting up Idle */
 	idle = empathy_idle_dup_singleton ();
 	empathy_idle_set_auto_away (idle, TRUE);
-	use_nm_notify_cb (empathy_conf_get (), EMPATHY_PREFS_USE_NM, idle);
-	empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_NM,
-				 use_nm_notify_cb, idle);
+
+	/* Setting up Connectivity */
+	connectivity = empathy_connectivity_dup_singleton ();
+	use_conn_notify_cb (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
+			    connectivity);
+	empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
+				 use_conn_notify_cb, connectivity);
 
 	/* Autoconnect */
 	empathy_conf_get_bool (empathy_conf_get (),
@@ -699,6 +705,7 @@ main (int argc, char *argv[])
 	empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 
 	g_object_unref (idle);
+	g_object_unref (connectivity);
 	g_object_unref (icon);
 	g_object_unref (account_manager);
 	g_object_unref (log_manager);

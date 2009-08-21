@@ -15,7 +15,6 @@ EXTRA_DIST = \
     generic-types.xml \
     misc.xml \
     Channel_Handler.xml \
-    Connection_Interface_Location.xml \
     Tube_Handler.xml \
     Debug.xml
 

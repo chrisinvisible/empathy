@@ -26,7 +26,7 @@
 
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
-#include <clutter-gtk/gtk-clutter-embed.h>
+#include <clutter-gtk/clutter-gtk.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-contact.h>
@@ -83,7 +83,7 @@ map_view_marker_update_position (ChamplainMarker *marker,
   if (location == NULL ||
       g_hash_table_size (location) == 0)
   {
-    clutter_actor_hide (CLUTTER_ACTOR (marker));
+    champlain_base_marker_animate_out (CHAMPLAIN_BASE_MARKER (marker));
     return;
   }
 
@@ -103,8 +103,8 @@ map_view_marker_update_position (ChamplainMarker *marker,
     }
   lon = g_value_get_double (value);
 
-  clutter_actor_show (CLUTTER_ACTOR (marker));
   champlain_base_marker_set_position (CHAMPLAIN_BASE_MARKER (marker), lat, lon);
+  champlain_base_marker_animate_in (CHAMPLAIN_BASE_MARKER (marker));
 }
 
 static void
@@ -171,7 +171,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
   gchar *date;
   gchar *label;
   GValue *gtime;
-  time_t time;
+  time_t loctime;
 
   gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
      &contact, -1);
@@ -181,7 +181,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
 
   location = empathy_contact_get_location (contact);
 
-  if (location == NULL)
+  if (location == NULL || g_hash_table_size (location) == 0)
     return FALSE;
 
   marker = champlain_marker_new ();
@@ -190,7 +190,8 @@ map_view_contacts_foreach (GtkTreeModel *model,
   if (avatar != NULL)
     {
       texture = clutter_texture_new ();
-      gtk_clutter_texture_set_from_pixbuf (CLUTTER_TEXTURE (texture), avatar);
+      gtk_clutter_texture_set_from_pixbuf (CLUTTER_TEXTURE (texture), avatar,
+          NULL);
       champlain_marker_set_image (CHAMPLAIN_MARKER (marker), texture);
       g_object_unref (avatar);
     }
@@ -201,10 +202,18 @@ map_view_contacts_foreach (GtkTreeModel *model,
   gtime = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
   if (gtime != NULL)
     {
-      time = g_value_get_int64 (gtime);
-      date = empathy_time_to_string_relative (time);
+      time_t now;
+
+      loctime = g_value_get_int64 (gtime);
+      date = empathy_time_to_string_relative (loctime);
       label = g_strconcat ("<b>", name, "</b>\n<small>", date, "</small>", NULL);
       g_free (date);
+
+      now = time (NULL);
+
+      /* if location is older than a week */
+      if (now - loctime > (60 * 60 * 24 * 7))
+        clutter_actor_set_opacity (CLUTTER_ACTOR (marker), 0.75 * 255);
     }
   else
     {

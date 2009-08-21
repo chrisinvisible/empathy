@@ -130,7 +130,7 @@ tp_contact_factory_set_aliases_cb (TpConnection *connection,
 }
 
 static void
-tp_contact_factory_set_location_cb (TpProxy *proxy,
+tp_contact_factory_set_location_cb (TpConnection *tp_conn,
 				    const GError *error,
 				    gpointer user_data,
 				    GObject *weak_object)
@@ -570,7 +570,7 @@ tp_contact_factory_update_location (EmpathyTpContactFactory *tp_factory,
 }
 
 static void
-tp_contact_factory_got_locations (TpProxy                 *tp_proxy,
+tp_contact_factory_got_locations (TpConnection                 *tp_conn,
 				  GHashTable              *locations,
 				  const GError            *error,
 				  gpointer                 user_data,
@@ -626,7 +626,7 @@ tp_contact_factory_capabilities_changed_cb (TpConnection    *connection,
 }
 
 static void
-tp_contact_factory_location_updated_cb (TpProxy      *proxy,
+tp_contact_factory_location_updated_cb (TpConnection      *tp_conn,
 					guint         handle,
 					GHashTable   *location,
 					gpointer      user_data,
@@ -797,8 +797,8 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 	g_clear_error (&error);
 
 	if (tp_proxy_has_interface_by_id (TP_PROXY (priv->connection),
-		EMP_IFACE_QUARK_CONNECTION_INTERFACE_LOCATION)) {
-		emp_cli_connection_interface_location_call_get_locations (TP_PROXY (priv->connection),
+		TP_IFACE_QUARK_CONNECTION_INTERFACE_LOCATION)) {
+		tp_cli_connection_interface_location_call_get_locations (priv->connection,
 									 -1,
 									 &handles,
 									 tp_contact_factory_got_locations,
@@ -1204,7 +1204,7 @@ empathy_tp_contact_factory_set_location (EmpathyTpContactFactory *tp_factory,
 
 	DEBUG ("Setting location");
 
-	emp_cli_connection_interface_location_call_set_location (TP_PROXY (priv->connection),
+	tp_cli_connection_interface_location_call_set_location (priv->connection,
 								 -1,
 								 location,
 								 tp_contact_factory_set_location_cb,
@@ -1318,7 +1318,7 @@ tp_contact_factory_constructor (GType                  type,
 										  NULL);
 
 
-	emp_cli_connection_interface_location_connect_to_location_updated (TP_PROXY (priv->connection),
+	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
 									   tp_contact_factory_location_updated_cb,
 									   NULL, NULL,
 									   G_OBJECT (tp_factory),

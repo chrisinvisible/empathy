@@ -850,7 +850,7 @@ chat_window_help_contents_activate_cb (GtkAction         *action,
 {
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
 
-	empathy_url_show (priv->dialog, "ghelp:empathy?chat");
+	empathy_url_show (priv->dialog, "ghelp:empathy");
 }
 
 static void
@@ -945,7 +945,6 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	char *escaped;
 	const char *body;
 	GdkPixbuf *pixbuf;
-	NotificationData *cb_data;
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
 	gboolean res;
 
@@ -959,37 +958,36 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		}
 	}
 
-	cb_data = g_slice_new0 (NotificationData);
-	cb_data->chat = g_object_ref (chat);
-	cb_data->window = window;
-
 	sender = empathy_message_get_sender (message);
 	header = empathy_contact_get_name (sender);
 	body = empathy_message_get_body (message);
 	escaped = g_markup_escape_text (body, -1);
 
-	pixbuf = empathy_misc_get_pixbuf_for_notification (sender, EMPATHY_IMAGE_NEW_MESSAGE);
-
 	if (priv->notification != NULL) {
 		notify_notification_update (priv->notification,
 					    header, escaped, NULL);
-		/* if icon doesn't exist libnotify will crash */
-		if (pixbuf != NULL)
-			notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
 	} else {
+		NotificationData *cb_data = cb_data = g_slice_new0 (NotificationData);
+
+		cb_data->chat = g_object_ref (chat);
+		cb_data->window = window;
+
 		priv->notification = notify_notification_new (header, escaped, NULL, NULL);
 		notify_notification_set_timeout (priv->notification, NOTIFY_EXPIRES_DEFAULT);
-		/* if icon doesn't exist libnotify will crash */
-		if (pixbuf != NULL)
-			notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
 
 		g_signal_connect (priv->notification, "closed",
 				  G_CALLBACK (chat_window_notification_closed_cb), cb_data);
 	}
 
+	pixbuf = empathy_misc_get_pixbuf_for_notification (sender, EMPATHY_IMAGE_NEW_MESSAGE);
+
+	if (pixbuf != NULL) {
+		notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
+		g_object_unref (pixbuf);
+	}
+
 	notify_notification_show (priv->notification, NULL);
 
-	g_object_unref (pixbuf);
 	g_free (escaped);
 }
 
@@ -1002,7 +1000,8 @@ chat_window_set_highlight_room_tab_label (EmpathyChat *chat)
 	if (!empathy_chat_is_room (chat))
 		return;
 
-	markup = g_markup_printf_escaped ("<span color=\"red\">%s</span>",
+	markup = g_markup_printf_escaped (
+		"<span color=\"red\" weight=\"bold\">%s</span>",
 		empathy_chat_get_name (chat));
 
 	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-label");

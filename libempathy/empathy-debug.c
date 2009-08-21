@@ -49,6 +49,7 @@ static GDebugKey keys[] = {
   { "Ft", EMPATHY_DEBUG_FT },
   { "Location", EMPATHY_DEBUG_LOCATION },
   { "Other", EMPATHY_DEBUG_OTHER },
+  { "Connectivity", EMPATHY_DEBUG_CONNECTIVITY },
   { 0, }
 };
 

@@ -1,0 +1,153 @@
+<page xmlns="http://projectmallard.org/1.0/"
+  type="topic"
+  id="prev-conv">
+
+  <info>
+    <link type="guide" xref="index#text-conv"/>
+    <desc>
+      Search your previous conversations.
+    </desc>
+    <revision pkgversion="2.28" version="0.1" date="2009-08-17" status="stub"/>
+    <revision pkgversion="2.28" version="0.2" date="2009-08-19" status="review"/>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+    <copyright>
+      <year>2009</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Previous conversations</title>
+
+  <p>
+    <app>Empathy</app> automatically saves all your text conversations you have
+    with your contacts, and lets you perform two different kinds of search: a
+    normal text search, or a per-conversation search.
+  </p>
+  <p>
+    The normal search is a <em>full text</em> search: it will search the exact text in
+    all your previous conversations.
+  </p>
+  <p>
+    The per-conversation search permits you to limit the text search to a particular
+    contact and conversation, and permits you to look at all the previous
+    conversations you had with your contacts.
+  </p>
+
+  <note>
+    <p>
+      You do not need to be connected to the Internet to search your previous
+      conversations.
+    </p>
+  </note>
+
+  <steps>
+    <item>
+      <p>
+        To start searching your previous conversations, from the <gui>Contact List</gui>
+        window, perform one of the following:
+      </p>
+      <list>
+        <item>
+          <p>
+            Press <key>F3</key>.
+          </p>
+        </item>
+        <item>
+          <p>
+            Choose <guiseq><gui>View</gui><gui>Previous Conversations</gui></guiseq>.
+          </p>
+        </item>
+      </list>
+    </item>
+    <item>
+      <p>
+        Based on the kind of search you want to perform, see
+        <link xref="prev-conv#normal-search"/> or <link xref="prev-conv#contact-search"/>
+        for more information.
+      </p>
+    </item>
+  </steps>
+
+  <section id="normal-search">
+  <title>Normal search</title>
+  <steps>
+    <item>
+      <p>
+        Select the <gui>Search</gui> tab.
+      </p>
+    </item>
+    <item>
+      <p>
+        In the <gui>For</gui> text box, type the text you want to search, and click on
+        <gui>Find</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        If there are results, they will be shown in the first pane, ordered by date.
+      </p>
+    </item>
+    <item>
+      <p>
+        Click on the result to see the exact text you were searching for on the
+        bottom pane.
+      </p>
+      <p>  
+        The search results will be highlighted.
+      </p>
+    </item>
+  </steps>
+  </section>
+
+  <section id="contact-search">
+  <title>Conversation search</title>
+  <steps>
+    <item>
+      <p>
+        Select the <gui>Conversations</gui> tab.
+      </p>
+    </item>
+    <item>
+      <p>
+        From the drop-down list at the top of the window, select your account.
+      </p>
+    </item>
+    <item>
+      <p>
+        From the left top pane, select the contact you want to look the previous
+        conversations of. The previous conversations will be shown on the right pane.
+      </p>
+      <p>
+        By default, the last conversation you had will be shown.
+      </p>
+      <note>
+        <p>
+          Based on your account selected and the service of that account, it will
+          be possible to select contacts, IRC rooms or group conversations. 
+        </p>
+      </note>
+    </item>
+    <item>
+      <p>
+        From the left bottom pane, you can browse your conversations by date. Based
+        on the contact selected, the date in which you had a conversation will
+        be highlighted in bold text.
+      </p>
+    </item>
+    <item>
+      <p>
+        To perform a text search, type the text you want to search in the text box
+        at the top of the window.
+      </p>
+      <p>
+        The search results will be highlighted.
+      </p>
+    </item>
+  </steps>
+  </section>
+
+</page>
