@@ -209,12 +209,12 @@ empathy_import_pidgin_load (void)
               if (g_str_has_prefix (protocol, "prpl-"))
                 protocol += 5;
 
-              data->protocol = g_strdup (protocol);
-
-              if (!tp_strdiff (data->protocol, PIDGIN_PROTOCOL_BONJOUR))
-                data->protocol = "salut";
-              else if (!tp_strdiff (data->protocol, PIDGIN_PROTOCOL_NOVELL))
-                data->protocol = "groupwise";
+              if (!tp_strdiff (protocol, PIDGIN_PROTOCOL_BONJOUR))
+                data->protocol = g_strdup ("salut");
+              else if (!tp_strdiff (protocol, PIDGIN_PROTOCOL_NOVELL))
+                data->protocol = g_strdup ("groupwise");
+              else
+                data->protocol = g_strdup (protocol);
 
               xmlFree (content);
 
