@@ -137,7 +137,15 @@ empathy_video_src_finalize (GObject *object)
 GstElement *
 empathy_video_src_new (void)
 {
-  return GST_ELEMENT (g_object_new (EMPATHY_TYPE_GST_VIDEO_SRC, NULL));
+  static gboolean registered = FALSE;
+
+  if (!registered) {
+    if (!gst_element_register (NULL, "empathyvideosrc",
+            GST_RANK_NONE, EMPATHY_TYPE_GST_VIDEO_SRC))
+      return NULL;
+    registered = TRUE;
+  }
+  return gst_element_factory_make ("empathyvideosrc", NULL);
 }
 
 void
