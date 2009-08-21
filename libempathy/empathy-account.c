@@ -899,16 +899,17 @@ _empathy_account_set_connection (EmpathyAccount *account,
                 error->message);
           g_error_free (error);
         }
+      else
+        {
+          priv->connection_invalidated_id = g_signal_connect (priv->connection,
+            "invalidated",
+            G_CALLBACK (_empathy_account_connection_invalidated_cb), account);
 
-      priv->connection_invalidated_id = g_signal_connect (priv->connection,
-          "invalidated",
-           G_CALLBACK (_empathy_account_connection_invalidated_cb),
-        account);
-
-      DEBUG ("Readying connection for %s", priv->unique_name);
-      /* notify a change in the connection property when it's ready */
-      tp_connection_call_when_ready (priv->connection,
-           empathy_account_connection_ready_cb, account);
+          DEBUG ("Readying connection for %s", priv->unique_name);
+          /* notify a change in the connection property when it's ready */
+          tp_connection_call_when_ready (priv->connection,
+            empathy_account_connection_ready_cb, account);
+        }
     }
 
    g_object_notify (G_OBJECT (account), "connection");
