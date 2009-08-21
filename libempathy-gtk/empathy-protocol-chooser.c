@@ -127,7 +127,6 @@ static const char *
 protocol_chooser_proto_name_to_display_name (const gchar *proto_name)
 {
   int i;
-  
   static struct {
     const gchar *proto;
     const gchar *display;
