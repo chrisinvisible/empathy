@@ -85,7 +85,9 @@ empathy_account_settings_init (EmpathyAccountSettings *obj)
   priv->managers = empathy_connection_managers_dup_singleton ();
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
-  priv->parameters = tp_asv_new (NULL, NULL);
+  priv->parameters = g_hash_table_new_full (g_str_hash, g_str_equal,
+     g_free, (GDestroyNotify) tp_g_value_slice_free);
+
   priv->unset_parameters = g_array_new (TRUE, FALSE, sizeof (gchar *));
 }
 
@@ -765,7 +767,7 @@ empathy_account_settings_set_string (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_string (priv->parameters, param, value);
+  tp_asv_set_string (priv->parameters, g_strdup (param), value);
 }
 
 void
@@ -775,7 +777,7 @@ empathy_account_settings_set_int32 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_int32 (priv->parameters, param, value);
+  tp_asv_set_int32 (priv->parameters, g_strdup (param), value);
 }
 
 void
@@ -785,7 +787,7 @@ empathy_account_settings_set_int64 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_int64 (priv->parameters, param, value);
+  tp_asv_set_int64 (priv->parameters, g_strdup (param), value);
 }
 
 void
@@ -795,7 +797,7 @@ empathy_account_settings_set_uint32 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_uint32 (priv->parameters, param, value);
+  tp_asv_set_uint32 (priv->parameters, g_strdup (param), value);
 }
 
 void
@@ -805,7 +807,7 @@ empathy_account_settings_set_uint64 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_uint64 (priv->parameters, param, value);
+  tp_asv_set_uint64 (priv->parameters, g_strdup (param), value);
 }
 
 void
@@ -815,7 +817,7 @@ empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_boolean (priv->parameters, param, value);
+  tp_asv_set_boolean (priv->parameters, g_strdup (param), value);
 }
 
 static void
