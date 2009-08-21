@@ -691,7 +691,7 @@ empathy_account_get_connection (EmpathyAccount *account)
 }
 
 /**
- * empathy_account_get_connection_for:
+ * empathy_account_get_connection_for_path:
  * @account: a #EmpathyAccount
  * @patch: the path to connection object for #EmpathyAccount
  *
@@ -701,7 +701,7 @@ empathy_account_get_connection (EmpathyAccount *account)
  * Returns: the connection of the account.
  **/
 TpConnection *
-empathy_account_get_connection_for (EmpathyAccount *account,
+empathy_account_get_connection_for_path (EmpathyAccount *account,
   const gchar *path)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);

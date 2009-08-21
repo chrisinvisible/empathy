@@ -58,7 +58,7 @@ GType empathy_account_get_type (void);
 
 gboolean empathy_account_is_just_connected (EmpathyAccount *account);
 TpConnection *empathy_account_get_connection (EmpathyAccount *account);
-TpConnection *empathy_account_get_connection_for (EmpathyAccount *account,
+TpConnection *empathy_account_get_connection_for_path (EmpathyAccount *account,
   const gchar *path);
 const gchar *empathy_account_get_unique_name (EmpathyAccount *account);
 const gchar *empathy_account_get_display_name (EmpathyAccount *account);

@@ -1804,7 +1804,8 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
     account_path);
   g_assert (account != NULL);
 
-  connection = empathy_account_get_connection_for (account, connection_path);
+  connection = empathy_account_get_connection_for_path (account,
+      connection_path);
   if (connection == NULL)
     {
       GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
