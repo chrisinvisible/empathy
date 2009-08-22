@@ -340,12 +340,19 @@
   (return-type "GType")
 )
 
+(define-method get_widget
+  (of-object "EmpathyAccountWidget")
+  (c-name "empathy_account_widget_get_widget")
+  (return-type "GtkWidget*")
+)
+
 (define-function account_widget_new_for_protocol
   (c-name "empathy_account_widget_new_for_protocol")
-  (return-type "GtkWidget*")
+  (return-type "EmpathyAccountWidget*")
   (parameters
     '("const-char*" "protocol")
     '("EmpathyAccountSettings*" "settings")
+    '("gboolean" "simple")
   )
 )
 
@@ -359,6 +366,7 @@
   (return-type "none")
   (parameters
     '("const-char*" "filename")
+    '("GtkWidget**" "table_common_settings")
   )
 )
 
@@ -372,6 +380,7 @@
   (return-type "none")
   (parameters
     '("const-char*" "filename")
+    '("GtkWidget**" "table_common_settings")
   )
 )
 
@@ -1517,6 +1526,16 @@
   (return-type "TpConnectionManager*")
   (parameters
     '("TpConnectionManagerProtocol**" "protocol")
+  )
+)
+
+(define-method set_visible
+  (of-object "EmpathyProtocolChooser")
+  (c-name "empathy_protocol_chooser_set_visible")
+  (return-type "none")
+  (parameters
+    '("EmpathyProtocolChooserFilterFunc" "func")
+    '("gpointer" "user_data")
   )
 )
 
