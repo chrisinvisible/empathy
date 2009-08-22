@@ -1186,7 +1186,8 @@ do_constructed (GObject *obj)
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
 
       priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
+      priv->apply_button = gtk_button_new_from_stock (
+        priv->creating_account ? GTK_STOCK_CONNECT : GTK_STOCK_APPLY);
 
       gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
           TRUE, 3);
