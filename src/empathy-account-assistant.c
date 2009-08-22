@@ -495,6 +495,7 @@ account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
 static GtkWidget *
 account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
 {
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   GtkWidget *main_vbox, *hbox_1, *w, *vbox_1;
   GtkWidget *radio = NULL;
   GdkPixbuf *pix;
@@ -563,6 +564,11 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
 
       g_signal_connect (radio, "clicked",
           G_CALLBACK (account_assistant_radio_choice_toggled_cb), self);
+      priv->first_resp = RESPONSE_IMPORT;
+    }
+  else
+    {
+      priv->first_resp = RESPONSE_ENTER_ACCOUNT;
     }
 
   str = _("Yes, I'll enter my account details now");
@@ -909,9 +915,6 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_set_page_type (assistant, page,
       GTK_ASSISTANT_PAGE_INTRO);
   gtk_assistant_set_page_complete (assistant, page, TRUE);
-
-  /* set a default answer */
-  priv->first_resp = RESPONSE_IMPORT;
 
   /* second page (import accounts) */
   page = account_assistant_build_import_page (self);
