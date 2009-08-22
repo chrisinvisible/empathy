@@ -244,8 +244,6 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 
   accounts_dialog_update_name_label (dialog,
       empathy_account_settings_get_display_name (settings));
-
-  g_free (icon_name);
 }
 
 static void
