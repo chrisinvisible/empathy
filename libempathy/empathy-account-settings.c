@@ -575,6 +575,9 @@ empathy_account_settings_get_dbus_signature (EmpathyAccountSettings *settings,
 
   p = empathy_account_settings_get_tp_param (settings, param);
 
+  if (p == NULL)
+    return NULL;
+
   return p->dbus_signature;
 }
 
