@@ -24,12 +24,7 @@
   </info>
 
   <title>Import an existing account</title>
-	<p>
-		Note: At the moment <app>Empathy</app> can import accounts only from
-	      the instant messaging program
-	      <app>Pidgin</app>. For more information
-	      about Pidgin, see the <link href="http://www.pidgin.im/">Pidgin website</link>.
-	</p>
+
   <steps>
     <item>
       <p>
@@ -49,30 +44,37 @@
       </list>
     </item>
     <item>
-		      <p>
-						Choose <gui>Import Accounts...</gui> and wait a few seconds until the <gui>Import
-		Accounts</gui> dialog opens with a list of accounts that can be imported.
-  		    </p>
-        </item>
-        <item>
-          <p>
-            Choose the accounts to import by clicking on the <gui>Import</gui> check-box.
-	        </p>
-	      </item>
-				<item>
-          <p>
-            Press <gui>OK</gui> to return to the <gui>Accounts</gui> dialog. Choose the accounts to enable by clicking the <gui>Enabled</gui> check-box. A dialog opens to add or change <gui>Nickname, Password, Real name</gui> and <gui>Quit message</gui>.
-	        </p>
-	      </item>
-				<item>
-          <p>
-            Press <gui>Close</gui> to return to the <gui>Contact List</gui> window.
-	        </p>
-	      </item>
-      </steps>
-  <p>
-    If you want to change the name that identifies the account in the <gui>Accounts</gui>
-    dialog, double-click on the name of the account in the box on the left of the dialog
-    and type the new name.
-  </p>
+      <p>
+        Click on <gui>Import Accounts...</gui>.
+      </p>
+    </item>
+    <item>
+      <p>
+        From the <gui>Import Accounts</gui> dialog, select the <gui>Import</gui>
+        check-box next to the accounts you want to import.
+      </p>
+    </item>
+    <item>
+      <p>
+        Click <gui>OK</gui> to import the accounts to <app>Empathy</app>.
+      </p>
+    </item>
+  </steps>
+
+  <note style="tip">
+    <p>
+      If you want to change the name that identifies the account in the <gui>Accounts</gui>
+      dialog, double-click on the name of the account in the box on the left of the dialog
+      and type the new name.
+    </p>
+  </note>
+
+  <note>
+    <p>
+      At the moment <app>Empathy</app> can import accounts only from the instant 
+      messaging program <app>Pidgin</app>. For more information about <app>Pidgin</app>,
+      see the <link href="http://www.pidgin.im/">Pidgin website</link>.
+    </p>
+  </note>
+
 </page>
