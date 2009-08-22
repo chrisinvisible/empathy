@@ -26,6 +26,7 @@ DOC_PAGES = \
 	geolocation-turn.page \
 	geolocation-what-is.page \
 	group-conversations.page \
+	import-account.page \
 	index.page \
 	introduction.page \
 	irc-account.page \
