@@ -55,7 +55,7 @@
         <child>
           <object class="GtkLabel" id="label_id">
             <property name="visible">True</property>
-            <property name="xalign">1</property>
+            <property name="xalign">0</property>
             <property name="label" translatable="yes">Login I_D:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">entry_id</property>
@@ -90,9 +90,10 @@
         <child>
           <object class="GtkLabel" id="label_password">
             <property name="visible">True</property>
-            <property name="xalign">1</property>
+            <property name="xalign">0</property>
             <property name="label" translatable="yes">Pass_word:</property>
             <property name="use_underline">True</property>
+            <property name="justify">right</property>
             <property name="mnemonic_widget">entry_password</property>
           </object>
           <packing>
@@ -103,22 +104,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label_login_example">
-            <property name="visible">True</property>
-            <property name="xalign">1</property>
-            <property name="label" translatable="yes">&lt;span size="small"&gt;Example:&lt;/span&gt;</property>
-            <property name="use_markup">True</property>
-          </object>
-          <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="label_username_example">
             <property name="visible">True</property>
             <property name="xalign">0</property>
-            <property name="label" translatable="yes">&lt;span size="small"&gt;test@jabber.org&lt;/span&gt;</property>
+            <property name="label" translatable="yes">Example: &lt;span size="small"&gt;test@jabber.org&lt;/span&gt;</property>
             <property name="use_markup">True</property>
           </object>
           <packing>
@@ -127,6 +116,9 @@
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
         <child>
           <placeholder/>
