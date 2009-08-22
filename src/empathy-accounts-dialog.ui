@@ -6,6 +6,7 @@
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Accounts</property>
     <property name="role">accounts</property>
+    <property name="default_width">640</property>
     <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
@@ -111,28 +112,12 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkFrame" id="frame2">
+                      <object class="GtkAlignment" id="alignment_settings">
                         <property name="visible">True</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
+                        <property name="top_padding">6</property>
+                        <property name="left_padding">20</property>
                         <child>
-                          <object class="GtkAlignment" id="alignment_settings">
-                            <property name="visible">True</property>
-                            <property name="top_padding">6</property>
-                            <property name="left_padding">20</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label599">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Settings</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
