@@ -947,7 +947,7 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
       TP_CONNECTION_STATUS_DISCONNECTED,
       dialog);
 
-  //g_object_unref (settings);
+  g_object_unref (settings);
 }
 
 static void
