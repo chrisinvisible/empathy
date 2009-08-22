@@ -630,14 +630,8 @@ empathy_account_settings_discard_changes (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  if (g_hash_table_size (priv->parameters) > 0)
-    g_hash_table_remove_all (priv->parameters);
-
-  if (priv->unset_parameters->len > 0)
-    {
-      g_array_remove_range (priv->unset_parameters, 0,
-          priv->unset_parameters->len);
-    }
+  g_hash_table_remove_all (priv->parameters);
+  empathy_account_settings_free_unset_parameters (settings);
 }
 
 const gchar *
@@ -967,6 +961,10 @@ empathy_account_settings_account_updated (GObject *source,
       g_simple_async_result_set_from_error (priv->apply_result, error);
       g_error_free (error);
     }
+  else
+    {
+      empathy_account_settings_discard_changes (settings);
+    }
 
   r = priv->apply_result;
   priv->apply_result = NULL;
@@ -990,9 +988,14 @@ empathy_account_settings_created_cb (GObject *source,
     EMPATHY_ACCOUNT_MANAGER (source), result, &error);
 
   if (account == NULL)
-    g_simple_async_result_set_from_error (priv->apply_result, error);
+    {
+      g_simple_async_result_set_from_error (priv->apply_result, error);
+    }
   else
-    priv->account = g_object_ref (account);
+    {
+      priv->account = g_object_ref (account);
+      empathy_account_settings_discard_changes (settings);
+    }
 
   r = priv->apply_result;
   priv->apply_result = NULL;
@@ -1111,9 +1114,6 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
       empathy_account_update_settings_async (priv->account,
         priv->parameters, (const gchar **)priv->unset_parameters->data,
         empathy_account_settings_account_updated, settings);
-
-      g_hash_table_remove_all (priv->parameters);
-      empathy_account_settings_free_unset_parameters (settings);
     }
 }
 
