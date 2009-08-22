@@ -237,26 +237,6 @@ tp_contact_factory_avatar_maybe_update (EmpathyTpContactFactory *tp_factory,
 	return FALSE;
 }
 
-typedef struct {
-	EmpathyTpContactFactory *tp_factory;
-	GArray                  *handles;
-} TokensData;
-
-static void
-tp_contact_factory_avatar_tokens_foreach (gpointer key,
-					  gpointer value,
-					  gpointer user_data)
-{
-	TokensData  *data = user_data;
-	const gchar *token = value;
-	guint        handle = GPOINTER_TO_UINT (key);
-
-	if (!tp_contact_factory_avatar_maybe_update (data->tp_factory,
-						     handle, token)) {
-		g_array_append_val (data->handles, handle);
-	}
-}
-
 static void
 tp_contact_factory_got_known_avatar_tokens (TpConnection *connection,
 					    GHashTable   *tokens,
@@ -266,33 +246,42 @@ tp_contact_factory_got_known_avatar_tokens (TpConnection *connection,
 {
 	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (weak_object);
 	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-	TokensData data;
+	GArray *handles;
+	GHashTableIter iter;
+	gpointer key, value;
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
 		return;
 	}
 
-	data.tp_factory = tp_factory;
-	data.handles = g_array_new (FALSE, FALSE, sizeof (guint));
-	g_hash_table_foreach (tokens,
-			      tp_contact_factory_avatar_tokens_foreach,
-			      &data);
+	handles = g_array_new (FALSE, FALSE, sizeof (guint));
+
+	g_hash_table_iter_init (&iter, tokens);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		guint handle = GPOINTER_TO_UINT (key);
+		const gchar *token = value;
+
+		if (!tp_contact_factory_avatar_maybe_update (tp_factory,
+							     handle, token)) {
+			g_array_append_val (handles, handle);
+		}
+	}
 
 	DEBUG ("Got %d tokens, need to request %d avatars",
-		g_hash_table_size (tokens), data.handles->len);
+		g_hash_table_size (tokens), handles->len);
 
 	/* Request needed avatars */
-	if (data.handles->len > 0) {
+	if (handles->len > 0) {
 		tp_cli_connection_interface_avatars_call_request_avatars (priv->connection,
 									  -1,
-									  data.handles,
+									  handles,
 									  tp_contact_factory_request_avatars_cb,
 									  NULL, NULL,
 									  G_OBJECT (tp_factory));
 	}
 
-	g_array_free (data.handles, TRUE);
+	g_array_free (handles, TRUE);
 }
 
 static void
