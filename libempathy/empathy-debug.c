@@ -50,6 +50,7 @@ static GDebugKey keys[] = {
   { "Location", EMPATHY_DEBUG_LOCATION },
   { "Other", EMPATHY_DEBUG_OTHER },
   { "Connectivity", EMPATHY_DEBUG_CONNECTIVITY },
+  { "ImportMc4Accounts", EMPATHY_DEBUG_IMPORT_MC4_ACCOUNTS },
   { 0, }
 };
 
