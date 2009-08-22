@@ -70,6 +70,7 @@
 #include "empathy-call-window.h"
 #include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
+#include "empathy-import-mc4-accounts.h"
 
 #include "extensions/extensions.h"
 
@@ -328,6 +329,7 @@ connection_managers_ready_cb (EmpathyConnectionManagers *managers,
 {
   if (empathy_connection_managers_is_ready (managers))
     {
+      empathy_import_mc4_accounts ();
       create_salut_account_if_needed (managers);
       g_object_unref (managers);
       managers = NULL;
