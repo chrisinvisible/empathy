@@ -644,7 +644,6 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
 
   /* Account column */
   column = gtk_tree_view_column_new ();
-  //gtk_tree_view_column_set_title (column, _("Accounts"));
   gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (view, column);
 
@@ -711,7 +710,6 @@ static void
 accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
     EmpathyAccountsDialog *dialog)
 {
-//  EmpathyAccountsDialogPriv priv = GET_PRIV (dialog);
   EmpathyAccountSettings *settings;
   GtkTreeModel *model;
   GtkTreeIter   iter;
@@ -726,7 +724,7 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
 
   accounts_dialog_update_settings (dialog, settings);
 
-  if (settings)
+  if (settings != NULL)
     g_object_unref (settings);
 }
 

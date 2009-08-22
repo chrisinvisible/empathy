@@ -61,9 +61,6 @@ GType empathy_account_widget_get_type (void);
 
 GtkWidget *empathy_account_widget_get_widget (EmpathyAccountWidget *widget);
 
-//EmpathyAccountWidget *empathy_account_widget_new_for_protocol (
-//    const char *protocol,
-//    EmpathyAccountSettings *settings);
 EmpathyAccountWidget * empathy_account_widget_new_for_protocol (
     const char *protocol,
     EmpathyAccountSettings *settings,
