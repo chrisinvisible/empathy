@@ -39,6 +39,7 @@ empathy_handwritten_source = \
 	empathy-debug-dialog.c empathy-debug-dialog.h			\
 	empathy-chat-window.c empathy-chat-window.h			\
 	empathy-event-manager.c empathy-event-manager.h			\
+	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
 	empathy-ft-manager.c empathy-ft-manager.h			\
 	empathy-import-dialog.c empathy-import-dialog.h			\
 	empathy-import-widget.c empathy-import-widget.h			\
