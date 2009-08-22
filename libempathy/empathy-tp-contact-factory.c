@@ -258,10 +258,13 @@ tp_contact_factory_avatar_tokens_foreach (gpointer key,
 }
 
 static void
-tp_contact_factory_got_known_avatar_tokens (EmpathyTpContactFactory *tp_factory,
-					    GHashTable              *tokens,
-					    const GError            *error)
+tp_contact_factory_got_known_avatar_tokens (TpConnection *connection,
+					    GHashTable   *tokens,
+					    const GError *error,
+					    gpointer      user_data,
+					    GObject      *weak_object)
 {
+	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (weak_object);
 	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
 	TokensData data;
 
@@ -290,7 +293,6 @@ tp_contact_factory_got_known_avatar_tokens (EmpathyTpContactFactory *tp_factory,
 	}
 
 	g_array_free (data.handles, TRUE);
-	g_hash_table_destroy (tokens);
 }
 
 static void
@@ -360,11 +362,16 @@ tp_contact_factory_update_capabilities (EmpathyTpContactFactory *tp_factory,
 }
 
 static void
-tp_contact_factory_got_capabilities (EmpathyTpContactFactory *tp_factory,
-				     GPtrArray *capabilities,
-				     const GError    *error)
+tp_contact_factory_got_capabilities (TpConnection    *connection,
+				     const GPtrArray *capabilities,
+				     const GError    *error,
+				     gpointer         user_data,
+				     GObject         *weak_object)
 {
+	EmpathyTpContactFactory *tp_factory;
 	guint i;
+
+	tp_factory = EMPATHY_TP_CONTACT_FACTORY (weak_object);
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
@@ -391,11 +398,7 @@ tp_contact_factory_got_capabilities (EmpathyTpContactFactory *tp_factory,
 							channel_type,
 							generic,
 							specific);
-
-		g_value_array_free (values);
 	}
-
-	g_ptr_array_free (capabilities, TRUE);
 }
 
 #if HAVE_GEOCLUE
@@ -740,9 +743,6 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 	TpHandle self_handle;
 	TpHandle handle;
 	GArray handles = {(gchar *) &handle, 1};
-	GHashTable *tokens;
-	GPtrArray *capabilities;
-	GError *error = NULL;
 	EmpathyCapabilities caps;
 
 	/* Keep a weak ref to that contact */
@@ -778,23 +778,21 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 	empathy_contact_set_is_user (contact, self_handle == handle);
 
 	/* FIXME: This should be done by TpContact */
-	tp_cli_connection_interface_avatars_run_get_known_avatar_tokens (priv->connection,
-									 -1,
-									 &handles,
-									 &tokens,
-									 &error,
-									 NULL);
-	tp_contact_factory_got_known_avatar_tokens (tp_factory, tokens, error);
-	g_clear_error (&error);
+	if (tp_proxy_has_interface_by_id (priv->connection,
+			TP_IFACE_QUARK_CONNECTION_INTERFACE_AVATARS)) {
+		tp_cli_connection_interface_avatars_call_get_known_avatar_tokens (
+			priv->connection, -1, &handles,
+			tp_contact_factory_got_known_avatar_tokens, NULL, NULL,
+			G_OBJECT (tp_factory));
+	}
 
-	tp_cli_connection_interface_capabilities_run_get_capabilities (priv->connection,
-									-1,
-									&handles,
-									&capabilities,
-									&error,
-									NULL);
-	tp_contact_factory_got_capabilities (tp_factory, capabilities, error);
-	g_clear_error (&error);
+	if (tp_proxy_has_interface_by_id (priv->connection,
+			TP_IFACE_QUARK_CONNECTION_INTERFACE_CAPABILITIES)) {
+		tp_cli_connection_interface_capabilities_call_get_capabilities (
+			priv->connection, -1, &handles,
+			tp_contact_factory_got_capabilities, NULL, NULL,
+			G_OBJECT (tp_factory));
+	}
 
 	if (tp_proxy_has_interface_by_id (TP_PROXY (priv->connection),
 		TP_IFACE_QUARK_CONNECTION_INTERFACE_LOCATION)) {
