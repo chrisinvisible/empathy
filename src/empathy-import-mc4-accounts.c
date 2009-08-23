@@ -402,14 +402,13 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
   if (error != NULL)
     {
       DEBUG ("Failed to get import_mc4_accounts key: %s\n", error->message);
-      g_clear_error (&error);
-      g_object_unref (client);
+      g_error_free (error);
       goto out;
     }
 
   if (imported_mc4_accounts)
     {
-      DEBUG ("Mc4 accounts already imported");
+      DEBUG ("Mc4 accounts previously imported");
       goto out;
     }
 
@@ -419,7 +418,7 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 
   if (error != NULL)
     {
-      DEBUG ("Failed to get mc_accounts_gconf_base dirs: %s\n",
+      DEBUG ("Failed to get MC4 account dirs: %s\n",
           error->message);
       g_clear_error (&error);
       g_object_unref (client);
