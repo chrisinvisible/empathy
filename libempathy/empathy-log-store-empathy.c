@@ -748,8 +748,7 @@ log_store_empathy_get_chats (EmpathyLogStore *self,
 
   priv = GET_PRIV (self);
 
-  dir = g_build_filename (priv->basedir,
-      empathy_account_get_unique_name (account), NULL);
+  dir = log_store_empathy_get_dir (self, account, NULL, FALSE);
 
   hits = log_store_empathy_get_chats_for_dir (self, dir, FALSE);
 
