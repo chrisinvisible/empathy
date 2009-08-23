@@ -103,7 +103,7 @@ _create_default_display_name (const gchar *protocol)
   if (!tp_strdiff (protocol, "local-xmpp"))
     return g_strdup (_("People Nearby"));
 
-  return g_strdup_printf ("%s account", protocol);
+  return g_strdup_printf (_("%s account"), protocol);
 }
 
 static const gchar *
