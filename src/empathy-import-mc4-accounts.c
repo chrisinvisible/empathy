@@ -32,7 +32,7 @@
 #include <libempathy/empathy-debug.h>
 
 #define MC_ACCOUNTS_GCONF_BASE "/apps/telepathy/mc/accounts"
-#define IMPORT_MC4_ACCOUNTS "/apps/empathy/accounts/import_mc4_accounts"
+#define IMPORTED_MC4_ACCOUNTS "/apps/empathy/accounts/imported_mc4_accounts"
 
 typedef struct
 {
@@ -436,12 +436,12 @@ void empathy_import_mc4_accounts (void)
   GConfClient *client;
   GError *error = NULL;
   GSList *dir, *dirs, *entries;
-  gboolean import_mc4_accounts;
+  gboolean imported_mc4_accounts;
 
   client = gconf_client_get_default ();
 
-  import_mc4_accounts = gconf_client_get_bool (client,
-      IMPORT_MC4_ACCOUNTS, &error);
+  imported_mc4_accounts = gconf_client_get_bool (client,
+      IMPORTED_MC4_ACCOUNTS, &error);
 
   if (error != NULL)
     {
@@ -451,8 +451,9 @@ void empathy_import_mc4_accounts (void)
       return;
     }
 
-  if (!import_mc4_accounts)
+  if (imported_mc4_accounts)
     {
+      DEBUG ("Mc4 accounts already imported");
       g_object_unref (client);
       return;
     }
@@ -541,7 +542,7 @@ void empathy_import_mc4_accounts (void)
     }
 
   gconf_client_set_bool (client,
-      IMPORT_MC4_ACCOUNTS, FALSE, &error);
+      IMPORTED_MC4_ACCOUNTS, TRUE, &error);
 
   if (error != NULL)
     {
