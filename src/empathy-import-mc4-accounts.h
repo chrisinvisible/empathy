@@ -27,6 +27,7 @@ G_BEGIN_DECLS
 #include <libempathy/empathy-connection-managers.h>
 
 gboolean empathy_import_mc4_accounts (EmpathyConnectionManagers *managers);
+gboolean empathy_import_mc4_has_imported (void);
 
 G_END_DECLS
 

@@ -369,6 +369,20 @@ failed:
 }
 
 gboolean
+empathy_import_mc4_has_imported (void)
+{
+  GConfClient *client;
+  gboolean ret;
+
+  client = gconf_client_get_default ();
+
+  ret = gconf_client_get_bool (client, IMPORTED_MC4_ACCOUNTS, NULL);
+  g_object_unref (client);
+
+  return ret;
+}
+
+gboolean
 empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 {
   GConfClient *client;
