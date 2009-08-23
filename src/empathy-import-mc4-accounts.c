@@ -19,6 +19,7 @@
  * Authors: Arnaud Maillet <arnaud.maillet@collabora.co.uk>
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <glib.h>
 #include <gconf/gconf-client.h>
@@ -120,7 +121,7 @@ _account_name_from_key (const gchar *key)
   guint base_len = strlen (MC_ACCOUNTS_GCONF_BASE);
   const gchar *base, *slash;
 
-  g_assert (key == strstr (key, MC_ACCOUNTS_GCONF_BASE));
+  g_assert (g_str_has_prefix (key, MC_ACCOUNTS_GCONF_BASE));
   g_assert (strlen (key) > base_len + 1);
 
   base = key + base_len + 1;
