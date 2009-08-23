@@ -192,8 +192,7 @@ empathy_account_get_property (GObject *object,
             empathy_account_get_display_name (account));
         break;
       case PROP_DBUS_DAEMON:
-        g_value_set_string (value,
-            empathy_account_get_display_name (account));
+        g_value_set_object (value, priv->dbus);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
