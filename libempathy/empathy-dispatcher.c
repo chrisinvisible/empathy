@@ -104,6 +104,10 @@ enum
 static guint signals[LAST_SIGNAL];
 static EmpathyDispatcher *dispatcher = NULL;
 
+static void dispatcher_init_connection_if_needed (
+    EmpathyDispatcher *dispatcher,
+    TpConnection *connection);
+
 static GList * empathy_dispatcher_find_channel_classes
   (EmpathyDispatcher *dispatcher, TpConnection *connection,
    const gchar *channel_type, guint handle_type, GArray *fixed_properties);
@@ -590,6 +594,8 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
     NULL
   };
 
+  dispatcher_init_connection_if_needed (dispatcher, connection);
+
   cd = g_hash_table_lookup (priv->connections, connection);
 
   /* Don't bother with channels we have already dispatched or are dispatching
@@ -784,9 +790,8 @@ dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
 }
 
 static void
-dispatcher_new_connection_cb (EmpathyAccountManager *manager,
-                              TpConnection *connection,
-                              EmpathyDispatcher *dispatcher)
+dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
+    TpConnection *connection)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   GPtrArray   *capabilities;
@@ -833,6 +838,14 @@ dispatcher_new_connection_cb (EmpathyAccountManager *manager,
 
   g_value_unset (&cap);
   g_ptr_array_free (capabilities, TRUE);
+}
+
+static void
+dispatcher_new_connection_cb (EmpathyAccountManager *manager,
+                              TpConnection *connection,
+                              EmpathyDispatcher *dispatcher)
+{
+  dispatcher_init_connection_if_needed (dispatcher, connection);
 }
 
 static void
