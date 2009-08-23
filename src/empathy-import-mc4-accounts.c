@@ -116,7 +116,7 @@ _get_manager_for_protocol (EmpathyConnectionManagers *managers,
     {
       TpConnectionManager *tp_cm = l->data;
 
-      /* Only use haze if no other cm provides this account */
+      /* Only use haze if no other cm provides this protocol */
       if (!tp_strdiff (tp_connection_manager_get_name (tp_cm), "haze"))
         {
           haze = tp_cm;
