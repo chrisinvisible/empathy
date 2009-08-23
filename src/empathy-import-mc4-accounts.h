@@ -24,7 +24,9 @@
 
 G_BEGIN_DECLS
 
-void empathy_import_mc4_accounts (void);
+#include <libempathy/empathy-connection-managers.h>
+
+void empathy_import_mc4_accounts (EmpathyConnectionManagers *managers);
 
 G_END_DECLS
 

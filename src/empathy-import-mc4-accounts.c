@@ -22,9 +22,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
+#include <glib/gi18n.h>
 #include <gconf/gconf-client.h>
 #include <telepathy-glib/util.h>
+#include <dbus/dbus-protocol.h>
 #include <libempathy/empathy-account-manager.h>
+#include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connection-managers.h>
 
 #include "empathy-import-mc4-accounts.h"
@@ -43,77 +46,14 @@ typedef struct
 
 static ProfileProtocolMapItem profile_protocol_map[] =
 {
-  { "aim", "aim" },
   { "ekiga", "sip" },
   { "fwd", "sip" },
-  { "gadugadu", "gadugadu" },
-  { "groupwise", "groupwise" },
   { "gtalk", "jabber" },
-  { "icq", "icq" },
-  { "irc", "irc" },
-  { "jabber", "jabber" },
   { "msn-haze", "msn" },
-  { "msn", "msn" },
-  { "qq", "qq" },
   { "salut", "local-xmpp" },
-  { "sametime", "sametime" },
   { "sipphone", "sip" },
   { "sofiasip", "sip" },
-  { "yahoo", "yahoo" },
 };
-
-typedef struct
-{
-  gchar *connection_manager;
-  gchar *protocol;
-  gchar *display_name;
-  gchar *param_account;
-  gchar *param_server;
-  gboolean enabled;
-  GHashTable *parameters;
-} AccountData;
-
-static void
-_account_data_free (AccountData *account)
-{
-  if (account->connection_manager != NULL)
-    {
-      g_free (account->connection_manager);
-      account->connection_manager = NULL;
-    }
-
-  if (account->protocol != NULL)
-    {
-      g_free (account->protocol);
-      account->protocol = NULL;
-    }
-
-  if (account->display_name != NULL)
-    {
-      g_free (account->display_name);
-      account->display_name = NULL;
-    }
-
-  if (account->param_account != NULL)
-    {
-      g_free (account->param_account);
-      account->param_account = NULL;
-    }
-
-  if (account->param_server != NULL)
-    {
-      g_free (account->param_server);
-      account->param_server = NULL;
-    }
-
-  if (account->parameters != NULL)
-    {
-      g_hash_table_destroy (account->parameters);
-      account->parameters = NULL;
-    }
-
-  g_slice_free (AccountData, account);
-}
 
 static gchar *
 _account_name_from_key (const gchar *key)
@@ -147,70 +87,47 @@ _param_name_from_key (const gchar *key)
  return g_strdup (slash+1);
 }
 
-static void
-_normalize_display_name (AccountData *account)
+static gchar *
+_create_default_display_name (const gchar *protocol)
 {
+  if (!tp_strdiff (protocol, "local-xmpp"))
+    return g_strdup (_("People Nearby"));
 
-  if (account->display_name != NULL)
-    return;
-
-  if (!tp_strdiff (account->protocol, "local-xmpp"))
-    {
-      account->display_name = g_strdup ("Nearby People");
-    }
-
-  else if (!tp_strdiff (account->protocol, "irc"))
-    {
-
-      if (account->display_name != NULL)
-        {
-          g_free (account->display_name);
-          account->display_name = NULL;
-        }
-
-      account->display_name = g_strdup_printf
-          ("%s on %s", account->param_account, account->param_server);
-
-    }
-
-  else if (account->display_name == NULL)
-    {
-
-      if (account->param_account != NULL)
-        account->display_name = g_strdup
-            ((const gchar *) account->param_account);
-      else
-        account->display_name = g_strdup
-            ("No display name");
-
-    }
+  return g_strdup_printf ("%s account", protocol);
 }
 
-static gboolean
-_protocol_is_supported (AccountData *data)
+static const gchar *
+_get_manager_for_protocol (EmpathyConnectionManagers *managers,
+    const gchar *protocol)
 {
-  EmpathyConnectionManagers *cm =
-      empathy_connection_managers_dup_singleton ();
-  GList *cms = empathy_connection_managers_get_cms (cm);
+  GList *cms = empathy_connection_managers_get_cms (managers);
   GList *l;
-  gboolean proto_is_supported = FALSE;
+  TpConnectionManager *haze = NULL;
+  TpConnectionManager *cm = NULL;
 
   for (l = cms; l; l = l->next)
     {
       TpConnectionManager *tp_cm = l->data;
-      const gchar *cm_name = tp_connection_manager_get_name (tp_cm);
-      if (tp_connection_manager_has_protocol (tp_cm,
-          (const gchar*)data->protocol))
+
+      /* Only use haze if no other cm provides this account */
+      if (!tp_strdiff (tp_connection_manager_get_name (tp_cm), "haze"))
         {
-          data->connection_manager = g_strdup (cm_name);
-          proto_is_supported = TRUE;
-          break;
+          haze = tp_cm;
+          continue;
+        }
+
+      if (tp_connection_manager_has_protocol (tp_cm, protocol))
+        {
+          cm = tp_cm;
+          goto out;
         }
     }
 
-  g_object_unref (cm);
+  if (haze != NULL && tp_connection_manager_has_protocol (haze, protocol))
+    return tp_connection_manager_get_name (haze);
 
-  return proto_is_supported;
+out:
+  return cm != NULL ? tp_connection_manager_get_name (cm) : NULL;
 }
 
 static void
@@ -218,30 +135,95 @@ _create_account_cb (GObject *source,
   GAsyncResult *result,
   gpointer user_data)
 {
-  AccountData *data = (AccountData*) user_data;
   EmpathyAccount *account;
   GError *error = NULL;
 
-  account = empathy_account_manager_create_account_finish (
-    EMPATHY_ACCOUNT_MANAGER (source), result, &error);
-
-  if (account == NULL)
+  if (!empathy_account_settings_apply_finish (
+      EMPATHY_ACCOUNT_SETTINGS (source), result, &error))
     {
       DEBUG ("Failed to create account: %s",
           error ? error->message : "No error given");
-      g_clear_error (&error);
-      _account_data_free (data);
-      return;
+      g_error_free (error);
+      goto out;
     }
 
   DEBUG ("account created\n");
-  empathy_account_set_enabled_async (account, data->enabled, NULL, NULL);
+  account = empathy_account_settings_get_account (
+    EMPATHY_ACCOUNT_SETTINGS (source));
+  empathy_account_set_enabled_async (account,
+      GPOINTER_TO_INT (user_data), NULL, NULL);
 
-  _account_data_free (data);
+out:
+  g_object_unref (source);
+}
+
+static gchar *
+_get_protocol_from_profile (const gchar *profile)
+{
+  gint i;
+
+  DEBUG ("profile: %s\n", profile);
+
+  for (i = 0; i < G_N_ELEMENTS (profile_protocol_map); i++)
+    if (!tp_strdiff (profile, profile_protocol_map[i].profile))
+      return g_strdup (profile_protocol_map[i].protocol);
+
+  return g_strdup (profile);
 }
 
 static void
-_recurse_account (GSList *entries, AccountData *account)
+_handle_entry (EmpathyAccountSettings *settings,
+    const gchar *key,
+    GConfEntry *entry)
+{
+  const gchar *signature;
+
+  signature = empathy_account_settings_get_dbus_signature (settings, key);
+  if (signature == NULL)
+    {
+      DEBUG ("Parameter %s is unknown", signature);
+      return;
+    }
+
+  switch ((int)*signature)
+    {
+      case DBUS_TYPE_INT16:
+      case DBUS_TYPE_INT32:
+        {
+          gint v = gconf_value_get_int (gconf_entry_get_value (entry));
+          empathy_account_settings_set_int32 (settings, key, v);
+          break;
+        }
+      case DBUS_TYPE_UINT16:
+      case DBUS_TYPE_UINT32:
+        {
+          gint v = gconf_value_get_int (gconf_entry_get_value (entry));
+          empathy_account_settings_set_uint32 (settings, key, v);
+          break;
+        }
+      case DBUS_TYPE_STRING:
+        {
+          const gchar *v = gconf_value_get_string (
+              gconf_entry_get_value (entry));
+
+          empathy_account_settings_set_string (settings, key, v);
+          break;
+        }
+      case DBUS_TYPE_BOOLEAN:
+        {
+          gboolean v = gconf_value_get_bool (
+              gconf_entry_get_value (entry));
+
+          empathy_account_settings_set_boolean (settings, key, v);
+          break;
+        }
+     default:
+       DEBUG ("Unsupported type in signature: %s", signature);
+    }
+}
+
+static void
+_recurse_account (GSList *entries, EmpathyAccountSettings *settings)
 {
   GSList *tmp;
 
@@ -250,194 +232,110 @@ _recurse_account (GSList *entries, AccountData *account)
 
       GConfEntry *entry;
       gchar *param;
-      GConfValue *value;
 
       entry = (GConfEntry*) tmp->data;
       param = _param_name_from_key (gconf_entry_get_key (entry));
 
-      if (!tp_strdiff (param, "profile"))
+      if (g_str_has_prefix (param, "param-"))
         {
-          const gchar *profile;
-          gint i;
-          value = gconf_entry_get_value (entry);
-          profile = gconf_value_get_string (value);
-
-          DEBUG ("profile: %s\n", profile);
-
-          for (i = 0; i < G_N_ELEMENTS (profile_protocol_map); i++)
-            {
-              if (!tp_strdiff (profile, profile_protocol_map[i].profile))
-                {
-                  account->protocol = g_strdup
-                      (profile_protocol_map[i].protocol);
-                  break;
-                }
-            }
-        }
-
-      else if (!tp_strdiff (param, "enabled"))
-        {
-          value = gconf_entry_get_value (entry);
-          account->enabled = gconf_value_get_bool (value);
-        }
-
-      else if (!tp_strdiff (param, "display_name"))
-        {
-          value = gconf_entry_get_value (entry);
-          account->display_name = g_strdup (gconf_value_get_string (value));
-        }
-
-      else if (!tp_strdiff (param, "param-account"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          account->param_account = g_strdup (gconf_value_get_string (value));
-
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, account->param_account);
-          g_hash_table_insert (account->parameters, "account", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-server"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          account->param_account = g_strdup (gconf_value_get_string (value));
-
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, account->param_account);
-          g_hash_table_insert (account->parameters, "server", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-port"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_UINT);
-          g_value_set_uint (my_g_value, gconf_value_get_int (value));
-          g_hash_table_insert (account->parameters, "password", my_g_value);;
-
-        }
-
-
-      else if (!tp_strdiff (param, "param-password"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, gconf_value_get_string (value));
-          g_hash_table_insert (account->parameters, "password", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-require-encryption"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_BOOLEAN);
-          g_value_set_boolean (my_g_value, gconf_value_get_bool (value));
-          g_hash_table_insert (account->parameters, "require-encryption", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-register"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_BOOLEAN);
-          g_value_set_boolean (my_g_value, gconf_value_get_bool (value));
-          g_hash_table_insert (account->parameters, "require-register", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-ident"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, gconf_value_get_string (value));
-          g_hash_table_insert (account->parameters, "ident", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-fullname"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, gconf_value_get_string (value));
-          g_hash_table_insert (account->parameters, "fullname", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-stun-server"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_STRING);
-          g_value_set_string (my_g_value, gconf_value_get_string (value));
-          g_hash_table_insert (account->parameters, "stun-server", my_g_value);
-
-        }
-
-      else if (!tp_strdiff (param, "param-stun-port"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_UINT);
-          g_value_set_uint (my_g_value, gconf_value_get_int (value));
-          g_hash_table_insert (account->parameters, "stun-port", my_g_value);;
-
-        }
-
-      else if (!tp_strdiff (param, "param-keepalive-interval"))
-        {
-
-          GValue *my_g_value;
-
-          value = gconf_entry_get_value (entry);
-          my_g_value = tp_g_value_slice_new (G_TYPE_UINT);
-          g_value_set_uint (my_g_value, gconf_value_get_int (value));
-          g_hash_table_insert (account->parameters, "keepalive-interval", my_g_value);;
-
+          _handle_entry (settings, param + strlen ("param-"), entry);
         }
 
       g_free (param);
       gconf_entry_unref (entry);
-
     }
-
-  _normalize_display_name (account);
 }
 
-void empathy_import_mc4_accounts (void)
+static void
+import_one_account (const char *path,
+  EmpathyConnectionManagers *managers,
+  GConfClient *client)
+{
+  gchar *account_name = _account_name_from_key (path);
+  EmpathyAccountSettings *settings;
+  GError *error = NULL;
+  GSList *entries = NULL;
+  gchar *profile = NULL;
+  gchar *protocol = NULL;
+  const gchar *manager;
+  gchar *display_name;
+  gchar *key;
+  gboolean enabled = FALSE;
+
+  DEBUG ("Starting import of %s (%s)", path, account_name);
+
+  key = g_strdup_printf ("%s/profile", path);
+  profile = gconf_client_get_string (client, key, NULL);
+  g_free (key);
+
+  if (profile == NULL)
+    {
+      DEBUG ("Account is missing a profile entry\n");
+      goto failed;
+    }
+
+  protocol = _get_protocol_from_profile (profile);
+  manager = _get_manager_for_protocol (managers, protocol);
+  if (manager == NULL)
+    {
+      DEBUG ("No manager available for this protocol %s", protocol);
+      goto failed;
+    }
+
+  key = g_strdup_printf ("%s/display_name", path);
+  display_name = gconf_client_get_string (client, key, NULL);
+  g_free (key);
+
+  if (display_name == NULL)
+    display_name = _create_default_display_name (protocol);
+
+  settings = empathy_account_settings_new (manager, protocol, display_name);
+  g_free (display_name);
+
+  /* Bit of a hack, as we know EmpathyConnectionManagers is ready the
+   * EmpathyAccountSettings should be ready right away as well */
+  g_assert (empathy_account_settings_is_ready (settings));
+
+  entries = gconf_client_all_entries (client, path, &error);
+
+  if (entries == NULL)
+    {
+
+      DEBUG ("Failed to get all entries: %s\n", error->message);
+      g_error_free (error);
+      goto failed;
+    }
+
+  _recurse_account (entries, settings);
+
+  key = g_strdup_printf ("%s/enabled", path);
+  enabled = gconf_client_get_bool (client, key, NULL);
+  g_free (key);
+  empathy_account_settings_apply_async (settings,
+          _create_account_cb, GINT_TO_POINTER (enabled));
+out:
+  g_free (protocol);
+  g_free (profile);
+  g_slist_free (entries);
+  g_free (account_name);
+  return;
+
+failed:
+  DEBUG ("Failed to import %s", path);
+  if (settings != NULL)
+    g_object_unref (settings);
+  goto out;
+}
+
+void
+empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 {
   GConfClient *client;
   GError *error = NULL;
-  GSList *dir, *dirs, *entries;
+  GSList *dir, *dirs;
   gboolean imported_mc4_accounts;
+
+  g_return_if_fail (empathy_connection_managers_is_ready (managers));
 
   client = gconf_client_get_default ();
 
@@ -474,73 +372,10 @@ void empathy_import_mc4_accounts (void)
 
   for (dir = dirs; NULL != dir; dir = dir->next)
     {
-      gchar *account_name = _account_name_from_key (dir->data);
-      AccountData *account;
-
-      account = g_slice_new0 (AccountData);
-
-      account->connection_manager = NULL;
-      account->protocol = NULL;
-      account->enabled = FALSE;
-      account->display_name = NULL;
-      account->param_account = NULL;
-      account->param_server = NULL;
-      account->parameters = g_hash_table_new_full (g_str_hash, g_str_equal,
-          NULL, (GDestroyNotify) tp_g_value_slice_free);
-
-      DEBUG ("name : %s\n", account_name);
-
-      entries = gconf_client_all_entries (client, dir->data, &error);
-
-      if (error != NULL)
-        {
-
-          DEBUG ("Failed to get all entries: %s\n", error->message);
-          g_clear_error (&error);
-
-        }
-      else
-        {
-          _recurse_account (entries, account);
-        }
-
-      if (_protocol_is_supported (account))
-        {
-          EmpathyAccountManager *account_manager;
-          GHashTable *properties;
-
-          account_manager = empathy_account_manager_dup_singleton ();
-
-          properties = g_hash_table_new (NULL, NULL);
-
-          DEBUG ("account cm: %s", account->connection_manager);
-          DEBUG ("account protocol: %s", account->protocol);
-          DEBUG ("account display_name: %s", account->display_name);
-          DEBUG ("account param_account: %s", account->param_account);
-          DEBUG ("account param_server: %s", account->param_server);
-          DEBUG ("enabled: %d", account->enabled);
-          tp_asv_dump (account->parameters);
-
-          empathy_account_manager_create_account_async (account_manager,
-              (const gchar*) account->connection_manager,
-              (const gchar*) account->protocol, account->display_name,
-              account->parameters, properties,
-              _create_account_cb, account);
-
-          g_hash_table_unref (properties);
-          g_object_unref (account_manager);
-        }
-      else
-        {
-          DEBUG ("protocol of this account is not supported\n");
-          _account_data_free (account);
-        }
-
-      g_slist_free (entries);
-      g_free (account_name);
+      import_one_account ((gchar *)dir->data, managers, client);
       g_free (dir->data);
-
     }
+  g_slist_free (dirs);
 
   gconf_client_set_bool (client,
       IMPORTED_MC4_ACCOUNTS, TRUE, &error);
@@ -551,6 +386,5 @@ void empathy_import_mc4_accounts (void)
       g_clear_error (&error);
     }
 
-  g_slist_free (dirs);
   g_object_unref (client);
 }
