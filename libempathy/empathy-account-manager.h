@@ -69,6 +69,9 @@ int                     empathy_account_manager_get_count
 EmpathyAccount *        empathy_account_manager_get_account_for_connection
                                 (EmpathyAccountManager *manager,
                                  TpConnection          *connection);
+EmpathyAccount *        empathy_account_manager_ensure_account
+                                (EmpathyAccountManager *manager,
+                                 const gchar *unique_name);
 EmpathyAccount *        empathy_account_manager_get_account
                                 (EmpathyAccountManager *manager,
                                  const gchar *unique_name);

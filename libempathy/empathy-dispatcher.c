@@ -1800,7 +1800,7 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
   EmpathyAccount *account;
   TpConnection *connection;
 
-  account = empathy_account_manager_get_account (priv->account_manager,
+  account = empathy_account_manager_ensure_account (priv->account_manager,
     account_path);
   g_assert (account != NULL);
 

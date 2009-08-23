@@ -337,6 +337,15 @@ empathy_account_manager_get_account (EmpathyAccountManager *manager,
   const gchar *path)
 {
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+
+  return g_hash_table_lookup (priv->accounts, path);
+}
+
+EmpathyAccount *
+empathy_account_manager_ensure_account (EmpathyAccountManager *manager,
+  const gchar *path)
+{
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   EmpathyAccount *account;
 
   account = g_hash_table_lookup (priv->accounts, path);
@@ -351,6 +360,7 @@ empathy_account_manager_get_account (EmpathyAccountManager *manager,
 
   return account;
 }
+
 
 static void
 account_manager_got_all_cb (TpProxy *proxy,
@@ -378,7 +388,7 @@ account_manager_got_all_cb (TpProxy *proxy,
         {
           gchar *name = g_ptr_array_index (accounts, i);
 
-          empathy_account_manager_get_account (manager, name);
+          empathy_account_manager_ensure_account (manager, name);
         }
     }
 
@@ -397,7 +407,7 @@ account_validity_changed_cb (TpAccountManager *proxy,
   if (!valid)
     return;
 
-  empathy_account_manager_get_account (manager, path);
+  empathy_account_manager_ensure_account (manager, path);
 }
 
 static void
@@ -909,7 +919,7 @@ empathy_account_manager_created_cb (TpAccountManager *proxy,
       return;
     }
 
-  account = empathy_account_manager_get_account (manager, account_path);
+  account = empathy_account_manager_ensure_account (manager, account_path);
 
   g_hash_table_insert (priv->create_results, account, my_res);
 }
