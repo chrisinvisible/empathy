@@ -222,8 +222,7 @@ _create_account_cb (GObject *source,
   if (!empathy_account_settings_apply_finish (
       EMPATHY_ACCOUNT_SETTINGS (source), result, &error))
     {
-      DEBUG ("Failed to create account: %s",
-          error ? error->message : "No error given");
+      DEBUG ("Failed to create account: %s", error->message);
       g_error_free (error);
       goto out;
     }
