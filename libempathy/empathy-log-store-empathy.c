@@ -389,11 +389,11 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 {
   EmpathyLogStoreEmpathyPriv *priv = GET_PRIV (self);
   EmpathyLogSearchHit *hit;
-  gchar *unescaped;
   gchar *account_name;
   const gchar *end;
   gchar **strv;
   guint len;
+  GList *accounts, *l;
 
   if (!g_str_has_suffix (filename, LOG_FILENAME_SUFFIX))
     return NULL;
@@ -413,15 +413,25 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
   else
     account_name = strv[len-3];
 
-  unescaped = g_strdup_printf ("/%s", g_strdelimit (account_name, "%", '/'));
+  accounts = empathy_account_manager_dup_accounts(priv->account_manager);
 
-  hit->account = empathy_account_manager_get_account (priv->account_manager,
-    unescaped);
-  if (hit->account != NULL)
-    g_object_ref (hit->account);
+  for (l = accounts; l != NULL; l = g_list_next (l))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      gchar *name;
+      name = log_store_account_to_dirname (account);
+      if (!tp_strdiff (name, account_name))
+        {
+          g_assert (hit->account == NULL);
+          hit->account = account;
+          g_object_ref (account);
+        }
+      g_object_unref (account);
+    }
+  g_list_free (accounts);
+
   hit->filename = g_strdup (filename);
 
-  g_free (unescaped);
   g_strfreev (strv);
 
   return hit;
