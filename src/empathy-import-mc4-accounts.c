@@ -432,16 +432,9 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
       g_free (dir->data);
     }
 
-  gconf_client_set_bool (client,
-      IMPORTED_MC4_ACCOUNTS, TRUE, &error);
-
-  if (error != NULL)
-    {
-      DEBUG ("Failed to set import_mc4_accounts key: %s\n", error->message);
-      g_clear_error (&error);
-    }
-
 out:
+  gconf_client_set_bool (client, IMPORTED_MC4_ACCOUNTS, TRUE, NULL);
+
   g_slist_free (dirs);
   g_object_unref (client);
   return imported;
