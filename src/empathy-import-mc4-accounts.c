@@ -283,7 +283,7 @@ _recurse_account (GSList *entries, EmpathyAccountSettings *settings,
     }
 }
 
-static void
+static gboolean
 import_one_account (const char *path,
   EmpathyConnectionManagers *managers,
   GConfClient *client)
@@ -298,6 +298,7 @@ import_one_account (const char *path,
   gchar *display_name;
   gchar *key;
   gboolean enabled = FALSE;
+  gboolean ret = FALSE;
 
   DEBUG ("Starting import of %s (%s)", path, account_name);
 
@@ -350,12 +351,15 @@ import_one_account (const char *path,
   g_free (key);
   empathy_account_settings_apply_async (settings,
           _create_account_cb, GINT_TO_POINTER (enabled));
+  ret = TRUE;
+
 out:
   g_free (protocol);
   g_free (profile);
   g_slist_free (entries);
   g_free (account_name);
-  return;
+
+  return ret;
 
 failed:
   DEBUG ("Failed to import %s", path);
@@ -364,15 +368,17 @@ failed:
   goto out;
 }
 
-void
+gboolean
 empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 {
   GConfClient *client;
   GError *error = NULL;
-  GSList *dir, *dirs;
+  GSList *dir, *dirs = NULL;
   gboolean imported_mc4_accounts;
+  gboolean imported = FALSE;
 
-  g_return_if_fail (empathy_connection_managers_is_ready (managers));
+  g_return_val_if_fail (empathy_connection_managers_is_ready (managers),
+    FALSE);
 
   client = gconf_client_get_default ();
 
@@ -384,14 +390,13 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
       DEBUG ("Failed to get import_mc4_accounts key: %s\n", error->message);
       g_clear_error (&error);
       g_object_unref (client);
-      return;
+      goto out;
     }
 
   if (imported_mc4_accounts)
     {
       DEBUG ("Mc4 accounts already imported");
-      g_object_unref (client);
-      return;
+      goto out;
     }
 
   DEBUG ("MC 4 accounts are going to be imported\n");
@@ -404,15 +409,15 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
           error->message);
       g_clear_error (&error);
       g_object_unref (client);
-      return;
+      goto out;
     }
 
   for (dir = dirs; NULL != dir; dir = dir->next)
     {
-      import_one_account ((gchar *)dir->data, managers, client);
+      if (import_one_account ((gchar *)dir->data, managers, client))
+        imported = TRUE;
       g_free (dir->data);
     }
-  g_slist_free (dirs);
 
   gconf_client_set_bool (client,
       IMPORTED_MC4_ACCOUNTS, TRUE, &error);
@@ -423,5 +428,8 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
       g_clear_error (&error);
     }
 
+out:
+  g_slist_free (dirs);
   g_object_unref (client);
+  return imported;
 }
