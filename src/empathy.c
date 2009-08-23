@@ -323,39 +323,41 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
 }
 
 static void
+maybe_show_account_assistant (void)
+{
+  EmpathyAccountManager *manager;
+  manager = empathy_account_manager_dup_singleton ();
+
+  if (empathy_account_manager_get_count (manager) == 0)
+    {
+      GtkWidget * assistant = empathy_account_assistant_new (
+        GTK_WINDOW (empathy_main_window_get ()));
+      gtk_window_present (GTK_WINDOW (assistant));
+    }
+}
+
+static gboolean
+check_connection_managers_ready (EmpathyConnectionManagers *managers)
+{
+  if (empathy_connection_managers_is_ready (managers))
+    {
+      if (!empathy_import_mc4_accounts (managers))
+        maybe_show_account_assistant ();
+
+      create_salut_account_if_needed (managers);
+      g_object_unref (managers);
+      managers = NULL;
+      return TRUE;
+    }
+  return FALSE;
+}
+
+static void
 connection_managers_ready_cb (EmpathyConnectionManagers *managers,
     GParamSpec *spec,
     gpointer user_data)
 {
-  if (empathy_connection_managers_is_ready (managers))
-    {
-      empathy_import_mc4_accounts ();
-      create_salut_account_if_needed (managers);
-      g_object_unref (managers);
-      managers = NULL;
-    }
-}
-
-static void
-create_salut_account (void)
-{
-  EmpathyConnectionManagers *managers;
-
-  if (!should_create_salut_account ())
-    return;
-
-  managers = empathy_connection_managers_dup_singleton ();
-
-  if (empathy_connection_managers_is_ready (managers))
-    {
-      create_salut_account_if_needed (managers);
-      g_object_unref (managers);
-    }
-  else
-    {
-      g_signal_connect (managers, "notify::ready",
-                        G_CALLBACK (connection_managers_ready_cb), NULL);
-    }
+  check_connection_managers_ready (managers);
 }
 
 static void
@@ -536,19 +538,24 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
     GParamSpec *spec,
     gpointer user_data)
 {
-  GtkWidget *assistant;
-
   if (!empathy_account_manager_is_ready (manager))
     return;
 
-  if (empathy_account_manager_get_count (manager) == 0)
+  if (should_create_salut_account () || !empathy_import_mc4_has_imported ())
     {
-      assistant = empathy_account_assistant_new (
-          GTK_WINDOW (empathy_main_window_get ()));
-      gtk_window_present (GTK_WINDOW (assistant));
-    }
+      EmpathyConnectionManagers *managers;
+      managers = empathy_connection_managers_dup_singleton ();
 
-  create_salut_account ();
+      if (!check_connection_managers_ready (managers))
+        {
+          g_signal_connect (managers, "notify::ready",
+            G_CALLBACK (connection_managers_ready_cb), NULL);
+        }
+    }
+  else
+    {
+      maybe_show_account_assistant ();
+    }
 }
 
 int
