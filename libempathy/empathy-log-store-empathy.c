@@ -116,6 +116,19 @@ empathy_log_store_empathy_init (EmpathyLogStoreEmpathy *self)
 }
 
 static gchar *
+log_store_account_to_dirname (EmpathyAccount *account)
+{
+  const gchar *name;
+
+  name = empathy_account_get_unique_name (account);
+  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
+    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
+
+  return g_strdelimit (g_strdup (name), "/", '_');
+}
+
+
+static gchar *
 log_store_empathy_get_dir (EmpathyLogStore *self,
                            EmpathyAccount *account,
                            const gchar *chat_id,
@@ -123,16 +136,11 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
 {
   gchar *basedir;
   gchar *escaped;
-  const gchar *name;
   EmpathyLogStoreEmpathyPriv *priv;
 
   priv = GET_PRIV (self);
 
-  name = empathy_account_get_unique_name (account);
-  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
-    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
-
-  escaped = g_strdelimit (g_strdup (name), "/", '_');
+  escaped = log_store_account_to_dirname (account);
 
   if (chatroom)
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, escaped,
