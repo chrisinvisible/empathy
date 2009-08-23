@@ -37,6 +37,7 @@
 #define G_DISABLE_DEPRECATED
 
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/defs.h>
 
 #include "empathy-log-store.h"
 #include "empathy-log-store-empathy.h"
@@ -122,15 +123,16 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
 {
   gchar *basedir;
   gchar *escaped;
+  const gchar *name;
   EmpathyLogStoreEmpathyPriv *priv;
 
   priv = GET_PRIV (self);
 
-  /* unique name is an object path, ignore the initial / and replace the others
-   * by % */
-  escaped = g_strdup (empathy_account_get_unique_name (account) + 1);
+  name = empathy_account_get_unique_name (account);
+  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
+    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
 
-  g_strdelimit (escaped, "/", '%');
+  escaped = g_strdelimit (g_strdup (name), "/", '_');
 
   if (chatroom)
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, escaped,
