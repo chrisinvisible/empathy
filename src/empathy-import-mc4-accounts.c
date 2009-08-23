@@ -234,7 +234,7 @@ _create_account_cb (GObject *source,
     }
 
   DEBUG ("account created\n");
-  empathy_account_set_enabled (account, data->enabled);
+  empathy_account_set_enabled_async (account, data->enabled, NULL, NULL);
 
   g_object_unref (account);
   _account_data_free (data);
