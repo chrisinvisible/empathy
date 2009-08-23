@@ -85,13 +85,16 @@ _param_name_from_key (const gchar *key)
 {
  const gchar *base, *slash;
  gchar *account_name;
+ gchar *ret;
 
  account_name = _account_name_from_key (key);
  base = strstr (key, account_name);
  slash = strchr (base, '/');
+
+ ret = g_strdup (slash+1);
  g_free (account_name);
 
- return g_strdup (slash+1);
+ return ret;
 }
 
 static gchar *
