@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 #include <gconf/gconf-client.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/defs.h>
 #include <dbus/dbus-protocol.h>
 #include <gnome-keyring.h>
 #include <libempathy/empathy-account-manager.h>
@@ -55,6 +56,11 @@ static ProfileProtocolMapItem profile_protocol_map[] =
   { "sipphone", "sip" },
   { "sofiasip", "sip" },
 };
+
+typedef struct {
+  gchar *account_name;
+  gboolean enable;
+} Misc;
 
 static gchar *
 _account_name_from_key (const gchar *key)
@@ -132,12 +138,83 @@ out:
 }
 
 static void
+_move_contents (const gchar *old, const gchar *new)
+{
+  GDir *source;
+  const gchar *f;
+  int ret;
+
+  ret = g_mkdir_with_parents (new, 0777);
+  if (ret == -1)
+    return;
+
+  source = g_dir_open (old, 0, NULL);
+  if (source == NULL)
+    return;
+
+  while ((f = g_dir_read_name (source)) != NULL)
+    {
+      gchar *old_path;
+      gchar *new_path;
+
+      old_path = g_build_path (G_DIR_SEPARATOR_S, old, f, NULL);
+      new_path = g_build_path (G_DIR_SEPARATOR_S, new, f, NULL);
+
+      if (g_file_test (old_path, G_FILE_TEST_IS_DIR))
+        {
+          _move_contents (old_path, new_path);
+        }
+      else
+        {
+          GFile *f_old, *f_new;
+
+          f_old = g_file_new_for_path (old_path);
+          f_new = g_file_new_for_path (new_path);
+
+          g_file_move (f_old, f_new, G_FILE_COPY_NONE,
+            NULL, NULL, NULL, NULL);
+
+          g_object_unref (f_old);
+          g_object_unref (f_new);
+        }
+
+      g_free (old_path);
+      g_free (new_path);
+    }
+
+  g_dir_close (source);
+}
+
+static void
+_move_logs (EmpathyAccount *account, const gchar *account_name)
+{
+  gchar *old_path, *new_path, *escaped;
+  const gchar *name;
+
+  name = empathy_account_get_unique_name (account);
+  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
+    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
+
+  escaped = g_strdelimit (g_strdup (name), "/", '_');
+  new_path = g_build_path (G_DIR_SEPARATOR_S, g_get_user_data_dir (),
+    PACKAGE_NAME, "logs", escaped, NULL);
+  g_free (escaped);
+
+  old_path = g_build_path (G_DIR_SEPARATOR_S,
+    g_get_home_dir (),
+    ".gnome2", PACKAGE_NAME, "logs", account_name, NULL);
+
+  _move_contents (old_path, new_path);
+}
+
+static void
 _create_account_cb (GObject *source,
   GAsyncResult *result,
   gpointer user_data)
 {
   EmpathyAccount *account;
   GError *error = NULL;
+  Misc *misc = (Misc *)user_data;
 
   if (!empathy_account_settings_apply_finish (
       EMPATHY_ACCOUNT_SETTINGS (source), result, &error))
@@ -151,8 +228,14 @@ _create_account_cb (GObject *source,
   DEBUG ("account created\n");
   account = empathy_account_settings_get_account (
     EMPATHY_ACCOUNT_SETTINGS (source));
+
+  _move_logs (account, misc->account_name);
+
   empathy_account_set_enabled_async (account,
-      GPOINTER_TO_INT (user_data), NULL, NULL);
+      misc->enable, NULL, NULL);
+
+  g_free (misc->account_name);
+  g_slice_free (Misc, misc);
 
 out:
   g_object_unref (source);
@@ -299,6 +382,7 @@ import_one_account (const char *path,
   gchar *key;
   gboolean enabled = FALSE;
   gboolean ret = FALSE;
+  Misc *misc;
 
   DEBUG ("Starting import of %s (%s)", path, account_name);
 
@@ -338,7 +422,6 @@ import_one_account (const char *path,
 
   if (entries == NULL)
     {
-
       DEBUG ("Failed to get all entries: %s\n", error->message);
       g_error_free (error);
       goto failed;
@@ -349,20 +432,25 @@ import_one_account (const char *path,
   key = g_strdup_printf ("%s/enabled", path);
   enabled = gconf_client_get_bool (client, key, NULL);
   g_free (key);
+
+  misc = g_slice_new (Misc);
+  misc->account_name = account_name;
+  misc->enable = enabled;
+
   empathy_account_settings_apply_async (settings,
-          _create_account_cb, GINT_TO_POINTER (enabled));
+          _create_account_cb, misc);
   ret = TRUE;
 
 out:
   g_free (protocol);
   g_free (profile);
   g_slist_free (entries);
-  g_free (account_name);
 
   return ret;
 
 failed:
   DEBUG ("Failed to import %s", path);
+  g_free (account_name);
   if (settings != NULL)
     g_object_unref (settings);
   goto out;
