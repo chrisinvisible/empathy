@@ -85,7 +85,6 @@ empathy_connection_managers_init (EmpathyConnectionManagers *obj)
 }
 
 static void empathy_connection_managers_dispose (GObject *object);
-static void empathy_connection_managers_finalize (GObject *object);
 
 static GObject *
 empathy_connection_managers_constructor (GType type,
@@ -138,7 +137,6 @@ empathy_connection_managers_class_init (
 
   object_class->constructor = empathy_connection_managers_constructor;
   object_class->dispose = empathy_connection_managers_dispose;
-  object_class->finalize = empathy_connection_managers_finalize;
   object_class->get_property = empathy_connection_managers_get_property;
 
   g_object_class_install_property (object_class, PROP_READY,
@@ -192,20 +190,6 @@ empathy_connection_managers_dispose (GObject *object)
 
   if (G_OBJECT_CLASS (empathy_connection_managers_parent_class)->dispose)
     G_OBJECT_CLASS (empathy_connection_managers_parent_class)->dispose (object);
-}
-
-void
-empathy_connection_managers_finalize (GObject *object)
-{
-#if 0
-  EmpathyConnectionManagers *self = EMPATHY_CONNECTION_MANAGERS (object);
-  EmpathyConnectionManagersPriv *priv =
-    EMPATHY_CONNECTION_MANAGERS_GET_PRIVATE (self);
-
-  /* free any data held directly by the object here */
-
-  G_OBJECT_CLASS (empathy_connection_managers_parent_class)->finalize (object);
-#endif
 }
 
 EmpathyConnectionManagers *
