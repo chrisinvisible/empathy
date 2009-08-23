@@ -1094,12 +1094,6 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
 
   if (priv->account == NULL)
     {
-      const gchar *default_display_name;
-      default_display_name = empathy_account_settings_get_string (settings,
-          "account");
-      empathy_account_settings_set_display_name_async (settings,
-          default_display_name, NULL, NULL);
-
       if (empathy_account_manager_is_ready (priv->account_manager))
         empathy_account_settings_do_create_account (settings);
       else
