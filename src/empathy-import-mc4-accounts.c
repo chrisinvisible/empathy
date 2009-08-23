@@ -26,6 +26,7 @@
 #include <gconf/gconf-client.h>
 #include <telepathy-glib/util.h>
 #include <dbus/dbus-protocol.h>
+#include <gnome-keyring.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connection-managers.h>
@@ -172,7 +173,35 @@ _get_protocol_from_profile (const gchar *profile)
 }
 
 static void
-_handle_entry (EmpathyAccountSettings *settings,
+_set_password_from_keyring (EmpathyAccountSettings *settings,
+    const gchar *account_name, const gchar *key)
+{
+  GnomeKeyringResult res;
+  gchar *password;
+  GnomeKeyringPasswordSchema keyring_schema = {
+      GNOME_KEYRING_ITEM_GENERIC_SECRET,
+      {
+        { "account", GNOME_KEYRING_ATTRIBUTE_TYPE_STRING },
+        { "param", GNOME_KEYRING_ATTRIBUTE_TYPE_STRING },
+        { NULL, 0 }
+      }
+   };
+
+  res = gnome_keyring_find_password_sync (&keyring_schema,
+    &password,
+    "account", account_name,
+    "param", key,
+    NULL);
+
+  if (res == GNOME_KEYRING_RESULT_OK)
+    {
+       empathy_account_settings_set_string (settings, key, password);
+       gnome_keyring_free_password (password);
+    }
+}
+
+static void
+_handle_entry (EmpathyAccountSettings *settings, const gchar *account_name,
     const gchar *key,
     GConfEntry *entry)
 {
@@ -206,7 +235,13 @@ _handle_entry (EmpathyAccountSettings *settings,
           const gchar *v = gconf_value_get_string (
               gconf_entry_get_value (entry));
 
-          empathy_account_settings_set_string (settings, key, v);
+          /* MC 4 would put password in the keyring and leave the password in
+           * gconf keyring */
+
+          if (!tp_strdiff (key, "password") && !tp_strdiff (v, "keyring"))
+            _set_password_from_keyring (settings, account_name, key);
+          else
+              empathy_account_settings_set_string (settings, key, v);
           break;
         }
       case DBUS_TYPE_BOOLEAN:
@@ -223,7 +258,8 @@ _handle_entry (EmpathyAccountSettings *settings,
 }
 
 static void
-_recurse_account (GSList *entries, EmpathyAccountSettings *settings)
+_recurse_account (GSList *entries, EmpathyAccountSettings *settings,
+  const gchar *account_name)
 {
   GSList *tmp;
 
@@ -238,7 +274,8 @@ _recurse_account (GSList *entries, EmpathyAccountSettings *settings)
 
       if (g_str_has_prefix (param, "param-"))
         {
-          _handle_entry (settings, param + strlen ("param-"), entry);
+          _handle_entry (settings, account_name, param + strlen ("param-"),
+            entry);
         }
 
       g_free (param);
@@ -306,7 +343,7 @@ import_one_account (const char *path,
       goto failed;
     }
 
-  _recurse_account (entries, settings);
+  _recurse_account (entries, settings, account_name);
 
   key = g_strdup_printf ("%s/enabled", path);
   enabled = gconf_client_get_bool (client, key, NULL);

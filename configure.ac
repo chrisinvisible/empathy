@@ -39,6 +39,7 @@ LIBCHAMPLAIN_GTK_REQUIRED=0.3.6
 CLUTTER_GTK_REQUIRED=0.10
 GEOCLUE_REQUIRED=0.11
 WEBKIT_REQUIRED=1.1.7
+KEYRING_REQUIRED=2.22
 NETWORK_MANAGER_REQUIRED=0.7.0
 
 # Use --enable-maintainer-mode to disabled deprecated symbols
@@ -127,6 +128,7 @@ PKG_CHECK_MODULES(EMPATHY,
    telepathy-farsight
    gstreamer-0.10
    unique-1.0
+   gnome-keyring-1 >= $KEYRING_REQUIRED
 ])
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
