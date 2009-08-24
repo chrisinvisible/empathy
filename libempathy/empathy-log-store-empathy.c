@@ -419,6 +419,7 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
     {
       EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
       gchar *name;
+
       name = log_store_account_to_dirname (account);
       if (!tp_strdiff (name, account_name))
         {
@@ -427,6 +428,7 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
           g_object_ref (account);
         }
       g_object_unref (account);
+      g_free (name);
     }
   g_list_free (accounts);
 
