@@ -413,7 +413,7 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
   else
     account_name = strv[len-3];
 
-  accounts = empathy_account_manager_dup_accounts(priv->account_manager);
+  accounts = empathy_account_manager_dup_accounts (priv->account_manager);
 
   for (l = accounts; l != NULL; l = g_list_next (l))
     {

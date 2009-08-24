@@ -217,7 +217,7 @@ _create_account_cb (GObject *source,
 {
   EmpathyAccount *account;
   GError *error = NULL;
-  Misc *misc = (Misc *)user_data;
+  Misc *misc = (Misc *) user_data;
 
   if (!empathy_account_settings_apply_finish (
       EMPATHY_ACCOUNT_SETTINGS (source), result, &error))
@@ -354,7 +354,7 @@ _recurse_account (GSList *entries, EmpathyAccountSettings *settings,
       GConfEntry *entry;
       gchar *param;
 
-      entry = (GConfEntry*) tmp->data;
+      entry = (GConfEntry *) tmp->data;
       param = _param_name_from_key (gconf_entry_get_key (entry));
 
       if (g_str_has_prefix (param, "param-"))
@@ -517,7 +517,7 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 
   for (dir = dirs; NULL != dir; dir = dir->next)
     {
-      if (import_one_account ((gchar *)dir->data, managers, client))
+      if (import_one_account ((gchar *) dir->data, managers, client))
         imported = TRUE;
       g_free (dir->data);
     }
