@@ -1232,8 +1232,9 @@ do_constructed (GObject *obj)
       gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
           nb_columns);
 
-      gtk_table_attach_defaults (GTK_TABLE (priv->table_common_settings),
-          priv->enabled_checkbox, 0, nb_columns, nb_rows - 1, nb_rows);
+      gtk_table_attach (GTK_TABLE (priv->table_common_settings),
+          priv->enabled_checkbox, 0, nb_columns, nb_rows - 1, nb_rows,
+          GTK_EXPAND | GTK_FILL, 0, 0, 0);
 
       gtk_widget_show (priv->enabled_checkbox);
 
