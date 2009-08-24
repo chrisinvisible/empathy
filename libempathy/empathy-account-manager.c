@@ -183,6 +183,7 @@ emp_account_manager_update_global_presence (EmpathyAccountManager *manager)
 
   if (account == NULL)
     {
+      priv->global_presence = presence;
       priv->global_status = NULL;
       priv->global_status_message = NULL;
       return;
