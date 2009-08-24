@@ -54,6 +54,7 @@ typedef struct {
   GtkWidget *throbber;
   ChamplainView *map_view;
   ChamplainLayer *layer;
+  guint timeout_id;
 } EmpathyMapView;
 
 static void
@@ -155,6 +156,48 @@ marker_clicked_cb (ChamplainMarker *marker,
   return FALSE;
 }
 
+static void
+map_view_contacts_update_label (ChamplainMarker *marker)
+{
+  const gchar *name;
+  gchar *date;
+  gchar *label;
+  GValue *gtime;
+  time_t loctime;
+  GHashTable *location;
+  EmpathyContact *contact;
+
+  contact = g_object_get_data (G_OBJECT (marker), "contact");
+  location = empathy_contact_get_location (contact);
+  name = empathy_contact_get_name (contact);
+  gtime = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
+
+  if (gtime != NULL)
+    {
+      time_t now;
+
+      loctime = g_value_get_int64 (gtime);
+      date = empathy_time_to_string_relative (loctime);
+      label = g_strconcat ("<b>", name, "</b>\n<small>", date, "</small>", NULL);
+      g_free (date);
+
+      now = time (NULL);
+
+      /* if location is older than a week */
+      if (now - loctime > (60 * 60 * 24 * 7))
+        clutter_actor_set_opacity (CLUTTER_ACTOR (marker), 0.75 * 255);
+    }
+  else
+    {
+      label = g_strconcat ("<b>", name, "</b>\n", NULL);
+    }
+
+  champlain_marker_set_use_markup (CHAMPLAIN_MARKER (marker), TRUE);
+  champlain_marker_set_text (CHAMPLAIN_MARKER (marker), label);
+
+  g_free (label);
+}
+
 static gboolean
 map_view_contacts_foreach (GtkTreeModel *model,
     GtkTreePath *path,
@@ -167,11 +210,6 @@ map_view_contacts_foreach (GtkTreeModel *model,
   ClutterActor *texture;
   GHashTable *location;
   GdkPixbuf *avatar;
-  const gchar *name;
-  gchar *date;
-  gchar *label;
-  GValue *gtime;
-  time_t loctime;
 
   gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
      &contact, -1);
@@ -198,30 +236,10 @@ map_view_contacts_foreach (GtkTreeModel *model,
   else
     champlain_marker_set_image (CHAMPLAIN_MARKER (marker), NULL);
 
-  name = empathy_contact_get_name (contact);
-  gtime = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
-  if (gtime != NULL)
-    {
-      time_t now;
+  g_object_set_data_full (G_OBJECT (marker), "contact",
+      g_object_ref (contact), g_object_unref);
 
-      loctime = g_value_get_int64 (gtime);
-      date = empathy_time_to_string_relative (loctime);
-      label = g_strconcat ("<b>", name, "</b>\n<small>", date, "</small>", NULL);
-      g_free (date);
-
-      now = time (NULL);
-
-      /* if location is older than a week */
-      if (now - loctime > (60 * 60 * 24 * 7))
-        clutter_actor_set_opacity (CLUTTER_ACTOR (marker), 0.75 * 255);
-    }
-  else
-    {
-      label = g_strconcat ("<b>", name, "</b>\n", NULL);
-    }
-  champlain_marker_set_use_markup (CHAMPLAIN_MARKER (marker), TRUE);
-  champlain_marker_set_text (CHAMPLAIN_MARKER (marker), label);
-  g_free (label);
+  map_view_contacts_update_label (CHAMPLAIN_MARKER (marker));
 
   clutter_actor_set_reactive (CLUTTER_ACTOR (marker), TRUE);
   g_signal_connect (marker, "button-release-event",
@@ -231,8 +249,6 @@ map_view_contacts_foreach (GtkTreeModel *model,
 
   g_signal_connect (contact, "notify::location",
       G_CALLBACK (map_view_contact_location_notify), marker);
-  g_object_set_data_full (G_OBJECT (marker), "contact",
-      g_object_ref (contact), g_object_unref);
 
   map_view_marker_update_position (CHAMPLAIN_MARKER (marker), contact);
 
@@ -245,6 +261,8 @@ map_view_destroy_cb (GtkWidget *widget,
     EmpathyMapView *window)
 {
   GList *item;
+
+  g_source_remove (window->timeout_id);
 
   item = clutter_container_get_children (CLUTTER_CONTAINER (window->layer));
   while (item != NULL)
@@ -263,6 +281,19 @@ map_view_destroy_cb (GtkWidget *widget,
   g_object_unref (window->list_store);
   g_object_unref (window->layer);
   g_slice_free (EmpathyMapView, window);
+}
+
+static gboolean
+map_view_tick (EmpathyMapView *window)
+{
+  GList *marker;
+
+  marker = clutter_container_get_children (CLUTTER_CONTAINER (window->layer));
+
+  for (; marker; marker = marker->next)
+    map_view_contacts_update_label (marker->data);
+
+  return TRUE;
 }
 
 GtkWidget *
@@ -343,6 +374,11 @@ empathy_map_view_show (void)
   gtk_tree_model_foreach (model, map_view_contacts_foreach, window);
 
   empathy_window_present (GTK_WINDOW (window->window), TRUE);
+
+  /* Set up time updating loop */
+  window->timeout_id = g_timeout_add_seconds (5,
+      (GSourceFunc) map_view_tick, window);
+
   return window->window;
 }
 
