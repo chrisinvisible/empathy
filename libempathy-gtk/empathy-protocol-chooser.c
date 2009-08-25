@@ -317,7 +317,8 @@ protocol_chooser_constructed (GObject *object)
         G_CALLBACK (protocol_chooser_cms_ready_cb), protocol_chooser);
 
   if (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed)
-    G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed (object);
+    G_OBJECT_CLASS
+      (empathy_protocol_chooser_parent_class)->constructed (object);
 }
 
 static void
