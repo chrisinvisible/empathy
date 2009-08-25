@@ -547,6 +547,8 @@ theme_adium_append_message (EmpathyChatView *view,
 	account = empathy_contact_get_account (sender);
 	service_name = empathy_protocol_name_to_display_name
 		(empathy_account_get_protocol (account));
+	if (service_name == NULL)
+		service_name = empathy_account_get_protocol (account);
 	timestamp = empathy_message_get_timestamp (msg);
 	body = empathy_message_get_body (msg);
 	dup_body = theme_adium_parse_body (theme, body);
