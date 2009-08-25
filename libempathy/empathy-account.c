@@ -978,6 +978,49 @@ empathy_account_set_enabled_async (EmpathyAccount *account,
 }
 
 static void
+account_reconnected_cb (TpAccount *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  GSimpleAsyncResult *result = user_data;
+
+  if (error != NULL)
+    g_simple_async_result_set_from_error (result, (GError *) error);
+
+  g_simple_async_result_complete (result);
+  g_object_unref (result);
+}
+
+gboolean
+empathy_account_reconnect_finish (EmpathyAccount *account,
+    GAsyncResult *result,
+    GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error) ||
+      !g_simple_async_result_is_valid (result, G_OBJECT (account),
+          empathy_account_reconnect_finish))
+    return FALSE;
+
+  return TRUE;
+}
+
+void
+empathy_account_reconnect_async (EmpathyAccount *account,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
+{
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+
+  GSimpleAsyncResult *result = g_simple_async_result_new (G_OBJECT (account),
+        callback, user_data, empathy_account_reconnect_finish);
+
+  tp_cli_account_call_reconnect (priv->account,
+      -1, account_reconnected_cb, result, NULL, G_OBJECT (account));
+}
+
+static void
 empathy_account_requested_presence_cb (TpProxy *proxy,
   const GError *error,
   gpointer user_data,

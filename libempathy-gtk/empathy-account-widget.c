@@ -66,13 +66,6 @@ typedef struct {
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
 
-  /* After having applied changes to a user account, we automatically
-   * disconnect him. Once he's disconnected, he will be reconnected,
-   * depending on the value of this member which should be set to the checked
-   * state of the "Enabled" checkbox. This is done so the new information
-   * entered by the user is validated on the server. */
-  gboolean re_enable_accound;
-
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
 
@@ -623,32 +616,35 @@ account_widget_applied_cb (GObject *source_object,
 
   account = empathy_account_settings_get_account (priv->settings);
 
-  if (priv->creating_account)
+  if (account != NULL)
     {
-      /* By default, when an account is created, we enable it. */
-      empathy_account_set_enabled_async (account, TRUE,
-          account_widget_account_enabled_cb, widget);
-    }
-  else if (account != NULL && priv->enabled_checkbox != NULL)
-    {
-      gboolean enabled_checked;
-
-      enabled_checked = gtk_toggle_button_get_active (
-          GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
-
-      if (empathy_account_is_enabled (account))
+      if (priv->creating_account)
         {
-          /* We want to disable the account (and possibly re-enable it) to make
-           * sure that the new settings are effective */
-          priv->re_enable_accound = enabled_checked;
-          empathy_account_set_enabled_async (account, FALSE, NULL, NULL);
+          /* By default, when an account is created, we enable it. */
+          empathy_account_set_enabled_async (account, TRUE,
+              account_widget_account_enabled_cb, widget);
         }
-      else
+      else if (priv->enabled_checkbox != NULL)
         {
-          /* The account is already disable so we just enable it according
-           * to the value of the "Enabled" checkbox */
-          empathy_account_set_enabled_async (account, enabled_checked,
-              NULL, NULL);
+          gboolean enabled_checked;
+
+          enabled_checked = gtk_toggle_button_get_active (
+              GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
+
+          if (empathy_account_is_enabled (account) && enabled_checked)
+            {
+              /* After having applied changes to a user account, we
+               * automatically reconnect it. This is done so the new
+               * information entered by the user is validated on the server. */
+              empathy_account_reconnect_async (account, NULL, NULL);
+            }
+          else
+            {
+              /* The account is disabled so we enable it according to the value
+               * of the "Enabled" checkbox */
+              empathy_account_set_enabled_async (account, enabled_checked,
+                  NULL, NULL);
+            }
         }
     }
 
@@ -1023,14 +1019,7 @@ empathy_account_widget_enabled_cb (EmpathyAccount *account,
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
   gboolean enabled = empathy_account_is_enabled (account);
 
-  if (!enabled && priv->re_enable_accound)
-    {
-      /* The account has been disabled because we were applying changes.
-       * However, the user wants the account to be enabled so let's re-enable
-       * it */
-      empathy_account_set_enabled_async (account, TRUE, NULL, NULL);
-    }
-  else if (priv->enabled_checkbox != NULL)
+  if (priv->enabled_checkbox != NULL)
     {
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
           enabled);
