@@ -26,6 +26,7 @@ lib_LTLIBRARIES = libempathy-gtk.la
 libempathy_gtk_handwritten_source =            	\
 	empathy-account-chooser.c		\
 	empathy-account-widget.c		\
+	empathy-account-widget-private.h	\
 	empathy-account-widget-irc.c		\
 	empathy-account-widget-sip.c		\
 	empathy-avatar-chooser.c		\
@@ -70,7 +71,6 @@ libempathy_gtk_la_SOURCES =			\
 
 # do not distribute generated files
 nodist_libempathy_gtk_la_SOURCES =\
-	empathy-account-widget-private.h	\
 	$(BUILT_SOURCES)
 
 libempathy_gtk_la_LIBADD =			\
