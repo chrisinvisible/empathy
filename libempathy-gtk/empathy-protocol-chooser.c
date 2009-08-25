@@ -136,13 +136,13 @@ protocol_chooser_proto_name_to_display_name (const gchar *proto_name)
     const gchar *proto;
     const gchar *display;
   } names[] = {
-    { "jabber", "XMPP" },
+    { "jabber", "Jabber" },
     { "msn", "MSN" },
     { "local-xmpp", "Salut" },
     { "irc", "IRC" },
     { "icq", "ICQ" },
     { "aim", "AIM" },
-    { "yahoo", "Yahoo" },
+    { "yahoo", "Yahoo!" },
     { "groupwise", "GroupWise" },
     { "sip", "SIP" },
     { NULL, NULL }
