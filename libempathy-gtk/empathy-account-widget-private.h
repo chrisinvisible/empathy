@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 
 struct _EmpathyAccountWidgetUIDetails {
   GtkWidget *widget;
-  
+
   GtkBuilder *gui;
 
   char *default_focus;
