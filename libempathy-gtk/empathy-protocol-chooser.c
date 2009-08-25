@@ -87,7 +87,7 @@ protocol_chooser_sort_protocol_value (TpConnectionManagerProtocol *protocol)
   guint i;
   const gchar *names[] = {
     "jabber",
-    "salut",
+    "local-xmpp",
     "gtalk",
     NULL
   };
