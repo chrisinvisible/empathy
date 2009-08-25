@@ -290,6 +290,15 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
   cm = empathy_protocol_chooser_dup_selected (
       EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto);
 
+  if (cm == NULL)
+    return;
+
+  if (proto == NULL)
+    {
+      g_object_unref (cm);
+      return;
+    }
+
   if (tp_connection_manager_protocol_can_register (proto))
     {
       gtk_widget_show (priv->radiobutton_register);
