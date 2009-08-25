@@ -81,7 +81,7 @@ libempathy_la_LDFLAGS =		\
 
 libempathy_headers =				\
 	empathy-account-settings.h		\
-	empathy-account.h		\
+	empathy-account.h			\
 	empathy-account-manager.h		\
 	empathy-chatroom.h			\
 	empathy-chatroom-manager.h		\
