@@ -29,6 +29,7 @@
 #include <telepathy-glib/connection.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/interfaces.h>
 
 #include "empathy-tp-contact-list.h"
 #include "empathy-tp-contact-factory.h"

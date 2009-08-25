@@ -28,12 +28,17 @@
 
 G_BEGIN_DECLS
 
-#define EMPATHY_TYPE_ACCOUNT_MANAGER         (empathy_account_manager_get_type ())
-#define EMPATHY_ACCOUNT_MANAGER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManager))
-#define EMPATHY_ACCOUNT_MANAGER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerClass))
-#define EMPATHY_IS_ACCOUNT_MANAGER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_ACCOUNT_MANAGER))
-#define EMPATHY_IS_ACCOUNT_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_ACCOUNT_MANAGER))
-#define EMPATHY_ACCOUNT_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerClass))
+#define EMPATHY_TYPE_ACCOUNT_MANAGER  (empathy_account_manager_get_type ())
+#define EMPATHY_ACCOUNT_MANAGER(o)    (G_TYPE_CHECK_INSTANCE_CAST ((o), \
+  EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManager))
+#define EMPATHY_ACCOUNT_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_CAST ((k), \
+  EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerClass))
+#define EMPATHY_IS_ACCOUNT_MANAGER(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), \
+  EMPATHY_TYPE_ACCOUNT_MANAGER))
+#define EMPATHY_IS_ACCOUNT_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), \
+  EMPATHY_TYPE_ACCOUNT_MANAGER))
+#define EMPATHY_ACCOUNT_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), \
+  EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerClass))
 
 typedef struct _EmpathyAccountManager      EmpathyAccountManager;
 typedef struct _EmpathyAccountManagerClass EmpathyAccountManagerClass;
@@ -52,19 +57,22 @@ GType empathy_account_manager_get_type (void);
 /* public methods */
 
 EmpathyAccountManager * empathy_account_manager_dup_singleton (void);
-EmpathyAccount *        empathy_account_manager_create
-                                (EmpathyAccountManager *manager,
-                                 McProfile *profile);
+
+gboolean empathy_account_manager_is_ready (EmpathyAccountManager *manager);
+
 int                     empathy_account_manager_get_connected_accounts
                                 (EmpathyAccountManager *manager);
 int                     empathy_account_manager_get_connecting_accounts
                                 (EmpathyAccountManager *manager);
 int                     empathy_account_manager_get_count
                                 (EmpathyAccountManager *manager);
-EmpathyAccount *        empathy_account_manager_get_account
+EmpathyAccount *        empathy_account_manager_get_account_for_connection
                                 (EmpathyAccountManager *manager,
                                  TpConnection          *connection);
-EmpathyAccount *        empathy_account_manager_lookup
+EmpathyAccount *        empathy_account_manager_ensure_account
+                                (EmpathyAccountManager *manager,
+                                 const gchar *unique_name);
+EmpathyAccount *        empathy_account_manager_get_account
                                 (EmpathyAccountManager *manager,
                                  const gchar *unique_name);
 GList *                 empathy_account_manager_dup_accounts
@@ -74,6 +82,31 @@ GList *                 empathy_account_manager_dup_connections
 void                    empathy_account_manager_remove (
                                  EmpathyAccountManager *manager,
                                  EmpathyAccount *account);
+
+void empathy_account_manager_request_global_presence (
+  EmpathyAccountManager *manager,
+  TpConnectionPresenceType type,
+  const gchar *status,
+  const gchar *message);
+
+TpConnectionPresenceType empathy_account_manager_get_requested_global_presence (
+  EmpathyAccountManager *manager,
+  gchar **status,
+  gchar **message);
+
+TpConnectionPresenceType empathy_account_manager_get_global_presence (
+  EmpathyAccountManager *manager,
+  gchar **status,
+  gchar **message);
+
+void empathy_account_manager_create_account_async (
+  EmpathyAccountManager *manager, const gchar *connection_manager,
+  const gchar *protocol, const gchar *display_name,
+  GHashTable *parameters, GHashTable *properties,
+  GAsyncReadyCallback callback, gpointer user_data);
+
+EmpathyAccount * empathy_account_manager_create_account_finish (
+  EmpathyAccountManager *settings, GAsyncResult *result, GError **error);
 
 G_END_DECLS
 

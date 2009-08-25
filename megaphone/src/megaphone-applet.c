@@ -31,8 +31,6 @@
 #include <panel-2.0/panel-applet-gconf.h>
 #include <gconf/gconf-client.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -199,7 +197,7 @@ megaphone_applet_new_connection_cb (EmpathyAccountManager *manager,
 {
 	MegaphoneAppletPriv *priv = GET_PRIV (applet);
 
-	if (priv->contact || !empathy_account_equal (account, priv->account)) {
+	if (priv->contact || account != priv->account) {
 		return;
 	}
 
@@ -445,7 +443,7 @@ megaphone_applet_set_contact (MegaphoneApplet *applet,
 	/* Lookup the new contact */
 	if (str) {
 		strv = g_strsplit (str, "/", 2);
-		priv->account = empathy_account_manager_lookup (priv->account_manager, 
+		priv->account = empathy_account_manager_get_account (priv->account_manager,
 			strv[0]);
 		priv->id = strv[1];
 		g_free (strv[0]);
@@ -453,6 +451,7 @@ megaphone_applet_set_contact (MegaphoneApplet *applet,
 	}
 
 	if (priv->account) {
+		g_object_ref (priv->account);
 		connection = empathy_account_get_connection (priv->account);
 		if (connection) {
 			megaphone_applet_new_connection_cb (priv->account_manager,

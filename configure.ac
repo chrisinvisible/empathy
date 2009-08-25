@@ -30,7 +30,6 @@ GTK_REQUIRED=2.16.0
 GCONF_REQUIRED=1.2.0
 LIBPANELAPPLET_REQUIRED=2.10.0
 TELEPATHY_GLIB_REQUIRED=0.7.34
-MISSION_CONTROL_REQUIRED=4.61
 ENCHANT_REQUIRED=1.2.0
 ISO_CODES_REQUIRED=0.35
 LIBNOTIFY_REQUIRED=0.4.4
@@ -40,6 +39,7 @@ LIBCHAMPLAIN_GTK_REQUIRED=0.3.6
 CLUTTER_GTK_REQUIRED=0.10
 GEOCLUE_REQUIRED=0.11
 WEBKIT_REQUIRED=1.1.7
+KEYRING_REQUIRED=2.22
 NETWORK_MANAGER_REQUIRED=0.7.0
 
 # Use --enable-maintainer-mode to disabled deprecated symbols
@@ -95,7 +95,6 @@ PKG_CHECK_MODULES(LIBEMPATHY,
    gio-unix-2.0 >= $GLIB_REQUIRED
    libxml-2.0
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   libmissioncontrol >= $MISSION_CONTROL_REQUIRED
    telepathy-farsight
    farsight2-0.10
    gstreamer-0.10
@@ -111,7 +110,6 @@ PKG_CHECK_MODULES(LIBEMPATHYGTK,
    gtk+-2.0 >= $GTK_REQUIRED
    libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   libmissioncontrol >= $MISSION_CONTROL_REQUIRED
    farsight2-0.10
    gstreamer-0.10
    gstreamer-interfaces-0.10
@@ -127,9 +125,10 @@ PKG_CHECK_MODULES(EMPATHY,
    libebook-1.2
    dbus-glib-1
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   libmissioncontrol >= $MISSION_CONTROL_REQUIRED
    telepathy-farsight
    gstreamer-0.10
+   unique-1.0
+   gnome-keyring-1 >= $KEYRING_REQUIRED
 ])
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
@@ -341,7 +340,7 @@ if test "x$enable_megaphone" != "xno"; then
       glib-2.0 >= $GLIB_REQUIRED
       gtk+-2.0 >= $GTK_REQUIRED
       gconf-2.0 >= $GCONF_REQUIRED
-      libmissioncontrol >= $MISSION_CONTROL_REQUIRED
+      telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    ], have_megaphone="yes", have_megaphone="no")
 else
    have_megaphone=no
@@ -368,7 +367,7 @@ if test "x$enable_nothere" != "xno"; then
       glib-2.0 >= $GLIB_REQUIRED
       gtk+-2.0 >= $GTK_REQUIRED
       gconf-2.0 >= $GCONF_REQUIRED
-      libmissioncontrol >= $MISSION_CONTROL_REQUIRED
+      telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    ], have_nothere="yes", have_nothere="no")
 else
    have_nothere=no
@@ -419,7 +418,6 @@ if test "x$enable_python" != "xno"; then
       gobject-2.0
       gconf-2.0 >= $GCONF_REQUIRED
       libxml-2.0
-      libmissioncontrol >= $MISSION_CONTROL_REQUIRED
       gtk+-2.0 >= $GTK_REQUIRED
       gstreamer-0.10
       gstreamer-interfaces-0.10

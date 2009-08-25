@@ -1,6 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2007-2008 Collabora Ltd.
+ * Copyright (C) 2007-2009 Collabora Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,6 +29,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include <unique/unique.h>
 
 #if HAVE_LIBCHAMPLAIN
 #include <clutter-gtk/clutter-gtk.h>
@@ -40,14 +40,17 @@
 
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
-#include <libmissioncontrol/mission-control.h>
+#include <telepathy-glib/connection-manager.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-chatroom-manager.h>
+#include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-account-manager.h>
+#include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-debugger.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-dispatch-operation.h>
@@ -60,13 +63,14 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-location-manager.h>
 
+#include "empathy-account-assistant.h"
 #include "empathy-accounts-dialog.h"
 #include "empathy-main-window.h"
 #include "empathy-status-icon.h"
 #include "empathy-call-window.h"
 #include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
-#include "bacon-message-connection.h"
+#include "empathy-import-mc4-accounts.h"
 
 #include "extensions/extensions.h"
 
@@ -75,444 +79,432 @@
 
 #include <gst/gst.h>
 
-static BaconMessageConnection *connection = NULL;
+#define COMMAND_ACCOUNTS_DIALOG 1
 
 static void
 dispatch_cb (EmpathyDispatcher *dispatcher,
-	     EmpathyDispatchOperation *operation,
-	     gpointer           user_data)
+    EmpathyDispatchOperation *operation,
+    gpointer user_data)
 {
-	GQuark channel_type;
+  GQuark channel_type;
 
-	channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
+  channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
 
-	if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT) {
-		EmpathyTpChat *tp_chat;
-		EmpathyChat   *chat = NULL;
-		const gchar   *id;
+  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
+    {
+      EmpathyTpChat *tp_chat;
+      EmpathyChat   *chat = NULL;
+      const gchar   *id;
 
-		tp_chat = EMPATHY_TP_CHAT (
-			empathy_dispatch_operation_get_channel_wrapper (operation));
+      tp_chat = EMPATHY_TP_CHAT
+        (empathy_dispatch_operation_get_channel_wrapper (operation));
 
-		id = empathy_tp_chat_get_id (tp_chat);
-		if (!id) {
-			EmpathyContact *contact;
+      id = empathy_tp_chat_get_id (tp_chat);
+      if (!id)
+        {
+          EmpathyContact *contact;
 
-			contact = empathy_tp_chat_get_remote_contact (tp_chat);
-			if (contact) {
-				id = empathy_contact_get_id (contact);
-			}
-		}
+          contact = empathy_tp_chat_get_remote_contact (tp_chat);
+          if (contact)
+            id = empathy_contact_get_id (contact);
+        }
 
-		if (id) {
-			EmpathyAccountManager *manager;
-			TpConnection *connection;
-			EmpathyAccount *account;
+      if (id)
+        {
+          EmpathyAccountManager *manager;
+          TpConnection *connection;
+          EmpathyAccount *account;
 
-			manager = empathy_account_manager_dup_singleton ();
-			connection = empathy_tp_chat_get_connection (tp_chat);
-			account = empathy_account_manager_get_account (manager,
-								       connection);
-			chat = empathy_chat_window_find_chat (account, id);
-			g_object_unref (manager);
-		}
+          manager = empathy_account_manager_dup_singleton ();
+          connection = empathy_tp_chat_get_connection (tp_chat);
+          account = empathy_account_manager_get_account_for_connection (
+              manager, connection);
+          chat = empathy_chat_window_find_chat (account, id);
+          g_object_unref (manager);
+        }
 
-		if (chat) {
-			empathy_chat_set_tp_chat (chat, tp_chat);
-		} else {
-			chat = empathy_chat_new (tp_chat);
-		}
+      if (chat)
+        empathy_chat_set_tp_chat (chat, tp_chat);
+      else
+        chat = empathy_chat_new (tp_chat);
 
-		empathy_chat_window_present_chat (chat);
+      empathy_chat_window_present_chat (chat);
 
-		empathy_dispatch_operation_claim (operation);
-	} else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA) {
-		EmpathyCallFactory *factory;
+      empathy_dispatch_operation_claim (operation);
+    }
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
+    {
+      EmpathyCallFactory *factory;
 
-		factory = empathy_call_factory_get ();
-		empathy_call_factory_claim_channel (factory, operation);
-	} else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER) {
-		EmpathyFTFactory *factory;
+      factory = empathy_call_factory_get ();
+      empathy_call_factory_claim_channel (factory, operation);
+    }
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
+    {
+      EmpathyFTFactory *factory;
 
-		factory = empathy_ft_factory_dup_singleton ();
+      factory = empathy_ft_factory_dup_singleton ();
 
-		/* if the operation is not incoming, don't claim it,
-		 * as it might have been triggered by another client, and
-		 * we are observing it.
-		 */
-		if (empathy_dispatch_operation_is_incoming (operation)) {
-			empathy_ft_factory_claim_channel (factory, operation);
-		}
-	}
+      /* if the operation is not incoming, don't claim it,
+       * as it might have been triggered by another client, and
+       * we are observing it.
+       */
+      if (empathy_dispatch_operation_is_incoming (operation))
+        empathy_ft_factory_claim_channel (factory, operation);
+    }
+}
+
+/* Salut account creation */
+static gboolean
+should_create_salut_account (void)
+{
+  EmpathyAccountManager *manager;
+  gboolean salut_created = FALSE;
+  GList *accounts, *l;
+
+  /* Check if we already created a salut account */
+  empathy_conf_get_bool (empathy_conf_get (),
+      EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+      &salut_created);
+
+  if (salut_created)
+    {
+      DEBUG ("Gconf says we already created a salut account once");
+      return FALSE;
+    }
+
+  manager = empathy_account_manager_dup_singleton ();
+  accounts = empathy_account_manager_dup_accounts (manager);
+
+  for (l = accounts; l != NULL;  l = g_list_next (l))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+
+      if (!tp_strdiff (empathy_account_get_protocol (account), "local-xmpp"))
+        salut_created = TRUE;
+
+      g_object_unref (account);
+    }
+
+  g_object_unref (manager);
+
+  if (salut_created)
+    {
+      DEBUG ("Existing salut account already exists, flagging so in gconf");
+      empathy_conf_set_bool (empathy_conf_get (),
+          EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+          TRUE);
+    }
+
+  return !salut_created;
 }
 
 static void
-service_ended_cb (MissionControl *mc,
-		  gpointer        user_data)
+salut_account_created (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
 {
-	DEBUG ("Mission Control stopped");
-}
+  EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
+  EmpathyAccount *account;
+  GError *error = NULL;
 
-static void
-operation_error_cb (MissionControl *mc,
-		    guint           operation_id,
-		    guint           error_code,
-		    gpointer        user_data)
-{
-	const gchar *message;
+  if (!empathy_account_settings_apply_finish (settings, result, &error))
+    {
+      DEBUG ("Failed to create salut account: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
-	switch (error_code) {
-	case MC_DISCONNECTED_ERROR:
-		message = "Disconnected";
-		break;
-	case MC_INVALID_HANDLE_ERROR:
-		message = "Invalid handle";
-		break;
-	case MC_NO_MATCHING_CONNECTION_ERROR:
-		message = "No matching connection";
-		break;
-	case MC_INVALID_ACCOUNT_ERROR:
-		message = "Invalid account";
-		break;
-	case MC_PRESENCE_FAILURE_ERROR:
-		message = "Presence failure";
-		break;
-	case MC_NO_ACCOUNTS_ERROR:
-		message = "No accounts";
-		break;
-	case MC_NETWORK_ERROR:
-		message = "Network error";
-		break;
-	case MC_CONTACT_DOES_NOT_SUPPORT_VOICE_ERROR:
-		message = "Contact does not support voice";
-		break;
-	case MC_LOWMEM_ERROR:
-		message = "Lowmem";
-		break;
-	case MC_CHANNEL_REQUEST_GENERIC_ERROR:
-		message = "Channel request generic error";
-		break;
-	case MC_CHANNEL_BANNED_ERROR:
-		message = "Channel banned";
-		break;
-	case MC_CHANNEL_FULL_ERROR:
-		message = "Channel full";
-		break;
-	case MC_CHANNEL_INVITE_ONLY_ERROR:
-		message = "Channel invite only";
-		break;
-	default:
-		message = "Unknown error code";
-	}
+  account = empathy_account_settings_get_account (settings);
 
-	DEBUG ("Error during operation %d: %s", operation_id, message);
+  empathy_account_set_enabled_async (account, TRUE, NULL, NULL);
+  empathy_conf_set_bool (empathy_conf_get (),
+      EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+      TRUE);
 }
 
 static void
 use_conn_notify_cb (EmpathyConf *conf,
-		    const gchar *key,
-		    gpointer     user_data)
+    const gchar *key,
+    gpointer     user_data)
 {
-	EmpathyConnectivity *connectivity = user_data;
-	gboolean     use_conn;
+  EmpathyConnectivity *connectivity = user_data;
+  gboolean     use_conn;
 
-	if (empathy_conf_get_bool (conf, key, &use_conn)) {
-		empathy_connectivity_set_use_conn (connectivity, use_conn);
-	}
+  if (empathy_conf_get_bool (conf, key, &use_conn))
+    {
+      empathy_connectivity_set_use_conn (connectivity, use_conn);
+    }
 }
 
 static void
-create_salut_account (void)
+create_salut_account_if_needed (EmpathyConnectionManagers *managers)
 {
-	McProfile  *profile;
-	McProtocol *protocol;
-	gboolean    salut_created = FALSE;
-	EmpathyAccount  *account;
-	EmpathyAccountManager *account_manager;
-	GList      *accounts;
-	EBook      *book;
-	EContact   *contact;
-	gchar      *nickname = NULL;
-	gchar      *first_name = NULL;
-	gchar      *last_name = NULL;
-	gchar      *email = NULL;
-	gchar      *jid = NULL;
-	GError     *error = NULL;
+  EmpathyAccountSettings  *settings;
+  TpConnectionManager *manager;
+  const TpConnectionManagerProtocol *protocol;
+  EBook      *book;
+  EContact   *contact;
+  gchar      *nickname = NULL;
+  gchar      *first_name = NULL;
+  gchar      *last_name = NULL;
+  gchar      *email = NULL;
+  gchar      *jid = NULL;
+  GError     *error = NULL;
 
-	/* Check if we already created a salut account */
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-			       &salut_created);
-	if (salut_created) {
-		return;
-	}
 
-	DEBUG ("Try to add a salut account...");
+  if (!should_create_salut_account ())
+    return;
 
-	/* Check if the salut CM is installed */
-	profile = mc_profile_lookup ("salut");
-	if (!profile) {
-		DEBUG ("No salut profile");
-		return;
-	}
-	protocol = mc_profile_get_protocol (profile);
-	if (!protocol) {
-		DEBUG ("Salut not installed");
-		g_object_unref (profile);
-		return;
-	}
-	g_object_unref (protocol);
+  manager = empathy_connection_managers_get_cm (managers, "salut");
+  if (manager == NULL)
+    {
+      DEBUG ("Salut not installed, not making a salut account");
+      return;
+    }
 
-	/* Get self EContact from EDS */
-	if (!e_book_get_self (&contact, &book, &error)) {
-		DEBUG ("Failed to get self econtact: %s",
-			error ? error->message : "No error given");
-		g_clear_error (&error);
-		g_object_unref (profile);
-		return;
-	}
+  protocol = tp_connection_manager_get_protocol (manager, "local-xmpp");
+  if (protocol == NULL)
+    {
+      DEBUG ("Salut doesn't support local-xmpp!!");
+      return;
+    }
 
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-			       TRUE);
+  DEBUG ("Trying to add a salut account...");
 
-	/* Check if there is already a salut account */
-	accounts = mc_accounts_list_by_profile (profile);
-	if (accounts) {
-		DEBUG ("There is already a salut account");
-		mc_accounts_list_free (accounts);
-		g_object_unref (profile);
-		return;
-	}
+  /* Get self EContact from EDS */
+  if (!e_book_get_self (&contact, &book, &error))
+    {
+      DEBUG ("Failed to get self econtact: %s",
+          error ? error->message : "No error given");
+      g_clear_error (&error);
+      return;
+    }
 
-	account_manager = empathy_account_manager_dup_singleton ();
-	account = empathy_account_manager_create (account_manager, profile);
-	empathy_account_set_display_name (account, _("People nearby"));
-	g_object_unref (account_manager);
+  settings = empathy_account_settings_new ("salut", "local-xmpp",
+      _("People nearby"));
 
-	nickname = e_contact_get (contact, E_CONTACT_NICKNAME);
-	first_name = e_contact_get (contact, E_CONTACT_GIVEN_NAME);
-	last_name = e_contact_get (contact, E_CONTACT_FAMILY_NAME);
-	email = e_contact_get (contact, E_CONTACT_EMAIL_1);
-	jid = e_contact_get (contact, E_CONTACT_IM_JABBER_HOME_1);
+  nickname = e_contact_get (contact, E_CONTACT_NICKNAME);
+  first_name = e_contact_get (contact, E_CONTACT_GIVEN_NAME);
+  last_name = e_contact_get (contact, E_CONTACT_FAMILY_NAME);
+  email = e_contact_get (contact, E_CONTACT_EMAIL_1);
+  jid = e_contact_get (contact, E_CONTACT_IM_JABBER_HOME_1);
 
-	if (!tp_strdiff (nickname, "nickname")) {
-		g_free (nickname);
-		nickname = NULL;
-	}
+  if (!tp_strdiff (nickname, "nickname"))
+    {
+      g_free (nickname);
+      nickname = NULL;
+    }
 
-	DEBUG ("Salut account created:\nnickname=%s\nfirst-name=%s\n"
-		"last-name=%s\nemail=%s\njid=%s\n",
-		nickname, first_name, last_name, email, jid);
+  DEBUG ("Salut account created:\nnickname=%s\nfirst-name=%s\n"
+     "last-name=%s\nemail=%s\njid=%s\n",
+     nickname, first_name, last_name, email, jid);
 
-	empathy_account_set_param_string (account, "nickname", nickname ? nickname : "");
-	empathy_account_set_param_string (account, "first-name", first_name ? first_name : "");
-	empathy_account_set_param_string (account, "last-name", last_name ? last_name : "");
-	empathy_account_set_param_string (account, "email", email ? email : "");
-	empathy_account_set_param_string (account, "jid", jid ? jid : "");
+  empathy_account_settings_set_string (settings,
+      "nickname", nickname ? nickname : "");
+  empathy_account_settings_set_string (settings,
+      "first-name", first_name ? first_name : "");
+  empathy_account_settings_set_string (settings,
+      "last-name", last_name ? last_name : "");
+  empathy_account_settings_set_string (settings, "email", email ? email : "");
+  empathy_account_settings_set_string (settings, "jid", jid ? jid : "");
 
-	g_free (nickname);
-	g_free (first_name);
-	g_free (last_name);
-	g_free (email);
-	g_free (jid);
-	g_object_unref (account);
-	g_object_unref (profile);
-	g_object_unref (contact);
-	g_object_unref (book);
+  empathy_account_settings_apply_async (settings,
+      salut_account_created, NULL);
+
+  g_free (nickname);
+  g_free (first_name);
+  g_free (last_name);
+  g_free (email);
+  g_free (jid);
+  g_object_unref (settings);
+  g_object_unref (contact);
+  g_object_unref (book);
+}
+
+static void
+maybe_show_account_assistant (void)
+{
+  EmpathyAccountManager *manager;
+  manager = empathy_account_manager_dup_singleton ();
+
+  if (empathy_account_manager_get_count (manager) == 0)
+    {
+      GtkWidget * assistant = empathy_account_assistant_new (
+        GTK_WINDOW (empathy_main_window_get ()));
+      gtk_window_present (GTK_WINDOW (assistant));
+    }
+}
+
+static gboolean
+check_connection_managers_ready (EmpathyConnectionManagers *managers)
+{
+  if (empathy_connection_managers_is_ready (managers))
+    {
+      if (!empathy_import_mc4_accounts (managers))
+        maybe_show_account_assistant ();
+
+      create_salut_account_if_needed (managers);
+      g_object_unref (managers);
+      managers = NULL;
+      return TRUE;
+    }
+  return FALSE;
+}
+
+static void
+connection_managers_ready_cb (EmpathyConnectionManagers *managers,
+    GParamSpec *spec,
+    gpointer user_data)
+{
+  check_connection_managers_ready (managers);
 }
 
 static void
 migrate_config_to_xdg_dir (void)
 {
-	gchar *xdg_dir, *old_dir, *xdg_filename, *old_filename;
-	int i;
-	GFile *xdg_file, *old_file;
-	static const gchar* filenames[] = {
-		"geometry.ini",
-		"irc-networks.xml",
-		"chatrooms.xml",
-		"contact-groups.xml",
-		"status-presets.xml",
-		"accels.txt",
-		NULL
-	};
+  gchar *xdg_dir, *old_dir, *xdg_filename, *old_filename;
+  int i;
+  GFile *xdg_file, *old_file;
+  static const gchar* filenames[] = {
+    "geometry.ini",
+    "irc-networks.xml",
+    "chatrooms.xml",
+    "contact-groups.xml",
+    "status-presets.xml",
+    "accels.txt",
+    NULL
+  };
 
-	xdg_dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
-	if (g_file_test (xdg_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
-		/* xdg config dir already exists */
-		g_free (xdg_dir);
-		return;
-	}
+  xdg_dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
+  if (g_file_test (xdg_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+    {
+      /* xdg config dir already exists */
+      g_free (xdg_dir);
+      return;
+    }
 
-	old_dir = g_build_filename (g_get_home_dir (), ".gnome2", PACKAGE_NAME, NULL);
-	if (!g_file_test (old_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
-		/* old config dir didn't exist */
-		g_free (xdg_dir);
-		g_free (old_dir);
-		return;
-	}
+  old_dir = g_build_filename (g_get_home_dir (), ".gnome2",
+      PACKAGE_NAME, NULL);
+  if (!g_file_test (old_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+    {
+      /* old config dir didn't exist */
+      g_free (xdg_dir);
+      g_free (old_dir);
+      return;
+    }
 
-	if (g_mkdir_with_parents (xdg_dir, (S_IRUSR | S_IWUSR | S_IXUSR)) == -1) {
-		DEBUG ("Failed to create configuration directory; aborting migration");
-		g_free (xdg_dir);
-		g_free (old_dir);
-		return;
-	}
+  if (g_mkdir_with_parents (xdg_dir, (S_IRUSR | S_IWUSR | S_IXUSR)) == -1)
+    {
+      DEBUG ("Failed to create configuration directory; aborting migration");
+      g_free (xdg_dir);
+      g_free (old_dir);
+      return;
+    }
 
-	for (i = 0; filenames[i]; i++) {
-		old_filename = g_build_filename (old_dir, filenames[i], NULL);
-		if (!g_file_test (old_filename, G_FILE_TEST_EXISTS)) {
-			g_free (old_filename);
-			continue;
-		}
-		xdg_filename = g_build_filename (xdg_dir, filenames[i], NULL);
-		old_file = g_file_new_for_path (old_filename);
-		xdg_file = g_file_new_for_path (xdg_filename);
-		if (!g_file_move (old_file, xdg_file, G_FILE_COPY_NONE,
-				  NULL, NULL, NULL, NULL)) {
-			DEBUG ("Failed to migrate %s", filenames[i]);
-		}
-		g_free (old_filename);
-		g_free (xdg_filename);
-		g_object_unref (old_file);
-		g_object_unref (xdg_file);
-	}
+  for (i = 0; filenames[i]; i++)
+    {
+      old_filename = g_build_filename (old_dir, filenames[i], NULL);
+      if (!g_file_test (old_filename, G_FILE_TEST_EXISTS))
+        {
+          g_free (old_filename);
+          continue;
+        }
+      xdg_filename = g_build_filename (xdg_dir, filenames[i], NULL);
+      old_file = g_file_new_for_path (old_filename);
+      xdg_file = g_file_new_for_path (xdg_filename);
 
-	g_free (xdg_dir);
-	g_free (old_dir);
+      if (!g_file_move (old_file, xdg_file, G_FILE_COPY_NONE,
+          NULL, NULL, NULL, NULL))
+        DEBUG ("Failed to migrate %s", filenames[i]);
+
+      g_free (old_filename);
+      g_free (xdg_filename);
+      g_object_unref (old_file);
+      g_object_unref (xdg_file);
+    }
+
+  g_free (xdg_dir);
+  g_free (old_dir);
 }
 
-/* The code that handles single-instance and startup notification is
- * copied from gedit.
- *
- * Copyright (C) 2005 - Paolo Maggi
- */
-static void
-on_bacon_message_received (const char *message,
-			   gpointer    data)
+static UniqueResponse
+unique_app_message_cb (UniqueApp *unique_app,
+    gint command,
+    UniqueMessageData *data,
+    guint timestamp,
+    gpointer user_data)
 {
-	GtkWidget *window = data;
-	guint32    startup_timestamp;
+  GtkWidget *window = user_data;
 
-	g_return_if_fail (message != NULL);
+  DEBUG ("Other instance launched, presenting the main window. "
+      "Command=%d, timestamp %u", command, timestamp);
 
-	DEBUG ("Other instance launched, presenting the main window. message='%s'",
-		message);
+  if (command == COMMAND_ACCOUNTS_DIALOG)
+    {
+      empathy_accounts_dialog_show (GTK_WINDOW (window), NULL);
+    }
+  else
+    {
+      gtk_window_set_screen (GTK_WINDOW (window),
+          unique_message_data_get_screen (data));
+      gtk_window_set_startup_id (GTK_WINDOW (window),
+          unique_message_data_get_startup_id (data));
+      gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
+    }
 
-	if (strcmp (message, "accounts") == 0) {
-		/* accounts dialog requested */
-		empathy_accounts_dialog_show (GTK_WINDOW (window), NULL);
-	} else {
-		startup_timestamp = atoi (message);
-
-		/* Set the proper interaction time on the window.
-		 * Fall back to roundtripping to the X server when we
-		 * don't have the timestamp, e.g. when launched from
-		 * terminal. We also need to make sure that the window
-		 * has been realized otherwise it will not work. lame. */
-		if (startup_timestamp == 0) {
-			/* Work if launched from the terminal */
-			DEBUG ("Using X server timestamp as a fallback");
-
-			if (!GTK_WIDGET_REALIZED (window)) {
-				gtk_widget_realize (GTK_WIDGET (window));
-			}
-
-			startup_timestamp = gdk_x11_get_server_time (gtk_widget_get_window (window));
-		}
-
-		gtk_window_present_with_time (GTK_WINDOW (window), startup_timestamp);
-	}
-}
-
-static guint32
-get_startup_timestamp ()
-{
-	const gchar *startup_id_env;
-	gchar       *startup_id = NULL;
-	gchar       *time_str;
-	gchar       *end;
-	gulong       retval = 0;
-
-	/* we don't unset the env, since startup-notification
-	 * may still need it */
-	startup_id_env = g_getenv ("DESKTOP_STARTUP_ID");
-	if (startup_id_env == NULL) {
-		goto out;
-	}
-
-	startup_id = g_strdup (startup_id_env);
-
-	time_str = g_strrstr (startup_id, "_TIME");
-	if (time_str == NULL) {
-		goto out;
-	}
-
-	errno = 0;
-
-	/* Skip past the "_TIME" part */
-	time_str += 5;
-
-	retval = strtoul (time_str, &end, 0);
-	if (end == time_str || errno != 0)
-		retval = 0;
-
- out:
-	g_free (startup_id);
-
-	return (retval > 0) ? retval : 0;
+  return UNIQUE_RESPONSE_OK;
 }
 
 static gboolean
 show_version_cb (const char *option_name,
-                 const char *value,
-                 gpointer data,
-                 GError **error)
+    const char *value,
+    gpointer data,
+    GError **error)
 {
-	g_print ("%s\n", PACKAGE_STRING);
+  g_print ("%s\n", PACKAGE_STRING);
 
-	exit (EXIT_SUCCESS);
+  exit (EXIT_SUCCESS);
 
-	return FALSE;
+  return FALSE;
 }
 
 static void
 new_incoming_transfer_cb (EmpathyFTFactory *factory,
-			  EmpathyFTHandler *handler,
-                          GError *error,
-			  gpointer user_data)
+    EmpathyFTHandler *handler,
+    GError *error,
+    gpointer user_data)
 {
-	if (error) {
-		empathy_ft_manager_display_error (handler, error);
-	} else {
-		empathy_receive_file_with_file_chooser (handler);
-	}
+  if (error)
+    empathy_ft_manager_display_error (handler, error);
+  else
+    empathy_receive_file_with_file_chooser (handler);
 }
 
 static void
 new_ft_handler_cb (EmpathyFTFactory *factory,
-		   EmpathyFTHandler *handler,
-                   GError *error,
-		   gpointer user_data)
+    EmpathyFTHandler *handler,
+    GError *error,
+    gpointer user_data)
 {
-	if (error) {
-		empathy_ft_manager_display_error (handler, error);
-	} else {
-		empathy_ft_manager_add_handler (handler);
-	}
+  if (error)
+    empathy_ft_manager_display_error (handler, error);
+  else
+    empathy_ft_manager_add_handler (handler);
 
-	g_object_unref (handler);
+  g_object_unref (handler);
 }
 
 static void
-new_call_handler_cb (EmpathyCallFactory *factory, EmpathyCallHandler *handler,
-	gboolean outgoing, gpointer user_data)
+new_call_handler_cb (EmpathyCallFactory *factory,
+    EmpathyCallHandler *handler,
+    gboolean outgoing,
+    gpointer user_data)
 {
-	EmpathyCallWindow *window;
+  EmpathyCallWindow *window;
 
-	window = empathy_call_window_new (handler);
-	gtk_widget_show (GTK_WIDGET (window));
+  window = empathy_call_window_new (handler);
+  gtk_widget_show (GTK_WIDGET (window));
 }
 
 #ifdef ENABLE_DEBUG
@@ -522,249 +514,246 @@ default_log_handler (const gchar *log_domain,
     const gchar *message,
     gpointer user_data)
 {
-	g_log_default_handler (log_domain, log_level, message, NULL);
+  g_log_default_handler (log_domain, log_level, message, NULL);
 
-	/* G_LOG_DOMAIN = "empathy". No need to send empathy messages to the
-	 * debugger as they already have in empathy_debug. */
-	if (log_level != G_LOG_LEVEL_DEBUG
-	    || tp_strdiff (log_domain, G_LOG_DOMAIN)) {
-		EmpathyDebugger *dbg;
-		GTimeVal now;
+  /* G_LOG_DOMAIN = "empathy". No need to send empathy messages to the
+   * debugger as they already have in empathy_debug. */
+  if (log_level != G_LOG_LEVEL_DEBUG
+      || tp_strdiff (log_domain, G_LOG_DOMAIN))
+    {
+        EmpathyDebugger *dbg;
+        GTimeVal now;
 
-		dbg = empathy_debugger_get_singleton ();
-		g_get_current_time (&now);
+        dbg = empathy_debugger_get_singleton ();
+        g_get_current_time (&now);
 
-		empathy_debugger_add_message (dbg, &now, log_domain,
-					      log_level, message);
-	}
+        empathy_debugger_add_message (dbg, &now, log_domain,
+                                      log_level, message);
+    }
 }
 #endif /* ENABLE_DEBUG */
+
+static void
+account_manager_ready_cb (EmpathyAccountManager *manager,
+    GParamSpec *spec,
+    gpointer user_data)
+{
+  if (!empathy_account_manager_is_ready (manager))
+    return;
+
+  if (should_create_salut_account () || !empathy_import_mc4_has_imported ())
+    {
+      EmpathyConnectionManagers *managers;
+      managers = empathy_connection_managers_dup_singleton ();
+
+      if (!check_connection_managers_ready (managers))
+        {
+          g_signal_connect (managers, "notify::ready",
+            G_CALLBACK (connection_managers_ready_cb), NULL);
+        }
+    }
+  else
+    {
+      maybe_show_account_assistant ();
+    }
+}
 
 int
 main (int argc, char *argv[])
 {
-	guint32            startup_timestamp;
 #if HAVE_GEOCLUE
-	EmpathyLocationManager *location_manager = NULL;
+  EmpathyLocationManager *location_manager = NULL;
 #endif
-	EmpathyStatusIcon *icon;
-	EmpathyDispatcher *dispatcher;
-	EmpathyLogManager *log_manager;
-	EmpathyChatroomManager *chatroom_manager;
-	EmpathyCallFactory *call_factory;
-	EmpathyFTFactory  *ft_factory;
-	GtkWidget         *window;
-	MissionControl    *mc;
-	EmpathyIdle       *idle;
-	EmpathyConnectivity *connectivity;
-	gboolean           autoconnect = TRUE;
-	gboolean           no_connect = FALSE;
-	gboolean           hide_contact_list = FALSE;
-	gboolean           accounts_dialog = FALSE;
-	GError            *error = NULL;
-	TpDBusDaemon      *dbus_daemon;
-	GOptionEntry       options[] = {
-		{ "no-connect", 'n',
-		  0, G_OPTION_ARG_NONE, &no_connect,
-		  N_("Don't connect on startup"),
-		  NULL },
-		{ "hide-contact-list", 'h',
-		  0, G_OPTION_ARG_NONE, &hide_contact_list,
-		  N_("Don't show the contact list on startup"),
-		  NULL },
-		{ "accounts", 'a',
-		  0, G_OPTION_ARG_NONE, &accounts_dialog,
-		  N_("Show the accounts dialog"),
-		  NULL },
-		{ "version", 'v',
-		  G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb, NULL, NULL },
-		{ NULL }
-	};
+  EmpathyStatusIcon *icon;
+  EmpathyDispatcher *dispatcher;
+  EmpathyAccountManager *account_manager;
+  EmpathyLogManager *log_manager;
+  EmpathyChatroomManager *chatroom_manager;
+  EmpathyCallFactory *call_factory;
+  EmpathyFTFactory  *ft_factory;
+  GtkWidget *window;
+  EmpathyIdle *idle;
+  EmpathyConnectivity *connectivity;
+  gboolean autoconnect = TRUE;
+  gboolean no_connect = FALSE;
+  gboolean hide_contact_list = FALSE;
+  gboolean accounts_dialog = FALSE;
+  GError *error = NULL;
+  TpDBusDaemon *dbus_daemon;
+  UniqueApp *unique_app;
 
-	/* Init */
-	g_thread_init (NULL);
-	empathy_init ();
+  GOptionEntry options[] = {
+      { "no-connect", 'n',
+        0, G_OPTION_ARG_NONE, &no_connect,
+        N_("Don't connect on startup"),
+        NULL },
+      { "hide-contact-list", 'h',
+        0, G_OPTION_ARG_NONE, &hide_contact_list,
+        N_("Don't show the contact list on startup"),
+        NULL },
+      { "accounts", 'a',
+        0, G_OPTION_ARG_NONE, &accounts_dialog,
+        N_("Show the accounts dialog"),
+        NULL },
+      { "version", 'v',
+        G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb,
+        NULL, NULL },
+      { NULL }
+  };
 
-	if (!gtk_init_with_args (&argc, &argv,
-				 N_("- Empathy IM Client"),
-				 options, GETTEXT_PACKAGE, &error)) {
-		g_warning ("Error in empathy init: %s", error->message);
-		return EXIT_FAILURE;
-	}
+  /* Init */
+  g_thread_init (NULL);
+  empathy_init ();
 
-	empathy_gtk_init ();
-	g_set_application_name (_(PACKAGE_NAME));
-	g_setenv ("PULSE_PROP_media.role", "phone", TRUE);
+  if (!gtk_init_with_args (&argc, &argv, N_("- Empathy IM Client"),
+      options, GETTEXT_PACKAGE, &error))
+    {
+      g_warning ("Error in empathy init: %s", error->message);
+      return EXIT_FAILURE;
+    }
 
-	gst_init (&argc, &argv);
+  empathy_gtk_init ();
+  g_set_application_name (_(PACKAGE_NAME));
+  g_setenv ("PULSE_PROP_media.role", "phone", TRUE);
+
+  gst_init (&argc, &argv);
 
 #if HAVE_LIBCHAMPLAIN
-	gtk_clutter_init (&argc, &argv);
+  gtk_clutter_init (&argc, &argv);
 #endif
 
-	gtk_window_set_default_icon_name ("empathy");
-	textdomain (GETTEXT_PACKAGE);
+  gtk_window_set_default_icon_name ("empathy");
+  textdomain (GETTEXT_PACKAGE);
 
 #ifdef ENABLE_DEBUG
-	/* Set up debugger */
-	g_log_set_default_handler (default_log_handler, NULL);
+  /* Set up debugger */
+  g_log_set_default_handler (default_log_handler, NULL);
 #endif
 
-        /* Setting up the bacon connection */
-	startup_timestamp = get_startup_timestamp ();
-	connection = bacon_message_connection_new ("empathy");
-	if (connection != NULL) {
-		if (!bacon_message_connection_get_is_server (connection)) {
-			gchar *message;
+  unique_app = unique_app_new_with_commands ("org.gnome.Empathy",
+      NULL, "accounts_dialog", COMMAND_ACCOUNTS_DIALOG, NULL);
 
-			if (accounts_dialog) {
-				DEBUG ("Showing accounts dialog from existing Empathy instance");
+  if (unique_app_is_running (unique_app))
+    {
+      unique_app_send_message (unique_app, accounts_dialog ?
+          COMMAND_ACCOUNTS_DIALOG : UNIQUE_ACTIVATE, NULL);
 
-				message = g_strdup ("accounts");
+      g_object_unref (unique_app);
+      return EXIT_SUCCESS;
+    }
 
-			} else {
+  /* Take well-known name */
+  dbus_daemon = tp_dbus_daemon_dup (&error);
+  if (error == NULL)
+    {
+      if (!tp_dbus_daemon_request_name (dbus_daemon,
+          "org.gnome.Empathy", TRUE, &error))
+        {
+          DEBUG ("Failed to request well-known name: %s",
+                 error ? error->message : "no message");
+          g_clear_error (&error);
+        }
+      g_object_unref (dbus_daemon);
+    }
+  else
+    {
+      DEBUG ("Failed to dup dbus daemon: %s",
+             error ? error->message : "no message");
+      g_clear_error (&error);
+    }
 
-				DEBUG ("Activating existing instance");
+  if (accounts_dialog)
+    {
+      GtkWidget *dialog;
 
-				message = g_strdup_printf ("%" G_GUINT32_FORMAT,
-							   startup_timestamp);
-			}
+      dialog = empathy_accounts_dialog_show (NULL, NULL);
+      g_signal_connect (dialog, "destroy",
+                        G_CALLBACK (gtk_main_quit), NULL);
 
-			bacon_message_connection_send (connection, message);
+      gtk_main ();
+      return 0;
+    }
 
-			/* We never popup a window, so tell startup-notification
-			 * that we are done. */
-			gdk_notify_startup_complete ();
+  /* Setting up Idle */
+  idle = empathy_idle_dup_singleton ();
+  empathy_idle_set_auto_away (idle, TRUE);
 
-			g_free (message);
-			bacon_message_connection_free (connection);
+  /* Setting up Connectivity */
+  connectivity = empathy_connectivity_dup_singleton ();
+  use_conn_notify_cb (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
+      connectivity);
+  empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
+      use_conn_notify_cb, connectivity);
 
-			return EXIT_SUCCESS;
-		}
-	} else {
-		g_warning ("Cannot create the 'empathy' bacon connection.");
-	}
+  /* Autoconnect */
+  empathy_conf_get_bool (empathy_conf_get (),
+      EMPATHY_PREFS_AUTOCONNECT, &autoconnect);
+  if (autoconnect && !no_connect &&
+      tp_connection_presence_type_cmp_availability
+          (empathy_idle_get_state (idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+            <= 0)
+      empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
-	/* Take well-known name */
-	dbus_daemon = tp_dbus_daemon_dup (&error);
-	if (error == NULL) {
-		if (!tp_dbus_daemon_request_name (dbus_daemon,
-						  "org.gnome.Empathy",
-						  TRUE, &error)) {
-			DEBUG ("Failed to request well-known name: %s",
-			       error ? error->message : "no message");
-			g_clear_error (&error);
-		}
-		g_object_unref (dbus_daemon);
-	} else {
-		DEBUG ("Failed to dup dbus daemon: %s",
-		       error ? error->message : "no message");
-		g_clear_error (&error);
-	}
+  /* account management */
+  account_manager = empathy_account_manager_dup_singleton ();
+  g_signal_connect (account_manager, "notify::ready",
+      G_CALLBACK (account_manager_ready_cb), NULL);
 
-	/* Setting up MC */
-	mc = empathy_mission_control_dup_singleton ();
-	g_signal_connect (mc, "ServiceEnded",
-			  G_CALLBACK (service_ended_cb),
-			  NULL);
-	g_signal_connect (mc, "Error",
-			  G_CALLBACK (operation_error_cb),
-			  NULL);
+  migrate_config_to_xdg_dir ();
 
-	if (accounts_dialog) {
-		GtkWidget *dialog;
+  /* Setting up UI */
+  window = empathy_main_window_show ();
+  icon = empathy_status_icon_new (GTK_WINDOW (window), hide_contact_list);
 
-		dialog = empathy_accounts_dialog_show (NULL, NULL);
-		g_signal_connect (dialog, "destroy",
-				  G_CALLBACK (gtk_main_quit),
-				  NULL);
+  g_signal_connect (unique_app, "message-received",
+      G_CALLBACK (unique_app_message_cb), window);
 
-		gtk_main ();
-		return 0;
-	}
+  /* Handle channels */
+  dispatcher = empathy_dispatcher_dup_singleton ();
+  g_signal_connect (dispatcher, "dispatch", G_CALLBACK (dispatch_cb), NULL);
 
-	/* Setting up Idle */
-	idle = empathy_idle_dup_singleton ();
-	empathy_idle_set_auto_away (idle, TRUE);
+  /* Logging */
+  log_manager = empathy_log_manager_dup_singleton ();
+  empathy_log_manager_observe (log_manager, dispatcher);
 
-	/* Setting up Connectivity */
-	connectivity = empathy_connectivity_dup_singleton ();
-	use_conn_notify_cb (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
-			    connectivity);
-	empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
-				 use_conn_notify_cb, connectivity);
+  chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
+  empathy_chatroom_manager_observe (chatroom_manager, dispatcher);
 
-	/* Autoconnect */
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_AUTOCONNECT,
-			       &autoconnect);
-	if (autoconnect && ! no_connect &&
-		tp_connection_presence_type_cmp_availability (empathy_idle_get_state
-			(idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE) <= 0) {
-		empathy_idle_set_state (idle, MC_PRESENCE_AVAILABLE);
-	}
+  notify_init (_(PACKAGE_NAME));
+  /* Create the call factory */
+  call_factory = empathy_call_factory_initialise ();
+  g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
+      G_CALLBACK (new_call_handler_cb), NULL);
+  /* Create the FT factory */
+  ft_factory = empathy_ft_factory_dup_singleton ();
+  g_signal_connect (ft_factory, "new-ft-handler",
+      G_CALLBACK (new_ft_handler_cb), NULL);
+  g_signal_connect (ft_factory, "new-incoming-transfer",
+      G_CALLBACK (new_incoming_transfer_cb), NULL);
 
-
-	migrate_config_to_xdg_dir ();
-	create_salut_account ();
-
-	/* Setting up UI */
-	window = empathy_main_window_show ();
-	icon = empathy_status_icon_new (GTK_WINDOW (window), hide_contact_list);
-
-	if (connection) {
-		/* We se the callback here because we need window */
-		bacon_message_connection_set_callback (connection,
-						       on_bacon_message_received,
-						       window);
-	}
-
-	/* Handle channels */
-	dispatcher = empathy_dispatcher_dup_singleton ();
-	g_signal_connect (dispatcher, "dispatch", G_CALLBACK (dispatch_cb), NULL);
-
-	/* Logging */
-	log_manager = empathy_log_manager_dup_singleton ();
-	empathy_log_manager_observe (log_manager, dispatcher);
-
-	chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
-	empathy_chatroom_manager_observe (chatroom_manager, dispatcher);
-
-	notify_init (_(PACKAGE_NAME));
-	/* Create the call factory */
-	call_factory = empathy_call_factory_initialise ();
-	g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
-		G_CALLBACK (new_call_handler_cb), NULL);
-	/* Create the FT factory */
-	ft_factory = empathy_ft_factory_dup_singleton ();
-	g_signal_connect (ft_factory, "new-ft-handler",
-		G_CALLBACK (new_ft_handler_cb), NULL);
-	g_signal_connect (ft_factory, "new-incoming-transfer",
-		G_CALLBACK (new_incoming_transfer_cb), NULL);
-
-	/* Location mananger */
+  /* Location mananger */
 #if HAVE_GEOCLUE
-	location_manager = empathy_location_manager_dup_singleton ();
+  location_manager = empathy_location_manager_dup_singleton ();
 #endif
 
-	gtk_main ();
+  gtk_main ();
 
-	empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+  empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 
-	g_object_unref (mc);
-	g_object_unref (idle);
-	g_object_unref (connectivity);
-	g_object_unref (icon);
-	g_object_unref (log_manager);
-	g_object_unref (dispatcher);
-	g_object_unref (chatroom_manager);
+  g_object_unref (idle);
+  g_object_unref (connectivity);
+  g_object_unref (icon);
+  g_object_unref (account_manager);
+  g_object_unref (log_manager);
+  g_object_unref (dispatcher);
+  g_object_unref (chatroom_manager);
 #if HAVE_GEOCLUE
-	g_object_unref (location_manager);
+  g_object_unref (location_manager);
 #endif
-	g_object_unref (ft_factory);
+  g_object_unref (ft_factory);
+  g_object_unref (unique_app);
 
-	notify_uninit ();
+  notify_uninit ();
 
-	return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
-

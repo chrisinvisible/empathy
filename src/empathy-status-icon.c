@@ -314,24 +314,7 @@ status_icon_set_visibility (EmpathyStatusIcon *icon,
 	if (!visible) {
 		empathy_window_iconify (priv->window, priv->icon);
 	} else {
-		GList *accounts;
-		GList *l;
-		gboolean one_enabled = FALSE;
-
 		empathy_window_present (GTK_WINDOW (priv->window), TRUE);
-
-		/* Show the accounts dialog if there is no enabled accounts */
-		accounts = empathy_account_manager_dup_accounts (priv->account_manager);
-		for (l = accounts ; l != NULL ; l = g_list_next (l)) {
-			one_enabled = empathy_account_is_enabled (EMPATHY_ACCOUNT (l->data))
-				|| one_enabled;
-			g_object_unref (l->data);
-		}
-		g_list_free (accounts);
-		if (!one_enabled) {
-			DEBUG ("No enabled account, Showing account dialog");
-			empathy_accounts_dialog_show (GTK_WINDOW (priv->window), NULL);
-		}
 	}
 }
 

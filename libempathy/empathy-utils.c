@@ -227,36 +227,6 @@ empathy_xml_node_find_child_prop_value (xmlNodePtr   node,
 	return found;
 }
 
-guint
-empathy_account_hash (gconstpointer key)
-{
-	g_return_val_if_fail (EMPATHY_IS_ACCOUNT (key), 0);
-
-	return g_str_hash (empathy_account_get_unique_name (EMPATHY_ACCOUNT (key)));
-}
-
-gboolean
-empathy_account_equal (gconstpointer a,
-		       gconstpointer b)
-{
-  return a == b;
-}
-
-MissionControl *
-empathy_mission_control_dup_singleton (void)
-{
-	static MissionControl *mc = NULL;
-
-	if (!mc) {
-		mc = mission_control_new (tp_get_bus ());
-		g_object_add_weak_pointer (G_OBJECT (mc), (gpointer) &mc);
-	} else {
-		g_object_ref (mc);
-	}
-
-	return mc;
-}
-
 const gchar *
 empathy_presence_get_default_message (TpConnectionPresenceType presence)
 {
@@ -378,3 +348,19 @@ empathy_uint_compare (gconstpointer a,
 	return *(guint *) a - *(guint *) b;
 }
 
+gchar *
+empathy_protocol_icon_name (const gchar *protocol)
+{
+  return g_strdup_printf ("im-%s", protocol);
+}
+
+GType
+empathy_type_dbus_ao (void)
+{
+  static GType t = 0;
+
+  if (G_UNLIKELY (t == 0))
+     t = dbus_g_type_get_collection ("GPtrArray", DBUS_TYPE_G_OBJECT_PATH);
+
+  return t;
+}

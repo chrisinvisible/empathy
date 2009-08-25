@@ -18,6 +18,7 @@
 #define CHATROOM_SAMPLE "chatrooms-sample.xml"
 #define CHATROOM_FILE "chatrooms.xml"
 
+#if 0
 static void
 check_chatroom (EmpathyChatroom *chatroom,
                 const gchar *name,
@@ -384,15 +385,18 @@ START_TEST (test_empathy_chatroom_manager_change_chatroom)
   g_object_unref (account_manager);
 }
 END_TEST
+#endif
 
 TCase *
 make_empathy_chatroom_manager_tcase (void)
 {
     TCase *tc = tcase_create ("empathy-chatroom-manager");
+    /*
     tcase_add_test (tc, test_empathy_chatroom_manager_dup_singleton);
     tcase_add_test (tc, test_empathy_chatroom_manager_add);
     tcase_add_test (tc, test_empathy_chatroom_manager_remove);
     tcase_add_test (tc, test_empathy_chatroom_manager_change_favorite);
     tcase_add_test (tc, test_empathy_chatroom_manager_change_chatroom);
+    */
     return tc;
 }

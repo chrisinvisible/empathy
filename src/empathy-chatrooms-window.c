@@ -514,7 +514,7 @@ chatrooms_window_chatroom_added_cb (EmpathyChatroomManager *manager,
 	if (!account) {
 		chatrooms_window_model_add (window, chatroom, FALSE);
 	} else {
-		if (empathy_account_equal (account, empathy_chatroom_get_account (chatroom))) {
+		if (account == empathy_chatroom_get_account (chatroom)) {
 			chatrooms_window_model_add (window, chatroom, FALSE);
 		}
 

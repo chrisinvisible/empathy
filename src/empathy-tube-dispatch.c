@@ -25,6 +25,7 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/proxy-subclass.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>

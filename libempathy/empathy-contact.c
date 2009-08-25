@@ -570,7 +570,8 @@ empathy_contact_get_account (EmpathyContact *contact)
       /* FIXME: This assume the account manager already exists */
       manager = empathy_account_manager_dup_singleton ();
       connection = tp_contact_get_connection (priv->tp_contact);
-      priv->account = empathy_account_manager_get_account (manager, connection);
+      priv->account = empathy_account_manager_get_account_for_connection (
+          manager, connection);
       g_object_ref (priv->account);
       g_object_unref (manager);
     }
@@ -857,27 +858,23 @@ contact_get_avatar_filename (EmpathyContact *contact,
   gchar *avatar_path;
   gchar *avatar_file;
   gchar *token_escaped;
-  gchar *contact_escaped;
 
   if (EMP_STR_EMPTY (empathy_contact_get_id (contact)))
     return NULL;
 
-  contact_escaped = tp_escape_as_identifier (empathy_contact_get_id (contact));
   token_escaped = tp_escape_as_identifier (token);
   account = empathy_contact_get_account (contact);
 
-  /* FIXME: Do not use the account, but proto/cm instead */
   avatar_path = g_build_filename (g_get_user_cache_dir (),
-      PACKAGE_NAME,
+      "telepathy",
       "avatars",
-      empathy_account_get_unique_name (account),
-      contact_escaped,
+      empathy_account_get_connection_manager (account),
+      empathy_account_get_protocol (account),
       NULL);
   g_mkdir_with_parents (avatar_path, 0700);
 
   avatar_file = g_build_filename (avatar_path, token_escaped, NULL);
 
-  g_free (contact_escaped);
   g_free (token_escaped);
   g_free (avatar_path);
 

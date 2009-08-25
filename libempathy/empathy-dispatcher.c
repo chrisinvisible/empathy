@@ -19,6 +19,9 @@
  *          Cosimo Cecchi <cosimo.cecchi@collabora.co.uk>
  */
 
+#define DISPATCHER_BUS_NAME TP_CLIENT_BUS_NAME_BASE "Empathy"
+#define DISPATCHER_OBJECT_PATH TP_CLIENT_OBJECT_PATH_BASE "Empathy"
+
 #include <config.h>
 
 #include <string.h>
@@ -31,8 +34,10 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/gtypes.h>
-
-#include <libmissioncontrol/mission-control.h>
+#include <telepathy-glib/defs.h>
+#include <telepathy-glib/svc-client.h>
+#include <telepathy-glib/svc-generic.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <extensions/extensions.h>
 
@@ -51,7 +56,6 @@
 typedef struct
 {
   EmpathyAccountManager *account_manager;
-  MissionControl *mc;
   /* connection to connection data mapping */
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
@@ -64,7 +68,30 @@ typedef struct
   GHashTable *request_channel_class_async_ids;
 } EmpathyDispatcherPriv;
 
-G_DEFINE_TYPE (EmpathyDispatcher, empathy_dispatcher, G_TYPE_OBJECT);
+static void empathy_dispatcher_client_handler_iface_init (gpointer g_iface,
+  gpointer g_iface_data);
+
+G_DEFINE_TYPE_WITH_CODE (EmpathyDispatcher,
+    empathy_dispatcher,
+    G_TYPE_OBJECT,
+    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_DBUS_PROPERTIES,
+      tp_dbus_properties_mixin_iface_init);
+    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_CLIENT, NULL);
+    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_CLIENT_HANDLER,
+      empathy_dispatcher_client_handler_iface_init);
+  );
+
+static const gchar *empathy_dispatcher_interfaces[] = {
+  TP_IFACE_CLIENT_HANDLER,
+  NULL
+};
+
+enum
+{
+  PROP_INTERFACES = 1,
+  PROP_CHANNEL_FILTER,
+  PROP_CHANNELS
+};
 
 enum
 {
@@ -76,6 +103,10 @@ enum
 
 static guint signals[LAST_SIGNAL];
 static EmpathyDispatcher *dispatcher = NULL;
+
+static void dispatcher_init_connection_if_needed (
+    EmpathyDispatcher *dispatcher,
+    TpConnection *connection);
 
 static GList * empathy_dispatcher_find_channel_classes
   (EmpathyDispatcher *dispatcher, TpConnection *connection,
@@ -563,6 +594,8 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
     NULL
   };
 
+  dispatcher_init_connection_if_needed (dispatcher, connection);
+
   cd = g_hash_table_lookup (priv->connections, connection);
 
   /* Don't bother with channels we have already dispatched or are dispatching
@@ -638,30 +671,11 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
 }
 
 static void
-dispatcher_connection_new_channel_cb (TpConnection *connection,
-                                      const gchar *object_path,
-                                      const gchar  *channel_type,
-                                      guint handle_type,
-                                      guint handle,
-                                      gboolean suppress_handler,
-                                      gpointer user_data,
-                                      GObject *object)
-{
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-
-  /* Empathy heavily abuses surpress handler (don't try this at home), if
-   * surpress handler is true then it is an outgoing channel, which is
-   * requested either by us or some other party (like the megaphone applet).
-   * Otherwise it's an incoming channel */
-  dispatcher_connection_new_channel (dispatcher, connection,
-    object_path, channel_type, handle_type, handle, NULL, !suppress_handler);
-}
-
-static void
-dispatcher_connection_new_channel_with_properties (EmpathyDispatcher *dispatcher,
-                                                   TpConnection *connection,
-                                                   const gchar *object_path,
-                                                   GHashTable *properties)
+dispatcher_connection_new_channel_with_properties (
+    EmpathyDispatcher *dispatcher,
+    TpConnection *connection,
+    const gchar *object_path,
+    GHashTable *properties)
 {
   const gchar *channel_type;
   guint handle_type;
@@ -701,34 +715,11 @@ dispatcher_connection_new_channel_with_properties (EmpathyDispatcher *dispatcher
   if (!valid)
     {
       g_message ("%s had an invalid Requested property", object_path);
-      return;
+      requested = FALSE;
     }
 
   dispatcher_connection_new_channel (dispatcher, connection,
     object_path, channel_type, handle_type, handle, properties, !requested);
-}
-
-static void
-dispatcher_connection_new_channels_cb (TpConnection *connection,
-                                       const GPtrArray *channels,
-                                       gpointer user_data,
-                                       GObject *object)
-{
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-  int i;
-
-  for (i = 0; i < channels->len ; i++)
-    {
-      GValueArray *arr = g_ptr_array_index (channels, i);
-      const gchar *object_path;
-      GHashTable *properties;
-
-      object_path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
-      properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
-
-      dispatcher_connection_new_channel_with_properties (dispatcher,
-        connection, object_path, properties);
-    }
 }
 
 static void
@@ -740,22 +731,12 @@ dispatcher_connection_got_all (TpProxy *proxy,
 {
   EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
-  GPtrArray *channels;
   GPtrArray *requestable_channels;
 
   if (error) {
     DEBUG ("Error: %s", error->message);
     return;
   }
-
-  channels = tp_asv_get_boxed (properties, "Channels",
-    TP_ARRAY_TYPE_CHANNEL_DETAILS_LIST);
-
-  if (channels == NULL)
-    DEBUG ("No Channels property !?! on connection");
-  else
-    dispatcher_connection_new_channels_cb (TP_CONNECTION (proxy),
-      channels, NULL, object);
 
   requestable_channels = tp_asv_get_boxed (properties,
     "RequestableChannelClasses", TP_ARRAY_TYPE_REQUESTABLE_CHANNEL_CLASS_LIST);
@@ -798,38 +779,6 @@ dispatcher_connection_got_all (TpProxy *proxy,
 }
 
 static void
-dispatcher_connection_list_channels_cb (TpConnection    *connection,
-                                        const GPtrArray *channels,
-                                        const GError    *error,
-                                        gpointer         user_data,
-                                        GObject         *dispatcher)
-{
-  int i;
-
-  if (error)
-    {
-      DEBUG ("Error: %s", error->message);
-      return;
-    }
-
-  for (i = 0; i < channels->len; i++)
-    {
-      GValueArray *values;
-
-      values = g_ptr_array_index (channels, i);
-      /* We don't have any extra info, so assume already existing channels are
-       * incoming... */
-      dispatcher_connection_new_channel (EMPATHY_DISPATCHER (dispatcher),
-        connection,
-        g_value_get_boxed (g_value_array_get_nth (values, 0)),
-        g_value_get_string (g_value_array_get_nth (values, 1)),
-        g_value_get_uint (g_value_array_get_nth (values, 2)),
-        g_value_get_uint (g_value_array_get_nth (values, 3)),
-        NULL, TRUE);
-    }
-}
-
-static void
 dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
                                                  const GPtrArray *capabilities,
                                                  const GError    *error,
@@ -841,9 +790,8 @@ dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
 }
 
 static void
-dispatcher_new_connection_cb (EmpathyAccountManager *manager,
-                              TpConnection *connection,
-                              EmpathyDispatcher *dispatcher)
+dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
+    TpConnection *connection)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   GPtrArray   *capabilities;
@@ -863,25 +811,10 @@ dispatcher_new_connection_cb (EmpathyAccountManager *manager,
   if (tp_proxy_has_interface_by_id (TP_PROXY (connection),
       TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS))
     {
-      tp_cli_connection_interface_requests_connect_to_new_channels (connection,
-        dispatcher_connection_new_channels_cb,
-        NULL, NULL, G_OBJECT (dispatcher), NULL);
-
       tp_cli_dbus_properties_call_get_all (connection, -1,
         TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
         dispatcher_connection_got_all,
         NULL, NULL, G_OBJECT (dispatcher));
-    }
-  else
-    {
-      tp_cli_connection_connect_to_new_channel (connection,
-        dispatcher_connection_new_channel_cb,
-        NULL, NULL, G_OBJECT (dispatcher), NULL);
-
-      tp_cli_connection_call_list_channels (connection, -1,
-        dispatcher_connection_list_channels_cb, NULL, NULL,
-        G_OBJECT (dispatcher));
-
     }
 
   /* Advertise VoIP capabilities */
@@ -908,6 +841,14 @@ dispatcher_new_connection_cb (EmpathyAccountManager *manager,
 }
 
 static void
+dispatcher_new_connection_cb (EmpathyAccountManager *manager,
+                              TpConnection *connection,
+                              EmpathyDispatcher *dispatcher)
+{
+  dispatcher_init_connection_if_needed (dispatcher, connection);
+}
+
+static void
 remove_idle_handlers (gpointer key,
                       gpointer value,
                       gpointer user_data)
@@ -924,19 +865,25 @@ dispatcher_constructor (GType type,
                         GObjectConstructParam *construct_params)
 {
   GObject *retval;
+  TpDBusDaemon *dbus;
 
-  if (dispatcher == NULL)
-    {
-      retval = G_OBJECT_CLASS (empathy_dispatcher_parent_class)->constructor
-          (type, n_construct_params, construct_params);
+  if (dispatcher != NULL)
+    return g_object_ref (dispatcher);
 
-      dispatcher = EMPATHY_DISPATCHER (retval);
-      g_object_add_weak_pointer (retval, (gpointer) &dispatcher);
-    }
-  else
-    {
-      retval = g_object_ref (dispatcher);
-    }
+  retval = G_OBJECT_CLASS (empathy_dispatcher_parent_class)->constructor
+    (type, n_construct_params, construct_params);
+
+  dispatcher = EMPATHY_DISPATCHER (retval);
+  g_object_add_weak_pointer (retval, (gpointer) &dispatcher);
+
+  dbus = tp_dbus_daemon_dup (NULL);
+
+  g_assert (tp_dbus_daemon_request_name (dbus,
+    DISPATCHER_BUS_NAME, TRUE, NULL));
+  dbus_g_connection_register_g_object (tp_get_bus (),
+    DISPATCHER_OBJECT_PATH, retval);
+
+  DEBUG ("Registering at '%s'", DISPATCHER_OBJECT_PATH);
 
   return retval;
 }
@@ -983,19 +930,112 @@ dispatcher_finalize (GObject *object)
     }
 
   g_object_unref (priv->account_manager);
-  g_object_unref (priv->mc);
 
   g_hash_table_destroy (priv->connections);
   g_hash_table_destroy (priv->outstanding_classes_requests);
 }
 
 static void
+dispatcher_get_property (GObject *object,
+  guint property_id,
+  GValue *value,
+  GParamSpec *pspec)
+{
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+
+  switch (property_id)
+    {
+      case PROP_INTERFACES:
+        g_value_set_boxed (value, empathy_dispatcher_interfaces);
+        break;
+      case PROP_CHANNEL_FILTER:
+        {
+          GPtrArray *filters = g_ptr_array_new ();
+          GHashTable *filter = g_hash_table_new (NULL, NULL);
+
+          g_ptr_array_add (filters, filter);
+
+          g_value_set_boxed (value, filters);
+          break;
+        }
+      case PROP_CHANNELS:
+        {
+          GPtrArray *accounts;
+          GList *l;
+
+          accounts = g_ptr_array_new ();
+
+          for (l = priv->channels; l != NULL; l = g_list_next (l))
+            {
+              TpProxy *channel = TP_PROXY (l->data);
+
+              g_ptr_array_add (accounts,
+                g_strdup (tp_proxy_get_object_path (channel)));
+            }
+
+          g_value_set_boxed (value, accounts);
+          break;
+        }
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        break;
+    }
+}
+
+static void
 empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GParamSpec *param_spec;
+
+  static TpDBusPropertiesMixinPropImpl client_props[] = {
+    { "Interfaces", "interfaces", NULL },
+    { NULL }
+  };
+  static TpDBusPropertiesMixinPropImpl client_handler_props[] = {
+    { "HandlerChannelFilter", "channel-filter", NULL },
+    { "HandledChannels", "channels", NULL },
+    { NULL }
+  };
+  static TpDBusPropertiesMixinIfaceImpl prop_interfaces[] = {
+    { TP_IFACE_CLIENT,
+      tp_dbus_properties_mixin_getter_gobject_properties,
+      NULL,
+      client_props
+    },
+    { TP_IFACE_CLIENT_HANDLER,
+      tp_dbus_properties_mixin_getter_gobject_properties,
+      NULL,
+      client_handler_props
+    },
+    { NULL }
+  };
 
   object_class->finalize = dispatcher_finalize;
   object_class->constructor = dispatcher_constructor;
+
+  object_class->get_property = dispatcher_get_property;
+
+  param_spec = g_param_spec_boxed ("interfaces", "interfaces",
+    "Available D-Bus interfaces",
+    G_TYPE_STRV,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_INTERFACES, param_spec);
+
+  param_spec = g_param_spec_boxed ("channel-filter", "channel-filter",
+    "Filter for channels this handles",
+    TP_ARRAY_TYPE_CHANNEL_CLASS_LIST,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+    PROP_CHANNEL_FILTER, param_spec);
+
+  param_spec = g_param_spec_boxed ("channels", "channels",
+    "List of channels we're handling",
+    EMPATHY_ARRAY_TYPE_OBJECT,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+    PROP_CHANNELS, param_spec);
 
   signals[OBSERVE] =
     g_signal_new ("observe",
@@ -1027,8 +1067,12 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
       G_TYPE_NONE,
       1, EMPATHY_TYPE_DISPATCH_OPERATION);
 
+
   g_type_class_add_private (object_class, sizeof (EmpathyDispatcherPriv));
 
+  klass->dbus_props_class.interfaces = prop_interfaces;
+  tp_dbus_properties_mixin_class_init (object_class,
+    G_STRUCT_OFFSET (EmpathyDispatcherClass, dbus_props_class));
 }
 
 static void
@@ -1039,7 +1083,6 @@ empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
     EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherPriv);
 
   dispatcher->priv = priv;
-  priv->mc = empathy_mission_control_dup_singleton ();
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
   g_signal_connect (priv->account_manager, "new-connection",
@@ -1752,4 +1795,60 @@ empathy_dispatcher_find_requestable_channel_classes_async
 
   g_hash_table_insert (priv->request_channel_class_async_ids,
     request, GUINT_TO_POINTER (source_id));
+}
+
+static void
+empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
+    const gchar *account_path,
+    const gchar *connection_path,
+    const GPtrArray *channels,
+    const GPtrArray *requests_satisfied,
+    guint64 timestamp,
+    GHashTable *handler_info,
+    DBusGMethodInvocation *context)
+{
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (self);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  int i;
+  EmpathyAccount *account;
+  TpConnection *connection;
+
+  account = empathy_account_manager_ensure_account (priv->account_manager,
+    account_path);
+  g_assert (account != NULL);
+
+  connection = empathy_account_get_connection_for_path (account,
+      connection_path);
+  if (connection == NULL)
+    {
+      GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
+        "Invalid connection argument" };
+      dbus_g_method_return_error (context, &error);
+      return;
+    }
+
+  for (i = 0; i < channels->len ; i++)
+    {
+      GValueArray *arr = g_ptr_array_index (channels, i);
+      const gchar *object_path;
+      GHashTable *properties;
+
+      object_path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
+      properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
+
+      dispatcher_connection_new_channel_with_properties (dispatcher,
+        connection, object_path, properties);
+    }
+
+  tp_svc_client_handler_return_from_handle_channels (context);
+}
+
+static void
+empathy_dispatcher_client_handler_iface_init (gpointer g_iface,
+  gpointer g_iface_data)
+{
+  TpSvcClientHandlerClass *klass = (TpSvcClientHandlerClass *) g_iface;
+
+  tp_svc_client_handler_implement_handle_channels (klass,
+    empathy_dispatcher_handle_channels);
 }

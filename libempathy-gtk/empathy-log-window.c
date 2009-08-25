@@ -419,7 +419,7 @@ log_window_find_populate (EmpathyLogWindow *window,
 
 		date_readable = empathy_log_manager_get_date_readable (hit->date);
 		account_name = empathy_account_get_display_name (hit->account);
-		account_icon = empathy_icon_name_from_account (hit->account);
+		account_icon = empathy_account_get_icon_name (hit->account);
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,
@@ -774,7 +774,7 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 				    COL_CHAT_IS_CHATROOM, &this_is_chatroom,
 				    -1);
 
-		if (empathy_account_equal (this_account, account) &&
+		if (this_account == account &&
 		    strcmp (this_chat_id, chat_id) == 0 &&
 		    this_is_chatroom == is_chatroom) {
 			gtk_tree_selection_select_iter (selection, &iter);

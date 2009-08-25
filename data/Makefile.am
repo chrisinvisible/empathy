@@ -1,25 +1,5 @@
 SUBDIRS = icons
 
-profiledir = $(datadir)/mission-control/profiles
-profile_DATA = 				\
-	aim.profile			\
-	icq.profile			\
-	jabber.profile			\
-	salut.profile			\
-	yahoo.profile			\
-	gtalk.profile			\
-	irc.profile			\
-	msn.profile			\
-	msn-haze.profile		\
-	sofiasip.profile		\
-	ekiga.profile			\
-	fwd.profile			\
-	sipphone.profile		\
-	groupwise.profile		\
-	gadugadu.profile		\
-	qq.profile			\
-	sametime.profile
-
 desktopdir = $(datadir)/applications
 desktop_in_files = empathy.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
@@ -50,7 +30,6 @@ htmldir = $(datadir)/empathy
 html_DATA = Template.html
 
 EXTRA_DIST = 				\
-	$(profile_DATA)			\
 	$(desktop_in_files)		\
 	$(desktop_DATA)			\
 	$(schemas_in_files)		\

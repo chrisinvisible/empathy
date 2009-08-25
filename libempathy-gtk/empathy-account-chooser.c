@@ -29,8 +29,6 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-utils.h>
 
@@ -547,7 +545,7 @@ account_chooser_find_account_foreach (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
-	if (empathy_account_equal (account, data->account)) {
+	if (account == data->account) {
 		data->found = TRUE;
 		*(data->iter) = *iter;
 		g_object_unref (account);
@@ -617,7 +615,7 @@ account_chooser_update_iter (EmpathyAccountChooser *chooser,
 			    COL_ACCOUNT_POINTER, &account,
 			    -1);
 
-	icon_name = empathy_icon_name_from_account (account);
+	icon_name = empathy_account_get_icon_name (account);
 	if (priv->filter) {
 		is_enabled = priv->filter (account, priv->filter_data);
 	}
@@ -690,10 +688,8 @@ account_chooser_set_account_foreach (GtkTreeModel   *model,
 	if ((data->account == NULL) != (account == NULL)) {
 		equal = FALSE;
 	}
-	else if (data->account == account) {
-		equal = TRUE;
-	} else {
-		equal = empathy_account_equal (data->account, account);
+	else {
+		equal = (data->account == account);
 	}
 
 	if (account) {
@@ -779,7 +775,7 @@ empathy_account_chooser_filter_is_connected (EmpathyAccount *account,
 {
 	TpConnectionStatus  status;
 
-	g_object_get (account, "status", &status, NULL);
+	g_object_get (account, "connection-status", &status, NULL);
 
 	return status == TP_CONNECTION_STATUS_CONNECTED;
 }

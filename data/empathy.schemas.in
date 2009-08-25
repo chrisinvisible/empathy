@@ -479,6 +479,20 @@
     </schema>
 
     <schema>
+      <key>/schemas/apps/empathy/accounts/imported_mc4_accounts</key>
+      <applyto>/apps/empathy/accounts/imported_mc4_accounts</applyto>
+      <owner>empathy</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>MC 4 accounts have been imported</short>
+        <long>
+          MC 4 accounts have been imported.
+        </long>
+      </locale>
+    </schema>
+
+    <schema>
       <key>/schemas/apps/empathy/use_conn</key>
       <applyto>/apps/empathy/use_conn</applyto>
       <owner>empathy</owner>

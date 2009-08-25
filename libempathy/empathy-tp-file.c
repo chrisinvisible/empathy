@@ -40,6 +40,7 @@
 #include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #include "empathy-tp-file.h"
 #include "empathy-marshal.h"

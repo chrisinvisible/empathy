@@ -24,7 +24,7 @@
 
 #include <glib.h>
 
-#include <libmissioncontrol/mission-control.h>
+#include <telepathy-glib/enums.h>
 
 G_BEGIN_DECLS
 

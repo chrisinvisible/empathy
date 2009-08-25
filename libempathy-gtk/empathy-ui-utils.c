@@ -38,8 +38,6 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 
-#include <libmissioncontrol/mc-profile.h>
-
 #include "empathy-ui-utils.h"
 #include "empathy-images.h"
 #include "empathy-conf.h"
@@ -180,16 +178,6 @@ empathy_builder_unref_and_keep_widget (GtkBuilder *gui,
 	g_object_unref (gui);
 
 	return widget;
-}
-
-const gchar *
-empathy_icon_name_from_account (EmpathyAccount *account)
-{
-	McProfile *profile;
-
-	profile = empathy_account_get_profile (account);
-
-	return mc_profile_get_icon_name (profile);
 }
 
 const gchar *

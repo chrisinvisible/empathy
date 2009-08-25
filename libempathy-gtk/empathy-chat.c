@@ -203,8 +203,9 @@ chat_new_connection_cb (EmpathyAccountManager *manager,
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	EmpathyAccount *account;
 
-	account = empathy_account_manager_get_account (manager, connection);
-	if (!priv->tp_chat && empathy_account_equal (account, priv->account) &&
+	account = empathy_account_manager_get_account_for_connection (manager,
+		connection);
+	if (!priv->tp_chat && account == priv->account &&
 	    priv->handle_type != TP_HANDLE_TYPE_NONE &&
 	    !EMP_STR_EMPTY (priv->id)) {
 
@@ -1781,7 +1782,8 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 
 	priv->tp_chat = g_object_ref (tp_chat);
 	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	priv->account = empathy_account_manager_get_account (priv->account_manager,
+	priv->account = empathy_account_manager_get_account_for_connection (
+							     priv->account_manager,
 							     connection);
 	g_object_ref (priv->account);
 

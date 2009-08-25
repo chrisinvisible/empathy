@@ -53,7 +53,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-log-window.c			\
 	empathy-new-message-dialog.c		\
 	empathy-presence-chooser.c		\
-	empathy-profile-chooser.c		\
+	empathy-protocol-chooser.c		\
 	empathy-smiley-manager.c		\
 	empathy-sound.c				\
 	empathy-spell.c				\
@@ -70,6 +70,7 @@ libempathy_gtk_la_SOURCES =			\
 
 # do not distribute generated files
 nodist_libempathy_gtk_la_SOURCES =\
+	empathy-account-widget-private.h	\
 	$(BUILT_SOURCES)
 
 libempathy_gtk_la_LIBADD =			\
@@ -115,7 +116,7 @@ libempathy_gtk_headers =			\
 	empathy-log-window.h			\
 	empathy-new-message-dialog.h		\
 	empathy-presence-chooser.h		\
-	empathy-profile-chooser.h		\
+	empathy-protocol-chooser.h		\
 	empathy-smiley-manager.h		\
 	empathy-sound.h				\
 	empathy-spell.h				\
@@ -145,7 +146,7 @@ ui_DATA = 					\
 	empathy-account-widget-jabber.ui	\
 	empathy-account-widget-msn.ui		\
 	empathy-account-widget-sip.ui		\
-	empathy-account-widget-salut.ui		\
+	empathy-account-widget-local-xmpp.ui	\
 	empathy-account-widget-irc.ui		\
 	empathy-account-widget-icq.ui		\
 	empathy-account-widget-yahoo.ui		\

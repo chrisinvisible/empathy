@@ -34,8 +34,6 @@
 
 #include <gtk/gtk.h>
 
-#include <libmissioncontrol/mc-profile.h>
-
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-account.h>
 #include <libempathy/empathy-ft-handler.h>
@@ -59,7 +57,6 @@ GtkWidget     *empathy_builder_unref_and_keep_widget    (GtkBuilder       *gui,
 							 GtkWidget        *root);
 
 /* Pixbufs */
-const gchar * empathy_icon_name_from_account            (EmpathyAccount   *account);
 const gchar * empathy_icon_name_for_presence            (TpConnectionPresenceType  presence);
 const gchar * empathy_icon_name_for_contact             (EmpathyContact   *contact);
 GdkPixbuf *   empathy_pixbuf_from_data                  (gchar            *data,

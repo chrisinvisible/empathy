@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <unistd.h>
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -31,7 +32,7 @@
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
 
-#include "empathy-import-dialog.h"
+#include "empathy-import-utils.h"
 #include "empathy-import-pidgin.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
@@ -114,8 +115,7 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
   /* Search for the map corresponding to setting we are parsing */
   for (i = 0; i < G_N_ELEMENTS (pidgin_cm_map); i++)
     {
-      if (!tp_strdiff (mc_profile_get_protocol_name (data->profile),
-            pidgin_cm_map[i].protocol) &&
+      if (!tp_strdiff (data->protocol, pidgin_cm_map[i].protocol) &&
           !tp_strdiff (tag_name, pidgin_cm_map[i].pidgin_name))
         {
           item = pidgin_cm_map + i;
@@ -199,23 +199,26 @@ empathy_import_pidgin_load (void)
           if (!tp_strdiff ((gchar *) child->name,
               PIDGIN_ACCOUNT_TAG_PROTOCOL))
             {
-              gchar *content;
+              xmlChar *content;
               const gchar *protocol;
 
-              protocol = content = (gchar *) xmlNodeGetContent (child);
+              content = xmlNodeGetContent (child);
+
+              protocol = (const gchar *) content;
 
               if (g_str_has_prefix (protocol, "prpl-"))
                 protocol += 5;
 
               if (!tp_strdiff (protocol, PIDGIN_PROTOCOL_BONJOUR))
-                protocol = "salut";
+                data->protocol = g_strdup ("salut");
               else if (!tp_strdiff (protocol, PIDGIN_PROTOCOL_NOVELL))
-                protocol = "groupwise";
+                data->protocol = g_strdup ("groupwise");
+              else
+                data->protocol = g_strdup (protocol);
 
-              data->profile = mc_profile_lookup (protocol);
-              g_free (content);
+              xmlFree (content);
 
-              if (data->profile == NULL)
+              if (data->protocol == NULL)
                 break;
             }
 
@@ -240,8 +243,7 @@ empathy_import_pidgin_load (void)
                 username = name;
 
              /* Split "username@server" if it is an IRC account */
-             if (strstr (name, "@") && !tp_strdiff (
-                   mc_profile_get_protocol_name (data->profile), "irc"))
+             if (strstr (name, "@") && !tp_strdiff (data->protocol, "irc"))
               {
                 nick_server = g_strsplit (name, "@", 2);
                 username = nick_server[0];
@@ -287,12 +289,11 @@ empathy_import_pidgin_load (void)
 
       /* If we have the needed settings, add the account data to the list,
        * otherwise free the data */
-      if (data->profile != NULL && g_hash_table_size (data->settings) > 0)
+      if (data->protocol != NULL && g_hash_table_size (data->settings) > 0)
         {
           /* Special-case XMPP:
            * http://bugzilla.gnome.org/show_bug.cgi?id=579992 */
-          if (!tp_strdiff (
-                  mc_profile_get_protocol_name (data->profile), "jabber"))
+          if (!tp_strdiff (data->protocol, "jabber"))
             {
               if (EMP_STR_EMPTY (tp_asv_get_string (data->settings, "server")))
                 {

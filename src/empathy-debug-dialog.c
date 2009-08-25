@@ -284,7 +284,6 @@ debug_dialog_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
     EmpathyDebugDialog *debug_dialog)
 {
   EmpathyDebugDialogPriv *priv = GET_PRIV (debug_dialog);
-  MissionControl *mc;
   TpDBusDaemon *dbus;
   GError *error = NULL;
   gchar *bus_name;
@@ -302,13 +301,11 @@ debug_dialog_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
       return;
     }
 
-  mc = empathy_mission_control_dup_singleton ();
   dbus = tp_dbus_daemon_dup (&error);
 
   if (error != NULL)
     {
       DEBUG ("Failed at duping the dbus daemon: %s", error->message);
-      g_object_unref (mc);
     }
 
   gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
@@ -344,7 +341,6 @@ debug_dialog_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
       debug_dialog_get_messages_cb, debug_dialog, NULL, NULL);
 
   g_object_unref (dbus);
-  g_object_unref (mc);
 }
 
 typedef struct

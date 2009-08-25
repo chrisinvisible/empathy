@@ -36,6 +36,9 @@
 #include <glib/gstdio.h>
 #define G_DISABLE_DEPRECATED
 
+#include <telepathy-glib/util.h>
+#include <telepathy-glib/defs.h>
+
 #include "empathy-log-store.h"
 #include "empathy-log-store-empathy.h"
 #include "empathy-log-manager.h"
@@ -105,12 +108,25 @@ empathy_log_store_empathy_init (EmpathyLogStoreEmpathy *self)
 
   self->priv = priv;
 
-  priv->basedir = g_build_path (G_DIR_SEPARATOR_S, g_get_home_dir (),
-      ".gnome2", PACKAGE_NAME, "logs", NULL);
+  priv->basedir = g_build_path (G_DIR_SEPARATOR_S, g_get_user_data_dir (),
+    PACKAGE_NAME, "logs", NULL);
 
   priv->name = g_strdup ("Empathy");
   priv->account_manager = empathy_account_manager_dup_singleton ();
 }
+
+static gchar *
+log_store_account_to_dirname (EmpathyAccount *account)
+{
+  const gchar *name;
+
+  name = empathy_account_get_unique_name (account);
+  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
+    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
+
+  return g_strdelimit (g_strdup (name), "/", '_');
+}
+
 
 static gchar *
 log_store_empathy_get_dir (EmpathyLogStore *self,
@@ -118,20 +134,22 @@ log_store_empathy_get_dir (EmpathyLogStore *self,
                            const gchar *chat_id,
                            gboolean chatroom)
 {
-  const gchar *account_id;
   gchar *basedir;
+  gchar *escaped;
   EmpathyLogStoreEmpathyPriv *priv;
 
   priv = GET_PRIV (self);
 
-  account_id = empathy_account_get_unique_name (account);
+  escaped = log_store_account_to_dirname (account);
 
   if (chatroom)
-    basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, account_id,
+    basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir, escaped,
         LOG_DIR_CHATROOMS, chat_id, NULL);
   else
     basedir = g_build_path (G_DIR_SEPARATOR_S, priv->basedir,
-        account_id, chat_id, NULL);
+        escaped, chat_id, NULL);
+
+  g_free (escaped);
 
   return basedir;
 }
@@ -371,10 +389,11 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 {
   EmpathyLogStoreEmpathyPriv *priv = GET_PRIV (self);
   EmpathyLogSearchHit *hit;
-  const gchar *account_name;
+  gchar *account_name;
   const gchar *end;
   gchar **strv;
   guint len;
+  GList *accounts, *l;
 
   if (!g_str_has_suffix (filename, LOG_FILENAME_SUFFIX))
     return NULL;
@@ -394,8 +413,25 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
   else
     account_name = strv[len-3];
 
-  hit->account = empathy_account_manager_lookup (priv->account_manager,
-    account_name);
+  accounts = empathy_account_manager_dup_accounts (priv->account_manager);
+
+  for (l = accounts; l != NULL; l = g_list_next (l))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      gchar *name;
+
+      name = log_store_account_to_dirname (account);
+      if (!tp_strdiff (name, account_name))
+        {
+          g_assert (hit->account == NULL);
+          hit->account = account;
+          g_object_ref (account);
+        }
+      g_object_unref (account);
+      g_free (name);
+    }
+  g_list_free (accounts);
+
   hit->filename = g_strdup (filename);
 
   g_strfreev (strv);
@@ -428,8 +464,14 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
 
   /* Get the account from the filename */
   hit = log_store_empathy_search_hit_new (self, filename);
-  account = g_object_ref (hit->account);
+
+  if (hit->account != NULL)
+    account = g_object_ref (hit->account);
+
   empathy_log_manager_search_hit_free (hit);
+
+  if (hit->account == NULL)
+    return NULL;
 
   /* Create parser. */
   ctxt = xmlNewParserCtxt ();
@@ -708,8 +750,7 @@ log_store_empathy_get_chats (EmpathyLogStore *self,
 
   priv = GET_PRIV (self);
 
-  dir = g_build_filename (priv->basedir,
-      empathy_account_get_unique_name (account), NULL);
+  dir = log_store_empathy_get_dir (self, account, NULL, FALSE);
 
   hits = log_store_empathy_get_chats_for_dir (self, dir, FALSE);
 

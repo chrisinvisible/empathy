@@ -65,6 +65,7 @@ copy_xml_file (const gchar *orig,
   g_free (buffer);
 }
 
+#if 0
 EmpathyAccount *
 get_test_account (void)
 {
@@ -79,7 +80,8 @@ get_test_account (void)
   if (g_list_length (accounts) == 0)
     {
       /* need to create a test account */
-      account = empathy_account_manager_create (account_manager, profile);
+      account = empathy_account_manager_create_by_profile (account_manager,
+          profile);
     }
   else
     {
@@ -165,3 +167,4 @@ destroy_test_account (EmpathyAccount *account)
   g_object_unref (account);
   g_object_unref (manager);
 }
+#endif

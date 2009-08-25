@@ -28,8 +28,8 @@
 
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
-#include <libmissioncontrol/mc-enum-types.h>
 
+#include "empathy-account-manager.h"
 #include "empathy-idle.h"
 #include "empathy-utils.h"
 #include "empathy-connectivity.h"
@@ -42,7 +42,6 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIdle)
 typedef struct {
-	MissionControl *mc;
 	DBusGProxy     *gs_proxy;
 	EmpathyConnectivity *connectivity;
 	gulong state_change_signal_id;
@@ -58,6 +57,8 @@ typedef struct {
 
 	gboolean        is_idle;
 	guint           ext_away_timeout;
+
+	EmpathyAccountManager *manager;
 } EmpathyIdlePriv;
 
 typedef enum {
@@ -81,9 +82,10 @@ G_DEFINE_TYPE (EmpathyIdle, empathy_idle, G_TYPE_OBJECT);
 static EmpathyIdle * idle_singleton = NULL;
 
 static void
-idle_presence_changed_cb (MissionControl *mc,
+idle_presence_changed_cb (EmpathyAccountManager *manager,
 			  TpConnectionPresenceType state,
 			  gchar          *status,
+			  gchar          *status_message,
 			  EmpathyIdle    *idle)
 {
 	EmpathyIdlePriv *priv;
@@ -94,14 +96,15 @@ idle_presence_changed_cb (MissionControl *mc,
 		/* Assume our presence is offline if MC reports UNSET */
 		state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
 
-	DEBUG ("Presence changed to '%s' (%d)", status, state);
+	DEBUG ("Presence changed to '%s' (%d) \"%s\"", status, state,
+		status_message);
 
 	g_free (priv->status);
 	priv->state = state;
-	priv->status = NULL;
-	if (!EMP_STR_EMPTY (status)) {
-		priv->status = g_strdup (status);
-	}
+	if (EMP_STR_EMPTY (status_message))
+		priv->status = NULL;
+	else
+		priv->status = g_strdup (status_message);
 
 	g_object_notify (G_OBJECT (idle), "state");
 	g_object_notify (G_OBJECT (idle), "status");
@@ -265,7 +268,6 @@ idle_finalize (GObject *object)
 	priv = GET_PRIV (object);
 
 	g_free (priv->status);
-	g_object_unref (priv->mc);
 
 	if (priv->gs_proxy) {
 		g_object_unref (priv->gs_proxy);
@@ -407,67 +409,22 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 	g_type_class_add_private (object_class, sizeof (EmpathyIdlePriv));
 }
 
-static TpConnectionPresenceType
-empathy_idle_get_actual_presence (EmpathyIdle *idle, GError **error)
-{
-	McPresence presence;
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
-
-	presence = mission_control_get_presence_actual (priv->mc, error);
-
-	switch (presence) {
-	case MC_PRESENCE_OFFLINE:
-		return TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-	case MC_PRESENCE_AVAILABLE:
-		return TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
-	case MC_PRESENCE_AWAY:
-		return TP_CONNECTION_PRESENCE_TYPE_AWAY;
-	case MC_PRESENCE_EXTENDED_AWAY:
-		return TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY;
-	case MC_PRESENCE_HIDDEN:
-		return TP_CONNECTION_PRESENCE_TYPE_HIDDEN;
-	case MC_PRESENCE_DO_NOT_DISTURB:
-		return TP_CONNECTION_PRESENCE_TYPE_BUSY;
-	default:
-		return TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-	}
-}
-
 static void
 empathy_idle_init (EmpathyIdle *idle)
 {
-	GError          *error = NULL;
 	EmpathyIdlePriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (idle,
 		EMPATHY_TYPE_IDLE, EmpathyIdlePriv);
 
 	idle->priv = priv;
 	priv->is_idle = FALSE;
-	priv->mc = empathy_mission_control_dup_singleton ();
-	priv->state = empathy_idle_get_actual_presence (idle, &error);
-	if (error) {
-		DEBUG ("Error getting actual presence: %s", error->message);
 
-		/* Fallback to OFFLINE as that's what mission_control_get_presence_actual
-		does. This also ensure to always display the status icon (there is no
-		unset presence icon). */
-		priv->state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
-		g_clear_error (&error);
-	}
-	priv->status = mission_control_get_presence_message_actual (priv->mc, &error);
-	if (error || EMP_STR_EMPTY (priv->status)) {
-		g_free (priv->status);
-		priv->status = NULL;
+	priv->manager = empathy_account_manager_dup_singleton ();
+	priv->state = empathy_account_manager_get_global_presence (priv->manager,
+		NULL, &priv->status);
 
-		if (error) {
-			DEBUG ("Error getting actual presence message: %s", error->message);
-			g_clear_error (&error);
-		}
-	}
 
-	dbus_g_proxy_connect_signal (DBUS_G_PROXY (priv->mc),
-				     "PresenceChanged",
-				     G_CALLBACK (idle_presence_changed_cb),
-				     idle, NULL);
+	g_signal_connect (priv->manager, "global-presence-changed",
+		G_CALLBACK (idle_presence_changed_cb), idle);
 
 	priv->gs_proxy = dbus_g_proxy_new_for_name (tp_get_bus (),
 						    "org.gnome.SessionManager",
@@ -568,36 +525,31 @@ empathy_idle_set_flash_state (EmpathyIdle *idle,
 
 static void
 empathy_idle_do_set_presence (EmpathyIdle *idle,
-			   TpConnectionPresenceType   state,
-			   const gchar *status)
+			   TpConnectionPresenceType status_type,
+			   const gchar *status_message)
 {
-	McPresence mc_state = MC_PRESENCE_UNSET;
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	const gchar *statuses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
+		NULL,
+		"offline",
+		"available",
+		"away",
+		"xa",
+		"hidden",
+		"busy",
+		NULL,
+		NULL,
+	};
+	const gchar *status;
 
-	switch (state) {
-		case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
-			mc_state = MC_PRESENCE_OFFLINE;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_AVAILABLE:
-			mc_state = MC_PRESENCE_AVAILABLE;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_AWAY:
-			mc_state = MC_PRESENCE_AWAY;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
-			mc_state = MC_PRESENCE_EXTENDED_AWAY;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
-			mc_state = MC_PRESENCE_HIDDEN;
-			break;
-		case TP_CONNECTION_PRESENCE_TYPE_BUSY:
-			mc_state = MC_PRESENCE_DO_NOT_DISTURB;
-			break;
-		default:
-			g_assert_not_reached ();
-	}
+	g_assert (status_type > 0 && status_type < NUM_TP_CONNECTION_PRESENCE_TYPES);
 
-	mission_control_set_presence (priv->mc, mc_state, status, NULL, NULL);
+	status = statuses[status_type];
+
+	g_return_if_fail (status != NULL);
+
+	empathy_account_manager_request_global_presence (priv->manager,
+		status_type, status, status_message);
 }
 
 void

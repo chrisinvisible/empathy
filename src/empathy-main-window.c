@@ -49,8 +49,6 @@
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
-#include <libmissioncontrol/mission-control.h>
-
 #include "empathy-accounts-dialog.h"
 #include "empathy-main-window.h"
 #include "ephy-spinner.h"
@@ -81,7 +79,6 @@
 typedef struct {
 	EmpathyContactListView  *list_view;
 	EmpathyContactListStore *list_store;
-	MissionControl          *mc;
 	EmpathyAccountManager   *account_manager;
 	EmpathyChatroomManager  *chatroom_manager;
 	EmpathyEventManager     *event_manager;
@@ -654,7 +651,6 @@ main_window_destroy_cb (GtkWidget         *widget,
 
 	g_list_free (window->actions_connected);
 
-	g_object_unref (window->mc);
 	g_object_unref (window->account_manager);
 	g_object_unref (window->list_store);
 	g_hash_table_destroy (window->errors);
@@ -1252,15 +1248,14 @@ empathy_main_window_show (void)
 	gtk_action_set_visible (show_map_widget, FALSE);
 #endif
 
-	window->mc = empathy_mission_control_dup_singleton ();
 	window->account_manager = empathy_account_manager_dup_singleton ();
 
 	g_signal_connect (window->account_manager,
 			  "account-connection-changed",
 			  G_CALLBACK (main_window_connection_changed_cb), window);
 
-	window->errors = g_hash_table_new_full (empathy_account_hash,
-						empathy_account_equal,
+	window->errors = g_hash_table_new_full (g_direct_hash,
+						g_direct_equal,
 						g_object_unref,
 						NULL);
 
@@ -1408,6 +1403,8 @@ empathy_main_window_show (void)
 						 window);
 
 	main_window_update_status (window, window->account_manager);
+
+	gtk_widget_show (window->window);
 
 	return window->window;
 }

@@ -27,7 +27,6 @@
 #include <gtk/gtk.h>
 #include <bonobo/bonobo-ui-component.h>
 
-#include <libmissioncontrol/mission-control.h>
 #include <libempathy-gtk/empathy-presence-chooser.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 

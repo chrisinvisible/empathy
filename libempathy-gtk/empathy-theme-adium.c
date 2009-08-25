@@ -31,7 +31,6 @@
 
 #include <libempathy/empathy-time.h>
 #include <libempathy/empathy-utils.h>
-#include <libmissioncontrol/mc-profile.h>
 
 #include "empathy-theme-adium.h"
 #include "empathy-smiley-manager.h"
@@ -479,7 +478,6 @@ theme_adium_append_html (EmpathyThemeAdium *theme,
 		} else if (theme_adium_match (&cur, "%time")) {
 			gchar *format = NULL;
 			gchar *end;
-
 			/* Time can be in 2 formats:
 			 * %time% or %time{strftime format}%
 			 * Extract the time format if provided. */
@@ -524,7 +522,6 @@ theme_adium_append_message (EmpathyChatView *view,
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 	EmpathyContact        *sender;
 	EmpathyAccount        *account;
-	McProfile             *account_profile;
 	gchar                 *dup_body = NULL;
 	const gchar           *body;
 	const gchar           *name;
@@ -548,8 +545,7 @@ theme_adium_append_message (EmpathyChatView *view,
 	/* Get information */
 	sender = empathy_message_get_sender (msg);
 	account = empathy_contact_get_account (sender);
-	account_profile = empathy_account_get_profile (account);
-	service_name = mc_profile_get_display_name (account_profile);
+	service_name = empathy_account_get_protocol (account);
 	timestamp = empathy_message_get_timestamp (msg);
 	body = empathy_message_get_body (msg);
 	dup_body = theme_adium_parse_body (theme, body);

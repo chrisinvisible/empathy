@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2006-2007 Imendio AB
  * Copyright (C) 2007-2008 Collabora Ltd.
@@ -22,34 +21,51 @@
  *          Martyn Russell <martyn@imendio.com>
  */
 
-#ifndef __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__
-#define __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__
+#ifndef __EMPATHY_ACCOUNT_WIDGET_H__
+#define __EMPATHY_ACCOUNT_WIDGET_H__
 
 #include <gtk/gtk.h>
 
-#include <libempathy/empathy-account.h>
+#include <libempathy/empathy-account-settings.h>
 
 G_BEGIN_DECLS
 
-void       empathy_account_widget_handle_params     (EmpathyAccount   *account,
-						     GtkBuilder  *gui,
-						     const gchar *first_widget,
-						     ...);
-void       empathy_account_widget_add_forget_button (EmpathyAccount   *account,
-						     GtkBuilder  *gui,
-						     const gchar *button,
-						     const gchar *entry);
-void	   empathy_account_widget_set_default_focus (GtkBuilder  *gui,
-						     const gchar *entry);
-GtkWidget *empathy_account_widget_generic_new       (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_salut_new         (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_msn_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_jabber_new        (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_icq_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_aim_new           (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_yahoo_new         (EmpathyAccount   *account);
-GtkWidget *empathy_account_widget_groupwise_new     (EmpathyAccount   *account);
+#define EMPATHY_TYPE_ACCOUNT_WIDGET empathy_account_widget_get_type()
+#define EMPATHY_ACCOUNT_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST ((obj), EMPATHY_TYPE_ACCOUNT_WIDGET, EmpathyAccountWidget))
+#define EMPATHY_ACCOUNT_WIDGET_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_CAST ((klass), EMPATHY_TYPE_ACCOUNT_WIDGET, EmpathyAccountWidgetClass))
+#define EMPATHY_IS_ACCOUNT_WIDGET(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), EMPATHY_TYPE_ACCOUNT_WIDGET))
+#define EMPATHY_IS_ACCOUNT_WIDGET_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE ((klass), EMPATHY_TYPE_ACCOUNT_WIDGET))
+#define EMPATHY_ACCOUNT_WIDGET_GET_CLASS(obj) \
+  (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_ACCOUNT_WIDGET, EmpathyAccountWidgetClass))
+
+typedef struct _EmpathyAccountWidgetUIDetails EmpathyAccountWidgetUIDetails;
+
+typedef struct {
+  GObject parent;
+
+  EmpathyAccountWidgetUIDetails *ui_details;
+
+  /* private */
+  gpointer priv;
+} EmpathyAccountWidget;
+
+typedef struct {
+  GObjectClass parent_class;
+} EmpathyAccountWidgetClass;
+
+GType empathy_account_widget_get_type (void);
+
+GtkWidget *empathy_account_widget_get_widget (EmpathyAccountWidget *widget);
+
+EmpathyAccountWidget * empathy_account_widget_new_for_protocol (
+    const char *protocol,
+    EmpathyAccountSettings *settings,
+    gboolean simple);
 
 G_END_DECLS
 
-#endif /* __EMPATHY_ACCOUNT_WIDGET_GENERIC_H__ */
+#endif /* __EMPATHY_ACCOUNT_WIDGET_H__ */

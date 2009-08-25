@@ -22,9 +22,9 @@
 #define __EMPATHY_ACCOUNT_H__
 
 #include <glib-object.h>
+#include <gio/gio.h>
 
 #include <telepathy-glib/connection.h>
-#include <libmissioncontrol/mc-profile.h>
 
 G_BEGIN_DECLS
 
@@ -58,36 +58,51 @@ GType empathy_account_get_type (void);
 
 gboolean empathy_account_is_just_connected (EmpathyAccount *account);
 TpConnection *empathy_account_get_connection (EmpathyAccount *account);
+TpConnection *empathy_account_get_connection_for_path (EmpathyAccount *account,
+  const gchar *path);
 const gchar *empathy_account_get_unique_name (EmpathyAccount *account);
 const gchar *empathy_account_get_display_name (EmpathyAccount *account);
 
-void empathy_account_set_enabled (EmpathyAccount *account,
-  gboolean enabled);
+const gchar *empathy_account_get_connection_manager (EmpathyAccount *account);
+const gchar *empathy_account_get_protocol (EmpathyAccount *account);
+const gchar *empathy_account_get_icon_name (EmpathyAccount *account);
+
+void empathy_account_set_enabled_async (EmpathyAccount *account,
+    gboolean enabled, GAsyncReadyCallback callback, gpointer user_data);
+gboolean empathy_account_set_enabled_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error);
+
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
 
-void empathy_account_unset_param (EmpathyAccount *account, const gchar *param);
-gchar *empathy_account_get_param_string (EmpathyAccount *account,
-    const gchar *param);
-gint empathy_account_get_param_int (EmpathyAccount *account,
-    const gchar *param);
-gboolean empathy_account_get_param_boolean (EmpathyAccount *account,
-    const gchar *param);
-
-void empathy_account_set_param_string (EmpathyAccount *account,
-    const gchar *param, const gchar *value);
-void empathy_account_set_param_int (EmpathyAccount *account,
-    const gchar *param, gint value);
-void empathy_account_set_param_boolean (EmpathyAccount *account,
-    const gchar *param, gboolean value);
-
 gboolean empathy_account_is_valid (EmpathyAccount *account);
+gboolean empathy_account_is_ready (EmpathyAccount *account);
 
-void empathy_account_set_display_name (EmpathyAccount *account,
-    const gchar *display_name);
+void empathy_account_update_settings_async (EmpathyAccount *account,
+  GHashTable *parameters, const gchar **unset_parameters,
+  GAsyncReadyCallback callback, gpointer user_data);
 
+gboolean empathy_account_update_settings_finish (EmpathyAccount *account,
+  GAsyncResult *result, GError **error);
 
-/* TODO remove McProfile */
-McProfile *empathy_account_get_profile (EmpathyAccount *account);
+void empathy_account_remove_async (EmpathyAccount *account,
+  GAsyncReadyCallback callback, gpointer user_data);
+gboolean empathy_account_remove_finish (EmpathyAccount *account,
+  GAsyncResult *result, GError **error);
+
+void empathy_account_set_display_name_async (EmpathyAccount *account,
+    const gchar *display_name, GAsyncReadyCallback callback,
+    gpointer user_data);
+gboolean empathy_account_set_display_name_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error);
+
+EmpathyAccount *empathy_account_new (TpDBusDaemon *bus_daemon,
+    const gchar *unique_name);
+
+void empathy_account_request_presence (EmpathyAccount *account,
+  TpConnectionPresenceType type, const gchar *status, const gchar *message);
+
+const GHashTable *empathy_account_get_parameters (EmpathyAccount *account);
+
 
 G_END_DECLS
 

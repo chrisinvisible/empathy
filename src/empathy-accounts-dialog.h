@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2005-2007 Imendio AB
  * Copyright (C) 2007-2008 Collabora Ltd.
@@ -31,8 +30,32 @@
 
 G_BEGIN_DECLS
 
+#define EMPATHY_TYPE_ACCOUNTS_DIALOG empathy_accounts_dialog_get_type()
+#define EMPATHY_ACCOUNTS_DIALOG(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST ((obj), EMPATHY_TYPE_ACCOUNTS_DIALOG, EmpathyAccountsDialog))
+#define EMPATHY_ACCOUNTS_DIALOG_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_CAST ((klass), EMPATHY_TYPE_ACCOUNTS_DIALOG, EmpathyAccountsDialogClass))
+#define EMPATHY_IS_ACCOUNTS_DIALOG(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), EMPATHY_TYPE_ACCOUNTS_DIALOG))
+#define EMPATHY_IS_ACCOUNTS_DIALOG_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE ((klass), EMPATHY_TYPE_ACCOUNTS_DIALOG))
+#define EMPATHY_ACCOUNTS_DIALOG_GET_CLASS(obj) \
+  (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_ACCOUNTS_DIALOG, EmpathyAccountsDialogClass))
+
+typedef struct {
+  GObject parent;
+
+  /* private */
+  gpointer priv;
+} EmpathyAccountsDialog;
+
+typedef struct {
+  GObjectClass parent_class;
+} EmpathyAccountsDialogClass;
+
+GType empathy_accounts_dialog_get_type (void);
 GtkWidget *empathy_accounts_dialog_show (GtkWindow *parent,
-					 EmpathyAccount *selected_account);
+    EmpathyAccount *selected_account);
 
 G_END_DECLS
 

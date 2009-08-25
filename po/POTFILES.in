@@ -4,6 +4,7 @@
 data/empathy.desktop.in.in
 data/empathy.schemas.in
 
+libempathy/empathy-account.c
 libempathy/empathy-ft-handler.c
 libempathy/empathy-tp-contact-list.c
 libempathy/empathy-tp-file.c
@@ -20,7 +21,7 @@ libempathy-gtk/empathy-account-widget-irc.c
 [type: gettext/glade]libempathy-gtk/empathy-account-widget-irc.ui
 [type: gettext/glade]libempathy-gtk/empathy-account-widget-jabber.ui
 [type: gettext/glade]libempathy-gtk/empathy-account-widget-msn.ui
-[type: gettext/glade]libempathy-gtk/empathy-account-widget-salut.ui
+[type: gettext/glade]libempathy-gtk/empathy-account-widget-local-xmpp.ui
 [type: gettext/glade]libempathy-gtk/empathy-account-widget-sip.ui
 [type: gettext/glade]libempathy-gtk/empathy-account-widget-yahoo.ui
 libempathy-gtk/empathy-avatar-chooser.c
@@ -61,6 +62,7 @@ nothere/src/nothere-applet.c
 
 src/empathy.c
 src/empathy-about-dialog.c
+src/empathy-account-assistant.c
 src/empathy-accounts-dialog.c
 [type: gettext/glade]src/empathy-accounts-dialog.ui
 src/empathy-call-window.c
@@ -73,7 +75,10 @@ src/empathy-event-manager.c
 src/empathy-ft-manager.c
 [type: gettext/glade]src/empathy-ft-manager.ui
 src/empathy-import-dialog.c
+src/empathy-import-widget.c
 [type: gettext/glade]src/empathy-import-dialog.ui
+src/empathy-import-widget.c
+src/empathy-import-mc4-accounts.c
 src/empathy-main-window.c
 [type: gettext/glade]src/empathy-main-window.ui
 src/empathy-new-chatroom-dialog.c
