@@ -364,3 +364,33 @@ empathy_type_dbus_ao (void)
 
   return t;
 }
+
+const char *
+empathy_protocol_name_to_display_name (const gchar *proto_name)
+{
+  int i;
+  static struct {
+    const gchar *proto;
+    const gchar *display;
+  } names[] = {
+    { "jabber", "Jabber" },
+    { "msn", "MSN" },
+    { "local-xmpp", N_("People Nearby") },
+    { "irc", "IRC" },
+    { "icq", "ICQ" },
+    { "aim", "AIM" },
+    { "yahoo", "Yahoo!" },
+    { "groupwise", "GroupWise" },
+    { "sip", "SIP" },
+    { NULL, NULL }
+  };
+
+  for (i = 0; names[i].proto != NULL; i++)
+    {
+      if (!tp_strdiff (proto_name, names[i].proto))
+        return names[i].display;
+    }
+
+  return NULL;
+}
+

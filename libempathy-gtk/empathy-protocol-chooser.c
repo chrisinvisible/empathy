@@ -128,35 +128,6 @@ protocol_chooser_sort_func (GtkTreeModel *model,
   return cmp;
 }
 
-static const char *
-protocol_chooser_proto_name_to_display_name (const gchar *proto_name)
-{
-  int i;
-  static struct {
-    const gchar *proto;
-    const gchar *display;
-  } names[] = {
-    { "jabber", "Jabber" },
-    { "msn", "MSN" },
-    { "local-xmpp", N_("People Nearby") },
-    { "irc", "IRC" },
-    { "icq", "ICQ" },
-    { "aim", "AIM" },
-    { "yahoo", "Yahoo!" },
-    { "groupwise", "GroupWise" },
-    { "sip", "SIP" },
-    { NULL, NULL }
-  };
-
-  for (i = 0; names[i].proto != NULL; i++)
-    {
-      if (!tp_strdiff (proto_name, names[i].proto))
-        return names[i].display;
-    }
-
-  return NULL;
-}
-
 static void
 protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
     TpConnectionManager *cm)
@@ -225,7 +196,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           g_strdup (proto->name), g_strdup (cm->name));
 
       icon_name = empathy_protocol_icon_name (proto->name);
-      display_name = protocol_chooser_proto_name_to_display_name (proto->name);
+      display_name = empathy_protocol_name_to_display_name (proto->name);
 
       if (display_name == NULL)
         display_name = proto->name;
