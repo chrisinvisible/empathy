@@ -381,6 +381,8 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
     { "icq", "ICQ", FALSE },
     { "aim", "AIM", FALSE },
     { "yahoo", "Yahoo!", FALSE },
+    { "yahoojp", N_("Yahoo! Japan"), TRUE },
+    { "facebook", N_("Facebook Chat"), TRUE },
     { "groupwise", "GroupWise", FALSE },
     { "sip", "SIP", FALSE },
     { NULL, NULL }
