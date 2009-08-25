@@ -15,6 +15,16 @@ streamingprefs_DATA =		\
 	codec-preferences	\
 	element-properties
 
+servicefiledir = `pkg-config --variable=session_bus_services_dir dbus-1`
+servicefile_in_files = org.freedesktop.Telepathy.Client.Empathy.service.in
+servicefile_DATA = $(servicefile_in_files:.service.in=.service)
+
+org.freedesktop.Telepathy.Client.Empathy.service: org.freedesktop.Telepathy.Client.Empathy.service.in
+	$(QUIET_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
+
+clientfiledir = $(datarootdir)/telepathy/clients
+clientfile_DATA = Empathy.client
+
 if GCONF_SCHEMAS_INSTALL
 install-data-local:
 	if test -z "$(DESTDIR)" ; then \
@@ -35,7 +45,9 @@ EXTRA_DIST = 				\
 	$(schemas_in_files)		\
 	$(schemas_DATA)			\
 	$(streamingprefs_DATA)		\
-	$(html_DATA)
+	$(html_DATA)			\
+	$(clientfile_DATA)		\
+	$(servicefile_in_files)
 
 DISTCLEANFILES = 			\
 	$(desktop_DATA)		\
