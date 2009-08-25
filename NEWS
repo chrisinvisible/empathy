@@ -1,3 +1,97 @@
+NEW in 2.27.91
+==============
+
+ - This version needs mission-control-5 instead of the now deprecated
+   mission-control-4. As result, libmission-control-client and libtelepathy are
+   not required anymore.
+
+ - Empathy can now optionally use ConnMan instead of NetworkManager.
+
+ - libgnome-keyring is now required, it is used to migrate accounts created with
+   MissionControl4, because password were saved in the keyring. Unfortunately
+   the new MissionControl is not using the keyring yet, so your password will be
+   written in plain text.
+
+Bugs fixed:
+ - Fixed #588878, empathy crashes making voip call if it can't set up the pipeline
+ - Fixed #494007, Empathy should conform to the XDG directory specification
+ - Fixed #526360, easy screen sharing
+ - Fixed #571989, "Video preview" menu item doesn't do anything
+ - Fixed #576467, msn profile should use a butterfly icon (Guillaume Desmottes)
+ - Fixed #580134, Displays empty bubbles for messages containing < (Will Thompson)
+ - Fixed #582191, The call windows should have a "redial" button.
+ - Fixed #582810, When we stop receiving video in a call, we should not see the last video frame.
+ - Fixed #585322, Start chat/call from map view
+ - Fixed #585443, drag & drop in contact list should be a move action (Louis-Francis Ratté-Boulianne)
+ - Fixed #585843, Should use stable Geolocation API (Guillaume Desmottes)
+ - Fixed #585844, Should use stable Debug API (Guillaume Desmottes)
+ - Fixed #585867, "Minutes ago" is not updated with time in Map View
+ - Fixed #585993, support global installed themes
+ - Fixed #586401, Clicking URLs don't work in adium's themes
+ - Fixed #586977, Reduced Accuracy mode is wrong
+ - Fixed #587161, cannot reconnect to msn after setting a s̷̸̭͎̯͔̭͙̮͙̹͉̱͔̳̏ͪͧ̏̒̒̐̋͌̊̀ͩͣ́̈ͦͬ̀̚ͅtrange nickname
+ - Fixed #587514, Werror breaks the build
+ - Fixed #587634, Mailto: url mangled if :+letter forms a smiley
+ - Fixed #587706, ALL yahoo contacts appear in contact list w/ no status icon or avatar
+ - Fixed #587803, Invert the variable position for a proper translation (Guillaume Desmottes)
+ - Fixed #588252, Set the codecs preferences/properties from a config file
+ - Fixed #588840, Empathy Crashes when initiating dialog with a buddy (Will Thompson)
+ - Fixed #589091, Feature Share My Desktop for Empathy
+ - Fixed #589335, No way to send a message starting with a slash (Frédéric Péters)
+ - Fixed #589846, wrap text in contact label status
+ - Fixed #590029, IRC help window waiting for something when opened from conversation window (Guillaume Desmottes)
+ - Fixed #590118, Port pidgin account importer to mc5
+ - Fixed #590165, Should use MC5 (Sjoerd Simons)
+ - Fixed #590756, VNC/Vinagre tube Service should a well-known TCP service name (Arnaud Maillet)
+ - Fixed #590924, Set selectable status information
+ - Fixed #590956, Shouldn't show old locations
+ - Fixed #590962, empathy-contact-widget does not follow style guidelines
+ - Fixed #590982, Changing the input volume makes the application crash if the call has been disconnected
+ - Fixed #591058, Should be able to send files from network locations (Guillaume Desmottes)
+ - Fixed #591199, [a11y] Attempting to get default text attributes crashes Empathy
+ - Fixed #591247, Missing status icons (Frédéric Péters)
+ - Fixed #591335, Merge new Mallard help files
+ - Fixed #591468, Crashed when I opened a tab to an IRC contact. (Will Thompson)
+ - Fixed #591543, Switch to clutter-gtk-0.10
+ - Fixed #591582, make distcheck fails on codec-preference (Frédéric Péters)
+ - Fixed #591602, Changed Empathy docs path (Milo Casagrande)
+ - Fixed #591612, Segfault at strcmp opening preferences (Guillaume Desmottes)
+ - Fixed #592005, Unmark for translation: 'gtk-add', 'gtk-remove' and 'gtk-leave-fullscreen'
+ - Fixed #592052, "Call" misses translator comment (Guillaume Desmottes)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated bg Translation (Alexander Shopov)
+ - Updated br Translation (Denis Arnaud)
+ - Updated ca Translation (Gil Forcada)
+ - Updated ca@valencia Translation (Carles Ferrando)
+ - Updated cs Translation (Andre Klapper)
+ - Updated de Translation (Michael Kanis)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin, Mattias Põldaru)
+ - Updated eu Translation (Inaki Larranaga Murgoitio)
+ - Updated fi Translation (Tommi Vainikainen)
+ - Updated ga Translation (Seán de Búrca)
+ - Updated gl Translation (Antón Méixome)
+ - Updated he Translation (Mark Krapivner)
+ - Updated hr Translation (Sjoerd Simons)
+ - Updated kn Translation (Shankar Prasad)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated or Translation (Manoj Kumar Giri)
+ - Updated pt_BR Translation (Rodrigo L. M. Flores)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (ifelix)
+ - Updated te Translation (krishnababu k)
+ - Updated tr Translation (Baris Cicek)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+ - Updated zh_CN Translation (Aron Xu, lyper)
+ - Updated zh_HK Translation (Chao-Hsiung Liao)
+ - Updated zh_TW Translation (Chao-Hsiung Liao)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated es Documentation translation (Jorge González)
+
 NEW in 2.27.5
 ==============
 Bugs fixed:
