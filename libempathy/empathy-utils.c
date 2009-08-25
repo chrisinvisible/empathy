@@ -372,23 +372,29 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
   static struct {
     const gchar *proto;
     const gchar *display;
+    gboolean translated;
   } names[] = {
-    { "jabber", "Jabber" },
-    { "msn", "MSN" },
-    { "local-xmpp", N_("People Nearby") },
-    { "irc", "IRC" },
-    { "icq", "ICQ" },
-    { "aim", "AIM" },
-    { "yahoo", "Yahoo!" },
-    { "groupwise", "GroupWise" },
-    { "sip", "SIP" },
+    { "jabber", "Jabber", FALSE },
+    { "msn", "MSN", FALSE, },
+    { "local-xmpp", N_("People Nearby"), TRUE },
+    { "irc", "IRC", FALSE },
+    { "icq", "ICQ", FALSE },
+    { "aim", "AIM", FALSE },
+    { "yahoo", "Yahoo!", FALSE },
+    { "groupwise", "GroupWise", FALSE },
+    { "sip", "SIP", FALSE },
     { NULL, NULL }
   };
 
   for (i = 0; names[i].proto != NULL; i++)
     {
       if (!tp_strdiff (proto_name, names[i].proto))
-        return names[i].display;
+        {
+          if (names[i].translated)
+            return _(names[i].display);
+          else
+            return names[i].display;
+        }
     }
 
   return NULL;
