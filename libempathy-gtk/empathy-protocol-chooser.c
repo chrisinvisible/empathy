@@ -28,6 +28,8 @@
 
 #include <gtk/gtk.h>
 
+#include <glib/gi18n-lib.h>
+
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-connection-managers.h>
 
