@@ -65,6 +65,8 @@ typedef struct
 
   EmpathyProtocolChooserFilterFunc filter_func;
   gpointer filter_user_data;
+
+  GHashTable *protocols;
 } EmpathyProtocolChooserPriv;
 
 enum
@@ -107,7 +109,7 @@ protocol_chooser_sort_func (GtkTreeModel *model,
 {
   TpConnectionManagerProtocol *protocol_a;
   TpConnectionManagerProtocol *protocol_b;
-  gint cmp;
+  gint cmp = 0;
 
   gtk_tree_model_get (model, iter_a,
       COL_PROTOCOL, &protocol_a,
@@ -168,6 +170,59 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       gchar *icon_name;
       const gchar *display_name;
       gchar *display_name_set;
+      const gchar *saved_cm_name;
+
+      saved_cm_name = g_hash_table_lookup (priv->protocols, proto->name);
+
+      if (!tp_strdiff (cm->name, "haze") && saved_cm_name != NULL &&
+          tp_strdiff (saved_cm_name, "haze"))
+        /* the CM we're adding is a haze implementation of something we already
+         * have; drop it.
+         */
+        continue;
+
+      if (tp_strdiff (cm->name, "haze") && !tp_strdiff (saved_cm_name, "haze"))
+        {
+          GtkTreeIter titer;
+          gboolean valid;
+          const TpConnectionManagerProtocol *haze_proto;
+          TpConnectionManager *haze_cm;
+
+          /* let's this CM replace the haze implementation */
+          valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->store),
+              &titer);
+
+          while (valid)
+            {
+              gtk_tree_model_get (GTK_TREE_MODEL (priv->store), &titer,
+                  COL_PROTOCOL, &haze_proto,
+                  COL_CM, &haze_cm, -1);
+
+              if (haze_cm == NULL)
+                continue;
+
+              if (haze_proto == NULL)
+                {
+                  g_object_unref (haze_cm);
+                  continue;
+                }
+
+              if (!tp_strdiff (haze_cm->name, "haze") &&
+                  !tp_strdiff (haze_proto->name, proto->name))
+                {
+                  gtk_list_store_remove (priv->store, &titer);
+                  g_object_unref (haze_cm);
+                  break;
+                }
+
+              g_object_unref (haze_cm);
+              valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->store),
+                  &titer);
+            }
+        }
+
+      g_hash_table_insert (priv->protocols,
+          g_strdup (proto->name), g_strdup (cm->name));
 
       icon_name = empathy_protocol_icon_name (proto->name);
       display_name = protocol_chooser_proto_name_to_display_name (proto->name);
@@ -175,18 +230,15 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       if (display_name == NULL)
         display_name = proto->name;
 
-      if (!tp_strdiff (cm->name, "haze"))
-        display_name_set = g_strdup_printf ("%s (Haze)", display_name);
-      else
-        display_name_set = g_strdup (display_name);
-
       gtk_list_store_insert_with_values (priv->store,
           NULL, 0,
           COL_ICON, icon_name,
-          COL_LABEL, display_name_set,
+          COL_LABEL, display_name,
           COL_CM, cm,
           COL_PROTOCOL, proto,
           -1);
+
+      
 
       g_free (display_name_set);
       g_free (icon_name);
@@ -277,8 +329,25 @@ empathy_protocol_chooser_init (EmpathyProtocolChooser *protocol_chooser)
 
   priv->dispose_run = FALSE;
   priv->cms = empathy_connection_managers_dup_singleton ();
+  priv->protocols = g_hash_table_new_full (g_str_hash, g_str_equal,
+      g_free, g_free);
 
   protocol_chooser->priv = priv;
+}
+
+static void
+protocol_chooser_finalize (GObject *object)
+{
+  EmpathyProtocolChooser *protocol_chooser = EMPATHY_PROTOCOL_CHOOSER (object);
+  EmpathyProtocolChooserPriv *priv = GET_PRIV (protocol_chooser);
+
+  if (priv->protocols)
+    {
+      g_hash_table_destroy (priv->protocols);
+      priv->protocols = NULL;
+    }
+
+  (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->finalize) (object);
 }
 
 static void
@@ -314,6 +383,7 @@ empathy_protocol_chooser_class_init (EmpathyProtocolChooserClass *klass)
 
   object_class->constructed = protocol_chooser_constructed;
   object_class->dispose = protocol_chooser_dispose;
+  object_class->finalize = protocol_chooser_finalize;
 
   g_type_class_add_private (object_class, sizeof (EmpathyProtocolChooserPriv));
 }
