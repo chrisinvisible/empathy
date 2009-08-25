@@ -15,7 +15,7 @@ streamingprefs_DATA =		\
 	codec-preferences	\
 	element-properties
 
-servicefiledir = `pkg-config --variable=session_bus_services_dir dbus-1`
+servicefiledir = $(datadir)/dbus-1/services
 servicefile_in_files = org.freedesktop.Telepathy.Client.Empathy.service.in
 servicefile_DATA = $(servicefile_in_files:.service.in=.service)
 
