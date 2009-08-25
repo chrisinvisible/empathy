@@ -138,7 +138,7 @@ protocol_chooser_proto_name_to_display_name (const gchar *proto_name)
   } names[] = {
     { "jabber", "Jabber" },
     { "msn", "MSN" },
-    { "local-xmpp", "Salut" },
+    { "local-xmpp", N_("People Nearby") },
     { "irc", "IRC" },
     { "icq", "ICQ" },
     { "aim", "AIM" },
