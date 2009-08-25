@@ -49,7 +49,8 @@ EXTRA_DIST = 				\
 	$(clientfile_DATA)		\
 	$(servicefile_in_files)
 
-DISTCLEANFILES = 			\
+DISTCLEANFILES = 		\
 	$(desktop_DATA)		\
-	$(schemas_DATA)
+	$(schemas_DATA)		\
+	$(servicefile_DATA)
 
