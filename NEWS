@@ -10,7 +10,10 @@ NEW in 2.27.91
  - libgnome-keyring is now required, it is used to migrate accounts created with
    MissionControl4, because password were saved in the keyring. Unfortunately
    the new MissionControl is not using the keyring yet, so your password will be
-   written in plain text.
+   written in plain text. Keyring support will soon be added in a future
+   MissionControl-5 release.
+
+ - Empathy now uses libunique to prevent running it twice.
 
 Bugs fixed:
  - Fixed #588878, empathy crashes making voip call if it can't set up the pipeline
