@@ -608,15 +608,19 @@ static void
 empathy_account_free_connection (EmpathyAccount *account)
 {
   EmpathyAccountPriv *priv = GET_PRIV (account);
+  TpConnection *conn;
+
+  if (priv->connection == NULL)
+    return;
+
+  conn = priv->connection;
+  priv->connection = NULL;
 
   if (priv->connection_invalidated_id != 0)
-    g_signal_handler_disconnect (priv->connection,
-        priv->connection_invalidated_id);
+    g_signal_handler_disconnect (conn, priv->connection_invalidated_id);
   priv->connection_invalidated_id = 0;
 
-  if (priv->connection != NULL)
-    g_object_unref (priv->connection);
-  priv->connection = NULL;
+  g_object_unref (conn);
 }
 
 void
@@ -853,12 +857,7 @@ _empathy_account_connection_invalidated_cb (TpProxy *self,
 
   g_assert (priv->connection == TP_CONNECTION (self));
 
-  g_signal_handler_disconnect (priv->connection,
-    priv->connection_invalidated_id);
-  priv->connection_invalidated_id = 0;
-
-  g_object_unref (priv->connection);
-  priv->connection = NULL;
+  empathy_account_free_connection (account);
 
   g_object_notify (G_OBJECT (account), "connection");
 }
@@ -878,15 +877,7 @@ _empathy_account_set_connection (EmpathyAccount *account,
         return;
     }
 
-  if (priv->connection != NULL)
-    {
-      g_signal_handler_disconnect (priv->connection,
-        priv->connection_invalidated_id);
-      priv->connection_invalidated_id = 0;
-
-      g_object_unref (priv->connection);
-      priv->connection = NULL;
-    }
+  empathy_account_free_connection (account);
 
   if (tp_strdiff ("/", path))
     {
