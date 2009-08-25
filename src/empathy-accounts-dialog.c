@@ -1081,19 +1081,24 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
   EmpathyAccountSettings *settings;
-  gchar     *str;
+  gchar *str;
+  const gchar *display_name;
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   cm = empathy_protocol_chooser_dup_selected (
       EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto);
+  display_name = empathy_protocol_name_to_display_name (proto->name);
+
+  if (display_name == NULL)
+    display_name = proto->name;
 
   /* Create account */
-  /* To translator: %s is the protocol name */
-  str = g_strdup_printf (_("New %s account"),
-      empathy_protocol_name_to_display_name (proto->name));
-
+  /* To translator: %s is the name of the protocol, such as "Google Talk" or
+   * "Yahoo!
+   */
+  str = g_strdup_printf (_("New %s account"), display_name);
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 
   g_free (str);
