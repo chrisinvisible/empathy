@@ -142,7 +142,6 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       const TpConnectionManagerProtocol *proto = *iter;
       gchar *icon_name;
       const gchar *display_name;
-      gchar *display_name_set;
       const gchar *saved_cm_name;
 
       saved_cm_name = g_hash_table_lookup (priv->protocols, proto->name);
@@ -211,9 +210,6 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           COL_PROTOCOL, proto,
           -1);
 
-      
-
-      g_free (display_name_set);
       g_free (icon_name);
     }
 }
