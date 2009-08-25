@@ -240,7 +240,8 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_type),
       icon_name, GTK_ICON_SIZE_DIALOG);
   gtk_widget_set_tooltip_text (priv->image_type,
-      empathy_account_settings_get_protocol (settings));
+      empathy_protocol_name_to_display_name
+      (empathy_account_settings_get_protocol (settings)));
 
   accounts_dialog_update_name_label (dialog,
       empathy_account_settings_get_display_name (settings));
@@ -1090,7 +1091,8 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   /* Create account */
   /* To translator: %s is the protocol name */
-  str = g_strdup_printf (_("New %s account"), proto->name);
+  str = g_strdup_printf (_("New %s account"),
+      empathy_protocol_name_to_display_name (proto->name));
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 
