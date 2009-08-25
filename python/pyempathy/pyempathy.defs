@@ -1,10 +1,24 @@
 ;; -*- scheme -*-
 ; object definitions ...
+(define-object Account
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyAccount")
+  (gtype-id "EMPATHY_TYPE_ACCOUNT")
+)
+
 (define-object AccountManager
   (in-module "Empathy")
   (parent "GObject")
   (c-name "EmpathyAccountManager")
   (gtype-id "EMPATHY_TYPE_ACCOUNT_MANAGER")
+)
+
+(define-object AccountSettings
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyAccountSettings")
+  (gtype-id "EMPATHY_TYPE_ACCOUNT_SETTINGS")
 )
 
 (define-object CallFactory
@@ -35,6 +49,20 @@
   (gtype-id "EMPATHY_TYPE_CHATROOM_MANAGER")
 )
 
+(define-object ConnectionManagers
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyConnectionManagers")
+  (gtype-id "EMPATHY_TYPE_CONNECTION_MANAGERS")
+)
+
+(define-object Connectivity
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyConnectivity")
+  (gtype-id "EMPATHY_TYPE_CONNECTIVITY")
+)
+
 (define-object Contact
   (in-module "Empathy")
   (parent "GObject")
@@ -61,6 +89,13 @@
   (parent "GObject")
   (c-name "EmpathyContactMonitor")
   (gtype-id "EMPATHY_TYPE_CONTACT_MONITOR")
+)
+
+(define-object Debugger
+  (in-module "Empathy")
+  (parent "GObject")
+  (c-name "EmpathyDebugger")
+  (gtype-id "EMPATHY_TYPE_DEBUGGER")
 )
 
 (define-object DispatchOperation
@@ -234,6 +269,7 @@
     '("other" "EMPATHY_DEBUG_OTHER")
     '("share-desktop" "EMPATHY_DEBUG_SHARE_DESKTOP")
     '("connectivity" "EMPATHY_DEBUG_CONNECTIVITY")
+    '("import-mc4-accounts" "EMPATHY_DEBUG_IMPORT_MC4_ACCOUNTS")
   )
 )
 
@@ -279,6 +315,475 @@
 )
 
 
+;; From empathy-account-settings.h
+
+(define-function account_settings_get_type
+  (c-name "empathy_account_settings_get_type")
+  (return-type "GType")
+)
+
+(define-function account_settings_new
+  (c-name "empathy_account_settings_new")
+  (is-constructor-of "EmpathyAccountSettings")
+  (return-type "EmpathyAccountSettings*")
+  (parameters
+    '("const-gchar*" "connection_manager")
+    '("const-gchar*" "protocol")
+    '("const-char*" "display_name")
+  )
+)
+
+(define-method settings_new_for_account
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_settings_new_for_account")
+  (return-type "EmpathyAccountSettings*")
+)
+
+(define-method is_ready
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_is_ready")
+  (return-type "gboolean")
+)
+
+(define-method get_cm
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_cm")
+  (return-type "const-gchar*")
+)
+
+(define-method get_protocol
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_protocol")
+  (return-type "const-gchar*")
+)
+
+(define-method get_account
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_account")
+  (return-type "EmpathyAccount*")
+)
+
+(define-method has_account
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_has_account")
+  (return-type "gboolean")
+  (parameters
+    '("EmpathyAccount*" "account")
+  )
+)
+
+(define-method get_tp_params
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_tp_params")
+  (return-type "TpConnectionManagerParam*")
+)
+
+(define-method unset
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_unset")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method discard_changes
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_discard_changes")
+  (return-type "none")
+)
+
+(define-method get
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get")
+  (return-type "const-GValue*")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_dbus_signature
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_dbus_signature")
+  (return-type "const-gchar*")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_default
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_default")
+  (return-type "const-GValue*")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_string
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_string")
+  (return-type "const-gchar*")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_int32
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_int32")
+  (return-type "gint32")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_int64
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_int64")
+  (return-type "gint64")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_uint32
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_uint32")
+  (return-type "guint32")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_uint64
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_uint64")
+  (return-type "guint64")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method get_boolean
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_boolean")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "param")
+  )
+)
+
+(define-method set_string
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_string")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("const-gchar*" "value")
+  )
+)
+
+(define-method set_int32
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_int32")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("gint32" "value")
+  )
+)
+
+(define-method set_int64
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_int64")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("gint64" "value")
+  )
+)
+
+(define-method set_uint32
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_uint32")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("guint32" "value")
+  )
+)
+
+(define-method set_uint64
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_uint64")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("guint64" "value")
+  )
+)
+
+(define-method set_boolean
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_boolean")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "param")
+    '("gboolean" "value")
+  )
+)
+
+(define-method get_icon_name
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_icon_name")
+  (return-type "gchar*")
+)
+
+(define-method get_display_name
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_get_display_name")
+  (return-type "const-gchar*")
+)
+
+(define-method set_display_name_async
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_display_name_async")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "name")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method set_display_name_finish
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_display_name_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method apply_async
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_apply_async")
+  (return-type "none")
+  (parameters
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method apply_finish
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_apply_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method is_valid
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_is_valid")
+  (return-type "gboolean")
+)
+
+
+
+;; From empathy-account.h
+
+(define-function account_get_type
+  (c-name "empathy_account_get_type")
+  (return-type "GType")
+)
+
+(define-method is_just_connected
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_is_just_connected")
+  (return-type "gboolean")
+)
+
+(define-method get_connection
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_connection")
+  (return-type "TpConnection*")
+)
+
+(define-method get_connection_for_path
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_connection_for_path")
+  (return-type "TpConnection*")
+  (parameters
+    '("const-gchar*" "path")
+  )
+)
+
+(define-method get_unique_name
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_unique_name")
+  (return-type "const-gchar*")
+)
+
+(define-method get_display_name
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_display_name")
+  (return-type "const-gchar*")
+)
+
+(define-method get_connection_manager
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_connection_manager")
+  (return-type "const-gchar*")
+)
+
+(define-method get_protocol
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_protocol")
+  (return-type "const-gchar*")
+)
+
+(define-method get_icon_name
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_icon_name")
+  (return-type "const-gchar*")
+)
+
+(define-method set_enabled_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_enabled_async")
+  (return-type "none")
+  (parameters
+    '("gboolean" "enabled")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method set_enabled_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_enabled_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method is_enabled
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_is_enabled")
+  (return-type "gboolean")
+)
+
+(define-method is_valid
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_is_valid")
+  (return-type "gboolean")
+)
+
+(define-method is_ready
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_is_ready")
+  (return-type "gboolean")
+)
+
+(define-method update_settings_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_update_settings_async")
+  (return-type "none")
+  (parameters
+    '("GHashTable*" "parameters")
+    '("const-gchar**" "unset_parameters")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method update_settings_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_update_settings_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method remove_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_remove_async")
+  (return-type "none")
+  (parameters
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method remove_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_remove_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_display_name_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_display_name_async")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "display_name")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method set_display_name_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_display_name_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-function account_new
+  (c-name "empathy_account_new")
+  (is-constructor-of "EmpathyAccount")
+  (return-type "EmpathyAccount*")
+  (parameters
+    '("TpDBusDaemon*" "bus_daemon")
+    '("const-gchar*" "unique_name")
+  )
+)
+
+(define-method request_presence
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_request_presence")
+  (return-type "none")
+  (parameters
+    '("TpConnectionPresenceType" "type")
+    '("const-gchar*" "status")
+    '("const-gchar*" "message")
+  )
+)
+
+(define-method get_parameters
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_get_parameters")
+  (return-type "const-GHashTable*")
+)
+
+
+
 ;; From empathy-account-manager.h
 
 (define-function account_manager_get_type
@@ -321,6 +826,15 @@
   (return-type "EmpathyAccount*")
   (parameters
     '("TpConnection*" "connection")
+  )
+)
+
+(define-method ensure_account
+  (of-object "EmpathyAccountManager")
+  (c-name "empathy_account_manager_ensure_account")
+  (return-type "EmpathyAccount*")
+  (parameters
+    '("const-gchar*" "unique_name")
   )
 )
 
@@ -778,6 +1292,41 @@
   (parameters
     '("GstBus*" "bus")
     '("GstMessage*" "message")
+  )
+)
+
+
+
+;; From empathy-connectivity.h
+
+(define-function connectivity_get_type
+  (c-name "empathy_connectivity_get_type")
+  (return-type "GType")
+)
+
+(define-function connectivity_dup_singleton
+  (c-name "empathy_connectivity_dup_singleton")
+  (return-type "EmpathyConnectivity*")
+)
+
+(define-method is_online
+  (of-object "EmpathyConnectivity")
+  (c-name "empathy_connectivity_is_online")
+  (return-type "gboolean")
+)
+
+(define-method get_use_conn
+  (of-object "EmpathyConnectivity")
+  (c-name "empathy_connectivity_get_use_conn")
+  (return-type "gboolean")
+)
+
+(define-method set_use_conn
+  (of-object "EmpathyConnectivity")
+  (c-name "empathy_connectivity_set_use_conn")
+  (return-type "none")
+  (parameters
+    '("gboolean" "use_conn")
   )
 )
 
@@ -1281,6 +1830,53 @@
 
 
 
+;; From empathy-connection-managers.h
+
+(define-function connection_managers_get_type
+  (c-name "empathy_connection_managers_get_type")
+  (return-type "GType")
+)
+
+(define-function connection_managers_dup_singleton
+  (c-name "empathy_connection_managers_dup_singleton")
+  (return-type "EmpathyConnectionManagers*")
+)
+
+(define-method is_ready
+  (of-object "EmpathyConnectionManagers")
+  (c-name "empathy_connection_managers_is_ready")
+  (return-type "gboolean")
+)
+
+(define-method update
+  (of-object "EmpathyConnectionManagers")
+  (c-name "empathy_connection_managers_update")
+  (return-type "none")
+)
+
+(define-method get_cms
+  (of-object "EmpathyConnectionManagers")
+  (c-name "empathy_connection_managers_get_cms")
+  (return-type "GList*")
+)
+
+(define-method get_cms_num
+  (of-object "EmpathyConnectionManagers")
+  (c-name "empathy_connection_managers_get_cms_num")
+  (return-type "guint")
+)
+
+(define-method get_cm
+  (of-object "EmpathyConnectionManagers")
+  (c-name "empathy_connection_managers_get_cm")
+  (return-type "TpConnectionManager*")
+  (parameters
+    '("const-gchar*" "cm")
+  )
+)
+
+
+
 ;; From empathy-debug.h
 
 (define-function debug_flag_is_set
@@ -1311,6 +1907,32 @@
   (return-type "none")
   (parameters
     '("const-gchar*" "flags_string")
+  )
+)
+
+
+
+;; From empathy-debugger.h
+
+(define-function debugger_get_type
+  (c-name "empathy_debugger_get_type")
+  (return-type "GType")
+)
+
+(define-function debugger_get_singleton
+  (c-name "empathy_debugger_get_singleton")
+  (return-type "EmpathyDebugger*")
+)
+
+(define-method add_message
+  (of-object "EmpathyDebugger")
+  (c-name "empathy_debugger_add_message")
+  (return-type "none")
+  (parameters
+    '("GTimeVal*" "timestamp")
+    '("const-gchar*" "domain")
+    '("GLogLevelFlags" "level")
+    '("const-gchar*" "string")
   )
 )
 
@@ -1874,6 +2496,10 @@
     '("gboolean" "ssl")
   )
 )
+
+
+
+;; From empathy-location.h
 
 
 
@@ -3015,6 +3641,14 @@
   (return-type "gchar*")
   (parameters
     '("const-gchar*" "protocol")
+  )
+)
+
+(define-function protocol_name_to_display_name
+  (c-name "empathy_protocol_name_to_display_name")
+  (return-type "const-gchar*")
+  (parameters
+    '("const-gchar*" "proto_name")
   )
 )
 

@@ -5,17 +5,22 @@
 cd ../libempathy
 python /usr/share/pygobject/2.0/codegen/h2def.py	\
         -m empathy				\
+	empathy-account-settings.h		\
+	empathy-account.h			\
 	empathy-account-manager.h		\
 	empathy-chatroom.h			\
 	empathy-chatroom-manager.h		\
 	empathy-call-factory.h			\
 	empathy-call-handler.h			\
+	empathy-connectivity.h			\
 	empathy-contact.h			\
 	empathy-contact-groups.h		\
 	empathy-contact-list.h			\
 	empathy-contact-manager.h		\
 	empathy-contact-monitor.h		\
+	empathy-connection-managers.h		\
 	empathy-debug.h				\
+	empathy-debugger.h			\
 	empathy-dispatcher.h			\
 	empathy-dispatch-operation.h		\
 	empathy-ft-factory.h			\
@@ -24,6 +29,7 @@ python /usr/share/pygobject/2.0/codegen/h2def.py	\
 	empathy-irc-network.h			\
 	empathy-irc-network-manager.h		\
 	empathy-irc-server.h			\
+	empathy-location.h			\
 	empathy-log-manager.h			\
 	empathy-log-store.h			\
 	empathy-log-store-empathy.h		\
@@ -62,6 +68,7 @@ python /usr/share/pygobject/2.0/codegen/h2def.py	\
 	empathy-contact-list-store.h		\
 	empathy-contact-list-view.h		\
 	empathy-contact-menu.h			\
+	empathy-share-my-desktop.h		\
 	empathy-contact-selector.h		\
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
@@ -76,10 +83,13 @@ python /usr/share/pygobject/2.0/codegen/h2def.py	\
 	empathy-presence-chooser.h		\
 	empathy-protocol-chooser.h		\
 	empathy-smiley-manager.h		\
+	empathy-sound.h				\
 	empathy-spell.h				\
+	empathy-status-preset-dialog.h		\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\
+	empathy-kludge-label.h			\
 	empathy-ui-utils.h			\
  > ../python/pyempathygtk/pyempathygtk.defs
 

@@ -118,6 +118,13 @@
   (gtype-id "EMPATHY_TYPE_GST_VIDEO_SRC")
 )
 
+(define-object KludgeLabel
+  (in-module "Empathy")
+  (parent "GtkLabel")
+  (c-name "EmpathyKludgeLabel")
+  (gtype-id "EMPATHY_TYPE_KLUDGE_LABEL")
+)
+
 (define-object PresenceChooser
   (in-module "Empathy")
   (parent "GtkComboBoxEntry")
@@ -137,6 +144,13 @@
   (parent "GObject")
   (c-name "EmpathySmileyManager")
   (gtype-id "EMPATHY_TYPE_SMILEY_MANAGER")
+)
+
+(define-object StatusPresetDialog
+  (in-module "Empathy")
+  (parent "GtkDialog")
+  (c-name "EmpathyStatusPresetDialog")
+  (gtype-id "EMPATHY_TYPE_STATUS_PRESET_DIALOG")
 )
 
 (define-object ThemeBoxes
@@ -259,6 +273,25 @@
     '("empathy-gst-video-src-channel-brightness" "EMPATHY_GST_VIDEO_SRC_CHANNEL_BRIGHTNESS")
     '("empathy-gst-video-src-channel-gamma" "EMPATHY_GST_VIDEO_SRC_CHANNEL_GAMMA")
     '("nr-empathy-gst-video-src-channels" "NR_EMPATHY_GST_VIDEO_SRC_CHANNELS")
+  )
+)
+
+(define-enum Sound
+  (in-module "Empathy")
+  (c-name "EmpathySound")
+  (gtype-id "EMPATHY_TYPE_SOUND")
+  (values
+    '("empathy-sound-message-incoming" "EMPATHY_SOUND_MESSAGE_INCOMING")
+    '("empathy-sound-message-outgoing" "EMPATHY_SOUND_MESSAGE_OUTGOING")
+    '("empathy-sound-conversation-new" "EMPATHY_SOUND_CONVERSATION_NEW")
+    '("empathy-sound-contact-connected" "EMPATHY_SOUND_CONTACT_CONNECTED")
+    '("empathy-sound-contact-disconnected" "EMPATHY_SOUND_CONTACT_DISCONNECTED")
+    '("empathy-sound-account-connected" "EMPATHY_SOUND_ACCOUNT_CONNECTED")
+    '("empathy-sound-account-disconnected" "EMPATHY_SOUND_ACCOUNT_DISCONNECTED")
+    '("empathy-sound-phone-incoming" "EMPATHY_SOUND_PHONE_INCOMING")
+    '("empathy-sound-phone-outgoing" "EMPATHY_SOUND_PHONE_OUTGOING")
+    '("empathy-sound-phone-hangup" "EMPATHY_SOUND_PHONE_HANGUP")
+    '("last-empathy-sound" "LAST_EMPATHY_SOUND")
   )
 )
 
@@ -1195,6 +1228,18 @@
 
 
 
+;; From empathy-share-my-desktop.h
+
+(define-function share_my_desktop_share_with_contact
+  (c-name "empathy_share_my_desktop_share_with_contact")
+  (return-type "none")
+  (parameters
+    '("EmpathyContact*" "contact")
+  )
+)
+
+
+
 ;; From empathy-contact-selector.h
 
 (define-function contact_selector_get_type
@@ -1604,6 +1649,46 @@
 
 
 
+;; From empathy-sound.h
+
+(define-function sound_play
+  (c-name "empathy_sound_play")
+  (return-type "gboolean")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("EmpathySound" "sound_id")
+  )
+)
+
+(define-method stop
+  (of-object "EmpathySound")
+  (c-name "empathy_sound_stop")
+  (return-type "none")
+)
+
+(define-function sound_start_playing
+  (c-name "empathy_sound_start_playing")
+  (return-type "gboolean")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("EmpathySound" "sound_id")
+    '("guint" "timeout_before_replay")
+  )
+)
+
+(define-function sound_play_full
+  (c-name "empathy_sound_play_full")
+  (return-type "gboolean")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("EmpathySound" "sound_id")
+    '("ca_finish_callback_t" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+
+
 ;; From empathy-spell.h
 
 (define-function spell_supported
@@ -1653,6 +1738,24 @@
   (return-type "none")
   (parameters
     '("GList*" "suggestions")
+  )
+)
+
+
+
+;; From empathy-status-preset-dialog.h
+
+(define-function status_preset_dialog_get_type
+  (c-name "empathy_status_preset_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function status_preset_dialog_new
+  (c-name "empathy_status_preset_dialog_new")
+  (is-constructor-of "EmpathyStatusPresetDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
   )
 )
 
@@ -1714,6 +1817,24 @@
   (of-object "EmpathyThemeManager")
   (c-name "empathy_theme_manager_create_view")
   (return-type "EmpathyChatView*")
+)
+
+
+
+;; From empathy-kludge-label.h
+
+(define-function kludge_label_get_type
+  (c-name "empathy_kludge_label_get_type")
+  (return-type "GType")
+)
+
+(define-function kludge_label_new
+  (c-name "empathy_kludge_label_new")
+  (is-constructor-of "EmpathyKludgeLabel")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-char*" "str")
+  )
 )
 
 

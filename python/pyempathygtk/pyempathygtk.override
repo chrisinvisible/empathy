@@ -25,12 +25,14 @@ headers
 #include "empathy-gtk-enum-types.h"
 #include "empathy-images.h"
 #include "empathy-irc-network-dialog.h"
+#include "empathy-kludge-label.h"
 #include "empathy-log-window.h"
 #include "empathy-new-message-dialog.h"
 #include "empathy-presence-chooser.h"
 #include "empathy-protocol-chooser.h"
 #include "empathy-smiley-manager.h"
 #include "empathy-spell.h"
+#include "empathy-status-preset-dialog.h"
 #include "empathy-theme-boxes.h"
 #include "empathy-theme-irc.h"
 #include "empathy-theme-manager.h"
@@ -62,6 +64,8 @@ import gtk.Bin as PyGtkBin_Type
 import gtk.DrawingArea as PyGtkDrawingArea_Type
 import gtk.ComboBoxEntry as PyGtkComboBoxEntry_Type
 import gtk.Builder as PyGtkBuilder_Type
+import gtk.Label as PyGtkLabel_Type
+import gtk.Dialog as PyGtkDialog_Type
 import gst.Bin as PyGstBin_Type
 import empathy.Contact as PyEmpathyContact_Type
 import empathy.ContactList as PyEmpathyContactList_Type
@@ -69,6 +73,8 @@ import empathy.TpChat as PyEmpathyTpChat_Type
 import empathy.Message as PyEmpathyMessage_Type
 import empathy.TpCall as PyEmpathyTpCall_Type
 import empathy.FTHandler as PyEmpathyFTHandler_Type
+import empathy.Account as PyEmpathyAccount_Type
+import empathy.AccountSettings as PyEmpathyAccountSettings_Type
 %%
 ignore-glob
 	*_get_type
