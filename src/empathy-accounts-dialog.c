@@ -182,23 +182,52 @@ empathy_account_dialog_widget_cancelled_cb (EmpathyAccountWidget *widget_object,
     g_object_unref (settings);
 }
 
+static gchar *
+get_default_display_name (EmpathyAccountSettings *settings)
+{
+  const gchar *login_id;
+  const gchar *protocol;
+  gchar *default_display_name;
+
+  login_id = empathy_account_settings_get_string (settings, "account");
+  protocol = empathy_account_settings_get_protocol (settings);
+
+  if (login_id != NULL)
+    {
+      if (!tp_strdiff(protocol, "irc"))
+        {
+          const gchar* server;
+          server = empathy_account_settings_get_string (settings, "server");
+
+          default_display_name =
+              g_strdup_printf (_("%s on %s"), login_id, server);
+        }
+      else
+        {
+          default_display_name = g_strdup (login_id);
+        }
+    }
+  else if (protocol != NULL)
+    {
+      default_display_name = g_strdup_printf (_("%s Account"), protocol);
+    }
+  else
+    {
+      default_display_name = g_strdup (_("New account"));
+    }
+
+  return default_display_name;
+}
+
 static void
 empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
 {
-  const gchar *default_display_name;
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
 
-  /* Setting the display name to the login ID (if there is one). */
-  default_display_name = empathy_account_settings_get_string (settings,
-      "account");
-
-  if (default_display_name != NULL)
-    {
-      empathy_account_settings_set_display_name_async (settings,
-          default_display_name, NULL, NULL);
-    }
+  empathy_account_settings_set_display_name_async (settings,
+      get_default_display_name (settings), NULL, NULL);
 
   accounts_dialog_update_settings (dialog, settings);
 
