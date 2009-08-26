@@ -1403,6 +1403,8 @@ empathy_call_window_connected (gpointer user_data)
   EmpathyTpCall *call;
   gboolean can_send_video;
 
+  empathy_sound_stop (EMPATHY_SOUND_PHONE_OUTGOING);
+
   can_send_video = priv->video_input != NULL && priv->contact != NULL &&
     empathy_contact_can_voip_video (priv->contact);
 
@@ -1471,7 +1473,6 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
       g_timer_start (priv->timer);
       priv->timer_id = g_idle_add  (empathy_call_window_connected, self);
       priv->call_state = CONNECTED;
-      empathy_sound_stop (EMPATHY_SOUND_PHONE_OUTGOING);
     }
 
   switch (media_type)
