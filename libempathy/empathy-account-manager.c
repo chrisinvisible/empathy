@@ -566,9 +566,9 @@ do_constructor (GType type,
 
   if (!manager_singleton)
     {
-      retval = G_OBJECT_CLASS (empathy_account_manager_parent_class)->constructor (type,
-                                                                                   n_construct_params,
-                                                                                   construct_params);
+      retval = G_OBJECT_CLASS
+        (empathy_account_manager_parent_class)->constructor (type,
+            n_construct_params, construct_params);
       manager_singleton = EMPATHY_ACCOUNT_MANAGER (retval);
       g_object_add_weak_pointer (retval, (gpointer) &manager_singleton);
     }
@@ -734,7 +734,8 @@ empathy_account_manager_get_connected_accounts (EmpathyAccountManager *manager)
 }
 
 int
-empathy_account_manager_get_connecting_accounts (EmpathyAccountManager *manager)
+empathy_account_manager_get_connecting_accounts (
+    EmpathyAccountManager *manager)
 {
   EmpathyAccountManagerPriv *priv;
 
