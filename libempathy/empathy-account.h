@@ -103,6 +103,8 @@ void empathy_account_request_presence (EmpathyAccount *account,
 
 const GHashTable *empathy_account_get_parameters (EmpathyAccount *account);
 
+void empathy_account_refresh_properties (EmpathyAccount *account);
+
 
 G_END_DECLS
 

@@ -348,7 +348,7 @@ empathy_account_got_all_cb (TpProxy *proxy,
 {
   EmpathyAccount *account = EMPATHY_ACCOUNT (weak_object);
 
-  DEBUG ("Got initial set of properties for %s",
+  DEBUG ("Got whole set of properties for %s",
     empathy_account_get_unique_name (account));
 
   if (error != NULL)
@@ -475,12 +475,7 @@ empathy_account_constructed (GObject *object)
     empathy_account_removed_cb,
     NULL, NULL, object, NULL);
 
-  tp_cli_dbus_properties_call_get_all (priv->account, -1,
-    TP_IFACE_ACCOUNT,
-    empathy_account_got_all_cb,
-    NULL,
-    NULL,
-    G_OBJECT (account));
+  empathy_account_refresh_properties (account);
 }
 
 static void empathy_account_dispose (GObject *object);
@@ -1175,3 +1170,19 @@ empathy_account_remove_finish (EmpathyAccount *account,
   return TRUE;
 }
 
+void
+empathy_account_refresh_properties (EmpathyAccount *account)
+{
+  EmpathyAccountPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_ACCOUNT (account));
+
+  priv = GET_PRIV (account);
+
+  tp_cli_dbus_properties_call_get_all (priv->account, -1,
+    TP_IFACE_ACCOUNT,
+    empathy_account_got_all_cb,
+    NULL,
+    NULL,
+    G_OBJECT (account));
+}
