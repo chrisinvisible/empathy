@@ -412,6 +412,24 @@ account_validity_changed_cb (TpAccountManager *proxy,
 }
 
 static void
+account_manager_start_mc5 (TpDBusDaemon *bus)
+{
+  TpProxy *mc5_proxy;
+
+  /* trigger MC5 starting */
+  mc5_proxy = g_object_new (TP_TYPE_PROXY,
+    "dbus-daemon", bus,
+    "dbus-connection", tp_proxy_get_dbus_connection (TP_PROXY (bus)),
+    "bus-name", MC5_BUS_NAME,
+    "object-path", "/",
+    NULL);
+
+  tp_cli_dbus_peer_call_ping (mc5_proxy, -1, NULL, NULL, NULL, NULL);
+
+  g_object_unref (mc5_proxy);
+}
+
+static void
 account_manager_name_owner_cb (TpDBusDaemon *proxy,
     const gchar *name,
     const gchar *new_owner,
@@ -420,32 +438,43 @@ account_manager_name_owner_cb (TpDBusDaemon *proxy,
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (user_data);
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
 
-  tp_dbus_daemon_cancel_name_owner_watch (proxy, name,
-    account_manager_name_owner_cb, user_data);
+  DEBUG ("Name owner changed for %s, new name: %s", name, new_owner);
 
-  priv->tp_manager = tp_account_manager_new (priv->dbus);
+  if (EMP_STR_EMPTY (new_owner))
+    {
+      /* MC5 quit or crashed for some reason, let's start it again */
+      account_manager_start_mc5 (priv->dbus);
 
-  tp_cli_account_manager_connect_to_account_validity_changed (
-      priv->tp_manager,
-      account_validity_changed_cb,
-      NULL,
-      NULL,
-      G_OBJECT (manager),
-      NULL);
+      g_object_unref (priv->tp_manager);
+      priv->tp_manager = NULL;
+      return;
+    }
 
-  tp_cli_dbus_properties_call_get_all (priv->tp_manager, -1,
-    TP_IFACE_ACCOUNT_MANAGER,
-    account_manager_got_all_cb,
-    NULL,
-    NULL,
-    G_OBJECT (manager));
+  if (priv->tp_manager == NULL)
+    {
+      priv->tp_manager = tp_account_manager_new (priv->dbus);
+
+      tp_cli_account_manager_connect_to_account_validity_changed (
+          priv->tp_manager,
+          account_validity_changed_cb,
+          NULL,
+          NULL,
+          G_OBJECT (manager),
+          NULL);
+
+      tp_cli_dbus_properties_call_get_all (priv->tp_manager, -1,
+          TP_IFACE_ACCOUNT_MANAGER,
+          account_manager_got_all_cb,
+          NULL,
+          NULL,
+          G_OBJECT (manager));
+    }
 }
 
 static void
 empathy_account_manager_init (EmpathyAccountManager *manager)
 {
   EmpathyAccountManagerPriv *priv;
-  TpProxy *mc5_proxy;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (manager,
       EMPATHY_TYPE_ACCOUNT_MANAGER, EmpathyAccountManagerPriv);
@@ -467,17 +496,7 @@ empathy_account_manager_init (EmpathyAccountManager *manager)
       manager,
       NULL);
 
-  /* trigger MC5 starting */
-  mc5_proxy = g_object_new (TP_TYPE_PROXY,
-    "dbus-daemon", priv->dbus,
-    "dbus-connection", tp_proxy_get_dbus_connection (TP_PROXY (priv->dbus)),
-    "bus-name", MC5_BUS_NAME,
-    "object-path", "/",
-    NULL);
-
-  tp_cli_dbus_peer_call_ping (mc5_proxy, -1, NULL, NULL, NULL, NULL);
-
-  g_object_unref (mc5_proxy);
+  account_manager_start_mc5 (priv->dbus);
 }
 
 static void
