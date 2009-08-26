@@ -65,6 +65,11 @@ EmpathyAccountWidget * empathy_account_widget_new_for_protocol (
     EmpathyAccountSettings *settings,
     gboolean simple);
 
+gboolean empathy_account_widget_contains_pending_changes
+    (EmpathyAccountWidget *widget);
+void empathy_account_widget_discard_pending_changes
+    (EmpathyAccountWidget *widget);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_WIDGET_H__ */

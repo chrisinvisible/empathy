@@ -87,6 +87,14 @@ typedef struct {
   GtkWidget *label_type;
   GtkWidget *settings_widget;
 
+  /* We have to keep a reference on the actual EmpathyAccountWidget, not just
+   * his GtkWidget. it is the only reliable source we can query to know if
+   * there are any unsaved changes to the currently selected account. We can't
+   * look at the account settings because it does not contain everything that
+   * can be changed using the EmpathyAccountWidget. For instance, it does not
+   * contain the state of the "Enabled" checkbox. */
+  EmpathyAccountWidget *setting_widget_object;
+
   gboolean  connecting_show;
   guint connecting_id;
 
@@ -98,6 +106,16 @@ typedef struct {
 
   GtkWindow *parent_window;
   EmpathyAccount *initial_selection;
+
+  /* Those are needed when changing the selected row. When a user selects
+   * another account and there are unsaved changes on the currently selected
+   * one, a confirmation message box is presented to him. Since his answer
+   * is retrieved asynchronously, we keep some information as member of the
+   * EmpathyAccountsDialog object. */
+  gboolean force_change_row;
+  gchar *destination_path;
+
+
 } EmpathyAccountsDialogPriv;
 
 enum {
@@ -119,6 +137,11 @@ static void accounts_dialog_account_display_name_changed_cb (
 
 static EmpathyAccountSettings * accounts_dialog_model_get_selected_settings (
     EmpathyAccountsDialog *dialog);
+
+static gboolean accounts_dialog_get_settings_iter (
+    EmpathyAccountsDialog *dialog,
+    EmpathyAccountSettings *settings,
+    GtkTreeIter *iter);
 
 static void accounts_dialog_model_select_first (EmpathyAccountsDialog *dialog);
 
@@ -163,7 +186,7 @@ empathy_account_dialog_widget_cancelled_cb (EmpathyAccountWidget *widget_object,
       COL_ACCOUNT_SETTINGS_POINTER, &settings,
       COL_ACCOUNT_POINTER, &account, -1);
 
-  empathy_account_settings_discard_changes (settings);
+  empathy_account_widget_discard_pending_changes (priv->setting_widget_object);
 
   if (account == NULL)
     {
@@ -249,17 +272,13 @@ static void
 account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
 {
-  EmpathyAccountWidget *widget_object = NULL;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gchar *icon_name;
 
-  widget_object = empathy_account_widget_new_for_protocol (settings, FALSE);
-
   priv->settings_widget = empathy_account_widget_get_widget (widget_object);
-
-  g_signal_connect (widget_object, "account-created",
+  g_signal_connect (priv->setting_widget_object, "account-created",
         G_CALLBACK (empathy_account_dialog_account_created_cb), dialog);
-  g_signal_connect (widget_object, "cancelled",
+  g_signal_connect (priv->setting_widget_object, "cancelled",
           G_CALLBACK (empathy_account_dialog_widget_cancelled_cb), dialog);
 
   gtk_container_add (GTK_CONTAINER (priv->alignment_settings),
@@ -311,6 +330,31 @@ accounts_dialog_model_select_first (EmpathyAccountsDialog *dialog)
     }
 }
 
+static gboolean
+accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
+    EmpathyAccount **account)
+{
+  gboolean has_pending_changes;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  EmpathyAccountSettings *settings;
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  settings = accounts_dialog_model_get_selected_settings (dialog);
+
+  if (accounts_dialog_get_settings_iter (dialog, settings, &iter))
+    gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, account, -1);
+
+  has_pending_changes = account != NULL && priv->setting_widget_object != NULL
+      && empathy_account_widget_contains_pending_changes (
+          priv->setting_widget_object);
+
+  g_object_unref (settings);
+
+  return has_pending_changes;
+}
+
 static void
 accounts_dialog_protocol_changed_cb (GtkWidget *widget,
     EmpathyAccountsDialog *dialog)
@@ -345,11 +389,10 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
 }
 
 static void
-accounts_dialog_button_add_clicked_cb (GtkWidget *button,
-    EmpathyAccountsDialog *dialog)
+accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 {
-  GtkTreeView      *view;
-  GtkTreeModel     *model;
+  GtkTreeView *view;
+  GtkTreeModel *model;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   view = GTK_TREE_VIEW (priv->treeview);
@@ -371,6 +414,54 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
       TRUE);
   gtk_combo_box_set_active (GTK_COMBO_BOX (priv->combobox_protocol), 0);
   gtk_widget_grab_focus (priv->combobox_protocol);
+}
+
+static void
+accounts_dialog_add_pending_changes_response_cb (GtkDialog *message_dialog,
+  gint response_id,
+  gpointer *user_data)
+{
+  EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (user_data);
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  gtk_widget_destroy (GTK_WIDGET (message_dialog));
+
+  if (response_id == GTK_RESPONSE_YES)
+    {
+      empathy_account_widget_discard_pending_changes (
+          priv->setting_widget_object);
+      accounts_dialog_setup_ui_to_add_account (dialog);
+    }
+}
+
+static void
+accounts_dialog_button_add_clicked_cb (GtkWidget *button,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccount *account;
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (accounts_dialog_has_pending_change (dialog, &account))
+    {
+      gchar *message;
+
+      message = g_strdup_printf (
+          _("There are unsaved modification regarding your %s account.\n"
+              "You are about to create a new account, which will discard\n"
+              "your changes. Are you sure you want to proceed?"),
+              empathy_account_get_display_name (account));
+
+      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
+          message,
+          G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
+          dialog);
+
+      g_free (message);
+    }
+  else
+    {
+      accounts_dialog_setup_ui_to_add_account (dialog);
+    }
 }
 
 static void
@@ -761,14 +852,101 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
   is_selection = gtk_tree_selection_get_selected (selection, &model, &iter);
 
   settings = accounts_dialog_model_get_selected_settings (dialog);
-
-  if (settings != NULL)
-    empathy_account_settings_discard_changes (settings);
-
   accounts_dialog_update_settings (dialog, settings);
 
   if (settings != NULL)
     g_object_unref (settings);
+}
+
+static void
+accounts_dialog_selection_change_response_cb (GtkDialog *message_dialog,
+  gint response_id,
+  gpointer *user_data)
+{
+  EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (user_data);
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  gtk_widget_destroy (GTK_WIDGET (message_dialog));
+
+    if (response_id == GTK_RESPONSE_YES)
+      {
+        /* The user wants to lose unsaved changes to the currently selected
+         * account and select another account. We discard the changes and
+         * select the other account. */
+        GtkTreeIter iter;
+        GtkTreeSelection *selection;
+        GtkTreeModel *model;
+
+        priv->force_change_row = TRUE;
+        empathy_account_widget_discard_pending_changes (
+            priv->setting_widget_object);
+
+        model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+        selection = gtk_tree_view_get_selection (
+            GTK_TREE_VIEW (priv->treeview));
+
+        if (gtk_tree_model_get_iter_from_string (model,
+              &iter, priv->destination_path))
+          {
+            /* This will trigger a call to
+             * accounts_dialog_account_selection_change() */
+            gtk_tree_selection_select_iter (selection, &iter);
+          }
+      }
+    else
+      {
+        priv->force_change_row = FALSE;
+      }
+}
+
+static gboolean
+accounts_dialog_account_selection_change (GtkTreeSelection *selection,
+    GtkTreeModel *model,
+    GtkTreePath *path,
+    gboolean path_currently_selected,
+    gpointer data)
+{
+  g_message ("path_currently_selected: %d - path: %s", path_currently_selected, gtk_tree_path_to_string (path));
+
+  EmpathyAccount *account;
+  EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (data);
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->force_change_row)
+    {
+      /* We came back here because the user wants to discard changes to his
+       * modified account. The changes have already been discarded so we
+       * just change the selected row. */
+      priv->force_change_row = FALSE;
+      return TRUE;
+    }
+
+  if (accounts_dialog_has_pending_change (dialog, &account))
+    {
+      /* The currently selected account has some unsaved changes. We ask
+       * the user if he really wants to lose his changes and select another
+       * account */
+      priv->destination_path = gtk_tree_path_to_string (path);
+      gchar *message;
+
+      message = g_strdup_printf (
+          _("There are unsaved modification regarding your %s account.\n"
+          "You are about to select another account, which will discard\n"
+          "your changes. Are you sure you want to proceed?"),
+          empathy_account_get_display_name (account));
+
+      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
+          message, G_CALLBACK (accounts_dialog_selection_change_response_cb),
+          dialog);
+
+      g_free (message);
+    }
+  else
+    {
+      return TRUE;
+    }
+
+  return FALSE;
 }
 
 static void
@@ -789,6 +967,8 @@ accounts_dialog_model_setup (EmpathyAccountsDialog *dialog)
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+  gtk_tree_selection_set_select_function (selection,
+      accounts_dialog_account_selection_change, dialog, NULL);
 
   g_signal_connect (selection, "changed",
       G_CALLBACK (accounts_dialog_model_selection_changed),
@@ -1212,11 +1392,42 @@ accounts_dialog_button_help_clicked_cb (GtkWidget *button,
 }
 
 static void
+accounts_dialog_close_response_cb (GtkDialog *message_dialog,
+  gint response_id,
+  gpointer user_data)
+{
+  GtkWidget *account_dialog = GTK_WIDGET (user_data);
+
+  gtk_widget_destroy (GTK_WIDGET (message_dialog));
+
+  if (response_id == GTK_RESPONSE_YES)
+    gtk_widget_destroy (account_dialog);
+}
+
+static void
 accounts_dialog_response_cb (GtkWidget *widget,
     gint response,
     EmpathyAccountsDialog *dialog)
 {
-  if (response == GTK_RESPONSE_CLOSE)
+  EmpathyAccount *account;
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (accounts_dialog_has_pending_change (dialog, &account))
+    {
+      gchar *message;
+
+      message = g_strdup_printf (
+        _("There are unsaved modifications regarding your %s account.\n"
+            "Are you sure you want to close the window? "),
+            empathy_account_get_display_name (account));
+
+      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
+          message, G_CALLBACK (accounts_dialog_close_response_cb),
+          widget);
+
+      g_free (message);
+    }
+  else if (response == GTK_RESPONSE_CLOSE)
     gtk_widget_destroy (widget);
 }
 

@@ -113,6 +113,12 @@ gchar *     empathy_make_absolute_url                   (const gchar *url);
 gchar *     empathy_make_absolute_url_len               (const gchar *url,
 							 guint len);
 
+/* Message Dialogs */
+void empathy_show_yes_no_question_dialog (GtkWindow *parent,
+    gchar *message,
+    GCallback response_callback,
+    gpointer user_data);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UI_UTILS_H__ */
