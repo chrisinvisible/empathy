@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy.master.ta\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-25 10:38+0000\n"
-"PO-Revision-Date: 2009-08-26 12:44+0530\n"
+"POT-Creation-Date: 2009-08-25 19:12+0000\n"
+"PO-Revision-Date: 2009-08-26 15:49+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\\n\n"
+"\n"
 "\n"
 "\n"
 "\n"
@@ -407,7 +408,7 @@ msgstr ""
 "பெயர் மதிப்பு \"பெயர்\". \"நிலை\" என்ற மதிப்பு தொடர்பை நிலையை பொருத்து "
 "வரிசைப்படுத்தும்."
 
-#: ../libempathy/empathy-account.c:1095
+#: ../libempathy/empathy-account.c:1103
 msgid "Can't set an empty display name"
 msgstr "ஒரு காலியான காட்சிப் பெயரை அமைக்க முடியாது"
 
@@ -482,6 +483,19 @@ msgstr "மறைந்துள்ள"
 #: ../libempathy/empathy-utils.c:244
 msgid "Offline"
 msgstr "இணைப்பு விலகி"
+
+#: ../libempathy/empathy-utils.c:379 ../src/empathy-import-mc4-accounts.c:104
+msgid "People Nearby"
+msgstr "அருகில் உள்ள மக்கள்"
+
+#: ../libempathy/empathy-utils.c:384
+#| msgid "Use _Yahoo Japan"
+msgid "Yahoo! Japan"
+msgstr "Yahoo! Japan"
+
+#: ../libempathy/empathy-utils.c:385
+msgid "Facebook Chat"
+msgstr "Facebook அரட்டை"
 
 #: ../libempathy/empathy-time.c:137
 #, c-format
@@ -1776,8 +1790,9 @@ msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this wizard and add accounts later from the Edit menu."
 msgstr ""
-"நீங்கள் பின்னாலும் சென்று மற்றும் உங்களது கணக்குகளின் விவரங்களை மீண்டும் உள்ளிட முயற்சிக்கலாம் அல்லது "
-"இந்த வழிகாட்டியை நிறுத்தலாம் மற்றும் மெனுவை திருத்துவதிலுருந்து பின்னர் கணக்குகளை சேர்க்கலாம்."
+"நீங்கள் பின்னாலும் சென்று மற்றும் உங்களது கணக்குகளின் விவரங்களை மீண்டும் உள்ளிட முயற்சிக்கலாம் "
+"அல்லது இந்த வழிகாட்டியை நிறுத்தலாம் மற்றும் மெனுவை திருத்துவதிலுருந்து பின்னர் கணக்குகளை "
+"சேர்க்கலாம்."
 
 #: ../src/empathy-account-assistant.c:194
 msgid "An error occurred"
@@ -1785,8 +1800,12 @@ msgstr "ஒரு பிழை ஏற்பட்டது"
 
 #. Create account
 #. To translator: %s is the protocol name
+#. Create account
+#. To translator: %s is the name of the protocol, such as "Google Talk" or
+#. * "Yahoo!
+#.
 #: ../src/empathy-account-assistant.c:330
-#: ../src/empathy-accounts-dialog.c:1084
+#: ../src/empathy-accounts-dialog.c:1101
 #, c-format
 msgid "New %s account"
 msgstr "புதிய %s கணக்கு"
@@ -1804,12 +1823,10 @@ msgid "Enter your account details"
 msgstr "உங்களது கணக்கு விவரங்களை உள்ளிடவும்"
 
 #: ../src/empathy-account-assistant.c:414
-#| msgid "%s is calling you, do you want to answer?"
 msgid "What kind of chat account do you want to create?"
 msgstr "எந்த வகையான அரட்டை கணக்கை நீங்கள் உருவாக்க விரும்புகிறீர்கள்?"
 
 #: ../src/empathy-account-assistant.c:420
-#| msgid "Do you really want to remove the contact '%s'?"
 msgid "Do you want to create other chat accounts?"
 msgstr "மற்ற அரட்டை கணக்குகளை உருவாக்க நீங்கள் விரும்புகிறீர்களா?"
 
@@ -1824,10 +1841,10 @@ msgid ""
 "programs. With a microphone or a webcam you can also have audio or video "
 "calls."
 msgstr ""
-"Empathy உடன் நீங்கள் ஆன்லைனில் அருகிலிருக்கும் மக்கள் மற்றும் நண்பர்கள் மற்றும் "
-"Google Talk, AIM, Windows Live போன்றவற்றை பயன்ற்றுபடுத்தி மற்றும் மற்ற பல அரட்டை நிரல்களில் இருக்கும் "
-"கொலிக்ஸ் உடன் அரட்டை அடிக்கலாம். மைக்ரோ போன் அல்லது வெப்கேமிராவினால் நீங்களும் "
-"ஆடியோ அல்லது வீடியோ அழைப்புகளை பெறலாம். "
+"Empathy உடன் நீங்கள் ஆன்லைனில் அருகிலிருக்கும் மக்கள் மற்றும் நண்பர்கள் மற்றும் Google Talk, "
+"AIM, Windows Live போன்றவற்றை பயன்ற்றுபடுத்தி மற்றும் மற்ற பல அரட்டை நிரல்களில் இருக்கும் "
+"கொலிக்ஸ் உடன் அரட்டை அடிக்கலாம். மைக்ரோ போன் அல்லது வெப்கேமிராவினால் நீங்களும் ஆடியோ அல்லது "
+"வீடியோ அழைப்புகளை பெறலாம். "
 
 #: ../src/empathy-account-assistant.c:530
 msgid "Do you have an account you've been using with another chat program?"
@@ -1842,7 +1859,6 @@ msgid "Yes, I'll enter my account details now"
 msgstr "ஆம், இப்போது எனது கணக்கு விவரங்களை உள்ளிடுகிறேன்"
 
 #: ../src/empathy-account-assistant.c:596
-#| msgid "_Create a new account"
 msgid "No, I want a new account"
 msgstr "இல்லை, எனக்கு ஒரு புதிய கணக்கு வேண்டும்"
 
@@ -1869,11 +1885,10 @@ msgid "Welcome to Empathy"
 msgstr "Empathyக்கு வரவேற்குறது"
 
 #: ../src/empathy-account-assistant.c:923
-#| msgid "_Reuse an existing account"
 msgid "Import your existing accounts"
 msgstr "உங்களிடம் இருக்கிற கணக்குகளை இறக்கவும்"
 
-#: ../src/empathy-accounts-dialog.c:606
+#: ../src/empathy-accounts-dialog.c:616
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1882,7 +1897,7 @@ msgstr ""
 "நீங்கள் உங்கள் %s கணக்கை நீக்கப்போகிறீர்கள்!\n"
 "நிச்சயம் தொடர வேண்டுமா?"
 
-#: ../src/empathy-accounts-dialog.c:612
+#: ../src/empathy-accounts-dialog.c:622
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -1932,7 +1947,6 @@ msgid "_Reuse an existing account"
 msgstr "(_R) இருக்கும் ஒரு கணக்கை மறு உபயோகம் செய்க"
 
 #: ../src/empathy-accounts-dialog.ui.h:9
-#| msgid "Account"
 msgid "account"
 msgstr "கணக்கு"
 
@@ -2330,14 +2344,8 @@ msgstr "விதிமுறை"
 msgid "Source"
 msgstr "மூலம்"
 
-#: ../src/empathy-import-mc4-accounts.c:104
-#| msgid "People nearby"
-msgid "People Nearby"
-msgstr "அருகில் உள்ள மக்கள்"
-
 #: ../src/empathy-import-mc4-accounts.c:106
 #, c-format
-#| msgid "New %s account"
 msgid "%s account"
 msgstr "%s கணக்கு"
 
