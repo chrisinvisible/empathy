@@ -364,6 +364,76 @@ empathy_account_manager_ensure_account (EmpathyAccountManager *manager,
 
 
 static void
+account_manager_ensure_all_accounts (EmpathyAccountManager *manager,
+    GPtrArray *accounts)
+{
+  int i, missing_accounts;
+  GHashTableIter iter;
+  EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
+  gpointer value;
+  EmpathyAccount *account;
+  gboolean found = FALSE;
+  const gchar *name;
+
+  /* ensure all accounts coming from MC5 first */
+  for (i = 0; i < accounts->len; i++)
+    {
+      name = g_ptr_array_index (accounts, i);
+
+      account = empathy_account_manager_ensure_account (manager, name);
+      empathy_account_refresh_properties (account);
+    }
+
+  missing_accounts = empathy_account_manager_get_count (manager) -
+    accounts->len;
+
+  if (missing_accounts > 0)
+    {
+      /* look for accounts we have and the Tp AccountManager doesn't,
+       * and remove them from our cache.
+       */
+
+      DEBUG ("%d missing accounts", missing_accounts);
+
+      g_hash_table_iter_init (&iter, priv->accounts);
+
+      while (g_hash_table_iter_next (&iter, NULL, &value) &&
+	     missing_accounts > 0)
+        {
+          account = value;
+
+          /* look for this account in the AccountManager provided array */
+          for (i = 0; i < accounts->len; i++)
+            {
+              name = g_ptr_array_index (accounts, i);
+
+              if (!tp_strdiff
+                  (name, empathy_account_get_unique_name (account)))
+                {
+                  found = TRUE;
+                  break;
+                }
+            }
+
+          if (!found)
+            {
+              DEBUG ("Account %s was not found, remove it from the cache",
+		     empathy_account_get_unique_name (account));
+
+	      g_object_ref (account);
+	      g_hash_table_iter_remove (&iter);
+	      g_signal_emit (manager, signals[ACCOUNT_DELETED], 0, account);
+	      g_object_unref (account);
+
+              missing_accounts--;
+            }
+
+          found = FALSE;
+        }
+    }
+}
+
+static void
 account_manager_got_all_cb (TpProxy *proxy,
     GHashTable *properties,
     const GError *error,
@@ -372,7 +442,6 @@ account_manager_got_all_cb (TpProxy *proxy,
 {
   EmpathyAccountManager *manager = EMPATHY_ACCOUNT_MANAGER (weak_object);
   GPtrArray *accounts;
-  int i;
 
   if (error != NULL)
     {
@@ -384,14 +453,7 @@ account_manager_got_all_cb (TpProxy *proxy,
     EMPATHY_ARRAY_TYPE_OBJECT);
 
   if (accounts != NULL)
-    {
-      for (i = 0; i < accounts->len; i++)
-        {
-          gchar *name = g_ptr_array_index (accounts, i);
-
-          empathy_account_manager_ensure_account (manager, name);
-        }
-    }
+    account_manager_ensure_all_accounts (manager, accounts);
 
   empathy_account_manager_check_ready (manager);
 }
