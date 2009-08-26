@@ -391,7 +391,7 @@ chat_send (EmpathyChat  *chat,
 
 	chat_sent_message_add (chat, msg);
 
-	if (g_str_has_prefix (msg, "/clear")) {
+	if (strcmp (msg, "/clear") == 0) {
 		empathy_chat_view_clear (chat->view);
 		return;
 	}
