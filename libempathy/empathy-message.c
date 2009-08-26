@@ -393,28 +393,15 @@ empathy_message_set_body (EmpathyMessage *message,
 			  const gchar    *body)
 {
 	EmpathyMessagePriv       *priv = GET_PRIV (message);
-	TpChannelTextMessageType  type;
 
 	g_return_if_fail (EMPATHY_IS_MESSAGE (message));
 
 	g_free (priv->body);
-	priv->body = NULL;
-
-	type = TP_CHANNEL_TEXT_MESSAGE_TYPE_NORMAL;
-	if (g_str_has_prefix (body, "/me")) {
-		type = TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION;
-		body += 4;
-	}
-	else if (g_str_has_prefix (body, "/say")) {
-		body += 5;
-	}
 
 	if (body) {
 		priv->body = g_strdup (body);
-	}
-
-	if (type != priv->type) {
-		empathy_message_set_tptype (message, type);
+	} else {
+		priv->body = NULL;
 	}
 
 	g_object_notify (G_OBJECT (message), "body");
