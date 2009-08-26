@@ -952,17 +952,20 @@ empathy_account_set_enabled_async (EmpathyAccount *account,
       return;
     }
 
-  acc_manager = empathy_account_manager_dup_singleton ();
-  presence = empathy_account_manager_get_requested_global_presence
-    (acc_manager, &status, &status_message);
+  if (enabled)
+    {
+      acc_manager = empathy_account_manager_dup_singleton ();
+      presence = empathy_account_manager_get_requested_global_presence
+	(acc_manager, &status, &status_message);
 
-  if (presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
-    empathy_account_request_presence (account, presence, status,
-        status_message);
+      if (presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
+	empathy_account_request_presence (account, presence, status,
+            status_message);
 
-  g_object_unref (acc_manager);
-  g_free (status);
-  g_free (status_message);
+      g_object_unref (acc_manager);
+      g_free (status);
+      g_free (status_message);
+    }
 
   g_value_init (&value, G_TYPE_BOOLEAN);
   g_value_set_boolean (&value, enabled);
