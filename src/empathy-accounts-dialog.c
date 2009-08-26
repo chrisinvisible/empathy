@@ -190,11 +190,15 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
 
-  /* Setting the display name to the login ID. */
+  /* Setting the display name to the login ID (if there is one). */
   default_display_name = empathy_account_settings_get_string (settings,
       "account");
-  empathy_account_settings_set_display_name_async (settings,
-      default_display_name, NULL, NULL);
+
+  if (default_display_name != NULL)
+    {
+      empathy_account_settings_set_display_name_async (settings,
+          default_display_name, NULL, NULL);
+    }
 
   accounts_dialog_update_settings (dialog, settings);
 
