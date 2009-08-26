@@ -218,6 +218,62 @@ message_set_property (GObject      *object,
 	};
 }
 
+static gboolean
+has_prefix_case (const gchar *s,
+		 const gchar *prefix)
+{
+	return g_ascii_strncasecmp (s, prefix, strlen (prefix)) == 0;
+}
+
+/*
+ * Constructs an EmpathyMessage based on user input, which may include "/me"
+ * and friends.
+ *
+ * Returns: an #EmpathyMessage if @message could be parsed, or %NULL if
+ *          @message was an unknown command.
+ */
+EmpathyMessage *
+empathy_message_new_from_entry (const gchar *message)
+{
+	TpChannelTextMessageType t = TP_CHANNEL_TEXT_MESSAGE_TYPE_NORMAL;
+
+	g_return_val_if_fail (message != NULL, NULL);
+
+	if (message[0] == '/') {
+		if (g_ascii_strcasecmp (message, "/me") == 0) {
+			message = "";
+			t = TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION;
+		} else if (has_prefix_case (message, "/me ")) {
+			message += strlen ("/me ");
+			t = TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION;
+		} else if (has_prefix_case (message, "/say ")) {
+			message += strlen ("/say ");
+		} else {
+			/* Also allow messages with two slashes before the
+			 * first space, so it is possible to send a /unix/path.
+			 * This heuristic is kind of crap.
+			 */
+			gboolean second_slash = FALSE;
+			const gchar *m = message + 1;
+
+			while (!second_slash && *m != '\0' && *m != ' ') {
+				if (*m == '/')
+					second_slash = TRUE;
+
+				m++;
+			}
+
+			if (!second_slash)
+				return NULL;
+		}
+	}
+
+	return g_object_new (EMPATHY_TYPE_MESSAGE,
+			     "type", t,
+			     "body", message,
+			     NULL);
+}
+
 EmpathyMessage *
 empathy_message_new (const gchar *body)
 {
