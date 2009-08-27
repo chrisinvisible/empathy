@@ -651,6 +651,7 @@ main (int argc, char *argv[])
   TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
 
+  GOptionContext *optcontext;
   GOptionEntry options[] = {
       { "no-connect", 'n',
         0, G_OPTION_ARG_NONE, &no_connect,
@@ -674,18 +675,23 @@ main (int argc, char *argv[])
   g_thread_init (NULL);
   empathy_init ();
 
-  if (!gtk_init_with_args (&argc, &argv, N_("- Empathy IM Client"),
-      options, GETTEXT_PACKAGE, &error))
-    {
-      g_warning ("Error in empathy init: %s", error->message);
-      return EXIT_FAILURE;
-    }
+  optcontext = g_option_context_new (N_("- Empathy IM Client"));
+  g_option_context_add_group (optcontext, gst_init_get_option_group ());
+  g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
+  g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
+
+  if (!g_option_context_parse (optcontext, &argc, &argv, &error)) {
+    g_print ("%s\nRun '%s --help' to see a full list of available command line options.\n",
+        error->message, argv[0]);
+    g_warning ("Error in empathy init: %s", error->message);
+    return EXIT_FAILURE;
+  }
+
+  g_option_context_free (optcontext);
 
   empathy_gtk_init ();
   g_set_application_name (_(PACKAGE_NAME));
   g_setenv ("PULSE_PROP_media.role", "phone", TRUE);
-
-  gst_init (&argc, &argv);
 
 #if HAVE_LIBCHAMPLAIN
   gtk_clutter_init (&argc, &argv);
