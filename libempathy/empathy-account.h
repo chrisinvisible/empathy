@@ -72,6 +72,13 @@ void empathy_account_set_enabled_async (EmpathyAccount *account,
 gboolean empathy_account_set_enabled_finish (EmpathyAccount *account,
     GAsyncResult *result, GError **error);
 
+void empathy_account_reconnect_async (EmpathyAccount *account,
+    GAsyncReadyCallback callback,
+    gpointer user_data);
+gboolean empathy_account_reconnect_finish (EmpathyAccount *account,
+    GAsyncResult *result,
+    GError **error);
+
 gboolean empathy_account_is_enabled (EmpathyAccount *account);
 
 gboolean empathy_account_is_valid (EmpathyAccount *account);
