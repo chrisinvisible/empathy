@@ -8,9 +8,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-27 20:58+0200\n"
-"PO-Revision-Date: 2009-08-27 20:58+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
+"POT-Creation-Date: 2009-08-27 18:51+0000\n"
+"PO-Revision-Date: 2009-08-27 21:34+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -1086,6 +1086,18 @@ msgstr "Gehitu _kontaktua..."
 #: ../src/empathy-main-window.ui.h:12
 msgid "_Chat"
 msgstr "_Berriketa"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:253
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Audio Call"
+msgstr "_Audio-deia"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:285
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Video Call"
+msgstr "_Bideo-deia"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:324
 msgid "_View Previous Conversations"
@@ -2261,6 +2273,12 @@ msgstr "%u:%02u.%02u"
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
 
+#: ../src/empathy-ft-manager.c:180
+#| msgid "unknown"
+msgctxt "file transfer percent"
+msgid "Unknown"
+msgstr "Ezezaguna"
+
 #: ../src/empathy-ft-manager.c:275
 #, c-format
 msgid "%s of %s at %s/s"
@@ -2534,6 +2552,22 @@ msgstr "Berriketa-gela"
 #: ../src/empathy-new-chatroom-dialog.c:344
 msgid "Members"
 msgstr "Kideak"
+
+#: ../src/empathy-new-chatroom-dialog.c:494
+#, c-format
+msgctxt ""
+"Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/no "
+"and a number."
+msgid ""
+"<b>%s</b>\n"
+"Invite required: %s\n"
+"Password required: %s\n"
+"Members: %s"
+msgstr ""
+"<b>%s</b>\n"
+"Gonbidapena behar da: %s\n"
+"Pasahitza behar da: %s\n"
+"Kideak: %s"
 
 #: ../src/empathy-new-chatroom-dialog.c:496
 #: ../src/empathy-new-chatroom-dialog.c:497
