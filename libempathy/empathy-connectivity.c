@@ -230,7 +230,7 @@ empathy_connectivity_init (EmpathyConnectivity *connectivity)
     }
 #endif
 
-#if !defined(HAVE_NM) || !defined(HAVE_CONNMAN)
+#if !defined(HAVE_NM) && !defined(HAVE_CONNMAN)
   priv->connected = TRUE;
 #endif
 }
