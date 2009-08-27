@@ -217,7 +217,7 @@ get_default_display_name (EmpathyAccountSettings *settings)
 
   if (login_id != NULL)
     {
-      if (!tp_strdiff(protocol, "irc"))
+      if (!tp_strdiff (protocol, "irc"))
         {
           const gchar* server;
           server = empathy_account_settings_get_string (settings, "server");
