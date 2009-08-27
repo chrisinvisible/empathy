@@ -383,14 +383,7 @@ empathy_connectivity_is_online (EmpathyConnectivity *connectivity)
 {
   EmpathyConnectivityPriv *priv = GET_PRIV (connectivity);
 
-  if (priv->use_conn)
-    {
-      return priv->connected;
-    }
-  else
-    {
-      return TRUE;
-    }
+  return priv->connected;
 }
 
 gboolean
