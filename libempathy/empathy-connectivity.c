@@ -105,7 +105,8 @@ connectivity_nm_state_change_cb (NMClient *client,
   new_nm_connected = !(state == NM_STATE_CONNECTING
       || state == NM_STATE_DISCONNECTED);
 
-  DEBUG ("New NetworkManager network state %d", state);
+  DEBUG ("New NetworkManager network state %d (connected: %d", state,
+    new_nm_connected);
 
   connectivity_change_state (connectivity, new_nm_connected);
 }
