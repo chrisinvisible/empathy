@@ -49,7 +49,6 @@
 G_DEFINE_TYPE (EmpathyAccountWidget, empathy_account_widget, G_TYPE_OBJECT)
 
 typedef struct {
-  char *protocol;
   EmpathyAccountSettings *settings;
 
   GtkWidget *table_common_settings;
@@ -1062,9 +1061,6 @@ do_set_property (GObject *object,
 
   switch (prop_id)
     {
-    case PROP_PROTOCOL:
-      priv->protocol = g_value_dup_string (value);
-      break;
     case PROP_SETTINGS:
       priv->settings = g_value_dup_object (value);
       break;
@@ -1090,7 +1086,8 @@ do_get_property (GObject *object,
   switch (prop_id)
     {
     case PROP_PROTOCOL:
-      g_value_set_string (value, priv->protocol);
+      g_value_set_string (value,
+        empathy_account_settings_get_protocol (priv->settings));
       break;
     case PROP_SETTINGS:
       g_value_set_object (value, priv->settings);
@@ -1305,12 +1302,9 @@ static void
 do_finalize (GObject *obj)
 {
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
-  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
   g_free (self->ui_details->default_focus);
   g_slice_free (EmpathyAccountWidgetUIDetails, self->ui_details);
-
-  g_free (priv->protocol);
 
   if (G_OBJECT_CLASS (empathy_account_widget_parent_class)->finalize != NULL)
     G_OBJECT_CLASS (empathy_account_widget_parent_class)->finalize (obj);
@@ -1331,7 +1325,7 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
   param_spec = g_param_spec_string ("protocol",
       "protocol", "The protocol of the account",
       NULL,
-      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_PROTOCOL, param_spec);
 
   param_spec = g_param_spec_object ("settings",
