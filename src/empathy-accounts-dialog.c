@@ -112,6 +112,11 @@ enum {
   PROP_PARENT = 1
 };
 
+static void accounts_dialog_account_display_name_changed_cb (
+    EmpathyAccount *account,
+    GParamSpec *pspec,
+    gpointer user_data);
+
 static EmpathyAccountSettings * accounts_dialog_model_get_selected_settings (
     EmpathyAccountsDialog *dialog);
 
@@ -177,12 +182,63 @@ empathy_account_dialog_widget_cancelled_cb (EmpathyAccountWidget *widget_object,
     g_object_unref (settings);
 }
 
+static gchar *
+get_default_display_name (EmpathyAccountSettings *settings)
+{
+  const gchar *login_id;
+  const gchar *protocol;
+  gchar *default_display_name;
+
+  login_id = empathy_account_settings_get_string (settings, "account");
+  protocol = empathy_account_settings_get_protocol (settings);
+
+  if (login_id != NULL)
+    {
+      if (!tp_strdiff(protocol, "irc"))
+        {
+          const gchar* server;
+          server = empathy_account_settings_get_string (settings, "server");
+
+          /* To translators: The first parameter is the login id and the
+           * second one is the server. The resulting string will be something
+           * like: "MyUserName on chat.freenode.net" */
+          default_display_name =
+              g_strdup_printf (_("%s on %s"), login_id, server);
+        }
+      else
+        {
+          default_display_name = g_strdup (login_id);
+        }
+    }
+  else if (protocol != NULL)
+    {
+      /* To translators: The parameter is the protocol name. The resulting
+       * string will be something like: "Jabber Account" */
+      default_display_name = g_strdup_printf (_("%s Account"), protocol);
+    }
+  else
+    {
+      default_display_name = g_strdup (_("New account"));
+    }
+
+  return default_display_name;
+}
+
 static void
 empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
 {
+  gchar *display_name;
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
+
+  display_name = get_default_display_name (settings);
+
+  empathy_account_settings_set_display_name_async (settings,
+      display_name, NULL, NULL);
+
+  g_free (display_name);
+
   accounts_dialog_update_settings (dialog, settings);
 
   if (settings)
@@ -572,6 +628,8 @@ accounts_dialog_delete_account_response_cb (GtkDialog *message_dialog,
 
       if (account != NULL)
         {
+          g_signal_handlers_disconnect_by_func (account,
+              accounts_dialog_account_display_name_changed_cb, account_dialog);
           empathy_account_remove_async (account, NULL, NULL);
           g_object_unref (account);
         }
@@ -920,6 +978,37 @@ accounts_dialog_connection_changed_cb     (EmpathyAccountManager *manager,
 }
 
 static void
+accounts_dialog_account_display_name_changed_cb (EmpathyAccount *account,
+  GParamSpec *pspec,
+  gpointer user_data)
+{
+  const gchar *display_name;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  EmpathyAccountSettings *settings;
+  EmpathyAccount *selected_account;
+  EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (user_data);
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  display_name = empathy_account_get_display_name (account);
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  settings = accounts_dialog_model_get_selected_settings (dialog);
+  selected_account = empathy_account_settings_get_account (settings);
+
+  if (accounts_dialog_get_account_iter (dialog, account, &iter))
+    {
+      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+          COL_NAME, display_name,
+          -1);
+    }
+
+  if (selected_account == account)
+    accounts_dialog_update_name_label (dialog, display_name);
+
+  g_object_unref (settings);
+}
+
+static void
 accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
     EmpathyAccount *account)
 {
@@ -954,6 +1043,9 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
       status,
       TP_CONNECTION_STATUS_DISCONNECTED,
       dialog);
+
+  g_signal_connect (account, "notify::display-name",
+      G_CALLBACK (accounts_dialog_account_display_name_changed_cb), dialog);
 
   g_object_unref (settings);
 }
@@ -1007,8 +1099,12 @@ accounts_dialog_account_removed_cb (EmpathyAccountManager *manager,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   if (accounts_dialog_get_account_iter (dialog, account, &iter))
-    gtk_list_store_remove (GTK_LIST_STORE (
+    {
+      g_signal_handlers_disconnect_by_func (account,
+          accounts_dialog_account_display_name_changed_cb, dialog);
+      gtk_list_store_remove (GTK_LIST_STORE (
             gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview))), &iter);
+    }
 }
 
 static void
@@ -1096,7 +1192,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   /* Create account */
   /* To translator: %s is the name of the protocol, such as "Google Talk" or
-   * "Yahoo!
+   * "Yahoo!"
    */
   str = g_strdup_printf (_("New %s account"), display_name);
   settings = empathy_account_settings_new (cm->name, proto->name, str);
