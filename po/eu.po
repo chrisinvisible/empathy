@@ -8,9 +8,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-25 19:12+0000\n"
-"PO-Revision-Date: 2009-08-26 10:47+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-08-27 20:58+0200\n"
+"PO-Revision-Date: 2009-08-27 20:58+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -437,7 +437,7 @@ msgstr ""
 "kontaktuen izenen arabera ordenatzea da \"izena\" balioarekin. \"egoera\" "
 "balioak kontaktu-zerrenda egoeraren arabera ordenatuko du."
 
-#: ../libempathy/empathy-account.c:1103
+#: ../libempathy/empathy-account.c:1144
 msgid "Can't set an empty display name"
 msgstr "Ezin da pantailaren izen hutsa ezarri"
 
@@ -575,13 +575,13 @@ msgstr "etorkizunean"
 msgid "All"
 msgstr "Denak"
 
-#: ../libempathy-gtk/empathy-account-widget.c:448
-#: ../libempathy-gtk/empathy-account-widget.c:504
+#: ../libempathy-gtk/empathy-account-widget.c:441
+#: ../libempathy-gtk/empathy-account-widget.c:497
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1224
+#: ../libempathy-gtk/empathy-account-widget.c:1213
 msgid "Enabled"
 msgstr "Gaituta"
 
@@ -800,7 +800,9 @@ msgstr "A_rgitaratutako izena:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
-msgstr "<span size=\"small\"><b>Adibidea:</b> erabiltzailea@nire.sip.zerbitzaria</span>"
+msgstr ""
+"<span size=\"small\"><b>Adibidea:</b> erabiltzailea@nire.sip.zerbitzaria</"
+"span>"
 
 #. look up the DNS SRV record at the service's domain for the host name of a STUN server.
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:4
@@ -1084,16 +1086,6 @@ msgstr "Gehitu _kontaktua..."
 #: ../src/empathy-main-window.ui.h:12
 msgid "_Chat"
 msgstr "_Berriketa"
-
-#: ../libempathy-gtk/empathy-contact-menu.c:253
-msgctxt "menu item"
-msgid "_Audio Call"
-msgstr "_Audio-deia"
-
-#: ../libempathy-gtk/empathy-contact-menu.c:285
-msgctxt "menu item"
-msgid "_Video Call"
-msgstr "_Bideo-deia"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:324
 msgid "_View Previous Conversations"
@@ -1836,10 +1828,10 @@ msgstr "Errore bat gertatu da"
 #. To translator: %s is the protocol name
 #. Create account
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
-#. * "Yahoo!
+#. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:330
-#: ../src/empathy-accounts-dialog.c:1101
+#: ../src/empathy-accounts-dialog.c:1197
 #, c-format
 msgid "New %s account"
 msgstr "%s kontu berria"
@@ -1876,8 +1868,9 @@ msgid ""
 "calls."
 msgstr ""
 "Google Talk, AIM, Windows Live eta beste berriketako programak darabilten "
-"inguruko jendearekin, lagunekin eta lankideekin berriketan egin dezakezu Empathy-rekin. "
-"Mikrofono edo web kamera batekin audio edo bideo-deiak egin ditzakezu."
+"inguruko jendearekin, lagunekin eta lankideekin berriketan egin dezakezu "
+"Empathy-rekin. Mikrofono edo web kamera batekin audio edo bideo-deiak egin "
+"ditzakezu."
 
 #: ../src/empathy-account-assistant.c:530
 msgid "Do you have an account you've been using with another chat program?"
@@ -1921,7 +1914,23 @@ msgstr "Ongietorri Empathy-ra"
 msgid "Import your existing accounts"
 msgstr "Inportatu dauzkazun kontuak"
 
-#: ../src/empathy-accounts-dialog.c:616
+#: ../src/empathy-accounts-dialog.c:206
+#, c-format
+msgid "%s on %s"
+msgstr "%s - %s"
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#: ../src/empathy-accounts-dialog.c:217
+#, c-format
+msgid "%s Account"
+msgstr "%s kontua"
+
+#: ../src/empathy-accounts-dialog.c:221
+msgid "New account"
+msgstr "Kontu berria"
+
+#: ../src/empathy-accounts-dialog.c:674
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1930,7 +1939,7 @@ msgstr ""
 "Zure %s kontua ezabatzera zoaz.\n"
 "Ziur zaude ezabatzea nahi duzula?"
 
-#: ../src/empathy-accounts-dialog.c:622
+#: ../src/empathy-accounts-dialog.c:680
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -2252,11 +2261,6 @@ msgstr "%u:%02u.%02u"
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
 
-#: ../src/empathy-ft-manager.c:180
-msgctxt "file transfer percent"
-msgid "Unknown"
-msgstr "Ezezaguna"
-
 #: ../src/empathy-ft-manager.c:275
 #, c-format
 msgid "%s of %s at %s/s"
@@ -2531,22 +2535,6 @@ msgstr "Berriketa-gela"
 msgid "Members"
 msgstr "Kideak"
 
-#: ../src/empathy-new-chatroom-dialog.c:494
-#, c-format
-msgctxt ""
-"Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/no "
-"and a number."
-msgid ""
-"<b>%s</b>\n"
-"Invite required: %s\n"
-"Password required: %s\n"
-"Members: %s"
-msgstr ""
-"<b>%s</b>\n"
-"Gonbidapena behar da: %s\n"
-"Pasahitza behar da: %s\n"
-"Kideak: %s"
-
 #: ../src/empathy-new-chatroom-dialog.c:496
 #: ../src/empathy-new-chatroom-dialog.c:497
 msgid "No"
@@ -2784,64 +2772,64 @@ msgstr ""
 msgid "Contact Map View"
 msgstr "Kontaktuen maparen ikuspegia"
 
-#: ../src/empathy-debug-dialog.c:111 ../src/empathy-debug-dialog.c:1079
+#: ../src/empathy-debug-window.c:111 ../src/empathy-debug-window.c:1081
 msgid "Error"
 msgstr "Errorea"
 
-#: ../src/empathy-debug-dialog.c:114 ../src/empathy-debug-dialog.c:1073
+#: ../src/empathy-debug-window.c:114 ../src/empathy-debug-window.c:1075
 msgid "Critical"
 msgstr "Kritikoa"
 
-#: ../src/empathy-debug-dialog.c:117 ../src/empathy-debug-dialog.c:1067
+#: ../src/empathy-debug-window.c:117 ../src/empathy-debug-window.c:1069
 msgid "Warning"
 msgstr "Abisua"
 
-#: ../src/empathy-debug-dialog.c:120 ../src/empathy-debug-dialog.c:1061
-#: ../src/empathy-debug-dialog.c:1109
+#: ../src/empathy-debug-window.c:120 ../src/empathy-debug-window.c:1063
+#: ../src/empathy-debug-window.c:1111
 msgid "Message"
 msgstr "Mezua"
 
-#: ../src/empathy-debug-dialog.c:123 ../src/empathy-debug-dialog.c:1055
+#: ../src/empathy-debug-window.c:123 ../src/empathy-debug-window.c:1057
 msgid "Info"
 msgstr "Informazioa"
 
-#: ../src/empathy-debug-dialog.c:126 ../src/empathy-debug-dialog.c:1049
+#: ../src/empathy-debug-window.c:126 ../src/empathy-debug-window.c:1051
 msgid "Debug"
 msgstr "Arazketa"
 
-#: ../src/empathy-debug-dialog.c:841
+#: ../src/empathy-debug-window.c:841
 msgid "Save"
 msgstr "Gorde"
 
-#: ../src/empathy-debug-dialog.c:944
+#: ../src/empathy-debug-window.c:944
 msgid "Debug Window"
 msgstr "Arazketa-leihoa"
 
-#: ../src/empathy-debug-dialog.c:1017
+#: ../src/empathy-debug-window.c:1019
 msgid "Pause"
 msgstr "Pausatu"
 
-#: ../src/empathy-debug-dialog.c:1029
+#: ../src/empathy-debug-window.c:1031
 msgid "Level "
 msgstr "Maila: "
 
-#: ../src/empathy-debug-dialog.c:1098
+#: ../src/empathy-debug-window.c:1100
 msgid "Time"
 msgstr "Ordua"
 
-#: ../src/empathy-debug-dialog.c:1100
+#: ../src/empathy-debug-window.c:1102
 msgid "Domain"
 msgstr "Domeinua"
 
-#: ../src/empathy-debug-dialog.c:1102
+#: ../src/empathy-debug-window.c:1104
 msgid "Category"
 msgstr "Kategoria"
 
-#: ../src/empathy-debug-dialog.c:1104
+#: ../src/empathy-debug-window.c:1106
 msgid "Level"
 msgstr "Maila"
 
-#: ../src/empathy-debug-dialog.c:1136
+#: ../src/empathy-debug-window.c:1138
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
