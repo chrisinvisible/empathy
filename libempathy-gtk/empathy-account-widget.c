@@ -151,16 +151,6 @@ account_widget_entry_changed_common (EmpathyAccountWidget *self,
     }
 }
 
-static gboolean
-account_widget_entry_focus_cb (GtkWidget *widget,
-    GdkEventFocus *event,
-    EmpathyAccountWidget *self)
-{
-  account_widget_entry_changed_common (self, GTK_ENTRY (widget), TRUE);
-
-  return FALSE;
-}
-
 static void
 account_widget_entry_changed_cb (GtkEditable *entry,
     EmpathyAccountWidget *self)
@@ -356,9 +346,6 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
           gtk_entry_set_visibility (GTK_ENTRY (widget), FALSE);
         }
 
-      g_signal_connect (widget, "focus-out-event",
-          G_CALLBACK (account_widget_entry_focus_cb),
-          self);
       g_signal_connect (widget, "changed",
           G_CALLBACK (account_widget_entry_changed_cb), self);
     }
@@ -1045,7 +1032,7 @@ empathy_account_widget_enabled_cb (EmpathyAccount *account,
 }
 
 static void
-account_widget_enabled_toggled_cb (GtkToggleButton *toggle_button,
+account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
     gpointer user_data)
 {
   account_widget_handle_control_buttons_sensitivity (
@@ -1256,8 +1243,8 @@ do_constructed (GObject *obj)
 
       gtk_widget_show (priv->enabled_checkbox);
 
-      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "toggled",
-          G_CALLBACK (account_widget_enabled_toggled_cb), self);
+      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
+          G_CALLBACK (account_widget_enabled_released_cb), self);
     }
 
   /* hook up to widget destruction to unref ourselves */

@@ -88,7 +88,7 @@ typedef struct {
   GtkWidget *settings_widget;
 
   /* We have to keep a reference on the actual EmpathyAccountWidget, not just
-   * his GtkWidget. it is the only reliable source we can query to know if
+   * his GtkWidget. It is the only reliable source we can query to know if
    * there are any unsaved changes to the currently selected account. We can't
    * look at the account settings because it does not contain everything that
    * can be changed using the EmpathyAccountWidget. For instance, it does not
