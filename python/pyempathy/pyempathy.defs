@@ -782,6 +782,12 @@
   (return-type "const-GHashTable*")
 )
 
+(define-method refresh_properties
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_refresh_properties")
+  (return-type "none")
+)
+
 
 
 ;; From empathy-account-manager.h
