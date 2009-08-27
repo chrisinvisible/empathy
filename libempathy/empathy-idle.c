@@ -570,17 +570,19 @@ empathy_idle_set_presence (EmpathyIdle *idle,
 		status = NULL;
 	}
 
-	if (!empathy_connectivity_is_online (priv->connectivity)) {
+	if (state != TP_CONNECTION_PRESENCE_TYPE_OFFLINE &&
+			!empathy_connectivity_is_online (priv->connectivity)) {
 		DEBUG ("Empathy is not online");
 
+		priv->saved_state = state;
 		if (tp_strdiff (priv->status, status)) {
-			g_free (priv->status);
-			priv->status = NULL;
+			g_free (priv->saved_status);
+			priv->saved_status = NULL;
 			if (!EMP_STR_EMPTY (status)) {
-				priv->status = g_strdup (status);
+				priv->saved_status = g_strdup (status);
 			}
-			g_object_notify (G_OBJECT (idle), "status");
 		}
+		return;
 	}
 
 	empathy_idle_do_set_presence (idle, state, status);
