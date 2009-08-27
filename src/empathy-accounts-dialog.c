@@ -245,34 +245,6 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     g_object_unref (settings);
 }
 
-static GtkWidget *
-get_account_setup_widget (EmpathyAccountSettings *settings,
-    EmpathyAccountWidget **widget_object)
-{
-  const gchar *proto = empathy_account_settings_get_protocol (settings);
-  EmpathyConnectionManagers *cm =
-      empathy_connection_managers_dup_singleton ();
-  GList *cms = empathy_connection_managers_get_cms (cm);
-  GList *l;
-
-  for (l = cms; l; l = l->next)
-    {
-      TpConnectionManager *tp_cm = l->data;
-      if (tp_connection_manager_has_protocol (tp_cm, proto))
-        {
-          g_object_unref (cm);
-          *widget_object = empathy_account_widget_new_for_protocol (proto,
-              settings, FALSE);
-          return empathy_account_widget_get_widget (*widget_object);
-        }
-    }
-
-  g_object_unref (cm);
-  *widget_object = empathy_account_widget_new_for_protocol ("generic", settings,
-      FALSE);
-  return empathy_account_widget_get_widget (*widget_object);
-}
-
 static void
 account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
@@ -281,7 +253,10 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gchar *icon_name;
 
-  priv->settings_widget = get_account_setup_widget (settings, &widget_object);
+  widget_object = empathy_account_widget_new_for_protocol (settings, FALSE);
+
+  priv->settings_widget = empathy_account_widget_get_widget (widget_object);
+
   g_signal_connect (widget_object, "account-created",
         G_CALLBACK (empathy_account_dialog_account_created_cb), dialog);
   g_signal_connect (widget_object, "cancelled",

@@ -739,6 +739,24 @@ account_widget_build_salut (EmpathyAccountWidget *self,
 }
 
 static void
+account_widget_build_irc (EmpathyAccountWidget *self,
+  const char *filename)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  empathy_account_widget_irc_build (self, filename,
+    &priv->table_common_settings);
+}
+
+static void
+account_widget_build_sip (EmpathyAccountWidget *self,
+  const char *filename)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  empathy_account_widget_sip_build (self, filename,
+    &priv->table_common_settings);
+}
+
+static void
 account_widget_build_msn (EmpathyAccountWidget *self,
     const char *filename)
 {
@@ -1088,51 +1106,62 @@ do_get_property (GObject *object,
     }
 }
 
+#define WIDGET(cm, proto) \
+  { #cm, #proto, "empathy-account-widget-"#proto".ui", \
+    account_widget_build_##proto }
+
 static void
 do_constructed (GObject *obj)
 {
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   EmpathyAccount *account;
-  char *uiname, *filename;
+  const gchar *protocol, *cm_name;
+  int i = 0;
+  struct {
+    const gchar *cm_name;
+    const gchar *protocol;
+    const char *file;
+    void (*func)(EmpathyAccountWidget *self, const gchar *filename);
+  } widgets [] = {
+    { "salut", "local-xmpp", "empathy-account-widget-local-xmpp.ui",
+        account_widget_build_salut },
+    WIDGET (gabble, jabber),
+    WIDGET (butterfly, msn),
+    WIDGET (haze, icq),
+    WIDGET (haze, aim),
+    WIDGET (haze, yahoo),
+    WIDGET (haze, groupwise),
+    WIDGET (idle, irc),
+    WIDGET (sofiasip, sip),
+  };
 
-  uiname = g_strconcat ("empathy-account-widget-", priv->protocol,
-      ".ui", NULL);
-  filename = empathy_file_lookup (uiname, "libempathy-gtk");
+  cm_name = empathy_account_settings_get_cm (priv->settings);
+  protocol = empathy_account_settings_get_protocol (priv->settings);
 
-  if (!tp_strdiff (priv->protocol, "local-xmpp"))
-    account_widget_build_salut (self, filename);
-  else if (!tp_strdiff (priv->protocol, "msn"))
-    account_widget_build_msn (self, filename);
-  else if (!tp_strdiff (priv->protocol, "jabber"))
-    account_widget_build_jabber (self, filename);
-  else if (!tp_strdiff (priv->protocol, "icq"))
-    account_widget_build_icq (self, filename);
-  else if (!tp_strdiff (priv->protocol, "aim"))
-    account_widget_build_aim (self, filename);
-  else if (!tp_strdiff (priv->protocol, "yahoo"))
-    account_widget_build_yahoo (self, filename);
-  else if (!tp_strdiff (priv->protocol, "groupwise"))
-    account_widget_build_groupwise (self, filename);
-  else if (!tp_strdiff (priv->protocol, "irc"))
-    empathy_account_widget_irc_build (self, filename,
-        &priv->table_common_settings);
-  else if (!tp_strdiff (priv->protocol, "sip"))
-    empathy_account_widget_sip_build (self, filename,
-        &priv->table_common_settings);
-  else if (!tp_strdiff (priv->protocol, "generic"))
-    account_widget_build_generic (self, filename);
-  else
+  for (i = 0 ; i < G_N_ELEMENTS (widgets); i++)
     {
-      g_free (filename);
+      if (!tp_strdiff (widgets[i].cm_name, cm_name) &&
+          !tp_strdiff (widgets[i].protocol, protocol))
+        {
+          gchar *filename;
 
-      filename = empathy_file_lookup (
-          "empathy-account-widget-generic.ui", "libempathy-gtk");
-      account_widget_build_generic (self, filename);
+          filename = empathy_file_lookup (widgets[i].file,
+              "libempathy-gtk");
+          widgets[i].func (self, filename);
+          g_free (filename);
+
+          break;
+        }
     }
 
-  g_free (uiname);
-  g_free (filename);
+  if (i == G_N_ELEMENTS (widgets))
+    {
+      gchar *filename = empathy_file_lookup (
+          "empathy-account-widget-generic.ui", "libempathy-gtk");
+      account_widget_build_generic (self, filename);
+      g_free (filename);
+    }
 
   /* handle default focus */
   if (self->ui_details->default_focus != NULL)
@@ -1383,17 +1412,15 @@ empathy_account_widget_get_widget (EmpathyAccountWidget *widget)
 }
 
 EmpathyAccountWidget *
-empathy_account_widget_new_for_protocol (const char *protocol,
-    EmpathyAccountSettings *settings,
+empathy_account_widget_new_for_protocol (EmpathyAccountSettings *settings,
     gboolean simple)
 {
   EmpathyAccountWidget *self;
 
   g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), NULL);
-  g_return_val_if_fail (protocol != NULL, NULL);
 
   self = g_object_new
-    (EMPATHY_TYPE_ACCOUNT_WIDGET, "protocol", protocol,
+    (EMPATHY_TYPE_ACCOUNT_WIDGET,
         "settings", settings, "simple", simple,
         "creating-account",
         empathy_account_settings_get_account (settings) == NULL,
