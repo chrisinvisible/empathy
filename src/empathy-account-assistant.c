@@ -97,8 +97,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
     GError *error, gint page_num)
 {
   GtkWidget *main_vbox, *w, *hbox;
-  GString *str;
-  char *message;
+  const char *message;
   PangoAttrList *list;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
@@ -115,24 +114,16 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
 
-  /* translators: this is followed by the "while ..." strings some lines
-   * down this file.
-   */
-  str = g_string_new (_("There has been an error "));
-
   if (page_num == PAGE_IMPORT)
-    /* translators: this follows the "There has been an error " string */
-    str = g_string_append (str, _("while importing the accounts."));
+    message = _("There has been an error while importing the accounts.");
   else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_ENTER_ACCOUNT)
-    /* translators: this follows the "There has been an error " string */
-    str = g_string_append (str, _("while parsing the account details."));
+    message = _("There has been an error while parsing the account details.");
   else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_CREATE_ACCOUNT)
-    /* translators: this follows the "There has been an error " string */
-    str = g_string_append (str, _("while creating the account."));
-
-  message = g_string_free (str, FALSE);
+    message = _("There has been an error while creating the account.");
+  else
+    message = _("There has been an error.")
 
   w = gtk_label_new (message);
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
@@ -144,7 +135,6 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_widget_show (w);
 
-  g_free (message);
   pango_attr_list_unref (list);
 
   message = g_markup_printf_escaped
