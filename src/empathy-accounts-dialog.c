@@ -350,7 +350,8 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
       && empathy_account_widget_contains_pending_changes (
           priv->setting_widget_object);
 
-  g_object_unref (settings);
+  if (settings != NULL)
+    g_object_unref (settings);
 
   return has_pending_changes;
 }
@@ -906,8 +907,6 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
     gboolean path_currently_selected,
     gpointer data)
 {
-  g_message ("path_currently_selected: %d - path: %s", path_currently_selected, gtk_tree_path_to_string (path));
-
   EmpathyAccount *account;
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (data);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
