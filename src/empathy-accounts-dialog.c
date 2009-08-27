@@ -199,6 +199,9 @@ get_default_display_name (EmpathyAccountSettings *settings)
           const gchar* server;
           server = empathy_account_settings_get_string (settings, "server");
 
+          /* To translators: The first parameter is the login id and the
+           * second one is the server. The resulting string will be something
+           * like: "MyUserName on chat.freenode.net" */
           default_display_name =
               g_strdup_printf (_("%s on %s"), login_id, server);
         }
@@ -209,6 +212,8 @@ get_default_display_name (EmpathyAccountSettings *settings)
     }
   else if (protocol != NULL)
     {
+      /* To translators: The parameter is the protocol name. The resulting
+       * string will be something like: "Jabber Account" */
       default_display_name = g_strdup_printf (_("%s Account"), protocol);
     }
   else
@@ -223,11 +228,16 @@ static void
 empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
 {
+  gchar *display_name;
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
 
+  display_name = get_default_display_name (settings);
+
   empathy_account_settings_set_display_name_async (settings,
-      get_default_display_name (settings), NULL, NULL);
+      display_name, NULL, NULL);
+
+  g_free (display_name);
 
   accounts_dialog_update_settings (dialog, settings);
 
@@ -1182,7 +1192,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   /* Create account */
   /* To translator: %s is the name of the protocol, such as "Google Talk" or
-   * "Yahoo!
+   * "Yahoo!"
    */
   str = g_strdup_printf (_("New %s account"), display_name);
   settings = empathy_account_settings_new (cm->name, proto->name, str);
