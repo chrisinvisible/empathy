@@ -305,11 +305,12 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   char *str;
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object = NULL;
+  gboolean is_gtalk;
 
   priv = GET_PRIV (self);
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto);
+      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &is_gtalk);
 
   if (cm == NULL || proto == NULL)
     /* we are not ready yet */
@@ -317,9 +318,14 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 
   /* Create account */
   /* To translator: %s is the protocol name */
-  str = g_strdup_printf (_("New %s account"), proto->name);
+  str = g_strdup_printf (_("New %s account"),
+      empathy_protocol_name_to_display_name (
+          is_gtalk ? "gtalk" : proto->name));
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
+
+  empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+      NULL, NULL);
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     empathy_account_settings_set_boolean (settings, "register", TRUE);

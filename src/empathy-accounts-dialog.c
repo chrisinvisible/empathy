@@ -170,7 +170,8 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 }
 
 static void
-empathy_account_dialog_widget_cancelled_cb (EmpathyAccountWidget *widget_object,
+empathy_account_dialog_widget_cancelled_cb (
+    EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
 {
   GtkTreeView *view;
@@ -369,10 +370,11 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
 {
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
+  gboolean is_gtalk;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto);
+      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk);
 
   if (cm == NULL)
     return;
@@ -383,7 +385,7 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
       return;
     }
 
-  if (tp_connection_manager_protocol_can_register (proto))
+  if (tp_connection_manager_protocol_can_register (proto) && !is_gtalk)
     {
       gtk_widget_show (priv->radiobutton_register);
       gtk_widget_show (priv->radiobutton_reuse);
@@ -1222,10 +1224,10 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
   name = empathy_account_get_display_name (account);
   enabled = empathy_account_is_enabled (account);
 
+  settings = empathy_account_settings_new_for_account (account);
+
   if (!accounts_dialog_get_account_iter (dialog, account, &iter))
     gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-
-  settings = empathy_account_settings_new_for_account (account);
 
   gtk_list_store_set (GTK_LIST_STORE (model), &iter,
       COL_NAME, name,
@@ -1379,10 +1381,13 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  gboolean is_gtalk;
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto);
-  display_name = empathy_protocol_name_to_display_name (proto->name);
+      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk);
+
+  display_name = empathy_protocol_name_to_display_name (
+      is_gtalk ? "gtalk" : proto->name);
 
   if (display_name == NULL)
     display_name = proto->name;
@@ -1401,10 +1406,14 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
       gboolean active;
 
       active = gtk_toggle_button_get_active
-          (GTK_TOGGLE_BUTTON (priv->radiobutton_register));
+        (GTK_TOGGLE_BUTTON (priv->radiobutton_register));
       if (active)
         empathy_account_settings_set_boolean (settings, "register", TRUE);
     }
+
+  if (is_gtalk)
+    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+        NULL, NULL);
 
   accounts_dialog_add (dialog, settings);
   accounts_dialog_model_set_selected (dialog, settings);
