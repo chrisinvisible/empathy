@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
 "POT-Creation-Date: 2009-08-25 14:09+0000\n"
-"PO-Revision-Date: 2009-08-26 17:24+0530\n"
+"PO-Revision-Date: 2009-08-28 14:59+0530\n"
 "Last-Translator: Sandeep Shedmake <sshedmak@redhat.com>\n"
 "Language-Team: Marathi <fedora-trans-mr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -265,14 +265,14 @@ msgstr "Empathy GPS चा वापर ठिकाण ओळखण्याक
 #| "Whether or not Empathy should use the avatar of the contact as the chat "
 #| "window icon."
 msgid "Whether or not Empathy can use the cellular network to guess the location."
-msgstr ""
+msgstr "ठिकाण ओळखण्यासाठी Empathy ने सेल्यूलर नेटवर्कचा वापर करायला हवा की नाही."
 
 #: ../data/empathy.schemas.in.h:57
 #| msgid ""
 #| "Whether or not Empathy should use the avatar of the contact as the chat "
 #| "window icon."
 msgid "Whether or not Empathy can use the network to guess the location."
-msgstr ""
+msgstr "ठिकाण ओळखण्यासाठी Empathy ने नेटवर्कचा वापर करायला हवा की नाही."
 
 #: ../data/empathy.schemas.in.h:58
 msgid ""
@@ -293,7 +293,7 @@ msgstr "प्रारंभवेळी Empathy ने आपोआप वा�
 msgid ""
 "Whether or not Empathy should reduce the location's accuracy for privacy "
 "reasons."
-msgstr ""
+msgstr "गोपणीयता कारणास्तव Empathy ने ठिकाणाची अचूकता कमी करायची का."
 
 #: ../data/empathy.schemas.in.h:61
 msgid ""
@@ -309,6 +309,8 @@ msgid ""
 "Whether or not connectivity managers should be used to automatically "
 "disconnect/reconnect."
 msgstr ""
+"स्वयंरित्या जुळवणी मोडण्यासाठी/पुनःजुळवणी Whether or not connectivity managers should be used to automatically "
+"disconnect/reconnect."
 
 #: ../data/empathy.schemas.in.h:63
 msgid "Whether or not the Salut account has been created on the first Empathy run."
@@ -365,12 +367,12 @@ msgstr "निष्क्रीय किंवा व्यस्थ असत
 #: ../data/empathy.schemas.in.h:75
 #| msgid "Whether or not to show popup notifications when away or busy."
 msgid "Whether or not to show a popup notification when a contact goes offline."
-msgstr ""
+msgstr "संपर्क ऑफलाइन झाल्यावर पॉपअप सूचना दाखवायची कि नाही."
 
 #: ../data/empathy.schemas.in.h:76
 #| msgid "Whether or not to show popup notifications when away or busy."
 msgid "Whether or not to show a popup notification when a contact goes online."
-msgstr ""
+msgstr "संपर्क ऑनलाइन आल्यावर पॉपअप सूचना दाखवायची कि नाही."
 
 #: ../data/empathy.schemas.in.h:77
 msgid ""
@@ -401,7 +403,7 @@ msgstr "निष्क्रीय किंवा व्यस्थ असल
 #: ../data/empathy.schemas.in.h:82
 #| msgid "Whether to show the contact list in compact mode or not."
 msgid "Whether or not to show the contact list in chat rooms."
-msgstr ""
+msgstr "गप्पा कक्ष मध्ये संपर्क सूची दाखवायचे की नाही."
 
 #: ../data/empathy.schemas.in.h:83
 msgid ""
@@ -433,7 +435,7 @@ msgstr "रिकामे दृष्य नाव ठरवणे अशक�
 
 #: ../libempathy/empathy-ft-handler.c:839
 msgid "The hash of the received file and the sent one do not match"
-msgstr ""
+msgstr "प्राप्त फाइलचे व पाठवलेल्याचे हॅश जुळत नाही"
 
 #: ../libempathy/empathy-ft-handler.c:1099
 msgid "File transfer not supported by remote contact"
@@ -1214,11 +1216,11 @@ msgstr "त्रुटी:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1290
 msgid "Vertical Error (meters):"
-msgstr ""
+msgstr "उभी त्रुटी (मिटीर्स्)"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1292
 msgid "Horizontal Error (meters):"
-msgstr ""
+msgstr "आडवी त्रुटी (मिटीर्स्)"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1294
 msgid "Speed:"
@@ -1231,7 +1233,7 @@ msgstr "बिअरींग:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1298
 msgid "Climb Speed:"
-msgstr ""
+msgstr "चढ वेग:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1300
 msgid "Last Updated on:"
@@ -1239,15 +1241,15 @@ msgstr "शेवटच्यावेळी सुधारीत केले:
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1302
 msgid "Longitude:"
-msgstr ""
+msgstr "रेखांश:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1304
 msgid "Latitude:"
-msgstr ""
+msgstr "अक्षांश:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1306
 msgid "Altitude:"
-msgstr ""
+msgstr "उच्चता:"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1353
 #| msgid "<b>Contact</b>"
@@ -1424,11 +1426,11 @@ msgstr "पसंतीचे संदेश संपादीत करा...
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:330
 msgid "Click to remove this status as a favorite"
-msgstr ""
+msgstr "हे स्तर पसंतीचे असे काढून टाकण्यासाठी क्लिक करा"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:339
 msgid "Click to make this status a favorite"
-msgstr ""
+msgstr "याचे स्तर पसंतीचे बनवण्यासाठी क्लिक करा"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:373
 #| msgid "Status"
@@ -1437,7 +1439,7 @@ msgstr "स्तर ठरवा"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:794
 msgid "Set your presence and current status"
-msgstr ""
+msgstr "तुमचे अस्तित्व व सध्याचे स्तर ठरवा"
 
 #. Custom messages
 #: ../libempathy-gtk/empathy-presence-chooser.c:1043
@@ -1496,12 +1498,12 @@ msgstr "पसंतीचे संदेश संपादीत करा"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:1
 msgid "Add _New Preset"
-msgstr ""
+msgstr "नवीन प्रिसेट समावेश करा (_N)"
 
 #: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:2
 #| msgid "Save message"
 msgid "Saved Presets"
-msgstr ""
+msgstr "प्रिसेटस् साठवले"
 
 #: ../libempathy-gtk/empathy-theme-manager.c:67
 msgid "Classic"
@@ -1840,7 +1842,7 @@ msgstr "त्रुटी संदेश: <span style=\"italic\">%s</span> अ
 msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this wizard and add accounts later from the Edit menu."
-msgstr ""
+msgstr "तुम्ही एकतर माघे जाऊन पुन्हा खाते विषयक तपशील भरण्याचा प्रयत्न करा किंवा या सहाय्यकातून बाहेर पडा व पुढे संपादन मेन्यू पासून खाते समावेश करा."
 
 #: ../src/empathy-account-assistant.c:194
 msgid "An error occurred"
@@ -1891,7 +1893,7 @@ msgid ""
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
 "programs. With a microphone or a webcam you can also have audio or video "
 "calls."
-msgstr ""
+msgstr "Empathy चा वापर करून तुम्ही ऑनलाइनरित्या मित्र व Google Talk, AIM, Windows Live व इतर गप्पा कार्यक्रमांचा वापर करणाऱ्या सहभागींसह गप्पा करू शकता. मायक्रोफोन किंवा वेबकॅमसह तुम्ही ऑडिओ किंवा विडीओ कॉल देखिल करू शकता."
 
 #: ../src/empathy-account-assistant.c:530
 msgid "Do you have an account you've been using with another chat program?"
@@ -2045,7 +2047,7 @@ msgstr "विडीओ इनपुट"
 #: ../src/empathy-call-window.c:868
 #, c-format
 msgid "Call with %s"
-msgstr ""
+msgstr "%s सह कॉल"
 
 #. translators: Call is a noun. This string is used in the window title
 #: ../src/empathy-call-window.c:938
@@ -2480,7 +2482,7 @@ msgstr "संपर्क यादी"
 
 #: ../src/empathy-main-window.ui.h:2
 msgid "Contacts on a _Map"
-msgstr ""
+msgstr "नकाशावरील संपर्क (_M)"
 
 #: ../src/empathy-main-window.ui.h:3
 msgid "Context"
@@ -2751,7 +2753,7 @@ msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
 "decimal place."
-msgstr ""
+msgstr "किमान ठिकाणांचे अचूकपणा म्हणजे तुमचे शहर, राज्य व देश यांच्या व्यतिरीक्त आणखी काही प्रकाशीत केले जाणार नाही.  GPS निबंधक 1 डेसिमल प्लेस् पर्यंत अचूक असू शकतात."
 
 #: ../src/empathy-preferences.ui.h:22
 msgid "Show _smileys as images"
