@@ -123,7 +123,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
       priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     message = _("There has been an error while creating the account.");
   else
-    message = _("There has been an error.")
+    message = _("There has been an error.");
 
   w = gtk_label_new (message);
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
