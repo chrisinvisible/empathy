@@ -110,6 +110,8 @@ void        empathy_send_file_with_file_chooser         (EmpathyContact   *conta
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
 
 gchar *     empathy_make_absolute_url                   (const gchar *url);
+gchar *     empathy_make_absolute_url_len               (const gchar *url,
+							 guint len);
 
 G_END_DECLS
 

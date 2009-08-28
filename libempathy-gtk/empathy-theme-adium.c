@@ -328,7 +328,7 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			}
 
 			/* Append the link inside <a href=""></a> tag */
-			real_url = empathy_make_absolute_url (text + s);
+			real_url = empathy_make_absolute_url_len (text + s, e - s);
 
 			g_string_append (string, "<a href=\"");
 			g_string_append (string, real_url);

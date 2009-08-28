@@ -1321,6 +1321,31 @@ empathy_get_toplevel_window (GtkWidget *widget)
 	return NULL;
 }
 
+/** empathy_make_absolute_url_len:
+ * @url: an url
+ * @len: a length
+ *
+ * Same as #empathy_make_absolute_url but for a limited string length
+ */
+gchar *
+empathy_make_absolute_url_len (const gchar *url,
+			       guint len)
+{
+	g_return_val_if_fail (url != NULL, NULL);
+
+	if (g_str_has_prefix (url, "ghelp:") ||
+	    g_str_has_prefix (url, "mailto:") ||
+	    strstr (url, ":/")) {
+		return g_strndup (url, len);
+	}
+
+	if (strstr (url, "@")) {
+		return g_strdup_printf ("mailto:%.*s", len, url);
+	}
+
+	return g_strdup_printf ("http://%.*s", len, url);
+}
+
 /** empathy_make_absolute_url:
  * @url: an url
  *
@@ -1335,19 +1360,7 @@ empathy_get_toplevel_window (GtkWidget *widget)
 gchar *
 empathy_make_absolute_url (const gchar *url)
 {
-	g_return_val_if_fail (url != NULL, NULL);
-
-	if (g_str_has_prefix (url, "ghelp:") ||
-	    g_str_has_prefix (url, "mailto:") ||
-	    strstr (url, ":/")) {
-		return g_strdup (url);
-	}
-
-	if (strstr (url, "@")) {
-		return g_strdup_printf ("mailto:%s", url);
-	}
-
-	return g_strdup_printf ("http://%s", url);
+	return empathy_make_absolute_url_len (url, strlen (url));
 }
 
 void
