@@ -339,7 +339,6 @@ static gboolean
 accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
     EmpathyAccount **account)
 {
-  gboolean has_pending_changes;
   GtkTreeIter iter;
   GtkTreeModel *model;
   GtkTreeSelection *selection;
@@ -350,11 +349,9 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
     gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, account, -1);
 
-  has_pending_changes = account != NULL && priv->setting_widget_object != NULL
+  return *account != NULL && priv->setting_widget_object != NULL
       && empathy_account_widget_contains_pending_changes (
           priv->setting_widget_object);
-
-  return has_pending_changes;
 }
 
 static void
@@ -480,7 +477,7 @@ static void
 accounts_dialog_button_add_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
-  EmpathyAccount *account;
+  EmpathyAccount *account = NULL;
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
@@ -738,6 +735,7 @@ accounts_dialog_delete_account_response_cb (GtkDialog *message_dialog,
               accounts_dialog_account_display_name_changed_cb, account_dialog);
           empathy_account_remove_async (account, NULL, NULL);
           g_object_unref (account);
+          account = NULL;
         }
 
       gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
@@ -791,7 +789,10 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
   g_free (question_dialog_primary_text);
 
   if (account != NULL)
-    g_object_unref (account);
+    {
+      g_object_unref (account);
+      account = NULL;
+    }
 }
 
 static void
@@ -936,7 +937,7 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
     gboolean path_currently_selected,
     gpointer data)
 {
-  EmpathyAccount *account;
+  EmpathyAccount *account = NULL;
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (data);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
@@ -1439,7 +1440,7 @@ accounts_dialog_response_cb (GtkWidget *widget,
     gint response,
     EmpathyAccountsDialog *dialog)
 {
-  EmpathyAccount *account;
+  EmpathyAccount *account = NULL;
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
