@@ -792,8 +792,14 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *checkbutton_ssl;
   GtkWidget *label_id, *label_password;
   GtkWidget *label_id_create, *label_password_create;
+  GtkWidget *label_example_gtalk, *label_example_jabber;
+  gboolean is_gtalk;
 
-  if (priv->simple)
+  is_gtalk = !tp_strdiff (
+      empathy_account_settings_get_icon_name (priv->settings),
+      "im-google-talk");
+
+  if (priv->simple && !is_gtalk)
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
           "vbox_jabber_simple", &self->ui_details->widget,
@@ -818,6 +824,19 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
 
       self->ui_details->default_focus = g_strdup ("entry_id_simple");
     }
+  else if (priv->simple && is_gtalk)
+    {
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_gtalk_simple", &self->ui_details->widget,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_id_g_simple", "account",
+          "entry_password_g_simple", "password",
+          NULL);
+
+      self->ui_details->default_focus = g_strdup ("entry_id_g_simple");
+    }
   else
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
@@ -825,6 +844,8 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "vbox_jabber_settings", &self->ui_details->widget,
           "spinbutton_port", &spinbutton_port,
           "checkbutton_ssl", &checkbutton_ssl,
+          "label_username_example", &label_example_jabber,
+          "label_username_g_example", &label_example_gtalk,
           NULL);
 
       empathy_account_widget_handle_params (self,
@@ -846,6 +867,12 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
       g_signal_connect (checkbutton_ssl, "toggled",
           G_CALLBACK (account_widget_jabber_ssl_toggled_cb),
           self);
+
+      if (is_gtalk)
+        {
+          gtk_widget_hide (label_example_jabber);
+          gtk_widget_show (label_example_gtalk);
+        }
     }
 }
 
