@@ -118,7 +118,7 @@ typedef struct {
    * is retrieved asynchronously, we keep some information as member of the
    * EmpathyAccountsDialog object. */
   gboolean force_change_row;
-  gchar *destination_path;
+  GtkTreeRowReference *destination_row;
 
 
 } EmpathyAccountsDialogPriv;
@@ -897,30 +897,31 @@ accounts_dialog_selection_change_response_cb (GtkDialog *message_dialog,
 
   gtk_widget_destroy (GTK_WIDGET (message_dialog));
 
-    if (response_id == GTK_RESPONSE_YES)
+    if (response_id == GTK_RESPONSE_YES && priv->destination_row != NULL)
       {
         /* The user wants to lose unsaved changes to the currently selected
          * account and select another account. We discard the changes and
          * select the other account. */
-        GtkTreeIter iter;
+        GtkTreePath *path;
         GtkTreeSelection *selection;
-        GtkTreeModel *model;
 
         priv->force_change_row = TRUE;
         empathy_account_widget_discard_pending_changes (
             priv->setting_widget_object);
 
-        model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+        path = gtk_tree_row_reference_get_path (priv->destination_row);
         selection = gtk_tree_view_get_selection (
             GTK_TREE_VIEW (priv->treeview));
 
-        if (gtk_tree_model_get_iter_from_string (model,
-              &iter, priv->destination_path))
+        if (path != NULL)
           {
             /* This will trigger a call to
              * accounts_dialog_account_selection_change() */
-            gtk_tree_selection_select_iter (selection, &iter);
+            gtk_tree_selection_select_path (selection, path);
+            gtk_tree_path_free (path);
           }
+
+        gtk_tree_row_reference_free (priv->destination_row);
       }
     else
       {
@@ -954,7 +955,7 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
        * the user if he really wants to lose his changes and select another
        * account */
       gchar *question_dialog_primary_text;
-      priv->destination_path = gtk_tree_path_to_string (path);
+      priv->destination_row = gtk_tree_row_reference_new (model, path);
 
       question_dialog_primary_text = g_strdup_printf (
           PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
