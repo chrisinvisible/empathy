@@ -45,6 +45,7 @@ libempathy_la_SOURCES =					\
 	empathy-dispatch-operation.c			\
 	empathy-ft-factory.c				\
 	empathy-ft-handler.c				\
+	empathy-handler.c				\
 	empathy-idle.c					\
 	empathy-irc-network.c				\
 	empathy-irc-network-manager.c			\
@@ -100,6 +101,7 @@ libempathy_headers =				\
 	empathy-dispatch-operation.h		\
 	empathy-ft-factory.h			\
 	empathy-ft-handler.h			\
+	empathy-handler.h			\
 	empathy-idle.h				\
 	empathy-irc-network.h			\
 	empathy-irc-network-manager.h		\

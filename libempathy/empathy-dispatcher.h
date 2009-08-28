@@ -26,7 +26,6 @@
 #include <gio/gio.h>
 
 #include <telepathy-glib/channel.h>
-#include <telepathy-glib/dbus-properties-mixin.h>
 
 #include "empathy-contact.h"
 #include "empathy-dispatch-operation.h"
@@ -52,7 +51,6 @@ struct _EmpathyDispatcher
 struct _EmpathyDispatcherClass
 {
  GObjectClass parent_class;
- TpDBusPropertiesMixinClass dbus_props_class;
 };
 
 /* Will be called when the channel is ready for dispatching. The requestor
@@ -97,6 +95,11 @@ GList * empathy_dispatcher_find_requestable_channel_classes
     (EmpathyDispatcher *dispatcher, TpConnection *connection,
      const gchar *channel_type, guint handle_type,
      const char *first_property_name, ...);
+
+/* Create the dispatcher singleton */
+EmpathyDispatcher * empathy_dispatcher_new (const gchar *name,
+  GPtrArray *filters,
+  GStrv capabilities);
 
 /* Get the dispatcher singleton */
 EmpathyDispatcher *    empathy_dispatcher_dup_singleton (void);

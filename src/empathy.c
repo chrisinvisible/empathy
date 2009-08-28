@@ -558,6 +558,57 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
     }
 }
 
+static EmpathyDispatcher *
+setup_dispatcher (void)
+{
+  EmpathyDispatcher *d;
+  GPtrArray *filters;
+  struct {
+    const gchar *channeltype;
+    TpHandleType handletype;
+  } types[] = {
+    /* Text channels with handle types none, contact and room */
+    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_NONE  },
+    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT  },
+    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM  },
+    /* file transfer to contacts */
+    { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
+    /* stream media to contacts */
+    { TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA, TP_HANDLE_TYPE_CONTACT  },
+    /* stream tubes to contacts and rooms */
+    { TP_IFACE_CHANNEL_TYPE_STREAM_TUBE, TP_HANDLE_TYPE_CONTACT  },
+    { TP_IFACE_CHANNEL_TYPE_STREAM_TUBE, TP_HANDLE_TYPE_ROOM  },
+    /* d-bus tubes to contacts and rooms */
+    { TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, TP_HANDLE_TYPE_CONTACT },
+    { TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, TP_HANDLE_TYPE_ROOM  },
+    /* roomlists */
+    { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
+  };
+  GStrv capabilities = { NULL };
+  int i;
+
+  filters = g_ptr_array_new ();
+
+  for (i = 0 ; i < G_N_ELEMENTS (types); i++)
+    {
+      GHashTable *asv;
+
+      asv = tp_asv_new (
+        TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, types[i].channeltype,
+        TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_INT, types[i].handletype,
+        NULL);
+
+      g_ptr_array_add (filters, asv);
+    }
+
+  d = empathy_dispatcher_new (PACKAGE_NAME, filters, capabilities);
+
+  g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
+  g_ptr_array_free (filters, TRUE);
+
+  return d;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -699,6 +750,10 @@ main (int argc, char *argv[])
   g_signal_connect (account_manager, "notify::ready",
       G_CALLBACK (account_manager_ready_cb), NULL);
 
+  /* Handle channels */
+  dispatcher = setup_dispatcher ();
+  g_signal_connect (dispatcher, "dispatch", G_CALLBACK (dispatch_cb), NULL);
+
   migrate_config_to_xdg_dir ();
 
   /* Setting up UI */
@@ -707,10 +762,6 @@ main (int argc, char *argv[])
 
   g_signal_connect (unique_app, "message-received",
       G_CALLBACK (unique_app_message_cb), window);
-
-  /* Handle channels */
-  dispatcher = empathy_dispatcher_dup_singleton ();
-  g_signal_connect (dispatcher, "dispatch", G_CALLBACK (dispatch_cb), NULL);
 
   /* Logging */
   log_manager = empathy_log_manager_dup_singleton ();

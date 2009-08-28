@@ -42,6 +42,7 @@
 #include <extensions/extensions.h>
 
 #include "empathy-dispatcher.h"
+#include "empathy-handler.h"
 #include "empathy-utils.h"
 #include "empathy-tube-handler.h"
 #include "empathy-account-manager.h"
@@ -64,33 +65,33 @@ typedef struct
 
   /* channels which the dispatcher is listening "invalidated" */
   GList *channels;
+  GPtrArray *array;
+  EmpathyHandler *handler;
 
   GHashTable *request_channel_class_async_ids;
 } EmpathyDispatcherPriv;
 
-static void empathy_dispatcher_client_handler_iface_init (gpointer g_iface,
-  gpointer g_iface_data);
+static GList *
+empathy_dispatcher_get_channels (EmpathyHandler *handler,
+    gpointer user_data);
 
-G_DEFINE_TYPE_WITH_CODE (EmpathyDispatcher,
-    empathy_dispatcher,
-    G_TYPE_OBJECT,
-    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_DBUS_PROPERTIES,
-      tp_dbus_properties_mixin_iface_init);
-    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_CLIENT, NULL);
-    G_IMPLEMENT_INTERFACE (TP_TYPE_SVC_CLIENT_HANDLER,
-      empathy_dispatcher_client_handler_iface_init);
-  );
+static gboolean
+empathy_dispatcher_handle_channels (EmpathyHandler *handler,
+    const gchar *account_path,
+    const gchar *connection_path,
+    const GPtrArray *channels,
+    const GPtrArray *requests_satisfied,
+    guint64 timestamp,
+    GHashTable *handler_info,
+    gpointer user_data,
+    GError **error);
 
-static const gchar *empathy_dispatcher_interfaces[] = {
-  TP_IFACE_CLIENT_HANDLER,
-  NULL
-};
+G_DEFINE_TYPE (EmpathyDispatcher, empathy_dispatcher, G_TYPE_OBJECT);
 
 enum
 {
   PROP_INTERFACES = 1,
-  PROP_CHANNEL_FILTER,
-  PROP_CHANNELS
+  PROP_HANDLER,
 };
 
 enum
@@ -865,7 +866,7 @@ dispatcher_constructor (GType type,
                         GObjectConstructParam *construct_params)
 {
   GObject *retval;
-  TpDBusDaemon *dbus;
+  EmpathyDispatcherPriv *priv;
 
   if (dispatcher != NULL)
     return g_object_ref (dispatcher);
@@ -876,14 +877,15 @@ dispatcher_constructor (GType type,
   dispatcher = EMPATHY_DISPATCHER (retval);
   g_object_add_weak_pointer (retval, (gpointer) &dispatcher);
 
-  dbus = tp_dbus_daemon_dup (NULL);
+  priv = GET_PRIV (dispatcher);
 
-  g_assert (tp_dbus_daemon_request_name (dbus,
-    DISPATCHER_BUS_NAME, TRUE, NULL));
-  dbus_g_connection_register_g_object (tp_get_bus (),
-    DISPATCHER_OBJECT_PATH, retval);
+  empathy_handler_set_handle_channels_func (priv->handler,
+    empathy_dispatcher_handle_channels,
+    dispatcher);
 
-  DEBUG ("Registering at '%s'", DISPATCHER_OBJECT_PATH);
+  empathy_handler_set_channels_func (priv->handler,
+    empathy_dispatcher_get_channels,
+    dispatcher);
 
   return retval;
 }
@@ -936,6 +938,26 @@ dispatcher_finalize (GObject *object)
 }
 
 static void
+dispatcher_set_property (GObject *object,
+  guint property_id,
+  const GValue *value,
+  GParamSpec *pspec)
+{
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+
+  switch (property_id)
+    {
+      case PROP_HANDLER:
+        priv->handler = g_value_dup_object (value);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        break;
+    }
+}
+
+static void
 dispatcher_get_property (GObject *object,
   guint property_id,
   GValue *value,
@@ -946,37 +968,9 @@ dispatcher_get_property (GObject *object,
 
   switch (property_id)
     {
-      case PROP_INTERFACES:
-        g_value_set_boxed (value, empathy_dispatcher_interfaces);
+      case PROP_HANDLER:
+        g_value_set_object (value, priv->handler);
         break;
-      case PROP_CHANNEL_FILTER:
-        {
-          GPtrArray *filters = g_ptr_array_new ();
-          GHashTable *filter = g_hash_table_new (NULL, NULL);
-
-          g_ptr_array_add (filters, filter);
-
-          g_value_set_boxed (value, filters);
-          break;
-        }
-      case PROP_CHANNELS:
-        {
-          GPtrArray *accounts;
-          GList *l;
-
-          accounts = g_ptr_array_new ();
-
-          for (l = priv->channels; l != NULL; l = g_list_next (l))
-            {
-              TpProxy *channel = TP_PROXY (l->data);
-
-              g_ptr_array_add (accounts,
-                g_strdup (tp_proxy_get_object_path (channel)));
-            }
-
-          g_value_set_boxed (value, accounts);
-          break;
-        }
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
         break;
@@ -989,53 +983,18 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GParamSpec *param_spec;
 
-  static TpDBusPropertiesMixinPropImpl client_props[] = {
-    { "Interfaces", "interfaces", NULL },
-    { NULL }
-  };
-  static TpDBusPropertiesMixinPropImpl client_handler_props[] = {
-    { "HandlerChannelFilter", "channel-filter", NULL },
-    { "HandledChannels", "channels", NULL },
-    { NULL }
-  };
-  static TpDBusPropertiesMixinIfaceImpl prop_interfaces[] = {
-    { TP_IFACE_CLIENT,
-      tp_dbus_properties_mixin_getter_gobject_properties,
-      NULL,
-      client_props
-    },
-    { TP_IFACE_CLIENT_HANDLER,
-      tp_dbus_properties_mixin_getter_gobject_properties,
-      NULL,
-      client_handler_props
-    },
-    { NULL }
-  };
-
   object_class->finalize = dispatcher_finalize;
   object_class->constructor = dispatcher_constructor;
 
   object_class->get_property = dispatcher_get_property;
+  object_class->set_property = dispatcher_set_property;
 
-  param_spec = g_param_spec_boxed ("interfaces", "interfaces",
-    "Available D-Bus interfaces",
-    G_TYPE_STRV,
-    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-  g_object_class_install_property (object_class, PROP_INTERFACES, param_spec);
-
-  param_spec = g_param_spec_boxed ("channel-filter", "channel-filter",
-    "Filter for channels this handles",
-    TP_ARRAY_TYPE_CHANNEL_CLASS_LIST,
-    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  param_spec = g_param_spec_object ("handler", "handler",
+    "The main Telepathy Client Hander object",
+    EMPATHY_TYPE_HANDLER,
+    G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (object_class,
-    PROP_CHANNEL_FILTER, param_spec);
-
-  param_spec = g_param_spec_boxed ("channels", "channels",
-    "List of channels we're handling",
-    EMPATHY_ARRAY_TYPE_OBJECT,
-    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-  g_object_class_install_property (object_class,
-    PROP_CHANNELS, param_spec);
+    PROP_HANDLER, param_spec);
 
   signals[OBSERVE] =
     g_signal_new ("observe",
@@ -1069,10 +1028,6 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 
 
   g_type_class_add_private (object_class, sizeof (EmpathyDispatcherPriv));
-
-  klass->dbus_props_class.interfaces = prop_interfaces;
-  tp_dbus_properties_mixin_class_init (object_class,
-    G_STRUCT_OFFSET (EmpathyDispatcherClass, dbus_props_class));
 }
 
 static void
@@ -1107,6 +1062,26 @@ empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
 
   priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
     g_direct_equal);
+}
+
+EmpathyDispatcher *
+empathy_dispatcher_new (const gchar *name,
+  GPtrArray *filters,
+  GStrv capabilities)
+{
+  g_assert (dispatcher == NULL);
+  EmpathyHandler *handler;
+  EmpathyDispatcher *ret;
+
+  handler = empathy_handler_new (name, filters, capabilities);
+
+  ret = EMPATHY_DISPATCHER (
+    g_object_new (EMPATHY_TYPE_DISPATCHER,
+      "handler", handler,
+      NULL));
+  g_object_unref (handler);
+
+  return ret;
 }
 
 EmpathyDispatcher *
@@ -1797,17 +1772,28 @@ empathy_dispatcher_find_requestable_channel_classes_async
     request, GUINT_TO_POINTER (source_id));
 }
 
-static void
-empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
+static GList *
+empathy_dispatcher_get_channels (EmpathyHandler *handler,
+  gpointer user_data)
+{
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (user_data);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+
+  return priv->channels;
+}
+
+static gboolean
+empathy_dispatcher_handle_channels (EmpathyHandler *handler,
     const gchar *account_path,
     const gchar *connection_path,
     const GPtrArray *channels,
     const GPtrArray *requests_satisfied,
     guint64 timestamp,
     GHashTable *handler_info,
-    DBusGMethodInvocation *context)
+    gpointer user_data,
+    GError **error)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (self);
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (user_data);
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   int i;
   EmpathyAccount *account;
@@ -1821,10 +1807,9 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
       connection_path);
   if (connection == NULL)
     {
-      GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
-        "Invalid connection argument" };
-      dbus_g_method_return_error (context, &error);
-      return;
+      g_set_error_literal (error, TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
+        "Invalid connection argument");
+      return FALSE;
     }
 
   for (i = 0; i < channels->len ; i++)
@@ -1840,15 +1825,5 @@ empathy_dispatcher_handle_channels (TpSvcClientHandler *self,
         connection, object_path, properties);
     }
 
-  tp_svc_client_handler_return_from_handle_channels (context);
-}
-
-static void
-empathy_dispatcher_client_handler_iface_init (gpointer g_iface,
-  gpointer g_iface_data)
-{
-  TpSvcClientHandlerClass *klass = (TpSvcClientHandlerClass *) g_iface;
-
-  tp_svc_client_handler_implement_handle_channels (klass,
-    empathy_dispatcher_handle_channels);
+  return TRUE;
 }
