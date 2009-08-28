@@ -488,19 +488,20 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
-    gchar *question_dialog_primary_text = g_strdup_printf (
-        PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
-        empathy_account_get_display_name (account));
+      gchar *question_dialog_primary_text = g_strdup_printf (
+          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
+          empathy_account_get_display_name (account));
 
-    accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-        _("You are about to create a new account, which will discard\n"
-            "your changes. Are you sure you want to proceed?"),
-        G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
-        dialog,
-        GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
-        GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
+      accounts_dialog_show_question_dialog (dialog,
+          question_dialog_primary_text,
+          _("You are about to create a new account, which will discard\n"
+              "your changes. Are you sure you want to proceed?"),
+          G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
+          dialog,
+          GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+          GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
 
-    g_free (question_dialog_primary_text);
+      g_free (question_dialog_primary_text);
     }
   else
     {
@@ -969,7 +970,8 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
           PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
           empathy_account_get_display_name (account));
 
-      accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
+      accounts_dialog_show_question_dialog (dialog,
+          question_dialog_primary_text,
           _("You are about to select another account, which will discard\n"
               "your changes. Are you sure you want to proceed?"),
           G_CALLBACK (accounts_dialog_selection_change_response_cb),
@@ -1456,7 +1458,8 @@ accounts_dialog_response_cb (GtkWidget *widget,
           PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
           empathy_account_get_display_name (account));
 
-      accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
+      accounts_dialog_show_question_dialog (dialog,
+          question_dialog_primary_text,
           _("You are about to close the window, which will discard\n"
               "your changes. Are you sure you want to proceed?"),
           G_CALLBACK (accounts_dialog_close_response_cb),
