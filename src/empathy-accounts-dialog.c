@@ -280,7 +280,14 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gchar *icon_name;
 
-  priv->settings_widget = empathy_account_widget_get_widget (widget_object);
+  priv->setting_widget_object =
+      empathy_account_widget_new_for_protocol (settings, FALSE);
+
+  priv->settings_widget =
+      empathy_account_widget_get_widget (priv->setting_widget_object);
+
+  priv->settings_widget =
+      empathy_account_widget_get_widget (priv->setting_widget_object);
   g_signal_connect (priv->setting_widget_object, "account-created",
         G_CALLBACK (empathy_account_dialog_account_created_cb), dialog);
   g_signal_connect (priv->setting_widget_object, "cancelled",
