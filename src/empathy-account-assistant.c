@@ -157,7 +157,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_widget_show (w);
 
   w = gtk_label_new (_("You can either go back and try to enter your "
-          "accounts' details again or quit this wizard and add accounts "
+          "accounts' details again or quit this assistant and add accounts "
           "later from the Edit menu."));
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 6);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
