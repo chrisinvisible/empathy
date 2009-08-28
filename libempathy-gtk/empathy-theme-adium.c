@@ -24,7 +24,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include <webkit/webkitnetworkrequest.h>
+#include <webkit/webkit.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 
@@ -128,18 +128,28 @@ theme_adium_notify_enable_webkit_developer_tools_cb (EmpathyConf *conf,
 	theme_adium_update_enable_webkit_developer_tools (theme);
 }
 
-static WebKitNavigationResponse
-theme_adium_navigation_requested_cb (WebKitWebView        *view,
-				     WebKitWebFrame       *frame,
-				     WebKitNetworkRequest *request,
-				     gpointer              user_data)
+static gboolean
+theme_adium_navigation_policy_decision_requested_cb (WebKitWebView             *view,
+						     WebKitWebFrame            *web_frame,
+						     WebKitNetworkRequest      *request,
+						     WebKitWebNavigationAction *action,
+						     WebKitWebPolicyDecision   *decision,
+						     gpointer                   data)
 {
 	const gchar *uri;
+
+	/* Only call url_show on clicks */
+	if (webkit_web_navigation_action_get_reason (action) !=
+	    WEBKIT_WEB_NAVIGATION_REASON_LINK_CLICKED) {
+		webkit_web_policy_decision_use (decision);
+		return TRUE;
+	}
 
 	uri = webkit_network_request_get_uri (request);
 	empathy_url_show (GTK_WIDGET (view), uri);
 
-	return WEBKIT_NAVIGATION_RESPONSE_IGNORE;
+	webkit_web_policy_decision_ignore (decision);
+	return TRUE;
 }
 
 static void
@@ -1074,8 +1084,8 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 	g_signal_connect (theme, "load-finished",
 			  G_CALLBACK (theme_adium_load_finished_cb),
 			  NULL);
-	g_signal_connect (theme, "navigation-requested",
-			  G_CALLBACK (theme_adium_navigation_requested_cb),
+	g_signal_connect (theme, "navigation-policy-decision-requested",
+			  G_CALLBACK (theme_adium_navigation_policy_decision_requested_cb),
 			  NULL);
 	g_signal_connect (theme, "populate-popup",
 			  G_CALLBACK (theme_adium_populate_popup_cb),
