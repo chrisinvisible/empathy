@@ -507,7 +507,9 @@ account_manager_name_owner_cb (TpDBusDaemon *proxy,
       /* MC5 quit or crashed for some reason, let's start it again */
       account_manager_start_mc5 (priv->dbus);
 
-      g_object_unref (priv->tp_manager);
+      if (priv->tp_manager != NULL)
+        g_object_unref (priv->tp_manager);
+
       priv->tp_manager = NULL;
       return;
     }
