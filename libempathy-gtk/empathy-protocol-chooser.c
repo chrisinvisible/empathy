@@ -77,6 +77,7 @@ enum
   COL_LABEL,
   COL_CM,
   COL_PROTOCOL,
+  COL_IS_GTALK,
   COL_COUNT
 };
 
@@ -208,7 +209,22 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           COL_LABEL, display_name,
           COL_CM, cm,
           COL_PROTOCOL, proto,
+          COL_IS_GTALK, FALSE,
           -1);
+
+      if (!tp_strdiff (proto->name, "jabber") &&
+          !tp_strdiff (cm->name, "gabble"))
+        {
+          display_name = empathy_protocol_name_to_display_name ("gtalk");
+          gtk_list_store_insert_with_values (priv->store,
+             NULL, 0,
+             COL_ICON, "im-google-talk",
+             COL_LABEL, display_name,
+             COL_CM, cm,
+             COL_PROTOCOL, proto,
+             COL_IS_GTALK, TRUE,
+             -1);
+        }
 
       g_free (icon_name);
     }
@@ -251,7 +267,8 @@ protocol_chooser_constructed (GObject *object)
           G_TYPE_STRING,    /* Icon name */
           G_TYPE_STRING,    /* Label     */
           G_TYPE_OBJECT,    /* CM */
-          G_TYPE_POINTER);  /* protocol   */
+          G_TYPE_POINTER,   /* protocol   */
+          G_TYPE_BOOLEAN);  /* is gtalk  */
 
   /* Set the protocol sort function */
   gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
@@ -394,7 +411,8 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
 TpConnectionManager *
 empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
-    TpConnectionManagerProtocol **protocol)
+    TpConnectionManagerProtocol **protocol,
+    gboolean *is_gtalk)
 {
   GtkTreeIter iter;
   TpConnectionManager *cm = NULL;
@@ -414,9 +432,18 @@ empathy_protocol_chooser_dup_selected (
           -1);
 
       if (protocol != NULL)
-        gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
-            COL_PROTOCOL, protocol,
-            -1);
+        {
+          gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
+              COL_PROTOCOL, protocol,
+              -1);
+        }
+
+      if (is_gtalk != NULL)
+        {
+          gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
+              COL_IS_GTALK, is_gtalk,
+              -1);
+        }
     }
 
   return cm;

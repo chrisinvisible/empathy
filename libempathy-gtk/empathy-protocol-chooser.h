@@ -65,13 +65,13 @@ GType empathy_protocol_chooser_get_type (void) G_GNUC_CONST;
 GtkWidget * empathy_protocol_chooser_new (void);
 TpConnectionManager *empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
-    TpConnectionManagerProtocol **protocol);
+    TpConnectionManagerProtocol **protocol,
+    gboolean *is_gtalk);
 
 void empathy_protocol_chooser_set_visible (
     EmpathyProtocolChooser *protocol_chooser,
     EmpathyProtocolChooserFilterFunc func,
     gpointer user_data);
-
 
 G_END_DECLS
 #endif /*  __EMPATHY_PROTOCOL_CHOOSER_H__ */
