@@ -104,12 +104,32 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label_username_example">
+          <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
-            <property name="xalign">0</property>
-            <property name="xpad">3</property>
-            <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@jabber.org&lt;/span&gt;</property>
-            <property name="use_markup">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label_username_example">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="xpad">3</property>
+                <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@jabber.org&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_username_g_example">
+                <property name="xalign">0</property>
+                <property name="xpad">3</property>
+                <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@gmail.com&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -475,6 +495,95 @@
       </object>
       <packing>
         <property name="position">5</property>
+      </packing>
+    </child>
+  </object>
+  <object class="GtkVBox" id="vbox_gtalk_simple">
+    <property name="visible">True</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkLabel" id="label_id_g_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">What is your Google ID?</property>
+      </object>
+      <packing>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment_simple_gtalk_id">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.34999999403953552</property>
+        <property name="top_padding">6</property>
+        <property name="bottom_padding">3</property>
+        <property name="left_padding">12</property>
+        <child>
+          <object class="GtkVBox" id="vbox1">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">4</property>
+            <child>
+              <object class="GtkEntry" id="entry_id_g_simple">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x2022;</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_g_example">
+                <property name="visible">True</property>
+                <property name="xalign">0.10000000149011612</property>
+                <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@gmail.com&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label_password_g_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="ypad">6</property>
+        <property name="label" translatable="yes">What is your Google password?</property>
+      </object>
+      <packing>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment2">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.5</property>
+        <property name="left_padding">12</property>
+        <child>
+          <object class="GtkEntry" id="entry_password_g_simple">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="visibility">False</property>
+            <property name="invisible_char">&#x2022;</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="position">3</property>
       </packing>
     </child>
   </object>
