@@ -11,6 +11,9 @@ DOC_FIGURES = \
 	figures/empathy-main-window.png
 
 DOC_PAGES = \
+	account-irc.page \
+	account-jabber.page \
+	accounts-window.page \
 	add-account.page \
 	add-contact.page \
 	audio-call.page \
