@@ -99,7 +99,9 @@ account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
   if (!priv->simple)
     {
       gtk_widget_set_sensitive (priv->apply_button, sensitive);
-      gtk_widget_set_sensitive (priv->cancel_button, sensitive);
+      gtk_widget_set_sensitive (
+          priv->cancel_button, sensitive || priv->creating_account);
+
       priv->contains_pending_changes = sensitive;
     }
 }
@@ -1207,7 +1209,19 @@ do_constructed (GObject *obj)
           G_CALLBACK (account_widget_apply_clicked_cb),
           self);
       gtk_widget_show_all (hbox);
-      account_widget_set_control_buttons_sensitivity (self, FALSE);
+
+      if (!tp_strdiff (protocol, "irc") && priv->creating_account)
+        {
+          /* For the IRC protocol, when creating an account, the user might
+           * have nothing to enter. That means that no control interaction
+           * might occur, so the control buttons sensitivity might never get
+           * updated. That's why we have to explicitly call this function. */
+          account_widget_handle_control_buttons_sensitivity (self);
+        }
+      else
+        {
+          account_widget_set_control_buttons_sensitivity (self, FALSE);
+        }
     }
 
   account = empathy_account_settings_get_account (priv->settings);
