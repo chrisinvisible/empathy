@@ -133,6 +133,17 @@ void empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
 gchar *empathy_account_settings_get_icon_name (
   EmpathyAccountSettings *settings);
 
+void empathy_account_settings_set_icon_name_async (
+  EmpathyAccountSettings *settings,
+  const gchar *name,
+  GAsyncReadyCallback callback,
+  gpointer user_data);
+
+gboolean empathy_account_settings_set_icon_name_finish (
+  EmpathyAccountSettings *settings,
+  GAsyncResult *result,
+  GError **error);
+
 const gchar *empathy_account_settings_get_display_name (
   EmpathyAccountSettings *settings);
 

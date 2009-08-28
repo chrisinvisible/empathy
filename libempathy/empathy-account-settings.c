@@ -62,6 +62,7 @@ struct _EmpathyAccountSettingsPriv
   gchar *protocol;
   gchar *display_name;
   gchar *icon_name;
+  gboolean icon_name_set;
   gboolean display_name_overridden;
   gboolean ready;
 
@@ -182,9 +183,13 @@ empathy_account_settings_constructed (GObject *object)
         g_strdup (empathy_account_get_connection_manager (priv->account));
       priv->protocol =
         g_strdup (empathy_account_get_protocol (priv->account));
+      priv->icon_name = g_strdup
+        (empathy_account_get_icon_name (priv->account));
     }
-
-  priv->icon_name = g_strdup_printf ("im-%s", priv->protocol);
+  else
+    {
+      priv->icon_name = g_strdup_printf ("im-%s", priv->protocol);
+    }
 
   g_assert (priv->cm_name != NULL && priv->protocol != NULL);
 
@@ -946,6 +951,74 @@ empathy_account_settings_set_display_name_finish (
 }
 
 static void
+account_settings_icon_name_set_cb (GObject *src,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+  EmpathyAccount *account = EMPATHY_ACCOUNT (src);
+  GSimpleAsyncResult *set_result = user_data;
+
+  empathy_account_set_icon_name_finish (account, res, &error);
+
+  if (error != NULL)
+    {
+      g_simple_async_result_set_from_error (set_result, error);
+      g_error_free (error);
+    }
+
+  g_simple_async_result_complete (set_result);
+  g_object_unref (set_result);
+}
+
+void
+empathy_account_settings_set_icon_name_async (
+  EmpathyAccountSettings *settings,
+  const gchar *name,
+  GAsyncReadyCallback callback,
+  gpointer user_data)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  GSimpleAsyncResult *result;
+
+  result = g_simple_async_result_new (G_OBJECT (settings),
+      callback, user_data, empathy_account_settings_set_icon_name_finish);
+
+  if (priv->account == NULL)
+    {
+      if (priv->icon_name != NULL)
+        g_free (priv->icon_name);
+
+      priv->icon_name = g_strdup (name);
+      priv->icon_name_set = TRUE;
+
+      g_simple_async_result_complete_in_idle (result);
+
+      return;
+    }
+
+  empathy_account_set_icon_name_async (priv->account, name,
+      account_settings_icon_name_set_cb, result);
+}
+
+gboolean
+empathy_account_settings_set_icon_name_finish (
+  EmpathyAccountSettings *settings,
+  GAsyncResult *result,
+  GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+      error))
+    return FALSE;
+
+  g_return_val_if_fail (g_simple_async_result_is_valid (result,
+    G_OBJECT (settings), empathy_account_settings_set_icon_name_finish),
+      FALSE);
+
+  return TRUE;
+}
+
+static void
 empathy_account_settings_account_updated (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
@@ -1045,6 +1118,10 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
       tp_asv_take_boxed (properties, TP_IFACE_ACCOUNT ".RequestedPresence",
         TP_STRUCT_TYPE_SIMPLE_PRESENCE, presence);
     }
+
+  if (priv->icon_name_set)
+    tp_asv_set_string (properties, TP_IFACE_ACCOUNT ".Icon",
+        priv->icon_name);
 
   empathy_account_manager_create_account_async (priv->account_manager,
     priv->cm_name, priv->protocol, priv->display_name,

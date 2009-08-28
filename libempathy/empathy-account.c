@@ -240,6 +240,19 @@ empathy_account_update (EmpathyAccount *account,
       g_object_notify (G_OBJECT (account), "display-name");
     }
 
+  if (g_hash_table_lookup (properties, "Icon") != NULL)
+    {
+      const gchar *icon_name;
+
+      icon_name = tp_asv_get_string (properties, "Icon");
+
+      if (!EMP_STR_EMPTY (icon_name))
+	{
+	  g_free (priv->icon_name);
+	  priv->icon_name = g_strdup (icon_name);
+	}
+    }
+
   if (g_hash_table_lookup (properties, "Enabled") != NULL)
     {
       gboolean enabled = tp_asv_get_boolean (properties, "Enabled", NULL);
@@ -1170,6 +1183,62 @@ empathy_account_set_display_name_finish (EmpathyAccount *account,
 }
 
 static void
+account_icon_name_set_cb (TpProxy *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  GSimpleAsyncResult *result = user_data;
+
+  if (error != NULL)
+    g_simple_async_result_set_from_error (result, (GError *) error);
+
+  g_simple_async_result_complete (result);
+  g_object_unref (result);
+}
+
+void
+empathy_account_set_icon_name_async (EmpathyAccount *account,
+    const char *icon_name,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
+{
+  GSimpleAsyncResult *result;
+  GValue value = {0, };
+  EmpathyAccountPriv *priv = GET_PRIV (account);
+  const char *icon_name_set;
+
+  if (icon_name == NULL)
+    /* settings an empty icon name is allowed */
+    icon_name_set = "";
+  else
+    icon_name_set = icon_name;
+
+  result = g_simple_async_result_new (G_OBJECT (account), callback,
+      user_data, empathy_account_set_icon_name_finish);
+
+  g_value_init (&value, G_TYPE_STRING);
+  g_value_set_string (&value, icon_name_set);
+
+  tp_cli_dbus_properties_call_set (priv->account, -1, TP_IFACE_ACCOUNT,
+      "Icon", &value, account_icon_name_set_cb, result, NULL,
+      G_OBJECT (account));
+}
+
+gboolean
+empathy_account_set_icon_name_finish (EmpathyAccount *account,
+    GAsyncResult *result, GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error) ||
+      !g_simple_async_result_is_valid (result, G_OBJECT (account),
+          empathy_account_set_icon_name_finish))
+    return FALSE;
+
+  return TRUE;
+}
+
+static void
 empathy_account_remove_cb (TpAccount *proxy,
     const GError *error,
     gpointer user_data,
@@ -1232,3 +1301,4 @@ empathy_account_refresh_properties (EmpathyAccount *account)
     NULL,
     G_OBJECT (account));
 }
+
