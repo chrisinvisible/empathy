@@ -1551,31 +1551,3 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 
 	gtk_widget_show (widget);
 }
-
-/** empathy_show_yes_no_question_dialog:
- * @parent: The parent of the message dialog
- * @message: The question message
- * @response_callback: The callback connected to the "response" signal of
- * the message dialog.
- * @user_data: User data to pass to the @response_callback.
- *
- * A simple utility function to create a modal yes/no question message dialog
- * and hooking to its "response" signal.
- */
-void empathy_show_yes_no_question_dialog (GtkWindow *parent,
-    gchar *message,
-    GCallback response_callback,
-    gpointer user_data)
-{
-  GtkWidget *message_dialog;
-
-  message_dialog = gtk_message_dialog_new (parent,
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    GTK_MESSAGE_QUESTION,
-    GTK_BUTTONS_YES_NO,
-    message);
-
-  g_signal_connect (message_dialog, "response", response_callback, user_data);
-
-  gtk_widget_show (message_dialog);
-}

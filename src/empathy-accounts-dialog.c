@@ -57,6 +57,11 @@
 /* Flashing delay for icons (milliseconds). */
 #define FLASH_TIMEOUT 500
 
+/* The primary text of the dialog shown to the user when he is about to lose
+ * unsaved changes */
+#define PENDING_CHANGES_QUESTION_PRIMARY_TEXT \
+  "There are unsaved modification regarding your %s account."
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, G_TYPE_OBJECT);
 
@@ -418,6 +423,46 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 }
 
 static void
+accounts_dialog_show_question_dialog (EmpathyAccountsDialog *dialog,
+    gchar *primary_text,
+    gchar *secondary_text,
+    GCallback response_callback,
+    gpointer user_data,
+    const gchar *first_button_text,
+    ...)
+{
+  va_list button_args;
+  GtkWidget *message_dialog;
+  const gchar *button_text;
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  message_dialog = gtk_message_dialog_new (GTK_WINDOW (priv->window),
+      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+      GTK_MESSAGE_QUESTION,
+      GTK_BUTTONS_NONE,
+      primary_text);
+
+  gtk_message_dialog_format_secondary_text (
+      GTK_MESSAGE_DIALOG (message_dialog), secondary_text);
+
+  va_start (button_args, first_button_text);
+  for (button_text = first_button_text;
+       button_text;
+       button_text = va_arg (button_args, const gchar *))
+    {
+      gint response_id;
+      response_id = va_arg (button_args, gint);
+
+      gtk_dialog_add_button (GTK_DIALOG (message_dialog), button_text, response_id);
+    }
+  va_end (button_args);
+
+  g_signal_connect (message_dialog, "response", response_callback, user_data);
+
+  gtk_widget_show (message_dialog);
+}
+
+static void
 accounts_dialog_add_pending_changes_response_cb (GtkDialog *message_dialog,
   gint response_id,
   gpointer *user_data)
@@ -440,24 +485,22 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
   EmpathyAccount *account;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
-      gchar *message;
+    gchar *question_dialog_primary_text = g_strdup_printf (
+        PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
+        empathy_account_get_display_name (account));
 
-      message = g_strdup_printf (
-          _("There are unsaved modification regarding your %s account.\n"
-              "You are about to create a new account, which will discard\n"
-              "your changes. Are you sure you want to proceed?"),
-              empathy_account_get_display_name (account));
+    accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
+        "You are about to create a new account, which will discard\n"
+          "your changes. Are you sure you want to proceed?",
+        G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
+        dialog,
+        GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+        GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
 
-      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
-          message,
-          G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
-          dialog);
-
-      g_free (message);
+    g_free (question_dialog_primary_text);
     }
   else
     {
@@ -716,7 +759,7 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
   EmpathyAccount *account;
   GtkTreeModel *model;
   GtkTreeIter iter;
-  GtkWidget *message_dialog;
+  gchar *question_dialog_primary_text;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
@@ -733,34 +776,23 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
       return;
     }
 
-  message_dialog = gtk_message_dialog_new
-      (GTK_WINDOW (priv->window),
-          GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-          GTK_MESSAGE_QUESTION,
-          GTK_BUTTONS_NONE,
-          _("You are about to remove your %s account!\n"
-              "Are you sure you want to proceed?"),
-              empathy_account_get_display_name (account));
+  question_dialog_primary_text = g_strdup_printf (
+      _("You are about to remove your %s account!\n"
+          "Are you sure you want to proceed?"),
+      empathy_account_get_display_name (account));
 
-  gtk_message_dialog_format_secondary_text
-  (GTK_MESSAGE_DIALOG (message_dialog),
+  accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
       _("Any associated conversations and chat rooms will NOT be "
           "removed if you decide to proceed.\n"
           "\n"
           "Should you decide to add the account back at a later time, "
-          "they will still be available."));
+          "they will still be available."),
+      G_CALLBACK (accounts_dialog_delete_account_response_cb),
+      dialog,
+      GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+      GTK_STOCK_REMOVE, GTK_RESPONSE_YES, NULL);
 
-  gtk_dialog_add_button (GTK_DIALOG (message_dialog),
-      GTK_STOCK_CANCEL,
-      GTK_RESPONSE_NO);
-  gtk_dialog_add_button (GTK_DIALOG (message_dialog),
-      GTK_STOCK_REMOVE,
-      GTK_RESPONSE_YES);
-
-  g_signal_connect (message_dialog, "response",
-      G_CALLBACK (accounts_dialog_delete_account_response_cb), dialog);
-
-  gtk_widget_show (message_dialog);
+  g_free (question_dialog_primary_text);
 
   if (account != NULL)
     g_object_unref (account);
@@ -925,20 +957,22 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
       /* The currently selected account has some unsaved changes. We ask
        * the user if he really wants to lose his changes and select another
        * account */
+      gchar *question_dialog_primary_text;
       priv->destination_path = gtk_tree_path_to_string (path);
-      gchar *message;
 
-      message = g_strdup_printf (
-          _("There are unsaved modification regarding your %s account.\n"
-          "You are about to select another account, which will discard\n"
-          "your changes. Are you sure you want to proceed?"),
+      question_dialog_primary_text = g_strdup_printf (
+          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
           empathy_account_get_display_name (account));
 
-      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
-          message, G_CALLBACK (accounts_dialog_selection_change_response_cb),
-          dialog);
+      accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
+          "You are about to select another account, which will discard\n"
+            "your changes. Are you sure you want to proceed?",
+          G_CALLBACK (accounts_dialog_selection_change_response_cb),
+          dialog,
+          GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+          GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
 
-      g_free (message);
+      g_free (question_dialog_primary_text);
     }
   else
     {
@@ -1409,22 +1443,23 @@ accounts_dialog_response_cb (GtkWidget *widget,
     EmpathyAccountsDialog *dialog)
 {
   EmpathyAccount *account;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
-      gchar *message;
+      gchar *question_dialog_primary_text;
+      question_dialog_primary_text = g_strdup_printf (
+          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
+          empathy_account_get_display_name (account));
 
-      message = g_strdup_printf (
-        _("There are unsaved modifications regarding your %s account.\n"
-            "Are you sure you want to close the window? "),
-            empathy_account_get_display_name (account));
+      accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
+          "You are about to close the window, which will discard\n"
+            "your changes. Are you sure you want to proceed?",
+          G_CALLBACK (accounts_dialog_close_response_cb),
+          widget,
+          GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+          GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
 
-      empathy_show_yes_no_question_dialog (GTK_WINDOW (priv->window),
-          message, G_CALLBACK (accounts_dialog_close_response_cb),
-          widget);
-
-      g_free (message);
+      g_free (question_dialog_primary_text);
     }
   else if (response == GTK_RESPONSE_CLOSE)
     gtk_widget_destroy (widget);
