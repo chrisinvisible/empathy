@@ -1208,7 +1208,7 @@ static void
 accounts_dialog_button_help_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
-  empathy_url_show (button, "ghelp:empathy?empathy-create-account");
+  empathy_url_show (button, "ghelp:empathy?accounts-window");
 }
 
 static void
