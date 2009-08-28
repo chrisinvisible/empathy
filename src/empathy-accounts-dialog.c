@@ -342,21 +342,17 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
   gboolean has_pending_changes;
   GtkTreeIter iter;
   GtkTreeModel *model;
-  EmpathyAccountSettings *settings;
+  GtkTreeSelection *selection;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
-  settings = accounts_dialog_model_get_selected_settings (dialog);
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
 
-  if (accounts_dialog_get_settings_iter (dialog, settings, &iter))
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
     gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, account, -1);
 
   has_pending_changes = account != NULL && priv->setting_widget_object != NULL
       && empathy_account_widget_contains_pending_changes (
           priv->setting_widget_object);
-
-  if (settings != NULL)
-    g_object_unref (settings);
 
   return has_pending_changes;
 }
