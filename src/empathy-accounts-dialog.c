@@ -60,7 +60,7 @@
 /* The primary text of the dialog shown to the user when he is about to lose
  * unsaved changes */
 #define PENDING_CHANGES_QUESTION_PRIMARY_TEXT \
-  "There are unsaved modification regarding your %s account."
+  _("There are unsaved modification regarding your %s account.")
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, G_TYPE_OBJECT);
@@ -493,8 +493,8 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
         empathy_account_get_display_name (account));
 
     accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-        "You are about to create a new account, which will discard\n"
-          "your changes. Are you sure you want to proceed?",
+        _("You are about to create a new account, which will discard\n"
+            "your changes. Are you sure you want to proceed?"),
         G_CALLBACK (accounts_dialog_add_pending_changes_response_cb),
         dialog,
         GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
@@ -970,8 +970,8 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
           empathy_account_get_display_name (account));
 
       accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-          "You are about to select another account, which will discard\n"
-            "your changes. Are you sure you want to proceed?",
+          _("You are about to select another account, which will discard\n"
+              "your changes. Are you sure you want to proceed?"),
           G_CALLBACK (accounts_dialog_selection_change_response_cb),
           dialog,
           GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
@@ -1457,8 +1457,8 @@ accounts_dialog_response_cb (GtkWidget *widget,
           empathy_account_get_display_name (account));
 
       accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-          "You are about to close the window, which will discard\n"
-            "your changes. Are you sure you want to proceed?",
+          _("You are about to close the window, which will discard\n"
+              "your changes. Are you sure you want to proceed?"),
           G_CALLBACK (accounts_dialog_close_response_cb),
           widget,
           GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
