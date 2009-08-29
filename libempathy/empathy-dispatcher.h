@@ -28,6 +28,7 @@
 #include <telepathy-glib/channel.h>
 
 #include "empathy-contact.h"
+#include "empathy-handler.h"
 #include "empathy-dispatch-operation.h"
 
 G_BEGIN_DECLS
@@ -100,6 +101,16 @@ GList * empathy_dispatcher_find_requestable_channel_classes
 EmpathyDispatcher * empathy_dispatcher_new (const gchar *name,
   GPtrArray *filters,
   GStrv capabilities);
+
+EmpathyHandler *
+empathy_dispatcher_add_handler (EmpathyDispatcher *dispatcher,
+    const gchar *name,
+    GPtrArray *filters,
+    GStrv capabilities);
+
+void
+empathy_dispatcher_remove_handler (EmpathyDispatcher *dispatcher,
+  EmpathyHandler *handler);
 
 /* Get the dispatcher singleton */
 EmpathyDispatcher *    empathy_dispatcher_dup_singleton (void);

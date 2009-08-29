@@ -56,6 +56,8 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyDispatcher)
 typedef struct
 {
+  gboolean dispose_has_run;
+
   EmpathyAccountManager *account_manager;
   /* connection to connection data mapping */
   GHashTable *connections;
@@ -66,7 +68,12 @@ typedef struct
   /* channels which the dispatcher is listening "invalidated" */
   GList *channels;
   GPtrArray *array;
+
+  /* main handler */
   EmpathyHandler *handler;
+
+  /* extra handlers */
+  GList *handlers;
 
   GHashTable *request_channel_class_async_ids;
 } EmpathyDispatcherPriv;
@@ -891,6 +898,30 @@ dispatcher_constructor (GType type,
 }
 
 static void
+dispatcher_dispose (GObject *object)
+{
+  EmpathyDispatcherPriv *priv = GET_PRIV (object);
+  GList *l;
+
+  if (priv->dispose_has_run)
+    return;
+
+  priv->dispose_has_run = TRUE;
+
+  for (l = priv->handlers ; l != NULL; l = g_list_next (l))
+    g_object_unref (G_OBJECT (l->data));
+
+  g_list_free (priv->handlers);
+  priv->handlers = NULL;
+
+  if (priv->handler != NULL)
+    g_object_unref (priv->handler);
+  priv->handler = NULL;
+
+  G_OBJECT_CLASS (empathy_dispatcher_parent_class)->dispose (object);
+}
+
+static void
 dispatcher_finalize (GObject *object)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (object);
@@ -983,6 +1014,7 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GParamSpec *param_spec;
 
+  object_class->dispose = dispatcher_dispose;
   object_class->finalize = dispatcher_finalize;
   object_class->constructor = dispatcher_constructor;
 
@@ -1826,4 +1858,42 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
     }
 
   return TRUE;
+}
+
+
+EmpathyHandler *
+empathy_dispatcher_add_handler (EmpathyDispatcher *dispatcher,
+    const gchar *name,
+    GPtrArray *filters,
+    GStrv capabilities)
+{
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyHandler *handler;
+
+  handler = empathy_handler_new (name, filters, capabilities);
+  priv->handlers = g_list_prepend (priv->handlers, handler);
+
+  /* Only set the handle_channels function, the Channel property on the main
+   * handler will always report all dispatched channels even if they came from
+   * a different Handler */
+  empathy_handler_set_handle_channels_func (handler,
+    empathy_dispatcher_handle_channels,
+    dispatcher);
+
+  return handler;
+}
+
+void
+empathy_dispatcher_remove_handler (EmpathyDispatcher *dispatcher,
+  EmpathyHandler *handler)
+{
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  GList *h;
+
+  h = g_list_find (priv->handlers, handler);
+  g_return_if_fail (h != NULL);
+
+  priv->handlers = g_list_delete_link (priv->handlers, h);
+
+  g_object_unref (handler);
 }
