@@ -584,7 +584,10 @@ setup_dispatcher (void)
     /* roomlists */
     { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
   };
-  GStrv capabilities = { NULL };
+  gchar *capabilities[] = {
+    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/ice-udp",
+    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
+    NULL };
   GHashTable *asv;
   int i;
 
