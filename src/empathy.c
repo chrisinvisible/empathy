@@ -585,14 +585,28 @@ setup_dispatcher (void)
     { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
   };
   GStrv capabilities = { NULL };
+  GHashTable *asv;
   int i;
 
+  /* Setup the basic Client.Handler that matches our client filter */
   filters = g_ptr_array_new ();
+  asv = tp_asv_new (
+        TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
+           TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_INT,
+            TP_HANDLE_TYPE_CONTACT,
+        NULL);
+  g_ptr_array_add (filters, asv);
 
+  d = empathy_dispatcher_new (PACKAGE_NAME, filters, NULL);
+
+  g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
+  g_ptr_array_free (filters, TRUE);
+
+  /* Setup the an extended Client.Handler that matches everything we can do */
+  filters = g_ptr_array_new ();
   for (i = 0 ; i < G_N_ELEMENTS (types); i++)
     {
-      GHashTable *asv;
-
       asv = tp_asv_new (
         TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, types[i].channeltype,
         TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_INT, types[i].handletype,
@@ -601,7 +615,8 @@ setup_dispatcher (void)
       g_ptr_array_add (filters, asv);
     }
 
-  d = empathy_dispatcher_new (PACKAGE_NAME, filters, capabilities);
+  empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThenMeetsTheEye",
+    filters, capabilities);
 
   g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
   g_ptr_array_free (filters, TRUE);
