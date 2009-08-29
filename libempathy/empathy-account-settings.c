@@ -62,7 +62,6 @@ struct _EmpathyAccountSettingsPriv
   gchar *protocol;
   gchar *display_name;
   gchar *icon_name;
-  gboolean icon_name_set;
   gboolean display_name_overridden;
   gboolean ready;
 
@@ -990,7 +989,6 @@ empathy_account_settings_set_icon_name_async (
         g_free (priv->icon_name);
 
       priv->icon_name = g_strdup (name);
-      priv->icon_name_set = TRUE;
 
       g_simple_async_result_complete_in_idle (result);
 
@@ -1119,9 +1117,8 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
         TP_STRUCT_TYPE_SIMPLE_PRESENCE, presence);
     }
 
-  if (priv->icon_name_set)
-    tp_asv_set_string (properties, TP_IFACE_ACCOUNT ".Icon",
-        priv->icon_name);
+  tp_asv_set_string (properties, TP_IFACE_ACCOUNT ".Icon",
+      priv->icon_name);
 
   empathy_account_manager_create_account_async (priv->account_manager,
     priv->cm_name, priv->protocol, priv->display_name,
