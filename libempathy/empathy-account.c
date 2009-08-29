@@ -246,11 +246,12 @@ empathy_account_update (EmpathyAccount *account,
 
       icon_name = tp_asv_get_string (properties, "Icon");
 
-      if (!EMP_STR_EMPTY (icon_name))
-	{
-	  g_free (priv->icon_name);
-	  priv->icon_name = g_strdup (icon_name);
-	}
+      g_free (priv->icon_name);
+
+      if (EMP_STR_EMPTY (icon_name))
+        priv->icon_name = empathy_protocol_icon_name (priv->proto_name);
+      else
+        priv->icon_name = g_strdup (icon_name);
     }
 
   if (g_hash_table_lookup (properties, "Enabled") != NULL)
