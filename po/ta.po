@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy.master.ta\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-25 19:12+0000\n"
-"PO-Revision-Date: 2009-08-26 15:49+0530\n"
+"POT-Creation-Date: 2009-08-28 12:11+0000\n"
+"PO-Revision-Date: 2009-08-31 00:57+0530\n"
 "Last-Translator: I. Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -23,12 +23,22 @@ msgstr ""
 "\n"
 "\n"
 "\n"
+"\n"
 
 #: ../data/empathy.desktop.in.in.h:1
+msgid "Empathy"
+msgstr "Empathy"
+
+#: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy IM Client"
 msgstr "Empathy IM கிளையன்"
 
-#: ../data/empathy.desktop.in.in.h:2
+#: ../data/empathy.desktop.in.in.h:3
+#| msgid "Client:"
+msgid "IM Client"
+msgstr "IM கிளையன்"
+
+#: ../data/empathy.desktop.in.in.h:4
 msgid "Send and receive messages"
 msgstr "செய்திகளை  அனுப்புக மற்றும் பெறுக"
 
@@ -408,7 +418,7 @@ msgstr ""
 "பெயர் மதிப்பு \"பெயர்\". \"நிலை\" என்ற மதிப்பு தொடர்பை நிலையை பொருத்து "
 "வரிசைப்படுத்தும்."
 
-#: ../libempathy/empathy-account.c:1103
+#: ../libempathy/empathy-account.c:1144
 msgid "Can't set an empty display name"
 msgstr "ஒரு காலியான காட்சிப் பெயரை அமைக்க முடியாது"
 
@@ -489,7 +499,6 @@ msgid "People Nearby"
 msgstr "அருகில் உள்ள மக்கள்"
 
 #: ../libempathy/empathy-utils.c:384
-#| msgid "Use _Yahoo Japan"
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
@@ -547,13 +556,13 @@ msgstr "எதிர்காலத்தில்"
 msgid "All"
 msgstr "அனைத்து"
 
-#: ../libempathy-gtk/empathy-account-widget.c:448
-#: ../libempathy-gtk/empathy-account-widget.c:504
+#: ../libempathy-gtk/empathy-account-widget.c:441
+#: ../libempathy-gtk/empathy-account-widget.c:497
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1224
+#: ../libempathy-gtk/empathy-account-widget.c:1213
 msgid "Enabled"
 msgstr "செயலாக்கப்பட்டது"
 
@@ -1758,43 +1767,44 @@ msgstr "க்னோமுக்கு ஒரு உடனடி செய்த
 msgid "translator-credits"
 msgstr "I. Felix <ifelix@redhat.com>. Dr. T. Vasudevan <agnihot3@gmail.com>"
 
-#. translators: this is followed by the "while ..." strings some lines
-#. * down this file.
-#.
+#: ../src/empathy-account-assistant.c:118
+#| msgid "while importing the accounts."
+msgid "There has been an error while importing the accounts."
+msgstr "கணக்குகளை இறக்கும் போது ஒரு பிழை."
+
 #: ../src/empathy-account-assistant.c:121
-msgid "There has been an error "
-msgstr "அங்கே ஒரு பிழையாக இருக்கலாம் "
+#| msgid "while parsing the account details."
+msgid "There has been an error while parsing the account details."
+msgstr "கணக்கு விவரங்களை பகுக்கும் போது ஒரு பிழை."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:125
-msgid "while importing the accounts."
-msgstr "கணக்குகளை இறக்கும் போது."
+#: ../src/empathy-account-assistant.c:124
+#| msgid "while creating the account."
+msgid "There has been an error while creating the account."
+msgstr "கணக்கை உருவாக்கும் போது ஒரு பிழை."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:129
-msgid "while parsing the account details."
-msgstr "கணக்கு விவரங்களை பகுக்கும் போது."
+#: ../src/empathy-account-assistant.c:126
+#| msgid "There has been an error "
+msgid "There has been an error."
+msgstr "அங்கே ஒரு பிழையாக இருக்கலாம்."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:133
-msgid "while creating the account."
-msgstr "கணக்கை உருவாக்கும் போது."
-
-#: ../src/empathy-account-assistant.c:151
+#: ../src/empathy-account-assistant.c:141
 #, c-format
 msgid "The error message was: <span style=\"italic\">%s</span>"
 msgstr "அந்த பிழையான செய்தியானது: <span style=\"italic\">%s</span>"
 
-#: ../src/empathy-account-assistant.c:159
+#: ../src/empathy-account-assistant.c:149
+#| msgid ""
+#| "You can either go back and try to enter your accounts' details again or "
+#| "quit this wizard and add accounts later from the Edit menu."
 msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
-"this wizard and add accounts later from the Edit menu."
+"this assistant and add accounts later from the Edit menu."
 msgstr ""
 "நீங்கள் பின்னாலும் சென்று மற்றும் உங்களது கணக்குகளின் விவரங்களை மீண்டும் உள்ளிட முயற்சிக்கலாம் "
 "அல்லது இந்த வழிகாட்டியை நிறுத்தலாம் மற்றும் மெனுவை திருத்துவதிலுருந்து பின்னர் கணக்குகளை "
 "சேர்க்கலாம்."
 
-#: ../src/empathy-account-assistant.c:194
+#: ../src/empathy-account-assistant.c:184
 msgid "An error occurred"
 msgstr "ஒரு பிழை ஏற்பட்டது"
 
@@ -1802,39 +1812,39 @@ msgstr "ஒரு பிழை ஏற்பட்டது"
 #. To translator: %s is the protocol name
 #. Create account
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
-#. * "Yahoo!
+#. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:330
-#: ../src/empathy-accounts-dialog.c:1101
+#: ../src/empathy-account-assistant.c:320
+#: ../src/empathy-accounts-dialog.c:1197
 #, c-format
 msgid "New %s account"
 msgstr "புதிய %s கணக்கு"
 
-#: ../src/empathy-account-assistant.c:397
+#: ../src/empathy-account-assistant.c:387
 msgid "What kind of chat account do you have?"
 msgstr "எந்த வகையான அரட்டை கணக்கை நீங்கள் பெற்றிருக்கிறீர்கள்?"
 
-#: ../src/empathy-account-assistant.c:403
+#: ../src/empathy-account-assistant.c:393
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "நீங்கள் அமைக்க விரும்புவதற்கு உங்களுக்கு ஏதேனும் மற்ற அரட்டை கணக்குகள் இருக்கிறதா?"
 
-#: ../src/empathy-account-assistant.c:409
+#: ../src/empathy-account-assistant.c:399
 msgid "Enter your account details"
 msgstr "உங்களது கணக்கு விவரங்களை உள்ளிடவும்"
 
-#: ../src/empathy-account-assistant.c:414
+#: ../src/empathy-account-assistant.c:404
 msgid "What kind of chat account do you want to create?"
 msgstr "எந்த வகையான அரட்டை கணக்கை நீங்கள் உருவாக்க விரும்புகிறீர்கள்?"
 
-#: ../src/empathy-account-assistant.c:420
+#: ../src/empathy-account-assistant.c:410
 msgid "Do you want to create other chat accounts?"
 msgstr "மற்ற அரட்டை கணக்குகளை உருவாக்க நீங்கள் விரும்புகிறீர்களா?"
 
-#: ../src/empathy-account-assistant.c:427
+#: ../src/empathy-account-assistant.c:417
 msgid "Enter the details for the new account"
 msgstr "புதிய கணக்கிற்கு விவரங்களை உள்ளிடவும்"
 
-#: ../src/empathy-account-assistant.c:513
+#: ../src/empathy-account-assistant.c:503
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -1846,49 +1856,68 @@ msgstr ""
 "கொலிக்ஸ் உடன் அரட்டை அடிக்கலாம். மைக்ரோ போன் அல்லது வெப்கேமிராவினால் நீங்களும் ஆடியோ அல்லது "
 "வீடியோ அழைப்புகளை பெறலாம். "
 
-#: ../src/empathy-account-assistant.c:530
+#: ../src/empathy-account-assistant.c:520
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "மற்ற அரட்டை நிரலை பயன்படுத்திக் கொண்டிருக்கிற உங்களுக்கு ஒரு கணக்கு உள்ளதா?"
 
-#: ../src/empathy-account-assistant.c:553
+#: ../src/empathy-account-assistant.c:543
 msgid "Yes, import my account details from "
 msgstr "ஆம், எனது கணக்கு விவரங்களை இதிலிருந்து இறக்கவும் "
 
-#: ../src/empathy-account-assistant.c:574
+#: ../src/empathy-account-assistant.c:564
 msgid "Yes, I'll enter my account details now"
 msgstr "ஆம், இப்போது எனது கணக்கு விவரங்களை உள்ளிடுகிறேன்"
 
-#: ../src/empathy-account-assistant.c:596
+#: ../src/empathy-account-assistant.c:586
 msgid "No, I want a new account"
 msgstr "இல்லை, எனக்கு ஒரு புதிய கணக்கு வேண்டும்"
 
-#: ../src/empathy-account-assistant.c:606
+#: ../src/empathy-account-assistant.c:596
 msgid "No, I just want to see people online nearby for now"
 msgstr "இல்லை, இப்போது ஆன்லைனில் எனக்கு அருகிலிருக்கும் மக்களை நான் பார்க்க விரும்புகிறேன்"
 
-#: ../src/empathy-account-assistant.c:627
+#: ../src/empathy-account-assistant.c:617
 msgid "Select the accounts you want to import:"
 msgstr "நீங்கள் இறக்க விரும்பும் கணக்குகளை தேர்ந்தெடுக்கவும்:"
 
-#: ../src/empathy-account-assistant.c:714
+#: ../src/empathy-account-assistant.c:704
 #: ../src/empathy-new-chatroom-dialog.c:496
 #: ../src/empathy-new-chatroom-dialog.c:497
 msgid "Yes"
 msgstr "ஆம்"
 
-#: ../src/empathy-account-assistant.c:721
+#: ../src/empathy-account-assistant.c:711
 msgid "No, that's all for now"
 msgstr "இல்லை, இப்போதைக்கு அவ்வளவு தான்"
 
-#: ../src/empathy-account-assistant.c:914
+#: ../src/empathy-account-assistant.c:904
 msgid "Welcome to Empathy"
 msgstr "Empathyக்கு வரவேற்குறது"
 
-#: ../src/empathy-account-assistant.c:923
+#: ../src/empathy-account-assistant.c:913
 msgid "Import your existing accounts"
 msgstr "உங்களிடம் இருக்கிற கணக்குகளை இறக்கவும்"
 
-#: ../src/empathy-accounts-dialog.c:616
+#: ../src/empathy-accounts-dialog.c:206
+#, c-format
+#| msgid "%s of %s"
+msgid "%s on %s"
+msgstr "%sஇல் %s"
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#: ../src/empathy-accounts-dialog.c:217
+#, c-format
+#| msgid "%s account"
+msgid "%s Account"
+msgstr "%s கணக்கு"
+
+#: ../src/empathy-accounts-dialog.c:221
+#| msgid "New %s account"
+msgid "New account"
+msgstr "புதிய கணக்கு"
+
+#: ../src/empathy-accounts-dialog.c:674
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1897,7 +1926,7 @@ msgstr ""
 "நீங்கள் உங்கள் %s கணக்கை நீக்கப்போகிறீர்கள்!\n"
 "நிச்சயம் தொடர வேண்டுமா?"
 
-#: ../src/empathy-accounts-dialog.c:622
+#: ../src/empathy-accounts-dialog.c:680
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -2751,64 +2780,64 @@ msgstr ""
 msgid "Contact Map View"
 msgstr "தொடர்புகள் படக்காட்சி"
 
-#: ../src/empathy-debug-dialog.c:111 ../src/empathy-debug-dialog.c:1079
+#: ../src/empathy-debug-window.c:111 ../src/empathy-debug-window.c:1081
 msgid "Error"
 msgstr " பிழை"
 
-#: ../src/empathy-debug-dialog.c:114 ../src/empathy-debug-dialog.c:1073
+#: ../src/empathy-debug-window.c:114 ../src/empathy-debug-window.c:1075
 msgid "Critical"
 msgstr "ஆபத்தானன்"
 
-#: ../src/empathy-debug-dialog.c:117 ../src/empathy-debug-dialog.c:1067
+#: ../src/empathy-debug-window.c:117 ../src/empathy-debug-window.c:1069
 msgid "Warning"
 msgstr "எச்சரிக்கை"
 
-#: ../src/empathy-debug-dialog.c:120 ../src/empathy-debug-dialog.c:1061
-#: ../src/empathy-debug-dialog.c:1109
+#: ../src/empathy-debug-window.c:120 ../src/empathy-debug-window.c:1063
+#: ../src/empathy-debug-window.c:1111
 msgid "Message"
 msgstr "செய்தி"
 
-#: ../src/empathy-debug-dialog.c:123 ../src/empathy-debug-dialog.c:1055
+#: ../src/empathy-debug-window.c:123 ../src/empathy-debug-window.c:1057
 msgid "Info"
 msgstr "தகவல்"
 
-#: ../src/empathy-debug-dialog.c:126 ../src/empathy-debug-dialog.c:1049
+#: ../src/empathy-debug-window.c:126 ../src/empathy-debug-window.c:1051
 msgid "Debug"
 msgstr "வழுநீக்கு"
 
-#: ../src/empathy-debug-dialog.c:841
+#: ../src/empathy-debug-window.c:841
 msgid "Save"
 msgstr "சேமி"
 
-#: ../src/empathy-debug-dialog.c:944
+#: ../src/empathy-debug-window.c:944
 msgid "Debug Window"
 msgstr "வழு நீக்கு சாளரம்"
 
-#: ../src/empathy-debug-dialog.c:1017
+#: ../src/empathy-debug-window.c:1019
 msgid "Pause"
 msgstr "தாமதி"
 
-#: ../src/empathy-debug-dialog.c:1029
+#: ../src/empathy-debug-window.c:1031
 msgid "Level "
 msgstr "மட்டம்"
 
-#: ../src/empathy-debug-dialog.c:1098
+#: ../src/empathy-debug-window.c:1100
 msgid "Time"
 msgstr "நேரம்"
 
-#: ../src/empathy-debug-dialog.c:1100
+#: ../src/empathy-debug-window.c:1102
 msgid "Domain"
 msgstr "களம்"
 
-#: ../src/empathy-debug-dialog.c:1102
+#: ../src/empathy-debug-window.c:1104
 msgid "Category"
 msgstr "வகை"
 
-#: ../src/empathy-debug-dialog.c:1104
+#: ../src/empathy-debug-window.c:1106
 msgid "Level"
 msgstr "மட்டம்"
 
-#: ../src/empathy-debug-dialog.c:1136
+#: ../src/empathy-debug-window.c:1138
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
