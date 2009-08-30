@@ -339,14 +339,9 @@ tp_chat_send_error_cb (TpChannel   *channel,
 	if (priv->channel == NULL)
 		return;
 
-	DEBUG ("Message sent error: %s (%d)", message_body, error_code);
+	DEBUG ("Error sending '%s' (%d)", message_body, error_code);
 
-	tp_chat_build_message (EMPATHY_TP_CHAT (chat),
-			       0,
-			       message_type,
-			       timestamp,
-			       0,
-			       message_body);
+	g_signal_emit (chat, signals[SEND_ERROR], 0, message_body, error_code);
 }
 
 static void
