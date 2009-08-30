@@ -1,9 +1,9 @@
 # Empathy'i eesti keele tõlge.
 # Estonian translation of Empathy.
 #
-# Copyright (C) 2005-2008 Free Software Foundation, Inc.
+# Copyright (C) 2005-2009 Free Software Foundation, Inc.
 #
-# Ivar Smolin <okul at linux ee>, 2005-2008.
+# Ivar Smolin <okul linux ee>, 2005-2009.
 # Mattias Põldaru <mahfiaz gmail com>, 2009.
 #
 msgid ""
@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-20 13:44+0000\n"
-"PO-Revision-Date: 2009-08-21 15:26+0300\n"
+"POT-Creation-Date: 2009-08-28 12:11+0000\n"
+"PO-Revision-Date: 2009-08-30 12:26+0300\n"
 "Last-Translator: Ivar Smolin <okul@linux.ee>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,8 +20,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Empathy"
+msgstr "Empathy"
+
 msgid "Empathy IM Client"
 msgstr "Empathy sõnumivahetuse klient"
+
+msgid "IM Client"
+msgstr "Välksõnumiklient:"
 
 msgid "Send and receive messages"
 msgstr "Sõnumite saatmine ja vastuvõtt"
@@ -103,6 +109,12 @@ msgstr "Peida peaaken"
 
 msgid "Hide the main window."
 msgstr "Peaakna peitmine."
+
+msgid "MC 4 accounts have been imported"
+msgstr ""
+
+msgid "MC 4 accounts have been imported."
+msgstr ""
 
 msgid "Nick completed character"
 msgstr "Nimele lisamise märk"
@@ -325,6 +337,9 @@ msgstr ""
 "kontaktid nime järgi, selle välja väärtus on \"name\". Kui väärtus on \"state"
 "\", sorteeritakse kontaktide nimekiri oleku järgi."
 
+msgid "Can't set an empty display name"
+msgstr ""
+
 msgid "The hash of the received file and the sent one do not match"
 msgstr "Vastuvõetud faili ja saadetud faili räsi ei kattu"
 
@@ -379,6 +394,15 @@ msgstr "Nähtamatu"
 msgid "Offline"
 msgstr "Ühendamata"
 
+msgid "People Nearby"
+msgstr "Lähedalasuvad inimesed"
+
+msgid "Yahoo! Japan"
+msgstr "Jaapani Yahoo!"
+
+msgid "Facebook Chat"
+msgstr "Facebooki vestlus"
+
 #, c-format
 msgid "%d second ago"
 msgid_plural "%d seconds ago"
@@ -425,6 +449,12 @@ msgstr "Kõik"
 msgid "%s:"
 msgstr "%s:"
 
+msgid "Enabled"
+msgstr "Lubatud"
+
+msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
+msgstr ""
+
 msgid "Advanced"
 msgstr "Laiendatud"
 
@@ -434,17 +464,41 @@ msgstr "_Parool:"
 msgid "Screen _Name:"
 msgstr "Ekraani_nimi:"
 
+msgid "What is your AIM password?"
+msgstr ""
+
+msgid "What is your AIM screen name?"
+msgstr ""
+
 msgid "_Port:"
 msgstr "_Port:"
 
 msgid "_Server:"
 msgstr "_Server:"
 
+msgid "<span size=\"small\"><b>Example:</b> username</span>"
+msgstr ""
+
 msgid "Login I_D:"
 msgstr "Sisselogimise I_D:"
 
+msgid "What is your GroupWise User ID?"
+msgstr ""
+
+msgid "What is your GroupWise password?"
+msgstr ""
+
+msgid "<span size=\"small\"><b>Example:</b> 123456789</span>"
+msgstr ""
+
 msgid "ICQ _UIN:"
 msgstr "ICQ _UIN:"
+
+msgid "What is your ICQ UIN?"
+msgstr ""
+
+msgid "What is your ICQ password?"
+msgstr ""
 
 msgid "_Charset:"
 msgstr "_Kooditabel:"
@@ -476,6 +530,9 @@ msgstr "Pärisnimi:"
 msgid "Servers"
 msgstr "Serverid"
 
+msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
+msgstr ""
+
 msgid "Override server settings"
 msgstr "Serveri sätete eiramine"
 
@@ -488,11 +545,32 @@ msgstr "_Vahend:"
 msgid "Use old SS_L"
 msgstr "Kasutatakse _vana SSL-i"
 
+msgid "What is your Jabber ID?"
+msgstr ""
+
+msgid "What is your Jabber password?"
+msgstr ""
+
+msgid "What is your desired Jabber ID?"
+msgstr ""
+
+msgid "What is your desired Jabber password?"
+msgstr ""
+
 msgid "_Encryption required (TLS/SSL)"
 msgstr "_Krüpteeringu nõudmine (TLS/SSL)"
 
 msgid "_Ignore SSL certificate errors"
 msgstr "SSL-sertifikaadi vigu _eiratakse"
+
+msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
+msgstr ""
+
+msgid "What is your Windows Live password?"
+msgstr ""
+
+msgid "What is your Windows Live user name?"
+msgstr ""
 
 msgid "_Email:"
 msgstr "_E-post:"
@@ -512,6 +590,9 @@ msgstr "_Hüüdnimi:"
 msgid "_Published Name:"
 msgstr "_Avaldatud nimi:"
 
+msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
+msgstr ""
+
 #. look up the DNS SRV record at the service's domain for the host name of a STUN server.
 msgid "Discover STUN"
 msgstr "STUN-i avastamine"
@@ -522,11 +603,23 @@ msgstr "STUN server:"
 msgid "STUN port:"
 msgstr "STUN port:"
 
+msgid "What is your SIP account password?"
+msgstr ""
+
+msgid "What is your SIP login ID?"
+msgstr ""
+
 msgid "_Username:"
 msgstr "_Kasutajanimi:"
 
 msgid "Use _Yahoo Japan"
 msgstr "Jaapani _Yahoo kasutamine"
+
+msgid "What is your Yahoo! ID?"
+msgstr ""
+
+msgid "What is your Yahoo! password?"
+msgstr ""
 
 msgid "Yahoo I_D:"
 msgstr "Yahoo I_D:"
@@ -1209,18 +1302,111 @@ msgid "An Instant Messaging client for GNOME"
 msgstr "Välksõnumivõrkude klient GNOME jaoks"
 
 msgid "translator-credits"
-msgstr "Mattias Põldaru 2009"
+msgstr ""
+"Ivar Smolin <okul linux ee>, 2005-2009.\n"
+"Mattias Põldaru <mahfiaz gmail com>, 2009."
 
-msgid "Enabled"
-msgstr "Lubatud"
+msgid "There has been an error while importing the accounts."
+msgstr "Kontode importimise käigus tekkis viga."
 
-msgid "Accounts"
-msgstr "Kontod"
+msgid "There has been an error while parsing the account details."
+msgstr ""
 
+msgid "There has been an error while creating the account."
+msgstr ""
+
+msgid "There has been an error."
+msgstr ""
+
+#, c-format
+msgid "The error message was: <span style=\"italic\">%s</span>"
+msgstr ""
+
+msgid ""
+"You can either go back and try to enter your accounts' details again or quit "
+"this assistant and add accounts later from the Edit menu."
+msgstr ""
+
+msgid "An error occurred"
+msgstr ""
+
+#. Create account
 #. To translator: %s is the protocol name
+#. Create account
+#. To translator: %s is the name of the protocol, such as "Google Talk" or
+#. * "Yahoo!"
+#.
 #, c-format
 msgid "New %s account"
 msgstr "Uus %s konto"
+
+msgid "What kind of chat account do you have?"
+msgstr ""
+
+msgid "Do you have any other chat accounts you want to set up?"
+msgstr ""
+
+msgid "Enter your account details"
+msgstr "Määra oma konto üksikasjad"
+
+msgid "What kind of chat account do you want to create?"
+msgstr "Mis liiki vestluskontot sa soovid luua?"
+
+msgid "Do you want to create other chat accounts?"
+msgstr "Kas soovid luua veel mõne vestlemiskonto?"
+
+msgid "Enter the details for the new account"
+msgstr "Määra uue konto üksikasjad"
+
+msgid ""
+"With Empathy you can chat with people online nearby and with friends and "
+"colleagues who use Google Talk, AIM, Windows Live and many other chat "
+"programs. With a microphone or a webcam you can also have audio or video "
+"calls."
+msgstr ""
+
+msgid "Do you have an account you've been using with another chat program?"
+msgstr ""
+
+msgid "Yes, import my account details from "
+msgstr ""
+
+msgid "Yes, I'll enter my account details now"
+msgstr ""
+
+msgid "No, I want a new account"
+msgstr "Ei, mulle on vaja uut kontot"
+
+msgid "No, I just want to see people online nearby for now"
+msgstr ""
+
+msgid "Select the accounts you want to import:"
+msgstr ""
+
+msgid "Yes"
+msgstr "Jah"
+
+msgid "No, that's all for now"
+msgstr ""
+
+msgid "Welcome to Empathy"
+msgstr ""
+
+msgid "Import your existing accounts"
+msgstr ""
+
+#, c-format
+msgid "%s on %s"
+msgstr ""
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#, c-format
+msgid "%s Account"
+msgstr "%s konto"
+
+msgid "New account"
+msgstr "Uus konto"
 
 #, c-format
 msgid ""
@@ -1241,23 +1427,17 @@ msgstr ""
 "\n"
 "Kui sa peaksid konto hiljem uuesti lisama, on need andmed ikka alles."
 
-msgid "Add Account"
-msgstr "Konto lisamine"
+msgid "Accounts"
+msgstr "Kontod"
+
+msgid "Add new"
+msgstr ""
 
 msgid "Cr_eate"
 msgstr "_Loo"
 
-msgid "Gmail"
-msgstr "Gmail"
-
-msgid "Import Accounts..."
-msgstr "Impordi kontod..."
-
 msgid "No protocol installed"
 msgstr "Ühtegi protokolli pole paigaldatud"
-
-msgid "Settings"
-msgstr "Sätted"
 
 msgid ""
 "To add a new account, you first have to install a backend for each protocol "
@@ -1265,9 +1445,6 @@ msgid ""
 msgstr ""
 "Uue konto lisamiseks pead paigaldama tugiprogrammi iga protokolli jaoks, "
 "mida tahad kasutada."
-
-msgid "Type:"
-msgstr "Liik:"
 
 msgid "_Add..."
 msgstr "_Lisa..."
@@ -1277,6 +1454,9 @@ msgstr "_Luuakse uus konto"
 
 msgid "_Reuse an existing account"
 msgstr "_Kasutatakse olemasolevat kontot"
+
+msgid "account"
+msgstr "konto"
 
 msgid "Contrast"
 msgstr "Kontrastsus"
@@ -1564,6 +1744,16 @@ msgstr "Failiülekanded"
 msgid "Remove completed, canceled and failed file transfers from the list"
 msgstr "Lõpetatud, katkestatud ja nurjunud failide eemaldamine loendist"
 
+msgid ""
+"No accounts to import could be found. Empathy currently only supports "
+"importing accounts from Pidgin."
+msgstr ""
+"Importimiseks ei leitud kontosid. Praegu on toetatud kontode importimine "
+"ainult Pidginist."
+
+msgid "Import Accounts"
+msgstr "Kontode importimine"
+
 #. Translators: this is the header of a treeview column
 msgid "Import"
 msgstr "Importida"
@@ -1574,15 +1764,10 @@ msgstr "Protokoll"
 msgid "Source"
 msgstr "Allikas"
 
-msgid ""
-"No accounts to import could be found. Empathy currently only supports "
-"importing accounts from Pidgin."
-msgstr ""
-"Importimiseks ei leitud kontosid. Praegu on toetatud kontode importimine "
-"ainult Pidginist."
-
-msgid "Import Accounts"
-msgstr "Kontode importimine"
+#, c-format
+#| msgid "New %s account"
+msgid "%s account"
+msgstr "%s konto"
 
 msgid "_Edit account"
 msgstr "_Redigeeri kontot"
@@ -1709,9 +1894,6 @@ msgstr ""
 "Nõutakse kutset: %s\n"
 "Nõutakse parooli: %s\n"
 "Liikmeid: %s"
-
-msgid "Yes"
-msgstr "Jah"
 
 msgid "No"
 msgstr "Ei"
@@ -1943,3 +2125,18 @@ msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr "Valitud ühenduse haldur ei toeta kaugsilumise laiendust."
+
+#~ msgid "Add Account"
+#~ msgstr "Konto lisamine"
+
+#~ msgid "Gmail"
+#~ msgstr "Gmail"
+
+#~ msgid "Import Accounts..."
+#~ msgstr "Impordi kontod..."
+
+#~ msgid "Settings"
+#~ msgstr "Sätted"
+
+#~ msgid "Type:"
+#~ msgstr "Liik:"
