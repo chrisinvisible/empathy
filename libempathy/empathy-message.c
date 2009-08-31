@@ -71,7 +71,6 @@ static void
 empathy_message_class_init (EmpathyMessageClass *class)
 {
 	GObjectClass *object_class;
-	GParamSpec *pspec;
 
 	object_class = G_OBJECT_CLASS (class);
 	object_class->finalize     = empathy_message_finalize;
@@ -126,12 +125,13 @@ empathy_message_class_init (EmpathyMessageClass *class)
 							       G_PARAM_READWRITE));
 
 
-	pspec = g_param_spec_boolean ("incoming",
-				      "Incoming",
-				      "If this is an incoming (as opposed to sent) message",
-				      FALSE,
-				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-	g_object_class_install_property (object_class, PROP_INCOMING, pspec);
+	g_object_class_install_property (object_class,
+					 PROP_INCOMING,
+					 g_param_spec_boolean ("incoming",
+							       "Incoming",
+							       "If this is an incoming (as opposed to sent) message",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
 	g_type_class_add_private (object_class, sizeof (EmpathyMessagePriv));
 
@@ -598,7 +598,15 @@ empathy_message_set_id (EmpathyMessage *message, guint id)
 void
 empathy_message_set_incoming (EmpathyMessage *message, gboolean incoming)
 {
-	g_object_set (message, "incoming", incoming, NULL);
+	EmpathyMessagePriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_MESSAGE (message));
+
+	priv = GET_PRIV (message);
+
+	priv->incoming = incoming;
+
+	g_object_notify (G_OBJECT (message), "incoming");
 }
 
 gboolean
