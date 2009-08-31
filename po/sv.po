@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-25 20:05+0200\n"
-"PO-Revision-Date: 2009-08-25 20:35+0100\n"
+"POT-Creation-Date: 2009-09-01 00:08+0200\n"
+"PO-Revision-Date: 2009-09-01 00:11+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -20,10 +20,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/empathy.desktop.in.in.h:1
+msgid "Empathy"
+msgstr "Empathy"
+
+#: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy IM Client"
 msgstr "Snabbmeddelandeklienten Empathy"
 
-#: ../data/empathy.desktop.in.in.h:2
+#: ../data/empathy.desktop.in.in.h:3
+msgid "IM Client"
+msgstr "Snabbmeddelandeklient"
+
+#: ../data/empathy.desktop.in.in.h:4
 msgid "Send and receive messages"
 msgstr "Skicka och ta emot meddelanden"
 
@@ -375,7 +383,7 @@ msgstr "Huruvida tema ska användas för chattrum eller inte."
 msgid "Which criterium to use when sorting the contact list. Default is to use sort by the contact's name with the value \"name\". A value of \"state\" will sort the contact list by state."
 msgstr "Vilket kriteria som ska användas när kontaktlistan sorteras. Standard är att sortera efter kontaktens namn med värdet \"name\". Värdet \"state\" kommer att sortera kontaktlistan efter tillstånd."
 
-#: ../libempathy/empathy-account.c:1086
+#: ../libempathy/empathy-account.c:1158
 msgid "Can't set an empty display name"
 msgstr "Kan inte ställa in ett tomt visningsnamn"
 
@@ -452,16 +460,16 @@ msgstr "Dold"
 msgid "Offline"
 msgstr "Frånkopplad"
 
-#: ../libempathy/empathy-utils.c:379
+#: ../libempathy/empathy-utils.c:380
 #: ../src/empathy-import-mc4-accounts.c:104
 msgid "People Nearby"
 msgstr "Personer i närheten"
 
-#: ../libempathy/empathy-utils.c:384
+#: ../libempathy/empathy-utils.c:385
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
-#: ../libempathy/empathy-utils.c:385
+#: ../libempathy/empathy-utils.c:386
 msgid "Facebook Chat"
 msgstr "Facebook-chatt"
 
@@ -515,13 +523,13 @@ msgstr "i framtiden"
 msgid "All"
 msgstr "Alla"
 
-#: ../libempathy-gtk/empathy-account-widget.c:448
-#: ../libempathy-gtk/empathy-account-widget.c:504
+#: ../libempathy-gtk/empathy-account-widget.c:430
+#: ../libempathy-gtk/empathy-account-widget.c:486
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1224
+#: ../libempathy-gtk/empathy-account-widget.c:1264
 msgid "Enabled"
 msgstr "Aktiverad"
 
@@ -533,7 +541,7 @@ msgstr "<span size=\"small\"><b>Exempel:</b> MittSkärmnamn</span>"
 #: ../libempathy-gtk/empathy-account-widget-generic.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:2
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:2
@@ -544,7 +552,7 @@ msgstr "Avancerat"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
@@ -566,7 +574,7 @@ msgstr "Vad är ditt AIM-skärmnamn?"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
@@ -575,7 +583,7 @@ msgstr "_Port:"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
@@ -588,7 +596,7 @@ msgid "<span size=\"small\"><b>Example:</b> username</span>"
 msgstr "<span size=\"small\"><b>Exempel:</b> användarnamn</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:3
 msgid "Login I_D:"
 msgstr "Inloggningsi_d:"
@@ -659,46 +667,58 @@ msgid "Servers"
 msgstr "Servrar"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
+msgstr "<span size=\"small\"><b>Exempel:</b> användare@gmail.com</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
 msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
 msgstr "<span size=\"small\"><b>Exempel:</b> användare@jabber.org</span>"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Override server settings"
 msgstr "Åsidosätt serverinställningar"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Pri_ority:"
 msgstr "Pri_oritet:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 msgid "Reso_urce:"
 msgstr "_Resurs:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
 msgid "Use old SS_L"
 msgstr "Använd gammal SS_L"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+msgid "What is your Google ID?"
+msgstr "Vad är ditt Google ID?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+msgid "What is your Google password?"
+msgstr "Vad är ditt Google-lösenord?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid "What is your Jabber ID?"
 msgstr "Vad är ditt Jabber ID?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
 msgid "What is your Jabber password?"
 msgstr "Vad är ditt Jabber-lösenord?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
 msgid "What is your desired Jabber ID?"
 msgstr "Vilket Jabber ID vill du använda?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your desired Jabber password?"
 msgstr "Vilket lösenord vill du använda för Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "_Encryption required (TLS/SSL)"
 msgstr "_Kryptering krävs (TLS/SSL)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "_Ignore SSL certificate errors"
 msgstr "_Ignorera SSL-certifikatfel"
 
@@ -824,67 +844,67 @@ msgstr "Klicka för att förstora"
 msgid "Failed to reconnect this chat"
 msgstr "Misslyckades med att återansluta till denna chatt"
 
-#: ../libempathy-gtk/empathy-chat.c:413
+#: ../libempathy-gtk/empathy-chat.c:403
 msgid "Unsupported command"
 msgstr "Kommandot stöds inte"
 
-#: ../libempathy-gtk/empathy-chat.c:549
+#: ../libempathy-gtk/empathy-chat.c:535
 msgid "offline"
 msgstr "frånkopplad"
 
-#: ../libempathy-gtk/empathy-chat.c:552
+#: ../libempathy-gtk/empathy-chat.c:538
 msgid "invalid contact"
 msgstr "ogiltig kontakt"
 
-#: ../libempathy-gtk/empathy-chat.c:555
+#: ../libempathy-gtk/empathy-chat.c:541
 msgid "permission denied"
 msgstr "åtkomst nekad"
 
-#: ../libempathy-gtk/empathy-chat.c:558
+#: ../libempathy-gtk/empathy-chat.c:544
 msgid "too long message"
 msgstr "för långt meddelande"
 
-#: ../libempathy-gtk/empathy-chat.c:561
+#: ../libempathy-gtk/empathy-chat.c:547
 msgid "not implemented"
 msgstr "inte implementerat"
 
-#: ../libempathy-gtk/empathy-chat.c:564
+#: ../libempathy-gtk/empathy-chat.c:550
 msgid "unknown"
 msgstr "okänt"
 
-#: ../libempathy-gtk/empathy-chat.c:568
+#: ../libempathy-gtk/empathy-chat.c:554
 #, c-format
 msgid "Error sending message '%s': %s"
 msgstr "Fel vid sändning av meddelandet \"%s\": %s"
 
-#: ../libempathy-gtk/empathy-chat.c:598
+#: ../libempathy-gtk/empathy-chat.c:584
 #, c-format
 msgid "Topic set to: %s"
 msgstr "Ämnet inställt till: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:600
+#: ../libempathy-gtk/empathy-chat.c:586
 msgid "No topic defined"
 msgstr "Inget ämne definierat"
 
-#: ../libempathy-gtk/empathy-chat.c:970
+#: ../libempathy-gtk/empathy-chat.c:956
 msgid "(No Suggestions)"
 msgstr "(Inga förslag)"
 
-#: ../libempathy-gtk/empathy-chat.c:1024
+#: ../libempathy-gtk/empathy-chat.c:1010
 msgid "Insert Smiley"
 msgstr "Infoga smilis"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:1042
-#: ../libempathy-gtk/empathy-ui-utils.c:1471
+#: ../libempathy-gtk/empathy-chat.c:1028
+#: ../libempathy-gtk/empathy-ui-utils.c:1484
 msgid "_Send"
 msgstr "_Skicka"
 
-#: ../libempathy-gtk/empathy-chat.c:1076
+#: ../libempathy-gtk/empathy-chat.c:1062
 msgid "_Spelling Suggestions"
 msgstr "Sta_vningsförslag"
 
-#: ../libempathy-gtk/empathy-chat.c:1191
+#: ../libempathy-gtk/empathy-chat.c:1177
 #, c-format
 msgid "%s has disconnected"
 msgstr "%s har kopplat från"
@@ -892,12 +912,12 @@ msgstr "%s har kopplat från"
 #. translators: reverse the order of these arguments
 #. * if the kicked should come before the kicker in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1198
+#: ../libempathy-gtk/empathy-chat.c:1184
 #, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%1$s sparkades ut av %2$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1201
+#: ../libempathy-gtk/empathy-chat.c:1187
 #, c-format
 msgid "%s was kicked"
 msgstr "%s sparkades ut"
@@ -905,17 +925,17 @@ msgstr "%s sparkades ut"
 #. translators: reverse the order of these arguments
 #. * if the banned should come before the banner in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1209
+#: ../libempathy-gtk/empathy-chat.c:1195
 #, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%1$s blev bannlyst av %2$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1212
+#: ../libempathy-gtk/empathy-chat.c:1198
 #, c-format
 msgid "%s was banned"
 msgstr "%s blev bannlyst"
 
-#: ../libempathy-gtk/empathy-chat.c:1216
+#: ../libempathy-gtk/empathy-chat.c:1202
 #, c-format
 msgid "%s has left the room"
 msgstr "%s har lämnat rummet"
@@ -925,26 +945,26 @@ msgstr "%s har lämnat rummet"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1225
+#: ../libempathy-gtk/empathy-chat.c:1211
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
-#: ../libempathy-gtk/empathy-chat.c:1248
+#: ../libempathy-gtk/empathy-chat.c:1234
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s har gått in i rummet"
 
-#: ../libempathy-gtk/empathy-chat.c:1381
+#: ../libempathy-gtk/empathy-chat.c:1367
 #: ../src/empathy-call-window.c:1277
 msgid "Disconnected"
 msgstr "Frånkopplad"
 
-#: ../libempathy-gtk/empathy-chat.c:1817
+#: ../libempathy-gtk/empathy-chat.c:1803
 msgid "Connected"
 msgstr "Ansluten"
 
-#: ../libempathy-gtk/empathy-chat.c:1867
+#: ../libempathy-gtk/empathy-chat.c:1853
 #: ../libempathy-gtk/empathy-log-window.c:502
 msgid "Conversation"
 msgstr "Samtal"
@@ -956,13 +976,13 @@ msgstr "Ämne:"
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:266
+#: ../libempathy-gtk/empathy-theme-adium.c:276
 msgid "_Copy Link Address"
 msgstr "_Kopiera länkadress"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:274
+#: ../libempathy-gtk/empathy-theme-adium.c:284
 msgid "_Open Link"
 msgstr "_Öppna länk"
 
@@ -1440,15 +1460,15 @@ msgstr "Rent"
 msgid "Blue"
 msgstr "Blått"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1373
+#: ../libempathy-gtk/empathy-ui-utils.c:1386
 msgid "Unable to open URI"
 msgstr "Kunde inte öppna uri"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1463
+#: ../libempathy-gtk/empathy-ui-utils.c:1476
 msgid "Select a file"
 msgstr "Välj en fil"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1523
+#: ../libempathy-gtk/empathy-ui-utils.c:1536
 msgid "Select a destination"
 msgstr "Välj ett mål"
 
@@ -1671,19 +1691,19 @@ msgstr "Närvaro"
 msgid "Set your own presence"
 msgstr "Ställ in din egna närvaro"
 
-#: ../src/empathy.c:588
+#: ../src/empathy.c:657
 msgid "Don't connect on startup"
 msgstr "Anslut inte vid uppstart"
 
-#: ../src/empathy.c:592
+#: ../src/empathy.c:661
 msgid "Don't show the contact list on startup"
 msgstr "Visa inte kontaktlistan vid uppstart"
 
-#: ../src/empathy.c:596
+#: ../src/empathy.c:665
 msgid "Show the accounts dialog"
 msgstr "Visa kontodialogrutan"
 
-#: ../src/empathy.c:608
+#: ../src/empathy.c:677
 msgid "- Empathy IM Client"
 msgstr "- Empathy snabbmeddelandeklient"
 
@@ -1713,38 +1733,32 @@ msgstr ""
 "Skicka synpunkter på översättningen till\n"
 "tp-sv@listor.tp-sv.se"
 
-#. translators: this is followed by the "while ..." strings some lines
-#. * down this file.
-#.
+#: ../src/empathy-account-assistant.c:118
+msgid "There has been an error while importing the accounts."
+msgstr "Det inträffade ett fel när konton importerades."
+
 #: ../src/empathy-account-assistant.c:121
-msgid "There has been an error "
-msgstr "Det inträffade ett fel "
+msgid "There has been an error while parsing the account details."
+msgstr "Det inträffade ett fel vid tolkning av kontouppgifterna."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:125
-msgid "while importing the accounts."
-msgstr "när konton importerades."
+#: ../src/empathy-account-assistant.c:124
+msgid "There has been an error while creating the account."
+msgstr "Det inträffade ett fel när kontot skapades."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:129
-msgid "while parsing the account details."
-msgstr "vid tolkning av kontouppgifterna."
+#: ../src/empathy-account-assistant.c:126
+msgid "There has been an error."
+msgstr "Det inträffade ett fel."
 
-#. translators: this follows the "There has been an error " string
-#: ../src/empathy-account-assistant.c:133
-msgid "while creating the account."
-msgstr "när kontot skapades."
-
-#: ../src/empathy-account-assistant.c:151
+#: ../src/empathy-account-assistant.c:141
 #, c-format
 msgid "The error message was: <span style=\"italic\">%s</span>"
 msgstr "Felmeddelandet var: <span style=\"italic\">%s</span>"
 
-#: ../src/empathy-account-assistant.c:159
-msgid "You can either go back and try to enter your accounts' details again or quit this wizard and add accounts later from the Edit menu."
+#: ../src/empathy-account-assistant.c:149
+msgid "You can either go back and try to enter your accounts' details again or quit this assistant and add accounts later from the Edit menu."
 msgstr "Du kan antingen gå tillbaka och försöka att ange dina kontouppgifter igen eller avsluta denna guide och lägga till konton senare från Redigera-menyn."
 
-#: ../src/empathy-account-assistant.c:194
+#: ../src/empathy-account-assistant.c:184
 msgid "An error occurred"
 msgstr "Ett fel inträffade"
 
@@ -1752,85 +1766,121 @@ msgstr "Ett fel inträffade"
 #. To translator: %s is the protocol name
 #. Create account
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
-#. * "Yahoo!
+#. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:330
-#: ../src/empathy-accounts-dialog.c:1101
+#: ../src/empathy-account-assistant.c:321
+#: ../src/empathy-accounts-dialog.c:1399
 #, c-format
 msgid "New %s account"
 msgstr "Nytt %s-konto"
 
-#: ../src/empathy-account-assistant.c:397
+#: ../src/empathy-account-assistant.c:393
 msgid "What kind of chat account do you have?"
 msgstr "Vilken typ av chattkonto har du?"
 
-#: ../src/empathy-account-assistant.c:403
+#: ../src/empathy-account-assistant.c:399
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "Har du ytterligare chattkonton som du vill konfigurera?"
 
-#: ../src/empathy-account-assistant.c:409
+#: ../src/empathy-account-assistant.c:405
 msgid "Enter your account details"
 msgstr "Ange dina kontouppgifter"
 
-#: ../src/empathy-account-assistant.c:414
+#: ../src/empathy-account-assistant.c:410
 msgid "What kind of chat account do you want to create?"
 msgstr "Vilken typ av chattkonto vill du skapa?"
 
-#: ../src/empathy-account-assistant.c:420
+#: ../src/empathy-account-assistant.c:416
 msgid "Do you want to create other chat accounts?"
 msgstr "Vill du skapa andra chattkonton?"
 
-#: ../src/empathy-account-assistant.c:427
+#: ../src/empathy-account-assistant.c:423
 msgid "Enter the details for the new account"
 msgstr "Ange uppgifterna för det nya kontot"
 
-#: ../src/empathy-account-assistant.c:513
+#: ../src/empathy-account-assistant.c:509
 msgid "With Empathy you can chat with people online nearby and with friends and colleagues who use Google Talk, AIM, Windows Live and many other chat programs. With a microphone or a webcam you can also have audio or video calls."
 msgstr "Med Empathy kan du chatta med anslutna personer i närheten och med vänner och kollegor som använder Google Talk, AIM, Windows Live och många andra chattprogram. Du kan även använda ljud- och videosamtal om du har en mikrofon eller webbkamera."
 
-#: ../src/empathy-account-assistant.c:530
+#: ../src/empathy-account-assistant.c:526
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "Har du ett konto som du har använt med andra chattprogram?"
 
-#: ../src/empathy-account-assistant.c:553
+#: ../src/empathy-account-assistant.c:549
 msgid "Yes, import my account details from "
 msgstr "Ja, importera mina kontouppgifter från "
 
-#: ../src/empathy-account-assistant.c:574
+#: ../src/empathy-account-assistant.c:570
 msgid "Yes, I'll enter my account details now"
 msgstr "Ja, jag vill ange mina kontouppgifter nu"
 
-#: ../src/empathy-account-assistant.c:596
+#: ../src/empathy-account-assistant.c:592
 msgid "No, I want a new account"
 msgstr "Nej, jag vill ha ett nytt konto"
 
-#: ../src/empathy-account-assistant.c:606
+#: ../src/empathy-account-assistant.c:602
 msgid "No, I just want to see people online nearby for now"
 msgstr "Nej, jag vill bara se anslutna personer i närheten just nu"
 
-#: ../src/empathy-account-assistant.c:627
+#: ../src/empathy-account-assistant.c:623
 msgid "Select the accounts you want to import:"
 msgstr "Välj de konton som du vill importera:"
 
-#: ../src/empathy-account-assistant.c:714
+#: ../src/empathy-account-assistant.c:710
 #: ../src/empathy-new-chatroom-dialog.c:496
 #: ../src/empathy-new-chatroom-dialog.c:497
 msgid "Yes"
 msgstr "Ja"
 
-#: ../src/empathy-account-assistant.c:721
+#: ../src/empathy-account-assistant.c:717
 msgid "No, that's all for now"
 msgstr "Nej, det är allt för stunden"
 
-#: ../src/empathy-account-assistant.c:914
+#: ../src/empathy-account-assistant.c:910
 msgid "Welcome to Empathy"
 msgstr "Välkommen till Empathy"
 
-#: ../src/empathy-account-assistant.c:923
+#: ../src/empathy-account-assistant.c:919
 msgid "Import your existing accounts"
 msgstr "Importera dina befintliga konton"
 
-#: ../src/empathy-accounts-dialog.c:616
+#. The primary text of the dialog shown to the user when he is about to lose
+#. * unsaved changes
+#: ../src/empathy-accounts-dialog.c:63
+#, c-format
+msgid "There are unsaved modification regarding your %s account."
+msgstr "Det finns osparade ändringar i ditt %s-konto."
+
+#. To translators: The first parameter is the login id and the
+#. * second one is the server. The resulting string will be something
+#. * like: "MyUserName on chat.freenode.net".
+#. * You should reverse the order of these arguments if the
+#. * server should come before the login id in your locale.
+#: ../src/empathy-accounts-dialog.c:236
+#, c-format
+msgid "%1$s on %2$s"
+msgstr "%1$s på %2$s"
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#: ../src/empathy-accounts-dialog.c:248
+#, c-format
+msgid "%s Account"
+msgstr "%s-konto"
+
+#: ../src/empathy-accounts-dialog.c:252
+msgid "New account"
+msgstr "Nytt konto"
+
+#: ../src/empathy-accounts-dialog.c:501
+msgid ""
+"You are about to create a new account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Du är på väg att skapa ett nytt konto vilket kommer att\n"
+"förkasta dina ändringar. Är du säker att du vill fortsätta?"
+
+#: ../src/empathy-accounts-dialog.c:786
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1839,7 +1889,7 @@ msgstr ""
 "Du håller på att ta bort kontot %s!\n"
 "Är du säker att du vill fortsätta?"
 
-#: ../src/empathy-accounts-dialog.c:622
+#: ../src/empathy-accounts-dialog.c:791
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you decide to proceed.\n"
 "\n"
@@ -1848,6 +1898,22 @@ msgstr ""
 "Eventuella samtal och chattrum kommer inte tas bort.\n"
 "\n"
 "Om du senare lägger till kontot igen, kommer dessa fortfarande vara tillgängliga."
+
+#: ../src/empathy-accounts-dialog.c:979
+msgid ""
+"You are about to select another account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Du är på väg att välja ett annat konto vilket kommer att\n"
+"förkasta dina ändringar. Är du säker att du vill fortsätta?"
+
+#: ../src/empathy-accounts-dialog.c:1474
+msgid ""
+"You are about to close the window, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Du är på väg att stänga fönstret vilket kommer att\n"
+"förkasta dina ändringar. Är du säker att du vill fortsätta?"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2668,70 +2734,70 @@ msgstr "Du blev erbjuden en inbjudan för tjänsten %s, men du har inte det nöd
 msgid "Contact Map View"
 msgstr "Kartvy för kontakter"
 
-#: ../src/empathy-debug-dialog.c:111
-#: ../src/empathy-debug-dialog.c:1079
+#: ../src/empathy-debug-window.c:111
+#: ../src/empathy-debug-window.c:1081
 msgid "Error"
 msgstr "Fel"
 
-#: ../src/empathy-debug-dialog.c:114
-#: ../src/empathy-debug-dialog.c:1073
+#: ../src/empathy-debug-window.c:114
+#: ../src/empathy-debug-window.c:1075
 msgid "Critical"
 msgstr "Kritiskt"
 
-#: ../src/empathy-debug-dialog.c:117
-#: ../src/empathy-debug-dialog.c:1067
+#: ../src/empathy-debug-window.c:117
+#: ../src/empathy-debug-window.c:1069
 msgid "Warning"
 msgstr "Varning"
 
-#: ../src/empathy-debug-dialog.c:120
-#: ../src/empathy-debug-dialog.c:1061
-#: ../src/empathy-debug-dialog.c:1109
+#: ../src/empathy-debug-window.c:120
+#: ../src/empathy-debug-window.c:1063
+#: ../src/empathy-debug-window.c:1111
 msgid "Message"
 msgstr "Meddelande"
 
-#: ../src/empathy-debug-dialog.c:123
-#: ../src/empathy-debug-dialog.c:1055
+#: ../src/empathy-debug-window.c:123
+#: ../src/empathy-debug-window.c:1057
 msgid "Info"
 msgstr "Info"
 
-#: ../src/empathy-debug-dialog.c:126
-#: ../src/empathy-debug-dialog.c:1049
+#: ../src/empathy-debug-window.c:126
+#: ../src/empathy-debug-window.c:1051
 msgid "Debug"
 msgstr "Felsökning"
 
-#: ../src/empathy-debug-dialog.c:841
+#: ../src/empathy-debug-window.c:841
 msgid "Save"
 msgstr "Spara"
 
-#: ../src/empathy-debug-dialog.c:944
+#: ../src/empathy-debug-window.c:944
 msgid "Debug Window"
 msgstr "Felsökningsfönster"
 
-#: ../src/empathy-debug-dialog.c:1017
+#: ../src/empathy-debug-window.c:1019
 msgid "Pause"
 msgstr "Gör paus"
 
-#: ../src/empathy-debug-dialog.c:1029
+#: ../src/empathy-debug-window.c:1031
 msgid "Level "
 msgstr "Nivå "
 
-#: ../src/empathy-debug-dialog.c:1098
+#: ../src/empathy-debug-window.c:1100
 msgid "Time"
 msgstr "Tid"
 
-#: ../src/empathy-debug-dialog.c:1100
+#: ../src/empathy-debug-window.c:1102
 msgid "Domain"
 msgstr "Domän"
 
-#: ../src/empathy-debug-dialog.c:1102
+#: ../src/empathy-debug-window.c:1104
 msgid "Category"
 msgstr "Kategori"
 
-#: ../src/empathy-debug-dialog.c:1104
+#: ../src/empathy-debug-window.c:1106
 msgid "Level"
 msgstr "Nivå"
 
-#: ../src/empathy-debug-dialog.c:1136
+#: ../src/empathy-debug-window.c:1138
 msgid "The selected connection manager does not support the remote debugging extension."
 msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfelsökning."
 
@@ -2938,8 +3004,6 @@ msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfe
 #~ msgstr "Aktivera ljud under _upptagetläge"
 #~ msgid "Configure Telepathy account settings"
 #~ msgstr "Konfigurera inställningar för Telepathy-konto"
-#~ msgid "Empathy accounts"
-#~ msgstr "Empathy-konton"
 #~ msgid ""
 #~ "To add a new account, you can click on the 'Add' button and a new entry "
 #~ "will be created for you to start configuring."
