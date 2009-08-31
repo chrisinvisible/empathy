@@ -1210,18 +1210,14 @@ do_constructed (GObject *obj)
           self);
       gtk_widget_show_all (hbox);
 
-      if (!tp_strdiff (protocol, "irc") && priv->creating_account)
-        {
-          /* For the IRC protocol, when creating an account, the user might
-           * have nothing to enter. That means that no control interaction
-           * might occur, so the control buttons sensitivity might never get
-           * updated. That's why we have to explicitly call this function. */
-          account_widget_handle_control_buttons_sensitivity (self);
-        }
+      if (priv->creating_account)
+        /* When creating an account, the user might have nothing to enter.
+         * That means that no control interaction might occur,
+         * so we update the control button sensitivity manually.
+         */
+        account_widget_handle_control_buttons_sensitivity (self);
       else
-        {
-          account_widget_set_control_buttons_sensitivity (self, FALSE);
-        }
+        account_widget_set_control_buttons_sensitivity (self, FALSE);
     }
 
   account = empathy_account_settings_get_account (priv->settings);
