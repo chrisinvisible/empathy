@@ -201,9 +201,11 @@ get_default_display_name (EmpathyAccountSettings *settings)
 
           /* To translators: The first parameter is the login id and the
            * second one is the server. The resulting string will be something
-           * like: "MyUserName on chat.freenode.net" */
-          default_display_name =
-              g_strdup_printf (_("%s on %s"), login_id, server);
+           * like: "MyUserName on chat.freenode.net".
+           * You should reverse the order of these arguments if the
+           * server should come before the login id in your locale.*/
+          default_display_name = g_strdup_printf (_("%1$s on %2$s"),
+              login_id, server);
         }
       else
         {
