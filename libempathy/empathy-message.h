@@ -72,6 +72,10 @@ void                     empathy_message_set_timestamp     (EmpathyMessage      
 gboolean                 empathy_message_is_backlog        (EmpathyMessage           *message);
 void                     empathy_message_set_is_backlog    (EmpathyMessage           *message,
 							    gboolean                 is_backlog);
+gboolean                 empathy_message_is_incoming       (EmpathyMessage           *message);
+void                     empathy_message_set_incoming      (EmpathyMessage           *message,
+							    gboolean                 incoming);
+
 gboolean                 empathy_message_should_highlight  (EmpathyMessage           *message);
 TpChannelTextMessageType empathy_message_type_from_str     (const gchar              *type_str);
 const gchar *            empathy_message_type_to_str       (TpChannelTextMessageType  type);
