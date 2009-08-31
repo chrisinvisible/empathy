@@ -187,7 +187,7 @@ empathy_account_settings_constructed (GObject *object)
     }
   else
     {
-      priv->icon_name = g_strdup_printf ("im-%s", priv->protocol);
+      priv->icon_name = empathy_protocol_icon_name (priv->protocol);
     }
 
   g_assert (priv->cm_name != NULL && priv->protocol != NULL);
