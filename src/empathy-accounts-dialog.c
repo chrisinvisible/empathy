@@ -428,8 +428,8 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 
 static void
 accounts_dialog_show_question_dialog (EmpathyAccountsDialog *dialog,
-    gchar *primary_text,
-    gchar *secondary_text,
+    const gchar *primary_text,
+    const gchar *secondary_text,
     GCallback response_callback,
     gpointer user_data,
     const gchar *first_button_text,
@@ -444,10 +444,10 @@ accounts_dialog_show_question_dialog (EmpathyAccountsDialog *dialog,
       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
       GTK_MESSAGE_QUESTION,
       GTK_BUTTONS_NONE,
-      primary_text);
+      "%s", primary_text);
 
   gtk_message_dialog_format_secondary_text (
-      GTK_MESSAGE_DIALOG (message_dialog), secondary_text);
+      GTK_MESSAGE_DIALOG (message_dialog), "%s", secondary_text);
 
   va_start (button_args, first_button_text);
   for (button_text = first_button_text;
