@@ -32,7 +32,6 @@ DOC_PAGES = \
 	import-account.page \
 	index.page \
 	introduction.page \
-	irc-account.page \
 	irc-join-pwd.page \
 	irc-join-room.page \
 	irc-manage.page \
