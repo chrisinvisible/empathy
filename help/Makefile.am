@@ -36,7 +36,7 @@ DOC_PAGES = \
 	irc-join-room.page \
 	irc-manage.page \
 	irc-nick-password.page \
-	irc-sending-file.page \
+	irc-send-file.page \
 	irc-start-conversation.page \
 	offline-contacts.page \
 	prev-conv.page \
