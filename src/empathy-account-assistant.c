@@ -324,7 +324,8 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 
-  empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+  if (is_gtalk)
+    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
       NULL, NULL);
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
