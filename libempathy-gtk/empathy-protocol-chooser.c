@@ -126,6 +126,17 @@ protocol_chooser_sort_func (GtkTreeModel *model,
   if (cmp == 0)
     {
       cmp = strcmp (protocol_a->name, protocol_b->name);
+      /* only happens for jabber where there is one entry for gtalk and one for
+       * non-gtalk */
+      if (cmp == 0)
+        {
+          gboolean is_gtalk;
+          gtk_tree_model_get (model, iter_a,
+            COL_IS_GTALK, &is_gtalk,
+            -1);
+
+          cmp = is_gtalk ? 1 : -1;
+        }
     }
 
   return cmp;
