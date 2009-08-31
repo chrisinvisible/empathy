@@ -24,83 +24,43 @@
 
   <title>Register for a new account</title>
 
-  <p>
-    You can freely create an account on any of the services listed below.
-    Follow the instructions reported on each website on
-    how to register your new account.
-  </p>
-  <p>
-    At the end of the registration process you should have a <em>user
-      name</em> (or an <em>account ID</em>) and a <em>password</em>
-      that you will use to add the account to <app>Empathy</app>.
-  </p>
-  <p>
-    Click on the name of the service to visit its website.
-  </p>
+  <p>Most account types require you to create an account with a account provider
+  before you can connect using instant messaging applications like <app>Empathy</app>.
+  With some account providers, you can use <app>Empathy</app> to register for a new
+  account, using the same steps as you would to <link xref="add-account">add an
+  account</link>.</p>
 
-  <section id="im-services">
-    <title>Instant Messaging Services</title>
+  <p>This page provides information on creating a new account for various types of
+  accounts.  Your account provider should give you a login ID and a password, as well
+  as any additional information you need to connect with <app>Empathy</app>.</p>
 
-    <list>
-      <item>
-        <p>
-          <link href="http://dashboard.aim.com/aim">AIM</link>
-        </p>
-      </item>
-      <item>
-        <p>
-          <link href="http://www.google.com/talk/">Google Talk</link>
-        </p>
-      </item>
-      <item>
-        <p>
-          <link href="https://www.icq.com/register/">ICQ</link>
-        </p>
-      </item>
-      <item>
-        <p>
-          <link href="http://register.jabber.org/">Jabber</link>
-        </p>
-        <note style="tip">
-          <p>
-            It is possible to use the automatic creation of accounts
-            with this service. Not all the service providers support it.
-             One service provider known to work is <em>jabber.org</em>,
-             the default one of the application.
-          </p>
-        </note>
-      </item>
-      <item>
-        <p>
-          <link href="https://accountservices.passport.net">MSN</link>
-        </p>
-      </item>
-      <item>
-        <p>
-          <link href="https://login.yahoo.com/config/login">Yahoo!</link>
-        </p>
-      </item>
-    </list>
+  <section id="jabber">
+    <title>Jabber</title>
+
+    <p>Jabber is an open instant messaging system.  Like email, Jabber allows
+    you to choose your account provider and communicate with all other Jabber
+    users, regardless of their account provider.</p>
+
+    <p>You will need to create a new account with a Jabber provider.  There are
+    many free providers; one popular provider is
+    <link href="http://register.jabber.org/">Jabber.org</link>.</p>
+
+    <note>
+      <p>If you use Google Mail or Google Talk, you already have a Jabber account.
+      Google Talk is a Jabber service.  Simply use your Google Mail address and
+      password in <app>Empathy</app> to connect.</p>
+    </note>
   </section>
 
-  <section id="local-service">
-    <title>Local Instant Messaging Services</title>
-    <p>
-      This service works when you are connected to a local network,
-      you do not need an Internet connection in order to use it.
-    </p>
-    <list>
-      <item>
-        <p>
-          <em>Salut</em>
-        </p>
-      </item>
-    </list>
+  <section id="salut">
+    <title>People Nearby</title>
 
-    <p>
-      For more information, see <link xref="salut-protocol" />.
-    </p>
+    <p>You do not need to create an account to use this feature.  This service works
+    whenever you are connected to a local network, such as a wireless hotspot.  It
+    automatically finds all other users on the network who are also using this
+    service.</p>
 
+    <p>For more information, see <link xref="salut-protocol" />.</p>
   </section>
 
   <section id ="sip-services">
@@ -132,6 +92,47 @@
         service you will use.
       </p>
     </note>
-
   </section>
+
+  <section id="irc">
+    <title>IRC</title>
+
+    <comment>
+      <p>you don't need an account, but mention and cross-link nick registering
+      and server password stuff</p>
+    </comment>
+  </section>
+
+  <section id="proprietary-services">
+    <title>Proprietary Services</title>
+
+    <list>
+      <item>
+        <p>
+          <link href="http://dashboard.aim.com/aim">AIM</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="http://www.google.com/talk/">Google Talk</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://www.icq.com/register/">ICQ</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://accountservices.passport.net">MSN</link>
+        </p>
+      </item>
+      <item>
+        <p>
+          <link href="https://login.yahoo.com/config/login">Yahoo!</link>
+        </p>
+      </item>
+    </list>
+  </section>
+
 </page>

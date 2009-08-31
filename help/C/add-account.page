@@ -13,6 +13,10 @@
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
     </credit>
+    <credit type="author">
+      <name>Shaun McCance</name>
+      <email>shaunm@gnome.org</email>
+    </credit>
     <copyright>
       <year>2009</year>
       <name>GNOME Documentation Project</name>
@@ -22,8 +26,8 @@
 
   <title>Add a new account</title>
 
-  <p>You can add instant messaging accounts from any support service to communicate
-  with all of your contacts in <app>Empathy</app>.  For some service providers,
+  <p>You can add instant messaging accounts from any supported service to communicate
+  with all of your contacts in <app>Empathy</app>.  For some account providers,
   these steps will also allow you to register for a new account.  For more details,
   see <link xref="create-account"/>.</p>
 
@@ -36,10 +40,16 @@
       <p>Click the <gui style="button">Add</gui> button.</p>
     </item>
     <item>
-      <p>From the <gui>Add new</gui> drop-down list, choose the service you wish to add
-      an account for.  If you would like to <link xref="create-account">register for a
-      new account</link> with the service provider, select <gui>Create a new account</gui>.
-      Click <gui>Create</gui>.</p>
+      <p>From the <gui>Add new</gui> drop-down list, select the type of account you wish
+      to add.</p>
+    </item>
+    <item>
+      <p>If you do not already have a registered account, select <gui>Create a new account</gui>.
+      This feature is not available for all account types, and may not work with some account
+      providers.  See <link xref="create-account"/> for more information.</p>
+    </item>
+    <item>
+      <p>Click <gui>Create</gui>.</p>
     </item>
     <item>
       <p>Enter the required information.  For most accounts, you will only need
