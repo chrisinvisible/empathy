@@ -61,6 +61,9 @@ typedef struct {
 
   gboolean simple;
 
+  gboolean contains_pending_changes;
+  gboolean original_enabled_checkbox_value;
+
   /* An EmpathyAccountWidget can be used to either create an account or
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
@@ -97,6 +100,7 @@ account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
     {
       gtk_widget_set_sensitive (priv->apply_button, sensitive);
       gtk_widget_set_sensitive (priv->cancel_button, sensitive);
+      priv->contains_pending_changes = sensitive;
     }
 }
 
@@ -109,10 +113,7 @@ account_widget_handle_control_buttons_sensitivity (EmpathyAccountWidget *self)
   is_valid = empathy_account_settings_is_valid (priv->settings);
 
   if (!priv->simple)
-    {
-      gtk_widget_set_sensitive (priv->apply_button, is_valid);
-      gtk_widget_set_sensitive (priv->cancel_button, is_valid);
-    }
+      account_widget_set_control_buttons_sensitivity (self, is_valid);
 
   g_signal_emit (self, signals[HANDLE_APPLY], 0, is_valid);
 }
@@ -148,16 +149,6 @@ account_widget_entry_changed_common (EmpathyAccountWidget *self,
           tp_strdiff (param_name, "password") ? str : "***");
       empathy_account_settings_set_string (priv->settings, param_name, str);
     }
-}
-
-static gboolean
-account_widget_entry_focus_cb (GtkWidget *widget,
-    GdkEventFocus *event,
-    EmpathyAccountWidget *self)
-{
-  account_widget_entry_changed_common (self, GTK_ENTRY (widget), TRUE);
-
-  return FALSE;
 }
 
 static void
@@ -355,9 +346,6 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
           gtk_entry_set_visibility (GTK_ENTRY (widget), FALSE);
         }
 
-      g_signal_connect (widget, "focus-out-event",
-          G_CALLBACK (account_widget_entry_focus_cb),
-          self);
       g_signal_connect (widget, "changed",
           G_CALLBACK (account_widget_entry_changed_cb), self);
     }
@@ -1044,7 +1032,7 @@ empathy_account_widget_enabled_cb (EmpathyAccount *account,
 }
 
 static void
-account_widget_enabled_toggled_cb (GtkToggleButton *toggle_button,
+account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
     gpointer user_data)
 {
   account_widget_handle_control_buttons_sensitivity (
@@ -1237,9 +1225,11 @@ do_constructed (GObject *obj)
 
       priv->enabled_checkbox =
           gtk_check_button_new_with_label (_("Enabled"));
+      priv->original_enabled_checkbox_value =
+          empathy_account_is_enabled (account);
       gtk_toggle_button_set_active (
           GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
-          empathy_account_is_enabled (account));
+          priv->original_enabled_checkbox_value);
 
       g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
           "n-columns", &nb_columns, NULL);
@@ -1253,8 +1243,8 @@ do_constructed (GObject *obj)
 
       gtk_widget_show (priv->enabled_checkbox);
 
-      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "toggled",
-          G_CALLBACK (account_widget_enabled_toggled_cb), self);
+      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
+          G_CALLBACK (account_widget_enabled_released_cb), self);
     }
 
   /* hook up to widget destruction to unref ourselves */
@@ -1386,6 +1376,26 @@ empathy_account_widget_init (EmpathyAccountWidget *self)
 }
 
 /* public methods */
+
+void
+empathy_account_widget_discard_pending_changes
+    (EmpathyAccountWidget *widget)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+
+  empathy_account_settings_discard_changes (priv->settings);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
+      priv->original_enabled_checkbox_value);
+  priv->contains_pending_changes = FALSE;
+}
+
+gboolean
+empathy_account_widget_contains_pending_changes (EmpathyAccountWidget *widget)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+
+  return priv->contains_pending_changes;
+}
 
 void
 empathy_account_widget_handle_params (EmpathyAccountWidget *self,
