@@ -255,7 +255,8 @@ empathy_account_settings_class_init (
   g_object_class_install_property (object_class, PROP_DISPLAY_NAME_OVERRIDDEN,
       g_param_spec_boolean ("display-name-overridden",
         "display-name-overridden",
-        "Whether the display name for this account has been manually overridden",
+        "Whether the display name for this account has been manually "
+        "overridden",
         FALSE,
         G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE));
 
