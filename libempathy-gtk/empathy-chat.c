@@ -523,7 +523,7 @@ chat_message_received_cb (EmpathyTpChat  *tp_chat,
 
 static void
 chat_send_error_cb (EmpathyTpChat          *tp_chat,
-		    EmpathyMessage         *message,
+		    const gchar            *message_body,
 		    TpChannelTextSendError  error_code,
 		    EmpathyChat            *chat)
 {
@@ -552,7 +552,7 @@ chat_send_error_cb (EmpathyTpChat          *tp_chat,
 	}
 
 	str = g_strdup_printf (_("Error sending message '%s': %s"),
-			       empathy_message_get_body (message),
+			       message_body,
 			       error);
 	empathy_chat_view_append_event (chat->view, str);
 	g_free (str);

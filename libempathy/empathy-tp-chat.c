@@ -359,7 +359,8 @@ tp_chat_send_cb (TpChannel    *proxy,
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
-		g_signal_emit (chat, signals[SEND_ERROR], 0, message,
+		g_signal_emit (chat, signals[SEND_ERROR], 0,
+			       empathy_message_get_body (message),
 			       TP_CHANNEL_TEXT_SEND_ERROR_UNKNOWN);
 	}
 }
@@ -1168,9 +1169,9 @@ empathy_tp_chat_class_init (EmpathyTpChatClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      _empathy_marshal_VOID__OBJECT_UINT,
+			      _empathy_marshal_VOID__STRING_UINT,
 			      G_TYPE_NONE,
-			      2, EMPATHY_TYPE_MESSAGE, G_TYPE_UINT);
+			      2, G_TYPE_STRING, G_TYPE_UINT);
 
 	signals[CHAT_STATE_CHANGED] =
 		g_signal_new ("chat-state-changed",
