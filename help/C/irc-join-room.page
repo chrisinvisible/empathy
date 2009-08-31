@@ -1,6 +1,6 @@
 <page xmlns="http://projectmallard.org/1.0/"
-  type="topic"
-  id="irc-join-room">
+      type="topic" style="task"
+      id="irc-join-room">
 
   <info>
     <link type="guide" xref="irc-manage#manage"/>
@@ -18,7 +18,11 @@
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
   </info>
 
-  <title>Join a room</title>
+  <title>Join an IRC chat room</title>
+
+  <p>You can join IRC chat rooms (also known as IRC channels) on any IRC network you’re
+  connected to.  To connect to an IRC network, see <link xref="add-account"/> and
+  <link xref="account-irc"/>.</p>
 
   <steps>
     <item>
@@ -36,12 +40,12 @@
     <item>
       <p>
         In the <gui>Room</gui> text box, type the name of the channel you want to
-        join. Prefix the name with the hash character (<sys>#</sys>).
+        join. IRC channel names start with the hash character (<sys>#</sys>).
       </p>
     </item>
     <item>
       <p>
-        Click on <gui>Join</gui> to enter the room.
+        Click <gui>Join</gui> to enter the room.
       </p>
     </item>
   </steps>
