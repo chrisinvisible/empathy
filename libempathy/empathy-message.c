@@ -41,6 +41,7 @@ typedef struct {
 	time_t                    timestamp;
 	gboolean                  is_backlog;
 	guint                     id;
+	gboolean                  incoming;
 } EmpathyMessagePriv;
 
 static void empathy_message_finalize   (GObject            *object);
@@ -63,6 +64,7 @@ enum {
 	PROP_BODY,
 	PROP_TIMESTAMP,
 	PROP_IS_BACKLOG,
+	PROP_INCOMING,
 };
 
 static void
@@ -123,6 +125,14 @@ empathy_message_class_init (EmpathyMessageClass *class)
 							       G_PARAM_READWRITE));
 
 
+	g_object_class_install_property (object_class,
+					 PROP_INCOMING,
+					 g_param_spec_boolean ("incoming",
+							       "Incoming",
+							       "If this is an incoming (as opposed to sent) message",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
 	g_type_class_add_private (object_class, sizeof (EmpathyMessagePriv));
 
 }
@@ -179,6 +189,9 @@ message_get_property (GObject    *object,
 	case PROP_BODY:
 		g_value_set_string (value, priv->body);
 		break;
+	case PROP_INCOMING:
+		g_value_set_boolean (value, priv->incoming);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
@@ -211,6 +224,9 @@ message_set_property (GObject      *object,
 	case PROP_BODY:
 		empathy_message_set_body (EMPATHY_MESSAGE (object),
 					 g_value_get_string (value));
+		break;
+	case PROP_INCOMING:
+		priv->incoming = g_value_get_boolean (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -577,6 +593,30 @@ empathy_message_set_id (EmpathyMessage *message, guint id)
 	EmpathyMessagePriv *priv = GET_PRIV (message);
 
 	priv->id = id;
+}
+
+void
+empathy_message_set_incoming (EmpathyMessage *message, gboolean incoming)
+{
+	EmpathyMessagePriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_MESSAGE (message));
+
+	priv = GET_PRIV (message);
+
+	priv->incoming = incoming;
+
+	g_object_notify (G_OBJECT (message), "incoming");
+}
+
+gboolean
+empathy_message_is_incoming (EmpathyMessage *message)
+{
+	EmpathyMessagePriv *priv = GET_PRIV (message);
+
+	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
+
+	return priv->incoming;
 }
 
 gboolean

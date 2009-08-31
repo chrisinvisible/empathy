@@ -227,6 +227,7 @@ tp_chat_got_sender_cb (EmpathyTpContactFactory *factory,
 
 static void
 tp_chat_build_message (EmpathyTpChat *chat,
+		       gboolean       incoming,
 		       guint          id,
 		       guint          type,
 		       guint          timestamp,
@@ -243,6 +244,8 @@ tp_chat_build_message (EmpathyTpChat *chat,
 	empathy_message_set_receiver (message, priv->user);
 	empathy_message_set_timestamp (message, timestamp);
 	empathy_message_set_id (message, id);
+	empathy_message_set_incoming (message, incoming);
+
 	g_queue_push_tail (priv->messages_queue, message);
 
 	if (from_handle == 0) {
@@ -294,6 +297,7 @@ tp_chat_received_cb (TpChannel   *channel,
 	}
 
 	tp_chat_build_message (chat,
+			       TRUE,
 			       message_id,
 			       message_type,
 			       timestamp,
@@ -318,6 +322,7 @@ tp_chat_sent_cb (TpChannel   *channel,
 	DEBUG ("Message sent: %s", message_body);
 
 	tp_chat_build_message (chat,
+			       FALSE,
 			       0,
 			       message_type,
 			       timestamp,
@@ -339,14 +344,9 @@ tp_chat_send_error_cb (TpChannel   *channel,
 	if (priv->channel == NULL)
 		return;
 
-	DEBUG ("Message sent error: %s (%d)", message_body, error_code);
+	DEBUG ("Error sending '%s' (%d)", message_body, error_code);
 
-	tp_chat_build_message (EMPATHY_TP_CHAT (chat),
-			       0,
-			       message_type,
-			       timestamp,
-			       0,
-			       message_body);
+	g_signal_emit (chat, signals[SEND_ERROR], 0, message_body, error_code);
 }
 
 static void
@@ -359,7 +359,8 @@ tp_chat_send_cb (TpChannel    *proxy,
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
-		g_signal_emit (chat, signals[SEND_ERROR], 0, message,
+		g_signal_emit (chat, signals[SEND_ERROR], 0,
+			       empathy_message_get_body (message),
 			       TP_CHANNEL_TEXT_SEND_ERROR_UNKNOWN);
 	}
 }
@@ -460,6 +461,7 @@ tp_chat_list_pending_messages_cb (TpChannel       *channel,
 		}
 
 		tp_chat_build_message (chat,
+				       TRUE,
 				       message_id,
 				       message_type,
 				       timestamp,
@@ -1168,9 +1170,9 @@ empathy_tp_chat_class_init (EmpathyTpChatClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      _empathy_marshal_VOID__OBJECT_UINT,
+			      _empathy_marshal_VOID__STRING_UINT,
 			      G_TYPE_NONE,
-			      2, EMPATHY_TYPE_MESSAGE, G_TYPE_UINT);
+			      2, G_TYPE_STRING, G_TYPE_UINT);
 
 	signals[CHAT_STATE_CHANGED] =
 		g_signal_new ("chat-state-changed",
@@ -1373,7 +1375,7 @@ empathy_tp_chat_acknowledge_message (EmpathyTpChat *chat,
 	g_return_if_fail (EMPATHY_IS_TP_CHAT (chat));
 	g_return_if_fail (priv->ready);
 
-	if (empathy_message_get_sender (message) == priv->user)
+	if (!empathy_message_is_incoming (message))
 		goto out;
 
 	message_ids = g_array_sized_new (FALSE, FALSE, sizeof (guint), 1);
@@ -1419,7 +1421,7 @@ empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
 		g_assert (m != NULL);
 		g_queue_delete_link (priv->pending_messages_queue, m);
 
-		if (empathy_message_get_sender (message) != priv->user) {
+		if (empathy_message_is_incoming (message)) {
 			guint id = empathy_message_get_id (message);
 			g_array_append_val (message_ids, id);
 		}
