@@ -1322,6 +1322,52 @@ empathy_call_window_channel_closed_cb (EmpathyCallHandler *handler,
       empathy_call_window_restart_call (self);
 }
 
+
+static void
+empathy_call_window_channel_stream_closed_cb (EmpathyCallHandler *handler,
+    TfStream *stream, gpointer user_data)
+{
+  EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  guint media_type;
+
+  g_object_get (stream, "media-type", &media_type, NULL);
+
+  /*
+   * This assumes that there is only one video stream per channel...
+   */
+
+  if (media_type == TP_MEDIA_STREAM_TYPE_VIDEO)
+    {
+      if (priv->funnel != NULL)
+        {
+          GstElement *output;
+
+          output = empathy_video_widget_get_element (EMPATHY_VIDEO_WIDGET
+              (priv->video_output));
+
+          gst_element_set_state (output, GST_STATE_NULL);
+          gst_element_set_state (priv->funnel, GST_STATE_NULL);
+
+          gst_bin_remove (GST_BIN (priv->pipeline), output);
+          gst_bin_remove (GST_BIN (priv->pipeline), priv->funnel);
+          priv->funnel = NULL;
+        }
+    }
+  else if (media_type == TP_MEDIA_STREAM_TYPE_AUDIO)
+    {
+      if (priv->liveadder != NULL)
+        {
+          gst_element_set_state (priv->audio_output, GST_STATE_NULL);
+          gst_element_set_state (priv->liveadder, GST_STATE_NULL);
+
+          gst_bin_remove (GST_BIN (priv->pipeline), priv->audio_output);
+          gst_bin_remove (GST_BIN (priv->pipeline), priv->liveadder);
+          priv->liveadder = NULL;
+        }
+    }
+}
+
 /* Called with global lock held */
 static GstPad *
 empathy_call_window_get_video_sink_pad (EmpathyCallWindow *self)
@@ -1702,6 +1748,8 @@ empathy_call_window_realized_cb (GtkWidget *widget, EmpathyCallWindow *window)
     G_CALLBACK (empathy_call_window_src_added_cb), window);
   g_signal_connect (priv->handler, "sink-pad-added",
     G_CALLBACK (empathy_call_window_sink_added_cb), window);
+  g_signal_connect (priv->handler, "stream-closed",
+    G_CALLBACK (empathy_call_window_channel_stream_closed_cb), window);
 
   gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
 }
