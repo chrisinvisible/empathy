@@ -167,8 +167,8 @@ handler_set_property (GObject *object,
     {
       case PROP_CHANNEL_FILTER:
         priv->filters = g_value_dup_boxed (value);
-	if (priv->filters == NULL)
-	  priv->filters = g_ptr_array_new ();
+        if (priv->filters == NULL)
+          priv->filters = g_ptr_array_new ();
         break;
       case PROP_CAPABILITIES:
         priv->capabilities = g_value_dup_boxed (value);
