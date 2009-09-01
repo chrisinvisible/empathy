@@ -42,6 +42,7 @@ enum {
   SINK_PAD_ADDED,
   REQUEST_RESOURCE,
   CLOSED,
+  STREAM_CLOSED,
   LAST_SIGNAL
 };
 
@@ -254,6 +255,12 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
       g_cclosure_marshal_VOID__VOID,
       G_TYPE_NONE,
       0);
+
+  signals[STREAM_CLOSED] =
+    g_signal_new ("stream-closed", G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+      g_cclosure_marshal_VOID__OBJECT,
+      G_TYPE_NONE, 1, TF_TYPE_STREAM);
 }
 
 /**
@@ -351,6 +358,13 @@ empathy_call_handler_tf_stream_request_resource_cb (TfStream *stream,
 }
 
 static void
+empathy_call_handler_tf_stream_closed_cb (TfStream *stream,
+  EmpathyCallHandler *handler)
+{
+  g_signal_emit (handler, signals[STREAM_CLOSED], 0, stream);
+}
+
+static void
 empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
   TfStream *stream, EmpathyCallHandler *handler)
 {
@@ -362,6 +376,8 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
   g_signal_connect (stream, "request-resource",
       G_CALLBACK (empathy_call_handler_tf_stream_request_resource_cb),
         handler);
+  g_signal_connect (stream, "closed",
+      G_CALLBACK (empathy_call_handler_tf_stream_closed_cb), handler);
 
   g_object_get (stream, "media-type", &media_type,
     "sink-pad", &spad, NULL);
