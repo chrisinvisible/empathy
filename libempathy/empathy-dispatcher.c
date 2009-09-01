@@ -1826,7 +1826,7 @@ empathy_dispatcher_find_requestable_channel_classes_async
 
   /* append another request for this connection */
   request = g_slice_new0 (FindChannelRequest);
-  request->dispatcher = dispatcher;
+  request->dispatcher = g_object_ref (dispatcher);
   request->channel_type = g_strdup (channel_type);
   request->handle_type = handle_type;
   request->connection = connection;
