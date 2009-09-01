@@ -457,7 +457,8 @@ accounts_dialog_show_question_dialog (EmpathyAccountsDialog *dialog,
       gint response_id;
       response_id = va_arg (button_args, gint);
 
-      gtk_dialog_add_button (GTK_DIALOG (message_dialog), button_text, response_id);
+      gtk_dialog_add_button (GTK_DIALOG (message_dialog), button_text,
+          response_id);
     }
   va_end (button_args);
 
