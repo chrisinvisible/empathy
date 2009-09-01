@@ -175,13 +175,14 @@ handler_set_property (GObject *object,
         break;
       case PROP_NAME:
         priv->name = g_value_dup_string (value);
-	if (EMP_STR_EMPTY (priv->name))
-	  {
-	    TpDBusDaemon *bus;
+        if (EMP_STR_EMPTY (priv->name))
+          {
+            TpDBusDaemon *bus;
 
-	    bus = tp_dbus_daemon_dup (NULL);
-	    priv->name = g_strdup_printf ("%s%p",
+            bus = tp_dbus_daemon_dup (NULL);
+            priv->name = g_strdup_printf ("badger_%s_%p",
                 tp_dbus_daemon_get_unique_name (bus), object);
+            g_strdelimit (priv->name, ":.", '_');
             g_object_unref (bus);
           }
         break;
