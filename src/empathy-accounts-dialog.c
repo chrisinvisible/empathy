@@ -1480,8 +1480,18 @@ accounts_dialog_response_cb (GtkWidget *widget,
 
       g_free (question_dialog_primary_text);
     }
-  else if (response == GTK_RESPONSE_CLOSE)
+  else if (response == GTK_RESPONSE_CLOSE ||
+           response == GTK_RESPONSE_DELETE_EVENT)
     gtk_widget_destroy (widget);
+}
+
+static gboolean
+accounts_dialog_delete_event_cb (GtkWidget *widget,
+    GdkEvent *event,
+    EmpathyAccountsDialog *dialog)
+{
+  /* we maunally handle responses to delete events */
+  return TRUE;
 }
 
 static void
@@ -1557,6 +1567,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   empathy_builder_connect (gui, dialog,
       "accounts_dialog", "response", accounts_dialog_response_cb,
       "accounts_dialog", "destroy", accounts_dialog_destroy_cb,
+      "accounts_dialog", "delete-event", accounts_dialog_delete_event_cb,
       "button_create", "clicked", accounts_dialog_button_create_clicked_cb,
       "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
