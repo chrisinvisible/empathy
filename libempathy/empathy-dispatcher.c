@@ -31,6 +31,8 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 #include <telepathy-glib/connection.h>
+#include <telepathy-glib/channel-dispatcher.h>
+#include <telepathy-glib/channel-request.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/proxy-subclass.h>
@@ -77,6 +79,9 @@ typedef struct
   /* (TpAccount *) => gulong
    * Signal handler ID of the "status-changed" signal */
   GHashTable *status_changed_handlers;
+
+  TpChannelDispatcher *channel_dispatcher;
+  TpDBusDaemon *dbus;
 } EmpathyDispatcherPriv;
 
 static GList *
@@ -139,6 +144,8 @@ typedef struct
   EmpathyDispatcherRequestCb *cb;
   gpointer user_data;
   gpointer *request_data;
+
+  TpChannelRequest *channel_request;
 } DispatcherRequestData;
 
 typedef struct
@@ -186,6 +193,11 @@ static void
 empathy_dispatcher_call_create_or_ensure_channel (
     EmpathyDispatcher *dispatcher,
     DispatcherRequestData *request_data);
+
+static void
+dispatcher_request_failed (EmpathyDispatcher *dispatcher,
+    DispatcherRequestData *request_data,
+    const GError *error);
 
 static DispatchData *
 new_dispatch_data (TpChannel *channel,
@@ -255,8 +267,12 @@ free_dispatcher_request_data (DispatcherRequestData *r)
   if (r->request != NULL)
     g_hash_table_unref (r->request);
 
+
   if (r->pending_call != NULL)
     tp_proxy_pending_call_cancel (r->pending_call);
+
+  if (r->channel_request != NULL)
+    g_object_unref (r->channel_request);
 
   g_slice_free (DispatcherRequestData, r);
 }
@@ -1003,6 +1019,14 @@ dispatcher_dispose (GObject *object)
   g_hash_table_destroy (priv->connections);
   priv->connections = NULL;
 
+  if (priv->channel_dispatcher != NULL)
+    g_object_unref (priv->channel_dispatcher);
+  priv->channel_dispatcher = NULL;
+
+  if (priv->dbus != NULL)
+    g_object_unref (priv->dbus);
+  priv->dbus = NULL;
+
   G_OBJECT_CLASS (empathy_dispatcher_parent_class)->dispose (object);
 }
 
@@ -1254,6 +1278,9 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
     g_direct_equal);
   priv->status_changed_handlers = g_hash_table_new (g_direct_hash,
       g_direct_equal);
+
+  priv->dbus = tp_dbus_daemon_dup (NULL);
+  priv->channel_dispatcher = tp_channel_dispatcher_new (priv->dbus);
 }
 
 EmpathyDispatcher *
@@ -1622,40 +1649,119 @@ empathy_dispatcher_join_muc (TpConnection *connection,
 }
 
 static void
-dispatcher_create_channel_cb (TpConnection *connect,
-                              const gchar *object_path,
-                              GHashTable *properties,
-                              const GError *error,
-                              gpointer user_data,
-                              GObject *weak_object)
+dispatcher_channel_request_failed_cb (TpChannelRequest *request,
+  const gchar *error, const gchar *message,
+  gpointer user_data,
+  GObject *weak_object)
 {
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
   EmpathyDispatcher *self =
       EMPATHY_DISPATCHER (request_data->dispatcher);
+  GError *err = NULL;
 
   request_data->pending_call = NULL;
 
-  dispatcher_connection_new_requested_channel (self,
-    request_data, object_path, properties, error);
+  DEBUG ("Request failed: %s - %s %s",
+    tp_proxy_get_object_path (request),
+    error, message);
+
+  tp_proxy_dbus_error_to_gerror (TP_PROXY (request),
+    error, message, &err);
+
+  dispatcher_request_failed (self, request_data, err);
+
+  g_error_free (err);
 }
 
 static void
-dispatcher_ensure_channel_cb (TpConnection *connect,
-                              gboolean is_ours,
-                              const gchar *object_path,
-                              GHashTable *properties,
-                              const GError *error,
-                              gpointer user_data,
-                              GObject *weak_object)
+dispatcher_channel_request_succeeded_cb (TpChannelRequest *request,
+  gpointer user_data,
+  GObject *weak_object)
 {
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (weak_object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-  EmpathyDispatcher *self =
-      EMPATHY_DISPATCHER (request_data->dispatcher);
+  ConnectionData *conn_data;
+
+  conn_data = g_hash_table_lookup (priv->connections,
+    request_data->connection);
+
+  DEBUG ("Request succeeded: %s", tp_proxy_get_object_path (request));
+
+  /* When success gets called the internal request should have been satisfied,
+   * if it's still in outstanding_requests and doesn't have an operation
+   * assigned to it, the channel got handled by someone else.. */
+
+  if (g_list_find (conn_data->outstanding_requests, request_data) == NULL)
+    return;
+
+  if (request_data->operation == NULL)
+    {
+      GError err = { TP_ERRORS, TP_ERROR_NOT_YOURS, "Not yours!" };
+      dispatcher_request_failed (self, request_data, &err);
+    }
+}
+
+static void
+dispatcher_channel_request_proceed_cb (TpChannelRequest *request,
+  const GError *error,
+  gpointer user_data,
+  GObject *weak_object)
+{
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (weak_object);
+  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
 
   request_data->pending_call = NULL;
 
-  dispatcher_connection_new_requested_channel (self,
-    request_data, object_path, properties, error);
+  if (error != NULL)
+    dispatcher_request_failed (self, request_data, error);
+}
+
+static void
+dispatcher_create_channel_cb (TpChannelDispatcher *proxy,
+    const gchar *request_path,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (weak_object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  TpChannelRequest *request;
+  GError *err = NULL;
+  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+
+  request_data->pending_call = NULL;
+
+  if (error != NULL)
+    {
+      dispatcher_request_failed (self, request_data, error);
+      return;
+    }
+
+  request = tp_channel_request_new (priv->dbus, request_path, NULL, NULL);
+  request_data->channel_request = request;
+
+  if (tp_cli_channel_request_connect_to_failed (request,
+      dispatcher_channel_request_failed_cb, request_data,
+      NULL, G_OBJECT (self), &err) == NULL)
+    {
+      dispatcher_request_failed (dispatcher, request_data, err);
+      g_error_free (err);
+      return;
+    }
+
+  if (tp_cli_channel_request_connect_to_succeeded (request,
+      dispatcher_channel_request_succeeded_cb, request_data,
+      NULL, G_OBJECT (self), &err) == NULL)
+    {
+      dispatcher_request_failed (self, request_data, err);
+      g_error_free (err);
+      return;
+    }
+
+  request_data->pending_call = tp_cli_channel_request_call_proceed (request,
+    -1, dispatcher_channel_request_proceed_cb,
+    request_data, NULL, G_OBJECT (self));
 }
 
 static void
@@ -1663,21 +1769,29 @@ empathy_dispatcher_call_create_or_ensure_channel (
     EmpathyDispatcher *self,
     DispatcherRequestData *request_data)
 {
+  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  TpAccount *account;
+
+  account = empathy_get_account_for_connection (request_data->connection);
+
   if (request_data->should_ensure)
     {
       request_data->pending_call =
-          tp_cli_connection_interface_requests_call_ensure_channel (
-          request_data->connection, -1,
-          request_data->request, dispatcher_ensure_channel_cb,
-          request_data, NULL, NULL);
+          tp_cli_channel_dispatcher_call_ensure_channel (
+              priv->channel_dispatcher,
+              -1, tp_proxy_get_object_path (TP_PROXY (account)),
+              request_data->request, 0, "",
+              dispatcher_create_channel_cb, request_data, NULL, NULL);
     }
   else
     {
       request_data->pending_call =
-          tp_cli_connection_interface_requests_call_create_channel (
-          request_data->connection, -1,
-          request_data->request, dispatcher_create_channel_cb,
-          request_data, NULL, NULL);
+          tp_cli_channel_dispatcher_call_create_channel (
+              priv->channel_dispatcher,
+              -1, tp_proxy_get_object_path (TP_PROXY (account)),
+              request_data->request, 0, "",
+              dispatcher_create_channel_cb, request_data, NULL,
+              G_OBJECT (dispatcher));
     }
 }
 
