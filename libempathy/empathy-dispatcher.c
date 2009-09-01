@@ -1137,7 +1137,8 @@ dispatcher_request_failed (EmpathyDispatcher *dispatcher,
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   ConnectionData *conn_data;
 
-  conn_data = g_hash_table_lookup (priv->connections, request_data->connection);
+  conn_data = g_hash_table_lookup (priv->connections,
+      request_data->connection);
   if (request_data->cb != NULL)
     request_data->cb (NULL, error, request_data->user_data);
 
@@ -1345,7 +1346,8 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
     }
   else
     {
-      empathy_dispatcher_chat_with_contact (contact, data->callback, data->user_data);
+      empathy_dispatcher_chat_with_contact (contact, data->callback,
+          data->user_data);
     }
 
   g_object_unref (data->dispatcher);
