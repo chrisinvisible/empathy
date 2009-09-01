@@ -162,16 +162,6 @@ typedef struct
   /* ObjectPath -> EmpathyDispatchOperations */
   GHashTable *dispatching_channels;
 
-  /* ObjectPath -> EmpathyDispatchOperations
-   *
-   * This holds channels which were announced with NewChannel while we have an
-   * outstanding channel request for a channel of this type. On the Requests
-   * interface, CreateChannel and EnsureChannel are guaranteed by the spec to
-   * return before NewChannels is emitted, but there was no guarantee of the
-   * ordering of RequestChannel vs. NewChannel. So if necessary, channels are
-   * held in limbo here until we know whether they were requested.
-   */
-  GHashTable *outstanding_channels;
   /* List of DispatcherRequestData */
   GList *outstanding_requests;
   /* List of requestable channel classes */
@@ -288,9 +278,6 @@ new_connection_data (void)
   cd->dispatching_channels = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, g_object_unref);
 
-  cd->outstanding_channels = g_hash_table_new_full (g_str_hash, g_str_equal,
-      g_free, NULL);
-
   return cd;
 }
 
@@ -353,28 +340,6 @@ dispatcher_connection_invalidated_cb (TpConnection *connection,
   g_hash_table_remove (priv->connections, connection);
 }
 
-static gboolean
-dispatcher_operation_can_start (EmpathyDispatcher *self,
-                                EmpathyDispatchOperation *operation,
-                                ConnectionData *cd)
-{
-  GList *l;
-  const gchar *channel_type =
-    empathy_dispatch_operation_get_channel_type (operation);
-
-  for (l = cd->outstanding_requests; l != NULL; l = g_list_next (l))
-    {
-      DispatcherRequestData *d = (DispatcherRequestData *) l->data;
-
-      if (d->operation == NULL && !tp_strdiff (d->channel_type, channel_type))
-        {
-          return FALSE;
-        }
-    }
-
-  return TRUE;
-}
-
 static void
 dispatch_operation_flush_requests (EmpathyDispatcher *self,
                                    EmpathyDispatchOperation *operation,
@@ -419,7 +384,6 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
   /* Channel went away... */
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpConnection *connection;
-  EmpathyDispatchOperation *operation;
   ConnectionData *cd;
   const gchar *object_path;
 
@@ -438,15 +402,6 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
   g_hash_table_remove (cd->dispatching_channels, object_path);
 
   priv->channels = g_list_remove (priv->channels, proxy);
-
-  operation = g_hash_table_lookup (cd->outstanding_channels, object_path);
-  if (operation != NULL)
-    {
-      GError error = { domain, code, message };
-      dispatch_operation_flush_requests (self, operation, &error, cd);
-      g_hash_table_remove (cd->outstanding_channels, object_path);
-      g_object_unref (operation);
-    }
 }
 
 static void
@@ -556,9 +511,6 @@ dispatcher_start_dispatching (EmpathyDispatcher *self,
 
   if (g_hash_table_lookup (cd->dispatching_channels, object_path) == NULL)
     {
-      g_assert (g_hash_table_lookup (cd->outstanding_channels,
-        object_path) == NULL);
-
       g_hash_table_insert (cd->dispatching_channels,
         g_strdup (object_path), operation);
 
@@ -583,26 +535,6 @@ dispatcher_start_dispatching (EmpathyDispatcher *self,
        * have seen it (if applicable), so we can flush the request right away.
        */
       dispatch_operation_flush_requests (self, operation, NULL, cd);
-    }
-}
-
-static void
-dispatcher_flush_outstanding_operations (EmpathyDispatcher *self,
-                                         ConnectionData *cd)
-{
-  GHashTableIter iter;
-  gpointer value;
-
-  g_hash_table_iter_init (&iter, cd->outstanding_channels);
-  while (g_hash_table_iter_next (&iter, NULL, &value))
-    {
-      EmpathyDispatchOperation *operation = EMPATHY_DISPATCH_OPERATION (value);
-
-      if (dispatcher_operation_can_start (self, operation, cd))
-        {
-          g_hash_table_iter_remove (&iter);
-          dispatcher_start_dispatching (self, operation, cd);
-        }
     }
 }
 
@@ -635,20 +567,6 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
   dispatcher_init_connection_if_needed (self, connection);
 
   cd = g_hash_table_lookup (priv->connections, connection);
-
-  /* Don't bother with channels we have already dispatched or are dispatching
-   * currently. This can happen when NewChannel(s) is fired after
-   * RequestChannel/CreateChannel/EnsureChannel */
-  if (g_hash_table_lookup (cd->dispatched_channels, object_path) != NULL)
-    return;
-
-  if (g_hash_table_lookup (cd->dispatching_channels, object_path) != NULL)
-    return;
-
-  /* Should never occur, but just in case a CM fires spurious NewChannel(s)
-   * signals */
-  if (g_hash_table_lookup (cd->outstanding_channels, object_path) != NULL)
-    return;
 
   for (i = 0 ; blacklist[i] != NULL; i++)
     {
@@ -1380,16 +1298,10 @@ dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
 
       dispatcher_request_failed (self, request_data, error);
 
-      goto out;
+      return;
     }
 
-  operation = g_hash_table_lookup (conn_data->outstanding_channels,
-    object_path);
-
-  if (operation != NULL)
-    g_hash_table_remove (conn_data->outstanding_channels, object_path);
-  else
-    operation = g_hash_table_lookup (conn_data->dispatching_channels,
+  operation = g_hash_table_lookup (conn_data->dispatching_channels,
         object_path);
 
   if (operation == NULL)
@@ -1451,10 +1363,6 @@ dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
           conn_data);
 
   g_object_unref (operation);
-
-out:
-  dispatcher_flush_outstanding_operations (self, conn_data);
-  g_object_unref (self);
 }
 
 static void
@@ -1623,8 +1531,6 @@ dispatcher_request_handles_cb (TpConnection *connection,
         request_data);
 
       free_dispatcher_request_data (request_data);
-
-      dispatcher_flush_outstanding_operations (self, cd);
       return;
     }
 
