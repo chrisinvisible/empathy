@@ -99,9 +99,19 @@ builder_get_file_valist (const gchar *filename,
 
 	gui = gtk_builder_new ();
 	if (!gtk_builder_add_from_file (gui, filename, &error)) {
-		g_critical ("GtkBuilder Error: %s", error->message);
+		g_critical ("GtkBuilder Error (%s): %s",
+				filename, error->message);
 		g_clear_error (&error);
 		g_object_unref (gui);
+
+		/* we need to iterate and set all of the pointers to NULL */
+		for (name = first_object; name;
+		     name = va_arg (args, const gchar *)) {
+			object_ptr = va_arg (args, GObject**);
+
+			*object_ptr = NULL;
+		}
+
 		return NULL;
 	}
 
