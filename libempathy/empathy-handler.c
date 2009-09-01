@@ -102,12 +102,12 @@ handler_constructor (GType type,
 
   dbus = tp_dbus_daemon_dup (NULL);
 
+  DEBUG ("Registering at '%s'", object_path);
   g_assert (tp_dbus_daemon_request_name (dbus,
     priv->busname, TRUE, NULL));
   dbus_g_connection_register_g_object (tp_get_bus (),
     object_path, obj);
 
-  DEBUG ("Registered at '%s'", object_path);
 
   g_free (object_path);
   g_object_unref (dbus);
