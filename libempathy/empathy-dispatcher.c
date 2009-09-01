@@ -890,6 +890,9 @@ dispatcher_constructor (GType type,
 
   priv = GET_PRIV (dispatcher);
 
+  if (priv->handler == NULL)
+    priv->handler = empathy_handler_new (NULL, NULL, NULL);
+
   empathy_handler_set_handle_channels_func (priv->handler,
     empathy_dispatcher_handle_channels,
     dispatcher);

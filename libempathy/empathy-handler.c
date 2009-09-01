@@ -141,12 +141,23 @@ handler_set_property (GObject *object,
     {
       case PROP_CHANNEL_FILTER:
         priv->filters = g_value_dup_boxed (value);
+	if (priv->filters == NULL)
+	  priv->filters = g_ptr_array_new ();
         break;
       case PROP_CAPABILITIES:
         priv->capabilities = g_value_dup_boxed (value);
         break;
       case PROP_NAME:
         priv->name = g_value_dup_string (value);
+	if (EMP_STR_EMPTY (priv->name))
+	  {
+	    TpDBusDaemon *bus;
+
+	    bus = tp_dbus_daemon_dup (NULL);
+	    priv->name = g_strdup_printf ("%s%p",
+                tp_dbus_daemon_get_unique_name (bus), object);
+            g_object_unref (bus);
+          }
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
