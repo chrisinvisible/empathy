@@ -1,15 +1,18 @@
 <page xmlns="http://projectmallard.org/1.0/"
-  type="topic"
-  id="change-status">
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="change-status">
 
   <info>
     <link type="guide" xref="index#accounts"/>
     <link type="seealso" xref="status-icons"/>
     <desc>
-      Change your status, if you are going away from your computer for example.
+      Change your status to advertise your availability to your contacts.
     </desc>
     <revision pkgversion="2.28" version="0.1" date="2009-06-14" status="draft"/>
-    <revision pkgversion="2.28" version="0.2" date="2009-08-10" status="review"/>
+    <revision pkgversion="2.28" version="0.2" date="2009-08-10" status="review">
+      <e:review by="shaunm@gnome.org" date="2009-09-01" status="done"/>
+    </revision>
     <credit type="author">
       <name>Phil Bull</name>
       <email>philbull@gmail.com</email>
@@ -22,6 +25,9 @@
   </info>
 
   <title>Change your status</title>
+
+  <p>You can set your status to indicate your availability to your contacts.
+  <app>Empathy</app> allows you to select from a list of defined statuses.</p>
 
   <steps>
     <item>
@@ -36,16 +42,14 @@
     </item>
   </steps>
 
-  <p>
-    For example, if you are busy and do not want to
-    be disturbed, select <gui>Busy</gui>.
-  </p>
+  <p>See <link xref="status-icons"/> for a list of the built-in statuses
+  and what they mean.  You can also <link xref="set-custom-message">add
+  custom status messages</link> to provide more information about your
+  availability to your contacts.</p>
 
   <note>
-    <p>
-      If you do not use your computer for a while, or if the screen saver is turned on,
-       the status will be automatically set to <gui>Away</gui>.
-    </p>
+    <p>If you do not use your computer for a while, or if the screensaver is on,
+    the status will be automatically set to Away.</p>
   </note>
 
 </page>

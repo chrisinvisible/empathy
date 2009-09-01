@@ -8,7 +8,11 @@ DOC_FIGURES = \
 	figures/away.png \
 	figures/busy.png \
 	figures/camera-web.png \
-	figures/empathy-main-window.png
+	figures/empathy-main-window.png \
+	figures/gtk-add.png \
+	figures/gtk-edit.png \
+	figures/gtk-remove.png \
+	figures/offline.png
 
 DOC_PAGES = \
 	account-irc.page \
