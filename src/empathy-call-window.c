@@ -1312,7 +1312,8 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
 
 
 static void
-empathy_call_window_channel_closed_cb (TfChannel *channel, gpointer user_data)
+empathy_call_window_channel_closed_cb (EmpathyCallHandler *handler,
+    gpointer user_data)
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
