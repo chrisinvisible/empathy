@@ -619,6 +619,8 @@ emit_error_signal (EmpathyFTHandler *handler,
 {
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
 
+  DEBUG ("Error in transfer: %s\n", error->message);
+
   if (!g_cancellable_is_cancelled (priv->cancellable))
     g_cancellable_cancel (priv->cancellable);
 
