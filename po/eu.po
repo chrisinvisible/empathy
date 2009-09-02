@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-29 09:39+0200\n"
-"PO-Revision-Date: 2009-08-29 09:40+0200\n"
+"POT-Creation-Date: 2009-09-02 18:20+0200\n"
+"PO-Revision-Date: 2009-09-02 18:26+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -445,7 +445,7 @@ msgstr ""
 "kontaktuen izenen arabera ordenatzea da \"izena\" balioarekin. \"egoera\" "
 "balioak kontaktu-zerrenda egoeraren arabera ordenatuko du."
 
-#: ../libempathy/empathy-account.c:1144
+#: ../libempathy/empathy-account.c:1158
 msgid "Can't set an empty display name"
 msgstr "Ezin da pantailaren izen hutsa ezarri"
 
@@ -521,15 +521,15 @@ msgstr "Ezkutatua"
 msgid "Offline"
 msgstr "Deskonektatuta"
 
-#: ../libempathy/empathy-utils.c:379 ../src/empathy-import-mc4-accounts.c:104
+#: ../libempathy/empathy-utils.c:380 ../src/empathy-import-mc4-accounts.c:104
 msgid "People Nearby"
 msgstr "Inguruko jendea"
 
-#: ../libempathy/empathy-utils.c:384
+#: ../libempathy/empathy-utils.c:385
 msgid "Yahoo! Japan"
 msgstr "Japoniako Yahoo!"
 
-#: ../libempathy/empathy-utils.c:385
+#: ../libempathy/empathy-utils.c:386
 msgid "Facebook Chat"
 msgstr "Facebook berriketa"
 
@@ -583,13 +583,13 @@ msgstr "etorkizunean"
 msgid "All"
 msgstr "Denak"
 
-#: ../libempathy-gtk/empathy-account-widget.c:440
-#: ../libempathy-gtk/empathy-account-widget.c:496
+#: ../libempathy-gtk/empathy-account-widget.c:430
+#: ../libempathy-gtk/empathy-account-widget.c:486
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1239
+#: ../libempathy-gtk/empathy-account-widget.c:1264
 msgid "Enabled"
 msgstr "Gaituta"
 
@@ -601,7 +601,7 @@ msgstr "<span size=\"small\"><b>Adibidea:</b> NirePantailaIzena</span>"
 #: ../libempathy-gtk/empathy-account-widget-generic.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:2
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:2
@@ -612,7 +612,7 @@ msgstr "Aurreratua"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
@@ -634,7 +634,7 @@ msgstr "Zein da zure AIM pantaila-izena?"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
@@ -643,7 +643,7 @@ msgstr "_Ataka:"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
@@ -656,7 +656,7 @@ msgid "<span size=\"small\"><b>Example:</b> username</span>"
 msgstr "<span size=\"small\"><b>Adibidea:</b> erabiltzaile-izena</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:3
 msgid "Login I_D:"
 msgstr "Saioko _IDa:"
@@ -727,46 +727,58 @@ msgid "Servers"
 msgstr "Zerbitzariak"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
+msgstr "<span size=\"small\"><b>Adibidea:</b> erabiltzailea@gmail.com</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
 msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
 msgstr "<span size=\"small\"><b>Adibidea:</b> erabiltzailea@jabber.org</span>"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Override server settings"
 msgstr "Gainidatzi zerbitzariaren ezarpenak"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Pri_ority:"
 msgstr "_Lehentasuna:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 msgid "Reso_urce:"
 msgstr "_Baliabidea:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
 msgid "Use old SS_L"
 msgstr "Erabili SS_L zaharra"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+msgid "What is your Google ID?"
+msgstr "Zein da zure Google-ko IDa?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+msgid "What is your Google password?"
+msgstr "Zein da zure Google-ko pasahitza?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid "What is your Jabber ID?"
 msgstr "Zein da zure Jabber IDa?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
 msgid "What is your Jabber password?"
 msgstr "Zein da zure Jabber pasahitza?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
 msgid "What is your desired Jabber ID?"
 msgstr "Zein da zure Jabber ID gogokoa?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your desired Jabber password?"
 msgstr "Zein da zure Jabber pasahitz gogokoa?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "_Encryption required (TLS/SSL)"
 msgstr "_Enkritatzea behar da (TLS/SSL)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "_Ignore SSL certificate errors"
 msgstr "_Ez ikusi egin SSL ziurtagirien erroreei"
 
@@ -946,7 +958,7 @@ msgstr "Txertatu aurpegiera"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1028
-#: ../libempathy-gtk/empathy-ui-utils.c:1484
+#: ../libempathy-gtk/empathy-ui-utils.c:1494
 msgid "_Send"
 msgstr "_Bidali"
 
@@ -1500,15 +1512,15 @@ msgstr "Garbia"
 msgid "Blue"
 msgstr "Urdina"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1386
+#: ../libempathy-gtk/empathy-ui-utils.c:1396
 msgid "Unable to open URI"
 msgstr "Ezin da URIa ireki"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1476
+#: ../libempathy-gtk/empathy-ui-utils.c:1486
 msgid "Select a file"
 msgstr "Hautatu fitxategia"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1536
+#: ../libempathy-gtk/empathy-ui-utils.c:1546
 msgid "Select a destination"
 msgstr "Hautatu helburua"
 
@@ -1734,19 +1746,19 @@ msgstr "Presentzia"
 msgid "Set your own presence"
 msgstr "Ezarri zure presentzia"
 
-#: ../src/empathy.c:588
+#: ../src/empathy.c:658
 msgid "Don't connect on startup"
 msgstr "Ez konektatu abiatzean"
 
-#: ../src/empathy.c:592
+#: ../src/empathy.c:662
 msgid "Don't show the contact list on startup"
 msgstr "Ez erakutsi kontaktu-zerrenda abiatzean"
 
-#: ../src/empathy.c:596
+#: ../src/empathy.c:666
 msgid "Show the accounts dialog"
 msgstr "Erakutsi kontuen elkarrizketa-koadroa"
 
-#: ../src/empathy.c:608
+#: ../src/empathy.c:678
 msgid "- Empathy IM Client"
 msgstr "- Empathy BM bezeroa"
 
@@ -1832,37 +1844,37 @@ msgstr "Errore bat gertatu da"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:320
-#: ../src/empathy-accounts-dialog.c:1172
+#: ../src/empathy-account-assistant.c:321
+#: ../src/empathy-accounts-dialog.c:1399
 #, c-format
 msgid "New %s account"
 msgstr "%s kontu berria"
 
-#: ../src/empathy-account-assistant.c:386
+#: ../src/empathy-account-assistant.c:393
 msgid "What kind of chat account do you have?"
 msgstr "Zein motako berriketa-kontua duzu?"
 
-#: ../src/empathy-account-assistant.c:392
+#: ../src/empathy-account-assistant.c:399
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "Baduzu beste berriketako konturik konfiguratzeko?"
 
-#: ../src/empathy-account-assistant.c:398
+#: ../src/empathy-account-assistant.c:405
 msgid "Enter your account details"
 msgstr "Sartu kontuaren xehetasunak"
 
-#: ../src/empathy-account-assistant.c:403
+#: ../src/empathy-account-assistant.c:410
 msgid "What kind of chat account do you want to create?"
 msgstr "Zein motako berriketako kontua sortzea nahi duzu?"
 
-#: ../src/empathy-account-assistant.c:409
+#: ../src/empathy-account-assistant.c:416
 msgid "Do you want to create other chat accounts?"
 msgstr "Nahi duzu beste berriketako kontu bat sortzea?"
 
-#: ../src/empathy-account-assistant.c:416
+#: ../src/empathy-account-assistant.c:423
 msgid "Enter the details for the new account"
 msgstr "Sartu kontu berriaren xehetasunak"
 
-#: ../src/empathy-account-assistant.c:502
+#: ../src/empathy-account-assistant.c:509
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -1874,65 +1886,85 @@ msgstr ""
 "Empathy-rekin. Mikrofono edo web kamera batekin audio edo bideo-deiak egin "
 "ditzakezu."
 
-#: ../src/empathy-account-assistant.c:519
+#: ../src/empathy-account-assistant.c:526
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "Beste berriketako programa batean erabiltzen duzun konturik baduzu?"
 
-#: ../src/empathy-account-assistant.c:542
+#: ../src/empathy-account-assistant.c:549
 msgid "Yes, import my account details from "
 msgstr "Bai, inportatu nire kontuko xehetasunak hemendik: "
 
-#: ../src/empathy-account-assistant.c:563
+#: ../src/empathy-account-assistant.c:570
 msgid "Yes, I'll enter my account details now"
 msgstr "Bai, orain sartuko dut nire kontuko xehetasunak"
 
-#: ../src/empathy-account-assistant.c:585
+#: ../src/empathy-account-assistant.c:592
 msgid "No, I want a new account"
 msgstr "Ez, kontu berri bat nahi dut"
 
-#: ../src/empathy-account-assistant.c:595
+#: ../src/empathy-account-assistant.c:602
 msgid "No, I just want to see people online nearby for now"
 msgstr "Ez, oraingoz inguruko konektatutako jendea ikustea nahi dut"
 
-#: ../src/empathy-account-assistant.c:616
+#: ../src/empathy-account-assistant.c:623
 msgid "Select the accounts you want to import:"
 msgstr "Hautatu inportatzea nahi dituzun kontuak:"
 
-#: ../src/empathy-account-assistant.c:703
+#: ../src/empathy-account-assistant.c:710
 #: ../src/empathy-new-chatroom-dialog.c:496
 #: ../src/empathy-new-chatroom-dialog.c:497
 msgid "Yes"
 msgstr "Bai"
 
-#: ../src/empathy-account-assistant.c:710
+#: ../src/empathy-account-assistant.c:717
 msgid "No, that's all for now"
 msgstr "Ez, hau izan da guztia"
 
-#: ../src/empathy-account-assistant.c:903
+#: ../src/empathy-account-assistant.c:910
 msgid "Welcome to Empathy"
 msgstr "Ongietorri Empathy-ra"
 
-#: ../src/empathy-account-assistant.c:912
+#: ../src/empathy-account-assistant.c:919
 msgid "Import your existing accounts"
 msgstr "Inportatu dauzkazun kontuak"
 
-#: ../src/empathy-accounts-dialog.c:206
+#. The primary text of the dialog shown to the user when he is about to lose
+#. * unsaved changes
+#: ../src/empathy-accounts-dialog.c:63
 #, c-format
-msgid "%s on %s"
+msgid "There are unsaved modification regarding your %s account."
+msgstr "Gorde gabeko eraldaketak daude zure %s kontuan."
+
+#. To translators: The first parameter is the login id and the
+#. * second one is the server. The resulting string will be something
+#. * like: "MyUserName on chat.freenode.net".
+#. * You should reverse the order of these arguments if the
+#. * server should come before the login id in your locale.
+#: ../src/empathy-accounts-dialog.c:236
+#, c-format
+msgid "%1$s on %2$s"
 msgstr "%s - %s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../src/empathy-accounts-dialog.c:217
+#: ../src/empathy-accounts-dialog.c:248
 #, c-format
 msgid "%s Account"
 msgstr "%s kontua"
 
-#: ../src/empathy-accounts-dialog.c:221
+#: ../src/empathy-accounts-dialog.c:252
 msgid "New account"
 msgstr "Kontu berria"
 
-#: ../src/empathy-accounts-dialog.c:649
+#: ../src/empathy-accounts-dialog.c:501
+msgid ""
+"You are about to create a new account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Kontu berri bat sortzera zoaz, eta ondorioz zuk egindako\n"
+"aldaketak baztertu egingo dira. Ziur zaude jarraitzea nahi duzula?"
+
+#: ../src/empathy-accounts-dialog.c:786
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1941,7 +1973,7 @@ msgstr ""
 "Zure %s kontua ezabatzera zoaz.\n"
 "Ziur zaude ezabatzea nahi duzula?"
 
-#: ../src/empathy-accounts-dialog.c:655
+#: ../src/empathy-accounts-dialog.c:791
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -1954,6 +1986,22 @@ msgstr ""
 "\n"
 "Beranduago kontua gehitzea erabakitzen baduzu ere, haiek oraindik "
 "erabilgarri egongo dira."
+
+#: ../src/empathy-accounts-dialog.c:979
+msgid ""
+"You are about to select another account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Beste kontu bat hautatzera zoaz, eta ondorioz zuk egindako\n"
+"aldaketak baztertu egingo dira Ziur zaude jarraitzea nahi duzula?"
+
+#: ../src/empathy-accounts-dialog.c:1474
+msgid ""
+"You are about to close the window, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Leihoa ixtera zoaz, eta ondorioz zuk egindako\n"
+"aldaketak baztertu egingo dira. Ziur zaude jarraitzea nahi duzula?"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2044,7 +2092,7 @@ msgid "Call"
 msgstr "Deitu"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1390
+#: ../src/empathy-call-window.c:1437
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Konektatuta — %d:%02dm"
