@@ -1,14 +1,18 @@
 <page xmlns="http://projectmallard.org/1.0/"
-  type="topic"
-  id="import-account">
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="import-account">
 
   <info>
     <link type="guide" xref="index#accounts"/>
     <link type="seealso" xref="add-account"/>
     <link type="seealso" xref="remove-account"/>
-    <desc>Import an existing account to <app>Empathy</app>.</desc>
+    <desc>Import an account from another instant messaging application.</desc>
     <revision pkgversion="2.28" version="0.1" date="2009-08-22" status="draft"/>
     <revision pkgversion="2.28" version="0.2" date="2009-08-22" status="review"/>
+    <revision pkgversion="2.28" version="0.3" date="2009-09-02" status="review">
+      <e:review by="shaunm@gnome.org" date="2009-09-02" status="done"/>
+    </revision>
     <credit type="author">
       <name>Peter Haslam</name>
       <email>peter.haslam@freenet.de</email>
@@ -16,6 +20,10 @@
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
+    </credit>
+    <credit>
+      <name>Shaun McCance</name>
+      <email>shaunm@gnome.org</email>
     </credit>
     <copyright>
       <year>2009</year>
@@ -26,63 +34,30 @@
 
   <title>Import an existing account</title>
 
+  <p>The first time you run <app>Empathy</app>, it will offer to import your
+  accounts from other instant messaging applications.  Currently, the only
+  supported application is <app>Pidgin</app>.</p>
+
   <steps>
     <item>
-      <p>
-	      From the <gui>Contact List</gui> window, do one of the following:
-      </p>
-      <list>
-        <item>
-          <p>
-            Press <key>F4</key>.
-          </p>
-        </item>
-        <item>
-          <p>
-            Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>.
-          </p>
-        </item>
-      </list>
+      <p>Run <app>Empathy</app> for the first time.  An assistant will offer
+      you a number of options to create new accounts.</p>
     </item>
     <item>
-      <p>
-        Click on <gui>Import Accounts...</gui>.
-      </p>
+      <p>Select <gui>Yes, import my account details from</gui> and click
+      <gui>Forward</gui>.</p>
     </item>
     <item>
-      <p>
-        From the <gui>Import Accounts</gui> dialog, select the <gui>Import</gui>
-        check-box next to the accounts you want to import.
-      </p>
+      <p>Select the check box next to each account you wish to import.</p>
     </item>
     <item>
-      <p>
-        Click <gui>OK</gui> to import the accounts to <app>Empathy</app>.
-      </p>
-    </item>
-    <item>
-      <p>
-        To enable the new account, select the
-         <gui>Enabled</gui> check-box next to
-         the name of the account in the box on the left of the dialog.
-      </p>
+      <p>Click <gui>Apply</gui>.</p>
     </item>
   </steps>
 
-  <note style="tip">
-    <p>
-      If you want to change the name that identifies the account in the <gui>Accounts</gui>
-      dialog, double-click on the name of the account in the box on the left of the dialog
-      and type the new name.
-    </p>
-  </note>
-
   <note>
-    <p>
-      At the moment <app>Empathy</app> can import accounts only from the instant 
-      messaging program <app>Pidgin</app>. For more information about <app>Pidgin</app>,
-      see the <link href="http://www.pidgin.im/">Pidgin website</link>.
-    </p>
+    <p>It is not currently possible to import accounts after you have completed
+    the first-run assistant.</p>
   </note>
 
 </page>
