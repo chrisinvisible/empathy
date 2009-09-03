@@ -130,6 +130,28 @@ map_view_zoom_out_cb (GtkWidget *widget,
   champlain_view_zoom_out (window->map_view);
 }
 
+static void
+map_view_zoom_fit_cb (GtkWidget *widget,
+    EmpathyMapView *window)
+{
+  GList *item, *children;
+  GPtrArray *markers;
+
+  children = clutter_container_get_children (CLUTTER_CONTAINER (window->layer));
+  markers =  g_ptr_array_sized_new (g_list_length (children) + 1);
+
+  for (item = children; item != NULL; item = g_list_next (item))
+    g_ptr_array_add (markers, (gpointer) item->data);
+
+  g_ptr_array_add (markers, (gpointer) NULL);
+  champlain_view_ensure_markers_visible (window->map_view,
+    (ChamplainBaseMarker **) markers->pdata,
+    TRUE);
+
+  g_ptr_array_free (markers, TRUE);
+  g_list_free (children);
+}
+
 static gboolean
 marker_clicked_cb (ChamplainMarker *marker,
     ClutterButtonEvent *event,
@@ -332,6 +354,7 @@ empathy_map_view_show (void)
       "map_view", "destroy", map_view_destroy_cb,
       "zoom_in", "clicked", map_view_zoom_in_cb,
       "zoom_out", "clicked", map_view_zoom_out_cb,
+      "zoom_fit", "clicked", map_view_zoom_fit_cb,
       NULL);
 
   g_object_unref (gui);
