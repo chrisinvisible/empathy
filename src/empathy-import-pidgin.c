@@ -140,8 +140,11 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
   else if (!tp_strdiff (type, "int"))
     {
       i = (gint) g_ascii_strtod (content, NULL);
-      value = tp_g_value_slice_new (G_TYPE_INT);
-      g_value_set_int (value, i);
+      /* FIXME: Pidgin uses signed int values whereas Telepathy usually
+       * uses unsigned int values.
+       */
+      value = tp_g_value_slice_new (G_TYPE_UINT);
+      g_value_set_uint (value, (guint) i);
     }
   else if (!tp_strdiff (type, "string"))
     {
