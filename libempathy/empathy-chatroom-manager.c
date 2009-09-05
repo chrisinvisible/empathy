@@ -52,6 +52,7 @@ typedef struct
   GList *chatrooms;
   gchar *file;
   EmpathyAccountManager *account_manager;
+  gulong account_manager_ready_handler_id;
   /* source id of the autosave timer */
   gint save_timer_id;
 } EmpathyChatroomManagerPriv;
@@ -356,6 +357,12 @@ chatroom_manager_finalize (GObject *object)
 
   priv = GET_PRIV (object);
 
+  if (priv->account_manager_ready_handler_id > 0)
+    {
+      g_signal_handler_disconnect (priv->account_manager,
+          priv->account_manager_ready_handler_id);
+    }
+
   g_object_unref (priv->account_manager);
 
   if (priv->save_timer_id > 0)
@@ -382,6 +389,21 @@ chatroom_manager_finalize (GObject *object)
   (G_OBJECT_CLASS (empathy_chatroom_manager_parent_class)->finalize) (object);
 }
 
+static void
+account_manager_ready_cb (GObject *gobject,
+                          GParamSpec *pspec,
+                          gpointer user_data)
+{
+  EmpathyChatroomManager *self = EMPATHY_CHATROOM_MANAGER (user_data);
+  EmpathyChatroomManagerPriv *priv = GET_PRIV (self);
+
+  chatroom_manager_get_all (self);
+
+  g_signal_handler_disconnect (gobject,
+      priv->account_manager_ready_handler_id);
+  priv->account_manager_ready_handler_id = 0;
+}
+
 static GObject *
 empathy_chatroom_manager_constructor (GType type,
                                       guint n_props,
@@ -406,6 +428,15 @@ empathy_chatroom_manager_constructor (GType type,
 
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
+  priv->account_manager_ready_handler_id = 0;
+
+  if (empathy_account_manager_is_ready (priv->account_manager))
+    chatroom_manager_get_all (self);
+  else
+    priv->account_manager_ready_handler_id =  g_signal_connect (
+        G_OBJECT (priv->account_manager), "notify::ready",
+        G_CALLBACK (account_manager_ready_cb), self);
+
   if (priv->file == NULL)
     {
       /* Set the default file path */
@@ -419,7 +450,6 @@ empathy_chatroom_manager_constructor (GType type,
       g_free (dir);
     }
 
-  chatroom_manager_get_all (self);
   return obj;
 }
 
