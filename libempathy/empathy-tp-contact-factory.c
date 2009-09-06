@@ -1047,6 +1047,11 @@ empathy_tp_contact_factory_get_from_handles (EmpathyTpContactFactory *tp_factory
 	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
 	GetContactsData *data;
 
+	if (n_handles == 0) {
+		callback (tp_factory, 0, NULL, 0, NULL, NULL, user_data, weak_object);
+		return;
+	}
+
 	g_return_if_fail (EMPATHY_IS_TP_CONTACT_FACTORY (tp_factory));
 	g_return_if_fail (handles != NULL);
 
