@@ -627,6 +627,117 @@ setup_dispatcher (void)
   return d;
 }
 
+static void
+account_connection_notify_cb (EmpathyAccount *account,
+    GParamSpec *pspec,
+    EmpathyChatroom *room)
+{
+  g_signal_handlers_disconnect_by_func (account,
+      account_connection_notify_cb, room);
+
+  empathy_dispatcher_join_muc (empathy_account_get_connection (account),
+      empathy_chatroom_get_room (room), NULL, NULL);
+}
+
+static void
+account_chatroom_account_status_changed_cb (EmpathyAccount *account,
+    TpConnectionStatus old_status,
+    TpConnectionStatus new_status,
+    TpConnectionStatusReason reason,
+    EmpathyChatroomManager *chatroom_manager)
+{
+  GList *chatrooms, *l;
+
+  if (new_status != TP_CONNECTION_STATUS_CONNECTED)
+    return;
+
+  chatrooms = empathy_chatroom_manager_get_chatrooms (
+      chatroom_manager, account);
+
+  for (l = chatrooms; l != NULL; l = l->next)
+    {
+      EmpathyChatroom *room = EMPATHY_CHATROOM (l->data);
+      TpConnection *conn;
+
+      if (!empathy_chatroom_get_auto_connect (room))
+        continue;
+
+      conn = empathy_account_get_connection (account);
+
+      /* Sometimes the account's connection hasn't been initialized yet. */
+      if (conn == NULL)
+        {
+          g_signal_connect (G_OBJECT (account), "notify::connection",
+              G_CALLBACK (account_connection_notify_cb), room);
+        }
+      else
+        {
+          empathy_dispatcher_join_muc (conn, empathy_chatroom_get_room (room),
+              NULL, NULL);
+        }
+    }
+
+  g_list_free (chatrooms);
+}
+
+static void
+account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
+    GParamSpec *pspec,
+    EmpathyChatroomManager *chatroom_manager)
+{
+  GList *accounts, *l;
+
+  accounts = empathy_account_manager_dup_accounts (account_manager);
+
+  for (l = accounts; l != NULL; l = g_list_next (l))
+    {
+      EmpathyAccount *a = EMPATHY_ACCOUNT (l->data);
+      TpConnectionStatus status;
+
+      g_object_get (a,
+          "connection-status", &status,
+          NULL);
+
+      if (status == TP_CONNECTION_STATUS_CONNECTED)
+        {
+          account_chatroom_account_status_changed_cb (a,
+              TP_CONNECTION_STATUS_DISCONNECTED,
+              TP_CONNECTION_STATUS_CONNECTED, 0, chatroom_manager);
+        }
+      else
+        {
+          g_signal_connect (G_OBJECT (a), "status-changed",
+              G_CALLBACK (account_chatroom_account_status_changed_cb),
+              chatroom_manager);
+
+        }
+    }
+
+  g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
+  g_list_free (accounts);
+}
+
+static void
+chatroom_manager_ready_cb (EmpathyChatroomManager *chatroom_manager,
+    GParamSpec *pspec,
+    EmpathyAccountManager *account_manager)
+{
+  gboolean ready;
+
+  g_object_get (G_OBJECT (account_manager), "ready", &ready, NULL);
+
+  if (ready)
+    {
+      account_manager_chatroom_ready_cb (account_manager, NULL,
+          chatroom_manager);
+    }
+  else
+    {
+      g_signal_connect (account_manager, "notify::ready",
+          G_CALLBACK (account_manager_chatroom_ready_cb), chatroom_manager);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -650,6 +761,7 @@ main (int argc, char *argv[])
   GError *error = NULL;
   TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
+  gboolean chatroom_manager_ready;
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
@@ -793,6 +905,17 @@ main (int argc, char *argv[])
 
   chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
   empathy_chatroom_manager_observe (chatroom_manager, dispatcher);
+
+  g_object_get (chatroom_manager, "ready", &chatroom_manager_ready, NULL);
+  if (!chatroom_manager_ready)
+    {
+      g_signal_connect (G_OBJECT (chatroom_manager), "notify::ready",
+          G_CALLBACK (chatroom_manager_ready_cb), account_manager);
+    }
+  else
+    {
+      chatroom_manager_ready_cb (chatroom_manager, NULL, account_manager);
+    }
 
   notify_init (_(PACKAGE_NAME));
   /* Create the call factory */
