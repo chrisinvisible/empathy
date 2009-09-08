@@ -618,7 +618,7 @@ setup_dispatcher (void)
       g_ptr_array_add (filters, asv);
     }
 
-  empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThenMeetsTheEye",
+  empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThanMeetsTheEye",
     filters, capabilities);
 
   g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
