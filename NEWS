@@ -1,3 +1,64 @@
+NEW in 2.27.92
+==============
+Bugs fixed:
+ - Fixed #593318, Empathy theme doesn't work (and opens a folder in Nautilus!)
+ - Fixed #583897, Warnings and assertions when starting Empathy
+ - Fixed #459014, we shouldn't be able to enable an incomplete account
+ - Fixed #459546, Rename Salut to Bonjour/Zeroconf/Link Local/something else in the interface
+ - Fixed #539142, Cannot go online manually if NM is not running
+ - Fixed #547323, The account is not enabled when added
+ - Fixed #585226, "make distcheck" is broken
+ - Fixed #587117, tp-haze MSN has password entry before account
+ - Fixed #587883, Empathy shouldn't use mc-profiles internally
+ - Fixed #590118, Port pidgin account importer to mc5
+ - Fixed #590165, Should use MC5
+ - Fixed #592737, GnomeGoal: Correct Desktop Files (Frédéric Péters)
+ - Fixed #592997, Confirmation needed when there are unapplied changes on an account
+ - Fixed #592998, Disable and re-enable an account and it won't reconnect
+ - Fixed #593009, No "Google Talk" profile/account any more
+ - Fixed #593018, Should respawn MC5 if it crashed (Cosimo Cecchi)
+ - Fixed #593041, Have Handler.Capabilities to remain callable with future Mission Control/Gabble (Sjoerd Simons)
+ - Fixed #593054, By default, the display name of an account should be set to the username.
+ - Fixed #593095, Send errors are printed as normal messages. (Will Thompson)
+ - Fixed #593101, Empathy exits sending empty /me message (Will Thompson)
+ - Fixed #593158, When we need to reconnect an account, instead of disconnecting and reconnecting it, tp_cli_account_call_reconnect should be used.
+ - Fixed #593161, A disabled and invalid account is enabled automatically when fixed. (Cosimo Cecchi)
+ - Fixed #593207, URL contains the rest of the line
+ - Fixed #593209, [PATCH] Use valid desktop category.
+ - Fixed #593224, .pc files still mark dep on libmissioncontrol
+ - Fixed #593237, Cannot create IRC account until you type something
+ - Fixed #593248, Cancel should always be sensitive for new account creation
+ - Fixed #593257, Translatable strings not well constructed (Frédéric Péters)
+ - Fixed #593285, Word 'wizard' should not be used (Milo Casagrande)
+ - Fixed #593717, Build failure due compiler warning
+ - Fixed #594139, importing msn account is broken since 2.27.91
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated be Translation (Alexander Nyakhaychyk)
+ - Updated de Translation (Christian Kirbach, Michael Kanis)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin)
+ - Updated eu Translation (Inaki Larranaga Murgoitio)
+ - Updated fr Translation (Claude Paroz)
+ - Updated gu Translation (Sweta Kothari)
+ - Updated he Translation (Mark Krapivner)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande)
+ - Updated kn Translation (Shankar Prasad)
+ - Updated ko Translation (Changwoo Ryu)
+ - Updated mr Translation (Sandeep Shedmake)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated pl Translation (Piotr Drąg)
+ - Updated pt_BR Translation (Fábio Nogueira)
+ - Updated sr@latin Translation (Branko Kokanović)
+ - Updated sr Translation (Branko Kokanović)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (ifelix)
+ - Updated zh_HK Translation (Chao-Hsiung Liao)
+ - Updated zh_TW Translation (Chao-Hsiung Liao)
+
 NEW in 2.27.91.1
 ================
 
