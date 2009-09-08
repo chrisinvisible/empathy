@@ -632,52 +632,15 @@ account_connection_notify_cb (EmpathyAccount *account,
     GParamSpec *pspec,
     EmpathyChatroom *room)
 {
-  g_signal_handlers_disconnect_by_func (account,
-      account_connection_notify_cb, room);
+  TpConnection *conn;
 
-  empathy_dispatcher_join_muc (empathy_account_get_connection (account),
-      empathy_chatroom_get_room (room), NULL, NULL);
-}
+  conn = empathy_account_get_connection (account);
 
-static void
-account_chatroom_account_status_changed_cb (EmpathyAccount *account,
-    TpConnectionStatus old_status,
-    TpConnectionStatus new_status,
-    TpConnectionStatusReason reason,
-    EmpathyChatroomManager *chatroom_manager)
-{
-  GList *chatrooms, *l;
-
-  if (new_status != TP_CONNECTION_STATUS_CONNECTED)
+  if (conn == NULL)
     return;
 
-  chatrooms = empathy_chatroom_manager_get_chatrooms (
-      chatroom_manager, account);
-
-  for (l = chatrooms; l != NULL; l = l->next)
-    {
-      EmpathyChatroom *room = EMPATHY_CHATROOM (l->data);
-      TpConnection *conn;
-
-      if (!empathy_chatroom_get_auto_connect (room))
-        continue;
-
-      conn = empathy_account_get_connection (account);
-
-      /* Sometimes the account's connection hasn't been initialized yet. */
-      if (conn == NULL)
-        {
-          g_signal_connect (G_OBJECT (account), "notify::connection",
-              G_CALLBACK (account_connection_notify_cb), room);
-        }
-      else
-        {
-          empathy_dispatcher_join_muc (conn, empathy_chatroom_get_room (room),
-              NULL, NULL);
-        }
-    }
-
-  g_list_free (chatrooms);
+  empathy_dispatcher_join_muc (conn,
+      empathy_chatroom_get_room (room), NULL, NULL);
 }
 
 static void
@@ -691,26 +654,35 @@ account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
 
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
-      EmpathyAccount *a = EMPATHY_ACCOUNT (l->data);
-      TpConnectionStatus status;
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      TpConnection *conn;
+      GList *chatrooms, *p;
 
-      g_object_get (a,
-          "connection-status", &status,
-          NULL);
+      conn = empathy_account_get_connection (account);
 
-      if (status == TP_CONNECTION_STATUS_CONNECTED)
+      chatrooms = empathy_chatroom_manager_get_chatrooms (
+          chatroom_manager, account);
+
+      for (p = chatrooms; p != NULL; p = p->next)
         {
-          account_chatroom_account_status_changed_cb (a,
-              TP_CONNECTION_STATUS_DISCONNECTED,
-              TP_CONNECTION_STATUS_CONNECTED, 0, chatroom_manager);
-        }
-      else
-        {
-          g_signal_connect (G_OBJECT (a), "status-changed",
-              G_CALLBACK (account_chatroom_account_status_changed_cb),
-              chatroom_manager);
+          EmpathyChatroom *room = EMPATHY_CHATROOM (p->data);
 
+          if (!empathy_chatroom_get_auto_connect (room))
+            continue;
+
+          if (conn == NULL)
+            {
+              g_signal_connect (G_OBJECT (account), "notify::connection",
+                  G_CALLBACK (account_connection_notify_cb), room);
+            }
+          else
+            {
+              empathy_dispatcher_join_muc (conn,
+                  empathy_chatroom_get_room (room), NULL, NULL);
+            }
         }
+
+      g_list_free (chatrooms);
     }
 
   g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
