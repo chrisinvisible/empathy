@@ -627,6 +627,89 @@ setup_dispatcher (void)
   return d;
 }
 
+static void
+account_connection_notify_cb (EmpathyAccount *account,
+    GParamSpec *pspec,
+    EmpathyChatroom *room)
+{
+  TpConnection *conn;
+
+  conn = empathy_account_get_connection (account);
+
+  if (conn == NULL)
+    return;
+
+  empathy_dispatcher_join_muc (conn,
+      empathy_chatroom_get_room (room), NULL, NULL);
+}
+
+static void
+account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
+    GParamSpec *pspec,
+    EmpathyChatroomManager *chatroom_manager)
+{
+  GList *accounts, *l;
+
+  accounts = empathy_account_manager_dup_accounts (account_manager);
+
+  for (l = accounts; l != NULL; l = g_list_next (l))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      TpConnection *conn;
+      GList *chatrooms, *p;
+
+      conn = empathy_account_get_connection (account);
+
+      chatrooms = empathy_chatroom_manager_get_chatrooms (
+          chatroom_manager, account);
+
+      for (p = chatrooms; p != NULL; p = p->next)
+        {
+          EmpathyChatroom *room = EMPATHY_CHATROOM (p->data);
+
+          if (!empathy_chatroom_get_auto_connect (room))
+            continue;
+
+          if (conn == NULL)
+            {
+              g_signal_connect (G_OBJECT (account), "notify::connection",
+                  G_CALLBACK (account_connection_notify_cb), room);
+            }
+          else
+            {
+              empathy_dispatcher_join_muc (conn,
+                  empathy_chatroom_get_room (room), NULL, NULL);
+            }
+        }
+
+      g_list_free (chatrooms);
+    }
+
+  g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
+  g_list_free (accounts);
+}
+
+static void
+chatroom_manager_ready_cb (EmpathyChatroomManager *chatroom_manager,
+    GParamSpec *pspec,
+    EmpathyAccountManager *account_manager)
+{
+  gboolean ready;
+
+  g_object_get (G_OBJECT (account_manager), "ready", &ready, NULL);
+
+  if (ready)
+    {
+      account_manager_chatroom_ready_cb (account_manager, NULL,
+          chatroom_manager);
+    }
+  else
+    {
+      g_signal_connect (account_manager, "notify::ready",
+          G_CALLBACK (account_manager_chatroom_ready_cb), chatroom_manager);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -650,6 +733,7 @@ main (int argc, char *argv[])
   GError *error = NULL;
   TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
+  gboolean chatroom_manager_ready;
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
@@ -793,6 +877,17 @@ main (int argc, char *argv[])
 
   chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
   empathy_chatroom_manager_observe (chatroom_manager, dispatcher);
+
+  g_object_get (chatroom_manager, "ready", &chatroom_manager_ready, NULL);
+  if (!chatroom_manager_ready)
+    {
+      g_signal_connect (G_OBJECT (chatroom_manager), "notify::ready",
+          G_CALLBACK (chatroom_manager_ready_cb), account_manager);
+    }
+  else
+    {
+      chatroom_manager_ready_cb (chatroom_manager, NULL, account_manager);
+    }
 
   notify_init (_(PACKAGE_NAME));
   /* Create the call factory */

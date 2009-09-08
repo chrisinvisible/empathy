@@ -55,6 +55,7 @@ typedef struct
   gulong account_manager_ready_handler_id;
   /* source id of the autosave timer */
   gint save_timer_id;
+  gboolean ready;
 } EmpathyChatroomManagerPriv;
 
 enum {
@@ -69,6 +70,7 @@ static guint signals[LAST_SIGNAL];
 enum
 {
   PROP_FILE = 1,
+  PROP_READY,
   LAST_PROPERTY
 };
 
@@ -304,6 +306,9 @@ chatroom_manager_get_all (EmpathyChatroomManager *manager)
 		return FALSE;
 	}
 
+        priv->ready = TRUE;
+        g_object_notify (G_OBJECT (manager), "ready");
+
 	return TRUE;
 }
 
@@ -320,6 +325,9 @@ empathy_chatroom_manager_get_property (GObject *object,
     {
       case PROP_FILE:
         g_value_set_string (value, priv->file);
+        break;
+      case PROP_READY:
+        g_value_set_boolean (value, priv->ready);
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -423,6 +431,8 @@ empathy_chatroom_manager_constructor (GType type,
   self = EMPATHY_CHATROOM_MANAGER (obj);
   priv = GET_PRIV (self);
 
+  priv->ready = FALSE;
+
   chatroom_manager_singleton = self;
   g_object_add_weak_pointer (obj, (gpointer) &chatroom_manager_singleton);
 
@@ -475,6 +485,14 @@ empathy_chatroom_manager_class_init (EmpathyChatroomManagerClass *klass)
       G_PARAM_STATIC_NICK |
       G_PARAM_STATIC_BLURB);
   g_object_class_install_property (object_class, PROP_FILE, param_spec);
+
+  param_spec = g_param_spec_boolean (
+      "ready",
+      "whether the manager is ready yet",
+      "whether the manager is ready yet",
+      FALSE,
+      G_PARAM_READABLE);
+  g_object_class_install_property (object_class, PROP_READY, param_spec);
 
   signals[CHATROOM_ADDED] = g_signal_new ("chatroom-added",
       G_TYPE_FROM_CLASS (klass),
