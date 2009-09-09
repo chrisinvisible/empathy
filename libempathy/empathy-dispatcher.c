@@ -1142,8 +1142,13 @@ dispatcher_request_failed (EmpathyDispatcher *dispatcher,
   if (request_data->cb != NULL)
     request_data->cb (NULL, error, request_data->user_data);
 
-  conn_data->outstanding_requests =
-      g_list_remove (conn_data->outstanding_requests, request_data);
+  if (conn_data != NULL)
+    {
+      conn_data->outstanding_requests =
+          g_list_remove (conn_data->outstanding_requests, request_data);
+    }
+  /* else Connection has been invalidated */
+
   free_dispatcher_request_data (request_data);
 }
 
