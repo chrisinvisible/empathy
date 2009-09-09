@@ -734,6 +734,8 @@ empathy_account_settings_get_uint32 (EmpathyAccountSettings *settings,
   guint32 ret;
 
   v = empathy_account_settings_get (settings, param);
+  if (v == NULL)
+    return 0;
 
   switch G_VALUE_TYPE (v)
     {
