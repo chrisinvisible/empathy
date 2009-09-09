@@ -55,7 +55,6 @@ DOC_PAGES = \
 	send-message.page \
 	set-custom-status.page \
 	share-desktop.page \
-	start-conversation.page \
 	status-icons.page \
 	video-call.page
 
