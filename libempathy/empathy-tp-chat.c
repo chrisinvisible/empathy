@@ -164,7 +164,8 @@ tp_chat_get_members (EmpathyContactList *list)
 		g_list_foreach (members, (GFunc) g_object_ref, NULL);
 	} else {
 		members = g_list_prepend (members, g_object_ref (priv->user));
-		members = g_list_prepend (members, g_object_ref (priv->remote_contact));
+		if (priv->remote_contact != NULL)
+			members = g_list_prepend (members, g_object_ref (priv->remote_contact));
 	}
 
 	return members;
