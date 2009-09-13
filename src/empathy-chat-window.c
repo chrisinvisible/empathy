@@ -59,6 +59,11 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
 
+typedef struct {
+	EmpathyChatWindow *window;
+	EmpathyChat *chat;
+} NotificationData;
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChatWindow)
 typedef struct {
 	EmpathyChat *current_chat;
@@ -72,6 +77,7 @@ typedef struct {
 	GtkWidget   *dialog;
 	GtkWidget   *notebook;
 	NotifyNotification *notification;
+	NotificationData *notification_data;
 
 	/* Menu items. */
 	GtkUIManager *ui_manager;
@@ -910,10 +916,12 @@ chat_window_set_urgency_hint (EmpathyChatWindow *window,
 	gtk_window_set_urgency_hint (GTK_WINDOW (priv->dialog), urgent);
 }
 
-typedef struct {
-	EmpathyChatWindow *window;
-	EmpathyChat *chat;
-} NotificationData;
+static void
+free_notification_data (NotificationData *data)
+{
+	g_object_unref (data->chat);
+	g_slice_free (NotificationData, data);
+}
 
 static void
 chat_window_notification_closed_cb (NotifyNotification *notify,
@@ -931,8 +939,8 @@ chat_window_notification_closed_cb (NotifyNotification *notify,
 
 	g_object_unref (notify);
 	priv->notification = NULL;
-	g_object_unref (cb_data->chat);
-	g_slice_free (NotificationData, cb_data);
+	free_notification_data (cb_data);
+	priv->notification_data = NULL;
 }
 
 static void
@@ -972,6 +980,7 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		cb_data->chat = g_object_ref (chat);
 		cb_data->window = window;
 
+		priv->notification_data = cb_data;
 		priv->notification = notify_notification_new (header, escaped, NULL, NULL);
 		notify_notification_set_timeout (priv->notification, NOTIFY_EXPIRES_DEFAULT);
 
@@ -1365,6 +1374,11 @@ chat_window_finalize (GObject *object)
 		notify_notification_close (priv->notification, NULL);
 		g_object_unref (priv->notification);
 		priv->notification = NULL;
+		if (priv->notification_data != NULL)
+			{
+				free_notification_data (priv->notification_data);
+				priv->notification_data = NULL;
+			}
 	}
 
 	chat_windows = g_list_remove (chat_windows, window);
