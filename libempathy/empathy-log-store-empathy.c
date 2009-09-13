@@ -441,6 +441,7 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 
 static GList *
 log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
+                                         EmpathyAccount *account,
                                          const gchar *filename)
 {
   GList *messages = NULL;
@@ -448,8 +449,6 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
   xmlDocPtr doc;
   xmlNodePtr log_node;
   xmlNodePtr node;
-  EmpathyLogSearchHit *hit;
-  EmpathyAccount *account;
 
   g_return_val_if_fail (EMPATHY_IS_LOG_STORE (self), NULL);
   g_return_val_if_fail (filename != NULL, NULL);
@@ -461,17 +460,6 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       DEBUG ("Filename:'%s' does not exist", filename);
       return NULL;
     }
-
-  /* Get the account from the filename */
-  hit = log_store_empathy_search_hit_new (self, filename);
-
-  if (hit->account != NULL)
-    account = g_object_ref (hit->account);
-
-  empathy_log_manager_search_hit_free (hit);
-
-  if (hit->account == NULL)
-    return NULL;
 
   /* Create parser. */
   ctxt = xmlNewParserCtxt ();
@@ -731,10 +719,12 @@ log_store_empathy_get_messages_for_date (EmpathyLogStore *self,
 
   g_return_val_if_fail (EMPATHY_IS_LOG_STORE (self), NULL);
   g_return_val_if_fail (chat_id != NULL, NULL);
+  g_return_val_if_fail (account != NULL, NULL);
 
   filename = log_store_empathy_get_filename_for_date (self, account,
       chat_id, chatroom, date);
-  messages = log_store_empathy_get_messages_for_file (self, filename);
+  messages = log_store_empathy_get_messages_for_file (self, account,
+    filename);
   g_free (filename);
 
   return messages;
