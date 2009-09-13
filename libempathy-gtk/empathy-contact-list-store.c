@@ -878,6 +878,24 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 	/* If no groups just add it at the top level. */
 	if (!groups) {
+		GtkTreeIter iter;
+		GtkTreeModel *model = GTK_TREE_MODEL (store);
+
+		if (gtk_tree_model_get_iter_first (model, &iter)) do {
+			EmpathyContact *c;
+
+			gtk_tree_model_get (model, &iter,
+				EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &c,
+				-1);
+
+			if (c == contact) {
+				g_object_unref (c);
+				return;
+			}
+			if (c != NULL)
+				g_object_unref (c);
+		} while (gtk_tree_model_iter_next (model, &iter));
+
 		gtk_tree_store_append (GTK_TREE_STORE (store), &iter, NULL);
 		gtk_tree_store_set (GTK_TREE_STORE (store), &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
