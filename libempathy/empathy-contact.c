@@ -415,6 +415,7 @@ empathy_contact_new_for_log (EmpathyAccount *account,
                              gboolean is_user)
 {
   g_return_val_if_fail (id != NULL, NULL);
+  g_assert (account != NULL);
 
   return g_object_new (EMPATHY_TYPE_CONTACT,
       "account", account,
