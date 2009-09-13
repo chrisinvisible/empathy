@@ -374,7 +374,7 @@ import_one_account (const char *path,
   GConfClient *client)
 {
   gchar *account_name = _account_name_from_key (path);
-  EmpathyAccountSettings *settings;
+  EmpathyAccountSettings *settings = NULL;
   GError *error = NULL;
   GSList *entries = NULL;
   gchar *profile = NULL;
