@@ -23,8 +23,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-12 17:39+0200\n"
-"PO-Revision-Date: 2009-09-12 17:37+0200\n"
+"POT-Creation-Date: 2009-09-13 13:58+0200\n"
+"PO-Revision-Date: 2009-09-13 13:53+0200\n"
 "Last-Translator: Kenneth Nielsen <k.nielsen81@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -35,16 +35,15 @@ msgstr ""
 
 #: ../data/empathy.desktop.in.in.h:1
 msgid "Empathy"
-msgstr ""
+msgstr "Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy IM Client"
 msgstr "Empathy IM-klient"
 
 #: ../data/empathy.desktop.in.in.h:3
-#, fuzzy
 msgid "IM Client"
-msgstr "Klient:"
+msgstr "IM-Klient"
 
 #: ../data/empathy.desktop.in.in.h:4
 msgid "Send and receive messages"
@@ -78,9 +77,8 @@ msgid "Compact contact list"
 msgstr "Kompakt kontaktliste"
 
 #: ../data/empathy.schemas.in.h:6
-#, fuzzy
 msgid "Connection managers should be used"
-msgstr "NetworkManager skal bruges"
+msgstr "Forbindelseshåndteringer bør bruges"
 
 #: ../data/empathy.schemas.in.h:7
 msgid "Contact list sort criterium"
@@ -157,11 +155,11 @@ msgstr "Skjul hovedvinduet."
 
 #: ../data/empathy.schemas.in.h:25
 msgid "MC 4 accounts have been imported"
-msgstr ""
+msgstr "MC 4-konti blev importeret"
 
 #: ../data/empathy.schemas.in.h:26
 msgid "MC 4 accounts have been imported."
-msgstr ""
+msgstr "MC 4-konti blev importeret."
 
 #: ../data/empathy.schemas.in.h:27
 msgid "Nick completed character"
@@ -325,12 +323,12 @@ msgstr ""
 "Om Empathy skal bruge kontaktens profilbillede som ikon for chatvinduet."
 
 #: ../data/empathy.schemas.in.h:62
-#, fuzzy
 msgid ""
 "Whether or not connectivity managers should be used to automatically "
 "disconnect/reconnect."
 msgstr ""
-"Om netværkshåndteringen bør bruges til automatisk at afbryde/genforbinde."
+"Om der skal bruges forbindelseshåndteringer til, automatisk at afbryde/"
+"genforbinde."
 
 #: ../data/empathy.schemas.in.h:63
 msgid ""
@@ -469,7 +467,7 @@ msgstr ""
 
 #: ../libempathy/empathy-account.c:1158
 msgid "Can't set an empty display name"
-msgstr ""
+msgstr "Kan ikke anvende et tomt kaldenavn"
 
 #: ../libempathy/empathy-ft-handler.c:839
 msgid "The hash of the received file and the sent one do not match"
@@ -544,18 +542,16 @@ msgid "Offline"
 msgstr "Frakoblet"
 
 #: ../libempathy/empathy-utils.c:380 ../src/empathy-import-mc4-accounts.c:104
-#, fuzzy
 msgid "People Nearby"
 msgstr "Folk i nærheden"
 
 #: ../libempathy/empathy-utils.c:385
-#, fuzzy
 msgid "Yahoo! Japan"
-msgstr "Brug _Yahoo Japan"
+msgstr "Yahoo! Japan"
 
 #: ../libempathy/empathy-utils.c:386
 msgid "Facebook Chat"
-msgstr ""
+msgstr "Facebook-chat"
 
 #: ../libempathy/empathy-time.c:137
 #, c-format
@@ -618,9 +614,8 @@ msgid "Enabled"
 msgstr "Aktiveret"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
-msgstr "<span size=\"smaller\">Eksempel:</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> MitNavn</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-generic.ui.h:1
@@ -649,14 +644,13 @@ msgid "Screen _Name:"
 msgstr "Kalde_navn:"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:5
-#, fuzzy
 msgid "What is your AIM password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din AIM-adgangskode?"
 
+# AIM er amerikansk, vi må hellere bruge begrebet screen name
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:6
-#, fuzzy
 msgid "What is your AIM screen name?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit screen name til AIM?"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
@@ -679,9 +673,8 @@ msgstr "_Server:"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> username</span>"
-msgstr "<span size=\"smaller\">Eksempel:</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> brugernavn</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
@@ -690,33 +683,28 @@ msgid "Login I_D:"
 msgstr "Logind-i_d:"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:5
-#, fuzzy
 msgid "What is your GroupWise User ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din bruger-id til GroupWise?"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:6
-#, fuzzy
 msgid "What is your GroupWise password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din adgangskode til GroupWise?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> 123456789</span>"
-msgstr "<span size=\"smaller\">Eksempel:</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> 123456789</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:3
 msgid "ICQ _UIN:"
 msgstr "ICQ _UIN:"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
-#, fuzzy
 msgid "What is your ICQ UIN?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din UIN til ICQ?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
-#, fuzzy
 msgid "What is your ICQ password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din adgangskode til ICQ?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
@@ -760,14 +748,12 @@ msgid "Servers"
 msgstr "Servere"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
-msgstr "<span size=\"smaller\">Eksempel:</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> bruger@gmail.com</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
-msgstr "<span size=\"smaller\">Eksempel: Mikael eller bruger@jabber.org</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> bruger@jabber.org</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Override server settings"
@@ -786,33 +772,28 @@ msgid "Use old SS_L"
 msgstr "Brug gammel SS_L"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
-#, fuzzy
 msgid "What is your Google ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit Google-id?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
-#, fuzzy
 msgid "What is your Google password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din Google-adgangskode?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
-#, fuzzy
 msgid "What is your Jabber ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit Jabber-id?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
-#, fuzzy
 msgid "What is your Jabber password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din Jabber-adgangskode?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
-#, fuzzy
 msgid "What is your desired Jabber ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit ønskede Jabber-id?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your desired Jabber password?"
-msgstr ""
+msgstr "Hvilken adgangskode vil du bruge til Jabber?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "_Encryption required (TLS/SSL)"
@@ -823,19 +804,16 @@ msgid "_Ignore SSL certificate errors"
 msgstr "_Ignorér SSL-certifikatfejl"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
-msgstr "<span size=\"smaller\">Eksempel:</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> bruger@hotmail.com</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:5
-#, fuzzy
 msgid "What is your Windows Live password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din Windows Live-adgangskode?"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
-#, fuzzy
 msgid "What is your Windows Live user name?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit Windows Live-brugernavn?"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
 msgid "_Email:"
@@ -862,9 +840,8 @@ msgid "_Published Name:"
 msgstr "_Udgivet navn:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:1
-#, fuzzy
 msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
-msgstr "<span size=\"smaller\">Eksempel: Mikael eller bruger@jabber.org</span>"
+msgstr "<span size=\"small\"><b>Eksempel:</b> bruger@min.sipserver</span>"
 
 #. look up the DNS SRV record at the service's domain for the host name of a STUN server.
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:4
@@ -880,14 +857,12 @@ msgid "STUN port:"
 msgstr "STUN-port:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:8
-#, fuzzy
 msgid "What is your SIP account password?"
-msgstr "Indtast din adgangskode for kontoen %s"
+msgstr "Hvad er adgangskoden til din SIP-konto?"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:9
-#, fuzzy
 msgid "What is your SIP login ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din logind-id til SIP?"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:10
 msgid "_Username:"
@@ -898,19 +873,17 @@ msgid "Use _Yahoo Japan"
 msgstr "Brug _Yahoo Japan"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
-#, fuzzy
 msgid "What is your Yahoo! ID?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er dit Yahoo!-id?"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
-#, fuzzy
 msgid "What is your Yahoo! password?"
-msgstr "Hvad er dit navn?"
+msgstr "Hvad er din Yahoo!-adgangskode?"
 
 # "id" eller "ID" står ikke i Retskrivningsordbogen
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "Yahoo I_D:"
-msgstr "Yahoo-I_D:"
+msgstr "Yahoo-i_d:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "_Ignore conference and chatroom invitations"
@@ -1022,9 +995,9 @@ msgstr "%s er koblet af"
 #. * if the kicked should come before the kicker in your locale.
 #.
 #: ../libempathy-gtk/empathy-chat.c:1184
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s was kicked by %2$s"
-msgstr "%s blev sparket ud af %s"
+msgstr "%1$s blev sparket ud af %2$s"
 
 #: ../libempathy-gtk/empathy-chat.c:1187
 #, c-format
@@ -1035,9 +1008,9 @@ msgstr "%s blev sparket ud"
 #. * if the banned should come before the banner in your locale.
 #.
 #: ../libempathy-gtk/empathy-chat.c:1195
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s was banned by %2$s"
-msgstr "%s blev bortvist af %s"
+msgstr "%1$s blev bortvist af %2$s"
 
 #: ../libempathy-gtk/empathy-chat.c:1198
 #, c-format
@@ -1123,7 +1096,7 @@ msgstr "Abonneringsanmodning"
 #: ../libempathy-gtk/empathy-contact-list-view.c:1412
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
-msgstr "Ønsker du at fjerne gruppen '%s'?"
+msgstr "Ønsker du at fjerne gruppen \"%s\"?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1414
 msgid "Removing group"
@@ -1138,7 +1111,7 @@ msgstr "_Fjern"
 #: ../libempathy-gtk/empathy-contact-list-view.c:1491
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
-msgstr "Ønsker du at fjerne kontakten '%s'?"
+msgstr "Ønsker du at fjerne kontakten \"%s\"?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1493
 msgid "Removing contact"
@@ -1870,37 +1843,37 @@ msgstr ""
 "Mere info: http://www.dansk-gruppen.dk"
 
 #: ../src/empathy-account-assistant.c:118
-#, fuzzy
 msgid "There has been an error while importing the accounts."
-msgstr "Empathy har spurgt om at importere konti"
+msgstr "Der opstod en fejl ved import af kontoerne."
 
 #: ../src/empathy-account-assistant.c:121
 msgid "There has been an error while parsing the account details."
-msgstr ""
+msgstr "Der opstod en fejl ved fortolkning af detaljer for kontoen."
 
 #: ../src/empathy-account-assistant.c:124
 msgid "There has been an error while creating the account."
-msgstr ""
+msgstr "Der opstod en fejl under oprettelse af kontoen."
 
 #: ../src/empathy-account-assistant.c:126
 msgid "There has been an error."
-msgstr ""
+msgstr "Der opstod en fejl."
 
 #: ../src/empathy-account-assistant.c:141
 #, c-format
 msgid "The error message was: <span style=\"italic\">%s</span>"
-msgstr ""
+msgstr "Fejlmeddelelsen var: <span style=\"italic\">%s</span>"
 
 #: ../src/empathy-account-assistant.c:149
 msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this assistant and add accounts later from the Edit menu."
 msgstr ""
+"Du kan enten gå tilbage og forsøge at indtaste dine kontodetaljer igen, "
+"eller afslutte denne assistent og tilføje konti senere fra Redigér-menuen."
 
 #: ../src/empathy-account-assistant.c:184
-#, fuzzy
 msgid "An error occurred"
-msgstr "Der opstod en ukendt fejl."
+msgstr "Der opstod en fejl"
 
 #. Create account
 #. To translator: %s is the protocol name
@@ -1916,33 +1889,29 @@ msgstr "Ny %s-konto"
 
 #: ../src/empathy-account-assistant.c:393
 msgid "What kind of chat account do you have?"
-msgstr ""
+msgstr "Hvilken type chatkonto ønsker du?"
 
 #: ../src/empathy-account-assistant.c:399
-#, fuzzy
 msgid "Do you have any other chat accounts you want to set up?"
-msgstr "Jeg har allerede en konto jeg vil benytte"
+msgstr "Har du andre chatkonti, du vil have indstillet?"
 
 #: ../src/empathy-account-assistant.c:405
-#, fuzzy
 msgid "Enter your account details"
-msgstr "Redigér kontooplysninger"
+msgstr "Indtast dine kontodetaljer"
 
 #: ../src/empathy-account-assistant.c:410
-#, fuzzy
 msgid "What kind of chat account do you want to create?"
-msgstr "Hvilken konto ønsker du at tilføje denne kontakt til?"
+msgstr "Hvilken type konto ønsker du at oprette?"
 
 #: ../src/empathy-account-assistant.c:416
-#, fuzzy
 msgid "Do you want to create other chat accounts?"
-msgstr "Ønsker du at fjerne kontakten '%s'?"
+msgstr "Ønsker du at oprette andre chatkonti?"
 
 #: ../src/empathy-account-assistant.c:423
-#, fuzzy
 msgid "Enter the details for the new account"
-msgstr "Indtast den port der bliver brugt ved tilslutning for denne konto."
+msgstr "Indtast detaljerne for den nye konto"
 
+# Jeg tror lige vi ændrer formuleringen lidt frit, eftersom jeg ikke forstår hvad de taler om
 #: ../src/empathy-account-assistant.c:509
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
@@ -1950,32 +1919,34 @@ msgid ""
 "programs. With a microphone or a webcam you can also have audio or video "
 "calls."
 msgstr ""
+"Med Empathy kan du chatte med folk på nettet, f.eks. venner og kolleger som "
+"bruger Google Talk, AIM, Windows Live eller mange andre chatprogrammer. Med "
+"en mikrofon eller et webkamera kan du også foretage lyd- eller videoopkald."
 
 #: ../src/empathy-account-assistant.c:526
 msgid "Do you have an account you've been using with another chat program?"
-msgstr ""
+msgstr "Har du en konto, som du har brugt med et andet chatprogram?"
 
 #: ../src/empathy-account-assistant.c:549
 msgid "Yes, import my account details from "
-msgstr ""
+msgstr "Ja, importér mine kontodetaljer fra "
 
 #: ../src/empathy-account-assistant.c:570
 msgid "Yes, I'll enter my account details now"
-msgstr ""
+msgstr "Ja, jeg vil indtaste mine kontodetaljer nu"
 
 #: ../src/empathy-account-assistant.c:592
-#, fuzzy
 msgid "No, I want a new account"
-msgstr "_Opret en ny konto"
+msgstr "Nej, jeg vil oprette en ny konto"
 
 #: ../src/empathy-account-assistant.c:602
 msgid "No, I just want to see people online nearby for now"
 msgstr ""
+"Nej, jeg vil bare tale med folk, der er tilsluttet i nærheden, indtil videre"
 
 #: ../src/empathy-account-assistant.c:623
-#, fuzzy
 msgid "Select the accounts you want to import:"
-msgstr "Sæt den status du ønsker at bruge"
+msgstr "Vælg de konti, du vil importere:"
 
 #: ../src/empathy-account-assistant.c:710
 #: ../src/empathy-new-chatroom-dialog.c:496
@@ -1985,24 +1956,22 @@ msgstr "Ja"
 
 #: ../src/empathy-account-assistant.c:717
 msgid "No, that's all for now"
-msgstr ""
+msgstr "Nej, det var alt - indtil videre"
 
 #: ../src/empathy-account-assistant.c:910
-#, fuzzy
 msgid "Welcome to Empathy"
-msgstr "Velkommen til Gossip"
+msgstr "Velkommen til Empathy"
 
 #: ../src/empathy-account-assistant.c:919
-#, fuzzy
 msgid "Import your existing accounts"
-msgstr "_Brug en eksisterende konto"
+msgstr "Importér dine eksisterende konti"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
 #: ../src/empathy-accounts-dialog.c:63
 #, c-format
 msgid "There are unsaved modification regarding your %s account."
-msgstr ""
+msgstr "Der er ugemte ændringer til din %s-konto."
 
 #. To translators: The first parameter is the login id and the
 #. * second one is the server. The resulting string will be something
@@ -2010,30 +1979,28 @@ msgstr ""
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
 #: ../src/empathy-accounts-dialog.c:236
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s on %2$s"
-msgstr "%s af %s"
+msgstr "%1$s på %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
 #: ../src/empathy-accounts-dialog.c:248
-#, fuzzy, c-format
+#, c-format
 msgid "%s Account"
-msgstr "Konto"
+msgstr "%s-konto"
 
 #: ../src/empathy-accounts-dialog.c:252
-#, fuzzy
 msgid "New account"
-msgstr "Ny %s-konto"
+msgstr "Ny konto"
 
 #: ../src/empathy-accounts-dialog.c:502
-#, fuzzy
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
-"Du skal til at fjerne din %s konto!\n"
-"Vil du fortsætte?"
+"Du er ved at oprette en ny konto, hvilket vil kassere\n"
+"dine ændringer. Er du sikker på, at du vil fortsætte?"
 
 #: ../src/empathy-accounts-dialog.c:787
 #, c-format
@@ -2059,22 +2026,20 @@ msgstr ""
 "stadig være tilgængelige."
 
 #: ../src/empathy-accounts-dialog.c:980
-#, fuzzy
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
-"Du skal til at fjerne din %s konto!\n"
-"Vil du fortsætte?"
+"Du er ved at vælge en anden konto, hvilket vil kassere dine \n"
+"ændringer. Er du sikker på, at du vil fortsætte?"
 
 #: ../src/empathy-accounts-dialog.c:1475
-#, fuzzy
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
-"Du skal til at fjerne din %s konto!\n"
-"Vil du fortsætte?"
+"Du er ved at lukke vinduet, hvilket vil kassere dine \n"
+"ændringer. Er du sikker på, at du vil fortsætte?"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2082,7 +2047,7 @@ msgstr "Konti"
 
 #: ../src/empathy-accounts-dialog.ui.h:2
 msgid "Add new"
-msgstr ""
+msgstr "Tilføj ny"
 
 #: ../src/empathy-accounts-dialog.ui.h:3
 msgid "Cr_eate"
@@ -2113,9 +2078,8 @@ msgid "_Reuse an existing account"
 msgstr "_Brug en eksisterende konto"
 
 #: ../src/empathy-accounts-dialog.ui.h:9
-#, fuzzy
 msgid "account"
-msgstr "Konto"
+msgstr "konto"
 
 #: ../src/empathy-call-window.c:426
 msgid "Contrast"
@@ -2521,9 +2485,9 @@ msgid "Source"
 msgstr "Kilde"
 
 #: ../src/empathy-import-mc4-accounts.c:106
-#, fuzzy, c-format
+#, c-format
 msgid "%s account"
-msgstr "Ny %s-konto"
+msgstr "%s-konto"
 
 #: ../src/empathy-main-window.c:399
 msgid "_Edit account"
@@ -3864,21 +3828,6 @@ msgstr ""
 
 #~ msgid "Gossip"
 #~ msgstr "Gossip"
-
-#~ msgid ""
-#~ "Gossip is a modern client for the Jabber Instant Messaging system.\n"
-#~ "\n"
-#~ "This assistant will help you configure Gossip and connect you to your "
-#~ "favorite Jabber server.\n"
-#~ "\n"
-#~ "To get started, just click \"Forward\"."
-#~ msgstr ""
-#~ "Gossip er en moderne klient til samtalesystemet Jabber\n"
-#~ "\n"
-#~ "Denne assistent sætter dig i gang med at konfigurere Gossip og tilslutte "
-#~ "dig til din favorit Jabber-server.\n"
-#~ "\n"
-#~ "Klik på \"Fremad\" for at komme i gang."
 
 #~ msgid ""
 #~ "If you have another machine on your network which 'proxies' the "
