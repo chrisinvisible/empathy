@@ -246,13 +246,13 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 	EmpathyContactListViewPriv *priv;
 	EmpathyAccountManager      *account_manager;
 	EmpathyTpContactFactory    *factory = NULL;
-	EmpathyAccount             *account;
+	EmpathyAccount             *account = NULL;
 	GtkTreeModel               *model;
 	GtkTreeViewDropPosition     position;
 	GtkTreePath                *path;
 	const gchar                *id;
 	gchar                     **strv = NULL;
-	const gchar                *account_id;
+	const gchar                *account_id = NULL;
 	const gchar                *contact_id;
 	gchar                      *new_group = NULL;
 	gchar                      *old_group = NULL;
@@ -298,11 +298,13 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		context->action == GDK_ACTION_COPY ? "copy" : "",
 		id);
 
-	strv = g_strsplit (id, "/", 2);
-	account_id = strv[0];
-	contact_id = strv[1];
-  account_manager = empathy_account_manager_dup_singleton ();
-	account = empathy_account_manager_get_account (account_manager, account_id);
+	account_manager = empathy_account_manager_dup_singleton ();
+	strv = g_strsplit (id, ":", 2);
+	if (g_strv_length (strv) == 2) {
+		account_id = strv[0];
+		contact_id = strv[1];
+		account = empathy_account_manager_get_account (account_manager, account_id);
+	}
 	if (account) {
 		TpConnection *connection;
 
