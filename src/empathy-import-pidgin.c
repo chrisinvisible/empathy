@@ -26,6 +26,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <dbus/dbus-protocol.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
@@ -139,12 +140,34 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
     }
   else if (!tp_strdiff (type, "int"))
     {
+      TpConnectionManager *cm = NULL;
+      const TpConnectionManagerProtocol *proto;
+      const TpConnectionManagerParam *param;
+      const gchar *signature;
+      int signature_i;
+
+      if (!empathy_import_protocol_is_supported (data->protocol, &cm))
+        return;
+
+      proto = tp_connection_manager_get_protocol (cm, data->protocol);
+      param = tp_connection_manager_protocol_get_param (proto, item->cm_name);
+      signature = tp_connection_manager_param_get_dbus_signature (param);
+      signature_i = (int) (*signature);
+
       i = (gint) g_ascii_strtod (content, NULL);
-      /* FIXME: Pidgin uses signed int values whereas Telepathy usually
-       * uses unsigned int values.
-       */
-      value = tp_g_value_slice_new (G_TYPE_UINT);
-      g_value_set_uint (value, (guint) i);
+
+      if (signature_i == DBUS_TYPE_INT16 ||
+          signature_i == DBUS_TYPE_INT32)
+        {
+          value = tp_g_value_slice_new (G_TYPE_INT);
+          g_value_set_int (value, i);
+        }
+      else if (signature_i == DBUS_TYPE_UINT16 ||
+          signature_i == DBUS_TYPE_UINT32)
+        {
+          value = tp_g_value_slice_new (G_TYPE_UINT);
+          g_value_set_uint (value, (guint) i);
+        }
     }
   else if (!tp_strdiff (type, "string"))
     {
