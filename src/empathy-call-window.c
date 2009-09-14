@@ -723,8 +723,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   gtk_container_add (GTK_CONTAINER (self), top_vbox);
 
-  empathy_call_window_setup_toolbar (self);
-
   priv->content_hbox = gtk_hbox_new (FALSE, CONTENT_HBOX_SPACING);
   gtk_container_set_border_width (GTK_CONTAINER (priv->content_hbox),
                                   CONTENT_HBOX_BORDER_WIDTH);
@@ -772,6 +770,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
   gtk_box_pack_start (GTK_BOX (priv->vbox), priv->self_user_output_frame, FALSE,
       FALSE, 0);
   empathy_call_window_setup_self_frame (bus, self);
+
+  empathy_call_window_setup_toolbar (self);
 
   g_object_unref (bus);
 
