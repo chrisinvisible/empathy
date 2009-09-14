@@ -100,11 +100,24 @@ empathy_video_widget_init (EmpathyVideoWidget *obj)
 }
 
 static void
+empathy_video_widget_realized (GtkWidget *widget, gpointer user_data)
+{
+  /* requesting the XID forces the GdkWindow to be native in GTK+ 2.18
+   * onwards, requesting the native window in a thread causes a BadWindowID,
+   * so we need to request it now. We could call gdk_window_ensure_native(),
+   * but that would mean we require GTK+ 2.18, so instead we call this */
+  GDK_WINDOW_XID (gtk_widget_get_window (GTK_WIDGET (widget)));
+}
+
+static void
 empathy_video_widget_constructed (GObject *object)
 {
   EmpathyVideoWidgetPriv *priv = GET_PRIV (object);
   GstElement *colorspace, *videoscale, *sink;
   GstPad *pad;
+
+  g_signal_connect (object, "realize",
+      G_CALLBACK (empathy_video_widget_realized), NULL);
 
   priv->videosink = gst_bin_new (NULL);
 
