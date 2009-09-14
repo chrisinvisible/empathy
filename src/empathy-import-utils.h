@@ -22,6 +22,7 @@
 #ifndef __EMPATHY_IMPORT_UTILS_H__
 #define __EMPATHY_IMPORT_UTILS_H__
 
+#include <telepathy-glib/connection-manager.h>
 #include <glib.h>
 
 G_BEGIN_DECLS
@@ -50,6 +51,9 @@ void empathy_import_account_data_free (EmpathyImportAccountData *data);
 
 gboolean empathy_import_accounts_to_import (void);
 GList *empathy_import_accounts_load (EmpathyImportApplication id);
+
+gboolean empathy_import_protocol_is_supported (const gchar *protocol,
+    TpConnectionManager **cm);
 
 G_END_DECLS
 

@@ -21,6 +21,7 @@
 
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-import-utils.h"
@@ -73,4 +74,47 @@ empathy_import_accounts_load (EmpathyImportApplication id)
     return empathy_import_pidgin_load ();
 
   return empathy_import_pidgin_load ();
+}
+
+gboolean
+empathy_import_protocol_is_supported (const gchar *protocol,
+    TpConnectionManager **cm)
+{
+  EmpathyConnectionManagers *manager;
+  GList *cms;
+  GList *l;
+  gboolean proto_is_supported = FALSE;
+
+  manager = empathy_connection_managers_dup_singleton ();
+  cms = empathy_connection_managers_get_cms (manager);
+
+  for (l = cms; l; l = l->next)
+    {
+
+      TpConnectionManager *tp_cm = l->data;
+      if (tp_connection_manager_has_protocol (tp_cm,
+          (const gchar*) protocol))
+        {
+          if (!proto_is_supported)
+            {
+              *cm = tp_cm;
+              proto_is_supported = TRUE;
+
+              continue;
+            }
+
+          /* we have more than one CM for this protocol,
+           * select the one which is not haze.
+           */
+          if (!tp_strdiff ((*cm)->name, "haze"))
+            {
+              *cm = tp_cm;
+              break;
+            }
+        }
+    }
+
+  g_object_unref (manager);
+
+  return proto_is_supported;
 }

@@ -101,31 +101,6 @@ import_widget_account_id_in_list (GList *accounts,
   return FALSE;
 }
 
-static gboolean
-protocol_is_supported (EmpathyImportWidget *self,
-    EmpathyImportAccountData *data)
-{
-  EmpathyImportWidgetPriv *priv = GET_PRIV (self);
-  GList *cms = empathy_connection_managers_get_cms (priv->cms);
-  GList *l;
-  gboolean proto_is_supported = FALSE;
-
-  for (l = cms; l; l = l->next)
-    {
-      TpConnectionManager *tp_cm = l->data;
-      const gchar *cm_name = tp_connection_manager_get_name (tp_cm);
-      if (tp_connection_manager_has_protocol (tp_cm,
-          (const gchar*) data->protocol))
-        {
-          data->connection_manager = g_strdup (cm_name);
-          proto_is_supported = TRUE;
-          break;
-        }
-    }
-
-  return proto_is_supported;
-}
-
 static void
 import_widget_add_accounts_to_model (EmpathyImportWidget *self)
 {
@@ -143,9 +118,13 @@ import_widget_add_accounts_to_model (EmpathyImportWidget *self)
       EmpathyImportAccountData *data = l->data;
       gboolean import;
       GList *accounts;
+      TpConnectionManager *cm = NULL;
 
-      if (!protocol_is_supported (self, data))
+      if (!empathy_import_protocol_is_supported (data->protocol, &cm))
         continue;
+
+      data->connection_manager = g_strdup (
+          tp_connection_manager_get_name (cm));
 
       value = g_hash_table_lookup (data->settings, "account");
 
