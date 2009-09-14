@@ -1259,9 +1259,9 @@ chat_window_drag_data_received (GtkWidget        *widget,
 				EmpathyChatWindow *window)
 {
 	if (info == DND_DRAG_TYPE_CONTACT_ID) {
-		EmpathyChat           *chat;
+		EmpathyChat           *chat = NULL;
 		EmpathyChatWindow     *old_window;
-		EmpathyAccount        *account;
+		EmpathyAccount        *account = NULL;
 		EmpathyAccountManager *account_manager;
 		const gchar           *id;
 		gchar                **strv;
@@ -1274,10 +1274,20 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		DEBUG ("DND contact from roster with id:'%s'", id);
 
 		strv = g_strsplit (id, ":", 2);
-		account_id = strv[0];
-		contact_id = strv[1];
-		account = empathy_account_manager_get_account (account_manager, account_id);
-		chat = empathy_chat_window_find_chat (account, contact_id);
+		if (g_strv_length (strv) == 2) {
+			account_id = strv[0];
+			contact_id = strv[1];
+			account =
+				empathy_account_manager_get_account (account_manager, account_id);
+			if (account != NULL)
+				chat = empathy_chat_window_find_chat (account, contact_id);
+		}
+
+		if (account == NULL) {
+			g_strfreev (strv);
+			gtk_drag_finish (context, FALSE, FALSE, time);
+			return;
+		}
 
 		if (!chat) {
 			TpConnection *connection;
