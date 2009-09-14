@@ -1295,17 +1295,15 @@ empathy_window_present (GtkWindow *window,
 			gboolean   steal_focus)
 {
 	guint32 timestamp;
+	GdkWindow *window;
 
 	g_return_if_fail (GTK_IS_WINDOW (window));
 
-	/* There are three cases: hidden, visible, visible on another
-	 * workspace.
-	 */
-
-	if (!empathy_window_get_is_visible (window)) {
-		/* Hide it so present brings it to the current workspace. */
-		gtk_widget_hide (GTK_WIDGET (window));
-	}
+	/* Move the window to the current workspace before trying to show it.
+	 * This is the behaviour people expect when clicking on the statusbar icon. */
+	window = gtk_widget_get_window (GTK_WIDGET (window));
+	if (window)
+		gdk_x11_window_move_to_current_desktop (window);
 
 	timestamp = gtk_get_current_event_time ();
 	gtk_window_present_with_time (window, timestamp);
