@@ -489,7 +489,7 @@ contact_list_view_drag_data_get (GtkWidget        *widget,
 	account_id = empathy_account_get_unique_name (account);
 	contact_id = empathy_contact_get_id (contact);
 	g_object_unref (contact);
-	str = g_strconcat (account_id, "/", contact_id, NULL);
+	str = g_strconcat (account_id, ":", contact_id, NULL);
 
 	switch (info) {
 	case DND_DRAG_TYPE_CONTACT_ID:

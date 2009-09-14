@@ -1273,7 +1273,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 		DEBUG ("DND contact from roster with id:'%s'", id);
 
-		strv = g_strsplit (id, "/", 2);
+		strv = g_strsplit (id, ":", 2);
 		account_id = strv[0];
 		contact_id = strv[1];
 		account = empathy_account_manager_get_account (account_manager, account_id);
