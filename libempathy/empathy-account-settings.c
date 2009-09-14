@@ -338,6 +338,9 @@ empathy_account_settings_finalize (GObject *object)
   g_free (priv->display_name);
   g_free (priv->icon_name);
 
+  if (priv->required_params != NULL)
+    g_array_free (priv->required_params, TRUE);
+
   g_hash_table_destroy (priv->parameters);
 
   empathy_account_settings_free_unset_parameters (self);
