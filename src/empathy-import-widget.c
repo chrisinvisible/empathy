@@ -262,6 +262,8 @@ import_widget_set_up_account_list (EmpathyImportWidget *self)
   GtkTreeViewColumn *column;
   GtkCellRenderer *cell;
 
+  priv->accounts = empathy_import_accounts_load (priv->app_id);
+
   store = gtk_list_store_new (COL_COUNT, G_TYPE_BOOLEAN, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -415,8 +417,6 @@ do_constructed (GObject *obj)
   EmpathyImportWidgetPriv *priv = GET_PRIV (self);
   GtkBuilder *gui;
   gchar *filename;
-
-  priv->accounts = empathy_import_accounts_load (priv->app_id);
 
   filename = empathy_file_lookup ("empathy-import-dialog.ui", "src");
   gui = empathy_builder_get_file (filename,
