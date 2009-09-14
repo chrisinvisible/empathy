@@ -60,7 +60,8 @@
 /* The avatar's default width and height are set to the same value because we
    want a square icon. */
 #define REMOTE_CONTACT_AVATAR_DEFAULT_WIDTH EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT
-#define REMOTE_CONTACT_AVATAR_DEFAULT_HEIGHT EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT
+#define REMOTE_CONTACT_AVATAR_DEFAULT_HEIGHT \
+  EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT
 
 /* If an video input error occurs, the error message will start with "v4l" */
 #define VIDEO_INPUT_ERROR_PREFIX "v4l"
@@ -207,8 +208,8 @@ static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
 static void empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
   EmpathyCallWindow *window);
 
-static void empathy_call_window_show_preview_toggled_cb (GtkToggleAction *toggle,
-  EmpathyCallWindow *window);
+static void empathy_call_window_show_preview_toggled_cb (
+  GtkToggleAction *toggle, EmpathyCallWindow *window);
 
 static void empathy_call_window_mic_toggled_cb (
   GtkToggleToolButton *toggle, EmpathyCallWindow *window);
@@ -227,14 +228,14 @@ static void empathy_call_window_fullscreen_cb (gpointer object,
 
 static void empathy_call_window_fullscreen_toggle (EmpathyCallWindow *window);
 
-static gboolean empathy_call_window_video_button_press_cb (GtkWidget *video_output,
-  GdkEventButton *event, EmpathyCallWindow *window);
+static gboolean empathy_call_window_video_button_press_cb (
+  GtkWidget *video_output, GdkEventButton *event, EmpathyCallWindow *window);
 
 static gboolean empathy_call_window_key_press_cb (GtkWidget *video_output,
   GdkEventKey *event, EmpathyCallWindow *window);
 
-static gboolean empathy_call_window_video_output_motion_notify (GtkWidget *widget,
-  GdkEventMotion *event, EmpathyCallWindow *window);
+static gboolean empathy_call_window_video_output_motion_notify (
+  GtkWidget *widget, GdkEventMotion *event, EmpathyCallWindow *window);
 
 static void empathy_call_window_video_menu_popup (EmpathyCallWindow *window,
   guint button);
@@ -520,7 +521,8 @@ empathy_call_window_audio_input_level_changed_cb (EmpathyGstAudioSrc *src,
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
   value = CLAMP (pow (10, level / 20), 0.0, 1.0);
-  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->volume_progress_bar), value);
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->volume_progress_bar),
+      value);
 }
 
 static GtkWidget *
@@ -552,7 +554,8 @@ empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 
   priv->volume_progress_bar = gtk_progress_bar_new ();
   gtk_progress_bar_set_orientation (
-      GTK_PROGRESS_BAR (priv->volume_progress_bar), GTK_PROGRESS_BOTTOM_TO_TOP);
+      GTK_PROGRESS_BAR (priv->volume_progress_bar),
+      GTK_PROGRESS_BOTTOM_TO_TOP);
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->volume_progress_bar),
       0);
 
@@ -767,8 +770,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
   priv->vbox = gtk_vbox_new (FALSE, 3);
   gtk_box_pack_start (GTK_BOX (priv->content_hbox), priv->vbox,
       FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
-  gtk_box_pack_start (GTK_BOX (priv->vbox), priv->self_user_output_frame, FALSE,
-      FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (priv->vbox), priv->self_user_output_frame,
+      FALSE, FALSE, 0);
   empathy_call_window_setup_self_frame (bus, self);
 
   empathy_call_window_setup_toolbar (self);
@@ -812,7 +815,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
   gtk_widget_hide (priv->sidebar);
 
   priv->fullscreen = empathy_call_window_fullscreen_new (self);
-  empathy_call_window_fullscreen_set_video_widget (priv->fullscreen, priv->video_output);
+  empathy_call_window_fullscreen_set_video_widget (priv->fullscreen,
+      priv->video_output);
   g_signal_connect (G_OBJECT (priv->fullscreen->leave_fullscreen_button),
       "clicked", G_CALLBACK (empathy_call_window_fullscreen_cb), self);
 
@@ -837,7 +841,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
 /* Instead of specifying a width and a height, we specify only one size. That's
    because we want a square avatar icon.  */
 static void
-init_contact_avatar_with_size (EmpathyContact *contact, GtkWidget *image_widget,
+init_contact_avatar_with_size (EmpathyContact *contact,
+    GtkWidget *image_widget,
     gint size)
 {
   GdkPixbuf *pixbuf_avatar = NULL;
@@ -863,8 +868,8 @@ set_window_title (EmpathyCallWindow *self)
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   gchar *tmp;
 
-  /* translators: Call is a noun and %s is the contact name. This string is used
-   * in the window title */
+  /* translators: Call is a noun and %s is the contact name. This string
+   * is used in the window title */
   tmp = g_strdup_printf (_("Call with %s"),
       empathy_contact_get_name (priv->contact));
   gtk_window_set_title (GTK_WINDOW (self), tmp);
@@ -934,7 +939,8 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
   else
     {
       g_warning ("call handler doesn't have a contact");
-      /* translators: Call is a noun. This string is used in the window title */
+      /* translators: Call is a noun. This string is used in the window
+       * title */
       gtk_window_set_title (GTK_WINDOW (self), _("Call"));
 
       /* Since we can't access the remote contact, we can't get a connection
@@ -945,8 +951,9 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
     }
 
   init_contact_avatar_with_size (priv->contact,
-      priv->remote_user_avatar_widget, MIN (REMOTE_CONTACT_AVATAR_DEFAULT_WIDTH,
-      REMOTE_CONTACT_AVATAR_DEFAULT_HEIGHT));
+      priv->remote_user_avatar_widget,
+      MIN (REMOTE_CONTACT_AVATAR_DEFAULT_WIDTH,
+          REMOTE_CONTACT_AVATAR_DEFAULT_HEIGHT));
 
   /* The remote avatar is shown by default and will be hidden when we receive
      video from the remote side. */
@@ -959,7 +966,8 @@ empathy_call_window_setup_video_preview_visibility (EmpathyCallWindow *self,
     EmpathyCallHandler *handler)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
-  gboolean initial_video = empathy_call_handler_has_initial_video (priv->handler);
+  gboolean initial_video =
+    empathy_call_handler_has_initial_video (priv->handler);
 
   gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
       initial_video);
@@ -1472,7 +1480,8 @@ empathy_call_window_connected (gpointer user_data)
   gtk_action_set_sensitive (priv->show_preview, TRUE);
   gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
       priv->sending_video
-      || gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (priv->show_preview)));
+      || gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (
+              priv->show_preview)));
   gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video),
       priv->sending_video && priv->video_input != NULL);
   gtk_toggle_tool_button_set_active (
@@ -1835,7 +1844,8 @@ empathy_call_window_state_event_cb (GtkWidget *widget,
   if (event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN)
     {
       EmpathyCallWindowPriv *priv = GET_PRIV (window);
-      gboolean set_fullscreen = event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN;
+      gboolean set_fullscreen = event->new_window_state &
+        GDK_WINDOW_STATE_FULLSCREEN;
 
       if (set_fullscreen)
         {
@@ -1854,7 +1864,8 @@ empathy_call_window_state_event_cb (GtkWidget *widget,
             {
               priv->video_output_motion_handler_id = g_signal_connect (
                   G_OBJECT (priv->video_output), "motion-notify-event",
-                  G_CALLBACK (empathy_call_window_video_output_motion_notify), window);
+                  G_CALLBACK (empathy_call_window_video_output_motion_notify),
+                  window);
             }
         }
       else
