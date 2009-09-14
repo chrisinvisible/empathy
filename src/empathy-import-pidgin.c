@@ -361,7 +361,8 @@ empathy_import_pidgin_accounts_to_import (void)
   gboolean out;
   GFile *file;
 
-  filename = g_build_filename (g_get_home_dir (), ".purple", "accounts.xml", NULL);
+  filename = g_build_filename (g_get_home_dir (), ".purple", "accounts.xml",
+      NULL);
   file = g_file_new_for_path (filename);
   out = g_file_query_exists (file, NULL);
 
