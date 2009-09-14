@@ -230,7 +230,7 @@ megaphone_applet_preferences_response_cb (GtkWidget       *dialog,
 			account_id = empathy_account_get_unique_name (account);
 			contact_id = empathy_contact_get_id (contact);
 
-			str = g_strconcat (account_id, "/", contact_id, NULL);
+			str = g_strconcat (account_id, ":", contact_id, NULL);
 			panel_applet_gconf_set_string (PANEL_APPLET (applet),
 						       "avatar_token", "",
 						       NULL);
@@ -442,12 +442,16 @@ megaphone_applet_set_contact (MegaphoneApplet *applet,
 
 	/* Lookup the new contact */
 	if (str) {
-		strv = g_strsplit (str, "/", 2);
-		priv->account = empathy_account_manager_get_account (priv->account_manager,
-			strv[0]);
-		priv->id = strv[1];
-		g_free (strv[0]);
-		g_free (strv);
+		strv = g_strsplit (str, ":", 2);
+		if (g_strv_length (strv) == 2) {
+			priv->account = empathy_account_manager_get_account (
+				priv->account_manager, strv[0]);
+			priv->id = strv[1];
+			g_free (strv[0]);
+			g_free (strv);
+		} else {
+			g_strfreev (strv);
+		}
 	}
 
 	if (priv->account) {
