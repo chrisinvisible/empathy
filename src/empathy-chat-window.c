@@ -113,10 +113,12 @@ typedef enum {
 static const GtkTargetEntry drag_types_dest[] = {
 	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
 	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
+	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
-static const GtkTargetEntry drag_types_uri_dest[] = {
-	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
+static const GtkTargetEntry drag_types_dest_noft[] = {
+	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
+	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
 };
 
 static void chat_window_update (EmpathyChatWindow *window);
@@ -1327,6 +1329,28 @@ chat_window_focus_in_event_cb (GtkWidget        *widget,
 }
 
 static void
+chat_window_drag_motion (GtkWidget        *widget,
+			 GdkDragContext   *context,
+			 int               x,
+			 int               y,
+			 guint             time,
+			 EmpathyChatWindow *window)
+{
+	static GtkTargetList *list = NULL;
+	GdkAtom target;
+
+	if (list == NULL) {
+		list = gtk_target_list_new (drag_types_dest_noft,
+					    G_N_ELEMENTS (drag_types_dest_noft));
+	}
+
+	target = gtk_drag_dest_find_target (widget, context, list);
+	if (target == GDK_NONE) {
+		gdk_drag_status (context, GDK_ACTION_COPY, time);
+	}
+}
+
+static void
 chat_window_drag_data_received (GtkWidget        *widget,
 				GdkDragContext   *context,
 				int               x,
@@ -1662,13 +1686,12 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			   GTK_DEST_DEFAULT_ALL,
 			   drag_types_dest,
 			   G_N_ELEMENTS (drag_types_dest),
-			   GDK_ACTION_MOVE);
-	gtk_drag_dest_set (GTK_WIDGET (priv->notebook),
-			   GTK_DEST_DEFAULT_ALL,
-			   drag_types_uri_dest,
-			   G_N_ELEMENTS (drag_types_uri_dest),
-			   GDK_ACTION_COPY);
+			   GDK_ACTION_MOVE | GDK_ACTION_COPY);
 
+	g_signal_connect (priv->notebook,
+			  "drag-motion",
+			  G_CALLBACK (chat_window_drag_motion),
+			  window);
 	g_signal_connect (priv->notebook,
 			  "drag-data-received",
 			  G_CALLBACK (chat_window_drag_data_received),
