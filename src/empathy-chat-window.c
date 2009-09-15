@@ -116,8 +116,7 @@ static const GtkTargetEntry drag_types_dest[] = {
 	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
-static const GtkTargetEntry drag_types_dest_noft[] = {
-	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
+static const GtkTargetEntry drag_types_dest_move[] = {
 	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
 };
 
@@ -1340,13 +1339,16 @@ chat_window_drag_motion (GtkWidget        *widget,
 	GdkAtom target;
 
 	if (list == NULL) {
-		list = gtk_target_list_new (drag_types_dest_noft,
-					    G_N_ELEMENTS (drag_types_dest_noft));
+		list = gtk_target_list_new (drag_types_dest_move,
+					    G_N_ELEMENTS (drag_types_dest_move));
 	}
 
 	target = gtk_drag_dest_find_target (widget, context, list);
 	if (target == GDK_NONE) {
 		gdk_drag_status (context, GDK_ACTION_COPY, time);
+	}
+	else {
+		gdk_drag_status (context, GDK_ACTION_MOVE, time);
 	}
 }
 
