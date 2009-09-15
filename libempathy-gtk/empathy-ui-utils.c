@@ -1451,30 +1451,40 @@ empathy_toggle_button_set_state_quietly (GtkWidget *widget,
 	g_signal_handlers_unblock_by_func (widget, callback, user_data);
 }
 
+void
+empathy_send_file (EmpathyContact *contact, GFile *file)
+{
+	EmpathyFTFactory *factory;
+	GtkRecentManager *manager;
+	gchar *uri;
+
+	g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+	g_return_if_fail (G_IS_FILE (file));
+
+	factory = empathy_ft_factory_dup_singleton ();
+
+	empathy_ft_factory_new_transfer_outgoing (factory, contact, file);
+
+	uri = g_file_get_uri (file);
+	manager = gtk_recent_manager_get_default ();
+	gtk_recent_manager_add_item (manager, uri);
+	g_free (uri);
+
+	g_object_unref (factory);
+}
+
 static void
 file_manager_send_file_response_cb (GtkDialog      *widget,
 				    gint            response_id,
 				    EmpathyContact *contact)
 {
-	EmpathyFTFactory *factory;
 	GFile *file;
-	gchar *uri;
-	GtkRecentManager *manager;
 
 	if (response_id == GTK_RESPONSE_OK) {
 		file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (widget));
-		uri = g_file_get_uri (file);
 
-		factory = empathy_ft_factory_dup_singleton ();
+		empathy_send_file (contact, file);
 
-		empathy_ft_factory_new_transfer_outgoing (factory, contact,
-		                                          file);
-
-		manager = gtk_recent_manager_get_default ();
-		gtk_recent_manager_add_item (manager, uri);
-
-		g_free (uri);
-		g_object_unref (factory);
 		g_object_unref (file);
 	}
 

@@ -110,6 +110,8 @@ void        empathy_toggle_button_set_state_quietly     (GtkWidget        *widge
 GtkWidget * empathy_link_button_new                     (const gchar      *url,
 							 const gchar      *title);
 
+void        empathy_send_file                           (EmpathyContact   *contact,
+							 GFile            *file);
 void        empathy_send_file_with_file_chooser         (EmpathyContact   *contact);
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
 
