@@ -46,9 +46,12 @@ typedef struct
   gpointer channels_user_data;
 
   gchar *name;
+  gchar *busname;
 
   GPtrArray *filters;
   GStrv *capabilities;
+
+  gboolean dispose_run;
 } EmpathyHandlerPriv;
 
 static void empathy_handler_client_handler_iface_init (gpointer g_iface,
@@ -89,29 +92,48 @@ handler_constructor (GType type,
   EmpathyHandler *handler = EMPATHY_HANDLER (obj);
   EmpathyHandlerPriv *priv = GET_PRIV (handler);
   TpDBusDaemon *dbus;
-  gchar *busname;
   gchar *object_path;
 
   priv = GET_PRIV (handler);
 
-  busname = g_strdup_printf (TP_CLIENT_BUS_NAME_BASE"%s", priv->name);
+  priv->busname = g_strdup_printf (TP_CLIENT_BUS_NAME_BASE"%s", priv->name);
   object_path = g_strdup_printf (TP_CLIENT_OBJECT_PATH_BASE"%s",
     priv->name);
 
   dbus = tp_dbus_daemon_dup (NULL);
 
   g_assert (tp_dbus_daemon_request_name (dbus,
-    busname, TRUE, NULL));
+    priv->busname, TRUE, NULL));
   dbus_g_connection_register_g_object (tp_get_bus (),
     object_path, obj);
 
   DEBUG ("Registered at '%s'", object_path);
 
-  g_free (busname);
   g_free (object_path);
   g_object_unref (dbus);
 
   return G_OBJECT (handler);
+}
+
+static void
+handler_dispose (GObject *object)
+{
+  EmpathyHandlerPriv *priv = GET_PRIV (object);
+  TpDBusDaemon *dbus;
+
+  if (priv->dispose_run)
+    return;
+
+  priv->dispose_run = TRUE;
+
+  dbus = tp_dbus_daemon_dup (NULL);
+
+  tp_dbus_daemon_release_name (dbus, priv->busname, NULL);
+
+  g_object_unref (dbus);
+
+  if (G_OBJECT_CLASS (empathy_handler_parent_class)->dispose != NULL)
+    G_OBJECT_CLASS (empathy_handler_parent_class)->dispose (object);
 }
 
 static void
@@ -126,6 +148,10 @@ handler_finalize (GObject *object)
     g_boxed_free (G_TYPE_STRV, priv->capabilities);
 
   g_free (priv->name);
+  g_free (priv->busname);
+
+  if (G_OBJECT_CLASS (empathy_handler_parent_class)->finalize != NULL)
+    G_OBJECT_CLASS (empathy_handler_parent_class)->finalize (object);
 }
 
 static void
@@ -243,6 +269,7 @@ empathy_handler_class_init (EmpathyHandlerClass *klass)
   };
 
   object_class->finalize = handler_finalize;
+  object_class->dispose = handler_dispose;
   object_class->constructor = handler_constructor;
 
   object_class->get_property = handler_get_property;
