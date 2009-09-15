@@ -126,6 +126,7 @@ typedef struct
   EmpathyDispatcher *dispatcher;
   EmpathyDispatchOperation *operation;
   TpConnection *connection;
+  gboolean should_ensure;
   gchar *channel_type;
   guint handle_type;
   guint handle;
@@ -180,7 +181,8 @@ typedef struct
 } FindChannelRequest;
 
 static void
-empathy_dispatcher_call_create_channel (EmpathyDispatcher *dispatcher,
+empathy_dispatcher_call_create_or_ensure_channel (
+    EmpathyDispatcher *dispatcher,
     DispatcherRequestData *request_data);
 
 static DispatchData *
@@ -220,6 +222,8 @@ new_dispatcher_request_data (EmpathyDispatcher *dispatcher,
 
   result->dispatcher = g_object_ref (dispatcher);
   result->connection = connection;
+
+  result->should_ensure = FALSE;
 
   result->channel_type = g_strdup (channel_type);
   result->handle_type = handle_type;
@@ -1282,8 +1286,8 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
         tp_asv_set_uint32 (request_data->request,
           TP_IFACE_CHANNEL ".TargetHandle", request_data->handle);
 
-      empathy_dispatcher_call_create_channel (request_data->dispatcher,
-        request_data);
+      empathy_dispatcher_call_create_or_ensure_channel (
+        request_data->dispatcher, request_data);
     }
   else
     {
@@ -1316,9 +1320,10 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   connection_data = g_hash_table_lookup (priv->connections, connection);
 
   /* The contact handle might not be known yet */
-  request_data  = new_dispatcher_request_data (dispatcher, connection,
+  request_data = new_dispatcher_request_data (dispatcher, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
     empathy_contact_get_handle (contact), NULL, contact, callback, user_data);
+  request_data->should_ensure = TRUE;
 
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
@@ -1469,13 +1474,40 @@ dispatcher_create_channel_cb (TpConnection *connect,
 }
 
 static void
-empathy_dispatcher_call_create_channel (EmpathyDispatcher *dispatcher,
+dispatcher_ensure_channel_cb (TpConnection *connect,
+                              gboolean is_ours,
+                              const gchar *object_path,
+                              GHashTable *properties,
+                              const GError *error,
+                              gpointer user_data,
+                              GObject *weak_object)
+{
+  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (weak_object);
+  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+
+  dispatcher_connection_new_requested_channel (dispatcher,
+    request_data, object_path, properties, error);
+}
+
+static void
+empathy_dispatcher_call_create_or_ensure_channel (
+    EmpathyDispatcher *dispatcher,
     DispatcherRequestData *request_data)
 {
-  tp_cli_connection_interface_requests_call_create_channel (
-    request_data->connection, -1,
-    request_data->request, dispatcher_create_channel_cb, request_data, NULL,
-    G_OBJECT (request_data->dispatcher));
+  if (request_data->should_ensure)
+    {
+      tp_cli_connection_interface_requests_call_ensure_channel (
+          request_data->connection, -1,
+          request_data->request, dispatcher_ensure_channel_cb,
+          request_data, NULL, G_OBJECT (request_data->dispatcher));
+    }
+  else
+    {
+      tp_cli_connection_interface_requests_call_create_channel (
+          request_data->connection, -1,
+          request_data->request, dispatcher_create_channel_cb,
+          request_data, NULL, G_OBJECT (request_data->dispatcher));
+    }
 }
 
 void
@@ -1516,7 +1548,7 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
 
-  empathy_dispatcher_call_create_channel (dispatcher, request_data);
+  empathy_dispatcher_call_create_or_ensure_channel (dispatcher, request_data);
 }
 
 static gboolean
