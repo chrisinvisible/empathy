@@ -809,6 +809,12 @@ dispatcher_connection_got_all (TpProxy *proxy,
 
           object_path = g_value_get_boxed (g_value_array_get_nth (values, 0));
           properties = g_value_get_boxed (g_value_array_get_nth (values, 1));
+
+          if (tp_strdiff (tp_asv_get_string (properties,
+                      TP_IFACE_CHANNEL ".ChannelType"),
+                  TP_IFACE_CHANNEL_TYPE_TEXT))
+            continue;
+
           dispatcher_connection_new_channel_with_properties (dispatcher,
               TP_CONNECTION (proxy), object_path, properties);
         }
