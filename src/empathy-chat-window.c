@@ -1441,6 +1441,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		empathy_send_file (contact, file);
 
 		g_object_unref (file);
+		gtk_drag_finish (context, TRUE, FALSE, time);
 	}
 	else if (info == DND_DRAG_TYPE_TAB) {
 		EmpathyChat        **chat;
