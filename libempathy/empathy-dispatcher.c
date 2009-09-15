@@ -1095,10 +1095,12 @@ empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
 
   priv->channels = NULL;
 
-  connections = empathy_account_manager_dup_connections (priv->account_manager);
+  connections = empathy_account_manager_dup_connections (
+      priv->account_manager);
   for (l = connections; l; l = l->next)
     {
-      dispatcher_new_connection_cb (priv->account_manager, l->data, dispatcher);
+      dispatcher_new_connection_cb (priv->account_manager, l->data,
+          dispatcher);
       g_object_unref (l->data);
     }
   g_list_free (connections);
@@ -1158,10 +1160,10 @@ dispatcher_request_failed (EmpathyDispatcher *dispatcher,
 
 static void
 dispatcher_connection_new_requested_channel (EmpathyDispatcher *dispatcher,
-                                             DispatcherRequestData *request_data,
-                                             const gchar *object_path,
-                                             GHashTable *properties,
-                                             const GError *error)
+  DispatcherRequestData *request_data,
+  const gchar *object_path,
+  GHashTable *properties,
+  const GError *error)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   EmpathyDispatchOperation *operation = NULL;
