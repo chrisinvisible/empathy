@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-13 19:44+0200\n"
+"POT-Creation-Date: 2009-09-16 15:05+0200\n"
 "PO-Revision-Date: 2009-09-07 17:47+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
@@ -968,7 +968,7 @@ msgstr "Wstaw emotikonę"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1028
-#: ../libempathy-gtk/empathy-ui-utils.c:1494
+#: ../libempathy-gtk/empathy-ui-utils.c:1492
 msgid "_Send"
 msgstr "_Wyślij"
 
@@ -1027,7 +1027,7 @@ msgstr " (%s)"
 msgid "%s has joined the room"
 msgstr "Użytkownik %s dołączył do pokoju"
 
-#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1277
+#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1285
 msgid "Disconnected"
 msgstr "Rozłączony"
 
@@ -1040,7 +1040,7 @@ msgstr "Połączony"
 msgid "Conversation"
 msgstr "Rozmowa"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:471
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:477
 msgid "Topic:"
 msgstr "Temat:"
 
@@ -1083,27 +1083,27 @@ msgstr "Z_decyduj później"
 msgid "Subscription Request"
 msgstr "Prośba o upoważnienie"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1412
+#: ../libempathy-gtk/empathy-contact-list-view.c:1414
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Na pewno usunąć grupę \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1414
+#: ../libempathy-gtk/empathy-contact-list-view.c:1416
 msgid "Removing group"
 msgstr "Usuwanie grupy"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1461
-#: ../libempathy-gtk/empathy-contact-list-view.c:1538
+#: ../libempathy-gtk/empathy-contact-list-view.c:1463
+#: ../libempathy-gtk/empathy-contact-list-view.c:1540
 msgid "_Remove"
 msgstr "_Usuń"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1491
+#: ../libempathy-gtk/empathy-contact-list-view.c:1493
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Na pewno usunąć kontakt \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1493
+#: ../libempathy-gtk/empathy-contact-list-view.c:1495
 msgid "Removing contact"
 msgstr "Usuwanie kontaktu"
 
@@ -1385,7 +1385,7 @@ msgid "SSL"
 msgstr "SSL"
 
 #: ../libempathy-gtk/empathy-log-window.c:495
-#: ../src/empathy-import-widget.c:321
+#: ../src/empathy-import-widget.c:302
 msgid "Account"
 msgstr "Konto"
 
@@ -1534,15 +1534,15 @@ msgstr "Czysty"
 msgid "Blue"
 msgstr "Niebieski"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1396
+#: ../libempathy-gtk/empathy-ui-utils.c:1394
 msgid "Unable to open URI"
 msgstr "Nie można otworzyć adresu URI"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1486
+#: ../libempathy-gtk/empathy-ui-utils.c:1484
 msgid "Select a file"
 msgstr "Wybór pliku"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1546
+#: ../libempathy-gtk/empathy-ui-utils.c:1544
 msgid "Select a destination"
 msgstr "Wybór miejsca docelowego"
 
@@ -1732,7 +1732,7 @@ msgid "Megaphone"
 msgstr "Megafon"
 
 #: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:2
-#: ../megaphone/src/megaphone-applet.c:518
+#: ../megaphone/src/megaphone-applet.c:522
 msgid "Talk!"
 msgstr "Porozmawiaj!"
 
@@ -1767,19 +1767,19 @@ msgstr "Obecność"
 msgid "Set your own presence"
 msgstr "Ustawianie własnej obecności"
 
-#: ../src/empathy.c:658
+#: ../src/empathy.c:742
 msgid "Don't connect on startup"
 msgstr "Bez łączenia podczas uruchamiania"
 
-#: ../src/empathy.c:662
+#: ../src/empathy.c:746
 msgid "Don't show the contact list on startup"
 msgstr "Bez wyświetlania listy kontaktów podczas uruchamiania"
 
-#: ../src/empathy.c:666
+#: ../src/empathy.c:750
 msgid "Show the accounts dialog"
 msgstr "Wyświetlanie okna dialogowego kont"
 
-#: ../src/empathy.c:678
+#: ../src/empathy.c:762
 msgid "- Empathy IM Client"
 msgstr " - komunikator Empathy"
 
@@ -2066,56 +2066,57 @@ msgstr "_Ponownie użyj istniejące konto"
 msgid "account"
 msgstr "konto"
 
-#: ../src/empathy-call-window.c:426
+#: ../src/empathy-call-window.c:427
 msgid "Contrast"
 msgstr "Kontrast"
 
-#: ../src/empathy-call-window.c:429
+#: ../src/empathy-call-window.c:430
 msgid "Brightness"
 msgstr "Jasność"
 
-#: ../src/empathy-call-window.c:432
+#: ../src/empathy-call-window.c:433
 msgid "Gamma"
 msgstr "Gamma"
 
-#: ../src/empathy-call-window.c:539
+#: ../src/empathy-call-window.c:541
 msgid "Volume"
 msgstr "Głośność"
 
-#: ../src/empathy-call-window.c:671
+#: ../src/empathy-call-window.c:674
 msgid "Connecting..."
 msgstr "Łączenie..."
 
-#: ../src/empathy-call-window.c:778
+#: ../src/empathy-call-window.c:781
 msgid "_Sidebar"
 msgstr "_Panel"
 
-#: ../src/empathy-call-window.c:797
+#: ../src/empathy-call-window.c:800
 msgid "Dialpad"
 msgstr "Panel wybierania"
 
-#: ../src/empathy-call-window.c:803
+#: ../src/empathy-call-window.c:806
 msgid "Audio input"
 msgstr "Wejście dźwięku"
 
-#: ../src/empathy-call-window.c:807
+#: ../src/empathy-call-window.c:810
 msgid "Video input"
 msgstr "Wejście obrazu"
 
-#. translators: Call is a noun and %s is the contact name. This string is used
-#. * in the window title
-#: ../src/empathy-call-window.c:868
+#. translators: Call is a noun and %s is the contact name. This string
+#. * is used in the window title
+#: ../src/empathy-call-window.c:873
 #, c-format
 msgid "Call with %s"
 msgstr "Rozmowa z użytkownikiem %s"
 
-#. translators: Call is a noun. This string is used in the window title
-#: ../src/empathy-call-window.c:938
+#. translators: Call is a noun. This string is used in the window
+#. * title
+#: ../src/empathy-call-window.c:944
 msgid "Call"
 msgstr "Rozmowa"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1437
+#: ../src/empathy-call-window.c:1445
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Połączony - %d:%02dm"
@@ -2148,12 +2149,12 @@ msgstr "_Zadzwoń"
 msgid "_View"
 msgstr "_Widok"
 
-#: ../src/empathy-chat-window.c:343
+#: ../src/empathy-chat-window.c:349
 #, c-format
 msgid "Conversations (%d)"
 msgstr "Rozmowy (%d)"
 
-#: ../src/empathy-chat-window.c:475
+#: ../src/empathy-chat-window.c:481
 msgid "Typing a message."
 msgstr "Pisze wiadomość."
 
@@ -2446,15 +2447,15 @@ msgid "Import Accounts"
 msgstr "Importowanie kont"
 
 #. Translators: this is the header of a treeview column
-#: ../src/empathy-import-widget.c:301
+#: ../src/empathy-import-widget.c:282
 msgid "Import"
 msgstr "Zaimportuj"
 
-#: ../src/empathy-import-widget.c:310
+#: ../src/empathy-import-widget.c:291
 msgid "Protocol"
 msgstr "Protokół"
 
-#: ../src/empathy-import-widget.c:334
+#: ../src/empathy-import-widget.c:315
 msgid "Source"
 msgstr "Źródło"
 
