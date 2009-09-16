@@ -952,8 +952,8 @@ empathy_contact_load_avatar_cache (EmpathyContact *contact,
       empathy_contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);
     }
-
-  g_free (filename);
+  else
+    g_free (filename);
 
   return data != NULL;
 }
