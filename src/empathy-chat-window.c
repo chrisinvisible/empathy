@@ -1438,9 +1438,9 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		EmpathyChatWindowPriv *priv;
 		EmpathyContact *contact;
 		const gchar *data;
-		GFile *file;
-		gchar *nl;
+		const gchar *nl;
 		gchar *uri;
+		GFile *file;
 
 		priv = GET_PRIV (window);
 		contact = empathy_chat_get_remote_contact (priv->current_chat);
