@@ -454,20 +454,35 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	gtk_tree_model_get_iter (model, &iter, path);
 
 	if (target == GDK_NONE) {
-		gboolean    is_group;
+		GtkTreeIter  group_iter;
+		gboolean     is_group;
+		GtkTreePath *group_path;
 		gtk_tree_model_get (model, &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 				    -1);
 		if (is_group) {
-			gdk_drag_status (context, GDK_ACTION_MOVE, time_);
-			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
-							 path,
-							 GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+			group_iter = iter;
 		}
 		else {
-			gdk_drag_status (context, 0, time_);
-			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
-			retval = FALSE;
+			if (gtk_tree_model_iter_parent (model, &group_iter, &iter))
+				gtk_tree_model_get (model, &group_iter,
+						    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+						    -1);
+		}
+		if (is_group) {
+			gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+			group_path = gtk_tree_model_get_path (model, &group_iter);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+							 group_path,
+							 GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+			gtk_tree_path_free (group_path);
+		}
+		else {
+			group_path = gtk_tree_path_new_first ();
+			gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+							 group_path,
+							 GTK_TREE_VIEW_DROP_BEFORE);
 		}
 	}
 	else {
