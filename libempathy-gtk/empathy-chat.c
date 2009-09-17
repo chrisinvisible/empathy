@@ -1957,8 +1957,15 @@ empathy_chat_paste (EmpathyChat *chat)
 {
 	GtkTextBuffer *buffer;
 	GtkClipboard  *clipboard;
+	EmpathyChatPriv *priv;
 
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
+
+	priv = GET_PRIV (chat);
+
+	if (priv->tp_chat == NULL ||
+	    !GTK_WIDGET_IS_SENSITIVE (chat->input_text_view))
+		return;
 
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
 	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
