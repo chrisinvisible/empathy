@@ -628,7 +628,7 @@ chat_window_favorite_toggled_cb (GtkToggleAction   *toggle_action,
 		chatroom = empathy_chatroom_new_full (account, room, name, FALSE);
 		empathy_chatroom_manager_add (priv->chatroom_manager, chatroom);
 		g_object_unref (chatroom);
-  }
+	}
 
 	empathy_chatroom_set_favorite (chatroom, active);
 }
