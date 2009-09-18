@@ -410,6 +410,27 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 }
 
 static void
+account_manager_ready_cb (EmpathyAccountManager *account_manager,
+			  GParamSpec *pspec,
+			  EmpathyIdle *idle)
+{
+	EmpathyIdlePriv *priv;
+	TpConnectionPresenceType state;
+	gchar *status, *status_message;
+
+	priv = GET_PRIV (idle);
+
+	state = empathy_account_manager_get_global_presence (priv->manager,
+		&status, &status_message);
+
+	idle_presence_changed_cb (account_manager, state, status,
+		status_message, idle);
+
+	g_free (status);
+	g_free (status_message);
+}
+
+static void
 empathy_idle_init (EmpathyIdle *idle)
 {
 	EmpathyIdlePriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (idle,
@@ -419,8 +440,14 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->is_idle = FALSE;
 
 	priv->manager = empathy_account_manager_dup_singleton ();
-	priv->state = empathy_account_manager_get_global_presence (priv->manager,
-		NULL, &priv->status);
+
+	if (empathy_account_manager_is_ready (priv->manager)) {
+		priv->state = empathy_account_manager_get_global_presence (priv->manager,
+			NULL, &priv->status);
+	} else {
+		g_signal_connect (priv->manager, "notify::ready",
+			G_CALLBACK (account_manager_ready_cb), idle);
+	}
 
 
 	g_signal_connect (priv->manager, "global-presence-changed",
