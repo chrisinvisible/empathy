@@ -1080,9 +1080,14 @@ contact_list_view_setup (EmpathyContactListView *view)
 				 GTK_TREE_MODEL (priv->store));
 
 	/* Setup view */
+	/* Setting reorderable is a hack that gets us row previews as drag icons
+	   for free.  We override all the drag handlers.  It's tricky to get the
+	   position of the drag icon right in drag_begin.  GtkTreeView has special
+	   voodoo for it, so we let it do the voodoo that he do.
+	 */
 	g_object_set (view,
 		      "headers-visible", FALSE,
-		      "reorderable", FALSE,
+		      "reorderable", TRUE,
 		      "show-expanders", FALSE,
 		      NULL);
 
