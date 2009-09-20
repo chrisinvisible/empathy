@@ -100,16 +100,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
         (empathy_dispatch_operation_get_channel_wrapper (operation));
 
       id = empathy_tp_chat_get_id (tp_chat);
-      if (!id)
-        {
-          EmpathyContact *contact;
-
-          contact = empathy_tp_chat_get_remote_contact (tp_chat);
-          if (contact)
-            id = empathy_contact_get_id (contact);
-        }
-
-      if (id)
+      if (!EMP_STR_EMPTY (id))
         {
           EmpathyAccountManager *manager;
           TpConnection *connection;

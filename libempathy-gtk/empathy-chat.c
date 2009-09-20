@@ -1325,20 +1325,19 @@ chat_remote_contact_changed_cb (EmpathyChat *chat)
 		priv->remote_contact = NULL;
 	}
 
+	g_free (priv->id);
+
+	priv->id = g_strdup (empathy_tp_chat_get_id (priv->tp_chat));
 	priv->remote_contact = empathy_tp_chat_get_remote_contact (priv->tp_chat);
 	if (priv->remote_contact != NULL) {
 		g_object_ref (priv->remote_contact);
 		priv->handle_type = TP_HANDLE_TYPE_CONTACT;
-		g_free (priv->id);
-		priv->id = g_strdup (empathy_contact_get_id (priv->remote_contact));
 	}
 	else if (priv->tp_chat != NULL) {
 		TpChannel *channel;
 
 		channel = empathy_tp_chat_get_channel (priv->tp_chat);
 		g_object_get (channel, "handle-type", &priv->handle_type, NULL);
-		g_free (priv->id);
-		priv->id = g_strdup (empathy_tp_chat_get_id (priv->tp_chat));
 	}
 
 	chat_update_contacts_visibility (chat);
