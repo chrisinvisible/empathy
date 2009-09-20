@@ -618,6 +618,27 @@ setup_dispatcher (void)
       g_ptr_array_add (filters, asv);
     }
 
+  asv = tp_asv_new (
+        TP_IFACE_CHANNEL ".ChannelType",
+          G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_IFACE_CHANNEL ".TargetHandleType",
+          G_TYPE_INT, TP_HANDLE_TYPE_CONTACT,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio",
+          G_TYPE_BOOLEAN, TRUE,
+        NULL);
+  g_ptr_array_add (filters, asv);
+
+  asv = tp_asv_new (
+        TP_IFACE_CHANNEL ".ChannelType",
+          G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_IFACE_CHANNEL ".TargetHandleType",
+          G_TYPE_INT, TP_HANDLE_TYPE_CONTACT,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo",
+          G_TYPE_BOOLEAN, TRUE,
+        NULL);
+  g_ptr_array_add (filters, asv);
+
+
   empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThanMeetsTheEye",
     filters, capabilities);
 
