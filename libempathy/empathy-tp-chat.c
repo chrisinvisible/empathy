@@ -1251,10 +1251,19 @@ const gchar *
 empathy_tp_chat_get_id (EmpathyTpChat *chat)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
+	const gchar *id;
+
 
 	g_return_val_if_fail (EMPATHY_IS_TP_CHAT (chat), NULL);
 
-	return tp_channel_get_identifier (priv->channel);
+	id = tp_channel_get_identifier (priv->channel);
+	if (!EMP_STR_EMPTY (id))
+		return id;
+	else if (priv->remote_contact)
+		return empathy_contact_get_id (priv->remote_contact);
+	else
+		return NULL;
+
 }
 
 EmpathyContact *
