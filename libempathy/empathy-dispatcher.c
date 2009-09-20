@@ -871,7 +871,9 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
         1, TP_CHANNEL_MEDIA_CAPABILITY_AUDIO |
            TP_CHANNEL_MEDIA_CAPABILITY_VIDEO |
            TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_STUN  |
-           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_GTALK_P2P, G_MAXUINT);
+           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_GTALK_P2P |
+           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_ICE_UDP,
+           G_MAXUINT);
   g_ptr_array_add (capabilities, g_value_get_boxed (&cap));
 
   tp_cli_connection_interface_capabilities_call_advertise_capabilities (
