@@ -1,3 +1,60 @@
+NEW in 2.28.0
+==============
+Bugs fixed:
+ - Fixed #593318, Empathy theme doesn't work (and opens a folder in Nautilus!)
+ - Fixed #594893, icq accounts import from pidgin not working
+ - Fixed #595275, Invalid read when terminating an audio call
+ - Fixed #520206, Room auto-connect doesn't work
+ - Fixed #532737, using *_run_* calls prevents quitting Empathy
+ - Fixed #550127, Chat windows don't show when we are reconnected
+ - Fixed #593334, Use GOptionContext to parse options
+ - Fixed #593883, Empathy misbehaviour
+ - Fixed #594160, Empathy forgets IRC bookmarks
+ - Fixed #594569, Empathy 2.27.92 fails to build
+ - Fixed #594619, asserts in empathy_idle_set_presence() after suspend/resume
+ - Fixed #594653, empathy crashed with SIGSEGV in empathy_account_settings_get_uint32() (Guillaume Desmottes)
+ - Fixed #594776, cannot add yahoo account (Frédéric Péters)
+ - Fixed #594890, Empathy crashing with CSW (Danielle Madeley)
+ - Fixed #594906, empathy crashed with SIGSEGV in empathy_audio_sink_set_volume()
+ - Fixed #594908, empathy crashed with SIGSEGV in tp_contact_list_got_added_members_cb()
+ - Fixed #594997, Doesn't respawn existing channel when trying to reopen it
+ - Fixed #595180, crash when dragging user from roster to MUC window
+ - Fixed #595417, Pasting text into a disconnected chat window crashes (Cosimo Cecchi)
+ - Fixed #595521, EmpathyIdle should wait for account manager to be ready
+ - Fixed #595666, double click on a contact should raise the window
+
+Translations:
+ - Updated as Translation (Amitakhya Phukan)
+ - Updated ast Translation (Astur)
+ - Updated bg Translation (Yavor Doganov)
+ - Updated bn_IN Translation (Runa Bhattacharjee)
+ - Updated bn Translation (Jamil Ahmed)
+ - Updated da Translation (Ask H. Larsen, Kenneth Nielsen)
+ - Updated el Translation (Kostas Papadimas)
+ - Updated en_GB Translation (Philip Withnall)
+ - Updated et Translation (Mattias Põldaru, Ivar Smolin)
+ - Updated fi Translation (Ilkka Tuohela)
+ - Updated gl Translation (Antón Méixome)
+ - Updated hi Translation (Rajesh Ranjan)
+ - Updated kn Translation (Shankar Prasad)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated mai Translation (Rajesh Ranjan)
+ - Updated ml Translation (Ani, Praveen Arimbrathodiyil)
+ - Updated or Translation (Manoj Kumar Giri)
+ - Updated pl Translation (Tomasz Dominikowski, Piotr Drąg)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated ro Translation (Lucian Adrian Grijincu)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated ta Translation (ifelix)
+ - Updated te Translation (krishnababu k)
+ - Updated tr Translation (Baris Cicek)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+ - Updated zh_HK Translation (Chao-Hsiung Liao)
+ - Updated zh_TW Translation (Chao-Hsiung Liao)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+
 NEW in 2.27.92
 ==============
 Bugs fixed:
