@@ -388,6 +388,18 @@
   )
 )
 
+(define-method contains_pending_changes
+  (of-object "EmpathyAccountWidget")
+  (c-name "empathy_account_widget_contains_pending_changes")
+  (return-type "gboolean")
+)
+
+(define-method discard_pending_changes
+  (of-object "EmpathyAccountWidget")
+  (c-name "empathy_account_widget_discard_pending_changes")
+  (return-type "none")
+)
+
 
 
 ;; From empathy-account-widget-irc.h
@@ -1570,6 +1582,7 @@
   (return-type "TpConnectionManager*")
   (parameters
     '("TpConnectionManagerProtocol**" "protocol")
+    '("gboolean*" "is_gtalk")
   )
 )
 
@@ -2080,6 +2093,15 @@
   (return-type "gchar*")
   (parameters
     '("const-gchar*" "url")
+  )
+)
+
+(define-function make_absolute_url_len
+  (c-name "empathy_make_absolute_url_len")
+  (return-type "gchar*")
+  (parameters
+    '("const-gchar*" "url")
+    '("guint" "len")
   )
 )
 

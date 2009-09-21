@@ -540,6 +540,27 @@
   (return-type "gchar*")
 )
 
+(define-method set_icon_name_async
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_icon_name_async")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "name")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method set_icon_name_finish
+  (of-object "EmpathyAccountSettings")
+  (c-name "empathy_account_settings_set_icon_name_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
 (define-method get_display_name
   (of-object "EmpathyAccountSettings")
   (c-name "empathy_account_settings_get_display_name")
@@ -674,6 +695,26 @@
   )
 )
 
+(define-method reconnect_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_reconnect_async")
+  (return-type "none")
+  (parameters
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method reconnect_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_reconnect_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
 (define-method is_enabled
   (of-object "EmpathyAccount")
   (c-name "empathy_account_is_enabled")
@@ -748,6 +789,27 @@
 (define-method set_display_name_finish
   (of-object "EmpathyAccount")
   (c-name "empathy_account_set_display_name_finish")
+  (return-type "gboolean")
+  (parameters
+    '("GAsyncResult*" "result")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_icon_name_async
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_icon_name_async")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "icon_name")
+    '("GAsyncReadyCallback" "callback")
+    '("gpointer" "user_data")
+  )
+)
+
+(define-method set_icon_name_finish
+  (of-object "EmpathyAccount")
+  (c-name "empathy_account_set_icon_name_finish")
   (return-type "gboolean")
   (parameters
     '("GAsyncResult*" "result")
@@ -2037,6 +2099,37 @@
   (varargs #t)
 )
 
+(define-function dispatcher_new
+  (c-name "empathy_dispatcher_new")
+  (is-constructor-of "EmpathyDispatcher")
+  (return-type "EmpathyDispatcher*")
+  (parameters
+    '("const-gchar*" "name")
+    '("GPtrArray*" "filters")
+    '("GStrv" "capabilities")
+  )
+)
+
+(define-method add_handler
+  (of-object "EmpathyDispatcher")
+  (c-name "empathy_dispatcher_add_handler")
+  (return-type "EmpathyHandler*")
+  (parameters
+    '("const-gchar*" "name")
+    '("GPtrArray*" "filters")
+    '("GStrv" "capabilities")
+  )
+)
+
+(define-method remove_handler
+  (of-object "EmpathyDispatcher")
+  (c-name "empathy_dispatcher_remove_handler")
+  (return-type "none")
+  (parameters
+    '("EmpathyHandler*" "handler")
+  )
+)
+
 (define-function dispatcher_dup_singleton
   (c-name "empathy_dispatcher_dup_singleton")
   (return-type "EmpathyDispatcher*")
@@ -2765,6 +2858,14 @@
   (return-type "GType")
 )
 
+(define-function message_new_from_entry
+  (c-name "empathy_message_new_from_entry")
+  (return-type "EmpathyMessage*")
+  (parameters
+    '("const-gchar*" "message")
+  )
+)
+
 (define-function message_new
   (c-name "empathy_message_new")
   (is-constructor-of "EmpathyMessage")
@@ -2861,6 +2962,21 @@
   (return-type "none")
   (parameters
     '("gboolean" "is_backlog")
+  )
+)
+
+(define-method is_incoming
+  (of-object "EmpathyMessage")
+  (c-name "empathy_message_is_incoming")
+  (return-type "gboolean")
+)
+
+(define-method set_incoming
+  (of-object "EmpathyMessage")
+  (c-name "empathy_message_set_incoming")
+  (return-type "none")
+  (parameters
+    '("gboolean" "incoming")
   )
 )
 
