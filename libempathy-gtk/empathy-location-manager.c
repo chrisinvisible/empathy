@@ -21,10 +21,6 @@
 
 #include "config.h"
 
-/* Needed for trunc */
-#define _ISOC9X_SOURCE 1
-#define _ISOC99_SOURCE 1
-#include <math.h>
 #include <string.h>
 #include <time.h>
 
@@ -375,7 +371,7 @@ position_changed_cb (GeocluePosition *position,
 
       if (priv->reduce_accuracy)
         /* Truncate at 1 decimal place */
-        longitude = trunc (longitude * 10.0) / 10.0;
+        longitude = ((int) (longitude * 10)) / 10.0;
 
       new_value = tp_g_value_slice_new_double (longitude);
       g_hash_table_insert (priv->location, g_strdup (EMPATHY_LOCATION_LON),
@@ -391,7 +387,7 @@ position_changed_cb (GeocluePosition *position,
     {
       if (priv->reduce_accuracy)
         /* Truncate at 1 decimal place */
-        latitude = trunc (latitude * 10.0) / 10.0;
+        latitude = ((int) (latitude * 10)) / 10.0;
 
       new_value = tp_g_value_slice_new_double (latitude);
       g_hash_table_replace (priv->location, g_strdup (EMPATHY_LOCATION_LAT),
