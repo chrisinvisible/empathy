@@ -428,6 +428,13 @@ empathy_cell_renderer_expander_start_animation (EmpathyCellRendererExpander *exp
 
 	priv = GET_PRIV (expander);
 
+	if (priv->animation_timeout != 0) {
+		g_source_remove (priv->animation_timeout);
+		priv->animation_timeout = 0;
+		gtk_tree_row_reference_free (priv->animation_node);
+		priv->animation_node = NULL;
+	}
+
 	if (expanding) {
 		priv->animation_style = GTK_EXPANDER_SEMI_COLLAPSED;
 	} else {
