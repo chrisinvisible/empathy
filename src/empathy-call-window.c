@@ -887,8 +887,18 @@ static void
 contact_avatar_changed_cb (EmpathyContact *contact,
     GParamSpec *pspec, GtkWidget *avatar_widget)
 {
-  init_contact_avatar_with_size (contact, avatar_widget,
-      avatar_widget->allocation.height);
+  int size;
+
+  size = avatar_widget->allocation.height;
+
+  if (size == 0)
+    {
+      /* the widget is not allocated yet, set a default size */
+      size = MIN (REMOTE_CONTACT_AVATAR_DEFAULT_HEIGHT,
+          REMOTE_CONTACT_AVATAR_DEFAULT_WIDTH);
+    }
+
+  init_contact_avatar_with_size (contact, avatar_widget, size);
 }
 
 static void
