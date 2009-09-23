@@ -41,6 +41,7 @@ GEOCLUE_REQUIRED=0.11
 WEBKIT_REQUIRED=1.1.7
 KEYRING_REQUIRED=2.22
 NETWORK_MANAGER_REQUIRED=0.7.0
+NAUTILUS_SENDTO_REQUIRED=2.28.0.1
 
 # Use --enable-maintainer-mode to disabled deprecated symbols
 GNOME_MAINTAINER_MODE_DEFINES
@@ -353,6 +354,29 @@ fi
 AM_CONDITIONAL(HAVE_MEGAPHONE, test "x$have_megaphone" = "xyes")
 
 # -----------------------------------------------------------
+# nautilus-sendto
+# -----------------------------------------------------------
+AC_ARG_ENABLE(nautilus-sendto,
+              AS_HELP_STRING([--enable-nautilus-sendto=@<:@no/yes/auto@:>@],
+                             [build nautilus-sendto plugin]), ,
+                             enable_nst=auto)
+
+if test "x$enable_nst" != "xno"; then
+   PKG_CHECK_MODULES(NST,
+   [
+      nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
+   ], have_nst="yes", have_nst="no")
+else
+   have_nst=no
+fi
+
+if test "x$enable_nst" = "xyes" -a "x$have_nst" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find nautilus-sendto dependencies.])
+fi
+
+AM_CONDITIONAL(HAVE_NST, test "x$have_nst" = "xyes")
+
+# -----------------------------------------------------------
 # Nothere
 # -----------------------------------------------------------
 AC_ARG_ENABLE(nothere,
@@ -465,6 +489,7 @@ AC_OUTPUT([
    megaphone/Makefile
    megaphone/src/Makefile
    megaphone/data/Makefile
+   nautilus-sendto-plugin/Makefile
    nothere/Makefile
    nothere/src/Makefile
    nothere/data/Makefile
@@ -509,4 +534,5 @@ Configure summary:
 	Python bindings.............:  ${have_python}
 	Megaphone applet............:  ${have_megaphone}
 	Nothere applet..............:  ${have_nothere}
+	Nautilus-sendto plugin......:  ${have_nst}
 "

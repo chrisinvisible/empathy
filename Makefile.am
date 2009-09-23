@@ -4,6 +4,10 @@ if HAVE_MEGAPHONE
 SUBDIRS += megaphone
 endif
 
+if HAVE_NST
+SUBDIRS += nautilus-sendto-plugin
+endif
+
 if HAVE_NOTHERE
 SUBDIRS += nothere
 endif
