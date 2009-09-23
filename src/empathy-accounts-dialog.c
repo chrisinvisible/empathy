@@ -302,11 +302,19 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 
   icon_name = empathy_account_settings_get_icon_name (settings);
 
+  if (!gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
+          icon_name))
+    /* show the default icon; keep this in sync with the default
+     * one in empathy-accounts-dialog.ui.
+     */
+    icon_name = GTK_STOCK_CUT;
+
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_type),
       icon_name, GTK_ICON_SIZE_DIALOG);
   gtk_widget_set_tooltip_text (priv->image_type,
       empathy_protocol_name_to_display_name
       (empathy_account_settings_get_protocol (settings)));
+  gtk_widget_show (priv->image_type);
 
   accounts_dialog_update_name_label (dialog,
       empathy_account_settings_get_display_name (settings));
