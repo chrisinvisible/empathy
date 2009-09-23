@@ -253,7 +253,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 	const gchar                *id;
 	gchar                     **strv = NULL;
 	const gchar                *account_id = NULL;
-	const gchar                *contact_id;
+	const gchar                *contact_id = NULL;
 	gchar                      *new_group = NULL;
 	gchar                      *old_group = NULL;
 	DndGetContactData          *data;
