@@ -27,14 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-/* FIXME: g_mapped_file_free has been deprecated in GLib 2.22, but the
- * replacement symbol, g_mapped_file_unref is not available in older Glib
- * and we're not ready to bump our version requirement just for this. When
- * we're ready to bump our version requirement, just revert this patch. */
-#undef G_DISABLE_DEPRECATED
 #include <glib/gstdio.h>
-#define G_DISABLE_DEPRECATED
 
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/defs.h>
@@ -638,7 +631,7 @@ log_store_empathy_search_new (EmpathyLogStore *self,
       contents = g_mapped_file_get_contents (file);
       contents_casefold = g_utf8_casefold (contents, length);
 
-      g_mapped_file_free (file);
+      g_mapped_file_unref (file);
 
       if (strstr (contents_casefold, text_casefold))
         {
