@@ -16,6 +16,7 @@
 *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 *
 *  Authors: Jonny Lamb <jonny.lamb@collabora.co.uk>
+*           Cosimo Cecchi <cosimo.cecchi@collabora.co.uk>
 */
 
 #include "config.h"
@@ -56,6 +57,7 @@ enum
 {
   COL_CM_NAME = 0,
   COL_CM_UNIQUE_NAME,
+  COL_CM_GONE,
   NUM_COLS_CM
 };
 
@@ -77,6 +79,9 @@ typedef struct
   GtkToolItem *pause_button;
   GtkToolItem *level_label;
   GtkWidget *level_filter;
+
+  /* Cache */
+  GHashTable *all_cms;
 
   /* TreeView */
   GtkListStore *store;
@@ -131,8 +136,67 @@ log_level_to_string (guint level)
     }
 }
 
+typedef struct
+{
+  gdouble timestamp;
+  gchar *domain;
+  guint level;
+  gchar *message;
+} DebugMessage;
+
+static DebugMessage *
+debug_message_new (gdouble timestamp,
+    const gchar *domain,
+    guint level,
+    const gchar *message)
+{
+  DebugMessage *retval = g_slice_new0 (DebugMessage);
+
+  retval->timestamp = timestamp;
+  retval->domain = g_strdup (domain);
+  retval->level = level;
+  retval->message = g_strdup (message);
+
+  return retval;
+}
+
+static void
+debug_message_free (DebugMessage *dm)
+{
+  g_free (dm->domain);
+  g_free (dm->message);
+
+  g_slice_free (DebugMessage, dm);
+}
+
+static void
+debug_window_cache_new_message (EmpathyDebugWindow *debug_window,
+    gdouble timestamp,
+    const gchar *domain,
+    guint level,
+    const gchar *message)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
+  GtkTreeIter iter;
+  GList *messages;
+  DebugMessage *dm;
+  char *name;
+
+  gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
+
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
+      COL_CM_NAME, &name, -1);
+  messages = g_hash_table_lookup (priv->all_cms, name);
+
+  dm = debug_message_new (timestamp, domain, level, message);
+  messages = g_list_append (messages, dm);
+
+  g_hash_table_insert (priv->all_cms, name, messages);
+}
+
 static void
 debug_window_add_message (EmpathyDebugWindow *debug_window,
+    gboolean should_cache,
     gdouble timestamp,
     const gchar *domain_category,
     guint level,
@@ -142,6 +206,10 @@ debug_window_add_message (EmpathyDebugWindow *debug_window,
   gchar *domain, *category;
   GtkTreeIter iter;
   gchar *string;
+
+  if (should_cache)
+    debug_window_cache_new_message (debug_window, timestamp, domain_category,
+        level, message);
 
   if (g_strrstr (domain_category, "/"))
     {
@@ -188,7 +256,7 @@ debug_window_new_debug_message_cb (TpProxy *proxy,
 {
   EmpathyDebugWindow *debug_window = (EmpathyDebugWindow *) user_data;
 
-  debug_window_add_message (debug_window, timestamp, domain, level,
+  debug_window_add_message (debug_window, TRUE, timestamp, domain, level,
       message);
 }
 
@@ -248,6 +316,9 @@ debug_window_get_messages_cb (TpProxy *proxy,
 {
   EmpathyDebugWindow *debug_window = (EmpathyDebugWindow *) user_data;
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
+  GtkTreeIter iter;
+  gchar *name;
+  GList *old_messages;
   gint i;
 
   if (error != NULL)
@@ -259,11 +330,28 @@ debug_window_get_messages_cb (TpProxy *proxy,
 
   debug_window_set_toolbar_sensitivity (debug_window, TRUE);
 
+  gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
+
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
+      COL_CM_NAME, &name, -1);
+  old_messages = g_hash_table_lookup (priv->all_cms, name);
+
+  /* we call get_messages either when a new CM is added or
+   * when a CM that we've already seen re-appears; in both cases
+   * we don't need our old cache anymore.
+   */
+  if (old_messages != NULL)
+    {
+      g_hash_table_remove (priv->all_cms, name);
+      g_list_foreach (old_messages, (GFunc) debug_message_free, NULL);
+      g_list_free (old_messages);
+    }
+
   for (i = 0; i < messages->len; i++)
     {
       GValueArray *values = g_ptr_array_index (messages, i);
 
-      debug_window_add_message (debug_window,
+      debug_window_add_message (debug_window, TRUE,
           g_value_get_double (g_value_array_get_nth (values, 0)),
           g_value_get_string (g_value_array_get_nth (values, 1)),
           g_value_get_uint (g_value_array_get_nth (values, 2)),
@@ -280,15 +368,40 @@ debug_window_get_messages_cb (TpProxy *proxy,
 }
 
 static void
+debug_window_add_log_messages_from_cache (EmpathyDebugWindow *debug_window,
+    const gchar *name)
+{
+  GList *messages, *l;
+  DebugMessage *dm;
+  EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
+
+  DEBUG ("Adding logs from cache for CM %s", name);
+
+  messages = g_hash_table_lookup (priv->all_cms, name);
+
+  if (messages == NULL)
+    return;
+
+  for (l = messages; l != NULL; l = l->next)
+    {
+      dm = l->data;
+
+      debug_window_add_message (debug_window, FALSE, dm->timestamp,
+          dm->domain, dm->level, dm->message);
+    }
+}
+
+static void
 debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
     EmpathyDebugWindow *debug_window)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
   TpDBusDaemon *dbus;
   GError *error = NULL;
-  gchar *bus_name;
+  gchar *bus_name, *name = NULL;
   TpProxy *proxy;
   GtkTreeIter iter;
+  gboolean cm_gone;
 
   if (!gtk_combo_box_get_active_iter (cm_chooser, &iter))
     {
@@ -300,6 +413,20 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
         }
       return;
     }
+
+  gtk_list_store_clear (priv->store);
+
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
+      COL_CM_NAME, &name, COL_CM_GONE, &cm_gone, -1);
+
+  if (cm_gone)
+    {
+      debug_window_add_log_messages_from_cache (debug_window, name);
+      g_free (name);
+      return;
+    }
+
+  g_free (name);
 
   dbus = tp_dbus_daemon_dup (&error);
 
@@ -316,8 +443,6 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
       "object-path", DEBUG_OBJECT_PATH,
       NULL);
   g_free (bus_name);
-
-  gtk_list_store_clear (priv->store);
 
   /* Disable debug signalling */
   if (priv->proxy != NULL)
@@ -345,8 +470,10 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
 
 typedef struct
 {
-  const gchar *unique_name;
+  const gchar *name;
   gboolean found;
+  gboolean use_name;
+  GtkTreeIter **found_iter;
 } CmInModelForeachData;
 
 static gboolean
@@ -356,31 +483,41 @@ debug_window_cms_foreach (GtkTreeModel *model,
     gpointer user_data)
 {
   CmInModelForeachData *data = (CmInModelForeachData *) user_data;
-  gchar *unique_name;
+  gchar *store_name;
 
   gtk_tree_model_get (model, iter,
-      COL_CM_UNIQUE_NAME, &unique_name,
+      (data->use_name ? COL_CM_NAME : COL_CM_UNIQUE_NAME),
+      &store_name,
       -1);
 
-  if (!tp_strdiff (unique_name, data->unique_name))
-    data->found = TRUE;
+  if (!tp_strdiff (store_name, data->name))
+    {
+      data->found = TRUE;
 
-  g_free (unique_name);
+      if (data->found_iter != NULL)
+        *(data->found_iter) = gtk_tree_iter_copy (iter);
+    }
+
+  g_free (store_name);
 
   return data->found;
 }
 
 static gboolean
 debug_window_cm_is_in_model (EmpathyDebugWindow *debug_window,
-    const gchar *unique_name)
+    const gchar *name,
+    GtkTreeIter **iter,
+    gboolean use_name)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
   CmInModelForeachData *data;
   gboolean found;
 
   data = g_slice_new0 (CmInModelForeachData);
-  data->unique_name = unique_name;
+  data->name = name;
   data->found = FALSE;
+  data->found_iter = iter;
+  data->use_name = use_name;
 
   gtk_tree_model_foreach (GTK_TREE_MODEL (priv->cms),
       debug_window_cms_foreach, data);
@@ -414,7 +551,7 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
       goto OUT;
     }
 
-  if (!debug_window_cm_is_in_model (data->debug_window, out))
+  if (!debug_window_cm_is_in_model (data->debug_window, out, NULL, FALSE))
     {
       GtkTreeIter iter;
 
@@ -478,29 +615,6 @@ debug_window_list_connection_names_cb (const gchar * const *names,
   g_object_unref (dbus);
 }
 
-static gboolean
-debug_window_remove_cm_foreach (GtkTreeModel *model,
-    GtkTreePath *path,
-    GtkTreeIter *iter,
-    gpointer user_data)
-{
-  const gchar *unique_name_to_remove = (const gchar *) user_data;
-  gchar *name;
-  gboolean found = FALSE;
-
-  gtk_tree_model_get (model, iter, COL_CM_UNIQUE_NAME, &name, -1);
-
-  if (!tp_strdiff (name, unique_name_to_remove))
-    {
-      found = TRUE;
-      gtk_list_store_remove (GTK_LIST_STORE (model), iter);
-    }
-
-  g_free (name);
-
-  return found;
-}
-
 #define CM_WELL_KNOWN_NAME_PREFIX \
     "org.freedesktop.Telepathy.ConnectionManager."
 
@@ -528,13 +642,38 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
       GtkTreeIter iter;
       const gchar *name = arg0 + strlen (CM_WELL_KNOWN_NAME_PREFIX);
 
-      DEBUG ("Adding new CM '%s' at %s.", name, arg2);
+      if (!g_hash_table_lookup (priv->all_cms, name))
+        {
+          DEBUG ("Adding new CM '%s' at %s.", name, arg2);
 
-      gtk_list_store_append (priv->cms, &iter);
-      gtk_list_store_set (priv->cms, &iter,
-          COL_CM_NAME, name,
-          COL_CM_UNIQUE_NAME, arg2,
-          -1);
+          gtk_list_store_append (priv->cms, &iter);
+          gtk_list_store_set (priv->cms, &iter,
+              COL_CM_NAME, name,
+              COL_CM_UNIQUE_NAME, arg2,
+              -1);
+        }
+      else
+        {
+          /* a CM with the same name is already in the hash table,
+           * update it and set it as re-enabled in the model.
+           */
+          GtkTreeIter *iter = NULL;
+
+          if (debug_window_cm_is_in_model (user_data, name, &iter, TRUE))
+            {
+              DEBUG ("Refreshing CM '%s' at '%s'.", name, arg2);
+
+              gtk_list_store_set (priv->cms, iter,
+                  COL_CM_NAME, name,
+                  COL_CM_UNIQUE_NAME, arg2,
+                  COL_CM_GONE, FALSE,
+                  -1);
+              gtk_tree_iter_free (iter);
+
+              debug_window_cm_chooser_changed_cb
+                (GTK_COMBO_BOX (priv->cm_chooser), user_data);
+            }
+        }
     }
   else if (!EMP_STR_EMPTY (arg1) && EMP_STR_EMPTY (arg2))
     {
@@ -543,17 +682,17 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
        * just died), we don't need to check that it was already
        * in the model.
        */
-      gchar *to_remove;
+      GtkTreeIter *iter = NULL;
 
-      /* Can't pass a const into a GtkTreeModelForeachFunc. */
-      to_remove = g_strdup (arg1);
+      DEBUG ("Setting CM disabled from %s.", arg1);
 
-      DEBUG ("Removing CM from %s.", to_remove);
-
-      gtk_tree_model_foreach (GTK_TREE_MODEL (priv->cms),
-          debug_window_remove_cm_foreach, to_remove);
-
-      g_free (to_remove);
+      /* set the CM as disabled in the model */
+      if (debug_window_cm_is_in_model (user_data, arg1, &iter, FALSE))
+	{
+	  gtk_list_store_set (priv->cms,
+              iter, COL_CM_GONE, TRUE, -1);
+          gtk_tree_iter_free (iter);
+        }
     }
 }
 
@@ -959,7 +1098,8 @@ debug_window_constructor (GType type,
 
   /* CM */
   priv->cm_chooser = gtk_combo_box_new_text ();
-  priv->cms = gtk_list_store_new (NUM_COLS_CM, G_TYPE_STRING, G_TYPE_STRING);
+  priv->cms = gtk_list_store_new (NUM_COLS_CM, G_TYPE_STRING, G_TYPE_STRING,
+      G_TYPE_BOOLEAN);
   gtk_combo_box_set_model (GTK_COMBO_BOX (priv->cm_chooser),
       GTK_TREE_MODEL (priv->cms));
   gtk_widget_show (priv->cm_chooser);
@@ -1138,7 +1278,8 @@ debug_window_constructor (GType type,
           _("The selected connection manager does not support the remote "
               "debugging extension.")));
   gtk_widget_show (priv->not_supported_label);
-  gtk_box_pack_start (GTK_BOX (vbox), priv->not_supported_label, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), priv->not_supported_label,
+      TRUE, TRUE, 0);
 
   priv->view_visible = FALSE;
 
@@ -1159,6 +1300,8 @@ empathy_debug_window_init (EmpathyDebugWindow *empathy_debug_window)
   empathy_debug_window->priv = priv;
 
   priv->dispose_run = FALSE;
+  priv->all_cms = g_hash_table_new_full (g_str_hash, g_str_equal,
+      g_free, NULL);
 }
 
 static void
@@ -1187,6 +1330,28 @@ debug_window_get_property (GObject *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
     }
+}
+
+static void
+debug_window_finalize (GObject *object)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (object);
+  GHashTableIter iter;
+  char *key;
+  GList *values;
+
+  g_hash_table_iter_init (&iter, priv->all_cms);
+
+  while (g_hash_table_iter_next (&iter, (gpointer *) &key,
+          (gpointer *) &values))
+    {
+      g_list_foreach (values, (GFunc) debug_message_free, NULL);
+      g_list_free (values);
+    }
+
+  g_hash_table_destroy (priv->all_cms);
+
+  (G_OBJECT_CLASS (empathy_debug_window_parent_class)->finalize) (object);
 }
 
 static void
@@ -1230,6 +1395,7 @@ empathy_debug_window_class_init (EmpathyDebugWindowClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   object_class->constructor = debug_window_constructor;
   object_class->dispose = debug_window_dispose;
+  object_class->finalize = debug_window_finalize;
   object_class->set_property = debug_window_set_property;
   object_class->get_property = debug_window_get_property;
   g_type_class_add_private (klass, sizeof (EmpathyDebugWindowPriv));
