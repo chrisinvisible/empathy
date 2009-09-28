@@ -327,6 +327,33 @@ AC_SUBST(GEOCLUE_CFLAGS)
 AC_SUBST(GEOCLUE_LIBS)
 
 # -----------------------------------------------------------
+# moblin widgets support
+# -----------------------------------------------------------
+AC_ARG_ENABLE(moblin,
+              AS_HELP_STRING([--enable-moblin=@<:no/yes@:>@],
+                             [Enable moblin widgets]), ,
+                             enable_moblin=no)
+
+if test "x$enable_moblin" != "xno"; then
+    PKG_CHECK_MODULES(MOBLIN,
+    [nbtk-gtk-1.2], have_nbtk="yes", have_nbtk="no")
+
+    if test "x$have_nbtk" = "xyes"; then
+       AC_DEFINE(HAVE_NBTK, 1, [Define if you have nbtk])
+    fi
+else
+   have_nbtk="no"
+fi
+
+if test "x$enable_moblin" = "xyes" -a "x$have_nbtk" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find moblin dependencies.])
+fi
+
+AM_CONDITIONAL(HAVE_NBTK, test "x$have_nbtk" = "xyes")
+AC_SUBST(MOBLIN_CFLAGS)
+AC_SUBST(MOBLIN_LIBS)
+
+# -----------------------------------------------------------
 # Megaphone
 # -----------------------------------------------------------
 AC_ARG_ENABLE(megaphone,
@@ -524,6 +551,7 @@ Configure summary:
 	Display maps (libchamplain).:  ${have_libchamplain}
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
+	Moblin widgets (Nbtk).......:  ${have_nbtk}
 
     Connectivity:
 	NetworkManager integration..:  ${have_nm}
