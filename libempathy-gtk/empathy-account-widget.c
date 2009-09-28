@@ -637,13 +637,6 @@ account_widget_applied_cb (GObject *source_object,
                * information entered by the user is validated on the server. */
               empathy_account_reconnect_async (account, NULL, NULL);
             }
-          else
-            {
-              /* The account is disabled so we enable it according to the value
-               * of the "Enabled" checkbox */
-              empathy_account_set_enabled_async (account, enabled_checked,
-                  NULL, NULL);
-            }
         }
     }
 
@@ -1086,8 +1079,18 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
     gpointer user_data)
 #endif /* HAVE_NBTK */
 {
-  account_widget_handle_control_buttons_sensitivity (
-      EMPATHY_ACCOUNT_WIDGET (user_data));
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (user_data);
+  EmpathyAccount *account;
+#ifndef HAVE_NBTK
+  gboolean state;
+
+  state = gtk_toggle_button_get_active (toggle_button);
+#endif
+
+  account = empathy_account_settings_get_account (priv->settings);
+
+  /* Enable the account according to the value of the "Enabled" checkbox */
+  empathy_account_set_enabled_async (account, state, NULL, NULL);
 }
 
 static void
