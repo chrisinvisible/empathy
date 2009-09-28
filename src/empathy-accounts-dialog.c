@@ -78,6 +78,7 @@ typedef struct {
   GtkWidget *treeview;
 
   GtkWidget *button_add;
+  GtkWidget *button_import;
 
   GtkWidget *frame_new_account;
   GtkWidget *combobox_protocol;
@@ -1452,6 +1453,18 @@ accounts_dialog_button_help_clicked_cb (GtkWidget *button,
 }
 
 static void
+accounts_dialog_button_import_clicked_cb (GtkWidget *button,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkWidget *import_dialog;
+
+  import_dialog = empathy_import_dialog_new (GTK_WINDOW (priv->window),
+      FALSE);
+  gtk_widget_show (import_dialog);
+}
+
+static void
 accounts_dialog_close_response_cb (GtkDialog *message_dialog,
   gint response_id,
   gpointer user_data)
@@ -1570,6 +1583,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "image_type", &priv->image_type,
       "label_name", &priv->label_name,
       "button_add", &priv->button_add,
+      "button_import", &priv->button_import,
       NULL);
   g_free (filename);
 
@@ -1581,6 +1595,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
       "button_help", "clicked", accounts_dialog_button_help_clicked_cb,
+      "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
       NULL);
 
   g_object_unref (gui);
@@ -1761,9 +1776,9 @@ do_constructed (GObject *object)
   empathy_conf_get_bool (empathy_conf_get (),
       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
 
-
   if (empathy_import_accounts_to_import ())
     {
+      gtk_widget_show (priv->button_import);
 
       if (!import_asked)
         {
