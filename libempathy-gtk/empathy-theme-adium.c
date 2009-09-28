@@ -544,7 +544,8 @@ theme_adium_append_message (EmpathyChatView *view,
 	const gchar           *func;
 	const gchar           *service_name;
 	GString               *message_classes = NULL;
-	gboolean              is_backlog;
+	gboolean               is_backlog;
+	gboolean               consecutive;
 
 	if (!priv->page_loaded) {
 		priv->message_queue = g_list_prepend (priv->message_queue,
@@ -600,77 +601,50 @@ theme_adium_append_message (EmpathyChatView *view,
 		}
 	}
 
+	/* We want to join this message with the last one if
+	 * - senders are the same contact,
+	 * - last message was recieved recently, and
+	 * - last message and this message both are/aren't backlog */
 	is_backlog = empathy_message_is_backlog (msg);
+	consecutive = empathy_contact_equal (priv->last_contact, sender) &&
+		(timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) &&
+		(is_backlog == priv->last_is_backlog);
 
-	/* Get the right html/func to add the message */
-	func = "appendMessage";
-
+	/* Define message classes */
 	message_classes = g_string_new ("message");
-
-	/* eventually append the "history" class */
 	if (is_backlog) {
 		g_string_append (message_classes, " history");
 	}
-
-	/* check the sender of the message and append the appropriate class */
+	if (consecutive) {
+		g_string_append (message_classes, " consecutive");
+	}
 	if (empathy_contact_is_user (sender)) {
 		g_string_append (message_classes, " outgoing");
-	}
-	else {
+	} else {
 		g_string_append (message_classes, " incoming");
 	}
 
-	/*
-	 * To mimick Adium's behavior, we only want to join messages
-	 * sent by the same contact within a 5 minute time frame.
-	 */
-	if (empathy_contact_equal (priv->last_contact, sender) &&
-	    (timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) &&
-	    (is_backlog == priv->last_is_backlog)) {
-		/* the messages can be appended */
-		func = "appendNextMessage";
-		g_string_append (message_classes, " consecutive");
-
-		/* check who is the sender of the message to use the correct html file */
-		if (empathy_contact_is_user (sender)) {
-			/* check if this is a backlog message and use NextContext.html */
+	/* Outgoing */
+	if (empathy_contact_is_user (sender)) {
+		if (consecutive) {
+			func = "appendNextMessage";
 			if (is_backlog) {
 				html = priv->data->out_nextcontext_html;
 				len = priv->data->out_nextcontext_len;
 			}
 
-			/*
-			 * html is null if this is not a backlog message or
-			 * if we have to fallback (NextContext.html missing).
-			 * use NextContent.html
-			 */
+			/* Note backlog, or fallback if NextContext.html
+			 * is missing */
 			if (html == NULL) {
 				html = priv->data->out_nextcontent_html;
 				len = priv->data->out_nextcontent_len;
 			}
 		}
-		else {
-			if (is_backlog) {
-				html = priv->data->in_nextcontext_html;
-				len = priv->data->in_nextcontext_len;
-			}
 
-			if (html == NULL) {
-				html = priv->data->in_nextcontent_html;
-				len = priv->data->in_nextcontent_len;
-			}
-		}
-	}
-
-	/*
-	 * we have html == NULL here if:
-	 * 1. the message didn't have to be appended because
-	 *    the sender was different or the timestamp was too far
-	 * 2. NextContent.html file does not exist, so we must
-	 *    not forget to fallback to the correct Content.html
-	 */
-	if (html == NULL) {
-		if (empathy_contact_is_user (sender)) {
+		/* Not consecutive, or fallback if NextContext.html and/or
+		 * NextContent.html are missing */
+		if (html == NULL) {
+			func = "appendMessage";
 			if (is_backlog) {
 				html = priv->data->out_context_html;
 				len = priv->data->out_context_len;
@@ -681,7 +655,29 @@ theme_adium_append_message (EmpathyChatView *view,
 				len = priv->data->out_content_len;
 			}
 		}
-		else {
+	}
+
+	/* Incoming, or fallback if outgoing files are missing */
+	if (html == NULL) {
+		if (consecutive) {
+			func = "appendNextMessage";
+			if (is_backlog) {
+				html = priv->data->in_nextcontext_html;
+				len = priv->data->in_nextcontext_len;
+			}
+
+			/* Note backlog, or fallback if NextContext.html
+			 * is missing */
+			if (html == NULL) {
+				html = priv->data->in_nextcontent_html;
+				len = priv->data->in_nextcontent_len;
+			}
+		}
+
+		/* Not consecutive, or fallback if NextContext.html and/or
+		 * NextContent.html are missing */
+		if (html == NULL) {
+			func = "appendMessage";
 			if (is_backlog) {
 				html = priv->data->in_context_html;
 				len = priv->data->in_context_len;
@@ -694,9 +690,14 @@ theme_adium_append_message (EmpathyChatView *view,
 		}
 	}
 
-	theme_adium_append_html (theme, func, html, len, body, avatar_filename,
-				 name, contact_id, service_name, message_classes->str,
-				 timestamp);
+	if (html != NULL) {
+		theme_adium_append_html (theme, func, html, len, body,
+					 avatar_filename, name, contact_id,
+					 service_name, message_classes->str,
+					 timestamp);
+	} else {
+		DEBUG ("Couldn't find HTML file for this message");
+	}
 
 	/* Keep the sender of the last displayed message */
 	if (priv->last_contact) {
