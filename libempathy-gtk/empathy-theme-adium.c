@@ -603,12 +603,15 @@ theme_adium_append_message (EmpathyChatView *view,
 
 	/* We want to join this message with the last one if
 	 * - senders are the same contact,
-	 * - last message was recieved recently, and
-	 * - last message and this message both are/aren't backlog */
+	 * - last message was recieved recently,
+	 * - last message and this message both are/aren't backlog, and
+	 * - DisableCombineConsecutive is not set in theme's settings */
 	is_backlog = empathy_message_is_backlog (msg);
 	consecutive = empathy_contact_equal (priv->last_contact, sender) &&
 		(timestamp - priv->last_timestamp < MESSAGE_JOIN_PERIOD) &&
-		(is_backlog == priv->last_is_backlog);
+		(is_backlog == priv->last_is_backlog) &&
+		!tp_asv_get_boolean (priv->data->info,
+				     "DisableCombineConsecutive", NULL);
 
 	/* Define message classes */
 	message_classes = g_string_new ("message");
