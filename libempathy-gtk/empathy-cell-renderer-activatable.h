@@ -39,6 +39,7 @@ typedef struct _EmpathyCellRendererActivatableClass EmpathyCellRendererActivatab
 
 struct _EmpathyCellRendererActivatable {
   GtkCellRendererPixbuf parent;
+  gpointer priv;
 };
 
 struct _EmpathyCellRendererActivatableClass {
