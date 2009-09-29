@@ -863,6 +863,9 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   gtk_tree_view_column_pack_start (column, cell, FALSE);
   g_object_set (cell,
         "icon-name", GTK_STOCK_DELETE,
+#ifdef HAVE_NBTK
+        "show-on-select", TRUE,
+#endif
         NULL);
 
   g_signal_connect (cell, "path-activated",
