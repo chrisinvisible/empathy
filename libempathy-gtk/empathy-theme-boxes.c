@@ -270,10 +270,10 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 			       NULL);
 
 	str_obj = g_string_new ("\n- ");
-	str_obj = g_string_append (str_obj, name);
-	str_obj = g_string_append (str_obj, ", ");
-	str_obj = g_string_append (str_obj, tmp);
-	str_obj = g_string_append (str_obj, " -");
+	g_string_append (str_obj, name);
+	g_string_append (str_obj, ", ");
+	g_string_append (str_obj, tmp);
+	g_string_append (str_obj, " -");
 	g_free (tmp);
 	g_free (str);
 
