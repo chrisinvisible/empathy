@@ -1168,8 +1168,6 @@ chat_text_view_copy_clipboard (EmpathyChatView *view)
 	GList *list;
 	gboolean ignore_newlines = FALSE;
 
-	str = g_string_new ("");
-
 	g_return_if_fail (EMPATHY_IS_CHAT_TEXT_VIEW (view));
 
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
@@ -1177,6 +1175,8 @@ chat_text_view_copy_clipboard (EmpathyChatView *view)
 
 	if (!gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
 		return;
+
+	str = g_string_new ("");
 
 	for (iter = start; !gtk_text_iter_equal (&iter, &end); gtk_text_iter_forward_char (&iter)) {
 		c = gtk_text_iter_get_char (&iter);
