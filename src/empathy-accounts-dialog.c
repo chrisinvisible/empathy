@@ -1571,6 +1571,9 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   GtkBuilder                   *gui;
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
+#ifdef HAVE_NBTK
+  GtkWidget                    *action_area;
+#endif
 
   filename = empathy_file_lookup ("empathy-accounts-dialog.ui", "src");
 
@@ -1605,6 +1608,11 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       NULL);
 
   g_object_unref (gui);
+
+#ifdef HAVE_NBTK
+  action_area = gtk_dialog_get_action_area (GTK_DIALOG (priv->window));
+  gtk_widget_hide (action_area);
+#endif
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
   gtk_box_pack_start (GTK_BOX (priv->hbox_type),
