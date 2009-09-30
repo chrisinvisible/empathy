@@ -1574,6 +1574,59 @@ accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
 }
 
 static void
+accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GList *accounts, *l;
+
+  g_signal_connect (priv->account_manager, "account-created",
+      G_CALLBACK (accounts_dialog_account_added_cb),
+      dialog);
+  g_signal_connect (priv->account_manager, "account-deleted",
+      G_CALLBACK (accounts_dialog_account_removed_cb),
+      dialog);
+  g_signal_connect (priv->account_manager, "account-enabled",
+      G_CALLBACK (accounts_dialog_account_enabled_cb),
+      dialog);
+  g_signal_connect (priv->account_manager, "account-disabled",
+      G_CALLBACK (accounts_dialog_account_disabled_cb),
+      dialog);
+  g_signal_connect (priv->account_manager, "account-changed",
+      G_CALLBACK (accounts_dialog_account_changed_cb),
+      dialog);
+  g_signal_connect (priv->account_manager, "account-connection-changed",
+      G_CALLBACK (accounts_dialog_connection_changed_cb),
+      dialog);
+
+  /* Add existing accounts */
+  accounts = empathy_account_manager_dup_accounts (priv->account_manager);
+  for (l = accounts; l; l = l->next)
+    {
+      accounts_dialog_add_account (dialog, l->data);
+      g_object_unref (l->data);
+    }
+  g_list_free (accounts);
+
+  priv->cms = empathy_connection_managers_dup_singleton ();
+  if (!empathy_connection_managers_is_ready (priv->cms))
+    g_signal_connect (priv->cms, "notify::ready",
+        G_CALLBACK (accounts_dialog_cms_ready_cb), dialog);
+
+  accounts_dialog_model_select_first (dialog);
+}
+
+static void
+accounts_dialog_manager_ready_cb (EmpathyAccountManager *manager,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  if (!empathy_account_manager_is_ready (manager))
+    return;
+
+  accounts_dialog_accounts_setup (user_data);
+}
+
+static void
 accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 {
   GtkBuilder                   *gui;
@@ -1664,6 +1717,9 @@ do_dispose (GObject *obj)
   g_signal_handlers_disconnect_by_func (priv->account_manager,
       accounts_dialog_connection_changed_cb,
       dialog);
+  g_signal_handlers_disconnect_by_func (priv->account_manager,
+      accounts_dialog_manager_ready_cb,
+      dialog);
 
   if (priv->connecting_id)
     g_source_remove (priv->connecting_id);
@@ -1753,50 +1809,19 @@ do_constructed (GObject *object)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (object);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  GList *accounts, *l;
   gboolean import_asked;
 
   accounts_dialog_build_ui (dialog);
+  accounts_dialog_model_setup (dialog);
 
   /* Set up signalling */
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
-  g_signal_connect (priv->account_manager, "account-created",
-      G_CALLBACK (accounts_dialog_account_added_cb),
-      dialog);
-  g_signal_connect (priv->account_manager, "account-deleted",
-      G_CALLBACK (accounts_dialog_account_removed_cb),
-      dialog);
-  g_signal_connect (priv->account_manager, "account-enabled",
-      G_CALLBACK (accounts_dialog_account_enabled_cb),
-      dialog);
-  g_signal_connect (priv->account_manager, "account-disabled",
-      G_CALLBACK (accounts_dialog_account_disabled_cb),
-      dialog);
-  g_signal_connect (priv->account_manager, "account-changed",
-      G_CALLBACK (accounts_dialog_account_changed_cb),
-      dialog);
-  g_signal_connect (priv->account_manager, "account-connection-changed",
-      G_CALLBACK (accounts_dialog_connection_changed_cb),
-      dialog);
-
-  accounts_dialog_model_setup (dialog);
-
-  /* Add existing accounts */
-  accounts = empathy_account_manager_dup_accounts (priv->account_manager);
-  for (l = accounts; l; l = l->next)
-    {
-      accounts_dialog_add_account (dialog, l->data);
-      g_object_unref (l->data);
-    }
-  g_list_free (accounts);
-
-  priv->cms = empathy_connection_managers_dup_singleton ();
-  if (!empathy_connection_managers_is_ready (priv->cms))
-    g_signal_connect (priv->cms, "notify::ready",
-        G_CALLBACK (accounts_dialog_cms_ready_cb), dialog);
-
-  accounts_dialog_model_select_first (dialog);
+  if (!empathy_account_manager_is_ready (priv->account_manager))
+    g_signal_connect (priv->account_manager, "notify::ready",
+        G_CALLBACK (accounts_dialog_manager_ready_cb), dialog);
+  else
+    accounts_dialog_accounts_setup (dialog);
 
   empathy_conf_get_bool (empathy_conf_get (),
       EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
