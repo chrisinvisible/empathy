@@ -627,16 +627,22 @@ theme_adium_append_message (EmpathyChatView *view,
 		g_string_append (message_classes, " incoming");
 	}
 
+	/* Define javascript function to use */
+	if (consecutive) {
+		func = "appendNextMessage";
+	} else {
+		func = "appendMessage";
+	}
+
 	/* Outgoing */
 	if (empathy_contact_is_user (sender)) {
 		if (consecutive) {
-			func = "appendNextMessage";
 			if (is_backlog) {
 				html = priv->data->out_nextcontext_html;
 				len = priv->data->out_nextcontext_len;
 			}
 
-			/* Note backlog, or fallback if NextContext.html
+			/* Not backlog, or fallback if NextContext.html
 			 * is missing */
 			if (html == NULL) {
 				html = priv->data->out_nextcontent_html;
@@ -647,7 +653,6 @@ theme_adium_append_message (EmpathyChatView *view,
 		/* Not consecutive, or fallback if NextContext.html and/or
 		 * NextContent.html are missing */
 		if (html == NULL) {
-			func = "appendMessage";
 			if (is_backlog) {
 				html = priv->data->out_context_html;
 				len = priv->data->out_context_len;
@@ -663,7 +668,6 @@ theme_adium_append_message (EmpathyChatView *view,
 	/* Incoming, or fallback if outgoing files are missing */
 	if (html == NULL) {
 		if (consecutive) {
-			func = "appendNextMessage";
 			if (is_backlog) {
 				html = priv->data->in_nextcontext_html;
 				len = priv->data->in_nextcontext_len;
@@ -680,7 +684,6 @@ theme_adium_append_message (EmpathyChatView *view,
 		/* Not consecutive, or fallback if NextContext.html and/or
 		 * NextContent.html are missing */
 		if (html == NULL) {
-			func = "appendMessage";
 			if (is_backlog) {
 				html = priv->data->in_context_html;
 				len = priv->data->in_context_len;
