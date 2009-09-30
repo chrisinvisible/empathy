@@ -1620,6 +1620,9 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 #ifdef HAVE_NBTK
   action_area = gtk_dialog_get_action_area (GTK_DIALOG (priv->window));
   gtk_widget_hide (action_area);
+
+  gtk_button_set_label (GTK_BUTTON (priv->button_create), GTK_STOCK_ADD);
+  gtk_button_set_use_stock (GTK_BUTTON (priv->button_create), TRUE);
 #endif
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
