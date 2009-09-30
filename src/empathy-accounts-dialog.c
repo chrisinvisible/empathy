@@ -394,6 +394,7 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
       return;
     }
 
+#ifndef HAVE_NBTK
   if (tp_connection_manager_protocol_can_register (proto) && !is_gtalk)
     {
       gtk_widget_show (priv->radiobutton_register);
@@ -404,6 +405,11 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
       gtk_widget_hide (priv->radiobutton_register);
       gtk_widget_hide (priv->radiobutton_reuse);
     }
+#else
+  gtk_widget_hide (priv->radiobutton_register);
+  gtk_widget_hide (priv->radiobutton_reuse);
+#endif
+
   g_object_unref (cm);
 }
 
@@ -1417,6 +1423,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   g_free (str);
 
+#ifndef HAVE_NBTK
   if (tp_connection_manager_protocol_can_register (proto))
     {
       gboolean active;
@@ -1426,6 +1433,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
       if (active)
         empathy_account_settings_set_boolean (settings, "register", TRUE);
     }
+#endif
 
   if (is_gtalk)
     empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
