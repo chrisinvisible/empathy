@@ -143,56 +143,6 @@ cell_renderer_activatable_activate (GtkCellRenderer      *cell,
   return TRUE;
 }
 
-/* copied from gtkcellrendererpixbuf.c */
-
-static GdkPixbuf *
-create_colorized_pixbuf (GdkPixbuf *src,
-    GdkColor  *new_color)
-{
-  gint i, j;
-  gint width, height, has_alpha, src_row_stride, dst_row_stride;
-  gint red_value, green_value, blue_value;
-  guchar *target_pixels;
-  guchar *original_pixels;
-  guchar *pixsrc;
-  guchar *pixdest;
-  GdkPixbuf *dest;
-
-  red_value = new_color->red / 255.0;
-  green_value = new_color->green / 255.0;
-  blue_value = new_color->blue / 255.0;
-
-  dest = gdk_pixbuf_new (gdk_pixbuf_get_colorspace (src),
-      gdk_pixbuf_get_has_alpha (src),
-      gdk_pixbuf_get_bits_per_sample (src),
-      gdk_pixbuf_get_width (src),
-      gdk_pixbuf_get_height (src));
-
-  has_alpha = gdk_pixbuf_get_has_alpha (src);
-  width = gdk_pixbuf_get_width (src);
-  height = gdk_pixbuf_get_height (src);
-  src_row_stride = gdk_pixbuf_get_rowstride (src);
-  dst_row_stride = gdk_pixbuf_get_rowstride (dest);
-  target_pixels = gdk_pixbuf_get_pixels (dest);
-  original_pixels = gdk_pixbuf_get_pixels (src);
-
-  for (i = 0; i < height; i++)
-    {
-      pixdest = target_pixels + i*dst_row_stride;
-      pixsrc = original_pixels + i*src_row_stride;
-      for (j = 0; j < width; j++)
-        {
-          *pixdest++ = (*pixsrc++ * red_value) >> 8;
-          *pixdest++ = (*pixsrc++ * green_value) >> 8;
-          *pixdest++ = (*pixsrc++ * blue_value) >> 8;
-          if (has_alpha)
-            *pixdest++ = *pixsrc++;
-        }
-    }
-
-  return dest;
-}
-
 static void
 cell_renderer_activatable_render (
     GtkCellRenderer      *cell,
@@ -203,106 +153,14 @@ cell_renderer_activatable_render (
     GdkRectangle         *expose_area,
     GtkCellRendererState  flags)
 {
-  GdkPixbuf *pixbuf;
-  GdkPixbuf *invisible = NULL;
-  GdkPixbuf *colorized = NULL;
-  GdkRectangle pix_rect;
-  GdkRectangle draw_rect;
-  GtkStyle *style;
-  gboolean follow_state;
-  cairo_t *cr;
-  int xpad, ypad;
   EmpathyCellRendererActivatablePriv *priv = GET_PRIV (cell);
 
   if (priv->show_on_select && !(flags & (GTK_CELL_RENDERER_SELECTED)))
     return;
 
-  g_object_get (cell,
-      "follow-state", &follow_state,
-      "xpad", &xpad,
-      "ypad", &ypad,
-      "pixbuf", &pixbuf,
-      NULL);
-  style = gtk_widget_get_style (widget);
-
-  gtk_cell_renderer_get_size (cell, widget, cell_area,
-      &pix_rect.x,
-      &pix_rect.y,
-      &pix_rect.width,
-      &pix_rect.height);
-
-  pix_rect.x += cell_area->x + xpad;
-  pix_rect.y += cell_area->y + ypad;
-  pix_rect.width  -= xpad * 2;
-  pix_rect.height -= ypad * 2;
-
-  if (!gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) ||
-      !gdk_rectangle_intersect (expose_area, &draw_rect, &draw_rect))
-    return;
-
-  if (pixbuf == NULL)
-    return;
-
-  if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE || !cell->sensitive)
-    {
-      GtkIconSource *source;
-
-      source = gtk_icon_source_new ();
-      gtk_icon_source_set_pixbuf (source, pixbuf);
-      /* The size here is arbitrary; since size isn't
-       * wildcarded in the source, it isn't supposed to be
-       * scaled by the engine function
-       */
-      gtk_icon_source_set_size (source, GTK_ICON_SIZE_SMALL_TOOLBAR);
-      gtk_icon_source_set_size_wildcarded (source, FALSE);
-
-      invisible = gtk_style_render_icon (style,
-          source,
-          gtk_widget_get_direction (widget),
-          GTK_STATE_INSENSITIVE,
-          /* arbitrary */
-          (GtkIconSize)-1,
-          widget,
-          "gtkcellrendererpixbuf");
-
-      gtk_icon_source_free (source);
-
-      pixbuf = invisible;
-    }
-  else if (follow_state &&
-      (flags & (GTK_CELL_RENDERER_SELECTED|GTK_CELL_RENDERER_PRELIT)) != 0)
-    {
-      GtkStateType state;
-
-      if ((flags & GTK_CELL_RENDERER_SELECTED) != 0)
-	{
-	  if (GTK_WIDGET_HAS_FOCUS (widget))
-	    state = GTK_STATE_SELECTED;
-	  else
-	    state = GTK_STATE_ACTIVE;
-	}
-      else
-	state = GTK_STATE_PRELIGHT;
-
-      colorized = create_colorized_pixbuf (pixbuf,
-          &style->base[state]);
-
-      pixbuf = colorized;
-    }
-
-  cr = gdk_cairo_create (window);
-
-  gdk_cairo_set_source_pixbuf (cr, pixbuf, pix_rect.x, pix_rect.y);
-  gdk_cairo_rectangle (cr, &draw_rect);
-  cairo_fill (cr);
-
-  cairo_destroy (cr);
-
-  if (invisible != NULL)
-    g_object_unref (invisible);
-
-  if (colorized != NULL)
-    g_object_unref (colorized);
+  GTK_CELL_RENDERER_CLASS
+    (empathy_cell_renderer_activatable_parent_class)->render (
+        cell, window, widget, background_area, cell_area, expose_area, flags);
 }
 
 static void
