@@ -501,7 +501,7 @@
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkCheckButton" id="checkbutton_location_resource_gps">
-                                <property name="label" translatable="yes">Allow _GPS usage</property>
+                                <property name="label" translatable="yes">_GPS</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -516,7 +516,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="checkbutton_location_resource_cell">
-                                <property name="label" translatable="yes">Allow _cellphone usage</property>
+                                <property name="label" translatable="yes">_Cellphone</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -532,7 +532,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="checkbutton_location_resource_network">
-                                <property name="label" translatable="yes">Allow _network usage</property>
+                                <property name="label" translatable="yes">_Network (IP, Wifi)</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -553,7 +553,7 @@
                     <child type="label">
                       <object class="GtkLabel" id="label5">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Geoclue Settings</property>
+                        <property name="label" translatable="yes">Location sources:</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
                         </attributes>
