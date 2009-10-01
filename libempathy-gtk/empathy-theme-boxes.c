@@ -199,6 +199,7 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	gboolean              color_set;
 	GtkTextTagTable      *table;
 	GtkTextTag           *tag;
+	GString              *str_obj;
 
 	contact = empathy_message_get_sender (msg);
 	name = empathy_contact_get_name (contact);
@@ -267,6 +268,12 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 			       "use-markup", TRUE,
 			       "xalign", 1.0,
 			       NULL);
+
+	str_obj = g_string_new ("\n- ");
+	g_string_append (str_obj, name);
+	g_string_append (str_obj, ", ");
+	g_string_append (str_obj, tmp);
+	g_string_append (str_obj, " -");
 	g_free (tmp);
 	g_free (str);
 
@@ -290,6 +297,10 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	gtk_box_pack_start (GTK_BOX (box), label2, TRUE, TRUE, 0);
 
 	/* Add the header box to the text view */
+	g_object_set_data_full (G_OBJECT (box),
+				"str_obj",
+				g_string_free (str_obj, FALSE),
+				g_free);
 	gtk_text_view_add_child_at_anchor (GTK_TEXT_VIEW (view),
 					   box,
 					   anchor);

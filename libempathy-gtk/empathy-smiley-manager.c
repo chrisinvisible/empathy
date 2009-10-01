@@ -245,6 +245,8 @@ smiley_manager_add_valist (EmpathySmileyManager *manager,
 	}
 
 	/* We give the ownership of path to the smiley */
+	g_object_set_data_full (G_OBJECT (pixbuf), "smiley_str",
+				g_strdup (first_str), g_free);
 	smiley = smiley_new (pixbuf, g_strdup (first_str), path);
 	priv->smileys = g_slist_prepend (priv->smileys, smiley);
 }
