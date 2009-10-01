@@ -240,6 +240,9 @@ cell_renderer_activatable_render (
       !gdk_rectangle_intersect (expose_area, &draw_rect, &draw_rect))
     return;
 
+  if (pixbuf == NULL)
+    return;
+
   if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE || !cell->sensitive)
     {
       GtkIconSource *source;
