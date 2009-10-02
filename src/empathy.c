@@ -845,6 +845,8 @@ main (int argc, char *argv[])
       return 0;
     }
 
+  notify_init (_(PACKAGE_NAME));
+
   /* Setting up Idle */
   idle = empathy_idle_dup_singleton ();
   empathy_idle_set_auto_away (idle, TRUE);
@@ -901,7 +903,6 @@ main (int argc, char *argv[])
       chatroom_manager_ready_cb (chatroom_manager, NULL, account_manager);
     }
 
-  notify_init (_(PACKAGE_NAME));
   /* Create the call factory */
   call_factory = empathy_call_factory_initialise ();
   g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
