@@ -27,6 +27,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <glib/gi18n.h>
 
 #include <libnotify/notification.h>
 
@@ -126,6 +127,17 @@ notification_close_helper (EmpathyStatusIconPriv *priv)
 }
 
 static void
+notification_action_cb (NotifyNotification *notification,
+			gchar              *action,
+			EmpathyStatusIcon  *icon)
+{
+	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
+
+	if (priv->event)
+		empathy_event_activate (priv->event);
+}
+
+static void
 status_icon_update_notification (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
@@ -152,6 +164,13 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 				(priv->event->header, message_esc, NULL, priv->icon);
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
+
+			notify_notification_add_action (priv->notification,
+							"respond",
+							_("Respond"),
+							(NotifyActionCallback) notification_action_cb,
+							icon,
+							NULL);
 
 			g_signal_connect (priv->notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
