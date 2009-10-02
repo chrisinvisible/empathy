@@ -169,15 +169,14 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
-			if (priv->notify_supports_actions)
-				{
-					notify_notification_add_action (priv->notification,
-							"respond",
-							_("Respond"),
-							(NotifyActionCallback) notification_action_cb,
-							icon,
-							NULL);
-				}
+			if (priv->notify_supports_actions) {
+				notify_notification_add_action (priv->notification,
+					"respond",
+					_("Respond"),
+					(NotifyActionCallback) notification_action_cb,
+					icon,
+					NULL);
+			}
 
 			g_signal_connect (priv->notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
@@ -564,7 +563,7 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (icon,
 		EMPATHY_TYPE_STATUS_ICON, EmpathyStatusIconPriv);
-  GList *list, *l;
+	GList *list, *l;
 
 	icon->priv = priv;
 	priv->icon = gtk_status_icon_new ();
@@ -607,13 +606,12 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 	/* Query the notification daemon to check if it supports actions */
 	priv->notify_supports_actions = FALSE;
 	list = notify_get_server_caps ();
-	for (l = list; l != NULL; l = g_list_next (l))
-		{
-			gchar *caps = l->data;
-			if (!tp_strdiff (caps, "actions"))
-				priv->notify_supports_actions = TRUE;
-			g_free (caps);
-		}
+	for (l = list; l != NULL; l = g_list_next (l)) {
+		gchar *caps = l->data;
+		if (!tp_strdiff (caps, "actions"))
+			priv->notify_supports_actions = TRUE;
+		g_free (caps);
+	}
 	g_list_free (list);
 }
 
