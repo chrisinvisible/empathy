@@ -370,13 +370,6 @@ event_manager_chat_message_received_cb (EmpathyTpChat *tp_chat,
    * queue. */
   event = event_lookup_by_approval (approval->manager, approval);
 
-  if (event != NULL && event->inhibit && approval->handler != 0)
-    {
-      g_signal_handler_disconnect (tp_chat, approval->handler);
-      approval->handler = 0;
-      return;
-    }
-
   sender = empathy_message_get_sender (message);
   header = empathy_contact_get_name (sender);
   msg = empathy_message_get_body (message);
