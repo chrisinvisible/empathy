@@ -817,7 +817,7 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
           "they will still be available."),
 #else
       /* Translators: this is used only when built on a moblin platform */
-      _("This will not remove your accounts on the server."),
+      _("This will not remove your account on the server."),
 #endif /* HAVE_NBTK */
       G_CALLBACK (accounts_dialog_delete_account_response_cb),
       dialog,
