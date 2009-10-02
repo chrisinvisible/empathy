@@ -66,7 +66,6 @@ typedef struct {
   gboolean simple;
 
   gboolean contains_pending_changes;
-  gboolean original_enabled_checkbox_value;
 
   /* An EmpathyAccountWidget can be used to either create an account or
    * modify it. When we are creating an account, this member is set to TRUE */
@@ -1294,17 +1293,16 @@ do_constructed (GObject *obj)
       GtkWidget *w;
 #endif
       guint nb_rows, nb_columns;
+      gboolean is_enabled;
 
-      priv->original_enabled_checkbox_value =
-          empathy_account_is_enabled (account);
+      is_enabled = empathy_account_is_enabled (account);
 
 #ifndef HAVE_NBTK
       priv->enabled_checkbox =
           gtk_check_button_new_with_label (_("Enabled"));
 
       gtk_toggle_button_set_active (
-          GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
-          priv->original_enabled_checkbox_value);
+          GTK_TOGGLE_BUTTON (priv->enabled_checkbox), is_enabled);
 #else
       /* Translators: this is used only when built on a moblin platform */
       w = gtk_label_new (_("Account:"));
@@ -1313,8 +1311,7 @@ do_constructed (GObject *obj)
       priv->enabled_checkbox = nbtk_gtk_light_switch_new ();
 
       nbtk_gtk_light_switch_set_active (
-          NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
-          priv->original_enabled_checkbox_value);
+          NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
 
       gtk_widget_show (w);
 #endif /* HAVE_NBTK */
@@ -1489,16 +1486,6 @@ empathy_account_widget_discard_pending_changes
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
 
   empathy_account_settings_discard_changes (priv->settings);
-
-#ifndef HAVE_NBTK
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
-      priv->original_enabled_checkbox_value);
-#else
-  nbtk_gtk_light_switch_set_active (
-      NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
-      priv->original_enabled_checkbox_value);
-#endif /* HAVE_NBTK */
-
   priv->contains_pending_changes = FALSE;
 }
 
