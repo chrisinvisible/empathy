@@ -1306,6 +1306,7 @@ do_constructed (GObject *obj)
           GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
           priv->original_enabled_checkbox_value);
 #else
+      /* Translators: this is used only when built on a moblin platform */
       w = gtk_label_new (_("Account:"));
       gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
 
