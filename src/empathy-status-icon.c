@@ -30,6 +30,9 @@
 #include <glib/gi18n.h>
 
 #include <libnotify/notification.h>
+#include <libnotify/notify.h>
+
+#include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-idle.h>
@@ -70,6 +73,7 @@ typedef struct {
 	GtkAction           *show_window_item;
 	GtkAction           *new_message_item;
 	GtkAction           *status_item;
+	gboolean             notify_supports_actions;
 } EmpathyStatusIconPriv;
 
 G_DEFINE_TYPE (EmpathyStatusIcon, empathy_status_icon, G_TYPE_OBJECT);
@@ -165,12 +169,15 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
-			notify_notification_add_action (priv->notification,
+			if (priv->notify_supports_actions)
+				{
+					notify_notification_add_action (priv->notification,
 							"respond",
 							_("Respond"),
 							(NotifyActionCallback) notification_action_cb,
 							icon,
 							NULL);
+				}
 
 			g_signal_connect (priv->notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
@@ -557,6 +564,7 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (icon,
 		EMPATHY_TYPE_STATUS_ICON, EmpathyStatusIconPriv);
+  GList *list, *l;
 
 	icon->priv = priv;
 	priv->icon = gtk_status_icon_new ();
@@ -595,6 +603,18 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 	g_signal_connect (priv->icon, "popup-menu",
 			  G_CALLBACK (status_icon_popup_menu_cb),
 			  icon);
+
+	/* Query the notification daemon to check if it supports actions */
+	priv->notify_supports_actions = FALSE;
+	list = notify_get_server_caps ();
+	for (l = list; l != NULL; l = g_list_next (l))
+		{
+			gchar *caps = l->data;
+			if (!tp_strdiff (caps, "actions"))
+				priv->notify_supports_actions = TRUE;
+			g_free (caps);
+		}
+	g_list_free (list);
 }
 
 EmpathyStatusIcon *
