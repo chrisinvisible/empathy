@@ -1246,6 +1246,13 @@ do_constructed (GObject *obj)
       priv->apply_button = gtk_button_new_from_stock (
         priv->creating_account ? GTK_STOCK_CONNECT : GTK_STOCK_APPLY);
 
+#ifdef HAVE_NBTK
+      if (priv->creating_account)
+	/* Translators: this is used only when built on a moblin platform */
+	gtk_button_set_label (GTK_BUTTON (priv->apply_button),
+            _("L_og in"));
+#endif
+
       gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
           TRUE, 3);
       gtk_box_pack_end (GTK_BOX (hbox), priv->cancel_button, TRUE,
