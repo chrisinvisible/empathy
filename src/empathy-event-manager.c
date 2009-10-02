@@ -186,15 +186,22 @@ autoremove_event_timeout_cb (EventPriv *event)
 }
 
 static void
-event_manager_add (EmpathyEventManager *manager, EmpathyContact *contact,
-  const gchar *icon_name, const gchar *header, const gchar *message,
-  EventManagerApproval *approval, EventFunc func, gpointer user_data)
+event_manager_add (EmpathyEventManager *manager,
+    EmpathyContact *contact,
+    EmpathyEventType type,
+    const gchar *icon_name,
+    const gchar *header,
+    const gchar *message,
+    EventManagerApproval *approval,
+    EventFunc func,
+    gpointer user_data)
 {
   EmpathyEventManagerPriv *priv = GET_PRIV (manager);
   EventPriv               *event;
 
   event = g_slice_new0 (EventPriv);
   event->public.contact = contact ? g_object_ref (contact) : NULL;
+  event->public.type = type;
   event->public.icon_name = g_strdup (icon_name);
   event->public.header = g_strdup (header);
   event->public.message = g_strdup (message);
@@ -379,8 +386,9 @@ event_manager_chat_message_received_cb (EmpathyTpChat *tp_chat,
   if (event != NULL)
     event_update (approval->manager, event, EMPATHY_IMAGE_NEW_MESSAGE, header, msg);
   else
-    event_manager_add (approval->manager, sender, EMPATHY_IMAGE_NEW_MESSAGE, header,
-      msg, approval, event_text_channel_process_func, NULL);
+    event_manager_add (approval->manager, sender, EMPATHY_EVENT_TYPE_CHAT,
+        EMPATHY_IMAGE_NEW_MESSAGE, header, msg, approval,
+        event_text_channel_process_func, NULL);
 
   empathy_sound_play (empathy_main_window_get (),
     EMPATHY_SOUND_CONVERSATION_NEW);
@@ -453,9 +461,9 @@ event_manager_media_channel_got_contact (EventManagerApproval *approval)
   header = g_strdup_printf (_("Incoming call from %s"),
     empathy_contact_get_name (approval->contact));
 
-  event_manager_add (approval->manager,
-    approval->contact, EMPATHY_IMAGE_VOIP, header, NULL,
-    approval, event_channel_process_voip_func, NULL);
+  event_manager_add (approval->manager, approval->contact,
+      EMPATHY_EVENT_TYPE_VOIP, EMPATHY_IMAGE_VOIP, header, NULL, approval,
+      event_channel_process_voip_func, NULL);
 
   g_free (header);
 
@@ -509,8 +517,9 @@ event_manager_add_tube_approval (EventManagerApproval *approval,
               "application to handle it.");
     }
 
-  event_manager_add (approval->manager, approval->contact, icon_name, header,
-    msg, approval, event_manager_tube_approved_cb, approval);
+  event_manager_add (approval->manager, approval->contact,
+      EMPATHY_EVENT_TYPE_TUBE, icon_name, header, msg, approval,
+      event_manager_tube_approved_cb, approval);
 
   g_free (header);
   /* FIXME better sound for incoming tubes ? */
@@ -691,9 +700,9 @@ event_manager_muc_invite_got_contact_cb (EmpathyTpContactFactory *factory,
       empathy_contact_get_name (approval->contact),
       tp_channel_get_identifier (channel));
 
-  event_manager_add (approval->manager,
-    approval->contact, EMPATHY_IMAGE_GROUP_MESSAGE, msg, invite_msg,
-    approval, event_room_channel_process_func, NULL);
+  event_manager_add (approval->manager, approval->contact,
+      EMPATHY_EVENT_TYPE_CHAT, EMPATHY_IMAGE_GROUP_MESSAGE, msg, invite_msg,
+      approval, event_room_channel_process_func, NULL);
 
   empathy_sound_play (empathy_main_window_get (),
     EMPATHY_SOUND_CONVERSATION_NEW);
@@ -717,8 +726,8 @@ event_manager_ft_got_contact_cb (EmpathyTpContactFactory *factory,
                             empathy_contact_get_name (approval->contact));
 
   event_manager_add (approval->manager, approval->contact,
-      EMPATHY_IMAGE_DOCUMENT_SEND, header, NULL, approval,
-      event_channel_process_func, NULL);
+      EMPATHY_EVENT_TYPE_TRANSFER, EMPATHY_IMAGE_DOCUMENT_SEND, header, NULL,
+      approval, event_channel_process_func, NULL);
 
   /* FIXME better sound for incoming file transfers ?*/
   empathy_sound_play (empathy_main_window_get (),
@@ -901,8 +910,9 @@ event_manager_pendings_changed_cb (EmpathyContactList  *list,
   else
     event_msg = NULL;
 
-  event_manager_add (manager, contact, GTK_STOCK_DIALOG_QUESTION, header,
-    event_msg, NULL, event_pending_subscribe_func, NULL);
+  event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_SUBSCRIPTION,
+      GTK_STOCK_DIALOG_QUESTION, header, event_msg, NULL,
+      event_pending_subscribe_func, NULL);
 
   g_free (event_msg);
   g_free (header);
@@ -936,8 +946,8 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
           header = g_strdup_printf (_("%s is now offline."),
             empathy_contact_get_name (contact));
 
-          event_manager_add (manager, contact, GTK_STOCK_DIALOG_INFO, header,
-                             NULL, NULL, NULL, NULL);
+          event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
+              GTK_STOCK_DIALOG_INFO, header, NULL, NULL, NULL, NULL);
         }
     }
   else
@@ -952,8 +962,8 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
           header = g_strdup_printf (_("%s is now online."),
             empathy_contact_get_name (contact));
 
-          event_manager_add (manager, contact, GTK_STOCK_DIALOG_INFO, header,
-                             NULL, NULL, NULL, NULL);
+          event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
+              GTK_STOCK_DIALOG_INFO, header, NULL, NULL, NULL, NULL);
         }
     }
   g_free (header);

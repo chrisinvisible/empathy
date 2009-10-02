@@ -48,12 +48,22 @@ struct _EmpathyEventManagerClass {
 	GObjectClass parent_class;
 };
 
+typedef enum {
+    EMPATHY_EVENT_TYPE_CHAT,
+    EMPATHY_EVENT_TYPE_VOIP,
+    EMPATHY_EVENT_TYPE_TUBE,
+    EMPATHY_EVENT_TYPE_TRANSFER,
+    EMPATHY_EVENT_TYPE_SUBSCRIPTION,
+    EMPATHY_EVENT_TYPE_PRESENCE
+} EmpathyEventType;
+
 typedef struct {
-	EmpathyContact *contact;
-	gchar          *icon_name;
-	gchar          *header;
-	gchar          *message;
-	gboolean        must_ack;
+    EmpathyContact *contact;
+    EmpathyEventType type;
+    gchar *icon_name;
+    gchar *header;
+    gchar *message;
+    gboolean must_ack;
 } EmpathyEvent;
 
 GType                empathy_event_manager_get_type      (void) G_GNUC_CONST;
