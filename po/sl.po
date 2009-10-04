@@ -6,9 +6,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-09-16 07:22+0000\n"
-"PO-Revision-Date: 2009-09-16 14:16+0100\n"
-"Last-Translator: Matej Urbančič <matej.urban@gmail.com>\n"
+"POT-Creation-Date: 2009-10-03 14:05+0000\n"
+"PO-Revision-Date: 2009-10-04 09:39+0100\n"
+"Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -530,15 +530,28 @@ msgstr "v prihodnosti"
 msgid "All"
 msgstr "Vse"
 
-#: ../libempathy-gtk/empathy-account-widget.c:430
-#: ../libempathy-gtk/empathy-account-widget.c:486
+#: ../libempathy-gtk/empathy-account-widget.c:433
+#: ../libempathy-gtk/empathy-account-widget.c:489
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1264
+#: ../libempathy-gtk/empathy-account-widget.c:1252
+msgid "L_og in"
+msgstr "_Prijava"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1302
 msgid "Enabled"
 msgstr "Omogočeno"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../libempathy-gtk/empathy-account-widget.c:1308
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
+#: ../src/empathy-chatrooms-window.ui.h:1
+#: ../src/empathy-new-chatroom-dialog.ui.h:1
+msgid "Account:"
+msgstr "Račun:"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
@@ -963,7 +976,7 @@ msgid "%s has joined the room"
 msgstr "%s je vstopil v klepetalnico"
 
 #: ../libempathy-gtk/empathy-chat.c:1367
-#: ../src/empathy-call-window.c:1285
+#: ../src/empathy-call-window.c:1295
 msgid "Disconnected"
 msgstr "Povezava prekinjena"
 
@@ -1226,13 +1239,6 @@ msgstr "%e.%B.%Y ob %R UTC"
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:1
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Lega</b> na (datum)\t"
-
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
-#: ../src/empathy-chatrooms-window.ui.h:1
-#: ../src/empathy-new-chatroom-dialog.ui.h:1
-msgid "Account:"
-msgstr "Račun:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
@@ -1777,7 +1783,7 @@ msgstr "Prišlo je do napake"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1400
+#: ../src/empathy-accounts-dialog.c:1430
 #, c-format
 msgid "New %s account"
 msgstr "Nov %s račun"
@@ -1880,7 +1886,7 @@ msgstr "%s račun"
 msgid "New account"
 msgstr "Nov račun"
 
-#: ../src/empathy-accounts-dialog.c:502
+#: ../src/empathy-accounts-dialog.c:516
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1888,7 +1894,7 @@ msgstr ""
 "Ustvarjen bo nov račun, trenutne spremembe pa bodo izgubljene!\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:787
+#: ../src/empathy-accounts-dialog.c:802
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1897,7 +1903,13 @@ msgstr ""
 "Odstranjen bo vaš račun %s!\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:792
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:806
+#, c-format
+msgid "Do you want to remove %s from your computer?"
+msgstr "Ali zares želite odstraniti %s z računalnika?"
+
+#: ../src/empathy-accounts-dialog.c:812
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you decide to proceed.\n"
 "\n"
@@ -1907,7 +1919,12 @@ msgstr ""
 "\n"
 "V primeru, da boste kasneje želeli obnoviti svoj račun, bodo podatki še vedno na voljo."
 
-#: ../src/empathy-accounts-dialog.c:980
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:819
+msgid "This will not remove your account on the server."
+msgstr "S tem bo odstranjen račun s strežnika."
+
+#: ../src/empathy-accounts-dialog.c:1010
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1915,13 +1932,18 @@ msgstr ""
 "Izbran bo nov račun, trenutne spremembe pa bodo izgubljene\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:1475
+#: ../src/empathy-accounts-dialog.c:1507
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
 "Zaprlo se bo okno, trenutne spremembe pa bodo izgubljene!\n"
 "Ali ste prepričani, da želite nadaljevati?"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../src/empathy-accounts-dialog.c:1673
+msgid "_Next"
+msgstr "_Naslednji"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2004,12 +2026,12 @@ msgstr "Pokliči s pomočjo %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:944
+#: ../src/empathy-call-window.c:954
 msgid "Call"
 msgstr "Pokliči"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1445
+#: ../src/empathy-call-window.c:1455
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Povezan - %d:%02d m"
@@ -2148,58 +2170,58 @@ msgstr "_Zavrni"
 msgid "_Answer"
 msgstr "_Odgovori"
 
-#: ../src/empathy-event-manager.c:453
+#: ../src/empathy-event-manager.c:446
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Dohodni klic od %s"
 
-#: ../src/empathy-event-manager.c:497
+#: ../src/empathy-event-manager.c:490
 #, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s vam ponuja povabilo"
 
-#: ../src/empathy-event-manager.c:503
+#: ../src/empathy-event-manager.c:496
 msgid "An external application will be started to handle it."
 msgstr "Zagnan bo ustrezen zunanji program za obdelavo."
 
-#: ../src/empathy-event-manager.c:508
+#: ../src/empathy-event-manager.c:501
 msgid "You don't have the needed external application to handle it."
 msgstr "Ni nameščenega ustreznega zunanjega programa."
 
-#: ../src/empathy-event-manager.c:635
+#: ../src/empathy-event-manager.c:628
 msgid "Room invitation"
 msgstr "Vabilo v klepetalnico"
 
-#: ../src/empathy-event-manager.c:638
+#: ../src/empathy-event-manager.c:631
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s vas vabi, da se pridružite v %s"
 
-#: ../src/empathy-event-manager.c:646
+#: ../src/empathy-event-manager.c:639
 msgid "_Decline"
 msgstr "_Odkloni"
 
-#: ../src/empathy-event-manager.c:651
+#: ../src/empathy-event-manager.c:644
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Pridruži se"
 
-#: ../src/empathy-event-manager.c:690
+#: ../src/empathy-event-manager.c:683
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s vas je povabil v %s"
 
-#: ../src/empathy-event-manager.c:716
+#: ../src/empathy-event-manager.c:709
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Prihajajoč prenos datoteke od %s"
 
-#: ../src/empathy-event-manager.c:896
+#: ../src/empathy-event-manager.c:889
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Naročilo zahteva %s"
 
-#: ../src/empathy-event-manager.c:900
+#: ../src/empathy-event-manager.c:893
 #, c-format
 msgid ""
 "\n"
@@ -2209,13 +2231,13 @@ msgstr ""
 "Sporočilo: %s"
 
 #. someone is logging off
-#: ../src/empathy-event-manager.c:936
+#: ../src/empathy-event-manager.c:929
 #, c-format
 msgid "%s is now offline."
 msgstr "%s ni povezan."
 
 #. someone is logging in
-#: ../src/empathy-event-manager.c:952
+#: ../src/empathy-event-manager.c:945
 #, c-format
 msgid "%s is now online."
 msgstr "%s je povezan."
@@ -2719,6 +2741,10 @@ msgstr "O_bjavi položaj mojim stikom"
 #: ../src/empathy-preferences.ui.h:32
 msgid "_Reduce location accuracy"
 msgstr "_Zmanjšaj natančnost položaja"
+
+#: ../src/empathy-status-icon.c:178
+msgid "Respond"
+msgstr "Odgovor"
 
 #: ../src/empathy-status-icon.ui.h:1
 msgid "Status"
