@@ -1224,6 +1224,9 @@ accounts_dialog_account_display_name_changed_cb (EmpathyAccount *account,
   display_name = empathy_account_get_display_name (account);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
   settings = accounts_dialog_model_get_selected_settings (dialog);
+  if (settings == NULL)
+    return;
+
   selected_account = empathy_account_settings_get_account (settings);
 
   if (accounts_dialog_get_account_iter (dialog, account, &iter))
