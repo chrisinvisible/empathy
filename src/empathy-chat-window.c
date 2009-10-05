@@ -80,6 +80,8 @@ typedef struct {
 	NotifyNotification *notification;
 	NotificationData *notification_data;
 
+	GtkTargetList *move_targets;
+
 	/* Menu items. */
 	GtkUIManager *ui_manager;
 	GtkAction   *menu_conv_insert_smiley;
@@ -1335,15 +1337,12 @@ chat_window_drag_motion (GtkWidget        *widget,
 			 guint             time,
 			 EmpathyChatWindow *window)
 {
-	static GtkTargetList *list = NULL;
 	GdkAtom target;
+	EmpathyChatWindowPriv *priv;
 
-	if (list == NULL) {
-		list = gtk_target_list_new (drag_types_dest_move,
-					    G_N_ELEMENTS (drag_types_dest_move));
-	}
+	priv = GET_PRIV (window);
 
-	target = gtk_drag_dest_find_target (widget, context, list);
+	target = gtk_drag_dest_find_target (widget, context, priv->move_targets);
 	/* If target != GDK_NONE, this target type is a type we should move
 	   instead of copy.  That's a notebook tab.  Other drag types, such
 	   as files or contacts, use copy.
@@ -1518,6 +1517,10 @@ chat_window_finalize (GObject *object)
 			}
 	}
 
+	if (priv->move_targets) {
+		gtk_target_list_unref (priv->move_targets);
+	}
+
 	chat_windows = g_list_remove (chat_windows, window);
 	gtk_widget_destroy (priv->dialog);
 
@@ -1628,6 +1631,10 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	}
 
 	g_object_unref (accel_group);
+
+	/* Set up drag target lists */
+	priv->move_targets = gtk_target_list_new (drag_types_dest_move,
+						  G_N_ELEMENTS (drag_types_dest_move));
 
 	/* Set up smiley menu */
 	smiley_manager = empathy_smiley_manager_dup_singleton ();

@@ -65,6 +65,7 @@ typedef struct {
 	EmpathyContactListFeatureFlags  list_features;
 	EmpathyContactFeatureFlags      contact_features;
 	GtkWidget                      *tooltip_widget;
+	GtkTargetList                  *file_targets;
 } EmpathyContactListViewPriv;
 
 typedef struct {
@@ -417,7 +418,6 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 {
 	EmpathyContactListViewPriv *priv;
 	GtkTreeModel               *model;
-	static GtkTargetList  *file_targets = NULL;
 	GdkAtom                target;
 	GtkTreeIter            iter;
 	static DragMotionData *dm = NULL;
@@ -429,11 +429,6 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 
 	priv = GET_PRIV (EMPATHY_CONTACT_LIST_VIEW (widget));
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
-
-	if (file_targets == NULL) {
-		file_targets = gtk_target_list_new (drag_types_dest_file,
-						    G_N_ELEMENTS (drag_types_dest_file));
-	}
 
 	is_row = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
 						x,
@@ -460,7 +455,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 		gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
 		return FALSE;
 	}
-	target = gtk_drag_dest_find_target (widget, context, file_targets);
+	target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
 	gtk_tree_model_get_iter (model, &iter, path);
 
 	if (target == GDK_NONE) {
@@ -1266,6 +1261,9 @@ contact_list_view_finalize (GObject *object)
 	if (priv->tooltip_widget) {
 		gtk_widget_destroy (priv->tooltip_widget);
 	}
+	if (priv->file_targets) {
+		gtk_target_list_unref (priv->file_targets);
+	}
 
 	G_OBJECT_CLASS (empathy_contact_list_view_parent_class)->finalize (object);
 }
@@ -1395,6 +1393,10 @@ empathy_contact_list_view_init (EmpathyContactListView *view)
 	gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (view),
 					      empathy_contact_list_store_row_separator_func,
 					      NULL, NULL);
+
+	/* Set up drag target lists. */
+	priv->file_targets = gtk_target_list_new (drag_types_dest_file,
+						  G_N_ELEMENTS (drag_types_dest_file));
 
 	/* Connect to tree view signals rather than override. */
 	g_signal_connect (view, "button-press-event",
