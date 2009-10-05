@@ -1344,6 +1344,10 @@ chat_window_drag_motion (GtkWidget        *widget,
 	}
 
 	target = gtk_drag_dest_find_target (widget, context, list);
+	/* If target != GDK_NONE, this target type is a type we should move
+	   instead of copy.  That's a notebook tab.  Other drag types, such
+	   as files or contacts, use copy.
+	 */
 	if (target == GDK_NONE) {
 		gdk_drag_status (context, GDK_ACTION_COPY, time);
 	}
