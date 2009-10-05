@@ -1438,9 +1438,6 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		EmpathyChatWindowPriv *priv;
 		EmpathyContact *contact;
 		const gchar *data;
-		const gchar *nl;
-		gchar *uri;
-		GFile *file;
 
 		priv = GET_PRIV (window);
 		contact = empathy_chat_get_remote_contact (priv->current_chat);
@@ -1450,29 +1447,9 @@ chat_window_drag_data_received (GtkWidget        *widget,
 			return;
 		}
 
-		/* Only handle a single file for new.  It would be wicked cool to be
-		   able to do multiple files, offering to zip them or whatever like
-		   nautilus-sendto does.  Note that text/uri-list is defined to have
-		   each line terminated by \r\n, but we can be tolerant of applications
-		   that only use \n or don't terminate single-line entries.
-		 */
-		data = (const gchar*) gtk_selection_data_get_data (selection);
-		nl = strstr (data, "\r\n");
-		if (!nl) {
-			nl = strchr (data, '\n');
-		}
-		if (nl) {
-			uri = g_strndup (data, nl - data);
-			file = g_file_new_for_uri (uri);
-			g_free (uri);
-		}
-		else {
-			file = g_file_new_for_uri (data);
-		}
+		data = (const gchar *) gtk_selection_data_get_data (selection);
+		empathy_send_file_from_uri_list (contact, data);
 
-		empathy_send_file (contact, file);
-
-		g_object_unref (file);
 		gtk_drag_finish (context, TRUE, FALSE, time);
 	}
 	else if (info == DND_DRAG_TYPE_TAB) {

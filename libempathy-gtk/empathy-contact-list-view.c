@@ -332,9 +332,6 @@ contact_list_view_file_drag_received (GtkWidget         *view,
 {
 	GtkTreeIter     iter;
 	const gchar    *sel_data;
-	const gchar    *nl;
-	gchar          *uri;
-	GFile          *file;
 	EmpathyContact *contact;
 
 	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
@@ -347,22 +344,9 @@ contact_list_view_file_drag_received (GtkWidget         *view,
 		return FALSE;
 	}
 
-	nl = strstr (sel_data, "\r\n");
-	if (!nl) {
-		nl = strchr (sel_data, '\n');
-	}
-	if (nl) {
-		uri = g_strndup (sel_data, nl - sel_data);
-		file = g_file_new_for_uri (uri);
-		g_free (uri);
-	}
-	else {
-		file = g_file_new_for_uri (sel_data);
-	}
+	empathy_send_file_from_uri_list (contact, sel_data);
 
-	empathy_send_file (contact, file);
-
-	g_object_unref (file);
+	g_object_unref (contact);
 
 	return TRUE;
 }

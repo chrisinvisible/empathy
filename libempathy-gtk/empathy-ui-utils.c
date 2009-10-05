@@ -1473,6 +1473,36 @@ empathy_send_file (EmpathyContact *contact, GFile *file)
 	g_object_unref (factory);
 }
 
+void
+empathy_send_file_from_uri_list (EmpathyContact *contact, const gchar *uri_list)
+{
+	const gchar *nl;
+	GFile *file;
+
+	/* Only handle a single file for now.  It would be wicked cool to be
+	   able to do multiple files, offering to zip them or whatever like
+	   nautilus-sendto does.  Note that text/uri-list is defined to have
+	   each line terminated by \r\n, but we can be tolerant of applications
+	   that only use \n or don't terminate single-line entries.
+	*/
+	nl = strstr (uri_list, "\r\n");
+	if (!nl) {
+		nl = strchr (uri_list, '\n');
+	}
+	if (nl) {
+		gchar *uri = g_strndup (uri_list, nl - uri_list);
+		file = g_file_new_for_uri (uri);
+		g_free (uri);
+	}
+	else {
+		file = g_file_new_for_uri (uri_list);
+	}
+
+	empathy_send_file (contact, file);
+
+	g_object_unref (file);
+}
+
 static void
 file_manager_send_file_response_cb (GtkDialog      *widget,
 				    gint            response_id,
