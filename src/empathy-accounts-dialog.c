@@ -394,7 +394,7 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
       return;
     }
 
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
   if (tp_connection_manager_protocol_can_register (proto) && !is_gtalk)
     {
       gtk_widget_show (priv->radiobutton_register);
@@ -799,17 +799,17 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
     }
 
   question_dialog_primary_text = g_strdup_printf (
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       _("You are about to remove your %s account!\n"
           "Are you sure you want to proceed?"),
 #else
       /* Translators: this is used only when built on a moblin platform */
       _("Do you want to remove %s from your computer?"),
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
       empathy_account_get_display_name (account));
 
   accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       _("Any associated conversations and chat rooms will NOT be "
           "removed if you decide to proceed.\n"
           "\n"
@@ -818,7 +818,7 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
 #else
       /* Translators: this is used only when built on a moblin platform */
       _("This will not remove your account on the server."),
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
       G_CALLBACK (accounts_dialog_delete_account_response_cb),
       dialog,
       GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
@@ -857,7 +857,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
       accounts_dialog_model_pixbuf_data_func,
       dialog,
       NULL);
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
   g_object_set (cell, "ypad", 4, NULL);
 #endif
 
@@ -882,7 +882,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   gtk_tree_view_column_pack_start (column, cell, FALSE);
   g_object_set (cell,
         "icon-name", GTK_STOCK_DELETE,
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
         "show-on-select", TRUE,
 #endif
         NULL);
@@ -1433,7 +1433,7 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   g_free (str);
 
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
   if (tp_connection_manager_protocol_can_register (proto))
     {
       gboolean active;
@@ -1642,7 +1642,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   GtkBuilder                   *gui;
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
   GtkWidget                    *action_area;
 #endif
 
@@ -1680,7 +1680,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 
   g_object_unref (gui);
 
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
   action_area = gtk_dialog_get_action_area (GTK_DIALOG (priv->window));
   gtk_widget_hide (action_area);
 

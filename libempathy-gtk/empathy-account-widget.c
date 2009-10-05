@@ -30,7 +30,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
 #include <nbtk/nbtk-gtk.h>
 #endif
 
@@ -621,7 +621,7 @@ account_widget_applied_cb (GObject *source_object,
           gboolean enabled_checked;
 
           enabled_checked =
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
             gtk_toggle_button_get_active (
                 GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
 #else
@@ -1057,30 +1057,30 @@ empathy_account_widget_enabled_cb (EmpathyAccount *account,
 
   if (priv->enabled_checkbox != NULL)
     {
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
           enabled);
 #else
       nbtk_gtk_light_switch_set_active (
           NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
           enabled);
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
     }
 }
 
 static void
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
 account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
     gpointer user_data)
 #else
 account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
     gboolean state,
     gpointer user_data)
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (user_data);
   EmpathyAccount *account;
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
   gboolean state;
 
   state = gtk_toggle_button_get_active (toggle_button);
@@ -1245,7 +1245,7 @@ do_constructed (GObject *obj)
       priv->apply_button = gtk_button_new_from_stock (
         priv->creating_account ? GTK_STOCK_CONNECT : GTK_STOCK_APPLY);
 
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
       if (priv->creating_account)
 	/* Translators: this is used only when built on a moblin platform */
 	gtk_button_set_label (GTK_BUTTON (priv->apply_button),
@@ -1289,7 +1289,7 @@ do_constructed (GObject *obj)
   /* handle the "Enabled" checkbox. We only add it when modifying an account */
   if (!priv->creating_account && priv->table_common_settings != NULL)
     {
-#ifdef HAVE_NBTK
+#ifdef HAVE_MOBLIN
       GtkWidget *w;
 #endif
       guint nb_rows, nb_columns;
@@ -1297,7 +1297,7 @@ do_constructed (GObject *obj)
 
       is_enabled = empathy_account_is_enabled (account);
 
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       priv->enabled_checkbox =
           gtk_check_button_new_with_label (_("Enabled"));
 
@@ -1314,7 +1314,7 @@ do_constructed (GObject *obj)
           NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
 
       gtk_widget_show (w);
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
 
       g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
           "n-columns", &nb_columns, NULL);
@@ -1322,7 +1322,7 @@ do_constructed (GObject *obj)
       gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
           nb_columns);
 
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       gtk_table_attach (GTK_TABLE (priv->table_common_settings),
           priv->enabled_checkbox,
           0, nb_columns, nb_rows - 1, nb_rows,
@@ -1336,17 +1336,17 @@ do_constructed (GObject *obj)
           priv->enabled_checkbox,
           1, nb_columns, nb_rows - 1, nb_rows,
           GTK_EXPAND | GTK_FILL, 0, 0, 0);
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
 
       gtk_widget_show (priv->enabled_checkbox);
 
-#ifndef HAVE_NBTK
+#ifndef HAVE_MOBLIN
       g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
           G_CALLBACK (account_widget_enabled_released_cb), self);
 #else
       g_signal_connect (G_OBJECT (priv->enabled_checkbox), "switch-flipped",
           G_CALLBACK (account_widget_switch_flipped_cb), self);
-#endif /* HAVE_NBTK */
+#endif /* HAVE_MOBLIN */
     }
 
   /* hook up to widget destruction to unref ourselves */

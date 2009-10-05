@@ -336,20 +336,22 @@ AC_ARG_ENABLE(moblin,
 
 if test "x$enable_moblin" != "xno"; then
     PKG_CHECK_MODULES(MOBLIN,
-    [nbtk-gtk-1.2], have_nbtk="yes", have_nbtk="no")
+    [
+       nbtk-gtk-1.2
+    ], have_moblin="yes", have_moblin="no")
 
-    if test "x$have_nbtk" = "xyes"; then
-       AC_DEFINE(HAVE_NBTK, 1, [Define if you have nbtk])
+    if test "x$have_moblin" = "xyes"; then
+       AC_DEFINE(HAVE_MOBLIN, 1, [Define if you have moblin])
     fi
 else
-   have_nbtk="no"
+   have_moblin="no"
 fi
 
-if test "x$enable_moblin" = "xyes" -a "x$have_nbtk" != "xyes"; then
+if test "x$enable_moblin" = "xyes" -a "x$have_moblin" != "xyes"; then
    AC_MSG_ERROR([Couldn't find moblin dependencies.])
 fi
 
-AM_CONDITIONAL(HAVE_NBTK, test "x$have_nbtk" = "xyes")
+AM_CONDITIONAL(HAVE_MOBLIN, test "x$have_moblin" = "xyes")
 AC_SUBST(MOBLIN_CFLAGS)
 AC_SUBST(MOBLIN_LIBS)
 
@@ -551,7 +553,7 @@ Configure summary:
 	Display maps (libchamplain).:  ${have_libchamplain}
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
-	Moblin widgets (Nbtk).......:  ${have_nbtk}
+	Moblin widgets .............:  ${have_moblin}
 
     Connectivity:
 	NetworkManager integration..:  ${have_nm}
