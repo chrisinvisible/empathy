@@ -453,7 +453,10 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	}
 
 	if (path == NULL) {
-		gdk_drag_status (context, 0, time_);
+		/* Coordinates don't point to an actual row, so make sure the pointer
+		   and highlighting don't indicate that a drag is possible.
+		 */
+		gdk_drag_status (context, GDK_ACTION_DEFAULT, time_);
 		gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
 		return FALSE;
 	}
@@ -461,6 +464,13 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	gtk_tree_model_get_iter (model, &iter, path);
 
 	if (target == GDK_NONE) {
+		/* If target == GDK_NONE, then we don't have a target that can be
+		   dropped on a contact.  This means a contact drag.  If we're
+		   pointing to a group, highlight it.  Otherwise, if the contact
+		   we're pointing to is in a group, highlight that.  Otherwise,
+		   set the drag position to before the first row for a drag into
+		   the "non-group" at the top.
+		 */
 		GtkTreeIter  group_iter;
 		gboolean     is_group;
 		GtkTreePath *group_path;
@@ -493,6 +503,9 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 		}
 	}
 	else {
+		/* This is a file drag, and it can only be dropped on contacts,
+		   not groups.
+		 */
 		EmpathyContact *contact;
 		gtk_tree_model_get (model, &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
@@ -502,6 +515,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
 							 path,
 							 GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+			g_object_unref (contact);
 		}
 		else {
 			gdk_drag_status (context, 0, time_);
