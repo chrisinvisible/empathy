@@ -238,6 +238,135 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 	}
 }
 
+static gboolean
+contact_list_view_contact_drag_received (GtkWidget         *view,
+					 GdkDragContext    *context,
+					 GtkTreeModel      *model,
+					 GtkTreePath       *path,
+					 GtkSelectionData  *selection)
+{
+	EmpathyContactListViewPriv *priv;
+	TpAccountManager           *account_manager;
+	EmpathyTpContactFactory    *factory = NULL;
+	TpAccount                  *account;
+	DndGetContactData          *data;
+	GtkTreePath                *source_path;
+	const gchar   *sel_data;
+	gchar        **strv = NULL;
+	const gchar   *account_id = NULL;
+	const gchar   *contact_id = NULL;
+	gchar         *new_group = NULL;
+	gchar         *old_group = NULL;
+	gboolean       success = TRUE;
+
+	priv = GET_PRIV (view);
+
+	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
+	new_group = empathy_contact_list_store_get_parent_group (model,
+								 path, NULL);
+
+	/* Get source group information. */
+	if (priv->drag_row) {
+		source_path = gtk_tree_row_reference_get_path (priv->drag_row);
+		if (source_path) {
+			old_group = empathy_contact_list_store_get_parent_group (
+										 model, source_path, NULL);
+			gtk_tree_path_free (source_path);
+		}
+	}
+
+	if (!tp_strdiff (old_group, new_group)) {
+		g_free (new_group);
+		g_free (old_group);
+		return FALSE;
+	}
+
+	account_manager = tp_account_manager_dup ();
+	strv = g_strsplit (sel_data, ":", 2);
+	if (g_strv_length (strv) == 2) {
+		account_id = strv[0];
+		contact_id = strv[1];
+		account = tp_account_manager_ensure_account (account_manager, account_id);
+	}
+	if (account) {
+		TpConnection *connection;
+
+		connection = tp_account_get_connection (account);
+		if (connection) {
+			factory = empathy_tp_contact_factory_dup_singleton (connection);
+		}
+	}
+	g_object_unref (account_manager);
+
+	if (!factory) {
+		DEBUG ("Failed to get factory for account '%s'", account_id);
+		success = FALSE;
+		g_free (new_group);
+		g_free (old_group);
+		return FALSE;
+	}
+
+	data = g_slice_new0 (DndGetContactData);
+	data->new_group = new_group;
+	data->old_group = old_group;
+	data->action = context->action;
+
+	/* FIXME: We should probably wait for the cb before calling
+	 * gtk_drag_finish */
+	empathy_tp_contact_factory_get_from_id (factory, contact_id,
+						contact_list_view_drag_got_contact,
+						data, (GDestroyNotify) contact_list_view_dnd_get_contact_free,
+						G_OBJECT (view));
+	g_strfreev (strv);
+	g_object_unref (factory);
+
+	return TRUE;
+}
+
+static gboolean
+contact_list_view_file_drag_received (GtkWidget         *view,
+				      GdkDragContext    *context,
+				      GtkTreeModel      *model,
+				      GtkTreePath       *path,
+				      GtkSelectionData  *selection)
+{
+	GtkTreeIter     iter;
+	const gchar    *sel_data;
+	const gchar    *nl;
+	gchar          *uri;
+	GFile          *file;
+	EmpathyContact *contact;
+
+	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
+
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_model_get (model, &iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    -1);
+	if (!contact) {
+		return FALSE;
+	}
+
+	nl = strstr (sel_data, "\r\n");
+	if (!nl) {
+		nl = strchr (sel_data, '\n');
+	}
+	if (nl) {
+		uri = g_strndup (sel_data, nl - sel_data);
+		file = g_file_new_for_uri (uri);
+		g_free (uri);
+	}
+	else {
+		file = g_file_new_for_uri (sel_data);
+	}
+
+	empathy_send_file (contact, file);
+
+	g_object_unref (file);
+
+	return TRUE;
+}
+
 static void
 contact_list_view_drag_data_received (GtkWidget         *view,
 				      GdkDragContext    *context,
@@ -247,23 +376,13 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 				      guint              info,
 				      guint              time_)
 {
-	EmpathyContactListViewPriv *priv;
 	GtkTreeModel               *model;
-	gboolean                    success = TRUE;
-	const gchar                *sel_data;
-	gchar                     **strv = NULL;
 	gboolean                    is_row;
 	GtkTreeViewDropPosition     position;
 	GtkTreePath                *path;
+	gboolean                    success = TRUE;
 
-	priv = GET_PRIV (view);
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
-
-	sel_data = (const gchar*) gtk_selection_data_get_data (selection);
-	DEBUG ("Received %s%s drag & drop contact from roster with id:'%s'",
-	       context->action == GDK_ACTION_MOVE ? "move" : "",
-	       context->action == GDK_ACTION_COPY ? "copy" : "",
-	       sel_data);
 
 	/* Get destination group information. */
 	is_row = gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (view),
@@ -273,119 +392,23 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 						    &position);
 	if (!is_row) {
 		success = FALSE;
-		goto OUT;
 	}
-
-	if (info == DND_DRAG_TYPE_CONTACT_ID || info == DND_DRAG_TYPE_STRING) {
-		TpAccountManager           *account_manager;
-		EmpathyTpContactFactory    *factory = NULL;
-		TpAccount                  *account = NULL;
-		const gchar                *account_id = NULL;
-		const gchar                *contact_id = NULL;
-		gchar                      *new_group = NULL;
-		gchar                      *old_group = NULL;
-		DndGetContactData          *data;
-		new_group = empathy_contact_list_store_get_parent_group (model,
-									 path, NULL);
-		gtk_tree_path_free (path);
-		path = NULL;
-
-		/* Get source group information. */
-		if (priv->drag_row) {
-			path = gtk_tree_row_reference_get_path (priv->drag_row);
-			if (path) {
-				old_group = empathy_contact_list_store_get_parent_group (
-											 model, path, NULL);
-				gtk_tree_path_free (path);
-				path = NULL;
-			}
-		}
-
-		if (!tp_strdiff (old_group, new_group)) {
-			g_free (new_group);
-			g_free (old_group);
-			goto OUT;
-		}
-
-		/* FIXME: should probably make sure the account manager is prepared
-		 * before calling _ensure_account on it. See bug 600115. */
-		account_manager = tp_account_manager_dup ();
-		strv = g_strsplit (sel_data, ":", 2);
-		if (g_strv_length (strv) == 2) {
-			account_id = strv[0];
-			contact_id = strv[1];
-			account = tp_account_manager_ensure_account (account_manager, account_id);
-		}
-		if (account) {
-			TpConnection *connection;
-
-			connection = tp_account_get_connection (account);
-			if (connection) {
-				factory = empathy_tp_contact_factory_dup_singleton (connection);
-			}
-			g_object_unref (account_manager);
-
-			if (!factory) {
-				DEBUG ("Failed to get factory for account '%s'", account_id);
-				success = FALSE;
-				g_free (new_group);
-				g_free (old_group);
-				goto OUT;
-			}
-		}
-
-		data = g_slice_new0 (DndGetContactData);
-		data->new_group = new_group;
-		data->old_group = old_group;
-		data->action = context->action;
-
-		/* FIXME: We should probably wait for the cb before calling
-		 * gtk_drag_finish */
-		empathy_tp_contact_factory_get_from_id (factory, contact_id,
-							contact_list_view_drag_got_contact,
-							data, (GDestroyNotify) contact_list_view_dnd_get_contact_free,
-							G_OBJECT (view));
-
-		g_object_unref (factory);
+	else if (info == DND_DRAG_TYPE_CONTACT_ID || info == DND_DRAG_TYPE_STRING) {
+		success = contact_list_view_contact_drag_received (view,
+								   context,
+								   model,
+								   path,
+								   selection);
 	}
 	else if (info == DND_DRAG_TYPE_URI_LIST) {
-		GtkTreeIter iter;
-		const gchar  *nl;
-		gchar        *uri;
-		GFile        *file;
-		EmpathyContact *contact;
-
-		gtk_tree_model_get_iter (model, &iter, path);
-		gtk_tree_model_get (model, &iter,
-				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
-				    -1);
-		if (!contact) {
-			success = FALSE;
-			goto OUT;
-		}
-
-		nl = strstr (sel_data, "\r\n");
-		if (!nl) {
-			nl = strchr (sel_data, '\n');
-		}
-		if (nl) {
-			uri = g_strndup (sel_data, nl - sel_data);
-			file = g_file_new_for_uri (uri);
-			g_free (uri);
-		}
-		else {
-			file = g_file_new_for_uri (sel_data);
-		}
-
-		empathy_send_file (contact, file);
-
-		g_object_unref (file);
-		gtk_drag_finish (context, TRUE, FALSE, time_);
+		success = contact_list_view_file_drag_received (view,
+								context,
+								model,
+								path,
+								selection);
 	}
 
-OUT:
 	gtk_tree_path_free (path);
-	g_strfreev (strv);
 	gtk_drag_finish (context, success, FALSE, GDK_CURRENT_TIME);
 }
 
