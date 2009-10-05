@@ -927,15 +927,6 @@
   (return-type "GList*")
 )
 
-(define-method remove
-  (of-object "EmpathyAccountManager")
-  (c-name "empathy_account_manager_remove")
-  (return-type "none")
-  (parameters
-    '("EmpathyAccount*" "account")
-  )
-)
-
 (define-method request_global_presence
   (of-object "EmpathyAccountManager")
   (c-name "empathy_account_manager_request_global_presence")
@@ -3462,12 +3453,6 @@
   (of-object "EmpathyTpContactList")
   (c-name "empathy_tp_contact_list_get_connection")
   (return-type "TpConnection*")
-)
-
-(define-method can_add
-  (of-object "EmpathyTpContactList")
-  (c-name "empathy_tp_contact_list_can_add")
-  (return-type "gboolean")
 )
 
 (define-method remove_all

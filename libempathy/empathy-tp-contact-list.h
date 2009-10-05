@@ -51,7 +51,6 @@ struct _EmpathyTpContactListClass {
 GType                  empathy_tp_contact_list_get_type    (void) G_GNUC_CONST;
 EmpathyTpContactList * empathy_tp_contact_list_new         (TpConnection         *connection);
 TpConnection *         empathy_tp_contact_list_get_connection (EmpathyTpContactList *list);
-gboolean               empathy_tp_contact_list_can_add     (EmpathyTpContactList *list);
 void                   empathy_tp_contact_list_remove_all  (EmpathyTpContactList *list);
 
 G_END_DECLS
