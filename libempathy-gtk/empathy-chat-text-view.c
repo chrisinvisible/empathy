@@ -1180,6 +1180,8 @@ chat_text_view_copy_clipboard (EmpathyChatView *view)
 
 	for (iter = start; !gtk_text_iter_equal (&iter, &end); gtk_text_iter_forward_char (&iter)) {
 		c = gtk_text_iter_get_char (&iter);
+		/* 0xFFFC is the 'object replacement' unicode character,
+		 * it indicates the presence of a pixbuf or a widget. */
 		if (c == 0xFFFC) {
 			ignore_newlines = FALSE;
 			if ((pixbuf = gtk_text_iter_get_pixbuf (&iter))) {
@@ -1210,7 +1212,8 @@ chat_text_view_copy_clipboard (EmpathyChatView *view)
 		}
 	}
 
-	gtk_clipboard_set_text (clipboard, g_string_free (str, FALSE), str->len);
+	gtk_clipboard_set_text (clipboard, str->str, str->len);
+	g_string_free (str, TRUE)
 }
 
 static void
