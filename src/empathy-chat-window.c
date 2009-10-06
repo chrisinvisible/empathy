@@ -80,7 +80,8 @@ typedef struct {
 	NotifyNotification *notification;
 	NotificationData *notification_data;
 
-	GtkTargetList *move_targets;
+	GtkTargetList *contact_targets;
+	GtkTargetList *file_targets;
 
 	/* Menu items. */
 	GtkUIManager *ui_manager;
@@ -118,8 +119,12 @@ static const GtkTargetEntry drag_types_dest[] = {
 	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
-static const GtkTargetEntry drag_types_dest_move[] = {
-	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
+static const GtkTargetEntry drag_types_dest_contact[] = {
+	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
+};
+
+static const GtkTargetEntry drag_types_dest_file[] = {
+	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
 static void chat_window_update (EmpathyChatWindow *window);
@@ -1329,7 +1334,7 @@ chat_window_focus_in_event_cb (GtkWidget        *widget,
 	return FALSE;
 }
 
-static void
+static gboolean
 chat_window_drag_motion (GtkWidget        *widget,
 			 GdkDragContext   *context,
 			 int               x,
@@ -1339,20 +1344,51 @@ chat_window_drag_motion (GtkWidget        *widget,
 {
 	GdkAtom target;
 	EmpathyChatWindowPriv *priv;
+	GdkAtom dest_target;
 
 	priv = GET_PRIV (window);
 
-	target = gtk_drag_dest_find_target (widget, context, priv->move_targets);
-	/* If target != GDK_NONE, this target type is a type we should move
-	   instead of copy.  That's a notebook tab.  Other drag types, such
-	   as files or contacts, use copy.
-	 */
-	if (target == GDK_NONE) {
+	target = gtk_drag_dest_find_target (widget, context, NULL);
+
+	dest_target = gdk_atom_intern_static_string ("text/uri-list");
+	if (target == dest_target) {
+		/* This is a file drag.  Ensure the contact is online and set the
+		   drag type to COPY.  Note that it's possible that the tab will
+		   be switched by GTK+ after a timeout from drag_motion without
+		   getting another drag_motion to disable the drop.  You have
+		   to hold your mouse really still.
+		 */
+		EmpathyContact *contact;
+
+		priv = GET_PRIV (window);
+		contact = empathy_chat_get_remote_contact (priv->current_chat);
+		if (!empathy_contact_is_online (contact)) {
+			gdk_drag_status (context, 0, time);
+			return FALSE;
+		}
+		if (!(empathy_contact_get_capabilities (contact)
+			   & EMPATHY_CAPABILITIES_FT)) {
+			gdk_drag_status (context, 0, time);
+			return FALSE;
+		}
 		gdk_drag_status (context, GDK_ACTION_COPY, time);
+		return TRUE;
 	}
-	else {
-		gdk_drag_status (context, GDK_ACTION_MOVE, time);
+
+	dest_target = gdk_atom_intern_static_string ("text/contact-id");
+	if (target == dest_target) {
+		/* This is a drag of a contact from a contact list.  Set to COPY.
+		   FIXME: If this drag is to a MUC window, it invites the user.
+		   Otherwise, it opens a chat.  Should we use a different drag
+		   type for invites?  Should we allow ASK?
+		 */
+		gdk_drag_status (context, GDK_ACTION_COPY, time);
+		return TRUE;
 	}
+
+	/* Otherwise, it must be a notebook tab drag.  Set to MOVE. */
+	gdk_drag_status (context, GDK_ACTION_MOVE, time);
+	return TRUE;
 }
 
 static void
@@ -1517,8 +1553,11 @@ chat_window_finalize (GObject *object)
 			}
 	}
 
-	if (priv->move_targets) {
-		gtk_target_list_unref (priv->move_targets);
+	if (priv->contact_targets) {
+		gtk_target_list_unref (priv->contact_targets);
+	}
+	if (priv->file_targets) {
+		gtk_target_list_unref (priv->file_targets);
 	}
 
 	chat_windows = g_list_remove (chat_windows, window);
@@ -1633,8 +1672,10 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	g_object_unref (accel_group);
 
 	/* Set up drag target lists */
-	priv->move_targets = gtk_target_list_new (drag_types_dest_move,
-						  G_N_ELEMENTS (drag_types_dest_move));
+	priv->contact_targets = gtk_target_list_new (drag_types_dest_contact,
+						     G_N_ELEMENTS (drag_types_dest_contact));
+	priv->file_targets = gtk_target_list_new (drag_types_dest_file,
+						  G_N_ELEMENTS (drag_types_dest_file));
 
 	/* Set up smiley menu */
 	smiley_manager = empathy_smiley_manager_dup_singleton ();
@@ -1678,10 +1719,11 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			   G_N_ELEMENTS (drag_types_dest),
 			   GDK_ACTION_MOVE | GDK_ACTION_COPY);
 
-	g_signal_connect (priv->notebook,
-			  "drag-motion",
-			  G_CALLBACK (chat_window_drag_motion),
-			  window);
+	/* connect_after to allow GtkNotebook's built-in tab switching */
+	g_signal_connect_after (priv->notebook,
+				"drag-motion",
+				G_CALLBACK (chat_window_drag_motion),
+				window);
 	g_signal_connect (priv->notebook,
 			  "drag-data-received",
 			  G_CALLBACK (chat_window_drag_data_received),
