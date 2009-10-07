@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-20 09:04+0300\n"
-"PO-Revision-Date: 2009-09-15 16:47+0300\n"
+"POT-Creation-Date: 2009-10-07 07:34+0300\n"
+"PO-Revision-Date: 2009-10-07 07:39+0300\n"
 "Last-Translator: Yavor Doganov <yavor@gnu.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgid "Connection managers should be used"
 msgstr "Да се използва управление на връзката"
 
 #: ../data/empathy.schemas.in.h:7
-msgid "Contact list sort criterium"
+msgid "Contact list sort criterion"
 msgstr "Критерий за подредбата на списъка с контактите"
 
 #: ../data/empathy.schemas.in.h:8
@@ -443,7 +443,7 @@ msgstr "Дали да се ползва графична тема за стаи�
 
 #: ../data/empathy.schemas.in.h:86
 msgid ""
-"Which criterium to use when sorting the contact list. Default is to use sort "
+"Which criterion to use when sorting the contact list. Default is to use sort "
 "by the contact's name with the value \"name\". A value of \"state\" will "
 "sort the contact list by state."
 msgstr ""
@@ -475,7 +475,7 @@ msgstr "Избраният файл е празен"
 # доста объркващо, защото контакти от локалната мрежа не е задължително
 # да са наблизо, както и контакти от други мрежи може да са съвсем
 # наблизо.
-#: ../libempathy/empathy-tp-contact-list.c:844 ../src/empathy.c:285
+#: ../libempathy/empathy-tp-contact-list.c:844 ../src/empathy.c:276
 msgid "People nearby"
 msgstr "Хора наблизо"
 
@@ -596,15 +596,28 @@ msgstr "в бъдеще"
 msgid "All"
 msgstr "Всички"
 
-#: ../libempathy-gtk/empathy-account-widget.c:430
-#: ../libempathy-gtk/empathy-account-widget.c:486
+#: ../libempathy-gtk/empathy-account-widget.c:433
+#: ../libempathy-gtk/empathy-account-widget.c:489
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1264
+#: ../libempathy-gtk/empathy-account-widget.c:1252
+msgid "L_og in"
+msgstr "_Включване в мрежата"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1302
 msgid "Enabled"
 msgstr "Включена"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../libempathy-gtk/empathy-account-widget.c:1308
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
+#: ../src/empathy-chatrooms-window.ui.h:1
+#: ../src/empathy-new-chatroom-dialog.ui.h:1
+msgid "Account:"
+msgstr "Регистрация:"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
@@ -1029,15 +1042,15 @@ msgstr " (%s)"
 msgid "%s has joined the room"
 msgstr "%s влезе в стаята"
 
-#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1285
+#: ../libempathy-gtk/empathy-chat.c:1366 ../src/empathy-call-window.c:1295
 msgid "Disconnected"
 msgstr "Изключен"
 
-#: ../libempathy-gtk/empathy-chat.c:1803
+#: ../libempathy-gtk/empathy-chat.c:1802
 msgid "Connected"
 msgstr "Свързан"
 
-#: ../libempathy-gtk/empathy-chat.c:1853
+#: ../libempathy-gtk/empathy-chat.c:1852
 #: ../libempathy-gtk/empathy-log-window.c:502
 msgid "Conversation"
 msgstr "Разговор"
@@ -1065,6 +1078,9 @@ msgid "%A %B %d %Y"
 msgstr "%d.%m.%Y, %A"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:177
+msgid "Contact Informations"
+msgstr "Данни за контакта"
+
 #: ../libempathy-gtk/empathy-contact-dialogs.c:236
 msgid "Edit Contact Information"
 msgstr "Редактиране на данните за контакта"
@@ -1294,13 +1310,6 @@ msgstr "%e %B, %Y в %R UTC"
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:1
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Местоположение</b> на (дата)\t"
-
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
-#: ../src/empathy-chatrooms-window.ui.h:1
-#: ../src/empathy-new-chatroom-dialog.ui.h:1
-msgid "Account:"
-msgstr "Регистрация:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
@@ -1764,6 +1773,22 @@ msgstr "Настройте контакт."
 msgid "Select contact..."
 msgstr "Избор на контакт…"
 
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:141
+msgid "The contact selected cannot receive files."
+msgstr "Избраният контакт не може да получава файлове."
+
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:147
+msgid "The contact selected is offline."
+msgstr "Избраният контакт е извън мрежата"
+
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:202
+msgid "No error message"
+msgstr "Липсва съобщение за грешка"
+
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:278
+msgid "Instant Message (Empathy)"
+msgstr "Моментно съобщение (Empathy)"
+
 #: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:1
 msgid "Presence"
 msgstr "Присъствие"
@@ -1773,23 +1798,23 @@ msgstr "Присъствие"
 msgid "Set your own presence"
 msgstr "Задайте присъствието си"
 
-#: ../src/empathy.c:742
+#: ../src/empathy.c:754
 msgid "Don't connect on startup"
 msgstr "Без автоматично свързване при стартиране"
 
-#: ../src/empathy.c:746
+#: ../src/empathy.c:758
 msgid "Don't show the contact list on startup"
 msgstr ""
 "Без показване на списъка с контакти при\n"
 "                                    стартиране"
 
-#: ../src/empathy.c:750
+#: ../src/empathy.c:762
 msgid "Show the accounts dialog"
 msgstr ""
 "Показване на диалоговия прозорец за\n"
 "                                    регистрации"
 
-#: ../src/empathy.c:762
+#: ../src/empathy.c:774
 msgid "- Empathy IM Client"
 msgstr "— моментни съобщения с Empathy"
 
@@ -1881,7 +1906,7 @@ msgstr "Възникна грешка"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1400
+#: ../src/empathy-accounts-dialog.c:1434
 #, c-format
 msgid "New %s account"
 msgstr "Нова регистрация в %s"
@@ -1977,23 +2002,23 @@ msgstr "Има незапазени промени относно регистр
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../src/empathy-accounts-dialog.c:236
+#: ../src/empathy-accounts-dialog.c:237
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s на %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../src/empathy-accounts-dialog.c:248
+#: ../src/empathy-accounts-dialog.c:249
 #, c-format
 msgid "%s Account"
 msgstr "Регистрация в %s"
 
-#: ../src/empathy-accounts-dialog.c:252
+#: ../src/empathy-accounts-dialog.c:253
 msgid "New account"
 msgstr "Нова регистрация"
 
-#: ../src/empathy-accounts-dialog.c:502
+#: ../src/empathy-accounts-dialog.c:517
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2001,7 +2026,7 @@ msgstr ""
 "На път сте да създадете нова регистрация, което ще анулира\n"
 "промените ви. Искате ли да продължите?"
 
-#: ../src/empathy-accounts-dialog.c:787
+#: ../src/empathy-accounts-dialog.c:803
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -2010,7 +2035,13 @@ msgstr ""
 "На път сте да изтриете регистрацията „%s“.\n"
 "Искате ли да продължите?"
 
-#: ../src/empathy-accounts-dialog.c:792
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:807
+#, c-format
+msgid "Do you want to remove %s from your computer?"
+msgstr "Сигурни ли сте, че искате да изтриете регистрацията „%s“?"
+
+#: ../src/empathy-accounts-dialog.c:813
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -2023,7 +2054,12 @@ msgstr ""
 "\n"
 "Те ще бъдат достъпни, ако решите да отново да я добавите."
 
-#: ../src/empathy-accounts-dialog.c:980
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:820
+msgid "This will not remove your account on the server."
+msgstr "Това няма да изтрие регистрацията ви от сървъра."
+
+#: ../src/empathy-accounts-dialog.c:1011
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2031,13 +2067,18 @@ msgstr ""
 "На път сте да изберете друга регистрация, което ще анулира\n"
 "промените ви. Искате ли да продължите?"
 
-#: ../src/empathy-accounts-dialog.c:1475
+#: ../src/empathy-accounts-dialog.c:1523
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
 "На път сте да затворите прозореца, което ще анулира\n"
 "промените ви. Искате ли да продължите?"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../src/empathy-accounts-dialog.c:1691
+msgid "_Next"
+msgstr "_Следващ"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2075,10 +2116,14 @@ msgid "_Create a new account"
 msgstr "_Създаване на нова регистрация"
 
 #: ../src/empathy-accounts-dialog.ui.h:8
+msgid "_Import..."
+msgstr "_Внасяне…"
+
+#: ../src/empathy-accounts-dialog.ui.h:9
 msgid "_Reuse an existing account"
 msgstr "_Използване на съществуваща регистрация"
 
-#: ../src/empathy-accounts-dialog.ui.h:9
+#: ../src/empathy-accounts-dialog.ui.h:10
 msgid "account"
 msgstr "регистрация"
 
@@ -2127,12 +2172,12 @@ msgstr "Разговор с %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:944
+#: ../src/empathy-call-window.c:954
 msgid "Call"
 msgstr "Разговор"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1445
+#: ../src/empathy-call-window.c:1455
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Връзка — %d:%02dm"
@@ -2250,75 +2295,75 @@ msgstr "Автоматично свързване"
 msgid "Manage Favorite Rooms"
 msgstr "Управление на стаите в отметките"
 
-#: ../src/empathy-event-manager.c:322
+#: ../src/empathy-event-manager.c:329
 msgid "Incoming call"
 msgstr "Входящ разговор"
 
-#: ../src/empathy-event-manager.c:325
+#: ../src/empathy-event-manager.c:332
 #, c-format
 msgid "%s is calling you, do you want to answer?"
 msgstr "%s ви търси, искате ли да отговорите?"
 
-#: ../src/empathy-event-manager.c:332
+#: ../src/empathy-event-manager.c:339
 msgid "_Reject"
 msgstr "От_казване"
 
-#: ../src/empathy-event-manager.c:338
+#: ../src/empathy-event-manager.c:345
 msgid "_Answer"
 msgstr "_Отговаряне"
 
-#: ../src/empathy-event-manager.c:453
+#: ../src/empathy-event-manager.c:454
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Входящ разговор от %s"
 
-#: ../src/empathy-event-manager.c:497
+#: ../src/empathy-event-manager.c:498
 #, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s ви праща покана"
 
-#: ../src/empathy-event-manager.c:503
+#: ../src/empathy-event-manager.c:504
 msgid "An external application will be started to handle it."
 msgstr "За обработката ѝ ще бъде стартирана външна програма."
 
-#: ../src/empathy-event-manager.c:508
+#: ../src/empathy-event-manager.c:509
 msgid "You don't have the needed external application to handle it."
 msgstr "Липсва външната програма за обработката ѝ."
 
-#: ../src/empathy-event-manager.c:635
+#: ../src/empathy-event-manager.c:637
 msgid "Room invitation"
 msgstr "Покана за стая"
 
-#: ../src/empathy-event-manager.c:638
+#: ../src/empathy-event-manager.c:640
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s ви кани да се присъедините към %s"
 
-#: ../src/empathy-event-manager.c:646
+#: ../src/empathy-event-manager.c:648
 msgid "_Decline"
 msgstr "_Отказване"
 
-#: ../src/empathy-event-manager.c:651
+#: ../src/empathy-event-manager.c:653
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Присъединяване"
 
-#: ../src/empathy-event-manager.c:690
+#: ../src/empathy-event-manager.c:692
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s ви кани да се присъедините към %s"
 
-#: ../src/empathy-event-manager.c:716
+#: ../src/empathy-event-manager.c:718
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Входящ файл от %s"
 
-#: ../src/empathy-event-manager.c:896
+#: ../src/empathy-event-manager.c:898
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Искане за записване от %s"
 
-#: ../src/empathy-event-manager.c:900
+#: ../src/empathy-event-manager.c:902
 #, c-format
 msgid ""
 "\n"
@@ -2328,13 +2373,13 @@ msgstr ""
 "Съобщение: %s"
 
 #. someone is logging off
-#: ../src/empathy-event-manager.c:936
+#: ../src/empathy-event-manager.c:939
 #, c-format
 msgid "%s is now offline."
 msgstr "%s в момента е извън мрежата."
 
 #. someone is logging in
-#: ../src/empathy-event-manager.c:952
+#: ../src/empathy-event-manager.c:955
 #, c-format
 msgid "%s is now online."
 msgstr "%s в момента е в мрежата."
@@ -2726,86 +2771,74 @@ msgid "Language"
 msgstr "Език"
 
 #: ../src/empathy-preferences.ui.h:1
-msgid "Allow _GPS usage"
-msgstr "_Ползване на GPS"
-
-#: ../src/empathy-preferences.ui.h:2
-msgid "Allow _cellphone usage"
-msgstr "Ползване на мобилни _телефони"
-
-#: ../src/empathy-preferences.ui.h:3
-msgid "Allow _network usage"
-msgstr "Ползване на _мрежа"
-
-#: ../src/empathy-preferences.ui.h:4
 msgid "Appearance"
 msgstr "Изглед"
 
-#: ../src/empathy-preferences.ui.h:5
+#: ../src/empathy-preferences.ui.h:2
 msgid "Automatically _connect on startup "
 msgstr "_Автоматично свързване при стартиране"
 
-#: ../src/empathy-preferences.ui.h:6
+#: ../src/empathy-preferences.ui.h:3
 msgid "Behavior"
 msgstr "Поведение"
 
-#: ../src/empathy-preferences.ui.h:7
+#: ../src/empathy-preferences.ui.h:4
 msgid "Chat Th_eme:"
 msgstr "_Тема за прозорците за разговори:"
 
-#: ../src/empathy-preferences.ui.h:8
+#: ../src/empathy-preferences.ui.h:5
 msgid "Disable notifications when _away or busy"
 msgstr "Без _известяване в състояние „Зает“ или „Отсъстващ“"
 
-#: ../src/empathy-preferences.ui.h:9
+#: ../src/empathy-preferences.ui.h:6
 msgid "Disable sounds when _away or busy"
 msgstr "Без _звуци в състояние „Зает“ или „Отсъстващ“"
 
-#: ../src/empathy-preferences.ui.h:10
+#: ../src/empathy-preferences.ui.h:7
 msgid "Enable notifications when a contact comes online"
 msgstr "Известяване, когато контактът влезе в мрежата"
 
-#: ../src/empathy-preferences.ui.h:11
+#: ../src/empathy-preferences.ui.h:8
 msgid "Enable notifications when a contact goes offline"
 msgstr "Известяване, когато контактът излезе извън мрежата"
 
-#: ../src/empathy-preferences.ui.h:12
+#: ../src/empathy-preferences.ui.h:9
 msgid "Enable notifications when the _chat is not focused"
 msgstr "Известяване, когато прозорецът за разговори не е на _фокус"
 
-#: ../src/empathy-preferences.ui.h:13
+#: ../src/empathy-preferences.ui.h:10
 msgid "Enable spell checking for languages:"
 msgstr "Езици с проверка на правописа:"
 
-#: ../src/empathy-preferences.ui.h:14
+#: ../src/empathy-preferences.ui.h:11
 msgid "General"
 msgstr "Общи"
 
-#: ../src/empathy-preferences.ui.h:15
-msgid "Geoclue Settings"
-msgstr "Настройки за местоположението"
-
-#: ../src/empathy-preferences.ui.h:16
+#: ../src/empathy-preferences.ui.h:12
 msgid "Location"
 msgstr "Местоположение"
 
-#: ../src/empathy-preferences.ui.h:17
+#: ../src/empathy-preferences.ui.h:13
+msgid "Location sources:"
+msgstr "Датчик за местоположение:"
+
+#: ../src/empathy-preferences.ui.h:14
 msgid "Notifications"
 msgstr "Известяване"
 
-#: ../src/empathy-preferences.ui.h:18
+#: ../src/empathy-preferences.ui.h:15
 msgid "Play sound for events"
 msgstr "Звуци при събития"
 
-#: ../src/empathy-preferences.ui.h:19
+#: ../src/empathy-preferences.ui.h:16
 msgid "Preferences"
 msgstr "Настройки"
 
-#: ../src/empathy-preferences.ui.h:20
+#: ../src/empathy-preferences.ui.h:17
 msgid "Privacy"
 msgstr "Лични данни"
 
-#: ../src/empathy-preferences.ui.h:21
+#: ../src/empathy-preferences.ui.h:18
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
@@ -2815,39 +2848,51 @@ msgstr ""
 "точни данни от град, щат, държава. Координатите от GPS ще са точни до едно "
 "място зад десетичната запетая."
 
-#: ../src/empathy-preferences.ui.h:22
+#: ../src/empathy-preferences.ui.h:19
 msgid "Show _smileys as images"
 msgstr "Използване на _картинки за емотикони"
 
-#: ../src/empathy-preferences.ui.h:23
+#: ../src/empathy-preferences.ui.h:20
 msgid "Show contact _list in rooms"
 msgstr "_Показване на контактите в стаите"
 
-#: ../src/empathy-preferences.ui.h:24
+#: ../src/empathy-preferences.ui.h:21
 msgid "Sounds"
 msgstr "Звуци"
 
-#: ../src/empathy-preferences.ui.h:25
+#: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
 msgstr "Проверка на правописа"
 
-#: ../src/empathy-preferences.ui.h:26
+#: ../src/empathy-preferences.ui.h:23
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
 msgstr "В списъка са само езиците, за които е инсталиран речник."
 
-#: ../src/empathy-preferences.ui.h:27
+#: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
 msgstr "Графични теми"
 
-#: ../src/empathy-preferences.ui.h:28
+#: ../src/empathy-preferences.ui.h:25
+msgid "_Cellphone"
+msgstr "_Мобилен телефон"
+
+#: ../src/empathy-preferences.ui.h:26
 msgid "_Enable bubble notifications"
 msgstr "Включване на известяването с _прозорци"
 
-#: ../src/empathy-preferences.ui.h:29
+#: ../src/empathy-preferences.ui.h:27
 msgid "_Enable sound notifications"
 msgstr "Включване на уведомяването със _звук"
+
+#: ../src/empathy-preferences.ui.h:28
+msgid "_GPS"
+msgstr "_GPS"
+
+#: ../src/empathy-preferences.ui.h:29
+msgid "_Network (IP, Wifi)"
+msgstr "_Мрежа (IP, Wifi)"
 
 #: ../src/empathy-preferences.ui.h:30
 msgid "_Open new chats in separate windows"
@@ -2860,6 +2905,10 @@ msgstr "_Публикуване на местоположението ви къ�
 #: ../src/empathy-preferences.ui.h:32
 msgid "_Reduce location accuracy"
 msgstr "_Ниска точност на местоположението"
+
+#: ../src/empathy-status-icon.c:175
+msgid "Respond"
+msgstr "Отговаряне"
 
 #: ../src/empathy-status-icon.ui.h:1
 msgid "Status"
@@ -2951,3 +3000,15 @@ msgid ""
 msgstr ""
 "Избраната програма за управление на връзките не поддържа разширението за "
 "отдалечено изчистване на грешки."
+
+#~ msgid "Allow _GPS usage"
+#~ msgstr "_Ползване на GPS"
+
+#~ msgid "Allow _cellphone usage"
+#~ msgstr "Ползване на мобилни _телефони"
+
+#~ msgid "Allow _network usage"
+#~ msgstr "Ползване на _мрежа"
+
+#~ msgid "Geoclue Settings"
+#~ msgstr "Настройки за местоположението"
