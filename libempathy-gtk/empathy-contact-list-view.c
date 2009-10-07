@@ -505,7 +505,9 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 		gtk_tree_model_get (model, &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
 				    -1);
-		if (contact) {
+		if (contact != NULL &&
+		    empathy_contact_is_online (contact) &&
+		    (empathy_contact_get_capabilities (contact) & EMPATHY_CAPABILITIES_FT)) {
 			gdk_drag_status (context, GDK_ACTION_COPY, time_);
 			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
 							 path,
