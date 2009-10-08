@@ -1213,7 +1213,7 @@ chat_text_view_copy_clipboard (EmpathyChatView *view)
 	}
 
 	gtk_clipboard_set_text (clipboard, str->str, str->len);
-	g_string_free (str, TRUE)
+	g_string_free (str, TRUE);
 }
 
 static void
