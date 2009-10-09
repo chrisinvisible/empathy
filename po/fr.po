@@ -19,13 +19,14 @@
 # Yannick Tailliez <ytdispatch-libre@yahoo.com>, 2008.
 # Laurent Coudeur <laurentc@iol.ie>, 2009.
 # Bruno Brouard <annoa.b@gmail.com>, 2009.
+# Emmanuel Sunyer <emmanuel.sunyer@dbmail.com>
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-08-31 22:09+0200\n"
-"PO-Revision-Date: 2009-08-31 22:16+0200\n"
+"PO-Revision-Date: 2009-10-09 23:14+0200\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +78,7 @@ msgstr ""
 
 #: ../data/empathy.schemas.in.h:5
 msgid "Compact contact list"
-msgstr "Liste compacte de contacts"
+msgstr "Liste des contacts compacte"
 
 #: ../data/empathy.schemas.in.h:6
 msgid "Connection managers should be used"
@@ -85,7 +86,7 @@ msgstr "Les gestionnaires de connexion doivent être utilisés"
 
 #: ../data/empathy.schemas.in.h:7
 msgid "Contact list sort criterium"
-msgstr "Critère de tri pour la liste de contacts"
+msgstr "Critère de tri pour la liste des contacts"
 
 #: ../data/empathy.schemas.in.h:8
 msgid "Default directory to select an avatar image from"
@@ -93,7 +94,7 @@ msgstr "Répertoire par défaut où choisir un avatar"
 
 #: ../data/empathy.schemas.in.h:9
 msgid "Disable popup notifications when away"
-msgstr "Désactiver les popups de notification en mode absent"
+msgstr "Désactiver les bulles de notification en mode absent"
 
 #: ../data/empathy.schemas.in.h:10
 msgid "Disable sounds when away"
@@ -481,7 +482,7 @@ msgid ""
 "sort the contact list by state."
 msgstr ""
 "Quel critère utiliser pour le tri de la liste des contacts. Le comportement "
-"par défaut est de trier selon le nom du contact (valeur: « name »).  Une "
+"par défaut est de trier selon le nom du contact (valeur : « name »).  Une "
 "valeur « state » triera la liste des contacts selon leur état."
 
 #: ../libempathy/empathy-account.c:1158
@@ -525,11 +526,11 @@ msgstr "Le changement d'état a été demandé"
 
 #: ../libempathy/empathy-tp-file.c:405
 msgid "You canceled the file transfer"
-msgstr "Vous avez annulé le transfert de fichiers"
+msgstr "Vous avez annulé le transfert de fichier"
 
 #: ../libempathy/empathy-tp-file.c:408
 msgid "The other participant canceled the file transfer"
-msgstr "Le correspondant a annulé le transfert de fichiers"
+msgstr "Le correspondant a annulé le transfert de fichier"
 
 #: ../libempathy/empathy-tp-file.c:411
 msgid "Error while trying to transfer the file"
@@ -891,7 +892,7 @@ msgstr "_Nom d'utilisateur :"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
 msgid "Use _Yahoo Japan"
-msgstr "Utiliser _Yahoo Japan"
+msgstr "Utiliser _Yahoo! Japan"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "What is your Yahoo! ID?"
@@ -903,7 +904,7 @@ msgstr "Quel est votre mot de passe Yahoo! ?"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "Yahoo I_D:"
-msgstr "I_dentifiant Yahoo :"
+msgstr "I_dentifiant Yahoo! :"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "_Ignore conference and chatroom invitations"
@@ -1117,7 +1118,7 @@ msgstr "Requête d'abonnement"
 #: ../libempathy-gtk/empathy-contact-list-view.c:1412
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
-msgstr "Voulez-vous réellement supprimer le groupe « %s » ?"
+msgstr "Voulez-vous vraiment supprimer le groupe « %s » ?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1414
 msgid "Removing group"
@@ -1132,7 +1133,7 @@ msgstr "_Supprimer"
 #: ../libempathy-gtk/empathy-contact-list-view.c:1491
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
-msgstr "Voulez-vous réellement supprimer le contact « %s » ?"
+msgstr "Voulez-vous vraiment supprimer le contact « %s » ?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1493
 msgid "Removing contact"
@@ -1181,11 +1182,11 @@ msgstr "É_dition"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:501
 msgid "Inviting to this room"
-msgstr "Inviter à ce salon"
+msgstr "Inviter à cette salle"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:532
 msgid "_Invite to chatroom"
-msgstr "_Inviter à un salon de discussion"
+msgstr "_Inviter à une salle de discussion"
 
 #: ../libempathy-gtk/empathy-contact-selector.c:129
 msgid "Select a contact"
@@ -1870,7 +1871,8 @@ msgstr ""
 "Frederic Peters <fpeters@0d.be>\n"
 "Laurent Bigonville <bigon@bigon.be>\n"
 "Stéphane Raimbault <stephane.raimbault@gmail.com>\n"
-"Christophe Benz <christophe.benz@gmail.com>"
+"Christophe Benz <christophe.benz@gmail.com>\n"
+"Emmanuel Sunyer <emmanuel.sunyer@dbmail.com>"
 
 #: ../src/empathy-account-assistant.c:118
 msgid "There has been an error while importing the accounts."
@@ -1962,7 +1964,7 @@ msgstr ""
 
 #: ../src/empathy-account-assistant.c:549
 msgid "Yes, import my account details from "
-msgstr "Oui, importer les détails de compte à partir de "
+msgstr "Oui, importer les détails de mon compte à partir de "
 
 #: ../src/empathy-account-assistant.c:570
 msgid "Yes, I'll enter my account details now"
