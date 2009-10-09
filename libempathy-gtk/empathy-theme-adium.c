@@ -54,7 +54,6 @@ typedef struct {
 	gboolean              last_is_backlog;
 	gboolean              page_loaded;
 	GList                *message_queue;
-	gchar                *hovered_uri;
 	guint                 notify_enable_webkit_developer_tools_id;
 	GtkWidget            *inspector_window;
 } EmpathyThemeAdiumPriv;
@@ -153,140 +152,36 @@ theme_adium_navigation_policy_decision_requested_cb (WebKitWebView             *
 }
 
 static void
-theme_adium_hovering_over_link_cb (EmpathyThemeAdium *theme,
-				   gchar             *title,
-				   gchar             *uri,
-				   gpointer           user_data)
-{
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
-
-	if (tp_strdiff (uri, priv->hovered_uri)) {
-		g_free (priv->hovered_uri);
-		priv->hovered_uri = g_strdup (uri);
-	}
-}
-
-static void
 theme_adium_copy_address_cb (GtkMenuItem *menuitem,
 			     gpointer     user_data)
 {
-	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	WebKitHitTestResult   *hit_test_result = WEBKIT_HIT_TEST_RESULT (user_data);
+	gchar                 *uri;
 	GtkClipboard          *clipboard;
 
+	g_object_get (G_OBJECT (hit_test_result), "link-uri", &uri, NULL);
+
 	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
-	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+	gtk_clipboard_set_text (clipboard, uri, -1);
 
 	clipboard = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
-	gtk_clipboard_set_text (clipboard, priv->hovered_uri, -1);
+	gtk_clipboard_set_text (clipboard, uri, -1);
+
+	g_free (uri);
 }
 
 static void
 theme_adium_open_address_cb (GtkMenuItem *menuitem,
 			     gpointer     user_data)
 {
-	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (user_data);
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	WebKitHitTestResult   *hit_test_result = WEBKIT_HIT_TEST_RESULT (user_data);
+	gchar                 *uri;
 
-	empathy_url_show (GTK_WIDGET (menuitem), priv->hovered_uri);
-}
+	g_object_get (G_OBJECT (hit_test_result), "link-uri", &uri, NULL);
 
-static void
-theme_adium_populate_popup_cb (WebKitWebView *view,
-			       GtkMenu       *menu,
-			       gpointer       user_data)
-{
-	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (view);
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
-	GtkWidget             *item;
-	GList                 *items;
-	GtkWidget             *icon;
-	gchar                 *stock_id;
-	gboolean               is_link = FALSE;
-	gboolean               developer_tools_enabled;
+	empathy_url_show (GTK_WIDGET (menuitem), uri);
 
-	/* FIXME: WebKitGTK+'s context menu API clearly needs an
-	 * overhaul.  There is currently no way to know what is being
-	 * clicked, to decide what features to provide. You either
-	 * take what it gives you as a menu, or use hacks to figure
-	 * out what to display. */
-	items = gtk_container_get_children (GTK_CONTAINER (menu));
-	item = GTK_WIDGET (g_list_nth_data (items, 0));
-	g_list_free (items);
-
-	if (GTK_IS_IMAGE_MENU_ITEM (item)) {
-		icon = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (item));
-		gtk_image_get_stock (GTK_IMAGE (icon), &stock_id, NULL);
-
-		if ((!strcmp (stock_id, GTK_STOCK_OPEN)) && priv->hovered_uri)
-			is_link = TRUE;
-	}
-
-	/* Remove default menu items */
-	g_object_get (G_OBJECT (webkit_web_view_get_settings (view)),
-		      "enable-developer-extras", &developer_tools_enabled, NULL);
-	if (!developer_tools_enabled)
-		gtk_container_foreach (GTK_CONTAINER (menu),
-				       (GtkCallback) gtk_widget_destroy, NULL);
-
-	/* Select all item */
-	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_SELECT_ALL, NULL);
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
-
-	g_signal_connect_swapped (item, "activate",
-				  G_CALLBACK (webkit_web_view_select_all),
-				  view);
-
-	/* Copy menu item */
-	if (webkit_web_view_can_copy_clipboard (view)) {
-		item = gtk_image_menu_item_new_from_stock (GTK_STOCK_COPY, NULL);
-		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-		gtk_widget_show (item);
-
-		g_signal_connect_swapped (item, "activate",
-					  G_CALLBACK (webkit_web_view_copy_clipboard),
-					  view);
-	}
-
-	/* Clear menu item */
-	item = gtk_separator_menu_item_new ();
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
-
-	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_CLEAR, NULL);
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
-
-	g_signal_connect_swapped (item, "activate",
-				  G_CALLBACK (empathy_chat_view_clear),
-				  view);
-
-	/* We will only add the following menu items if we are
-	 * right-clicking a link */
-	if (!is_link)
-		return;
-
-	/* Separator */
-	item = gtk_separator_menu_item_new ();
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
-
-	/* Copy Link Address menu item */
-	item = gtk_menu_item_new_with_mnemonic (_("_Copy Link Address"));
-	g_signal_connect (item, "activate",
-			  G_CALLBACK (theme_adium_copy_address_cb),
-			  view);
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
-
-	/* Open Link menu item */
-	item = gtk_menu_item_new_with_mnemonic (_("_Open Link"));
-	g_signal_connect (item, "activate",
-			  G_CALLBACK (theme_adium_open_address_cb),
-			  view);
-	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show (item);
+	g_free (uri);
 }
 
 static gchar *
@@ -832,6 +727,111 @@ theme_adium_copy_clipboard (EmpathyChatView *view)
 }
 
 static void
+theme_adium_context_menu_selection_done_cb (GtkMenuShell *menu, gpointer user_data)
+{
+	WebKitHitTestResult *hit_test_result = WEBKIT_HIT_TEST_RESULT (user_data);
+
+	g_object_unref (hit_test_result);
+}
+
+static void
+theme_adium_context_menu_for_event (EmpathyThemeAdium *theme, GdkEventButton *event)
+{
+	WebKitWebView              *view = WEBKIT_WEB_VIEW (theme);
+	WebKitHitTestResult        *hit_test_result;
+	WebKitHitTestResultContext  context;
+	GtkWidget                  *menu;
+	GtkWidget                  *item;
+
+	hit_test_result = webkit_web_view_get_hit_test_result (view, event);
+	g_object_get (G_OBJECT (hit_test_result), "context", &context, NULL);
+
+	/* The menu */
+	menu = gtk_menu_new ();
+
+	/* Select all item */
+	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_SELECT_ALL, NULL);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+	g_signal_connect_swapped (item, "activate",
+				  G_CALLBACK (webkit_web_view_select_all),
+				  view);
+
+	/* Copy menu item */
+	if (webkit_web_view_can_copy_clipboard (view)) {
+		item = gtk_image_menu_item_new_from_stock (GTK_STOCK_COPY, NULL);
+		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+		g_signal_connect_swapped (item, "activate",
+					  G_CALLBACK (webkit_web_view_copy_clipboard),
+					  view);
+	}
+
+	/* Clear menu item */
+	item = gtk_separator_menu_item_new ();
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+	item = gtk_image_menu_item_new_from_stock (GTK_STOCK_CLEAR, NULL);
+	gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+	g_signal_connect_swapped (item, "activate",
+				  G_CALLBACK (empathy_chat_view_clear),
+				  view);
+
+	/* We will only add the following menu items if we are
+	 * right-clicking a link */
+	if (context & WEBKIT_HIT_TEST_RESULT_CONTEXT_LINK) {
+		/* Separator */
+		item = gtk_separator_menu_item_new ();
+		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+		/* Copy Link Address menu item */
+		item = gtk_menu_item_new_with_mnemonic (_("_Copy Link Address"));
+		g_signal_connect (item, "activate",
+				  G_CALLBACK (theme_adium_copy_address_cb),
+				  hit_test_result);
+		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+
+		/* Open Link menu item */
+		item = gtk_menu_item_new_with_mnemonic (_("_Open Link"));
+		g_signal_connect (item, "activate",
+				  G_CALLBACK (theme_adium_open_address_cb),
+				  hit_test_result);
+		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+	}
+
+	g_signal_connect (GTK_MENU_SHELL (menu), "selection-done",
+			  G_CALLBACK (theme_adium_context_menu_selection_done_cb),
+			  hit_test_result);
+
+	/* Display the menu */
+	gtk_widget_show_all (menu);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
+			event->button, event->time);
+}
+
+static gboolean
+theme_adium_button_press_event (GtkWidget *widget, GdkEventButton *event)
+{
+	if (event->button == 3) {
+		gboolean developer_tools_enabled;
+
+		g_object_get (G_OBJECT (webkit_web_view_get_settings (WEBKIT_WEB_VIEW (widget))),
+			      "enable-developer-extras", &developer_tools_enabled, NULL);
+
+		/* We currently have no way to add an inspector menu
+		 * item ourselves, so we disable our customized menu
+		 * if the developer extras are enabled. */
+		if (!developer_tools_enabled) {
+			theme_adium_context_menu_for_event (EMPATHY_THEME_ADIUM (widget), event);
+			return TRUE;
+		}
+	}
+
+	return GTK_WIDGET_CLASS (empathy_theme_adium_parent_class)->button_press_event (widget, event);
+}
+
+static void
 theme_adium_iface_init (EmpathyChatViewIface *iface)
 {
 	iface->append_message = theme_adium_append_message;
@@ -875,7 +875,6 @@ theme_adium_finalize (GObject *object)
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (object);
 
 	empathy_adium_data_unref (priv->data);
-	g_free (priv->hovered_uri);
 
 	empathy_conf_notify_remove (empathy_conf_get (),
 				    priv->notify_enable_webkit_developer_tools_id);
@@ -1058,12 +1057,15 @@ static void
 empathy_theme_adium_class_init (EmpathyThemeAdiumClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->finalize = theme_adium_finalize;
 	object_class->dispose = theme_adium_dispose;
 	object_class->constructed = theme_adium_constructed;
 	object_class->get_property = theme_adium_get_property;
 	object_class->set_property = theme_adium_set_property;
+
+	widget_class->button_press_event = theme_adium_button_press_event;
 
 	g_object_class_install_property (object_class,
 					 PROP_ADIUM_DATA,
@@ -1093,12 +1095,6 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 			  NULL);
 	g_signal_connect (theme, "navigation-policy-decision-requested",
 			  G_CALLBACK (theme_adium_navigation_policy_decision_requested_cb),
-			  NULL);
-	g_signal_connect (theme, "populate-popup",
-			  G_CALLBACK (theme_adium_populate_popup_cb),
-			  NULL);
-	g_signal_connect (theme, "hovering-over-link",
-			  G_CALLBACK (theme_adium_hovering_over_link_cb),
 			  NULL);
 
 	priv->notify_enable_webkit_developer_tools_id =
