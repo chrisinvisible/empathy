@@ -52,6 +52,13 @@ struct _EmpathyTpChatClass {
 	GObjectClass parent_class;
 };
 
+typedef struct {
+	gchar          *name;
+	guint           id;
+	TpPropertyFlags flags;
+	GValue         *value;
+} EmpathyTpChatProperty;
+
 GType          empathy_tp_chat_get_type             (void) G_GNUC_CONST;
 EmpathyTpChat *empathy_tp_chat_new                  (TpChannel          *channel);
 void           empathy_tp_chat_close                (EmpathyTpChat      *chat);
@@ -67,6 +74,10 @@ void           empathy_tp_chat_set_state            (EmpathyTpChat      *chat,
 void           empathy_tp_chat_set_property         (EmpathyTpChat      *chat,
 						     const gchar        *name,
 						     const GValue       *value);
+EmpathyTpChatProperty *
+	       empathy_tp_chat_get_property         (EmpathyTpChat      *chat,
+						     const gchar        *name);
+GPtrArray *    empathy_tp_chat_get_properties       (EmpathyTpChat      *chat);
 
 /* Returns a read-only list of pending messages (should be a copy maybe ?) */
 const GList *  empathy_tp_chat_get_pending_messages (EmpathyTpChat *chat);

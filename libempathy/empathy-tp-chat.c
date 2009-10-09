@@ -58,13 +58,6 @@ typedef struct {
 	gboolean               ready;
 } EmpathyTpChatPriv;
 
-typedef struct {
-	gchar          *name;
-	guint           id;
-	TpPropertyFlags flags;
-	GValue         *value;
-} TpChatProperty;
-
 static void tp_chat_iface_init         (EmpathyContactListIface *iface);
 
 enum {
@@ -493,10 +486,10 @@ tp_chat_property_flags_changed_cb (TpProxy         *proxy,
 	}
 
 	for (i = 0; i < properties->len; i++) {
-		GValueArray    *prop_struct;
-		TpChatProperty *property;
-		guint           id;
-		guint           flags;
+		GValueArray           *prop_struct;
+		EmpathyTpChatProperty *property;
+		guint                  id;
+		guint                  flags;
 
 		prop_struct = g_ptr_array_index (properties, i);
 		id = g_value_get_uint (g_value_array_get_nth (prop_struct, 0));
@@ -531,10 +524,10 @@ tp_chat_properties_changed_cb (TpProxy         *proxy,
 	}
 
 	for (i = 0; i < properties->len; i++) {
-		GValueArray    *prop_struct;
-		TpChatProperty *property;
-		guint           id;
-		GValue         *src_value;
+		GValueArray           *prop_struct;
+		EmpathyTpChatProperty *property;
+		guint                  id;
+		GValue                *src_value;
 
 		prop_struct = g_ptr_array_index (properties, i);
 		id = g_value_get_uint (g_value_array_get_nth (prop_struct, 0));
@@ -597,11 +590,11 @@ tp_chat_list_properties_cb (TpProxy         *proxy,
 	ids = g_array_sized_new (FALSE, FALSE, sizeof (guint), properties->len);
 	priv->properties = g_ptr_array_sized_new (properties->len);
 	for (i = 0; i < properties->len; i++) {
-		GValueArray    *prop_struct;
-		TpChatProperty *property;
+		GValueArray           *prop_struct;
+		EmpathyTpChatProperty *property;
 
 		prop_struct = g_ptr_array_index (properties, i);
-		property = g_slice_new0 (TpChatProperty);
+		property = g_slice_new0 (EmpathyTpChatProperty);
 		property->id = g_value_get_uint (g_value_array_get_nth (prop_struct, 0));
 		property->name = g_value_dup_string (g_value_array_get_nth (prop_struct, 1));
 		property->flags = g_value_get_uint (g_value_array_get_nth (prop_struct, 3));
@@ -628,9 +621,13 @@ empathy_tp_chat_set_property (EmpathyTpChat *chat,
 			      const gchar   *name,
 			      const GValue  *value)
 {
-	EmpathyTpChatPriv *priv = GET_PRIV (chat);
-	TpChatProperty    *property;
-	guint              i;
+	EmpathyTpChatPriv     *priv = GET_PRIV (chat);
+	EmpathyTpChatProperty *property;
+	guint                  i;
+
+	if (!priv->had_properties_list) {
+		return;
+	}
 
 	for (i = 0; i < priv->properties->len; i++) {
 		property = g_ptr_array_index (priv->properties, i);
@@ -670,6 +667,36 @@ empathy_tp_chat_set_property (EmpathyTpChat *chat,
 			break;
 		}
 	}
+}
+
+EmpathyTpChatProperty *
+empathy_tp_chat_get_property (EmpathyTpChat *chat,
+			      const gchar   *name)
+{
+	EmpathyTpChatPriv     *priv = GET_PRIV (chat);
+	EmpathyTpChatProperty *property;
+	guint                  i;
+
+	if (!priv->had_properties_list) {
+		return NULL;
+	}
+
+	for (i = 0; i < priv->properties->len; i++) {
+		property = g_ptr_array_index (priv->properties, i);
+		if (!tp_strdiff (property->name, name)) {
+			return property;
+		}
+	}
+
+	return NULL;
+}
+
+GPtrArray *
+empathy_tp_chat_get_properties (EmpathyTpChat *chat)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (chat);
+
+	return priv->properties;
 }
 
 static void
@@ -727,14 +754,14 @@ tp_chat_finalize (GObject *object)
 
 	if (priv->properties) {
 		for (i = 0; i < priv->properties->len; i++) {
-			TpChatProperty *property;
+			EmpathyTpChatProperty *property;
 
 			property = g_ptr_array_index (priv->properties, i);
 			g_free (property->name);
 			if (property->value) {
 				tp_g_value_slice_free (property->value);
 			}
-			g_slice_free (TpChatProperty, property);
+			g_slice_free (EmpathyTpChatProperty, property);
 		}
 		g_ptr_array_free (priv->properties, TRUE);
 	}

@@ -394,6 +394,31 @@ chat_send (EmpathyChat  *chat,
 	if (strcmp (msg, "/clear") == 0) {
 		empathy_chat_view_clear (chat->view);
 		return;
+	} else if (g_str_has_prefix (msg, "/topic")) {
+		EmpathyTpChatProperty *property;
+		GValue value = {0, };
+		gchar *topic;
+
+		property = empathy_tp_chat_get_property (priv->tp_chat, "subject");
+		if (property == NULL) {
+			empathy_chat_view_append_event (chat->view,
+				_("This conversation does not have topic"));
+			return;
+		}
+
+		if (!(property->flags & TP_PROPERTY_FLAG_WRITE)) {
+			empathy_chat_view_append_event (chat->view,
+				_("You need to be a channel operator to do that"));
+			return;
+		}
+
+		topic = g_strstrip (g_strdup (msg + strlen ("/topic")));
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_take_string (&value, topic);
+		empathy_tp_chat_set_property (priv->tp_chat, "subject", &value);
+		g_value_unset (&value);
+
+		return;
 	}
 
 	message = empathy_message_new_from_entry (msg);
@@ -1449,9 +1474,6 @@ chat_create_ui (EmpathyChat *chat)
 			   chat->input_text_view);
 	gtk_widget_show (chat->input_text_view);
 
-	/* Create contact list */
-	chat_update_contacts_visibility (chat);
-
 	/* Initialy hide the topic, will be shown if not empty */
 	gtk_widget_hide (priv->hbox_topic);
 
@@ -1588,7 +1610,6 @@ chat_constructed (GObject *object)
 {
 	EmpathyChat *chat = EMPATHY_CHAT (object);
 
-	chat_create_ui (chat);
 	chat_add_logs (chat);
 	show_pending_messages (chat);
 }
@@ -1728,6 +1749,8 @@ empathy_chat_init (EmpathyChat *chat)
 	/* Add nick name completion */
 	priv->completion = g_completion_new ((GCompletionFunc) empathy_contact_get_name);
 	g_completion_set_compare (priv->completion, chat_contacts_completion_func);
+
+	chat_create_ui (chat);
 }
 
 EmpathyChat *
@@ -1752,6 +1775,7 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	TpConnection    *connection;
+	GPtrArray       *properties;
 
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
 	g_return_if_fail (EMPATHY_IS_TP_CHAT (tp_chat));
@@ -1793,6 +1817,25 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	g_signal_connect_swapped (tp_chat, "notify::remote-contact",
 				  G_CALLBACK (chat_remote_contact_changed_cb),
 				  chat);
+
+	/* Get initial value of properties */
+	properties = empathy_tp_chat_get_properties (priv->tp_chat);
+	if (properties != NULL) {
+		guint i;
+
+		for (i = 0; i < properties->len; i++) {
+			EmpathyTpChatProperty *property;
+
+			property = g_ptr_array_index (properties, i);
+			if (property->value == NULL)
+				continue;
+
+			chat_property_changed_cb (priv->tp_chat,
+						  property->name,
+						  property->value,
+						  chat);
+		}
+	}
 
 	chat_remote_contact_changed_cb (chat);
 
