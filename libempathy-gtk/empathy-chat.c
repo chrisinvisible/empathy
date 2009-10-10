@@ -391,6 +391,20 @@ chat_join_command_cb (EmpathyDispatchOperation *dispatch,
 }
 
 static void
+chat_query_command_cb (EmpathyDispatchOperation *dispatch,
+		       const GError             *error,
+		       gpointer                  user_data)
+{
+	EmpathyChat *chat = user_data;
+
+	if (error != NULL) {
+		DEBUG ("Error: %s", error->message);
+		empathy_chat_view_append_event (chat->view,
+			_("Failed to query contact"));
+	}
+}
+
+static void
 chat_send (EmpathyChat  *chat,
 	   const gchar *msg)
 {
@@ -438,7 +452,21 @@ chat_send (EmpathyChat  *chat,
 		join = g_strstrip (g_strdup (msg + strlen ("/join ")));
 	} else if (g_str_has_prefix (msg, "/j ")) {
 		join = g_strstrip (g_strdup (msg + strlen ("/j ")));
+	} else if (g_str_has_prefix (msg, "/query ")) {
+		TpConnection *connection;
+		gchar *id;
+
+		/* FIXME: We should probably search in members alias. But this
+		 * is enough for IRC */
+		id = g_strstrip (g_strdup (msg + strlen ("/query ")));
+		connection = empathy_tp_chat_get_connection (priv->tp_chat);
+		empathy_dispatcher_chat_with_contact_id (connection, id,
+							 chat_query_command_cb,
+							 chat);
+		g_free (id);
+		return;
 	}
+
 	if (join != NULL) {
 		TpConnection *connection;
 
