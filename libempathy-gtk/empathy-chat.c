@@ -377,11 +377,26 @@ chat_sent_message_get_last (EmpathyChat *chat)
 }
 
 static void
+chat_join_command_cb (EmpathyDispatchOperation *dispatch,
+		      const GError             *error,
+		      gpointer                  user_data)
+{
+	EmpathyChat *chat = user_data;
+
+	if (error != NULL) {
+		DEBUG ("Error: %s", error->message);
+		empathy_chat_view_append_event (chat->view,
+			_("Failed to join chatroom"));
+	}
+}
+
+static void
 chat_send (EmpathyChat  *chat,
 	   const gchar *msg)
 {
 	EmpathyChatPriv *priv;
 	EmpathyMessage  *message;
+	gchar           *join = NULL;
 
 	if (EMP_STR_EMPTY (msg)) {
 		return;
@@ -394,7 +409,7 @@ chat_send (EmpathyChat  *chat,
 	if (strcmp (msg, "/clear") == 0) {
 		empathy_chat_view_clear (chat->view);
 		return;
-	} else if (g_str_has_prefix (msg, "/topic")) {
+	} else if (g_str_has_prefix (msg, "/topic ")) {
 		EmpathyTpChatProperty *property;
 		GValue value = {0, };
 		gchar *topic;
@@ -412,12 +427,25 @@ chat_send (EmpathyChat  *chat,
 			return;
 		}
 
-		topic = g_strstrip (g_strdup (msg + strlen ("/topic")));
+		topic = g_strstrip (g_strdup (msg + strlen ("/topic ")));
 		g_value_init (&value, G_TYPE_STRING);
 		g_value_take_string (&value, topic);
 		empathy_tp_chat_set_property (priv->tp_chat, "subject", &value);
 		g_value_unset (&value);
 
+		return;
+	} else if (g_str_has_prefix (msg, "/join ")) {
+		join = g_strstrip (g_strdup (msg + strlen ("/join ")));
+	} else if (g_str_has_prefix (msg, "/j ")) {
+		join = g_strstrip (g_strdup (msg + strlen ("/j ")));
+	}
+	if (join != NULL) {
+		TpConnection *connection;
+
+		connection = empathy_tp_chat_get_connection (priv->tp_chat);
+		empathy_dispatcher_join_muc (connection, join,
+					     chat_join_command_cb, chat);
+		g_free (join);
 		return;
 	}
 
