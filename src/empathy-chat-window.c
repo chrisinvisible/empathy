@@ -437,7 +437,11 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 		name, empathy_account_get_unique_name (account), subject, remote_contact);
 
 	/* Update tab image */
-	if (g_list_find (priv->chats_new_msg, chat)) {
+	if (empathy_chat_get_tp_chat (chat) == NULL) {
+		/* No TpChat, we are disconnected */
+		icon_name = EMPATHY_IMAGE_OFFLINE;
+	}
+	else if (g_list_find (priv->chats_new_msg, chat)) {
 		icon_name = EMPATHY_IMAGE_MESSAGE;
 	}
 	else if (g_list_find (priv->chats_composing, chat)) {
@@ -1170,6 +1174,9 @@ chat_window_page_added_cb (GtkNotebook      *notebook,
 	g_signal_connect (chat, "new-message",
 			  G_CALLBACK (chat_window_new_message_cb),
 			  window);
+	g_signal_connect (chat, "notify::tp-chat",
+			  G_CALLBACK (chat_window_update_chat_tab),
+			  window);
 
 	/* Set flag so we know to perform some special operations on
 	 * switch page due to the new page being added.
@@ -1213,6 +1220,9 @@ chat_window_page_removed_cb (GtkNotebook      *notebook,
 					      window);
 	g_signal_handlers_disconnect_by_func (chat,
 					      G_CALLBACK (chat_window_new_message_cb),
+					      window);
+	g_signal_handlers_disconnect_by_func (chat,
+					      G_CALLBACK (chat_window_update_chat_tab),
 					      window);
 
 	/* Keep list of chats up to date */
