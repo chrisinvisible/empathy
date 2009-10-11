@@ -377,7 +377,7 @@ chat_sent_message_get_last (EmpathyChat *chat)
 }
 
 static void
-chat_join_command_cb (EmpathyDispatchOperation *dispatch,
+chat_command_join_cb (EmpathyDispatchOperation *dispatch,
 		      const GError             *error,
 		      gpointer                  user_data)
 {
@@ -391,7 +391,7 @@ chat_join_command_cb (EmpathyDispatchOperation *dispatch,
 }
 
 static void
-chat_query_command_cb (EmpathyDispatchOperation *dispatch,
+chat_command_query_cb (EmpathyDispatchOperation *dispatch,
 		       const GError             *error,
 		       gpointer                  user_data)
 {
@@ -407,14 +407,14 @@ chat_query_command_cb (EmpathyDispatchOperation *dispatch,
 typedef struct {
 	EmpathyChat *chat;
 	gchar *msg;
-} ChatMsgCommandData;
+} ChatCommandMsgData;
 
 static void
-chat_msg_command_cb (EmpathyDispatchOperation *dispatch,
+chat_command_msg_cb (EmpathyDispatchOperation *dispatch,
 		     const GError             *error,
 		     gpointer                  user_data)
 {
-	ChatMsgCommandData *data = user_data;
+	ChatCommandMsgData *data = user_data;
 	EmpathyTpChat *tpchat;
 
 	if (error != NULL) {
@@ -445,8 +445,124 @@ chat_msg_command_cb (EmpathyDispatchOperation *dispatch,
 
 OUT:
 	g_free (data->msg);
-	g_slice_free (ChatMsgCommandData, data);
+	g_slice_free (ChatCommandMsgData, data);
 }
+
+static void
+chat_command_clear (EmpathyChat *chat,
+		    const gchar *str)
+{
+	empathy_chat_view_clear (chat->view);
+}
+
+static void
+chat_command_topic (EmpathyChat *chat,
+		    const gchar *str)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	EmpathyTpChatProperty *property;
+	GValue value = {0, };
+
+	property = empathy_tp_chat_get_property (priv->tp_chat, "subject");
+	if (property == NULL) {
+		empathy_chat_view_append_event (chat->view,
+			_("This conversation does not have topic"));
+		return;
+	}
+
+	if (!(property->flags & TP_PROPERTY_FLAG_WRITE)) {
+		empathy_chat_view_append_event (chat->view,
+			_("You need to be a channel operator to do that"));
+		return;
+	}
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, str);
+	empathy_tp_chat_set_property (priv->tp_chat, "subject", &value);
+	g_value_unset (&value);
+}
+
+static void
+chat_command_join (EmpathyChat *chat,
+		   const gchar *str)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	TpConnection *connection;
+
+	connection = empathy_tp_chat_get_connection (priv->tp_chat);
+	empathy_dispatcher_join_muc (connection, str,
+				     chat_command_join_cb,
+				     chat);
+}
+
+static void
+chat_command_query (EmpathyChat *chat,
+		   const gchar *str)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	TpConnection *connection;
+
+	/* FIXME: We should probably search in members alias. But this
+	 * is enough for IRC */
+	connection = empathy_tp_chat_get_connection (priv->tp_chat);
+	empathy_dispatcher_chat_with_contact_id (connection, str,
+						 chat_command_query_cb,
+						 chat);
+}
+
+static void
+chat_command_msg (EmpathyChat *chat,
+		  const gchar *str)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	TpConnection *connection;
+	ChatCommandMsgData *data;
+	gchar *id, *msg = NULL;
+
+	id = g_strdup (str);
+	if (id != NULL) {
+		msg = strchr (id, ' ');
+		if (msg != NULL) {
+			*msg = '\0';
+			g_strstrip (++msg);
+		}
+	}
+
+	if (EMP_STR_EMPTY (id) || EMP_STR_EMPTY (msg)) {
+		empathy_chat_view_append_event (chat->view,
+			_("Usage: /msg pseudo message"));
+		g_free (id);
+		return;
+	}
+
+	/* FIXME: We should probably search in members alias. But this
+	 * is enough for IRC */
+	data = g_slice_new (ChatCommandMsgData);
+	data->chat = chat;
+	data->msg = g_strdup (msg);
+	connection = empathy_tp_chat_get_connection (priv->tp_chat);
+	empathy_dispatcher_chat_with_contact_id (connection, id,
+						 chat_command_msg_cb,
+						 data);
+	g_free (id);
+}
+
+typedef void (*ChatCommandFunc) (EmpathyChat *chat, const gchar *str);
+
+typedef struct {
+	const gchar *str;
+	ChatCommandFunc func;
+} ChatCommandItem;
+
+static ChatCommandItem commands[] = {
+	{"/clear", chat_command_clear},
+	{"/topic ", chat_command_topic},
+	{"/join ", chat_command_join},
+	{"/j ", chat_command_join},
+	{"/query ", chat_command_query},
+	{"/msg ", chat_command_msg},
+	{NULL, NULL}
+};
 
 static void
 chat_send (EmpathyChat  *chat,
@@ -454,8 +570,7 @@ chat_send (EmpathyChat  *chat,
 {
 	EmpathyChatPriv *priv;
 	EmpathyMessage  *message;
-	TpConnection    *connection;
-	gchar           *join = NULL;
+	guint            i;
 
 	if (EMP_STR_EMPTY (msg)) {
 		return;
@@ -465,88 +580,15 @@ chat_send (EmpathyChat  *chat,
 
 	chat_sent_message_add (chat, msg);
 
-	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	if (strcmp (msg, "/clear") == 0) {
-		empathy_chat_view_clear (chat->view);
-		return;
-	} else if (g_str_has_prefix (msg, "/topic ")) {
-		EmpathyTpChatProperty *property;
-		GValue value = {0, };
-		gchar *topic;
+	for (i = 0; commands[i].str != NULL; i++) {
+		if (g_str_has_prefix (msg, commands[i].str)) {
+			gchar *str;
 
-		property = empathy_tp_chat_get_property (priv->tp_chat, "subject");
-		if (property == NULL) {
-			empathy_chat_view_append_event (chat->view,
-				_("This conversation does not have topic"));
+			str = g_strstrip (g_strdup (msg + strlen (commands[i].str)));
+			commands[i].func (chat, str);
+			g_free (str);
 			return;
 		}
-
-		if (!(property->flags & TP_PROPERTY_FLAG_WRITE)) {
-			empathy_chat_view_append_event (chat->view,
-				_("You need to be a channel operator to do that"));
-			return;
-		}
-
-		topic = g_strstrip (g_strdup (msg + strlen ("/topic ")));
-		g_value_init (&value, G_TYPE_STRING);
-		g_value_take_string (&value, topic);
-		empathy_tp_chat_set_property (priv->tp_chat, "subject", &value);
-		g_value_unset (&value);
-
-		return;
-	} else if (g_str_has_prefix (msg, "/join ")) {
-		join = g_strstrip (g_strdup (msg + strlen ("/join ")));
-	} else if (g_str_has_prefix (msg, "/j ")) {
-		join = g_strstrip (g_strdup (msg + strlen ("/j ")));
-	} else if (g_str_has_prefix (msg, "/query ")) {
-		gchar *id;
-
-		/* FIXME: We should probably search in members alias. But this
-		 * is enough for IRC */
-		id = g_strstrip (g_strdup (msg + strlen ("/query ")));
-		empathy_dispatcher_chat_with_contact_id (connection, id,
-							 chat_query_command_cb,
-							 chat);
-		g_free (id);
-		return;
-	} else if (g_str_has_prefix (msg, "/msg ")) {
-		gchar *id, *index;
-		ChatMsgCommandData *data;
-
-		id = g_strstrip (g_strdup (msg + strlen ("/msg ")));
-		index = strchr (id, ' ');
-		if (index != NULL) {
-			*index = '\0';
-			g_strstrip (++index);
-		}
-
-		if (EMP_STR_EMPTY (id) || EMP_STR_EMPTY (index)) {
-			empathy_chat_view_append_event (chat->view,
-				_("Usage: /msg pseudo message"));
-			g_free (id);
-			return;
-		}
-
-		/* FIXME: We should probably search in members alias. But this
-		 * is enough for IRC */
-		data = g_slice_new (ChatMsgCommandData);
-		data->chat = chat;
-		data->msg = g_strdup (index);
-		empathy_dispatcher_chat_with_contact_id (connection, id,
-							 chat_msg_command_cb,
-							 data);
-		g_free (id);
-		return;
-	}
-
-	if (join != NULL) {
-		TpConnection *connection;
-
-		connection = empathy_tp_chat_get_connection (priv->tp_chat);
-		empathy_dispatcher_join_muc (connection, join,
-					     chat_join_command_cb, chat);
-		g_free (join);
-		return;
 	}
 
 	message = empathy_message_new_from_entry (msg);
