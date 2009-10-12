@@ -1712,8 +1712,12 @@ empathy_dispatcher_call_create_or_ensure_channel (
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   TpAccount *account;
+  const gchar *handler = "";
 
   account = empathy_get_account_for_connection (request_data->connection);
+
+  if (request_data->cb)
+    handler = empathy_handler_get_busname (priv->handler);
 
   if (request_data->should_ensure)
     {
@@ -1721,7 +1725,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
           tp_cli_channel_dispatcher_call_ensure_channel (
               priv->channel_dispatcher,
               -1, tp_proxy_get_object_path (TP_PROXY (account)),
-              request_data->request, 0, "",
+              request_data->request, 0, handler,
               dispatcher_create_channel_cb, request_data, NULL, NULL);
     }
   else
@@ -1730,7 +1734,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
           tp_cli_channel_dispatcher_call_create_channel (
               priv->channel_dispatcher,
               -1, tp_proxy_get_object_path (TP_PROXY (account)),
-              request_data->request, 0, "",
+              request_data->request, 0, handler,
               dispatcher_create_channel_cb, request_data, NULL,
               G_OBJECT (dispatcher));
     }
