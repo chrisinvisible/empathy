@@ -173,7 +173,7 @@ empathy_sound_play_internal (GtkWidget *widget, EmpathySound sound_id,
     goto failed;
 
   if (ca_proplist_sets (p, CA_PROP_EVENT_DESCRIPTION,
-          gettext (entry->event_ca_id)) < 0)
+          gettext (entry->event_ca_description)) < 0)
     goto failed;
 
   if (ca_gtk_proplist_set_for_widget (p, widget) < 0)
