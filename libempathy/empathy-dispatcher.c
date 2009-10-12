@@ -578,7 +578,17 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
         }
     }
 
-  DEBUG ("New channel of type %s on %s", channel_type, object_path);
+  DEBUG ("%s channel of type %s on %s", incoming ? "incoming" : "outgoing",
+    channel_type, object_path);
+
+  if ((operation = g_hash_table_lookup (cd->dispatching_channels,
+      object_path)) != NULL)
+    {
+      /* This operation was already being dispatched, assume we got the channel
+       * again because something asked for it and approve it right away */
+      empathy_dispatch_operation_approve (operation);
+      return;
+    }
 
   if (properties == NULL)
     channel = tp_channel_new (connection, object_path, channel_type,
@@ -642,6 +652,10 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
             }
         }
     }
+
+  if (g_hash_table_lookup (cd->dispatched_channels, object_path) != NULL)
+    empathy_dispatch_operation_approve (operation);
+
   dispatcher_start_dispatching (dispatcher, operation, cd);
 }
 
@@ -658,7 +672,6 @@ dispatcher_connection_new_channel_with_properties (
   guint handle;
   gboolean requested;
   gboolean valid;
-
 
   channel_type = tp_asv_get_string (properties,
     TP_IFACE_CHANNEL ".ChannelType");
