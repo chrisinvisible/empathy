@@ -216,11 +216,14 @@ static gchar *
 get_default_display_name (EmpathyAccountSettings *settings)
 {
   const gchar *login_id;
-  const gchar *protocol;
+  const gchar *protocol, *p;
   gchar *default_display_name;
 
   login_id = empathy_account_settings_get_string (settings, "account");
   protocol = empathy_account_settings_get_protocol (settings);
+
+  if ((p = empathy_protocol_name_to_display_name (protocol)) != NULL)
+    protocol = p;
 
   if (login_id != NULL)
     {
