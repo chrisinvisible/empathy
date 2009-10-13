@@ -81,6 +81,7 @@
 
 #define COMMAND_ACCOUNTS_DIALOG 1
 
+static gboolean account_dialog_only = FALSE;
 static gboolean start_hidden = FALSE;
 
 static void
@@ -440,6 +441,50 @@ migrate_config_to_xdg_dir (void)
   g_free (old_dir);
 }
 
+static void
+do_show_accounts_ui (GtkWindow *window, EmpathyAccountManager *manager)
+{
+
+  GtkWidget *ui;
+
+  if (has_non_salut_accounts (manager))
+    ui = empathy_accounts_dialog_show (window, NULL);
+  else
+    ui = empathy_account_assistant_show (window);
+
+  if (account_dialog_only)
+    g_signal_connect (ui, "destroy",
+      G_CALLBACK (gtk_main_quit), NULL);
+}
+
+static void
+account_manager_ready_for_accounts_cb (EmpathyAccountManager *manager,
+    GParamSpec *spec,
+    gpointer user_data)
+{
+  if (!empathy_account_manager_is_ready (manager))
+    return;
+
+  do_show_accounts_ui (user_data, manager);
+}
+
+static void
+show_accounts_ui (GtkWindow *window)
+{
+  EmpathyAccountManager *manager;
+
+  manager = empathy_account_manager_dup_singleton ();
+  if (empathy_account_manager_is_ready (manager))
+    {
+      do_show_accounts_ui (window, manager);
+    }
+  else
+    {
+      g_signal_connect (manager, "notify::ready",
+        G_CALLBACK (account_manager_ready_for_accounts_cb), window);
+    }
+}
+
 static UniqueResponse
 unique_app_message_cb (UniqueApp *unique_app,
     gint command,
@@ -447,14 +492,14 @@ unique_app_message_cb (UniqueApp *unique_app,
     guint timestamp,
     gpointer user_data)
 {
-  GtkWidget *window = user_data;
+  GtkWindow *window = user_data;
 
   DEBUG ("Other instance launched, presenting the main window. "
       "Command=%d, timestamp %u", command, timestamp);
 
   if (command == COMMAND_ACCOUNTS_DIALOG)
     {
-      empathy_accounts_dialog_show (GTK_WINDOW (window), NULL);
+      show_accounts_ui (window);
     }
   else
     {
@@ -761,7 +806,6 @@ main (int argc, char *argv[])
   EmpathyConnectivity *connectivity;
   gboolean autoconnect = TRUE;
   gboolean no_connect = FALSE;
-  gboolean accounts_dialog = FALSE;
   GError *error = NULL;
   TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
@@ -778,7 +822,7 @@ main (int argc, char *argv[])
         N_("Don't show the contact list on startup"),
         NULL },
       { "accounts", 'a',
-        0, G_OPTION_ARG_NONE, &accounts_dialog,
+        0, G_OPTION_ARG_NONE, &account_dialog_only,
         N_("Show the accounts dialog"),
         NULL },
       { "version", 'v',
@@ -826,7 +870,7 @@ main (int argc, char *argv[])
 
   if (unique_app_is_running (unique_app))
     {
-      unique_app_send_message (unique_app, accounts_dialog ?
+      unique_app_send_message (unique_app, account_dialog_only ?
           COMMAND_ACCOUNTS_DIALOG : UNIQUE_ACTIVATE, NULL);
 
       g_object_unref (unique_app);
@@ -853,16 +897,13 @@ main (int argc, char *argv[])
       g_clear_error (&error);
     }
 
-  if (accounts_dialog)
+  if (account_dialog_only)
     {
-      GtkWidget *dialog;
-
-      dialog = empathy_accounts_dialog_show (NULL, NULL);
-      g_signal_connect (dialog, "destroy",
-                        G_CALLBACK (gtk_main_quit), NULL);
+      show_accounts_ui (NULL);
 
       gtk_main ();
       return 0;
+
     }
 
   notify_init (_(PACKAGE_NAME));
