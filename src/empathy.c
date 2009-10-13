@@ -81,6 +81,8 @@
 
 #define COMMAND_ACCOUNTS_DIALOG 1
 
+static gboolean start_hidden = FALSE;
+
 static void
 dispatch_cb (EmpathyDispatcher *dispatcher,
     EmpathyDispatchOperation *operation,
@@ -562,7 +564,7 @@ account_manager_ready_cb (EmpathyAccountManager *manager,
             G_CALLBACK (connection_managers_ready_cb), NULL);
         }
     }
-  else
+  else if (!start_hidden)
     {
       maybe_show_account_assistant ();
     }
@@ -759,7 +761,6 @@ main (int argc, char *argv[])
   EmpathyConnectivity *connectivity;
   gboolean autoconnect = TRUE;
   gboolean no_connect = FALSE;
-  gboolean hide_contact_list = FALSE;
   gboolean accounts_dialog = FALSE;
   GError *error = NULL;
   TpDBusDaemon *dbus_daemon;
@@ -773,7 +774,7 @@ main (int argc, char *argv[])
         N_("Don't connect on startup"),
         NULL },
       { "hide-contact-list", 'h',
-        0, G_OPTION_ARG_NONE, &hide_contact_list,
+        0, G_OPTION_ARG_NONE, &start_hidden,
         N_("Don't show the contact list on startup"),
         NULL },
       { "accounts", 'a',
@@ -899,7 +900,7 @@ main (int argc, char *argv[])
 
   /* Setting up UI */
   window = empathy_main_window_show ();
-  icon = empathy_status_icon_new (GTK_WINDOW (window), hide_contact_list);
+  icon = empathy_status_icon_new (GTK_WINDOW (window), start_hidden);
 
   g_signal_connect (unique_app, "message-received",
       G_CALLBACK (unique_app_message_cb), window);
