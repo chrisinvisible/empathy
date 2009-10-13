@@ -930,8 +930,20 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
 }
 
 GtkWidget *
-empathy_account_assistant_new (GtkWindow *window)
+empathy_account_assistant_show (GtkWindow *window)
 {
-  return g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT, "parent-window",
-      window, NULL);
+  static GtkWidget *dialog = NULL;
+
+  if (dialog == NULL)
+    {
+      dialog =  g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT, "parent-window",
+        window, NULL);
+      g_object_add_weak_pointer (G_OBJECT (dialog), (gpointer *) &dialog);
+    }
+
+  gtk_window_present (GTK_WINDOW (dialog));
+
+  return dialog;
 }
+
+

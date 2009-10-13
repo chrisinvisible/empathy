@@ -56,7 +56,7 @@ typedef struct {
 
 GType empathy_account_assistant_get_type (void);
 
-GtkWidget *empathy_account_assistant_new (GtkWindow *parent);
+GtkWidget *empathy_account_assistant_show (GtkWindow *parent);
 
 G_END_DECLS
 

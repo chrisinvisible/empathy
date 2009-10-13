@@ -313,18 +313,37 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
   g_object_unref (book);
 }
 
+static gboolean
+has_non_salut_accounts (EmpathyAccountManager *manager)
+{
+  gboolean ret = FALSE;
+  GList *accounts, *l;
+
+  accounts = empathy_account_manager_dup_accounts (manager);
+
+  for (l = accounts ; l != NULL; l = g_list_next (l))
+    {
+      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+
+      if (tp_strdiff (empathy_account_get_protocol (l->data), "local-xmpp"))
+        ret = TRUE;
+
+      g_object_unref (account);
+    }
+
+  g_list_free (accounts);
+
+  return ret;
+}
+
 static void
 maybe_show_account_assistant (void)
 {
   EmpathyAccountManager *manager;
   manager = empathy_account_manager_dup_singleton ();
 
-  if (empathy_account_manager_get_count (manager) == 0)
-    {
-      GtkWidget * assistant = empathy_account_assistant_new (
-        GTK_WINDOW (empathy_main_window_get ()));
-      gtk_window_present (GTK_WINDOW (assistant));
-    }
+  if (!has_non_salut_accounts (manager))
+    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()));
 }
 
 static gboolean
