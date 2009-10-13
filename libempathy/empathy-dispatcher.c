@@ -131,6 +131,7 @@ typedef struct
   guint handle_type;
   guint handle;
   EmpathyContact *contact;
+  TpProxyPendingCall *pending_call;
 
   /* Properties to pass to the channel when requesting it */
   GHashTable *request;
@@ -284,6 +285,8 @@ free_connection_data (ConnectionData *cd)
 
   for (l = cd->outstanding_requests ; l != NULL; l = g_list_delete_link (l,l))
     {
+      DispatcherRequestData *data = l->data;
+      tp_proxy_pending_call_cancel (data->pending_call);
       free_dispatcher_request_data (l->data);
     }
 
@@ -1322,7 +1325,8 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
     }
   else
     {
-      tp_cli_connection_call_request_channel (request_data->connection, -1,
+      request_data->pending_call = tp_cli_connection_call_request_channel (
+        request_data->connection, -1,
         request_data->channel_type,
         request_data->handle_type,
         request_data->handle,
@@ -1481,7 +1485,8 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
 
-  tp_cli_connection_call_request_handles (connection, -1,
+  request_data->pending_call = tp_cli_connection_call_request_handles (
+    connection, -1,
     TP_HANDLE_TYPE_ROOM, names,
     dispatcher_request_handles_cb, request_data, NULL,
     G_OBJECT (dispatcher));
@@ -1527,14 +1532,16 @@ empathy_dispatcher_call_create_or_ensure_channel (
 {
   if (request_data->should_ensure)
     {
-      tp_cli_connection_interface_requests_call_ensure_channel (
+      request_data->pending_call =
+          tp_cli_connection_interface_requests_call_ensure_channel (
           request_data->connection, -1,
           request_data->request, dispatcher_ensure_channel_cb,
           request_data, NULL, G_OBJECT (request_data->dispatcher));
     }
   else
     {
-      tp_cli_connection_interface_requests_call_create_channel (
+      request_data->pending_call =
+          tp_cli_connection_interface_requests_call_create_channel (
           request_data->connection, -1,
           request_data->request, dispatcher_create_channel_cb,
           request_data, NULL, G_OBJECT (request_data->dispatcher));
