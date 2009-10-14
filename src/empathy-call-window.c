@@ -1087,9 +1087,8 @@ empathy_call_window_dispose (GObject *object)
     {
       g_signal_handlers_disconnect_by_func (call,
         empathy_call_window_video_stream_changed_cb, object);
+      g_object_unref (call);
     }
-
-  g_object_unref (call);
 
   if (priv->handler != NULL)
     g_object_unref (priv->handler);
