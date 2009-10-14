@@ -483,6 +483,8 @@ show_accounts_ui (GtkWindow *window)
       g_signal_connect (manager, "notify::ready",
         G_CALLBACK (account_manager_ready_for_accounts_cb), window);
     }
+
+  g_object_unref (manager);
 }
 
 static UniqueResponse
@@ -899,11 +901,13 @@ main (int argc, char *argv[])
 
   if (account_dialog_only)
     {
+      account_manager = empathy_account_manager_dup_singleton ();
       show_accounts_ui (NULL);
 
       gtk_main ();
-      return 0;
 
+      g_object_unref (account_manager);
+      return 0;
     }
 
   notify_init (_(PACKAGE_NAME));
