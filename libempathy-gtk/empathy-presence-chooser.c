@@ -39,6 +39,7 @@
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-status-presets.h>
+#include <libempathy/empathy-account-manager.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -114,6 +115,8 @@ typedef struct {
 	TpConnectionPresenceType   flash_state_1;
 	TpConnectionPresenceType   flash_state_2;
 	guint        flash_timeout_id;
+
+	EmpathyAccountManager *account_manager;
 } EmpathyPresenceChooserPriv;
 
 /* States to be listed in the menu.
@@ -714,11 +717,45 @@ presence_chooser_entry_focus_out_cb (EmpathyPresenceChooser *chooser,
 }
 
 static void
+presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
+{
+	EmpathyPresenceChooserPriv *priv = GET_PRIV (chooser);
+	gboolean sensitive = FALSE;
+	GList *accounts, *l;
+
+	accounts = empathy_account_manager_dup_accounts (priv->account_manager);
+
+	for (l = accounts ; l != NULL ; l = g_list_next (l)) {
+		EmpathyAccount *a = EMPATHY_ACCOUNT (l->data);
+
+		if (empathy_account_is_enabled (a))
+			sensitive = TRUE;
+
+		g_object_unref (a);
+	}
+
+	g_list_free (accounts);
+
+	if (!empathy_connectivity_is_online (priv->connectivity))
+		sensitive = FALSE;
+
+	gtk_widget_set_sensitive (GTK_WIDGET (chooser), sensitive);
+}
+
+static void
+presence_chooser_account_manager_account (EmpathyAccountManager *manager,
+	EmpathyAccount *account,
+	EmpathyPresenceChooser *chooser)
+{
+	presence_chooser_update_sensitivity (chooser);
+}
+
+static void
 presence_chooser_connectivity_state_change (EmpathyConnectivity *connectivity,
 					    gboolean new_online,
 					    EmpathyPresenceChooser *chooser)
 {
-	gtk_widget_set_sensitive (GTK_WIDGET (chooser), new_online);
+	presence_chooser_update_sensitivity (chooser);
 }
 
 static void
@@ -789,6 +826,21 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 		G_CALLBACK (presence_chooser_presence_changed_cb),
 		chooser);
 
+	priv->account_manager = empathy_account_manager_dup_singleton ();
+
+	g_signal_connect (priv->account_manager, "account-created",
+		G_CALLBACK (presence_chooser_account_manager_account),
+		chooser);
+	g_signal_connect (priv->account_manager, "account-deleted",
+		G_CALLBACK (presence_chooser_account_manager_account),
+		chooser);
+	g_signal_connect (priv->account_manager, "account-enabled",
+		G_CALLBACK (presence_chooser_account_manager_account),
+		chooser);
+	g_signal_connect (priv->account_manager, "account-disabled",
+		G_CALLBACK (presence_chooser_account_manager_account),
+		chooser);
+
 	/* FIXME: this string sucks */
 	gtk_widget_set_tooltip_text (GTK_WIDGET (chooser),
 		_("Set your presence and current status"));
@@ -798,8 +850,8 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 		"state-change",
 		G_CALLBACK (presence_chooser_connectivity_state_change),
 		chooser);
-	presence_chooser_connectivity_state_change (priv->connectivity,
-		empathy_connectivity_is_online (priv->connectivity), chooser);
+
+	presence_chooser_update_sensitivity (chooser);
 }
 
 static void
@@ -816,6 +868,9 @@ presence_chooser_finalize (GObject *object)
 	if (priv->focus_out_idle_source) {
 		g_source_remove (priv->focus_out_idle_source);
 	}
+
+	if (priv->account_manager != NULL)
+		g_object_unref (priv->account_manager);
 
 	g_signal_handlers_disconnect_by_func (priv->idle,
 					      presence_chooser_presence_changed_cb,
