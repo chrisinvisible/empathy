@@ -80,6 +80,11 @@ const gchar *empathy_protocol_name_to_display_name (const gchar *proto_name);
 #define EMPATHY_ARRAY_TYPE_OBJECT (empathy_type_dbus_ao ())
 GType empathy_type_dbus_ao (void);
 
+void empathy_signal_connect_weak (gpointer instance,
+    const gchar *detailed_signal,
+    GCallback c_handler,
+    GObject *user_data);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UTILS_H__ */
