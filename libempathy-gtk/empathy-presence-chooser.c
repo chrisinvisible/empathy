@@ -741,7 +741,8 @@ presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
 }
 
 static void
-presence_chooser_account_manager_account (EmpathyAccountManager *manager,
+presence_chooser_account_manager_account_changed_cb (
+	EmpathyAccountManager *manager,
 	EmpathyAccount *account,
 	EmpathyPresenceChooser *chooser)
 {
@@ -827,16 +828,16 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	priv->account_manager = empathy_account_manager_dup_singleton ();
 
 	empathy_signal_connect_weak (priv->account_manager, "account-created",
-		G_CALLBACK (presence_chooser_account_manager_account),
+		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
 		G_OBJECT (chooser));
 	empathy_signal_connect_weak (priv->account_manager, "account-deleted",
-		G_CALLBACK (presence_chooser_account_manager_account),
+		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
 		G_OBJECT (chooser));
 	empathy_signal_connect_weak (priv->account_manager, "account-enabled",
-		G_CALLBACK (presence_chooser_account_manager_account),
+		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
 		G_OBJECT (chooser));
 	empathy_signal_connect_weak (priv->account_manager, "account-disabled",
-		G_CALLBACK (presence_chooser_account_manager_account),
+		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
 		G_OBJECT (chooser));
 
 	/* FIXME: this string sucks */
