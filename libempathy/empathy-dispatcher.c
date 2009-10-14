@@ -944,6 +944,8 @@ static void
 dispatcher_dispose (GObject *object)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (object);
+  GHashTableIter iter;
+  gpointer connection;
   GList *l;
 
   if (priv->dispose_has_run)
@@ -960,6 +962,16 @@ dispatcher_dispose (GObject *object)
   if (priv->handler != NULL)
     g_object_unref (priv->handler);
   priv->handler = NULL;
+
+  g_hash_table_iter_init (&iter, priv->connections);
+  while (g_hash_table_iter_next (&iter, &connection, NULL))
+    {
+      g_signal_handlers_disconnect_by_func (connection,
+          dispatcher_connection_invalidated_cb, object);
+    }
+
+  g_hash_table_destroy (priv->connections);
+  priv->connections = NULL;
 
   G_OBJECT_CLASS (empathy_dispatcher_parent_class)->dispose (object);
 }
@@ -991,13 +1003,6 @@ dispatcher_finalize (GObject *object)
 
   g_list_free (priv->channels);
 
-  g_hash_table_iter_init (&iter, priv->connections);
-  while (g_hash_table_iter_next (&iter, &connection, NULL))
-    {
-      g_signal_handlers_disconnect_by_func (connection,
-          dispatcher_connection_invalidated_cb, object);
-    }
-
   g_hash_table_iter_init (&iter, priv->outstanding_classes_requests);
   while (g_hash_table_iter_next (&iter, &connection, (gpointer *) &list))
     {
@@ -1007,7 +1012,6 @@ dispatcher_finalize (GObject *object)
 
   g_object_unref (priv->account_manager);
 
-  g_hash_table_destroy (priv->connections);
   g_hash_table_destroy (priv->outstanding_classes_requests);
 }
 
