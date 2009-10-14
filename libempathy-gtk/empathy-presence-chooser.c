@@ -102,8 +102,6 @@ typedef struct {
 	EmpathyIdle *idle;
 	EmpathyConnectivity *connectivity;
 
-	gulong state_change_signal_id;
-
 	gboolean     editing_status;
 	int          block_set_editing;
 	int          block_changed;
@@ -828,28 +826,28 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 
 	priv->account_manager = empathy_account_manager_dup_singleton ();
 
-	g_signal_connect (priv->account_manager, "account-created",
+	empathy_signal_connect_weak (priv->account_manager, "account-created",
 		G_CALLBACK (presence_chooser_account_manager_account),
-		chooser);
-	g_signal_connect (priv->account_manager, "account-deleted",
+		G_OBJECT (chooser));
+	empathy_signal_connect_weak (priv->account_manager, "account-deleted",
 		G_CALLBACK (presence_chooser_account_manager_account),
-		chooser);
-	g_signal_connect (priv->account_manager, "account-enabled",
+		G_OBJECT (chooser));
+	empathy_signal_connect_weak (priv->account_manager, "account-enabled",
 		G_CALLBACK (presence_chooser_account_manager_account),
-		chooser);
-	g_signal_connect (priv->account_manager, "account-disabled",
+		G_OBJECT (chooser));
+	empathy_signal_connect_weak (priv->account_manager, "account-disabled",
 		G_CALLBACK (presence_chooser_account_manager_account),
-		chooser);
+		G_OBJECT (chooser));
 
 	/* FIXME: this string sucks */
 	gtk_widget_set_tooltip_text (GTK_WIDGET (chooser),
 		_("Set your presence and current status"));
 
 	priv->connectivity = empathy_connectivity_dup_singleton ();
-	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
+	empathy_signal_connect_weak (priv->connectivity,
 		"state-change",
 		G_CALLBACK (presence_chooser_connectivity_state_change),
-		chooser);
+		G_OBJECT (chooser));
 
 	presence_chooser_update_sensitivity (chooser);
 }
@@ -876,10 +874,6 @@ presence_chooser_finalize (GObject *object)
 					      presence_chooser_presence_changed_cb,
 					      object);
 	g_object_unref (priv->idle);
-
-	g_signal_handler_disconnect (priv->connectivity,
-				     priv->state_change_signal_id);
-	priv->state_change_signal_id = 0;
 
 	g_object_unref (priv->connectivity);
 
