@@ -170,6 +170,15 @@ debug_message_free (DebugMessage *dm)
 }
 
 static void
+debug_message_list_free (gpointer data)
+{
+  GList *list = data;
+
+  g_list_foreach (list, (GFunc) debug_message_free, NULL);
+  g_list_free (list);
+}
+
+static void
 debug_window_cache_new_message (EmpathyDebugWindow *debug_window,
     gdouble timestamp,
     const gchar *domain,
@@ -343,8 +352,7 @@ debug_window_get_messages_cb (TpProxy *proxy,
   if (old_messages != NULL)
     {
       g_hash_table_remove (priv->all_cms, name);
-      g_list_foreach (old_messages, (GFunc) debug_message_free, NULL);
-      g_list_free (old_messages);
+      debug_message_list_free (old_messages);
     }
 
   for (i = 0; i < messages->len; i++)
@@ -1345,8 +1353,7 @@ debug_window_finalize (GObject *object)
   while (g_hash_table_iter_next (&iter, (gpointer *) &key,
           (gpointer *) &values))
     {
-      g_list_foreach (values, (GFunc) debug_message_free, NULL);
-      g_list_free (values);
+      debug_message_list_free (values);
     }
 
   g_hash_table_destroy (priv->all_cms);
