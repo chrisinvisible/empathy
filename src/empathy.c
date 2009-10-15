@@ -442,7 +442,8 @@ migrate_config_to_xdg_dir (void)
 }
 
 static void
-do_show_accounts_ui (GtkWindow *window, EmpathyAccountManager *manager)
+do_show_accounts_ui (GtkWindow *window,
+    EmpathyAccountManager *manager)
 {
 
   GtkWidget *ui;
@@ -469,17 +470,24 @@ account_manager_ready_for_accounts_cb (EmpathyAccountManager *manager,
 }
 
 static void
-show_accounts_ui (GtkWindow *window)
+show_accounts_ui (GtkWindow *window,
+    gboolean force)
 {
   EmpathyAccountManager *manager;
 
   manager = empathy_account_manager_dup_singleton ();
   if (empathy_account_manager_is_ready (manager))
     {
-      do_show_accounts_ui (window, manager);
+      if (force)
+        do_show_accounts_ui (window, manager);
+      else
+        maybe_show_account_assistant ();
     }
-  else
+  else if (force)
     {
+      /* Only if we we're forced to show the widget connect to ready, otherwise
+       * the initial readyness will cause the accounts ui to be shown when
+       * needed */
       g_signal_connect (manager, "notify::ready",
         G_CALLBACK (account_manager_ready_for_accounts_cb), window);
     }
@@ -501,10 +509,17 @@ unique_app_message_cb (UniqueApp *unique_app,
 
   if (command == COMMAND_ACCOUNTS_DIALOG)
     {
-      show_accounts_ui (window);
+      show_accounts_ui (window, TRUE);
     }
   else
     {
+      /* We're requested to show stuff again, disable the start hidden global
+       * in case the accounts wizard wants to pop up.
+       */
+      start_hidden = FALSE;
+
+      show_accounts_ui (window, FALSE);
+
       gtk_window_set_screen (GTK_WINDOW (window),
           unique_message_data_get_screen (data));
       gtk_window_set_startup_id (GTK_WINDOW (window),
@@ -902,7 +917,7 @@ main (int argc, char *argv[])
   if (account_dialog_only)
     {
       account_manager = empathy_account_manager_dup_singleton ();
-      show_accounts_ui (NULL);
+      show_accounts_ui (NULL, TRUE);
 
       gtk_main ();
 
