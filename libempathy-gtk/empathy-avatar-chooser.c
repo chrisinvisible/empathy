@@ -594,6 +594,7 @@ avatar_chooser_set_image_from_data (EmpathyAvatarChooser *chooser,
 	pixbuf = empathy_pixbuf_from_data_and_mime (data, size, &mime_type);
 	if (pixbuf == NULL) {
 		g_free (data);
+		data = NULL;
 		return;
 	}
 
@@ -789,9 +790,9 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 	target_type = gdk_atom_name (gtk_selection_data_get_target (selection_data));
 	if (!strcmp (target_type, URI_LIST_TYPE)) {
 		GFile            *file;
-		GFileInputStream *input_stream;
 		gchar            *nl;
 		gchar            *data = NULL;
+		gsize             bytes_read;
 
 		nl = strstr (gtk_selection_data_get_data (selection_data), "\r\n");
 		if (nl) {
@@ -806,37 +807,16 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 			file = g_file_new_for_uri (gtk_selection_data_get_data (selection_data));
 		}
 
-		input_stream = g_file_read (file, NULL, NULL);
+		handled = g_file_load_contents (file, NULL, &data, &bytes_read,
+						NULL, NULL);
 
-		if (input_stream != NULL) {
-			GFileInfo *info;
-
-			info = g_file_query_info (file,
-						  G_FILE_ATTRIBUTE_STANDARD_SIZE,
-						  0, NULL, NULL);
-			if (info != NULL) {
-				goffset size;
-				gssize bytes_read;
-
-				size = g_file_info_get_size (info);
-				data = g_malloc (size);
-
-				bytes_read = g_input_stream_read (G_INPUT_STREAM (input_stream),
-								  data, size,
-								  NULL, NULL);
-				if (bytes_read != -1) {
-					avatar_chooser_set_image_from_data (
-						chooser, data,
-						(gsize) bytes_read,
-						TRUE);
-					handled = TRUE;
-				}
-
-				g_free (data);
-				g_object_unref (info);
-			}
-
-			g_object_unref (input_stream);
+		if (handled) {
+			/* this in turn calls empathy_avatar_new(), which assumes
+			 * ownership of data.
+			 */
+			avatar_chooser_set_image_from_data (chooser, data,
+							    bytes_read,
+							    TRUE);
 		}
 
 		g_object_unref (file);
