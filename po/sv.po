@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-03 10:11+0200\n"
-"PO-Revision-Date: 2009-10-03 10:14+0100\n"
+"POT-Creation-Date: 2009-10-15 18:23+0200\n"
+"PO-Revision-Date: 2009-10-15 18:23+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -404,7 +404,7 @@ msgid "The selected file is empty"
 msgstr "Den valda filen är tom"
 
 #: ../libempathy/empathy-tp-contact-list.c:844
-#: ../src/empathy.c:276
+#: ../src/empathy.c:279
 msgid "People nearby"
 msgstr "Personer i närheten"
 
@@ -833,19 +833,19 @@ msgstr "Kunde inte konvertera bild"
 msgid "None of the accepted image formats is supported on your system"
 msgstr "Inga av de accepterade bildformaten stöds på ditt system"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:933
+#: ../libempathy-gtk/empathy-avatar-chooser.c:913
 msgid "Select Your Avatar Image"
 msgstr "Välj din avatarbild"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:936
+#: ../libempathy-gtk/empathy-avatar-chooser.c:916
 msgid "No Image"
 msgstr "Ingen bild"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:998
+#: ../libempathy-gtk/empathy-avatar-chooser.c:978
 msgid "Images"
 msgstr "Bilder"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:1002
+#: ../libempathy-gtk/empathy-avatar-chooser.c:982
 msgid "All Files"
 msgstr "Alla filer"
 
@@ -989,13 +989,13 @@ msgstr "Ämne:"
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:276
+#: ../libempathy-gtk/empathy-theme-adium.c:789
 msgid "_Copy Link Address"
 msgstr "_Kopiera länkadress"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:284
+#: ../libempathy-gtk/empathy-theme-adium.c:796
 msgid "_Open Link"
 msgstr "_Öppna länk"
 
@@ -1006,6 +1006,9 @@ msgid "%A %B %d %Y"
 msgstr "%A %e %B %Y"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:177
+msgid "Contact Informations"
+msgstr "Kontaktinformation"
+
 #: ../libempathy-gtk/empathy-contact-dialogs.c:236
 msgid "Edit Contact Information"
 msgstr "Redigera kontaktinformation"
@@ -1363,34 +1366,34 @@ msgstr "Nytt samtal"
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
-#: ../libempathy-gtk/empathy-presence-chooser.c:176
-#: ../libempathy-gtk/empathy-presence-chooser.c:212
+#: ../libempathy-gtk/empathy-presence-chooser.c:177
+#: ../libempathy-gtk/empathy-presence-chooser.c:213
 msgid "Custom Message..."
 msgstr "Anpassat meddelande..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:229
-#: ../libempathy-gtk/empathy-presence-chooser.c:231
+#: ../libempathy-gtk/empathy-presence-chooser.c:230
+#: ../libempathy-gtk/empathy-presence-chooser.c:232
 msgid "Edit Custom Messages..."
 msgstr "Redigera anpassade meddelanden..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:330
+#: ../libempathy-gtk/empathy-presence-chooser.c:331
 msgid "Click to remove this status as a favorite"
 msgstr "Klicka för att ta bort denna status som favorit"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:339
+#: ../libempathy-gtk/empathy-presence-chooser.c:340
 msgid "Click to make this status a favorite"
 msgstr "Klicka för att göra denna status till favorit"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:373
+#: ../libempathy-gtk/empathy-presence-chooser.c:374
 msgid "Set status"
 msgstr "Ange status"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:794
+#: ../libempathy-gtk/empathy-presence-chooser.c:845
 msgid "Set your presence and current status"
 msgstr "Ange din närvaro och aktuell status"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1043
+#: ../libempathy-gtk/empathy-presence-chooser.c:1093
 msgid "Custom messages..."
 msgstr "Anpassade meddelanden..."
 
@@ -1713,19 +1716,19 @@ msgstr "Närvaro"
 msgid "Set your own presence"
 msgstr "Ställ in din egna närvaro"
 
-#: ../src/empathy.c:754
+#: ../src/empathy.c:820
 msgid "Don't connect on startup"
 msgstr "Anslut inte vid uppstart"
 
-#: ../src/empathy.c:758
+#: ../src/empathy.c:824
 msgid "Don't show the contact list on startup"
 msgstr "Visa inte kontaktlistan vid uppstart"
 
-#: ../src/empathy.c:762
+#: ../src/empathy.c:828
 msgid "Show the accounts dialog"
 msgstr "Visa kontodialogrutan"
 
-#: ../src/empathy.c:774
+#: ../src/empathy.c:840
 msgid "- Empathy IM Client"
 msgstr "- Empathy snabbmeddelandeklient"
 
@@ -1791,7 +1794,7 @@ msgstr "Ett fel inträffade"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1431
+#: ../src/empathy-accounts-dialog.c:1429
 #, c-format
 msgid "New %s account"
 msgstr "Nytt %s-konto"
@@ -1878,23 +1881,23 @@ msgstr "Det finns osparade ändringar i ditt %s-konto."
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../src/empathy-accounts-dialog.c:237
+#: ../src/empathy-accounts-dialog.c:235
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s på %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../src/empathy-accounts-dialog.c:249
+#: ../src/empathy-accounts-dialog.c:247
 #, c-format
 msgid "%s Account"
 msgstr "%s-konto"
 
-#: ../src/empathy-accounts-dialog.c:253
+#: ../src/empathy-accounts-dialog.c:251
 msgid "New account"
 msgstr "Nytt konto"
 
-#: ../src/empathy-accounts-dialog.c:517
+#: ../src/empathy-accounts-dialog.c:515
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1902,7 +1905,7 @@ msgstr ""
 "Du är på väg att skapa ett nytt konto vilket kommer att\n"
 "förkasta dina ändringar. Är du säker att du vill fortsätta?"
 
-#: ../src/empathy-accounts-dialog.c:803
+#: ../src/empathy-accounts-dialog.c:799
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1912,12 +1915,12 @@ msgstr ""
 "Är du säker att du vill fortsätta?"
 
 #. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:807
+#: ../src/empathy-accounts-dialog.c:803
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Vill du ta bort %s från din dator?"
 
-#: ../src/empathy-accounts-dialog.c:813
+#: ../src/empathy-accounts-dialog.c:809
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you decide to proceed.\n"
 "\n"
@@ -1928,11 +1931,11 @@ msgstr ""
 "Om du senare lägger till kontot igen, kommer dessa fortfarande vara tillgängliga."
 
 #. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:820
+#: ../src/empathy-accounts-dialog.c:816
 msgid "This will not remove your account on the server."
 msgstr "Detta kommer inte att ta bort ditt konto på servern."
 
-#: ../src/empathy-accounts-dialog.c:1011
+#: ../src/empathy-accounts-dialog.c:1007
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1940,7 +1943,7 @@ msgstr ""
 "Du är på väg att välja ett annat konto vilket kommer att\n"
 "förkasta dina ändringar. Är du säker att du vill fortsätta?"
 
-#: ../src/empathy-accounts-dialog.c:1520
+#: ../src/empathy-accounts-dialog.c:1518
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1949,7 +1952,7 @@ msgstr ""
 "förkasta dina ändringar. Är du säker att du vill fortsätta?"
 
 #.  Translators: this is used only when built on a moblin platform 
-#: ../src/empathy-accounts-dialog.c:1688
+#: ../src/empathy-accounts-dialog.c:1686
 msgid "_Next"
 msgstr "_Nästa"
 
@@ -2781,70 +2784,70 @@ msgstr "Du blev erbjuden en inbjudan för tjänsten %s, men du har inte det nöd
 msgid "Contact Map View"
 msgstr "Kartvy för kontakter"
 
-#: ../src/empathy-debug-window.c:111
-#: ../src/empathy-debug-window.c:1081
+#: ../src/empathy-debug-window.c:116
+#: ../src/empathy-debug-window.c:1229
 msgid "Error"
 msgstr "Fel"
 
-#: ../src/empathy-debug-window.c:114
-#: ../src/empathy-debug-window.c:1075
+#: ../src/empathy-debug-window.c:119
+#: ../src/empathy-debug-window.c:1223
 msgid "Critical"
 msgstr "Kritiskt"
 
-#: ../src/empathy-debug-window.c:117
-#: ../src/empathy-debug-window.c:1069
+#: ../src/empathy-debug-window.c:122
+#: ../src/empathy-debug-window.c:1217
 msgid "Warning"
 msgstr "Varning"
 
-#: ../src/empathy-debug-window.c:120
-#: ../src/empathy-debug-window.c:1063
-#: ../src/empathy-debug-window.c:1111
+#: ../src/empathy-debug-window.c:125
+#: ../src/empathy-debug-window.c:1211
+#: ../src/empathy-debug-window.c:1259
 msgid "Message"
 msgstr "Meddelande"
 
-#: ../src/empathy-debug-window.c:123
-#: ../src/empathy-debug-window.c:1057
+#: ../src/empathy-debug-window.c:128
+#: ../src/empathy-debug-window.c:1205
 msgid "Info"
 msgstr "Info"
 
-#: ../src/empathy-debug-window.c:126
-#: ../src/empathy-debug-window.c:1051
+#: ../src/empathy-debug-window.c:131
+#: ../src/empathy-debug-window.c:1199
 msgid "Debug"
 msgstr "Felsökning"
 
-#: ../src/empathy-debug-window.c:841
+#: ../src/empathy-debug-window.c:988
 msgid "Save"
 msgstr "Spara"
 
-#: ../src/empathy-debug-window.c:944
+#: ../src/empathy-debug-window.c:1091
 msgid "Debug Window"
 msgstr "Felsökningsfönster"
 
-#: ../src/empathy-debug-window.c:1019
+#: ../src/empathy-debug-window.c:1167
 msgid "Pause"
 msgstr "Gör paus"
 
-#: ../src/empathy-debug-window.c:1031
+#: ../src/empathy-debug-window.c:1179
 msgid "Level "
 msgstr "Nivå "
 
-#: ../src/empathy-debug-window.c:1100
+#: ../src/empathy-debug-window.c:1248
 msgid "Time"
 msgstr "Tid"
 
-#: ../src/empathy-debug-window.c:1102
+#: ../src/empathy-debug-window.c:1250
 msgid "Domain"
 msgstr "Domän"
 
-#: ../src/empathy-debug-window.c:1104
+#: ../src/empathy-debug-window.c:1252
 msgid "Category"
 msgstr "Kategori"
 
-#: ../src/empathy-debug-window.c:1106
+#: ../src/empathy-debug-window.c:1254
 msgid "Level"
 msgstr "Nivå"
 
-#: ../src/empathy-debug-window.c:1138
+#: ../src/empathy-debug-window.c:1286
 msgid "The selected connection manager does not support the remote debugging extension."
 msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfelsökning."
 
@@ -2912,8 +2915,6 @@ msgstr "Den valda anslutningshanteraren saknar stöd för tillägg för fjärrfe
 #~ msgstr "_Kontrollera stavning..."
 #~ msgid "Group Chat"
 #~ msgstr "Gruppchatt"
-#~ msgid "Contact Information"
-#~ msgstr "Kontaktinformation"
 #~ msgid "I would like to add you to my contact list."
 #~ msgstr "Jag vill lägga till dig i min kontaktlista."
 #~ msgid "Sorry, I don't want you in my contact list anymore."
