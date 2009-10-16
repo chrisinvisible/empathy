@@ -908,6 +908,7 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 	GtkTreeModel               *model;
 	GtkTreeIter                 iter;
 	gboolean valid, match_state = FALSE, match = FALSE;
+	GtkWidget                  *entry;
 
 	priv = GET_PRIV (chooser);
 
@@ -977,6 +978,10 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 	else {
 		presence_chooser_flash_stop (chooser, state);
 	}
+
+	entry = gtk_bin_get_child (GTK_BIN (chooser));
+	gtk_editable_set_editable (GTK_EDITABLE (entry),
+	    state != TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
 }
 
 static gboolean
