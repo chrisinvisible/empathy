@@ -227,7 +227,7 @@ _create_account_cb (GObject *source,
       goto out;
     }
 
-  DEBUG ("account created\n");
+  DEBUG ("account created");
   account = empathy_account_settings_get_account (
     EMPATHY_ACCOUNT_SETTINGS (source));
 
@@ -248,7 +248,7 @@ _get_protocol_from_profile (const gchar *profile)
 {
   gint i;
 
-  DEBUG ("profile: %s\n", profile);
+  DEBUG ("profile: %s", profile);
 
   for (i = 0; i < G_N_ELEMENTS (profile_protocol_map); i++)
     if (!tp_strdiff (profile, profile_protocol_map[i].profile))
@@ -394,7 +394,7 @@ import_one_account (const char *path,
 
   if (profile == NULL)
     {
-      DEBUG ("Account is missing a profile entry\n");
+      DEBUG ("Account is missing a profile entry");
       goto failed;
     }
 
@@ -424,7 +424,7 @@ import_one_account (const char *path,
 
   if (entries == NULL)
     {
-      DEBUG ("Failed to get all entries: %s\n", error->message);
+      DEBUG ("Failed to get all entries: %s", error->message);
       g_error_free (error);
       goto failed;
     }
@@ -491,7 +491,7 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 
   if (error != NULL)
     {
-      DEBUG ("Failed to get import_mc4_accounts key: %s\n", error->message);
+      DEBUG ("Failed to get import_mc4_accounts key: %s", error->message);
       g_error_free (error);
       goto out;
     }
@@ -502,13 +502,13 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
       goto out;
     }
 
-  DEBUG ("MC 4 accounts are going to be imported\n");
+  DEBUG ("MC 4 accounts are going to be imported");
 
   dirs = gconf_client_all_dirs (client, MC_ACCOUNTS_GCONF_BASE, &error);
 
   if (error != NULL)
     {
-      DEBUG ("Failed to get MC4 account dirs: %s\n",
+      DEBUG ("Failed to get MC4 account dirs: %s",
           error->message);
       g_clear_error (&error);
       g_object_unref (client);
