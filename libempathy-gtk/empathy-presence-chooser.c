@@ -306,7 +306,7 @@ presence_chooser_is_preset (EmpathyPresenceChooser *self)
 
 	g_list_free (presets);
 
-	DEBUG ("is_preset(%i, %s) = %i\n", state, status, match);
+	DEBUG ("is_preset(%i, %s) = %i", state, status, match);
 
 	return match;
 }
@@ -414,7 +414,7 @@ mc_set_custom_state (EmpathyPresenceChooser *self)
 	/* update the status with MC */
 	status = gtk_entry_get_text (GTK_ENTRY (entry));
 
-	DEBUG ("Sending state to MC-> %d (%s)\n", priv->state, status);
+	DEBUG ("Sending state to MC-> %d (%s)", priv->state, status);
 
 	empathy_idle_set_presence (priv->idle, priv->state, status);
 }
@@ -479,12 +479,12 @@ presence_chooser_entry_icon_release_cb (EmpathyPresenceChooser *self,
 
 		if (presence_chooser_is_preset (self)) {
 			/* remove the entry */
-			DEBUG ("REMOVING PRESET (%i, %s)\n", state, status);
+			DEBUG ("REMOVING PRESET (%i, %s)", state, status);
 			empathy_status_presets_remove (state, status);
 		}
 		else {
 			/* save the entry */
-			DEBUG ("SAVING PRESET (%i, %s)\n", state, status);
+			DEBUG ("SAVING PRESET (%i, %s)", state, status);
 			empathy_status_presets_set_last (state, status);
 		}
 
@@ -674,7 +674,7 @@ presence_chooser_entry_focus_out_idle_cb (gpointer user_data)
 	EmpathyPresenceChooser *chooser;
 	GtkWidget *entry;
 
-	DEBUG ("Autocommiting status message\n");
+	DEBUG ("Autocommiting status message");
 
 	chooser = EMPATHY_PRESENCE_CHOOSER (user_data);
 	entry = gtk_bin_get_child (GTK_BIN (chooser));
