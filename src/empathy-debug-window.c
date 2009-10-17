@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
+#include <gdk/gdkkeysyms.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -1068,6 +1069,20 @@ debug_window_copy_clicked_cb (GtkToolButton *tool_button,
   g_free (text);
 }
 
+static gboolean
+debug_window_key_press_event_cb (GtkWidget *widget,
+    GdkEventKey *event,
+    gpointer user_data)
+{
+  if (event->state & GDK_CONTROL_MASK && event->keyval == GDK_w)
+    {
+      gtk_widget_destroy (widget);
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
 static GObject *
 debug_window_constructor (GType type,
     guint n_construct_params,
@@ -1090,6 +1105,9 @@ debug_window_constructor (GType type,
 
   gtk_window_set_title (GTK_WINDOW (object), _("Debug Window"));
   gtk_window_set_default_size (GTK_WINDOW (object), 800, 400);
+
+  g_signal_connect (object, "key-press-event",
+      G_CALLBACK (debug_window_key_press_event_cb), NULL);
 
   vbox = gtk_vbox_new (FALSE, 0);
   gtk_container_add (GTK_CONTAINER (object), vbox);
