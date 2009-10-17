@@ -215,12 +215,23 @@ idle_session_status_changed_cb (DBusGProxy    *gs_proxy,
 			new_status = priv->status;
 		}
 
-		DEBUG ("Restoring state to %d, reset status to %s",
-			priv->away_saved_state, new_status);
+		/* Only try and set the presence if the away saved state is not
+		 * unset. This is an odd case because it means that the session
+		 * didn't notify us of the state change to idle, and as a
+		 * result, we couldn't save the current state at that time.
+		 */
+		if (priv->away_saved_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
+			DEBUG ("Restoring state to %d, reset status to %s",
+				priv->away_saved_state, new_status);
 
-		empathy_idle_set_presence (idle,
-					   priv->away_saved_state,
-					   new_status);
+			empathy_idle_set_presence (idle,
+						   priv->away_saved_state,
+						   new_status);
+		} else {
+			DEBUG ("Away saved state is unset. This means that we "
+			       "weren't told when the session went idle. "
+			       "As a result, I'm not trying to set presence");
+		}
 
 		priv->away_saved_state = TP_CONNECTION_PRESENCE_TYPE_UNSET;
 	}
