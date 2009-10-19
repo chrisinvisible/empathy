@@ -620,8 +620,9 @@ empathy_call_window_setup_self_frame (GstBus *bus, EmpathyCallWindow *self)
   gst_object_ref (priv->audio_input);
   gst_object_sink (priv->audio_input);
 
-  g_signal_connect (priv->audio_input, "peak-level-changed",
-    G_CALLBACK (empathy_call_window_audio_input_level_changed_cb), self);
+  empathy_signal_connect_weak (priv->audio_input, "peak-level-changed",
+    G_CALLBACK (empathy_call_window_audio_input_level_changed_cb),
+    G_OBJECT (self));
 }
 
 static void
