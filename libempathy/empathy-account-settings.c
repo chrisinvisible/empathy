@@ -31,6 +31,9 @@
 #include "empathy-connection-managers.h"
 #include "empathy-utils.h"
 
+#define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
+#include <libempathy/empathy-debug.h>
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountSettings)
 
 G_DEFINE_TYPE(EmpathyAccountSettings, empathy_account_settings, G_TYPE_OBJECT)
@@ -453,7 +456,12 @@ empathy_account_settings_get_tp_params (EmpathyAccountSettings *settings)
 
   tp_protocol = tp_connection_manager_get_protocol (priv->manager,
      priv->protocol);
-  g_return_val_if_fail (tp_protocol != NULL, NULL);
+  if (tp_protocol == NULL)
+    {
+      DEBUG ("Can't retrieve TpConnectionManagerProtocol for protocol '%s'",
+          priv->protocol);
+      return NULL;
+    }
 
   return tp_protocol->params;
 }
