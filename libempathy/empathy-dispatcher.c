@@ -131,6 +131,7 @@ typedef struct
   guint handle_type;
   guint handle;
   EmpathyContact *contact;
+  TpProxyPendingCall *pending_call;
 
   /* Properties to pass to the channel when requesting it */
   GHashTable *request;
@@ -284,6 +285,8 @@ free_connection_data (ConnectionData *cd)
 
   for (l = cd->outstanding_requests ; l != NULL; l = g_list_delete_link (l,l))
     {
+      DispatcherRequestData *data = l->data;
+      tp_proxy_pending_call_cancel (data->pending_call);
       free_dispatcher_request_data (l->data);
     }
 
@@ -941,6 +944,8 @@ static void
 dispatcher_dispose (GObject *object)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (object);
+  GHashTableIter iter;
+  gpointer connection;
   GList *l;
 
   if (priv->dispose_has_run)
@@ -957,6 +962,16 @@ dispatcher_dispose (GObject *object)
   if (priv->handler != NULL)
     g_object_unref (priv->handler);
   priv->handler = NULL;
+
+  g_hash_table_iter_init (&iter, priv->connections);
+  while (g_hash_table_iter_next (&iter, &connection, NULL))
+    {
+      g_signal_handlers_disconnect_by_func (connection,
+          dispatcher_connection_invalidated_cb, object);
+    }
+
+  g_hash_table_destroy (priv->connections);
+  priv->connections = NULL;
 
   G_OBJECT_CLASS (empathy_dispatcher_parent_class)->dispose (object);
 }
@@ -988,13 +1003,6 @@ dispatcher_finalize (GObject *object)
 
   g_list_free (priv->channels);
 
-  g_hash_table_iter_init (&iter, priv->connections);
-  while (g_hash_table_iter_next (&iter, &connection, NULL))
-    {
-      g_signal_handlers_disconnect_by_func (connection,
-          dispatcher_connection_invalidated_cb, object);
-    }
-
   g_hash_table_iter_init (&iter, priv->outstanding_classes_requests);
   while (g_hash_table_iter_next (&iter, &connection, (gpointer *) &list))
     {
@@ -1004,7 +1012,6 @@ dispatcher_finalize (GObject *object)
 
   g_object_unref (priv->account_manager);
 
-  g_hash_table_destroy (priv->connections);
   g_hash_table_destroy (priv->outstanding_classes_requests);
 }
 
@@ -1291,8 +1298,9 @@ dispatcher_request_channel_cb (TpConnection *connection,
                                gpointer user_data,
                                GObject *weak_object)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (weak_object);
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+  EmpathyDispatcher *dispatcher =
+      EMPATHY_DISPATCHER (request_data->dispatcher);
 
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, NULL, error);
@@ -1322,12 +1330,13 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
     }
   else
     {
-      tp_cli_connection_call_request_channel (request_data->connection, -1,
+      request_data->pending_call = tp_cli_connection_call_request_channel (
+        request_data->connection, -1,
         request_data->channel_type,
         request_data->handle_type,
         request_data->handle,
         TRUE, dispatcher_request_channel_cb,
-        request_data, NULL, G_OBJECT (request_data->dispatcher));
+        request_data, NULL, NULL);
     }
 }
 
@@ -1481,10 +1490,10 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
 
-  tp_cli_connection_call_request_handles (connection, -1,
+  request_data->pending_call = tp_cli_connection_call_request_handles (
+    connection, -1,
     TP_HANDLE_TYPE_ROOM, names,
-    dispatcher_request_handles_cb, request_data, NULL,
-    G_OBJECT (dispatcher));
+    dispatcher_request_handles_cb, request_data, NULL, NULL);
 
   g_object_unref (dispatcher);
 }
@@ -1497,8 +1506,9 @@ dispatcher_create_channel_cb (TpConnection *connect,
                               gpointer user_data,
                               GObject *weak_object)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (weak_object);
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+  EmpathyDispatcher *dispatcher =
+      EMPATHY_DISPATCHER (request_data->dispatcher);
 
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, properties, error);
@@ -1513,8 +1523,9 @@ dispatcher_ensure_channel_cb (TpConnection *connect,
                               gpointer user_data,
                               GObject *weak_object)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (weak_object);
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+  EmpathyDispatcher *dispatcher =
+      EMPATHY_DISPATCHER (request_data->dispatcher);
 
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, properties, error);
@@ -1527,17 +1538,19 @@ empathy_dispatcher_call_create_or_ensure_channel (
 {
   if (request_data->should_ensure)
     {
-      tp_cli_connection_interface_requests_call_ensure_channel (
+      request_data->pending_call =
+          tp_cli_connection_interface_requests_call_ensure_channel (
           request_data->connection, -1,
           request_data->request, dispatcher_ensure_channel_cb,
-          request_data, NULL, G_OBJECT (request_data->dispatcher));
+          request_data, NULL, NULL);
     }
   else
     {
-      tp_cli_connection_interface_requests_call_create_channel (
+      request_data->pending_call =
+          tp_cli_connection_interface_requests_call_create_channel (
           request_data->connection, -1,
           request_data->request, dispatcher_create_channel_cb,
-          request_data, NULL, G_OBJECT (request_data->dispatcher));
+          request_data, NULL, NULL);
     }
 }
 
