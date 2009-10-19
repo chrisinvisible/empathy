@@ -55,7 +55,6 @@ struct _EmpathyAccountSettingsPriv
   gulong account_manager_ready_id;
 
   TpConnectionManager *manager;
-  const TpConnectionManagerProtocol *tp_protocol;
 
   EmpathyAccount *account;
   gchar *cm_name;
@@ -353,6 +352,7 @@ static void
 empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (self);
+  const TpConnectionManagerProtocol *tp_protocol;
 
   if (priv->ready)
     return;
@@ -380,10 +380,10 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
         g_strdup (empathy_account_get_icon_name (priv->account));
     }
 
-  priv->tp_protocol = tp_connection_manager_get_protocol (priv->manager,
+  tp_protocol = tp_connection_manager_get_protocol (priv->manager,
     priv->protocol);
 
-  if (priv->tp_protocol == NULL)
+  if (tp_protocol == NULL)
     {
       priv->manager = NULL;
       return;
@@ -396,7 +396,7 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 
       priv->required_params = g_array_new (TRUE, FALSE, sizeof (gchar *));
 
-      for (cur = priv->tp_protocol->params; cur->name != NULL; cur++)
+      for (cur = tp_protocol->params; cur->name != NULL; cur++)
         {
           if (tp_connection_manager_param_is_required (cur))
             {
@@ -446,10 +446,16 @@ TpConnectionManagerParam *
 empathy_account_settings_get_tp_params (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  const TpConnectionManagerProtocol *tp_protocol;
 
-  g_return_val_if_fail (priv->tp_protocol != NULL, NULL);
+  g_return_val_if_fail (priv->manager != NULL, NULL);
+  g_return_val_if_fail (priv->protocol != NULL, NULL);
 
-  return priv->tp_protocol->params;
+  tp_protocol = tp_connection_manager_get_protocol (priv->manager,
+     priv->protocol);
+  g_return_val_if_fail (tp_protocol != NULL, NULL);
+
+  return tp_protocol->params;
 }
 
 gboolean
