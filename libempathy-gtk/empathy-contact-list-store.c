@@ -63,6 +63,7 @@ typedef struct {
 	gboolean                    show_active;
 	EmpathyContactListStoreSort sort_criterium;
 	guint                       inhibit_active;
+	guint                       setup_idle_id;
 } EmpathyContactListStorePriv;
 
 typedef struct {
@@ -193,6 +194,7 @@ contact_list_store_iface_setup (gpointer user_data)
 	}
 	g_list_free (contacts);
 
+	priv->setup_idle_id = 0;
 	return FALSE;
 }
 
@@ -206,7 +208,7 @@ contact_list_store_set_contact_list (EmpathyContactListStore *store,
 	priv->list = g_object_ref (list_iface);
 
 	/* Let a chance to have all properties set before populating */
-	g_idle_add (contact_list_store_iface_setup, store);
+	priv->setup_idle_id = g_idle_add (contact_list_store_iface_setup, store);
 }
 
 static void
@@ -311,6 +313,10 @@ contact_list_store_finalize (GObject *object)
 
 	if (priv->inhibit_active) {
 		g_source_remove (priv->inhibit_active);
+	}
+
+	if (priv->setup_idle_id != 0) {
+		g_source_remove (priv->setup_idle_id);
 	}
 
 	G_OBJECT_CLASS (empathy_contact_list_store_parent_class)->finalize (object);
