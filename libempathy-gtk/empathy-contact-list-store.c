@@ -64,6 +64,7 @@ typedef struct {
 	EmpathyContactListStoreSort sort_criterium;
 	guint                       inhibit_active;
 	guint                       setup_idle_id;
+	gboolean                    dispose_has_run;
 } EmpathyContactListStorePriv;
 
 typedef struct {
@@ -84,7 +85,7 @@ typedef struct {
 	gboolean                remove;
 } ShowActiveData;
 
-static void             contact_list_store_finalize                  (GObject                       *object);
+static void             contact_list_store_dispose                  (GObject                       *object);
 static void             contact_list_store_get_property              (GObject                       *object,
 								      guint                          param_id,
 								      GValue                        *value,
@@ -216,7 +217,7 @@ empathy_contact_list_store_class_init (EmpathyContactListStoreClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->finalize = contact_list_store_finalize;
+	object_class->dispose = contact_list_store_dispose;
 	object_class->get_property = contact_list_store_get_property;
 	object_class->set_property = contact_list_store_set_property;
 
@@ -288,10 +289,14 @@ empathy_contact_list_store_init (EmpathyContactListStore *store)
 }
 
 static void
-contact_list_store_finalize (GObject *object)
+contact_list_store_dispose (GObject *object)
 {
 	EmpathyContactListStorePriv *priv = GET_PRIV (object);
 	GList                       *contacts, *l;
+
+	if (priv->dispose_has_run)
+		return;
+	priv->dispose_has_run = TRUE;
 
 	contacts = empathy_contact_list_get_members (priv->list);
 	for (l = contacts; l; l = l->next) {
@@ -319,7 +324,7 @@ contact_list_store_finalize (GObject *object)
 		g_source_remove (priv->setup_idle_id);
 	}
 
-	G_OBJECT_CLASS (empathy_contact_list_store_parent_class)->finalize (object);
+	G_OBJECT_CLASS (empathy_contact_list_store_parent_class)->dispose (object);
 }
 
 static void
