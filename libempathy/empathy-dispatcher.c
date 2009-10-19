@@ -254,6 +254,9 @@ free_dispatcher_request_data (DispatcherRequestData *r)
   if (r->request != NULL)
     g_hash_table_unref (r->request);
 
+  if (r->pending_call != NULL)
+    tp_proxy_pending_call_cancel (r->pending_call);
+
   g_slice_free (DispatcherRequestData, r);
 }
 
@@ -285,8 +288,6 @@ free_connection_data (ConnectionData *cd)
 
   for (l = cd->outstanding_requests ; l != NULL; l = g_list_delete_link (l,l))
     {
-      DispatcherRequestData *data = l->data;
-      tp_proxy_pending_call_cancel (data->pending_call);
       free_dispatcher_request_data (l->data);
     }
 
@@ -1302,6 +1303,8 @@ dispatcher_request_channel_cb (TpConnection *connection,
   EmpathyDispatcher *dispatcher =
       EMPATHY_DISPATCHER (request_data->dispatcher);
 
+  request_data->pending_call = NULL;
+
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, NULL, error);
 }
@@ -1438,6 +1441,8 @@ dispatcher_request_handles_cb (TpConnection *connection,
 {
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
 
+  request_data->pending_call = NULL;
+
   if (error != NULL)
     {
       EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
@@ -1510,6 +1515,8 @@ dispatcher_create_channel_cb (TpConnection *connect,
   EmpathyDispatcher *dispatcher =
       EMPATHY_DISPATCHER (request_data->dispatcher);
 
+  request_data->pending_call = NULL;
+
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, properties, error);
 }
@@ -1526,6 +1533,8 @@ dispatcher_ensure_channel_cb (TpConnection *connect,
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
   EmpathyDispatcher *dispatcher =
       EMPATHY_DISPATCHER (request_data->dispatcher);
+
+  request_data->pending_call = NULL;
 
   dispatcher_connection_new_requested_channel (dispatcher,
     request_data, object_path, properties, error);
