@@ -943,7 +943,7 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
       factory = empathy_tp_contact_factory_dup_singleton (connection);
       empathy_tp_contact_factory_get_from_handle (factory,
           tp_connection_get_self_handle (connection),
-          empathy_call_window_got_self_contact_cb, self, NULL, NULL);
+          empathy_call_window_got_self_contact_cb, self, NULL, G_OBJECT (self));
 
       g_object_unref (factory);
     }
