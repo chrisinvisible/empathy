@@ -392,7 +392,7 @@ ephy_spinner_cache_get_images (EphySpinnerCache *cache,
 
 	LOG ("Getting animation images for screen %p at size %d", screen, icon_size);
 
-	g_return_val_if_fail (icon_size >= 0 && icon_size < LAST_ICON_SIZE, NULL);
+	g_return_val_if_fail (icon_size < LAST_ICON_SIZE, NULL);
 
 	/* Backward compat: "invalid" meant "native" size which doesn't exist anymore */
 	if (icon_size == GTK_ICON_SIZE_INVALID)
@@ -642,8 +642,7 @@ ephy_spinner_expose (GtkWidget *widget,
 	/* Otherwise |images| will be NULL anyway */
 	g_assert (images->n_animation_pixbufs > 0);
 		
-	g_assert (details->current_image >= 0 &&
-		  details->current_image < images->n_animation_pixbufs);
+	g_assert (details->current_image < images->n_animation_pixbufs);
 
 	pixbuf = images->animation_pixbufs[details->current_image];
 
