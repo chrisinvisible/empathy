@@ -663,7 +663,7 @@ setup_dispatcher (void)
     "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
     NULL };
   GHashTable *asv;
-  int i;
+  guint i;
 
   /* Setup the basic Client.Handler that matches our client filter */
   filters = g_ptr_array_new ();
