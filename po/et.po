@@ -8,10 +8,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: empathy 2.28\n"
+"Project-Id-Version: empathy MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-09-16 18:17+0000\n"
+"POT-Creation-Date: 2009-10-05 11:29+0000\n"
 "PO-Revision-Date: 2009-09-17 10:17+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <et@li.org>\n"
@@ -56,7 +56,7 @@ msgstr "Kompaktne sõbranimekiri"
 msgid "Connection managers should be used"
 msgstr "Kas peab ühenduste haldureid kasutama"
 
-msgid "Contact list sort criterium"
+msgid "Contact list sort criterion"
 msgstr "Kontaktide nimekirja sortimise alus"
 
 msgid "Default directory to select an avatar image from"
@@ -329,13 +329,13 @@ msgid "Whether to use the theme for chat rooms or not."
 msgstr "Kas jututubadele kasutatakse kujundust või mitte."
 
 msgid ""
-"Which criterium to use when sorting the contact list. Default is to use sort "
+"Which criterion to use when sorting the contact list. Default is to use sort "
 "by the contact's name with the value \"name\". A value of \"state\" will "
 "sort the contact list by state."
 msgstr ""
-"Millie alusel sorteeritakse kontaktide nimekiri. Vaikimisi sorteeritakse "
-"kontaktid nime järgi, selle välja väärtus on \"name\". Kui väärtus on \"state"
-"\", sorteeritakse kontaktide nimekiri oleku järgi."
+"Kontaktide nimekirja sortimise alus. Vaikimisi on väärtus \"name\" ja sel "
+"juhul sorditakse kontaktid nime järgi. Väärtuse \"state\" korral toimub "
+"sortimine oleku järgi."
 
 msgid "Can't set an empty display name"
 msgstr "Tühja ekraaninime pole võimalik määrata"
@@ -449,8 +449,15 @@ msgstr "Kõik"
 msgid "%s:"
 msgstr "%s:"
 
+msgid "L_og in"
+msgstr "Logi _sisse"
+
 msgid "Enabled"
 msgstr "Lubatud"
+
+#.  Translators: this is used only when built on a moblin platform 
+msgid "Account:"
+msgstr "Konto:"
 
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
 msgstr "<span size=\"small\"><b>Näide:</b> MinuEkraaniNimi</span>"
@@ -776,6 +783,9 @@ msgstr "_Ava link"
 msgid "%A %B %d %Y"
 msgstr "%A, %d. %B %Y"
 
+msgid "Contact Informations"
+msgstr "Kontakti andmed"
+
 msgid "Edit Contact Information"
 msgstr "Kontakti andmete redigeerimine"
 
@@ -942,9 +952,6 @@ msgstr "%e. %B %Y kell %R UTC"
 
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Asukoht</b> kuupäeval\t"
-
-msgid "Account:"
-msgstr "Konto:"
 
 msgid "Alias:"
 msgstr "Alias:"
@@ -1258,6 +1265,18 @@ msgstr "Häälesta kontakt."
 msgid "Select contact..."
 msgstr "Vali kontakt..."
 
+msgid "The contact selected cannot receive files."
+msgstr "Valitud kontakt pole suuteline faile vastu võtma."
+
+msgid "The contact selected is offline."
+msgstr "Valitud kontakt pole võrku ühendatud."
+
+msgid "No error message"
+msgstr "Veateade puudub"
+
+msgid "Instant Message (Empathy)"
+msgstr "Välksõnum (Empathy)"
+
 msgid "Presence"
 msgstr "Kohalolek"
 
@@ -1450,6 +1469,11 @@ msgstr ""
 "Sa oled eemaldamas oma %s kontot.\n"
 "Kas sa soovid seda teha?"
 
+#. Translators: this is used only when built on a moblin platform
+#, c-format
+msgid "Do you want to remove %s from your computer?"
+msgstr "Kas tahad '%s' oma arvutist eemaldada?"
+
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -1460,6 +1484,10 @@ msgstr ""
 "Jätkamisel EI eemaldata ühtegi seotud vestlust ega jututuba.\n"
 "\n"
 "Kui sa peaksid konto hiljem uuesti lisama, on need andmed ikka alles."
+
+#. Translators: this is used only when built on a moblin platform
+msgid "This will not remove your account on the server."
+msgstr "See eemaldab serverist sinu konto."
 
 msgid ""
 "You are about to select another account, which will discard\n"
@@ -1474,6 +1502,10 @@ msgid ""
 msgstr ""
 "Sa oled akent sulgemas ja see tühistab tehtud muudatused\n"
 "Kas sa soovid seda teha?"
+
+#.  Translators: this is used only when built on a moblin platform 
+msgid "_Next"
+msgstr "_Järgmine"
 
 msgid "Accounts"
 msgstr "Kontod"
@@ -1499,6 +1531,9 @@ msgstr "_Lisa..."
 
 msgid "_Create a new account"
 msgstr "_Luuakse uus konto"
+
+msgid "_Import..."
+msgstr "_Impordi..."
 
 msgid "_Reuse an existing account"
 msgstr "_Kasutatakse olemasolevat kontot"
@@ -1830,7 +1865,7 @@ msgid "Authentication failed"
 msgstr "Tõrge autentimisel"
 
 msgid "Encryption error"
-msgstr "Krüpteerimise viga"
+msgstr "Krüptimise viga"
 
 msgid "Name in use"
 msgstr "Nimi on juba kasutusel"
@@ -2001,15 +2036,6 @@ msgstr "Konto ühendus katkestatud"
 msgid "Language"
 msgstr "Keel"
 
-msgid "Allow _GPS usage"
-msgstr "_GPS-i kasutamine lubatud"
-
-msgid "Allow _cellphone usage"
-msgstr "_Mobiili kasutamine lubatud"
-
-msgid "Allow _network usage"
-msgstr "_Võrgu kasutamine lubatud"
-
 msgid "Appearance"
 msgstr "Välimus"
 
@@ -2043,11 +2069,11 @@ msgstr "Õigekirjakontroll on lubatud järgmistele keeltele:"
 msgid "General"
 msgstr "Üldine"
 
-msgid "Geoclue Settings"
-msgstr "Geoclue sätted"
-
 msgid "Location"
 msgstr "Asukoht"
+
+msgid "Location sources:"
+msgstr "Asukohaallikad:"
 
 msgid "Notifications"
 msgstr "Teavitamisviisid"
@@ -2091,11 +2117,20 @@ msgstr ""
 msgid "Themes"
 msgstr "Teemad"
 
+msgid "_Cellphone"
+msgstr "_Mobiiltelefon"
+
 msgid "_Enable bubble notifications"
 msgstr "_Teatemullid on lubatud"
 
 msgid "_Enable sound notifications"
 msgstr "_Heliteated on lubatud"
+
+msgid "_GPS"
+msgstr "_GPS"
+
+msgid "_Network (IP, Wifi)"
+msgstr "_Võrk (IP, Wifi)"
 
 msgid "_Open new chats in separate windows"
 msgstr "_Uued vestlused avanevad eraldi akendes"
@@ -2105,6 +2140,9 @@ msgstr "_Minu asukoht avaldatakse kontaktidele"
 
 msgid "_Reduce location accuracy"
 msgstr "_Asukoha täpsust vähendatakse"
+
+msgid "Respond"
+msgstr "Vastamine"
 
 msgid "Status"
 msgstr "Olek"
