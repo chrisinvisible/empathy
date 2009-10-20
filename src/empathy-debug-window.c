@@ -329,7 +329,7 @@ debug_window_get_messages_cb (TpProxy *proxy,
   GtkTreeIter iter;
   gchar *name;
   GList *old_messages;
-  gint i;
+  guint i;
 
   if (error != NULL)
     {
@@ -648,11 +648,11 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
        * just joined), we don't need to check whether the unique
        * name is in the CM model. Hooray.
        */
-      GtkTreeIter iter;
       const gchar *name = arg0 + strlen (CM_WELL_KNOWN_NAME_PREFIX);
 
       if (!g_hash_table_lookup (priv->all_cms, name))
         {
+          GtkTreeIter iter;
           DEBUG ("Adding new CM '%s' at %s.", name, arg2);
 
           gtk_list_store_append (priv->cms, &iter);
