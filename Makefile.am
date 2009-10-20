@@ -12,10 +12,6 @@ if HAVE_NOTHERE
 SUBDIRS += nothere
 endif
 
-if HAVE_PYTHON
-SUBDIRS += python
-endif
-
 if HAVE_TESTS
 SUBDIRS += tests
 endif

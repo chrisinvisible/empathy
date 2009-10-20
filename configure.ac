@@ -456,41 +456,6 @@ fi
 AM_CONDITIONAL(HAVE_TESTS, test "x$have_check" = "xyes")
 
 # -----------------------------------------------------------
-# Python Bindings
-# -----------------------------------------------------------
-AC_ARG_ENABLE(python,
-              AS_HELP_STRING([--enable-python=@<:@no/yes/auto@:>@],
-                             [build python bindings to libempathy and libempathy-gtk]), ,
-                             enable_python=auto)
-
-if test "x$enable_python" != "xno"; then
-   PKG_CHECK_MODULES(PYTHON_BINDING,
-   [
-      pygtk-2.0,
-      glib-2.0 >= $GLIB_REQUIRED
-      gobject-2.0
-      gconf-2.0 >= $GCONF_REQUIRED
-      libxml-2.0
-      gtk+-2.0 >= $GTK_REQUIRED
-      gstreamer-0.10
-      gstreamer-interfaces-0.10
-      telepathy-farsight
-   ], have_python="yes", have_python="no")
-   if test "x$have_python" = "xyes" ; then
-      AM_CHECK_PYTHON_HEADERS(,have_python="no")
-      AC_CHECK_PROGS([PYGOBJECTCODEGEN], [pygobject-codegen-2.0 pygtk-codegen-2.0])
-   fi
-else
-   have_python=no
-fi
-
-if test "x$enable_python" = "xyes" -a "x$have_python" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find python.])
-fi
-
-AM_CONDITIONAL(HAVE_PYTHON, test "x$have_python" = "xyes")
-
-# -----------------------------------------------------------
 # Coding style checks
 # -----------------------------------------------------------
 AC_ARG_ENABLE(coding-style-checks,
@@ -528,9 +493,6 @@ AC_OUTPUT([
    docs/libempathy-gtk/Makefile
    docs/libempathy-gtk/version.xml
    help/Makefile
-   python/Makefile
-   python/pyempathy/Makefile
-   python/pyempathygtk/Makefile
    tests/Makefile
    tests/xml/Makefile
    tools/Makefile
@@ -561,7 +523,6 @@ Configure summary:
 
     Extras:
 	Documentation...............:  ${enable_gtk_doc}
-	Python bindings.............:  ${have_python}
 	Megaphone applet............:  ${have_megaphone}
 	Nothere applet..............:  ${have_nothere}
 	Nautilus-sendto plugin......:  ${have_nst}
