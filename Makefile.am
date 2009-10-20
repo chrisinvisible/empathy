@@ -1,4 +1,4 @@
-SUBDIRS = tools extensions po data libempathy libempathy-gtk src docs help
+SUBDIRS = tools extensions po data libempathy libempathy-gtk src help
 
 if HAVE_NST
 SUBDIRS += nautilus-sendto-plugin

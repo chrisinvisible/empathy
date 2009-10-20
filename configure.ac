@@ -67,7 +67,6 @@ AM_PROG_MKDIR_P
 AM_PATH_GLIB_2_0
 AC_PATH_XTRA
 IT_PROG_INTLTOOL([0.35.0])
-GTK_DOC_CHECK([1.3])
 GNOME_DOC_INIT([0.17.3])
 IDT_COMPILE_WARNINGS
 AC_PATH_PROG(DBUS_BINDING_TOOL, dbus-binding-tool)
@@ -427,11 +426,6 @@ AC_OUTPUT([
    libempathy-gtk/libempathy-gtk.pc
    src/Makefile
    nautilus-sendto-plugin/Makefile
-   docs/Makefile
-   docs/libempathy/Makefile
-   docs/libempathy/version.xml
-   docs/libempathy-gtk/Makefile
-   docs/libempathy-gtk/version.xml
    help/Makefile
    tests/Makefile
    tests/xml/Makefile
@@ -462,6 +456,5 @@ Configure summary:
 	ConnMan integration.........:  ${have_connman}
 
     Extras:
-	Documentation...............:  ${enable_gtk_doc}
 	Nautilus-sendto plugin......:  ${have_nst}
 "

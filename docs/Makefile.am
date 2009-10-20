@@ -1,2 +1,0 @@
-SUBDIRS = libempathy libempathy-gtk
-
