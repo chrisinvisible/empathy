@@ -99,14 +99,15 @@ empathy_sidebar_select_page (EmpathySidebar *sidebar,
                                 GtkTreeIter *iter)
 {
   gchar *title;
-  gint index;
+  gint index_;
 
   gtk_tree_model_get (sidebar->priv->page_model, iter,
       PAGE_COLUMN_TITLE, &title,
-      PAGE_COLUMN_NOTEBOOK_INDEX, &index,
+      PAGE_COLUMN_NOTEBOOK_INDEX, &index_,
       -1);
 
-  gtk_notebook_set_current_page (GTK_NOTEBOOK (sidebar->priv->notebook), index);
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (sidebar->priv->notebook),
+      index_);
   gtk_label_set_text (GTK_LABEL (sidebar->priv->label), title);
 
   g_free (title);
@@ -485,12 +486,12 @@ empathy_sidebar_add_page (EmpathySidebar *sidebar,
   GtkTreeIter iter;
   GtkWidget *menu_item;
   gchar *label_title;
-  gint index;
+  gint index_;
 
   g_return_if_fail (EMPATHY_IS_SIDEBAR (sidebar));
   g_return_if_fail (GTK_IS_WIDGET (main_widget));
 
-  index = gtk_notebook_append_page (GTK_NOTEBOOK (sidebar->priv->notebook),
+  index_ = gtk_notebook_append_page (GTK_NOTEBOOK (sidebar->priv->notebook),
       main_widget, NULL);
 
   menu_item = gtk_image_menu_item_new_with_label (title);
@@ -510,7 +511,7 @@ empathy_sidebar_add_page (EmpathySidebar *sidebar,
       PAGE_COLUMN_TITLE, title,
       PAGE_COLUMN_MENU_ITEM, menu_item,
       PAGE_COLUMN_MAIN_WIDGET, main_widget,
-      PAGE_COLUMN_NOTEBOOK_INDEX, index,
+      PAGE_COLUMN_NOTEBOOK_INDEX, index_,
       -1);
 
   gtk_list_store_move_before (GTK_LIST_STORE(sidebar->priv->page_model),
@@ -522,15 +523,15 @@ empathy_sidebar_add_page (EmpathySidebar *sidebar,
   gtk_tree_model_get (sidebar->priv->page_model,
       &iter,
       PAGE_COLUMN_TITLE, &label_title,
-      PAGE_COLUMN_NOTEBOOK_INDEX, &index,
+      PAGE_COLUMN_NOTEBOOK_INDEX, &index_,
       -1);
 
-  gtk_menu_set_active (GTK_MENU (sidebar->priv->menu), index);
+  gtk_menu_set_active (GTK_MENU (sidebar->priv->menu), index_);
 
   gtk_label_set_text (GTK_LABEL (sidebar->priv->label), label_title);
 
   gtk_notebook_set_current_page (GTK_NOTEBOOK (sidebar->priv->notebook),
-      index);
+      index_);
 
   g_free (label_title);
 
@@ -545,7 +546,7 @@ empathy_sidebar_remove_page (EmpathySidebar *sidebar,
   GtkTreeIter iter;
   GtkWidget *widget, *menu_item;
   gboolean valid;
-  gint index;
+  gint index_;
 
   g_return_if_fail (EMPATHY_IS_SIDEBAR (sidebar));
   g_return_if_fail (GTK_IS_WIDGET (main_widget));
@@ -555,7 +556,7 @@ empathy_sidebar_remove_page (EmpathySidebar *sidebar,
   while (valid)
     {
       gtk_tree_model_get (sidebar->priv->page_model, &iter,
-          PAGE_COLUMN_NOTEBOOK_INDEX, &index,
+          PAGE_COLUMN_NOTEBOOK_INDEX, &index_,
           PAGE_COLUMN_MENU_ITEM, &menu_item,
           PAGE_COLUMN_MAIN_WIDGET, &widget,
           -1);
@@ -572,7 +573,7 @@ empathy_sidebar_remove_page (EmpathySidebar *sidebar,
   if (valid)
     {
       gtk_notebook_remove_page (GTK_NOTEBOOK (sidebar->priv->notebook),
-          index);
+          index_);
 
       gtk_container_remove (GTK_CONTAINER (sidebar->priv->menu), menu_item);
 
