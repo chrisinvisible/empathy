@@ -2,6 +2,7 @@ include $(top_srcdir)/tools/shave.mk
 include $(top_srcdir)/tools/flymake.mk
 
 AM_CPPFLAGS =                                           \
+	$(ERROR_CFLAGS)					\
 	-I.                                             \
 	-I$(top_srcdir)                                 \
 	-I$(top_builddir)                               \
