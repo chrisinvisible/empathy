@@ -113,7 +113,7 @@ typedef struct {
 	GList                  *actions_connected;
 } EmpathyMainWindow;
 
-static EmpathyMainWindow *window = NULL;
+static EmpathyMainWindow *main_window = NULL;
 
 static void
 main_window_flash_stop (EmpathyMainWindow *window)
@@ -1147,7 +1147,7 @@ main_window_connection_items_setup (EmpathyMainWindow *window,
 {
 	GList         *list;
 	GObject       *action;
-	gint           i;
+	guint          i;
 	const gchar *actions_connected[] = {
 		"room",
 		"chat_new_message",
@@ -1166,12 +1166,13 @@ main_window_connection_items_setup (EmpathyMainWindow *window,
 GtkWidget *
 empathy_main_window_get (void)
 {
-  return window != NULL ? window->window : NULL;
+  return main_window != NULL ? main_window->window : NULL;
 }
 
 GtkWidget *
 empathy_main_window_show (void)
 {
+	EmpathyMainWindow        *window;
 	EmpathyContactList       *list_iface;
 	EmpathyContactMonitor    *monitor;
 	GtkBuilder               *gui;
@@ -1186,12 +1187,13 @@ empathy_main_window_show (void)
 	gchar                    *filename;
 	GSList                   *l;
 
-	if (window) {
-		empathy_window_present (GTK_WINDOW (window->window), TRUE);
-		return window->window;
+	if (main_window) {
+		empathy_window_present (GTK_WINDOW (main_window->window), TRUE);
+		return main_window->window;
 	}
 
-	window = g_new0 (EmpathyMainWindow, 1);
+	main_window = g_new0 (EmpathyMainWindow, 1);
+	window = main_window;
 
 	/* Set up interface */
 	filename = empathy_file_lookup ("empathy-main-window.ui", "src");
