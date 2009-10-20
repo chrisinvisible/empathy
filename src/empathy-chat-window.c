@@ -420,6 +420,8 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	GString               *tooltip;
 	gchar                 *markup;
 	const gchar           *icon_name;
+	GtkWidget             *tab_image;
+	GtkWidget             *menu_image;
 
 	window = chat_window_find_chat (chat);
 	if (!window) {
@@ -439,7 +441,7 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	/* Update tab image */
 	if (empathy_chat_get_tp_chat (chat) == NULL) {
 		/* No TpChat, we are disconnected */
-		icon_name = EMPATHY_IMAGE_OFFLINE;
+		icon_name = NULL;
 	}
 	else if (g_list_find (priv->chats_new_msg, chat)) {
 		icon_name = EMPATHY_IMAGE_MESSAGE;
@@ -452,10 +454,18 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	} else {
 		icon_name = EMPATHY_IMAGE_GROUP_MESSAGE;
 	}
-	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-image");
-	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name, GTK_ICON_SIZE_MENU);
-	widget = g_object_get_data (G_OBJECT (chat), "chat-window-menu-image");
-	gtk_image_set_from_icon_name (GTK_IMAGE (widget), icon_name, GTK_ICON_SIZE_MENU);
+
+	tab_image = g_object_get_data (G_OBJECT (chat), "chat-window-tab-image");
+	menu_image = g_object_get_data (G_OBJECT (chat), "chat-window-menu-image");
+	if (icon_name != NULL) {
+		gtk_image_set_from_icon_name (GTK_IMAGE (tab_image), icon_name, GTK_ICON_SIZE_MENU);
+		gtk_widget_show (tab_image);
+		gtk_image_set_from_icon_name (GTK_IMAGE (menu_image), icon_name, GTK_ICON_SIZE_MENU);
+		gtk_widget_show (menu_image);
+	} else {
+		gtk_widget_hide (tab_image);
+		gtk_widget_hide (menu_image);
+	}
 
 	/* Update tab tooltip */
 	tooltip = g_string_new (NULL);
