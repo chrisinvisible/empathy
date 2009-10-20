@@ -105,11 +105,12 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
   gchar *tag_name;
   gchar *type = NULL;
   gchar *content;
-  gint i;
+  guint i;
   GValue *value = NULL;
 
   /* We can't do anything if the setting don't have a name */
-  tag_name = (gchar *) xmlGetProp (setting, PIDGIN_ACCOUNT_TAG_NAME);
+  tag_name = (gchar *) xmlGetProp (setting,
+      (xmlChar *) PIDGIN_ACCOUNT_TAG_NAME);
   if (!tag_name)
     return;
 
@@ -129,7 +130,7 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
   if (!item)
     return;
 
-  type = (gchar *) xmlGetProp (setting, PIDGIN_SETTING_PROP_TYPE);
+  type = (gchar *) xmlGetProp (setting, (xmlChar *) PIDGIN_SETTING_PROP_TYPE);
   content = (gchar *) xmlNodeGetContent (setting);
 
   if (!tp_strdiff (type, "bool"))
