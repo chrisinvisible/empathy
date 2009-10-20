@@ -110,10 +110,10 @@ class Project:
 		end = s.find(s2, i + 1)
 		description = s[start:end]
 
-		s1 = "GNOME SVN"
+		s1 = "homepage"
 		i = s.find(s1)
 		s1 = "href"
-		i = s.find(s1, i)        
+		i = s.rfind(s1, 0, i)
 		start = i + 6
 		s2 = '">'
 		end = s.find(s2, start)
