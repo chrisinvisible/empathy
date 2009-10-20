@@ -10,7 +10,6 @@ from string import Template
 from optparse import OptionParser
 
 last_tag_patern = 'EMPATHY_2_27*'
-username = 'xclaesse'
 upload_server = 'master.gnome.org'
 template = '''\
 $name $version is now available for download from:
@@ -246,7 +245,16 @@ class Project:
 			  self.package_version.replace('.', '_')
 		self.exec_cmd('git tag -m "Tagged for release %s." %s' % ( self.package_version, new_tag))
 
+	def _get_username(self):
+		username = os.environ.get('GNOME_ACCOUNT_NAME')
+		if username is not None:
+			return username
+			
+		return os.getlogin()
+		
+
 	def upload_tarball(self):
+		username = self._get_username()
 		tarball = '%s-%s.tar.gz' % (self.package_name.lower(), self.package_version)
 
 		cmd = 'scp %s %s@%s:' % (tarball, username, upload_server)
