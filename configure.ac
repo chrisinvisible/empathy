@@ -356,33 +356,6 @@ AC_SUBST(MOBLIN_CFLAGS)
 AC_SUBST(MOBLIN_LIBS)
 
 # -----------------------------------------------------------
-# Megaphone
-# -----------------------------------------------------------
-AC_ARG_ENABLE(megaphone,
-              AS_HELP_STRING([--enable-megaphone=@<:@no/yes/auto@:>@],
-                             [build megaphone applet]), ,
-                             enable_megaphone=auto)
-
-if test "x$enable_megaphone" != "xno"; then
-   PKG_CHECK_MODULES(MEGAPHONE, 
-   [
-      libpanelapplet-2.0 >= $LIBPANELAPPLET_REQUIRED
-      glib-2.0 >= $GLIB_REQUIRED
-      gtk+-2.0 >= $GTK_REQUIRED
-      gconf-2.0 >= $GCONF_REQUIRED
-      telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   ], have_megaphone="yes", have_megaphone="no")
-else
-   have_megaphone=no
-fi
-
-if test "x$enable_megaphone" = "xyes" -a "x$have_megaphone" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find megaphone dependencies.])
-fi
-
-AM_CONDITIONAL(HAVE_MEGAPHONE, test "x$have_megaphone" = "xyes")
-
-# -----------------------------------------------------------
 # nautilus-sendto
 # -----------------------------------------------------------
 AC_ARG_ENABLE(nautilus-sendto,
@@ -404,33 +377,6 @@ if test "x$enable_nst" = "xyes" -a "x$have_nst" != "xyes"; then
 fi
 
 AM_CONDITIONAL(HAVE_NST, test "x$have_nst" = "xyes")
-
-# -----------------------------------------------------------
-# Nothere
-# -----------------------------------------------------------
-AC_ARG_ENABLE(nothere,
-              AS_HELP_STRING([--enable-nothere=@<:@no/yes/auto@:>@],
-                             [build nothere applet]), ,
-                             enable_nothere=auto)
-
-if test "x$enable_nothere" != "xno"; then
-   PKG_CHECK_MODULES(NOTHERE, 
-   [
-      libpanelapplet-2.0 >= $LIBPANELAPPLET_REQUIRED
-      glib-2.0 >= $GLIB_REQUIRED
-      gtk+-2.0 >= $GTK_REQUIRED
-      gconf-2.0 >= $GCONF_REQUIRED
-      telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   ], have_nothere="yes", have_nothere="no")
-else
-   have_nothere=no
-fi
-
-if test "x$enable_nothere" = "xyes" -a "x$have_nothere" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find nothere dependencies.])
-fi
-
-AM_CONDITIONAL(HAVE_NOTHERE, test "x$have_nothere" = "xyes")
 
 # -----------------------------------------------------------
 # Tests
@@ -515,13 +461,7 @@ AC_OUTPUT([
    libempathy-gtk/Makefile
    libempathy-gtk/libempathy-gtk.pc
    src/Makefile
-   megaphone/Makefile
-   megaphone/src/Makefile
-   megaphone/data/Makefile
    nautilus-sendto-plugin/Makefile
-   nothere/Makefile
-   nothere/src/Makefile
-   nothere/data/Makefile
    docs/Makefile
    docs/libempathy/Makefile
    docs/libempathy/version.xml
@@ -562,7 +502,5 @@ Configure summary:
     Extras:
 	Documentation...............:  ${enable_gtk_doc}
 	Python bindings.............:  ${have_python}
-	Megaphone applet............:  ${have_megaphone}
-	Nothere applet..............:  ${have_nothere}
 	Nautilus-sendto plugin......:  ${have_nst}
 "
