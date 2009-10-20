@@ -246,7 +246,7 @@ out:
 static gchar *
 _get_protocol_from_profile (const gchar *profile)
 {
-  gint i;
+  guint i;
 
   DEBUG ("profile: %s", profile);
 
