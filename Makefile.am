@@ -1,15 +1,7 @@
 SUBDIRS = tools extensions po data libempathy libempathy-gtk src docs help
 
-if HAVE_MEGAPHONE
-SUBDIRS += megaphone
-endif
-
 if HAVE_NST
 SUBDIRS += nautilus-sendto-plugin
-endif
-
-if HAVE_NOTHERE
-SUBDIRS += nothere
 endif
 
 if HAVE_TESTS
