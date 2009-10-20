@@ -5,25 +5,6 @@ AC_COPYRIGHT([
   Copyright (C) 2007-2008 Collabora Ltd.
 ])
 
-# LT Version numbers, remember to change them just *before* a release.
-#   (Interfaces removed:    CURRENT++, AGE=0, REVISION=0)
-#   (Interfaces added:      CURRENT++, AGE++, REVISION=0)
-#   (No interfaces changed:                   REVISION++)
-LIBEMPATHY_CURRENT=30
-LIBEMPATHY_AGE=0
-LIBEMPATHY_REVISION=0
-
-LIBEMPATHY_GTK_CURRENT=28
-LIBEMPATHY_GTK_AGE=0
-LIBEMPATHY_GTK_REVISION=0
-
-AC_SUBST(LIBEMPATHY_CURRENT)
-AC_SUBST(LIBEMPATHY_AGE)
-AC_SUBST(LIBEMPATHY_REVISION)
-AC_SUBST(LIBEMPATHY_GTK_CURRENT)
-AC_SUBST(LIBEMPATHY_GTK_AGE)
-AC_SUBST(LIBEMPATHY_GTK_REVISION)
-
 # Minimal version required
 GLIB_REQUIRED=2.22.0
 GTK_REQUIRED=2.16.0
@@ -421,9 +402,7 @@ AC_OUTPUT([
    extensions/Makefile
    po/Makefile.in
    libempathy/Makefile
-   libempathy/libempathy.pc
    libempathy-gtk/Makefile
-   libempathy-gtk/libempathy-gtk.pc
    src/Makefile
    nautilus-sendto-plugin/Makefile
    help/Makefile

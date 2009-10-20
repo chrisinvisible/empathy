@@ -22,7 +22,7 @@ BUILT_SOURCES = 					\
 	empathy-gtk-enum-types.h			\
 	empathy-gtk-enum-types.c
 
-lib_LTLIBRARIES = libempathy-gtk.la
+noinst_LTLIBRARIES = libempathy-gtk.la
 
 libempathy_gtk_handwritten_source =            	\
 	empathy-account-chooser.c		\
@@ -66,27 +66,6 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-kludge-label.c			\
 	empathy-ui-utils.c
 
-libempathy_gtk_la_SOURCES =			\
-	$(libempathy_gtk_handwritten_source)	\
-	totem-subtitle-encoding.c totem-subtitle-encoding.h
-
-# do not distribute generated files
-nodist_libempathy_gtk_la_SOURCES =\
-	$(BUILT_SOURCES)
-
-libempathy_gtk_la_LIBADD =			\
-	$(LIBEMPATHYGTK_LIBS)			\
-	$(ENCHANT_LIBS)				\
-	$(LIBCHAMPLAIN_LIBS)			\
-	$(GEOCLUE_LIBS)				\
-	$(MOBLIN_LIBS)				\
-	$(WEBKIT_LIBS)				\
-	$(top_builddir)/libempathy/libempathy.la
-
-libempathy_gtk_la_LDFLAGS =                \
-       -version-info ${LIBEMPATHY_GTK_CURRENT}:${LIBEMPATHY_GTK_REVISION}:${LIBEMPATHY_GTK_AGE} \
-       -export-symbols-regex ^empathy_
-
 libempathy_gtk_headers =			\
 	empathy-account-chooser.h		\
 	empathy-account-widget.h		\
@@ -129,16 +108,29 @@ libempathy_gtk_headers =			\
 	empathy-kludge-label.h			\
 	empathy-ui-utils.h
 
+libempathy_gtk_la_SOURCES =			\
+	$(libempathy_gtk_handwritten_source)	\
+	$(libempathy_gtk_headers)		\
+	totem-subtitle-encoding.c totem-subtitle-encoding.h
+
+# do not distribute generated files
+nodist_libempathy_gtk_la_SOURCES =\
+	$(BUILT_SOURCES)
+
+libempathy_gtk_la_LIBADD =			\
+	$(LIBEMPATHYGTK_LIBS)			\
+	$(ENCHANT_LIBS)				\
+	$(LIBCHAMPLAIN_LIBS)			\
+	$(GEOCLUE_LIBS)				\
+	$(MOBLIN_LIBS)				\
+	$(WEBKIT_LIBS)				\
+	$(top_builddir)/libempathy/libempathy.la
+
 check_c_sources = \
     $(libempathy_gtk_handwritten_source) \
     $(libempathy_gtk_headers)
 include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style
-
-libempathy_gtk_includedir = $(includedir)/libempathy-gtk/
-libempathy_gtk_include_HEADERS =		\
-	$(libempathy_gtk_headers)		\
-	empathy-gtk-enum-types.h
 
 uidir = $(datadir)/empathy
 ui_DATA = 					\
@@ -214,9 +206,6 @@ empathy-gtk-enum-types.c: Makefile $(libempathy_gtk_headers)
 		$(libempathy_gtk_headers) ) > xgen-gtc \
 	&& cp xgen-gtc $(@F) \
 	&& rm -f xgen-gtc
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libempathy-gtk.pc
 
 EXTRA_DIST =			\
 	$(ui_DATA)

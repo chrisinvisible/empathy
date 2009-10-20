@@ -22,10 +22,54 @@ BUILT_SOURCES = 					\
 	empathy-enum-types.h				\
 	empathy-enum-types.c
 
-lib_LTLIBRARIES = libempathy.la
+noinst_LTLIBRARIES = libempathy.la
+
+libempathy_headers =				\
+	empathy-account-settings.h		\
+	empathy-account.h			\
+	empathy-account-manager.h		\
+	empathy-chatroom.h			\
+	empathy-chatroom-manager.h		\
+	empathy-call-factory.h			\
+	empathy-call-handler.h			\
+	empathy-connectivity.h			\
+	empathy-contact.h			\
+	empathy-contact-groups.h		\
+	empathy-contact-list.h			\
+	empathy-contact-manager.h		\
+	empathy-contact-monitor.h		\
+	empathy-connection-managers.h		\
+	empathy-debug.h				\
+	empathy-debugger.h			\
+	empathy-dispatcher.h			\
+	empathy-dispatch-operation.h		\
+	empathy-ft-factory.h			\
+	empathy-ft-handler.h			\
+	empathy-handler.h			\
+	empathy-idle.h				\
+	empathy-irc-network.h			\
+	empathy-irc-network-manager.h		\
+	empathy-irc-server.h			\
+	empathy-location.h			\
+	empathy-log-manager.h			\
+	empathy-log-store.h			\
+	empathy-log-store-empathy.h		\
+	empathy-message.h			\
+	empathy-status-presets.h		\
+	empathy-time.h				\
+	empathy-tp-call.h			\
+	empathy-tp-chat.h			\
+	empathy-tp-contact-factory.h		\
+	empathy-tp-contact-list.h		\
+	empathy-tp-file.h			\
+	empathy-tp-roomlist.h			\
+	empathy-tube-handler.h			\
+	empathy-types.h				\
+	empathy-utils.h
 
 libempathy_la_SOURCES =					\
-	empathy-account.c			\
+	$(libempathy_headers)				\
+	empathy-account.c				\
 	empathy-account-settings.c			\
 	empathy-account-manager.c			\
 	empathy-chatroom.c				\
@@ -76,63 +120,11 @@ libempathy_la_LIBADD =		\
 	$(NETWORK_MANAGER_LIBS) \
 	$(CONNMAN_LIBS)
 
-libempathy_la_LDFLAGS =		\
-       -version-info ${LIBEMPATHY_CURRENT}:${LIBEMPATHY_REVISION}:${LIBEMPATHY_AGE} \
-       -export-symbols-regex ^empathy_
-
-libempathy_headers =				\
-	empathy-account-settings.h		\
-	empathy-account.h			\
-	empathy-account-manager.h		\
-	empathy-chatroom.h			\
-	empathy-chatroom-manager.h		\
-	empathy-call-factory.h			\
-	empathy-call-handler.h			\
-	empathy-connectivity.h			\
-	empathy-contact.h			\
-	empathy-contact-groups.h		\
-	empathy-contact-list.h			\
-	empathy-contact-manager.h		\
-	empathy-contact-monitor.h		\
-	empathy-connection-managers.h		\
-	empathy-debug.h				\
-	empathy-debugger.h			\
-	empathy-dispatcher.h			\
-	empathy-dispatch-operation.h		\
-	empathy-ft-factory.h			\
-	empathy-ft-handler.h			\
-	empathy-handler.h			\
-	empathy-idle.h				\
-	empathy-irc-network.h			\
-	empathy-irc-network-manager.h		\
-	empathy-irc-server.h			\
-	empathy-location.h			\
-	empathy-log-manager.h			\
-	empathy-log-store.h			\
-	empathy-log-store-empathy.h		\
-	empathy-message.h			\
-	empathy-status-presets.h		\
-	empathy-time.h				\
-	empathy-tp-call.h			\
-	empathy-tp-chat.h			\
-	empathy-tp-contact-factory.h		\
-	empathy-tp-contact-list.h		\
-	empathy-tp-file.h			\
-	empathy-tp-roomlist.h			\
-	empathy-tube-handler.h			\
-	empathy-types.h				\
-	empathy-utils.h
-
 check_c_sources = \
     $(libempathy_la_SOURCES) \
     $(libempathy_headers)
 include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style
-
-libempathy_includedir = $(includedir)/libempathy/
-libempathy_include_HEADERS =			\
-	$(libempathy_headers)			\
-	empathy-enum-types.h
 
 empathy-marshal.list: $(libempathy_la_SOURCES) Makefile.am
 	$(QUIET_GEN)( cd $(srcdir) && \
@@ -204,9 +196,6 @@ stylesheet_DATA =		\
 ircnetworksdir = $(datadir)/empathy
 ircnetworks_DATA =		\
 	irc-networks.xml
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libempathy.pc
 
 EXTRA_DIST = 			\
 	empathy-marshal.list	\
