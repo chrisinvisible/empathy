@@ -292,7 +292,7 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 static void
 preferences_sound_load (EmpathyPreferences *preferences)
 {
-	int i;
+	guint i;
 	GtkTreeView *view;
 	GtkListStore *store;
 	GtkTreeIter iter;
@@ -1178,8 +1178,6 @@ empathy_preferences_show (GtkWindow *parent)
 	preferences_sound_load (preferences);
 
 	if (empathy_spell_supported ()) {
-		GtkWidget *page;
-
 		page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (preferences->notebook), 2);
 		gtk_widget_show (page);
 	}
