@@ -124,7 +124,7 @@ chat_window_accel_cb (GtkAccelGroup    *accelgroup,
 {
 	EmpathyChatWindowPriv *priv;
 	gint                  num = -1;
-	gint                  i;
+	guint                 i;
 
 	priv = GET_PRIV (window);
 
@@ -812,19 +812,19 @@ chat_window_tabs_left_activate_cb (GtkAction         *action,
 {
 	EmpathyChatWindowPriv *priv;
 	EmpathyChat           *chat;
-	gint                  index;
+	gint                  index_;
 
 	priv = GET_PRIV (window);
 
 	chat = priv->current_chat;
-	index = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
-	if (index <= 0) {
+	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
+	if (index_ <= 0) {
 		return;
 	}
 
 	gtk_notebook_reorder_child (GTK_NOTEBOOK (priv->notebook),
 				    GTK_WIDGET (chat),
-				    index - 1);
+				    index_ - 1);
 }
 
 static void
@@ -833,16 +833,16 @@ chat_window_tabs_right_activate_cb (GtkAction         *action,
 {
 	EmpathyChatWindowPriv *priv;
 	EmpathyChat           *chat;
-	gint                  index;
+	gint                  index_;
 
 	priv = GET_PRIV (window);
 
 	chat = priv->current_chat;
-	index = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
+	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
 
 	gtk_notebook_reorder_child (GTK_NOTEBOOK (priv->notebook),
 				    GTK_WIDGET (chat),
-				    index + 1);
+				    index_ + 1);
 }
 
 static void
@@ -1275,7 +1275,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 				int               y,
 				GtkSelectionData *selection,
 				guint             info,
-				guint             time,
+				guint             time_,
 				EmpathyChatWindow *window)
 {
 	if (info == DND_DRAG_TYPE_CONTACT_ID) {
@@ -1305,7 +1305,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 		if (account == NULL) {
 			g_strfreev (strv);
-			gtk_drag_finish (context, FALSE, FALSE, time);
+			gtk_drag_finish (context, FALSE, FALSE, time_);
 			return;
 		}
 
@@ -1328,7 +1328,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		old_window = chat_window_find_chat (chat);
 		if (old_window) {
 			if (old_window == window) {
-				gtk_drag_finish (context, TRUE, FALSE, time);
+				gtk_drag_finish (context, TRUE, FALSE, time_);
 				return;
 			}
 
@@ -1345,7 +1345,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		 * weird consequences, and we handle that internally
 		 * anyway with add_chat () and remove_chat ().
 		 */
-		gtk_drag_finish (context, TRUE, FALSE, time);
+		gtk_drag_finish (context, TRUE, FALSE, time_);
 	}
 	else if (info == DND_DRAG_TYPE_TAB) {
 		EmpathyChat        **chat;
@@ -1364,7 +1364,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 			if (old_window == window) {
 				DEBUG ("DND tab (within same window)");
 				priv->dnd_same_window = TRUE;
-				gtk_drag_finish (context, TRUE, FALSE, time);
+				gtk_drag_finish (context, TRUE, FALSE, time_);
 				return;
 			}
 
@@ -1376,10 +1376,10 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		 * weird consequences, and we handle that internally
 		 * anyway with add_chat () and remove_chat ().
 		 */
-		gtk_drag_finish (context, TRUE, FALSE, time);
+		gtk_drag_finish (context, TRUE, FALSE, time_);
 	} else {
 		DEBUG ("DND from unknown source");
-		gtk_drag_finish (context, FALSE, FALSE, time);
+		gtk_drag_finish (context, FALSE, FALSE, time_);
 	}
 }
 
@@ -1447,7 +1447,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	GClosure              *closure;
 	GtkWidget             *menu;
 	GtkWidget             *submenu;
-	gint                   i;
+	guint                  i;
 	GtkWidget             *chat_vbox;
 	gchar                 *filename;
 	EmpathySmileyManager  *smiley_manager;
