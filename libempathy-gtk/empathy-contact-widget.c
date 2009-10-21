@@ -496,19 +496,19 @@ save_avatar_menu_activate_cb (GtkWidget *widget,
       if (!empathy_avatar_save_to_file (avatar, filename, &error))
         {
           /* Save error */
-          GtkWidget *dialog;
+          GtkWidget *error_dialog;
 
-          dialog = gtk_message_dialog_new (NULL, 0,
+          error_dialog = gtk_message_dialog_new (NULL, 0,
               GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
               _("Unable to save avatar"));
 
           gtk_message_dialog_format_secondary_text (
-              GTK_MESSAGE_DIALOG (dialog), "%s", error->message);
+              GTK_MESSAGE_DIALOG (error_dialog), "%s", error->message);
 
-          g_signal_connect (dialog, "response",
+          g_signal_connect (error_dialog, "response",
               G_CALLBACK (gtk_widget_destroy), NULL);
 
-          gtk_window_present (GTK_WINDOW (dialog));
+          gtk_window_present (GTK_WINDOW (error_dialog));
 
           g_clear_error (&error);
         }
@@ -1356,12 +1356,12 @@ contact_widget_location_update (EmpathyContactWidget *information)
       gchar *user_date;
       gchar *text;
       gint64 stamp;
-      time_t time;
+      time_t time_;
 
       stamp = g_value_get_int64 (value);
-      time = stamp;
+      time_ = stamp;
 
-      user_date = empathy_time_to_string_relative (time);
+      user_date = empathy_time_to_string_relative (time_);
 
       text = g_strconcat ( _("<b>Location</b>, "), user_date, NULL);
       gtk_label_set_markup (GTK_LABEL (information->label_location), text);
@@ -1410,10 +1410,10 @@ contact_widget_location_update (EmpathyContactWidget *information)
         }
       else if (G_VALUE_TYPE (gvalue) == G_TYPE_INT64)
         {
-          time_t time;
+          time_t time_;
 
-          time = g_value_get_int64 (value);
-          svalue = empathy_time_to_string_utc (time, _("%B %e, %Y at %R UTC"));
+          time_ = g_value_get_int64 (value);
+          svalue = empathy_time_to_string_utc (time_, _("%B %e, %Y at %R UTC"));
         }
 
       if (svalue != NULL)
