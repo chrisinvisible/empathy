@@ -948,7 +948,8 @@ empathy_contact_load_avatar_cache (EmpathyContact *contact,
   if (data)
     {
       DEBUG ("Avatar loaded from %s", filename);
-      avatar = empathy_avatar_new (data, len, NULL, g_strdup (token), filename);
+      avatar = empathy_avatar_new ((guchar *) data, len, NULL, g_strdup (token),
+          filename);
       empathy_contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);
     }
@@ -1048,7 +1049,8 @@ empathy_avatar_save_to_file (EmpathyAvatar *self,
                              const gchar *filename,
                              GError **error)
 {
-  return g_file_set_contents (filename, self->data, self->len, error);
+  return g_file_set_contents (filename, (const gchar *) self->data, self->len,
+      error);
 }
 
 /**
