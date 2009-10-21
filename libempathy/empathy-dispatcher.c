@@ -209,7 +209,7 @@ free_dispatch_data (DispatchData *data)
 }
 
 static DispatcherRequestData *
-new_dispatcher_request_data (EmpathyDispatcher *dispatcher,
+new_dispatcher_request_data (EmpathyDispatcher *self,
                              TpConnection *connection,
                              const gchar *channel_type,
                              guint handle_type,
@@ -221,7 +221,7 @@ new_dispatcher_request_data (EmpathyDispatcher *dispatcher,
 {
   DispatcherRequestData *result = g_slice_new0 (DispatcherRequestData);
 
-  result->dispatcher = g_object_ref (dispatcher);
+  result->dispatcher = g_object_ref (self);
   result->connection = connection;
 
   result->should_ensure = FALSE;
@@ -281,10 +281,10 @@ static void
 free_connection_data (ConnectionData *cd)
 {
   GList *l;
+  guint i;
 
   g_hash_table_destroy (cd->dispatched_channels);
   g_hash_table_destroy (cd->dispatching_channels);
-  int i;
 
   for (l = cd->outstanding_requests ; l != NULL; l = g_list_delete_link (l,l))
     {
@@ -303,7 +303,7 @@ free_connection_data (ConnectionData *cd)
 static void
 free_find_channel_request (FindChannelRequest *r)
 {
-  int idx;
+  guint idx;
   char *str;
 
   g_object_unref (r->dispatcher);
@@ -328,9 +328,9 @@ dispatcher_connection_invalidated_cb (TpConnection *connection,
                                       guint domain,
                                       gint code,
                                       gchar *message,
-                                      EmpathyDispatcher *dispatcher)
+                                      EmpathyDispatcher *self)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
 
   DEBUG ("Error: %s", message);
   g_hash_table_remove (priv->connections, connection);
@@ -359,7 +359,7 @@ dispatcher_operation_can_start (EmpathyDispatcher *self,
 }
 
 static void
-dispatch_operation_flush_requests (EmpathyDispatcher *dispatcher,
+dispatch_operation_flush_requests (EmpathyDispatcher *self,
                                    EmpathyDispatchOperation *operation,
                                    GError *error,
                                    ConnectionData *cd)
@@ -397,10 +397,10 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
                                    guint domain,
                                    gint code,
                                    gchar *message,
-                                   EmpathyDispatcher *dispatcher)
+                                   EmpathyDispatcher *self)
 {
   /* Channel went away... */
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpConnection *connection;
   EmpathyDispatchOperation *operation;
   ConnectionData *cd;
@@ -426,7 +426,7 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
   if (operation != NULL)
     {
       GError error = { domain, code, message };
-      dispatch_operation_flush_requests (dispatcher, operation, &error, cd);
+      dispatch_operation_flush_requests (self, operation, &error, cd);
       g_hash_table_remove (cd->outstanding_channels, object_path);
       g_object_unref (operation);
     }
@@ -434,21 +434,21 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
 
 static void
 dispatch_operation_approved_cb (EmpathyDispatchOperation *operation,
-                                EmpathyDispatcher *dispatcher)
+                                EmpathyDispatcher *self)
 {
   g_assert (empathy_dispatch_operation_is_incoming (operation));
   DEBUG ("Send of for dispatching: %s",
     empathy_dispatch_operation_get_object_path (operation));
-  g_signal_emit (dispatcher, signals[DISPATCH], 0, operation);
+  g_signal_emit (self, signals[DISPATCH], 0, operation);
 }
 
 static void
 dispatch_operation_claimed_cb (EmpathyDispatchOperation *operation,
-                               EmpathyDispatcher *dispatcher)
+                               EmpathyDispatcher *self)
 {
   /* Our job is done, remove the dispatch operation and mark the channel as
    * dispatched */
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpConnection *connection;
   ConnectionData *cd;
   const gchar *object_path;
@@ -475,23 +475,23 @@ dispatch_operation_claimed_cb (EmpathyDispatchOperation *operation,
 
 static void
 dispatch_operation_ready_cb (EmpathyDispatchOperation *operation,
-                             EmpathyDispatcher *dispatcher)
+                             EmpathyDispatcher *self)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpConnection *connection;
   ConnectionData *cd;
   EmpathyDispatchOperationState status;
 
   g_signal_connect (operation, "approved",
-    G_CALLBACK (dispatch_operation_approved_cb), dispatcher);
+    G_CALLBACK (dispatch_operation_approved_cb), self);
 
   g_signal_connect (operation, "claimed",
-    G_CALLBACK (dispatch_operation_claimed_cb), dispatcher);
+    G_CALLBACK (dispatch_operation_claimed_cb), self);
 
   /* Signal the observers */
   DEBUG ("Send to observers: %s",
     empathy_dispatch_operation_get_object_path (operation));
-  g_signal_emit (dispatcher, signals[OBSERVE], 0, operation);
+  g_signal_emit (self, signals[OBSERVE], 0, operation);
 
   empathy_dispatch_operation_start (operation);
 
@@ -501,9 +501,9 @@ dispatch_operation_ready_cb (EmpathyDispatchOperation *operation,
   g_assert (cd != NULL);
 
   g_object_ref (operation);
-  g_object_ref (dispatcher);
+  g_object_ref (self);
 
-  dispatch_operation_flush_requests (dispatcher, operation, NULL, cd);
+  dispatch_operation_flush_requests (self, operation, NULL, cd);
   status = empathy_dispatch_operation_get_status (operation);
   g_object_unref (operation);
 
@@ -514,17 +514,17 @@ dispatch_operation_ready_cb (EmpathyDispatchOperation *operation,
     {
       DEBUG ("Send to approvers: %s",
         empathy_dispatch_operation_get_object_path (operation));
-      g_signal_emit (dispatcher, signals[APPROVE], 0, operation);
+      g_signal_emit (self, signals[APPROVE], 0, operation);
     }
   else
     {
       g_assert (status == EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING);
       DEBUG ("Send of for dispatching: %s",
         empathy_dispatch_operation_get_object_path (operation));
-      g_signal_emit (dispatcher, signals[DISPATCH], 0, operation);
+      g_signal_emit (self, signals[DISPATCH], 0, operation);
     }
 
-  g_object_unref (dispatcher);
+  g_object_unref (self);
 }
 
 static void
@@ -549,10 +549,10 @@ dispatcher_start_dispatching (EmpathyDispatcher *self,
         {
           case EMPATHY_DISPATCHER_OPERATION_STATE_PREPARING:
             g_signal_connect (operation, "ready",
-              G_CALLBACK (dispatch_operation_ready_cb), dispatcher);
+              G_CALLBACK (dispatch_operation_ready_cb), self);
             break;
           case EMPATHY_DISPATCHER_OPERATION_STATE_PENDING:
-            dispatch_operation_ready_cb (operation, dispatcher);
+            dispatch_operation_ready_cb (operation, self);
             break;
           default:
             g_assert_not_reached ();
@@ -584,13 +584,13 @@ dispatcher_flush_outstanding_operations (EmpathyDispatcher *self,
       if (dispatcher_operation_can_start (self, operation, cd))
         {
           g_hash_table_iter_remove (&iter);
-          dispatcher_start_dispatching (dispatcher, operation, cd);
+          dispatcher_start_dispatching (self, operation, cd);
         }
     }
 }
 
 static void
-dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
+dispatcher_connection_new_channel (EmpathyDispatcher *self,
                                    TpConnection *connection,
                                    const gchar *object_path,
                                    const gchar *channel_type,
@@ -599,7 +599,7 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
                                    GHashTable *properties,
                                    gboolean incoming)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpChannel         *channel;
   ConnectionData *cd;
   EmpathyDispatchOperation *operation;
@@ -614,7 +614,7 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
     NULL
   };
 
-  dispatcher_init_connection_if_needed (dispatcher, connection);
+  dispatcher_init_connection_if_needed (self, connection);
 
   cd = g_hash_table_lookup (priv->connections, connection);
 
@@ -664,7 +664,7 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
 
   g_signal_connect (channel, "invalidated",
     G_CALLBACK (dispatcher_channel_invalidated_cb),
-    dispatcher);
+    self);
 
   priv->channels = g_list_prepend (priv->channels, channel);
 
@@ -678,21 +678,21 @@ dispatcher_connection_new_channel (EmpathyDispatcher *dispatcher,
       /* Request could either be by us or by a remote party. If there are no
        * outstanding requests for this channel type we can assume it's remote.
        * Otherwise we wait untill they are all satisfied */
-      if (dispatcher_operation_can_start (dispatcher, operation, cd))
-        dispatcher_start_dispatching (dispatcher, operation, cd);
+      if (dispatcher_operation_can_start (self, operation, cd))
+        dispatcher_start_dispatching (self, operation, cd);
       else
         g_hash_table_insert (cd->outstanding_channels,
           g_strdup (object_path), operation);
     }
   else
     {
-      dispatcher_start_dispatching (dispatcher, operation, cd);
+      dispatcher_start_dispatching (self, operation, cd);
     }
 }
 
 static void
 dispatcher_connection_new_channel_with_properties (
-    EmpathyDispatcher *dispatcher,
+    EmpathyDispatcher *self,
     TpConnection *connection,
     const gchar *object_path,
     GHashTable *properties)
@@ -738,7 +738,7 @@ dispatcher_connection_new_channel_with_properties (
       requested = FALSE;
     }
 
-  dispatcher_connection_new_channel (dispatcher, connection,
+  dispatcher_connection_new_channel (self, connection,
     object_path, channel_type, handle_type, handle, properties, !requested);
 }
 
@@ -749,8 +749,8 @@ dispatcher_connection_got_all (TpProxy *proxy,
                                gpointer user_data,
                                GObject *object)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GPtrArray *requestable_channels;
   GPtrArray *existing_channels;
 
@@ -784,7 +784,7 @@ dispatcher_connection_got_all (TpProxy *proxy,
         {
           request = l->data;
 
-          retval = empathy_dispatcher_find_channel_classes (dispatcher,
+          retval = empathy_dispatcher_find_channel_classes (self,
               TP_CONNECTION (proxy), request->channel_type,
               request->handle_type, request->properties);
           request->callback (retval, request->user_data);
@@ -803,24 +803,24 @@ dispatcher_connection_got_all (TpProxy *proxy,
 
   if (existing_channels != NULL)
     {
-      int idx;
+      guint idx;
 
       for (idx = 0; idx < existing_channels->len; idx++)
         {
           GValueArray *values = g_ptr_array_index (existing_channels, idx);
           const gchar *object_path;
-          GHashTable *properties;
+          GHashTable *props;
 
           object_path = g_value_get_boxed (g_value_array_get_nth (values, 0));
-          properties = g_value_get_boxed (g_value_array_get_nth (values, 1));
+          props = g_value_get_boxed (g_value_array_get_nth (values, 1));
 
-          if (tp_strdiff (tp_asv_get_string (properties,
+          if (tp_strdiff (tp_asv_get_string (props,
                       TP_IFACE_CHANNEL ".ChannelType"),
                   TP_IFACE_CHANNEL_TYPE_TEXT))
             continue;
 
-          dispatcher_connection_new_channel_with_properties (dispatcher,
-              TP_CONNECTION (proxy), object_path, properties);
+          dispatcher_connection_new_channel_with_properties (self,
+              TP_CONNECTION (proxy), object_path, props);
         }
     }
 }
@@ -830,21 +830,21 @@ dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
                                                  const GPtrArray *capabilities,
                                                  const GError    *error,
                                                  gpointer         user_data,
-                                                 GObject         *dispatcher)
+                                                 GObject         *self)
 {
   if (error)
     DEBUG ("Error: %s", error->message);
 }
 
 static void
-dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
+dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
     TpConnection *connection)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GPtrArray   *capabilities;
   GType        cap_type;
   GValue       cap = {0, };
-  const gchar *remove = NULL;
+  const gchar *remove_ = NULL;
 
   if (g_hash_table_lookup (priv->connections, connection) != NULL)
     return;
@@ -853,7 +853,7 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
     new_connection_data ());
 
   g_signal_connect (connection, "invalidated",
-    G_CALLBACK (dispatcher_connection_invalidated_cb), dispatcher);
+    G_CALLBACK (dispatcher_connection_invalidated_cb), self);
 
   if (tp_proxy_has_interface_by_id (TP_PROXY (connection),
       TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS))
@@ -861,7 +861,7 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
       tp_cli_dbus_properties_call_get_all (connection, -1,
         TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
         dispatcher_connection_got_all,
-        NULL, NULL, G_OBJECT (dispatcher));
+        NULL, NULL, G_OBJECT (self));
     }
 
   /* Advertise VoIP capabilities */
@@ -881,9 +881,9 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
   g_ptr_array_add (capabilities, g_value_get_boxed (&cap));
 
   tp_cli_connection_interface_capabilities_call_advertise_capabilities (
-    connection, -1, capabilities, &remove,
+    connection, -1, capabilities, &remove_,
     dispatcher_connection_advertise_capabilities_cb,
-    NULL, NULL, G_OBJECT (dispatcher));
+    NULL, NULL, G_OBJECT (self));
 
   g_value_unset (&cap);
   g_ptr_array_free (capabilities, TRUE);
@@ -892,9 +892,9 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *dispatcher,
 static void
 dispatcher_new_connection_cb (EmpathyAccountManager *manager,
                               TpConnection *connection,
-                              EmpathyDispatcher *dispatcher)
+                              EmpathyDispatcher *self)
 {
-  dispatcher_init_connection_if_needed (dispatcher, connection);
+  dispatcher_init_connection_if_needed (self, connection);
 }
 
 static void
@@ -1022,8 +1022,8 @@ dispatcher_set_property (GObject *object,
   const GValue *value,
   GParamSpec *pspec)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
 
   switch (property_id)
     {
@@ -1042,8 +1042,8 @@ dispatcher_get_property (GObject *object,
   GValue *value,
   GParamSpec *pspec)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
 
   switch (property_id)
     {
@@ -1111,18 +1111,18 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 }
 
 static void
-empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
+empathy_dispatcher_init (EmpathyDispatcher *self)
 {
   GList *connections, *l;
-  EmpathyDispatcherPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (dispatcher,
+  EmpathyDispatcherPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
     EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherPriv);
 
-  dispatcher->priv = priv;
+  self->priv = priv;
   priv->account_manager = empathy_account_manager_dup_singleton ();
 
   g_signal_connect (priv->account_manager, "new-connection",
     G_CALLBACK (dispatcher_new_connection_cb),
-    dispatcher);
+    self);
 
   priv->connections = g_hash_table_new_full (g_direct_hash, g_direct_equal,
     g_object_unref, (GDestroyNotify) free_connection_data);
@@ -1137,7 +1137,7 @@ empathy_dispatcher_init (EmpathyDispatcher *dispatcher)
   for (l = connections; l; l = l->next)
     {
       dispatcher_new_connection_cb (priv->account_manager, l->data,
-          dispatcher);
+          self);
       g_object_unref (l->data);
     }
   g_list_free (connections);
@@ -1151,10 +1151,10 @@ empathy_dispatcher_new (const gchar *name,
   GPtrArray *filters,
   GStrv capabilities)
 {
-  g_assert (dispatcher == NULL);
   EmpathyHandler *handler;
   EmpathyDispatcher *ret;
 
+  g_assert (dispatcher == NULL);
   handler = empathy_handler_new (name, filters, capabilities);
 
   ret = EMPATHY_DISPATCHER (
@@ -1173,11 +1173,11 @@ empathy_dispatcher_dup_singleton (void)
 }
 
 static void
-dispatcher_request_failed (EmpathyDispatcher *dispatcher,
+dispatcher_request_failed (EmpathyDispatcher *self,
                            DispatcherRequestData *request_data,
                            const GError *error)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   ConnectionData *conn_data;
 
   conn_data = g_hash_table_lookup (priv->connections,
@@ -1196,13 +1196,13 @@ dispatcher_request_failed (EmpathyDispatcher *dispatcher,
 }
 
 static void
-dispatcher_connection_new_requested_channel (EmpathyDispatcher *dispatcher,
+dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
   DispatcherRequestData *request_data,
   const gchar *object_path,
   GHashTable *properties,
   const GError *error)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   EmpathyDispatchOperation *operation = NULL;
   ConnectionData *conn_data;
 
@@ -1213,7 +1213,7 @@ dispatcher_connection_new_requested_channel (EmpathyDispatcher *dispatcher,
     {
       DEBUG ("Channel request failed: %s", error->message);
 
-      dispatcher_request_failed (dispatcher, request_data, error);
+      dispatcher_request_failed (self, request_data, error);
 
       goto out;
     }
@@ -1300,12 +1300,12 @@ dispatcher_request_channel_cb (TpConnection *connection,
                                GObject *weak_object)
 {
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-  EmpathyDispatcher *dispatcher =
+  EmpathyDispatcher *self =
       EMPATHY_DISPATCHER (request_data->dispatcher);
 
   request_data->pending_call = NULL;
 
-  dispatcher_connection_new_requested_channel (dispatcher,
+  dispatcher_connection_new_requested_channel (self,
     request_data, object_path, NULL, error);
 }
 
@@ -1348,7 +1348,7 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
                                       EmpathyDispatcherRequestCb *callback,
                                       gpointer user_data)
 {
-  EmpathyDispatcher *dispatcher;
+  EmpathyDispatcher *self;
   EmpathyDispatcherPriv *priv;
   TpConnection *connection;
   ConnectionData *connection_data;
@@ -1356,14 +1356,14 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
-  priv = GET_PRIV (dispatcher);
+  self = empathy_dispatcher_dup_singleton ();
+  priv = GET_PRIV (self);
 
   connection = empathy_contact_get_connection (contact);
   connection_data = g_hash_table_lookup (priv->connections, connection);
 
   /* The contact handle might not be known yet */
-  request_data = new_dispatcher_request_data (dispatcher, connection,
+  request_data = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
     empathy_contact_get_handle (contact), NULL, contact, callback, user_data);
   request_data->should_ensure = TRUE;
@@ -1373,7 +1373,7 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
 
   dispatcher_request_channel (request_data);
 
-  g_object_unref (dispatcher);
+  g_object_unref (self);
 }
 
 typedef struct
@@ -1413,17 +1413,17 @@ empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
                                          EmpathyDispatcherRequestCb *callback,
                                          gpointer user_data)
 {
-  EmpathyDispatcher *dispatcher;
+  EmpathyDispatcher *self;
   EmpathyTpContactFactory *factory;
   ChatWithContactIdData *data;
 
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (!EMP_STR_EMPTY (contact_id));
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
+  self = empathy_dispatcher_dup_singleton ();
   factory = empathy_tp_contact_factory_dup_singleton (connection);
   data = g_slice_new0 (ChatWithContactIdData);
-  data->dispatcher = dispatcher;
+  data->dispatcher = self;
   data->callback = callback;
   data->user_data = user_data;
   empathy_tp_contact_factory_get_from_id (factory, contact_id,
@@ -1445,8 +1445,8 @@ dispatcher_request_handles_cb (TpConnection *connection,
 
   if (error != NULL)
     {
-      EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (object);
-      EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+      EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
+      EmpathyDispatcherPriv *priv = GET_PRIV (self);
       ConnectionData *cd;
 
       cd = g_hash_table_lookup (priv->connections, request_data->connection);
@@ -1459,7 +1459,7 @@ dispatcher_request_handles_cb (TpConnection *connection,
 
       free_dispatcher_request_data (request_data);
 
-      dispatcher_flush_outstanding_operations (dispatcher, cd);
+      dispatcher_flush_outstanding_operations (self, cd);
       return;
     }
 
@@ -1473,7 +1473,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
                              EmpathyDispatcherRequestCb *callback,
                              gpointer user_data)
 {
-  EmpathyDispatcher *dispatcher;
+  EmpathyDispatcher *self;
   EmpathyDispatcherPriv *priv;
   DispatcherRequestData *request_data;
   ConnectionData *connection_data;
@@ -1482,13 +1482,13 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (!EMP_STR_EMPTY (roomname));
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
-  priv = GET_PRIV (dispatcher);
+  self = empathy_dispatcher_dup_singleton ();
+  priv = GET_PRIV (self);
 
   connection_data = g_hash_table_lookup (priv->connections, connection);
 
   /* Don't know the room handle yet */
-  request_data  = new_dispatcher_request_data (dispatcher, connection,
+  request_data  = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL,
     NULL, callback, user_data);
 
@@ -1500,7 +1500,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
     TP_HANDLE_TYPE_ROOM, names,
     dispatcher_request_handles_cb, request_data, NULL, NULL);
 
-  g_object_unref (dispatcher);
+  g_object_unref (self);
 }
 
 static void
@@ -1512,12 +1512,12 @@ dispatcher_create_channel_cb (TpConnection *connect,
                               GObject *weak_object)
 {
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-  EmpathyDispatcher *dispatcher =
+  EmpathyDispatcher *self =
       EMPATHY_DISPATCHER (request_data->dispatcher);
 
   request_data->pending_call = NULL;
 
-  dispatcher_connection_new_requested_channel (dispatcher,
+  dispatcher_connection_new_requested_channel (self,
     request_data, object_path, properties, error);
 }
 
@@ -1531,18 +1531,18 @@ dispatcher_ensure_channel_cb (TpConnection *connect,
                               GObject *weak_object)
 {
   DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-  EmpathyDispatcher *dispatcher =
+  EmpathyDispatcher *self =
       EMPATHY_DISPATCHER (request_data->dispatcher);
 
   request_data->pending_call = NULL;
 
-  dispatcher_connection_new_requested_channel (dispatcher,
+  dispatcher_connection_new_requested_channel (self,
     request_data, object_path, properties, error);
 }
 
 static void
 empathy_dispatcher_call_create_or_ensure_channel (
-    EmpathyDispatcher *dispatcher,
+    EmpathyDispatcher *self,
     DispatcherRequestData *request_data)
 {
   if (request_data->should_ensure)
@@ -1564,13 +1564,13 @@ empathy_dispatcher_call_create_or_ensure_channel (
 }
 
 void
-empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
+empathy_dispatcher_create_channel (EmpathyDispatcher *self,
                                    TpConnection *connection,
                                    GHashTable *request,
                                    EmpathyDispatcherRequestCb *callback,
                                    gpointer user_data)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   ConnectionData *connection_data;
   DispatcherRequestData *request_data;
   const gchar *channel_type;
@@ -1578,7 +1578,7 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
   guint handle;
   gboolean valid;
 
-  g_return_if_fail (EMPATHY_IS_DISPATCHER (dispatcher));
+  g_return_if_fail (EMPATHY_IS_DISPATCHER (self));
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (request != NULL);
 
@@ -1594,14 +1594,14 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
 
   handle = tp_asv_get_uint32 (request, TP_IFACE_CHANNEL ".TargetHandle", NULL);
 
-  request_data  = new_dispatcher_request_data (dispatcher, connection,
+  request_data  = new_dispatcher_request_data (self, connection,
     channel_type, handle_type, handle, request,
     NULL, callback, user_data);
 
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
 
-  empathy_dispatcher_call_create_or_ensure_channel (dispatcher, request_data);
+  empathy_dispatcher_call_create_or_ensure_channel (self, request_data);
 }
 
 static gboolean
@@ -1635,7 +1635,7 @@ channel_class_matches (GValueArray *class,
   if (fixed_properties != NULL)
     {
       gpointer h_key, h_val;
-      int idx;
+      guint idx;
       GHashTableIter iter;
       gboolean found;
 
@@ -1686,17 +1686,17 @@ channel_class_matches (GValueArray *class,
 }
 
 static GList *
-empathy_dispatcher_find_channel_classes (EmpathyDispatcher *dispatcher,
+empathy_dispatcher_find_channel_classes (EmpathyDispatcher *self,
                                          TpConnection *connection,
                                          const gchar *channel_type,
                                          guint handle_type,
                                          GArray *fixed_properties)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GValueArray *class;
   GPtrArray *classes;
   GList *matching_classes;
-  int i;
+  guint i;
   ConnectionData *cd;
 
   g_return_val_if_fail (channel_type != NULL, NULL);
@@ -1826,7 +1826,7 @@ setup_varargs (va_list var_args,
  */
 GList *
 empathy_dispatcher_find_requestable_channel_classes
-                                 (EmpathyDispatcher *dispatcher,
+                                 (EmpathyDispatcher *self,
                                   TpConnection *connection,
                                   const gchar *channel_type,
                                   guint handle_type,
@@ -1837,15 +1837,15 @@ empathy_dispatcher_find_requestable_channel_classes
   GArray *properties;
   EmpathyDispatcherPriv *priv;
   GList *retval;
-  int idx;
+  guint idx;
   char *str;
 
-  g_return_val_if_fail (EMPATHY_IS_DISPATCHER (dispatcher), NULL);
+  g_return_val_if_fail (EMPATHY_IS_DISPATCHER (self), NULL);
   g_return_val_if_fail (TP_IS_CONNECTION (connection), NULL);
   g_return_val_if_fail (channel_type != NULL, NULL);
   g_return_val_if_fail (handle_type != 0, NULL);
 
-  priv = GET_PRIV (dispatcher);
+  priv = GET_PRIV (self);
 
   va_start (var_args, first_property_name);
 
@@ -1853,7 +1853,7 @@ empathy_dispatcher_find_requestable_channel_classes
 
   va_end (var_args);
 
-  retval = empathy_dispatcher_find_channel_classes (dispatcher, connection,
+  retval = empathy_dispatcher_find_channel_classes (self, connection,
     channel_type, handle_type, properties);
 
   if (properties != NULL)
@@ -1888,7 +1888,7 @@ empathy_dispatcher_find_requestable_channel_classes
  */
 void
 empathy_dispatcher_find_requestable_channel_classes_async
-                                 (EmpathyDispatcher *dispatcher,
+                                 (EmpathyDispatcher *self,
                                   TpConnection *connection,
                                   const gchar *channel_type,
                                   guint handle_type,
@@ -1903,12 +1903,12 @@ empathy_dispatcher_find_requestable_channel_classes_async
   EmpathyDispatcherPriv *priv;
   guint source_id;
 
-  g_return_if_fail (EMPATHY_IS_DISPATCHER (dispatcher));
+  g_return_if_fail (EMPATHY_IS_DISPATCHER (self));
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (channel_type != NULL);
   g_return_if_fail (handle_type != 0);
 
-  priv = GET_PRIV (dispatcher);
+  priv = GET_PRIV (self);
 
   va_start (var_args, first_property_name);
 
@@ -1918,7 +1918,7 @@ empathy_dispatcher_find_requestable_channel_classes_async
 
   /* append another request for this connection */
   request = g_slice_new0 (FindChannelRequest);
-  request->dispatcher = g_object_ref (dispatcher);
+  request->dispatcher = g_object_ref (self);
   request->channel_type = g_strdup (channel_type);
   request->handle_type = handle_type;
   request->connection = connection;
@@ -1936,8 +1936,8 @@ static GList *
 empathy_dispatcher_get_channels (EmpathyHandler *handler,
   gpointer user_data)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (user_data);
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
 
   return priv->channels;
 }
@@ -1953,9 +1953,9 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
     gpointer user_data,
     GError **error)
 {
-  EmpathyDispatcher *dispatcher = EMPATHY_DISPATCHER (user_data);
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
-  int i;
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
+  guint i;
   EmpathyAccount *account;
   TpConnection *connection;
 
@@ -1981,7 +1981,7 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
       object_path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
       properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
 
-      dispatcher_connection_new_channel_with_properties (dispatcher,
+      dispatcher_connection_new_channel_with_properties (self,
         connection, object_path, properties);
     }
 
@@ -1990,12 +1990,12 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
 
 
 EmpathyHandler *
-empathy_dispatcher_add_handler (EmpathyDispatcher *dispatcher,
+empathy_dispatcher_add_handler (EmpathyDispatcher *self,
     const gchar *name,
     GPtrArray *filters,
     GStrv capabilities)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   EmpathyHandler *handler;
 
   handler = empathy_handler_new (name, filters, capabilities);
@@ -2005,17 +2005,16 @@ empathy_dispatcher_add_handler (EmpathyDispatcher *dispatcher,
    * handler will always report all dispatched channels even if they came from
    * a different Handler */
   empathy_handler_set_handle_channels_func (handler,
-    empathy_dispatcher_handle_channels,
-    dispatcher);
+    empathy_dispatcher_handle_channels, self);
 
   return handler;
 }
 
 void
-empathy_dispatcher_remove_handler (EmpathyDispatcher *dispatcher,
+empathy_dispatcher_remove_handler (EmpathyDispatcher *self,
   EmpathyHandler *handler)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GList *h;
 
   h = g_list_find (priv->handlers, handler);
