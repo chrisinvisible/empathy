@@ -889,7 +889,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 	/* If no groups just add it at the top level. */
 	if (!groups) {
-		GtkTreeIter iter;
 		GtkTreeModel *model = GTK_TREE_MODEL (store);
 
 		if (gtk_tree_model_get_iter_first (model, &iter)) do {
@@ -1193,19 +1192,19 @@ contact_list_store_contact_set_active (EmpathyContactListStore *store,
 static ShowActiveData *
 contact_list_store_contact_active_new (EmpathyContactListStore *store,
 				       EmpathyContact          *contact,
-				       gboolean                remove)
+				       gboolean                remove_)
 {
 	ShowActiveData *data;
 
 	DEBUG ("Contact:'%s' now active, and %s be removed",
 		empathy_contact_get_name (contact),
-		remove ? "WILL" : "WILL NOT");
+		remove_ ? "WILL" : "WILL NOT");
 
 	data = g_slice_new0 (ShowActiveData);
 
 	data->store = g_object_ref (store);
 	data->contact = g_object_ref (contact);
-	data->remove = remove;
+	data->remove = remove_;
 
 	return data;
 }
