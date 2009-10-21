@@ -11,6 +11,7 @@ EXTRA_DIST = 		\
 	test.profile
 
 AM_CPPFLAGS =						\
+	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
 	$(EMPATHY_CFLAGS)				\
