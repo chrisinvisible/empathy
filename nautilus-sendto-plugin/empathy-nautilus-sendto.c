@@ -189,7 +189,7 @@ error_dialog_cb (GtkDialog *dialog,
 }
 
 static void
-handler_ready_cb (EmpathyFTFactory *factory,
+handler_ready_cb (EmpathyFTFactory *fact,
                   EmpathyFTHandler *handler,
                   GError *error,
                   NstPlugin *plugin)
