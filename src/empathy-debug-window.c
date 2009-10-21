@@ -1074,7 +1074,8 @@ debug_window_key_press_event_cb (GtkWidget *widget,
     GdkEventKey *event,
     gpointer user_data)
 {
-  if (event->state & GDK_CONTROL_MASK && event->keyval == GDK_w)
+  if ((event->state & GDK_CONTROL_MASK && event->keyval == GDK_w)
+      || event->keyval == GDK_Escape)
     {
       gtk_widget_destroy (widget);
       return TRUE;
