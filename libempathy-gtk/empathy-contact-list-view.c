@@ -241,7 +241,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 				      gint               y,
 				      GtkSelectionData  *selection,
 				      guint              info,
-				      guint              time)
+				      guint              time_)
 {
 	EmpathyContactListViewPriv *priv;
 	EmpathyAccountManager      *account_manager;
@@ -359,7 +359,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 			       GdkDragContext *context,
 			       gint            x,
 			       gint            y,
-			       guint           time)
+			       guint           time_)
 {
 	static DragMotionData *dm = NULL;
 	GtkTreePath           *path;
@@ -390,7 +390,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 	} else if (context->actions & GDK_ACTION_MOVE) {
 		action = GDK_ACTION_MOVE;
 	}
-	gdk_drag_status (context, action, time);
+	gdk_drag_status (context, action, time_);
 
 	if (!is_different && !cleanup) {
 		return TRUE;
@@ -451,7 +451,7 @@ contact_list_view_drag_data_get (GtkWidget        *widget,
 				 GdkDragContext   *context,
 				 GtkSelectionData *selection,
 				 guint             info,
-				 guint             time)
+				 guint             time_)
 {
 	EmpathyContactListViewPriv *priv;
 	GtkTreePath                *src_path;
@@ -525,7 +525,7 @@ contact_list_view_drag_drop (GtkWidget      *widget,
 			     GdkDragContext *drag_context,
 			     gint            x,
 			     gint            y,
-			     guint           time)
+			     guint           time_)
 {
 	return FALSE;
 }
@@ -954,7 +954,7 @@ contact_list_view_setup (EmpathyContactListView *view)
 	EmpathyContactListViewPriv *priv;
 	GtkCellRenderer           *cell;
 	GtkTreeViewColumn         *col;
-	gint                       i;
+	guint                      i;
 
 	priv = GET_PRIV (view);
 
