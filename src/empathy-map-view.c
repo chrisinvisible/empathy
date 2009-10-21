@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gdk/gdkkeysyms.h>
 
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
@@ -306,6 +307,21 @@ map_view_destroy_cb (GtkWidget *widget,
 }
 
 static gboolean
+map_view_key_press_cb (GtkWidget *widget,
+    GdkEventKey *event,
+    gpointer user_data)
+{
+  if (event->state & GDK_CONTROL_MASK
+      && event->keyval == GDK_w)
+    {
+      gtk_widget_destroy (widget);
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
 map_view_tick (EmpathyMapView *window)
 {
   GList *marker;
@@ -352,6 +368,7 @@ empathy_map_view_show (void)
 
   empathy_builder_connect (gui, window,
       "map_view", "destroy", map_view_destroy_cb,
+      "map_view", "key-press-event", map_view_key_press_cb,
       "zoom_in", "clicked", map_view_zoom_in_cb,
       "zoom_out", "clicked", map_view_zoom_out_cb,
       "zoom_fit", "clicked", map_view_zoom_fit_cb,
