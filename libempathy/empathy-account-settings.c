@@ -691,13 +691,15 @@ empathy_account_settings_get_int32 (EmpathyAccountSettings *settings,
         ret = g_value_get_int (v);
         break;
       case G_TYPE_UINT:
-        ret = CLAMP (G_MININT32, g_value_get_uint (v), G_MAXINT32);
+        ret = CLAMP (g_value_get_uint (v), (guint) G_MININT32,
+            G_MAXINT32);
         break;
       case G_TYPE_INT64:
-        ret = CLAMP (G_MININT32, g_value_get_int64 (v), G_MAXINT32);
+        ret = CLAMP (g_value_get_int64 (v), G_MININT32, G_MAXINT32);
         break;
       case G_TYPE_UINT64:
-        ret = CLAMP (G_MININT32, g_value_get_uint64 (v), G_MAXINT32);
+        ret = CLAMP (g_value_get_uint64 (v), (guint64) G_MININT32,
+            G_MAXINT32);
         break;
       default:
         ret = 0;
@@ -733,7 +735,7 @@ empathy_account_settings_get_int64 (EmpathyAccountSettings *settings,
         ret = g_value_get_int64 (v);
         break;
       case G_TYPE_UINT64:
-        ret = CLAMP (G_MININT64, g_value_get_uint64 (v), G_MAXINT64);
+        ret = CLAMP (g_value_get_uint64 (v), (guint64) G_MININT64, G_MAXINT64);
         break;
       default:
         ret = 0;
@@ -766,10 +768,10 @@ empathy_account_settings_get_uint32 (EmpathyAccountSettings *settings,
         ret = g_value_get_uint (v);
         break;
       case G_TYPE_INT64:
-        ret = CLAMP (0, g_value_get_int64 (v), G_MAXUINT32);
+        ret = CLAMP (g_value_get_int64 (v), 0, G_MAXUINT32);
         break;
       case G_TYPE_UINT64:
-        ret = CLAMP (0, g_value_get_uint64 (v), G_MAXUINT32);
+        ret = MIN (g_value_get_uint64 (v), G_MAXUINT32);
         break;
       default:
         ret = 0;
@@ -806,7 +808,7 @@ empathy_account_settings_get_uint64 (EmpathyAccountSettings *settings,
         ret = MAX (0, g_value_get_int64 (v));
         break;
       case G_TYPE_UINT64:
-        ret = CLAMP (0, g_value_get_uint64 (v), G_MAXUINT64);
+        ret = g_value_get_uint64 (v);
         break;
       default:
         ret = 0;
