@@ -219,7 +219,12 @@ spell_setup_languages (void)
 			lang->config = enchant_broker_init ();
 			lang->speller = enchant_broker_request_dict (lang->config, strv[i]);
 
-			languages = g_list_append (languages, lang);
+			if (lang->speller == NULL) {
+				DEBUG ("language '%s' has no valid dict", strv[i]);
+			} else {
+				languages = g_list_append (languages, lang);
+			}
+
 			i++;
 		}
 
