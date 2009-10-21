@@ -573,24 +573,24 @@ GList *
 empathy_theme_manager_get_adium_themes (void)
 {
 #ifdef HAVE_WEBKIT
-	GList *themes = NULL;
+	GList *themes_list = NULL;
 	gchar *userpath = NULL;
 	const gchar *const *paths = NULL;
 	gint i = 0;
 
 	userpath = g_build_path (G_DIR_SEPARATOR_S, g_get_user_data_dir (), "adium/message-styles", NULL);
-	find_themes (&themes, userpath);
+	find_themes (&themes_list, userpath);
 	g_free (userpath);
 
 	paths = g_get_system_data_dirs ();
 	for (i = 0; paths[i] != NULL; i++) {
 		userpath = g_build_path (G_DIR_SEPARATOR_S, paths[i],
 			"adium/message-styles", NULL);
-		find_themes (&themes, userpath);
+		find_themes (&themes_list, userpath);
 		g_free (userpath);
 	}
 
-	return themes;
+	return themes_list;
 #else
 	return NULL;
 #endif /* HAVE_WEBKIT */
