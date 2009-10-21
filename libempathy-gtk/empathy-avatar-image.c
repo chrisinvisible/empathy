@@ -306,7 +306,8 @@ empathy_avatar_image_set (EmpathyAvatarImage *avatar_image,
 	}
 
 	if (avatar) {
-		priv->pixbuf = empathy_pixbuf_from_data (avatar->data, avatar->len);
+		priv->pixbuf = empathy_pixbuf_from_data ((gchar *) avatar->data,
+				avatar->len);
 	}
 
 	if (!priv->pixbuf) {
