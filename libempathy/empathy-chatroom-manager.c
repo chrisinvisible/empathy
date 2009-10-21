@@ -90,8 +90,8 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 
 	priv = GET_PRIV (manager);
 
-	doc = xmlNewDoc ("1.0");
-	root = xmlNewNode (NULL, "chatrooms");
+	doc = xmlNewDoc ((const xmlChar *) "1.0");
+	root = xmlNewNode (NULL, (const xmlChar *) "chatrooms");
 	xmlDocSetRootElement (doc, root);
 
 	for (l = priv->chatrooms; l; l = l->next) {
@@ -108,12 +108,16 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 		account_id = empathy_account_get_unique_name (
 		  empathy_chatroom_get_account (chatroom));
 
-		node = xmlNewChild (root, NULL, "chatroom", NULL);
-		xmlNewTextChild (node, NULL, "name", empathy_chatroom_get_name (chatroom));
-		xmlNewTextChild (node, NULL, "room", empathy_chatroom_get_room (chatroom));
-		xmlNewTextChild (node, NULL, "account", account_id);
-		xmlNewTextChild (node, NULL, "auto_connect",
-			empathy_chatroom_get_auto_connect (chatroom) ? "yes" : "no");
+		node = xmlNewChild (root, NULL, (const xmlChar *) "chatroom", NULL);
+		xmlNewTextChild (node, NULL, (const xmlChar *) "name",
+			(const xmlChar *) empathy_chatroom_get_name (chatroom));
+		xmlNewTextChild (node, NULL, (const xmlChar *) "room",
+			(const xmlChar *) empathy_chatroom_get_name (chatroom));
+		xmlNewTextChild (node, NULL, (const xmlChar *) "account",
+			(const xmlChar *) account_id);
+		xmlNewTextChild (node, NULL, (const xmlChar *) "auto_connect",
+			empathy_chatroom_get_auto_connect (chatroom) ?
+			(const xmlChar *) "yes" : (const xmlChar *) "no");
 	}
 
 	/* Make sure the XML is indented properly */
