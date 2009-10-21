@@ -59,7 +59,7 @@ typedef struct {
 } EmpathyThemeAdiumPriv;
 
 struct _EmpathyAdiumData {
-	guint  ref_count;
+	gint  ref_count;
 	gchar *path;
 	gchar *basedir;
 	gchar *default_avatar_filename;
@@ -235,7 +235,7 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			last = e;
 		} while (g_match_info_next (match_info, NULL));
 
-		if (e < strlen (text)) {
+		if (e < (gint) strlen (text)) {
 			/* Append the text after the last link */
 			g_string_append_len (string, text + e, strlen (text) - e);
 		}
