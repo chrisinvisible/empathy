@@ -131,8 +131,8 @@ contact_groups_file_parse (const gchar *filename)
 			gboolean      expanded;
 			ContactGroup *contact_group;
 
-			name = (gchar *) xmlGetProp (node, "name");
-			expanded_str = (gchar *) xmlGetProp (node, "expanded");
+			name = (gchar *) xmlGetProp (node, (const xmlChar *) "name");
+			expanded_str = (gchar *) xmlGetProp (node, (const xmlChar *) "expanded");
 
 			if (expanded_str && strcmp (expanded_str, "yes") == 0) {
 				expanded = TRUE;
@@ -195,12 +195,12 @@ contact_groups_file_save (void)
 	file = g_build_filename (dir, CONTACT_GROUPS_XML_FILENAME, NULL);
 	g_free (dir);
 
-	doc = xmlNewDoc ("1.0");
-	root = xmlNewNode (NULL, "contacts");
+	doc = xmlNewDoc ((const xmlChar *) "1.0");
+	root = xmlNewNode (NULL, (const xmlChar *) "contacts");
 	xmlDocSetRootElement (doc, root);
 
-	node = xmlNewChild (root, NULL, "account", NULL);
-	xmlNewProp (node, "name", "Default");
+	node = xmlNewChild (root, NULL, (const xmlChar *) "account", NULL);
+	xmlNewProp (node, (const xmlChar *) "name", (const xmlChar *) "Default");
 
 	for (l = groups; l; l = l->next) {
 		ContactGroup *cg;
@@ -208,9 +208,10 @@ contact_groups_file_save (void)
 
 		cg = l->data;
 
-		subnode = xmlNewChild (node, NULL, "group", NULL);
-		xmlNewProp (subnode, "expanded", cg->expanded ? "yes" : "no");
-		xmlNewProp (subnode, "name", cg->name);
+		subnode = xmlNewChild (node, NULL, (const xmlChar *) "group", NULL);
+		xmlNewProp (subnode, (const xmlChar *) "expanded", cg->expanded ?
+				(const xmlChar *) "yes" : (const xmlChar *) "no");
+		xmlNewProp (subnode, (const xmlChar *) "name", (const xmlChar *) cg->name);
 	}
 
 	/* Make sure the XML is indented properly */
@@ -262,7 +263,7 @@ empathy_contact_group_set_expanded (const gchar *group,
 	g_return_if_fail (group != NULL);
 
 	for (l = groups; l; l = l->next) {
-		ContactGroup *cg = l->data;
+		cg = l->data;
 
 		if (!cg || !cg->name) {
 			continue;
