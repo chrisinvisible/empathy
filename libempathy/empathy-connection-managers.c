@@ -111,8 +111,8 @@ empathy_connection_managers_get_property (GObject *object,
     GValue *value,
     GParamSpec *pspec)
 {
-  EmpathyConnectionManagers *managers = EMPATHY_CONNECTION_MANAGERS (object);
-  EmpathyConnectionManagersPriv *priv = GET_PRIV (managers);
+  EmpathyConnectionManagers *self = EMPATHY_CONNECTION_MANAGERS (object);
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
 
   switch (prop_id)
     {
@@ -200,9 +200,9 @@ empathy_connection_managers_dup_singleton (void)
 }
 
 gboolean
-empathy_connection_managers_is_ready (EmpathyConnectionManagers *managers)
+empathy_connection_managers_is_ready (EmpathyConnectionManagers *self)
 {
-  EmpathyConnectionManagersPriv *priv = GET_PRIV (managers);
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
   return priv->ready;
 }
 
@@ -245,28 +245,28 @@ out:
 }
 
 void
-empathy_connection_managers_update (EmpathyConnectionManagers *managers)
+empathy_connection_managers_update (EmpathyConnectionManagers *self)
 {
-  EmpathyConnectionManagersPriv *priv = GET_PRIV (managers);
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
 
   tp_list_connection_managers (priv->dbus,
     empathy_connection_managers_listed_cb,
-    NULL, NULL, G_OBJECT (managers));
+    NULL, NULL, G_OBJECT (self));
 }
 
 GList *
-empathy_connection_managers_get_cms (EmpathyConnectionManagers *managers)
+empathy_connection_managers_get_cms (EmpathyConnectionManagers *self)
 {
-  EmpathyConnectionManagersPriv *priv = GET_PRIV (managers);
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
 
   return priv->cms;
 }
 
 TpConnectionManager *
-empathy_connection_managers_get_cm (EmpathyConnectionManagers *managers,
+empathy_connection_managers_get_cm (EmpathyConnectionManagers *self,
   const gchar *cm)
 {
-  EmpathyConnectionManagersPriv *priv = GET_PRIV (managers);
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
   GList *l;
 
   for (l = priv->cms ; l != NULL; l = g_list_next (l))
@@ -281,13 +281,13 @@ empathy_connection_managers_get_cm (EmpathyConnectionManagers *managers,
 }
 
 guint
-empathy_connection_managers_get_cms_num (EmpathyConnectionManagers *managers)
+empathy_connection_managers_get_cms_num (EmpathyConnectionManagers *self)
 {
   EmpathyConnectionManagersPriv *priv;
 
-  g_return_val_if_fail (EMPATHY_IS_CONNECTION_MANAGERS (managers), 0);
+  g_return_val_if_fail (EMPATHY_IS_CONNECTION_MANAGERS (self), 0);
 
-  priv = GET_PRIV (managers);
+  priv = GET_PRIV (self);
 
   return g_list_length (priv->cms);
 }
