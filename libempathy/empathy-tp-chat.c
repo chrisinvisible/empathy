@@ -882,7 +882,7 @@ tp_chat_got_added_contacts_cb (EmpathyTpContactFactory *factory,
 static EmpathyContact *
 chat_lookup_contact (EmpathyTpChat *chat,
 		     TpHandle       handle,
-		     gboolean       remove)
+		     gboolean       remove_)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 	GList *l;
@@ -894,7 +894,7 @@ chat_lookup_contact (EmpathyTpChat *chat,
 			continue;
 		}
 
-		if (remove) {
+		if (remove_) {
 			/* Caller takes the reference. */
 			priv->members = g_list_delete_link (priv->members, l);
 		} else {
