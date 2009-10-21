@@ -367,7 +367,7 @@ static void
 account_manager_ensure_all_accounts (EmpathyAccountManager *manager,
     GPtrArray *accounts)
 {
-  int i, missing_accounts;
+  guint i, missing_accounts;
   GHashTableIter iter;
   EmpathyAccountManagerPriv *priv = GET_PRIV (manager);
   gpointer value;
