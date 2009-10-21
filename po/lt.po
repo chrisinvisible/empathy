@@ -8,16 +8,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
-"Report-Msgid-Bugs-To: "
-"http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-09-15 13:09+0000\n"
-"PO-Revision-Date: 2009-09-16 19:17+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=empathy&component=general\n"
+"POT-Creation-Date: 2009-10-02 16:41+0000\n"
+"PO-Revision-Date: 2009-10-21 12:33+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian\n"
-"Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: lt\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%"
 "100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Virtaal 0.4.0\n"
@@ -31,12 +31,10 @@ msgid "Empathy IM Client"
 msgstr "Tikralaikių pokalbių klientas Empathy"
 
 #: ../data/empathy.desktop.in.in.h:3
-#| msgid "Client:"
 msgid "IM Client"
 msgstr "Tikralaikių pokalbių klientas"
 
 #: ../data/empathy.desktop.in.in.h:4
-#| msgid "Send and receive instant messages"
 msgid "Send and receive messages"
 msgstr "Siųsti ir priimti žinutes"
 
@@ -67,7 +65,6 @@ msgid "Compact contact list"
 msgstr "Kompaktiškas adresatų sąrašas"
 
 #: ../data/empathy.schemas.in.h:6
-#| msgid "NetworkManager should be used"
 msgid "Connection managers should be used"
 msgstr "Turėtų būti naudojamos ryšių valdyklės"
 
@@ -306,9 +303,6 @@ msgid ""
 msgstr "Ar naudoti adresato pseudoportretą kaip pokalbio lango piktogramą."
 
 #: ../data/empathy.schemas.in.h:62
-#| msgid ""
-#| "Whether or not the network manager should be used to automatically "
-#| "disconnect/reconnect."
 msgid ""
 "Whether or not connectivity managers should be used to automatically "
 "disconnect/reconnect."
@@ -515,12 +509,10 @@ msgid "Offline"
 msgstr "Atsijungęs(-usi)"
 
 #: ../libempathy/empathy-utils.c:380 ../src/empathy-import-mc4-accounts.c:104
-#| msgid "People nearby"
 msgid "People Nearby"
 msgstr "Žmonės netoliese"
 
 #: ../libempathy/empathy-utils.c:385
-#| msgid "Use _Yahoo Japan"
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
@@ -584,15 +576,29 @@ msgstr "ateityje"
 msgid "All"
 msgstr "Visi"
 
-#: ../libempathy-gtk/empathy-account-widget.c:430
-#: ../libempathy-gtk/empathy-account-widget.c:486
+#: ../libempathy-gtk/empathy-account-widget.c:433
+#: ../libempathy-gtk/empathy-account-widget.c:489
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1264
+#: ../libempathy-gtk/empathy-account-widget.c:1252
+#| msgid "_Join"
+msgid "L_og in"
+msgstr "_Prisijungti"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1302
 msgid "Enabled"
 msgstr "Įjungta"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../libempathy-gtk/empathy-account-widget.c:1308
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
+#: ../src/empathy-chatrooms-window.ui.h:1
+#: ../src/empathy-new-chatroom-dialog.ui.h:1
+msgid "Account:"
+msgstr "Paskyra:"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
@@ -821,7 +827,8 @@ msgstr "_Prisistatymo vardas:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
-msgstr "<span size=\"small\"><b>Pavyzdys:</b> naudotojas@mano.sip.serveris</span>"
+msgstr ""
+"<span size=\"small\"><b>Pavyzdys:</b> naudotojas@mano.sip.serveris</span>"
 
 #. look up the DNS SRV record at the service's domain for the host name of a STUN server.
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:4
@@ -975,7 +982,6 @@ msgstr "%s atsijungė"
 #.
 #: ../libempathy-gtk/empathy-chat.c:1184
 #, c-format
-#| msgid "%s was kicked by %s"
 msgid "%1$s was kicked by %2$s"
 msgstr "%2$s išspyrė naudotoją %1$s"
 
@@ -989,7 +995,6 @@ msgstr "%s buvo išspirtas"
 #.
 #: ../libempathy-gtk/empathy-chat.c:1195
 #, c-format
-#| msgid "%s was banned by %s"
 msgid "%1$s was banned by %2$s"
 msgstr "%2$s užblokavo naudotoją %1$s"
 
@@ -1018,7 +1023,7 @@ msgstr " (%s)"
 msgid "%s has joined the room"
 msgstr "%s prisijungė prie pokalbių kambario"
 
-#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1285
+#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1295
 msgid "Disconnected"
 msgstr "Atsijungęs(-usi)"
 
@@ -1279,13 +1284,6 @@ msgstr "%Y %B %e, %R UTC"
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:1
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Vietovė</b> (data)\t"
-
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
-#: ../src/empathy-chatrooms-window.ui.h:1
-#: ../src/empathy-new-chatroom-dialog.ui.h:1
-msgid "Account:"
-msgstr "Paskyra:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
@@ -1767,7 +1765,6 @@ msgid "Show the accounts dialog"
 msgstr "Rodyti paskyrų dialogą"
 
 #: ../src/empathy.c:762
-#| msgid "- Empathy Instant Messenger"
 msgid "- Empathy IM Client"
 msgstr "– Tikralaikių pokalbių klientas Empathy"
 
@@ -1816,7 +1813,6 @@ msgstr ""
 "Saulius Šopaga"
 
 #: ../src/empathy-account-assistant.c:118
-#| msgid "Empathy has asked about importing accounts"
 msgid "There has been an error while importing the accounts."
 msgstr "Importuojant paskyras įvyko klaida."
 
@@ -1843,8 +1839,7 @@ msgid ""
 "this assistant and add accounts later from the Edit menu."
 msgstr ""
 "Galite grįžti atgal, bandyti įvesti savo paskyros informaciją dar kartą arba "
-"uždaryti šį pagelbiklį ir pridėti paskyras vėliau, naudojantis meniu "
-"Taisyti."
+"uždaryti šį pagelbiklį ir pridėti paskyras vėliau, naudojantis meniu Taisyti."
 
 #: ../src/empathy-account-assistant.c:184
 msgid "An error occurred"
@@ -1857,7 +1852,7 @@ msgstr "Įvyko klaida"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1400
+#: ../src/empathy-accounts-dialog.c:1430
 #, c-format
 msgid "New %s account"
 msgstr "Nauja %s paskyra"
@@ -1875,12 +1870,10 @@ msgid "Enter your account details"
 msgstr "Įveskite savo paskyros informaciją"
 
 #: ../src/empathy-account-assistant.c:410
-#| msgid "%s is calling you, do you want to answer?"
 msgid "What kind of chat account do you want to create?"
 msgstr "Kokio tipo pokalbių paskyrą norite sukurti?"
 
 #: ../src/empathy-account-assistant.c:416
-#| msgid "Do you really want to remove the contact '%s'?"
 msgid "Do you want to create other chat accounts?"
 msgstr "Ar norite sukurti kitų pokalbių paskyrų?"
 
@@ -1902,7 +1895,8 @@ msgstr ""
 
 #: ../src/empathy-account-assistant.c:526
 msgid "Do you have an account you've been using with another chat program?"
-msgstr "Ar turite paskyrą, kuria naudojotės anksčiau su kita pokalbių programa?"
+msgstr ""
+"Ar turite paskyrą, kuria naudojotės anksčiau su kita pokalbių programa?"
 
 #: ../src/empathy-account-assistant.c:549
 msgid "Yes, import my account details from "
@@ -1913,7 +1907,6 @@ msgid "Yes, I'll enter my account details now"
 msgstr "Taip, įvesiu savo paskyros informaciją dabar"
 
 #: ../src/empathy-account-assistant.c:592
-#| msgid "_Create a new account"
 msgid "No, I want a new account"
 msgstr "Ne, noriu sukurti naują paskyrą"
 
@@ -1940,7 +1933,6 @@ msgid "Welcome to Empathy"
 msgstr "Sveikame paleidus Empathy"
 
 #: ../src/empathy-account-assistant.c:919
-#| msgid "_Reuse an existing account"
 msgid "Import your existing accounts"
 msgstr "Importuokite savo egzistuojančią paskyrą"
 
@@ -1958,7 +1950,6 @@ msgstr "Yra neįrašytų jūsų %s paskyros pakeitimų."
 #. * server should come before the login id in your locale.
 #: ../src/empathy-accounts-dialog.c:236
 #, c-format
-#| msgid "%s of %s"
 msgid "%1$s on %2$s"
 msgstr "%1$s serveryje %2$s"
 
@@ -1966,19 +1957,14 @@ msgstr "%1$s serveryje %2$s"
 #. * string will be something like: "Jabber Account"
 #: ../src/empathy-accounts-dialog.c:248
 #, c-format
-#| msgid "Account"
 msgid "%s Account"
 msgstr "%s paskyra"
 
 #: ../src/empathy-accounts-dialog.c:252
-#| msgid "New %s account"
 msgid "New account"
 msgstr "Nauja paskyra"
 
-#: ../src/empathy-accounts-dialog.c:502
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#: ../src/empathy-accounts-dialog.c:516
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1986,7 +1972,7 @@ msgstr ""
 "Ketinate sukurti naują paskyrą, kuri panaikins jūsų pakeitimus!\n"
 "Ar tikrai norite tęsti?"
 
-#: ../src/empathy-accounts-dialog.c:787
+#: ../src/empathy-accounts-dialog.c:802
 #, c-format
 msgid ""
 "You are about to remove your %s account!\n"
@@ -1995,7 +1981,14 @@ msgstr ""
 "Ištrinsite savo paskyrą %s!\n"
 "Ar tikrai norite tęsti?"
 
-#: ../src/empathy-accounts-dialog.c:792
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:806
+#, c-format
+#| msgid "Do you really want to remove the group '%s'?"
+msgid "Do you want to remove %s from your computer?"
+msgstr "Ar tikrai norite pašalinti %s iš savo kompiuterio?"
+
+#: ../src/empathy-accounts-dialog.c:812
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -2008,10 +2001,12 @@ msgstr ""
 "\n"
 "Jei vėliau vėl pridėsite šią paskyrą, jie tebebus prieinami."
 
-#: ../src/empathy-accounts-dialog.c:980
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#. Translators: this is used only when built on a moblin platform
+#: ../src/empathy-accounts-dialog.c:819
+msgid "This will not remove your account on the server."
+msgstr "Tai nepašalins jūsų paskyros serveryje."
+
+#: ../src/empathy-accounts-dialog.c:1010
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2019,16 +2014,19 @@ msgstr ""
 "Ketinate pasirinkti kitą paskyrą, kuri panaikins jūsų pakeitimus.\n"
 "Ar tikrai norite tęsti?"
 
-#: ../src/empathy-accounts-dialog.c:1475
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#: ../src/empathy-accounts-dialog.c:1507
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
 msgstr ""
-"Ketinate užverti šį langą, kuris panaikins jūsų pakeitimus.\n"
+"Ketinate užverti šį langą. Tai panaikins jūsų pakeitimus.\n"
 "Ar tikrai norite tęsti?"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../src/empathy-accounts-dialog.c:1673
+#| msgid "_Next Tab"
+msgid "_Next"
+msgstr "_Kitas"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
 msgid "Accounts"
@@ -2067,7 +2065,6 @@ msgid "_Reuse an existing account"
 msgstr "_Panaudoti esančią paskyrą"
 
 #: ../src/empathy-accounts-dialog.ui.h:9
-#| msgid "Account"
 msgid "account"
 msgstr "paskyra"
 
@@ -2116,12 +2113,12 @@ msgstr "Skambinti su %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:944
+#: ../src/empathy-call-window.c:954
 msgid "Call"
 msgstr "Skambutis"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1445
+#: ../src/empathy-call-window.c:1455
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Prisijunta – %d:%02dm"
@@ -2164,17 +2161,14 @@ msgid "Typing a message."
 msgstr "Rašoma žinutė."
 
 #: ../src/empathy-chat-window.ui.h:1
-#| msgid "Clean"
 msgid "C_lear"
 msgstr "Iš_valyti"
 
 #: ../src/empathy-chat-window.ui.h:2
-#| msgid "_Chat"
 msgid "Chat"
 msgstr "Pokalbis"
 
 #: ../src/empathy-chat-window.ui.h:3
-#| msgid "Insert Smiley"
 msgid "Insert _Smiley"
 msgstr "Įterpti _šypsenėlę"
 
@@ -2187,7 +2181,6 @@ msgid "Move Tab _Right"
 msgstr "Perkelti kortelę _dešinėn"
 
 #: ../src/empathy-chat-window.ui.h:6
-#| msgid "Contact"
 msgid "_Contact"
 msgstr "_Adresatas"
 
@@ -2196,7 +2189,6 @@ msgid "_Contents"
 msgstr "_Turinys"
 
 #: ../src/empathy-chat-window.ui.h:8
-#| msgid "Conversation"
 msgid "_Conversation"
 msgstr "_Pokalbis"
 
@@ -2205,7 +2197,6 @@ msgid "_Detach Tab"
 msgstr "_Atkabinti kortelę"
 
 #: ../src/empathy-chat-window.ui.h:11
-#| msgid "_Invite to chatroom"
 msgid "_Favorite Chatroom"
 msgstr "_Mėgstamiausias kambarys"
 
@@ -2218,7 +2209,6 @@ msgid "_Next Tab"
 msgstr "_Kita kortelė"
 
 #: ../src/empathy-chat-window.ui.h:14
-#| msgid "_Previous Conversations"
 msgid "_Previous Tab"
 msgstr "_Ankstesnė kortelė"
 
@@ -2263,58 +2253,58 @@ msgstr "A_tmesti"
 msgid "_Answer"
 msgstr "_Atsiliepti"
 
-#: ../src/empathy-event-manager.c:453
+#: ../src/empathy-event-manager.c:446
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Skambutis jums nuo %s"
 
-#: ../src/empathy-event-manager.c:497
+#: ../src/empathy-event-manager.c:490
 #, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s siūlo jums kvietimą"
 
-#: ../src/empathy-event-manager.c:503
+#: ../src/empathy-event-manager.c:496
 msgid "An external application will be started to handle it."
 msgstr "Jam priimti bus paleista išorinė programa."
 
-#: ../src/empathy-event-manager.c:508
+#: ../src/empathy-event-manager.c:501
 msgid "You don't have the needed external application to handle it."
 msgstr "Nėra įdiegta tam reikalinga programa."
 
-#: ../src/empathy-event-manager.c:635
+#: ../src/empathy-event-manager.c:628
 msgid "Room invitation"
 msgstr "Kvietimas į pokalbių kambarį"
 
-#: ../src/empathy-event-manager.c:638
+#: ../src/empathy-event-manager.c:631
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s kviečia jus prisijungti prie %s"
 
-#: ../src/empathy-event-manager.c:646
+#: ../src/empathy-event-manager.c:639
 msgid "_Decline"
 msgstr "_Atmesti"
 
-#: ../src/empathy-event-manager.c:651
+#: ../src/empathy-event-manager.c:644
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Prisijungti"
 
-#: ../src/empathy-event-manager.c:690
+#: ../src/empathy-event-manager.c:683
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s pakvietė jus prisijungti %s"
 
-#: ../src/empathy-event-manager.c:716
+#: ../src/empathy-event-manager.c:709
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Failo atsiuntimas iš %s"
 
-#: ../src/empathy-event-manager.c:896
+#: ../src/empathy-event-manager.c:889
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Užsisakymo prašymas iš %s"
 
-#: ../src/empathy-event-manager.c:900
+#: ../src/empathy-event-manager.c:893
 #, c-format
 msgid ""
 "\n"
@@ -2324,13 +2314,13 @@ msgstr ""
 "Žinutė: %s"
 
 #. someone is logging off
-#: ../src/empathy-event-manager.c:936
+#: ../src/empathy-event-manager.c:929
 #, c-format
 msgid "%s is now offline."
 msgstr "%s dabar atsijungęs(-usi)."
 
 #. someone is logging in
-#: ../src/empathy-event-manager.c:952
+#: ../src/empathy-event-manager.c:945
 #, c-format
 msgid "%s is now online."
 msgstr "%s dabar prisijungęs(-usi)."
@@ -2473,7 +2463,6 @@ msgstr "Šaltinis"
 
 #: ../src/empathy-import-mc4-accounts.c:106
 #, c-format
-#| msgid "New %s account"
 msgid "%s account"
 msgstr "%s paskyra"
 
@@ -2798,10 +2787,6 @@ msgid "Privacy"
 msgstr "Privatumas"
 
 #: ../src/empathy-preferences.ui.h:21
-#| msgid ""
-#| "Reduced location accuracy means that nothing more precise than your city, "
-#| "state and country will be published.  GPS coordinates will have a random "
-#| "value added (&#xB1;0.25&#xB0;)."
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
@@ -2855,6 +2840,10 @@ msgstr "_Rodyti vietovę mano adresatams"
 #: ../src/empathy-preferences.ui.h:32
 msgid "_Reduce location accuracy"
 msgstr "_Sumažinti vietovės tikslumą"
+
+#: ../src/empathy-status-icon.c:175
+msgid "Respond"
+msgstr "Atsakyti"
 
 #: ../src/empathy-status-icon.ui.h:1
 msgid "Status"
@@ -2943,21 +2932,3 @@ msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr "Pasirinktoji ryšių valdyklė nepalaiko nuotolinio derinimo plėtinio."
-
-#~ msgid "Empathy Instant Messenger"
-#~ msgstr "Pokalbių programa Empathy"
-
-#~ msgid "Add Account"
-#~ msgstr "Pridėti paskyrą"
-
-#~ msgid "Gmail"
-#~ msgstr "Gmail"
-
-#~ msgid "Import Accounts..."
-#~ msgstr "Įmportuoti paskyras..."
-
-#~ msgid "Settings"
-#~ msgstr "Parametrai"
-
-#~ msgid "Type:"
-#~ msgstr "Tipas:"
