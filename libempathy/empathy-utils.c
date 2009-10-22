@@ -135,7 +135,8 @@ gboolean
 empathy_xml_validate (xmlDoc      *doc,
 		     const gchar *dtd_filename)
 {
-	gchar        *path, *escaped;
+	gchar        *path;
+	xmlChar      *escaped;
 	xmlValidCtxt  cvp;
 	xmlDtd       *dtd;
 	gboolean      ret;
@@ -149,7 +150,8 @@ empathy_xml_validate (xmlDoc      *doc,
 	DEBUG ("Loading dtd file %s", path);
 
 	/* The list of valid chars is taken from libxml. */
-	escaped = xmlURIEscapeStr (path, ":@&=+$,/?;");
+	escaped = xmlURIEscapeStr ((const xmlChar *) path,
+		(const xmlChar *)":@&=+$,/?;");
 	g_free (path);
 
 	memset (&cvp, 0, sizeof (cvp));
@@ -172,7 +174,7 @@ empathy_xml_node_get_child (xmlNodePtr   node,
         g_return_val_if_fail (child_name != NULL, NULL);
 
 	for (l = node->children; l; l = l->next) {
-		if (l->name && strcmp (l->name, child_name) == 0) {
+		if (l->name && strcmp ((const gchar *) l->name, child_name) == 0) {
 			return l;
 		}
 	}
@@ -212,12 +214,12 @@ empathy_xml_node_find_child_prop_value (xmlNodePtr   node,
 	for (l = node->children; l && !found; l = l->next) {
 		xmlChar *prop;
 
-		if (!xmlHasProp (l, prop_name)) {
+		if (!xmlHasProp (l, (const xmlChar *) prop_name)) {
 			continue;
 		}
 
-		prop = xmlGetProp (l, prop_name);
-		if (prop && strcmp (prop, prop_value) == 0) {
+		prop = xmlGetProp (l, (const xmlChar *) prop_name);
+		if (prop && strcmp ((const gchar *) prop, prop_value) == 0) {
 			found = l;
 		}
 
