@@ -127,7 +127,7 @@ status_presets_file_parse (const gchar *filename)
 			}
 
 			status = (gchar *) xmlNodeGetContent (node);
-			state_str = (gchar *) xmlGetProp (node, "presence");
+			state_str = (gchar *) xmlGetProp (node, (const xmlChar *) "presence");
 
 			if (state_str) {
 				state = empathy_presence_from_str (state_str);
@@ -208,19 +208,19 @@ status_presets_file_save (void)
 	file = g_build_filename (dir, STATUS_PRESETS_XML_FILENAME, NULL);
 	g_free (dir);
 
-	doc = xmlNewDoc ("1.0");
-	root = xmlNewNode (NULL, "presets");
+	doc = xmlNewDoc ((const xmlChar *) "1.0");
+	root = xmlNewNode (NULL, (const xmlChar *) "presets");
 	xmlDocSetRootElement (doc, root);
 
 	if (default_preset) {
 		xmlNodePtr  subnode;
 		xmlChar    *state;
 
-		state = (gchar *) empathy_presence_to_str (default_preset->state);
+		state = (xmlChar *) empathy_presence_to_str (default_preset->state);
 
-		subnode = xmlNewTextChild (root, NULL, "default",
-					   default_preset->status);
-		xmlNewProp (subnode, "presence", state);
+		subnode = xmlNewTextChild (root, NULL, (const xmlChar *) "default",
+					  (const xmlChar *) default_preset->status);
+		xmlNewProp (subnode, (const xmlChar *) "presence", state);
 	}
 
 	for (l = presets; l; l = l->next) {
@@ -229,7 +229,7 @@ status_presets_file_save (void)
 		xmlChar      *state;
 
 		sp = l->data;
-		state = (gchar *) empathy_presence_to_str (sp->state);
+		state = (xmlChar *) empathy_presence_to_str (sp->state);
 
 		count[sp->state]++;
 		if (count[sp->state] > STATUS_PRESETS_MAX_EACH) {
@@ -237,8 +237,8 @@ status_presets_file_save (void)
 		}
 
 		subnode = xmlNewTextChild (root, NULL,
-					   "status", sp->status);
-		xmlNewProp (subnode, "presence", state);
+					   (const xmlChar *) "status", (const xmlChar *) sp->status);
+		xmlNewProp (subnode, (const xmlChar *) "presence", state);
 	}
 
 	/* Make sure the XML is indented properly */
