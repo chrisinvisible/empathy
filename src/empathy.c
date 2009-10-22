@@ -118,9 +118,16 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
         }
 
       if (chat)
-        empathy_chat_set_tp_chat (chat, tp_chat);
+        {
+          empathy_chat_set_tp_chat (chat, tp_chat);
+        }
       else
-        chat = empathy_chat_new (tp_chat);
+        {
+          chat = empathy_chat_new (tp_chat);
+          /* empathy_chat_new returns a floating reference as EmpathyChat is
+           * a GtkWidget. This reference will be taken by a container
+           * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
+        }
 
       empathy_chat_window_present_chat (chat);
 
