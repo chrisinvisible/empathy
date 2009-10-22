@@ -480,7 +480,7 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
     {
       EmpathyMessage *message;
       EmpathyContact *sender;
-      gchar *time;
+      gchar *time_;
       time_t t;
       gchar *sender_id;
       gchar *sender_name;
@@ -493,17 +493,18 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       guint cm_id;
       TpChannelTextMessageType msg_type = TP_CHANNEL_TEXT_MESSAGE_TYPE_NORMAL;
 
-      if (strcmp (node->name, "message") != 0)
+      if (strcmp ((const gchar *) node->name, "message") != 0)
         continue;
 
-      body = xmlNodeGetContent (node);
-      time = xmlGetProp (node, "time");
-      sender_id = xmlGetProp (node, "id");
-      sender_name = xmlGetProp (node, "name");
-      sender_avatar_token = xmlGetProp (node, "token");
-      is_user_str = xmlGetProp (node, "isuser");
-      msg_type_str = xmlGetProp (node, "type");
-      cm_id_str = xmlGetProp (node, "cm_id");
+      body = (gchar *) xmlNodeGetContent (node);
+      time_ = (gchar *) xmlGetProp (node, (const xmlChar *) "time");
+      sender_id = (gchar *) xmlGetProp (node, (const xmlChar *) "id");
+      sender_name = (gchar *) xmlGetProp (node, (const xmlChar *) "name");
+      sender_avatar_token = (gchar *) xmlGetProp (node,
+          (const xmlChar *) "token");
+      is_user_str = (gchar *) xmlGetProp (node, (const xmlChar *) "isuser");
+      msg_type_str = (gchar *) xmlGetProp (node, (const xmlChar *) "type");
+      cm_id_str = (gchar *) xmlGetProp (node, (const xmlChar *) "cm_id");
 
       if (is_user_str)
         is_user = strcmp (is_user_str, "true") == 0;
@@ -514,7 +515,7 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       if (cm_id_str)
         cm_id = atoi (cm_id_str);
 
-      t = empathy_time_parse (time);
+      t = empathy_time_parse (time_);
 
       sender = empathy_contact_new_for_log (account, sender_id, sender_name,
 					    is_user);
@@ -535,7 +536,7 @@ log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
       messages = g_list_append (messages, message);
 
       g_object_unref (sender);
-      xmlFree (time);
+      xmlFree (time_);
       xmlFree (sender_id);
       xmlFree (sender_name);
       xmlFree (body);
