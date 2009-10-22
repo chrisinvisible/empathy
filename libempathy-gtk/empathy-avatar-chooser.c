@@ -811,7 +811,7 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 						NULL, NULL);
 
 		if (handled) {
-			/* this in turn calls empathy_avatar_new(), which assumes
+			/* this in turn calls empathy_avatar_new (), which assumes
 			 * ownership of data.
 			 */
 			avatar_chooser_set_image_from_data (chooser, data,
