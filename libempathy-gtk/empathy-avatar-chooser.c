@@ -795,7 +795,7 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 		gsize             bytes_read;
 
 		nl = strstr ((gchar *) gtk_selection_data_get_data (selection_data),
-        "\r\n");
+						"\r\n");
 		if (nl) {
 			gchar *uri;
 
@@ -806,7 +806,7 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 			g_free (uri);
 		} else {
 			file = g_file_new_for_uri ((gchar *) gtk_selection_data_get_data (
-            selection_data));
+						selection_data));
 		}
 
 		handled = g_file_load_contents (file, NULL, &data, &bytes_read,
