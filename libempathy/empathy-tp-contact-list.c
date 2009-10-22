@@ -188,7 +188,7 @@ tp_contact_list_group_members_changed_cb (TpChannel     *channel,
 {
 	EmpathyTpContactListPriv  *priv = GET_PRIV (list);
 	const gchar *group_name;
-	gint i;
+	guint i;
 
 	group_name = tp_channel_get_identifier (channel);
 
@@ -430,12 +430,12 @@ tp_contact_list_remove_handle (EmpathyTpContactList *list,
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	EmpathyContact *contact;
-	const gchar *signal;
+	const gchar *sig;
 
 	if (table == priv->pendings)
-		signal = "pendings-changed";
+		sig = "pendings-changed";
 	else if (table == priv->members)
-		signal = "members-changed";
+		sig = "members-changed";
 	else
 		return;
 
@@ -443,7 +443,7 @@ tp_contact_list_remove_handle (EmpathyTpContactList *list,
 	if (contact) {
 		g_object_ref (contact);
 		g_hash_table_remove (table, GUINT_TO_POINTER (handle));
-		g_signal_emit_by_name (list, signal, contact, 0, 0, NULL,
+		g_signal_emit_by_name (list, sig, contact, 0, 0, NULL,
 				       FALSE);
 		g_object_unref (contact);
 	}
@@ -539,7 +539,7 @@ tp_contact_list_get_requestablechannelclasses_cb (TpProxy      *connection,
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	GPtrArray *classes;
-	int i;
+	guint i;
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);

@@ -117,7 +117,7 @@ status_preset_dialog_presets_update (EmpathyStatusPresetDialog *self)
 {
 	EmpathyStatusPresetDialogPriv *priv = GET_PRIV (self);
 	GtkListStore *store;
-	int i;
+	guint i;
 
 	store = GTK_LIST_STORE (gtk_tree_view_get_model (
 				GTK_TREE_VIEW (priv->presets_treeview)));
@@ -167,7 +167,7 @@ status_preset_dialog_setup_add_combobox (EmpathyStatusPresetDialog *self)
 	GtkWidget *combobox = priv->add_combobox;
 	GtkListStore *store;
 	GtkCellRenderer *renderer;
-	int i;
+	guint i;
 
 	store = gtk_list_store_new (ADD_COMBO_N_COLS,
 			G_TYPE_UINT,		/* ADD_COMBO_STATE */

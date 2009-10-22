@@ -320,7 +320,7 @@ empathy_account_settings_free_unset_parameters (
     EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
-  int i;
+  guint i;
 
   for (i = 0 ; i < priv->unset_parameters->len; i++)
     g_free (g_array_index (priv->unset_parameters, gchar *, i));
@@ -520,7 +520,7 @@ empathy_account_settings_is_unset (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   GArray *a;
-  int i;
+  guint i;
 
   a = priv->unset_parameters;
 
@@ -557,7 +557,7 @@ account_settings_remove_from_unset (EmpathyAccountSettings *settings,
     const gchar *param)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
-  int idx;
+  guint idx;
   gchar *val;
 
   for (idx = 0; idx < priv->unset_parameters->len; idx++)
@@ -1240,7 +1240,7 @@ gboolean
 empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv;
-  int idx;
+  guint idx;
   gchar *current;
   gboolean missed = FALSE;
 

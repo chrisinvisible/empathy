@@ -40,18 +40,18 @@ empathy_time_get_current (void)
 time_t
 empathy_time_get_local_time (struct tm *tm)
 {
-	const gchar *timezone;
+	const gchar *tz;
 	time_t       t;
 
-	timezone = g_getenv ("TZ");
+	tz = g_getenv ("TZ");
 	g_setenv ("TZ", "", TRUE);
 
 	tzset ();
 
 	t = mktime (tm);
 
-	if (timezone) {
-		g_setenv ("TZ", timezone, TRUE);
+	if (tz) {
+		g_setenv ("TZ", tz, TRUE);
 	} else {
 		g_unsetenv ("TZ");
 	}

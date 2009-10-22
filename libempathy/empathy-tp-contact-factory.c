@@ -185,7 +185,7 @@ tp_contact_factory_avatar_retrieved_cb (TpConnection *connection,
 		handle);
 
 	empathy_contact_load_avatar_data (contact,
-					  avatar_data->data,
+					  (guchar *) avatar_data->data,
 					  avatar_data->len,
 					  mime_type,
 					  token);

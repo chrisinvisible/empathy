@@ -411,7 +411,7 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 	guint                     max_width = 0, max_height = 0, max_size = 0;
 	gchar                   **mime_types = NULL;
 	gboolean                  needs_conversion = FALSE;
-	gint                      width, height;
+	guint                     width, height;
 	gchar                    *new_format_name = NULL;
 	gchar                    *new_mime_type = NULL;
 	gdouble                   min_factor, max_factor;
@@ -550,11 +550,11 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 		 *   a difference of 1k.
 		 */
 	} while (min_factor != max_factor &&
-	         ABS (max_size - converted_image_size) > 1024);
+	         abs (max_size - converted_image_size) > 1024);
 	g_free (new_format_name);
 
 	/* Takes ownership of new_mime_type and converted_image_data */
-	avatar = empathy_avatar_new (converted_image_data,
+	avatar = empathy_avatar_new ((guchar *) converted_image_data,
 		converted_image_size, new_mime_type, NULL, NULL);
 
 	return avatar;
@@ -599,7 +599,7 @@ avatar_chooser_set_image_from_data (EmpathyAvatarChooser *chooser,
 	}
 
 	/* avatar takes ownership of data and mime_type */
-	avatar = empathy_avatar_new (data, size, mime_type, NULL, NULL);
+	avatar = empathy_avatar_new ((guchar *) data, size, mime_type, NULL, NULL);
 
 	avatar_chooser_set_image (chooser, avatar, pixbuf, set_locally);
 }
@@ -614,7 +614,7 @@ avatar_chooser_set_image_from_avatar (EmpathyAvatarChooser *chooser,
 
 	g_assert (avatar != NULL);
 
-	pixbuf = empathy_pixbuf_from_data_and_mime (avatar->data,
+	pixbuf = empathy_pixbuf_from_data_and_mime ((gchar *) avatar->data,
 						    avatar->len,
 						    &mime_type);
 	if (pixbuf == NULL) {
@@ -704,7 +704,7 @@ avatar_chooser_drag_motion_cb (GtkWidget          *widget,
 			      GdkDragContext     *context,
 			      gint                x,
 			      gint                y,
-			      guint               time,
+			      guint               time_,
 			      EmpathyAvatarChooser *chooser)
 {
 	EmpathyAvatarChooserPriv *priv;
@@ -719,7 +719,7 @@ avatar_chooser_drag_motion_cb (GtkWidget          *widget,
 
 		if (!strcmp (possible_type, URI_LIST_TYPE)) {
 			g_free (possible_type);
-			gdk_drag_status (context, GDK_ACTION_COPY, time);
+			gdk_drag_status (context, GDK_ACTION_COPY, time_);
 
 			return TRUE;
 		}
@@ -733,7 +733,7 @@ avatar_chooser_drag_motion_cb (GtkWidget          *widget,
 static void
 avatar_chooser_drag_leave_cb (GtkWidget          *widget,
 			     GdkDragContext     *context,
-			     guint               time,
+			     guint               time_,
 			     EmpathyAvatarChooser *chooser)
 {
 }
@@ -743,7 +743,7 @@ avatar_chooser_drag_drop_cb (GtkWidget          *widget,
 			    GdkDragContext     *context,
 			    gint                x,
 			    gint                y,
-			    guint               time,
+			    guint               time_,
 			    EmpathyAvatarChooser *chooser)
 {
 	EmpathyAvatarChooserPriv *priv;
@@ -763,7 +763,7 @@ avatar_chooser_drag_drop_cb (GtkWidget          *widget,
 			g_free (possible_type);
 			gtk_drag_get_data (widget, context,
 					   GDK_POINTER_TO_ATOM (p->data),
-					   time);
+					   time_);
 
 			return TRUE;
 		}
@@ -781,7 +781,7 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 				     gint                y,
 				     GtkSelectionData   *selection_data,
 				     guint               info,
-				     guint               time,
+				     guint               time_,
 				     EmpathyAvatarChooser *chooser)
 {
 	gchar    *target_type;
@@ -794,17 +794,19 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 		gchar            *data = NULL;
 		gsize             bytes_read;
 
-		nl = strstr (gtk_selection_data_get_data (selection_data), "\r\n");
+		nl = strstr ((gchar *) gtk_selection_data_get_data (selection_data),
+						"\r\n");
 		if (nl) {
 			gchar *uri;
 
-			uri = g_strndup (gtk_selection_data_get_data (selection_data),
+			uri = g_strndup ((gchar *) gtk_selection_data_get_data (selection_data),
 					 nl - (gchar *) gtk_selection_data_get_data (selection_data));
 
 			file = g_file_new_for_uri (uri);
 			g_free (uri);
 		} else {
-			file = g_file_new_for_uri (gtk_selection_data_get_data (selection_data));
+			file = g_file_new_for_uri ((gchar *) gtk_selection_data_get_data (
+						selection_data));
 		}
 
 		handled = g_file_load_contents (file, NULL, &data, &bytes_read,
@@ -822,7 +824,7 @@ avatar_chooser_drag_data_received_cb (GtkWidget          *widget,
 		g_object_unref (file);
 	}
 
-	gtk_drag_finish (context, handled, FALSE, time);
+	gtk_drag_finish (context, handled, FALSE, time_);
 }
 
 static void
@@ -1049,7 +1051,7 @@ empathy_avatar_chooser_get_image_data (EmpathyAvatarChooser  *chooser,
 
 	if (priv->avatar != NULL) {
 		if (data != NULL) {
-			*data = priv->avatar->data;
+			*data = (gchar *) priv->avatar->data;
 		}
 		if (data_size != NULL) {
 			*data_size = priv->avatar->len;

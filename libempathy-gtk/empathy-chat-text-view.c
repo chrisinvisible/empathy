@@ -359,7 +359,7 @@ chat_text_view_maybe_trim_buffer (EmpathyChatTextView *view)
 	EmpathyChatTextViewPriv *priv;
 	GtkTextIter         top, bottom;
 	gint                line;
-	gint                remove;
+	gint                remove_;
 	GtkTextTagTable    *table;
 	GtkTextTag         *tag;
 
@@ -371,11 +371,11 @@ chat_text_view_maybe_trim_buffer (EmpathyChatTextView *view)
 		return;
 	}
 
-	remove = line - MAX_LINES;
+	remove_ = line - MAX_LINES;
 	gtk_text_buffer_get_start_iter (priv->buffer, &top);
 
 	bottom = top;
-	if (!gtk_text_iter_forward_lines (&bottom, remove)) {
+	if (!gtk_text_iter_forward_lines (&bottom, remove_)) {
 		return;
 	}
 
@@ -506,7 +506,7 @@ chat_text_view_drag_motion (GtkWidget      *widget,
 			    GdkDragContext *context,
 			    gint            x,
 			    gint            y,
-			    guint           time)
+			    guint           time_)
 {
 	/* Don't handle drag motion, since we don't want the view to scroll as
 	 * the result of dragging something across it. */
@@ -1342,7 +1342,7 @@ empathy_chat_text_view_append_body (EmpathyChatTextView *view,
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 
-	if (last < strlen (body)) {
+	if (last < (gint) strlen (body)) {
 		gtk_text_buffer_get_end_iter (priv->buffer, &iter);
 		chat_text_view_insert_text_with_emoticons (view,
 							   &iter,

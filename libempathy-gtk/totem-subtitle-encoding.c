@@ -429,18 +429,18 @@ subtitle_encoding_get_index (const char *charset)
 }
 
 static const char *
-subtitle_encoding_get_charset (int index)
+subtitle_encoding_get_charset (int index_)
 {
   const SubtitleEncoding *e;
 
-  if (index >= SUBTITLE_ENCODING_LAST)
+  if (index_ >= SUBTITLE_ENCODING_LAST)
     e = &encodings[SUBTITLE_ENCODING_CURRENT_LOCALE];
-  else if (index < SUBTITLE_ENCODING_CURRENT_LOCALE)
+  else if (index_ < SUBTITLE_ENCODING_CURRENT_LOCALE)
     e = &encodings[SUBTITLE_ENCODING_CURRENT_LOCALE];
-  else if (!encodings[index].valid)
+  else if (!encodings[index_].valid)
     e = &encodings[SUBTITLE_ENCODING_CURRENT_LOCALE];
   else
-    e = &encodings[index];
+    e = &encodings[index_];
   return e->charset;
 }
 
@@ -530,15 +530,15 @@ totem_subtitle_encoding_get_selected (GtkComboBox * combo)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
-  gint index = -1;
+  gint index_ = -1;
 
   model = gtk_combo_box_get_model (combo);
   if (gtk_combo_box_get_active_iter (combo, &iter)) {
-    gtk_tree_model_get (model, &iter, INDEX_COL, &index, -1);
+    gtk_tree_model_get (model, &iter, INDEX_COL, &index_, -1);
   }
-  if (index == -1)
+  if (index_ == -1)
     return NULL;
-  return subtitle_encoding_get_charset (index);
+  return subtitle_encoding_get_charset (index_);
 }
 
 void
@@ -546,12 +546,12 @@ totem_subtitle_encoding_set (GtkComboBox * combo, const char *encoding)
 {
   GtkTreeModel *model;
   GtkTreeIter iter, iter2;
-  gint index, i;
+  gint index_, i;
 
   g_return_if_fail (encoding != NULL);
 
   model = gtk_combo_box_get_model (combo);
-  index = subtitle_encoding_get_index (encoding);
+  index_ = subtitle_encoding_get_index (encoding);
   gtk_tree_model_get_iter_first (model, &iter);
   do {
     if (!gtk_tree_model_iter_has_child (model, &iter))
@@ -560,10 +560,10 @@ totem_subtitle_encoding_set (GtkComboBox * combo, const char *encoding)
       continue;
     do {
       gtk_tree_model_get (model, &iter2, INDEX_COL, &i, -1);
-      if (i == index)
+      if (i == index_)
         break;
     } while (gtk_tree_model_iter_next (model, &iter2));
-    if (i == index)
+    if (i == index_)
       break;
   } while (gtk_tree_model_iter_next (model, &iter));
   gtk_combo_box_set_active_iter (combo, &iter2);

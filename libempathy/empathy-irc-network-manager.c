@@ -463,12 +463,12 @@ irc_network_manager_parse_irc_server (EmpathyIrcNetwork *network,
     {
       gchar *address = NULL, *port = NULL, *ssl = NULL;
 
-      if (strcmp (server_node->name, "server") != 0)
+      if (strcmp ((const gchar *) server_node->name, "server") != 0)
         continue;
 
-      address = xmlGetProp (server_node, "address");
-      port = xmlGetProp (server_node, "port");
-      ssl = xmlGetProp (server_node, "ssl");
+      address = (gchar *) xmlGetProp (server_node, (const xmlChar *) "address");
+      port = (gchar *) xmlGetProp (server_node, (const xmlChar *) "port");
+      ssl = (gchar *) xmlGetProp (server_node, (const xmlChar *) "ssl");
 
       if (address != NULL)
         {
@@ -511,8 +511,8 @@ irc_network_manager_parse_irc_network (EmpathyIrcNetworkManager *self,
   gchar *str;
   gchar *id, *name;
 
-  id = xmlGetProp (node, "id");
-  if (xmlHasProp (node, "dropped"))
+  id = (gchar *) xmlGetProp (node, (const xmlChar *) "id");
+  if (xmlHasProp (node, (const xmlChar *) "dropped"))
     {
       if (!user_defined)
         {
@@ -529,16 +529,16 @@ irc_network_manager_parse_irc_network (EmpathyIrcNetworkManager *self,
       return;
     }
 
-  if (!xmlHasProp (node, "name"))
+  if (!xmlHasProp (node, (const xmlChar *) "name"))
     return;
 
-  name = xmlGetProp (node, "name");
+  name = (gchar *) xmlGetProp (node, (const xmlChar *) "name");
   network = empathy_irc_network_new (name);
 
-  if (xmlHasProp (node, "network_charset"))
+  if (xmlHasProp (node, (const xmlChar *) "network_charset"))
     {
       gchar *charset;
-      charset = xmlGetProp (node, "network_charset");
+      charset = (gchar *) xmlGetProp (node, (const xmlChar *) "network_charset");
       g_object_set (network, "charset", charset, NULL);
       xmlFree (charset);
     }
@@ -630,12 +630,13 @@ write_network_to_xml (const gchar *id,
     /* no need to write this network to the XML */
     return;
 
-  network_node = xmlNewChild (root, NULL, "network", NULL);
-  xmlNewProp (network_node, "id", id);
+  network_node = xmlNewChild (root, NULL, (const xmlChar *) "network", NULL);
+  xmlNewProp (network_node, (const xmlChar *) "id", (const xmlChar *) id);
 
   if (network->dropped)
     {
-      xmlNewProp (network_node, "dropped", "1");
+      xmlNewProp (network_node, (const xmlChar *) "dropped",
+          (const xmlChar *)  "1");
       return;
     }
 
@@ -643,14 +644,16 @@ write_network_to_xml (const gchar *id,
       "name", &name,
       "charset", &charset,
       NULL);
-  xmlNewProp (network_node, "name", name);
-  xmlNewProp (network_node, "network_charset", charset);
+  xmlNewProp (network_node, (const xmlChar *) "name", (const xmlChar *) name);
+  xmlNewProp (network_node, (const xmlChar *) "network_charset",
+      (const xmlChar *) charset);
   g_free (name);
   g_free (charset);
 
   servers = empathy_irc_network_get_servers (network);
 
-  servers_node = xmlNewChild (network_node, NULL, "servers", NULL);
+  servers_node = xmlNewChild (network_node, NULL, (const xmlChar *) "servers",
+      NULL);
   for (l = servers; l != NULL; l = g_slist_next (l))
     {
       EmpathyIrcServer *server;
@@ -661,7 +664,8 @@ write_network_to_xml (const gchar *id,
 
       server = l->data;
 
-      server_node = xmlNewChild (servers_node, NULL, "server", NULL);
+      server_node = xmlNewChild (servers_node, NULL, (const xmlChar *) "server",
+          NULL);
 
       g_object_get (server,
           "address", &address,
@@ -669,13 +673,16 @@ write_network_to_xml (const gchar *id,
           "ssl", &ssl,
           NULL);
 
-      xmlNewProp (server_node, "address", address);
+      xmlNewProp (server_node, (const xmlChar *) "address",
+          (const xmlChar *) address);
 
       tmp = g_strdup_printf ("%u", port);
-      xmlNewProp (server_node, "port", tmp);
+      xmlNewProp (server_node, (const xmlChar *) "port",
+          (const xmlChar *) tmp);
       g_free (tmp);
 
-      xmlNewProp (server_node, "ssl", ssl ? "TRUE": "FALSE");
+      xmlNewProp (server_node, (const xmlChar *) "ssl",
+          ssl ? (const xmlChar *) "TRUE": (const xmlChar *) "FALSE");
 
       g_free (address);
     }
@@ -700,8 +707,8 @@ irc_network_manager_file_save (EmpathyIrcNetworkManager *self)
 
   DEBUG ("Saving IRC networks");
 
-  doc = xmlNewDoc ("1.0");
-  root = xmlNewNode (NULL, "networks");
+  doc = xmlNewDoc ((const xmlChar *)  "1.0");
+  root = xmlNewNode (NULL, (const xmlChar *) "networks");
   xmlDocSetRootElement (doc, root);
 
   g_hash_table_foreach (priv->networks, (GHFunc) write_network_to_xml, root);

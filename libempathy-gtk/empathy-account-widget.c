@@ -1155,7 +1155,7 @@ do_constructed (GObject *obj)
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   EmpathyAccount *account;
   const gchar *protocol, *cm_name;
-  int i = 0;
+  guint i = 0;
   struct {
     const gchar *cm_name;
     const gchar *protocol;

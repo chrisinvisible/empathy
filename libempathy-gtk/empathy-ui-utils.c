@@ -152,13 +152,13 @@ empathy_builder_connect (GtkBuilder *gui,
 {
 	va_list      args;
 	const gchar *name;
-	const gchar *signal;
+	const gchar *sig;
 	GObject     *object;
 	GCallback    callback;
 
 	va_start (args, first_object);
 	for (name = first_object; name; name = va_arg (args, const gchar *)) {
-		signal = va_arg (args, const gchar *);
+		sig = va_arg (args, const gchar *);
 		callback = va_arg (args, GCallback);
 
 		object = gtk_builder_get_object (gui, name);
@@ -167,7 +167,7 @@ empathy_builder_connect (GtkBuilder *gui,
 			continue;
 		}
 
-		g_signal_connect (object, signal, callback, user_data);
+		g_signal_connect (object, sig, callback, user_data);
 	}
 
 	va_end (args);
@@ -250,7 +250,7 @@ empathy_pixbuf_from_data_and_mime (gchar  *data,
 	}
 
 	loader = gdk_pixbuf_loader_new ();
-	if (!gdk_pixbuf_loader_write (loader, data, data_size, &error)) {
+	if (!gdk_pixbuf_loader_write (loader, (guchar *) data, data_size, &error)) {
 		DEBUG ("Failed to write to pixbuf loader: %s",
 			error ? error->message : "No error given");
 		goto out;

@@ -193,7 +193,7 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	GtkTextChildAnchor   *anchor;
 	GtkWidget            *box;
 	gchar                *str;
-	time_t                time;
+	time_t                time_;
 	gchar                *tmp;
 	GtkTextIter           start;
 	gboolean              color_set;
@@ -259,8 +259,8 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	g_free (str);
 
 	/* Add the message receive time */
-	time = empathy_message_get_timestamp (msg);
-	tmp = empathy_time_to_string_local (time,
+	time_ = empathy_message_get_timestamp (msg);
+	tmp = empathy_time_to_string_local (time_,
 					   EMPATHY_TIME_FORMAT_DISPLAY_SHORT);
 	str = g_strdup_printf ("<i>%s</i>", tmp);
 	label2 = g_object_new (GTK_TYPE_LABEL,
