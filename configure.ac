@@ -1,20 +1,23 @@
-# Making releases:
-#   set the new version number:
-#     odd minor -> development series
-#     even minor -> stable series
-#     increment micro for each release within a series
-#   set empathy_nano_version to 0.
+dnl If not 1, append datestamp to the version number
+m4_define(empathy_released, 0)
 
 m4_define([empathy_major_version], [2])
 m4_define([empathy_minor_version], [29])
 m4_define([empathy_micro_version], [1])
-m4_define([empathy_nano_version], [1])
+m4_define([empathy_nano_version], [0])
 
+dnl Display the nano_version only if it's not '0'
 m4_define([empathy_base_version],
           [empathy_major_version.empathy_minor_version.empathy_micro_version])
-m4_define([empathy_version],
+m4_define([empathy_full_version],
           [m4_if(empathy_nano_version, 0, [empathy_base_version],
               [empathy_base_version].[empathy_nano_version])])
+
+m4_define(empathy_maybe_datestamp,
+          m4_esyscmd([if test x]empathy_released[ != x1; then date +.%Y%m%d | tr -d '\n\r'; fi]))
+
+m4_define(empathy_version, empathy_full_version[]empathy_maybe_datestamp)
+
 
 AC_INIT(Empathy, empathy_version, http://bugzilla.gnome.org/browse.cgi?product=empathy)
 
@@ -103,7 +106,7 @@ AS_COMPILER_FLAG(-Wno-unused-parameter,
         wno_unused_parameter=yes,
         wno_unused_parameter=no)
 
-ifelse(empathy_nano_version, 0, [],
+ifelse(empathy_released, 1, [],
     [
         if test x$werror = xyes; then
             ERROR_CFLAGS="$ERROR_CFLAGS -Werror"
