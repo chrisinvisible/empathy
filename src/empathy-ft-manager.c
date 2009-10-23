@@ -33,6 +33,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_FT
 #include <libempathy/empathy-debug.h>
@@ -950,6 +951,21 @@ ft_manager_destroy_cb (GtkWidget *widget,
   g_object_unref (manager);
 }
 
+static gboolean
+ft_manager_key_press_event_cb (GtkWidget *widget,
+                               GdkEventKey *event,
+                               gpointer user_data)
+{
+  if ((event->state & GDK_CONTROL_MASK && event->keyval == GDK_w)
+      || event->keyval == GDK_Escape)
+    {
+      gtk_widget_destroy (widget);
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
 static void
 ft_manager_build_ui (EmpathyFTManager *manager)
 {
@@ -978,6 +994,7 @@ ft_manager_build_ui (EmpathyFTManager *manager)
       "ft_manager_dialog", "response", ft_manager_response_cb,
       "ft_manager_dialog", "delete-event", ft_manager_delete_event_cb,
       "ft_manager_dialog", "configure-event", ft_manager_configure_event_cb,
+      "ft_manager_dialog", "key-press-event", ft_manager_key_press_event_cb,
       NULL);
 
   empathy_builder_unref_and_keep_widget (gui, priv->window);
