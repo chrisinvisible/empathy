@@ -65,6 +65,11 @@ gboolean     empathy_idle_get_auto_away       (EmpathyIdle *idle);
 void         empathy_idle_set_auto_away       (EmpathyIdle *idle,
 					       gboolean     auto_away);
 
+TpConnectionPresenceType empathy_idle_get_requested_presence (EmpathyIdle *idle,
+							      gchar **status,
+							      gchar **status_message);
+
+
 G_END_DECLS
 
 #endif /* __EMPATHY_IDLE_H__ */

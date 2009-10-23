@@ -59,6 +59,10 @@ typedef struct {
 	guint           ext_away_timeout;
 
 	EmpathyAccountManager *manager;
+
+	TpConnectionPresenceType requested_presence_type;
+	gchar *requested_status_message;
+
 } EmpathyIdlePriv;
 
 typedef enum {
@@ -80,6 +84,18 @@ enum {
 G_DEFINE_TYPE (EmpathyIdle, empathy_idle, G_TYPE_OBJECT);
 
 static EmpathyIdle * idle_singleton = NULL;
+
+static const gchar *presence_type_to_status[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
+	NULL,
+	"offline",
+	"available",
+	"away",
+	"xa",
+	"hidden",
+	"busy",
+	NULL,
+	NULL,
+};
 
 static void
 idle_presence_changed_cb (EmpathyAccountManager *manager,
@@ -279,6 +295,7 @@ idle_finalize (GObject *object)
 	priv = GET_PRIV (object);
 
 	g_free (priv->status);
+	g_free (priv->requested_status_message);
 
 	if (priv->gs_proxy) {
 		g_object_unref (priv->gs_proxy);
@@ -567,22 +584,11 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 			   const gchar *status_message)
 {
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
-	const gchar *statuses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
-		NULL,
-		"offline",
-		"available",
-		"away",
-		"xa",
-		"hidden",
-		"busy",
-		NULL,
-		NULL,
-	};
 	const gchar *status;
 
 	g_assert (status_type > 0 && status_type < NUM_TP_CONNECTION_PRESENCE_TYPES);
 
-	status = statuses[status_type];
+	status = presence_type_to_status[status_type];
 
 	g_return_if_fail (status != NULL);
 
@@ -601,6 +607,10 @@ empathy_idle_set_presence (EmpathyIdle *idle,
 	priv = GET_PRIV (idle);
 
 	DEBUG ("Changing presence to %s (%d)", status, state);
+
+	g_free (priv->requested_status_message);
+	priv->requested_presence_type = state;
+	priv->requested_status_message = g_strdup (status);
 
 	/* Do not set translated default messages */
 	default_status = empathy_presence_get_default_message (state);
@@ -645,3 +655,20 @@ empathy_idle_set_auto_away (EmpathyIdle *idle,
 	g_object_notify (G_OBJECT (idle), "auto-away");
 }
 
+TpConnectionPresenceType
+empathy_idle_get_requested_presence (EmpathyIdle *idle,
+    gchar **status,
+    gchar **status_message)
+{
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+
+	if (status != NULL) {
+		*status = g_strdup (presence_type_to_status[priv->requested_presence_type]);
+	}
+
+	if (status_message != NULL) {
+		*status_message = g_strdup (priv->requested_status_message);
+	}
+
+	return priv->requested_presence_type;
+}
