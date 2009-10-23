@@ -113,6 +113,8 @@ static const GtkTargetEntry drag_types_dest[] = {
 	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
 };
 
+static void chat_window_update (EmpathyChatWindow *window);
+
 G_DEFINE_TYPE (EmpathyChatWindow, empathy_chat_window, G_TYPE_OBJECT);
 
 static void
@@ -295,6 +297,17 @@ chat_window_create_label (EmpathyChatWindow *window,
 }
 
 static void
+_submenu_notify_visible_changed_cb (GObject    *object,
+				    GParamSpec *pspec,
+				    gpointer    userdata)
+{
+	g_signal_handlers_disconnect_by_func (object,
+					      _submenu_notify_visible_changed_cb,
+					      userdata);
+	chat_window_update (EMPATHY_CHAT_WINDOW (userdata));
+}
+
+static void
 chat_window_update (EmpathyChatWindow *window)
 {
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
@@ -311,8 +324,7 @@ chat_window_update (EmpathyChatWindow *window)
 	gboolean               avatar_in_icon;
 	GtkWidget             *chat;
 	GtkWidget             *chat_close_button;
-	GtkWidget             *submenu;
-	GtkWidget             *menu;
+	GtkWidget             *menu, *submenu, *orig_submenu;
 
 	/* Get information */
 	page_num = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
@@ -336,9 +348,18 @@ chat_window_update (EmpathyChatWindow *window)
 	/* Update Contact menu */
 	menu = gtk_ui_manager_get_widget (priv->ui_manager,
 		"/chats_menubar/menu_contact");
-	submenu = empathy_chat_get_contact_menu (priv->current_chat);
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
-	gtk_widget_show (menu);
+	orig_submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (menu));
+	if (!GTK_WIDGET_VISIBLE (orig_submenu))
+	{
+		submenu = empathy_chat_get_contact_menu (priv->current_chat);
+		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
+		gtk_widget_show (menu);
+	} else {
+		empathy_signal_connect_weak (orig_submenu,
+					     "notify::visible",
+					     (GCallback)_submenu_notify_visible_changed_cb,
+					     G_OBJECT (window));
+	}
 
 	/* Update window title */
 	if (n_chats == 1) {
