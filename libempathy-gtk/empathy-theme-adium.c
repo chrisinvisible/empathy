@@ -28,6 +28,9 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 
+#include <gconf/gconf-client.h>
+#include <pango/pango.h>
+#include <gdk/gdk.h>
 
 #include <libempathy/empathy-time.h>
 #include <libempathy/empathy-utils.h>
@@ -42,6 +45,10 @@
 #include <libempathy/empathy-debug.h>
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyThemeAdium)
+
+/* GConf key containing current value of font */
+#define EMPATHY_GCONF_FONT_KEY_NAME       "/desktop/gnome/interface/font_name"
+#define BORING_DPI_DEFAULT                96
 
 /* "Join" consecutive messages with timestamps within five minutes */
 #define MESSAGE_JOIN_PERIOD 5*60
@@ -970,6 +977,67 @@ theme_adium_inspect_web_view_cb (WebKitWebInspector *inspector,
 	return NULL;
 }
 
+static PangoFontDescription *
+theme_adium_get_default_font (void)
+{
+	GConfClient *gconf_client;
+	PangoFontDescription *pango_fd;
+	gchar *gconf_font_family;
+
+	gconf_client = gconf_client_get_default ();
+	if (gconf_client == NULL) {
+		return NULL;
+	}
+	gconf_font_family = gconf_client_get_string (gconf_client,
+		     EMPATHY_GCONF_FONT_KEY_NAME,
+		     NULL);
+	if (gconf_font_family == NULL) {
+		g_object_unref (gconf_client);
+		return NULL;
+	}
+	pango_fd = pango_font_description_from_string (gconf_font_family);
+	g_free (gconf_font_family);
+	g_object_unref (gconf_client);
+	return pango_fd;
+}
+
+static void
+theme_adium_set_webkit_font (WebKitWebSettings *w_settings,
+			     const gchar *name,
+			     gint size)
+{
+	g_object_set (w_settings, "default-font-family", name, NULL);
+	g_object_set (w_settings, "default-font-size", size, NULL);
+}
+
+static void
+theme_adium_set_default_font (WebKitWebSettings *w_settings)
+{
+	PangoFontDescription *default_font_desc;
+	GdkScreen *current_screen;
+	gdouble dpi = 0;
+	gint pango_font_size = 0;
+
+	default_font_desc = theme_adium_get_default_font ();
+	if (default_font_desc == NULL)
+		return ;
+	pango_font_size = pango_font_description_get_size (default_font_desc)
+		/ PANGO_SCALE ;
+	if (pango_font_description_get_size_is_absolute (default_font_desc)) {
+		current_screen = gdk_screen_get_default ();
+		if (current_screen != NULL) {
+			dpi = gdk_screen_get_resolution (current_screen);
+		} else {
+			dpi = BORING_DPI_DEFAULT;
+		}
+		pango_font_size = (gint) (pango_font_size / (dpi / 72));
+	}
+	theme_adium_set_webkit_font (w_settings,
+		pango_font_description_get_family (default_font_desc),
+		pango_font_size);
+	pango_font_description_free (default_font_desc);
+}
+
 static void
 theme_adium_constructed (GObject *object)
 {
@@ -985,15 +1053,11 @@ theme_adium_constructed (GObject *object)
 	font_family = tp_asv_get_string (priv->data->info, "DefaultFontFamily");
 	font_size = tp_asv_get_int32 (priv->data->info, "DefaultFontSize", NULL);
 	webkit_settings = webkit_web_view_get_settings (webkit_view);
-	if (font_family) {
-		g_object_set (webkit_settings,
-			      "default-font-family", font_family,
-			      NULL);
-	}
-	if (font_size) {
-		g_object_set (webkit_settings,
-			      "default-font-size", font_size,
-			      NULL);
+
+	if (font_family && font_size) {
+		theme_adium_set_webkit_font (webkit_settings, font_family, font_size);
+	} else {
+		theme_adium_set_default_font (webkit_settings);
 	}
 
 	/* Setup webkit inspector */
