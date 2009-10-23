@@ -76,7 +76,7 @@ enum
   COL_ICON,
   COL_LABEL,
   COL_CM,
-  COL_PROTOCOL,
+  COL_PROTOCOL_NAME,
   COL_IS_GTALK,
   COL_COUNT
 };
@@ -85,7 +85,7 @@ G_DEFINE_TYPE (EmpathyProtocolChooser, empathy_protocol_chooser,
     GTK_TYPE_COMBO_BOX);
 
 static gint
-protocol_chooser_sort_protocol_value (TpConnectionManagerProtocol *protocol)
+protocol_chooser_sort_protocol_value (const gchar *protocol_name)
 {
   guint i;
   const gchar *names[] = {
@@ -97,7 +97,7 @@ protocol_chooser_sort_protocol_value (TpConnectionManagerProtocol *protocol)
 
   for (i = 0 ; names[i]; i++)
     {
-      if (strcmp (protocol->name, names[i]) == 0)
+      if (strcmp (protocol_name, names[i]) == 0)
         return i;
     }
 
@@ -110,22 +110,22 @@ protocol_chooser_sort_func (GtkTreeModel *model,
     GtkTreeIter  *iter_b,
     gpointer      user_data)
 {
-  TpConnectionManagerProtocol *protocol_a;
-  TpConnectionManagerProtocol *protocol_b;
+  gchar *protocol_a;
+  gchar *protocol_b;
   gint cmp = 0;
 
   gtk_tree_model_get (model, iter_a,
-      COL_PROTOCOL, &protocol_a,
+      COL_PROTOCOL_NAME, &protocol_a,
       -1);
   gtk_tree_model_get (model, iter_b,
-      COL_PROTOCOL, &protocol_b,
+      COL_PROTOCOL_NAME, &protocol_b,
       -1);
 
   cmp = protocol_chooser_sort_protocol_value (protocol_a);
   cmp -= protocol_chooser_sort_protocol_value (protocol_b);
   if (cmp == 0)
     {
-      cmp = strcmp (protocol_a->name, protocol_b->name);
+      cmp = strcmp (protocol_a, protocol_b);
       /* only happens for jabber where there is one entry for gtalk and one for
        * non-gtalk */
       if (cmp == 0)
@@ -139,6 +139,8 @@ protocol_chooser_sort_func (GtkTreeModel *model,
         }
     }
 
+  g_free (protocol_a);
+  g_free (protocol_b);
   return cmp;
 }
 
@@ -169,7 +171,6 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
         {
           GtkTreeIter titer;
           gboolean valid;
-          const TpConnectionManagerProtocol *haze_proto;
           TpConnectionManager *haze_cm;
 
           /* let's this CM replace the haze implementation */
@@ -178,28 +179,26 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
 
           while (valid)
             {
+              gchar *haze_proto_name = NULL;
+
               gtk_tree_model_get (GTK_TREE_MODEL (priv->store), &titer,
-                  COL_PROTOCOL, &haze_proto,
+                  COL_PROTOCOL_NAME, &haze_proto_name,
                   COL_CM, &haze_cm, -1);
 
               if (haze_cm == NULL)
                 continue;
 
-              if (haze_proto == NULL)
-                {
-                  g_object_unref (haze_cm);
-                  continue;
-                }
-
               if (!tp_strdiff (haze_cm->name, "haze") &&
-                  !tp_strdiff (haze_proto->name, proto->name))
+                  !tp_strdiff (haze_proto_name, proto->name))
                 {
                   gtk_list_store_remove (priv->store, &titer);
                   g_object_unref (haze_cm);
+                  g_free (haze_proto_name);
                   break;
                 }
 
               g_object_unref (haze_cm);
+              g_free (haze_proto_name);
               valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->store),
                   &titer);
             }
@@ -219,7 +218,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           COL_ICON, icon_name,
           COL_LABEL, display_name,
           COL_CM, cm,
-          COL_PROTOCOL, proto,
+          COL_PROTOCOL_NAME, proto->name,
           COL_IS_GTALK, FALSE,
           -1);
 
@@ -232,7 +231,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
              COL_ICON, "im-google-talk",
              COL_LABEL, display_name,
              COL_CM, cm,
-             COL_PROTOCOL, proto,
+             COL_PROTOCOL_NAME, proto->name,
              COL_IS_GTALK, TRUE,
              -1);
         }
@@ -278,16 +277,16 @@ protocol_chooser_constructed (GObject *object)
           G_TYPE_STRING,    /* Icon name */
           G_TYPE_STRING,    /* Label     */
           G_TYPE_OBJECT,    /* CM */
-          G_TYPE_POINTER,   /* protocol   */
+          G_TYPE_STRING,    /* protocol name  */
           G_TYPE_BOOLEAN);  /* is gtalk  */
 
   /* Set the protocol sort function */
   gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
-      COL_PROTOCOL,
+      COL_PROTOCOL_NAME,
       protocol_chooser_sort_func,
       NULL, NULL);
   gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (priv->store),
-      COL_PROTOCOL,
+      COL_PROTOCOL_NAME,
       GTK_SORT_ASCENDING);
 
   gtk_combo_box_set_model (GTK_COMBO_BOX (object),
@@ -394,16 +393,29 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
   EmpathyProtocolChooser *protocol_chooser = user_data;
   EmpathyProtocolChooserPriv *priv = GET_PRIV (protocol_chooser);
   TpConnectionManager *cm = NULL;
-  TpConnectionManagerProtocol *protocol = NULL;
+  gchar *protocol_name = NULL;
   gboolean visible = FALSE;
 
-  gtk_tree_model_get (model, iter, COL_CM, &cm, COL_PROTOCOL, &protocol, -1);
+  gtk_tree_model_get (model, iter,
+      COL_CM, &cm,
+      COL_PROTOCOL_NAME, &protocol_name,
+      -1);
 
-  if (cm != NULL && protocol != NULL)
+  if (cm != NULL && protocol_name != NULL)
     {
-      visible = priv->filter_func (cm, protocol, priv->filter_user_data);
-      g_object_unref (cm);
+      TpConnectionManagerProtocol *protocol;
+
+      protocol = (TpConnectionManagerProtocol *)
+        tp_connection_manager_get_protocol (cm, protocol_name);
+
+      if (protocol != NULL)
+        {
+          visible = priv->filter_func (cm, protocol, priv->filter_user_data);
+        }
     }
+
+  if (cm != NULL)
+    g_object_unref (cm);
 
   return visible;
 }
@@ -444,9 +456,16 @@ empathy_protocol_chooser_dup_selected (
 
       if (protocol != NULL)
         {
+          gchar *protocol_name = NULL;
+
           gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
-              COL_PROTOCOL, protocol,
+              COL_PROTOCOL_NAME, &protocol_name,
               -1);
+
+          *protocol = (TpConnectionManagerProtocol *)
+            tp_connection_manager_get_protocol (cm, protocol_name);
+
+          g_free (protocol_name);
         }
 
       if (is_gtalk != NULL)
