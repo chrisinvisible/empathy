@@ -132,7 +132,7 @@ contact_manager_disconnect_foreach (gpointer key,
 }
 
 static void
-contact_manager_new_connection_cb (TpAccount *account,
+contact_manager_status_changed_cb (TpAccount *account,
 				   guint old_status,
 				   guint new_status,
 				   guint reason,
@@ -256,12 +256,12 @@ account_manager_prepared_cb (GObject *source_object,
 		TpConnection *conn = tp_account_get_connection (account);
 
 		if (conn != NULL) {
-			contact_manager_new_connection_cb (account, 0, 0, 0,
+			contact_manager_status_changed_cb (account, 0, 0, 0,
 							   NULL, NULL, manager);
 		}
 
 		empathy_signal_connect_weak (account, "status-changed",
-		    G_CALLBACK (contact_manager_new_connection_cb),
+		    G_CALLBACK (contact_manager_status_changed_cb),
 		    G_OBJECT (manager));
 	}
 	g_list_free (accounts);

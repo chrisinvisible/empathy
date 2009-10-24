@@ -890,7 +890,7 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
 }
 
 static void
-dispatcher_new_connection_cb (TpAccount *account,
+dispatcher_status_changed_cb (TpAccount *account,
                               guint old_status,
                               guint new_status,
                               guint reason,
@@ -1133,10 +1133,10 @@ account_manager_prepared_cb (GObject *source_object,
       TpConnection *conn = tp_account_get_connection (a);
 
       if (conn != NULL)
-        dispatcher_new_connection_cb (a, 0, 0, 0, NULL, NULL, self);
+        dispatcher_status_changed_cb (a, 0, 0, 0, NULL, NULL, self);
 
       empathy_signal_connect_weak (a, "status-changed",
-          G_CALLBACK (dispatcher_new_connection_cb),
+          G_CALLBACK (dispatcher_status_changed_cb),
           G_OBJECT (self));
     }
   g_list_free (accounts);
