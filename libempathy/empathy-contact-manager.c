@@ -23,10 +23,10 @@
 
 #include <string.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 
 #include "empathy-contact-manager.h"
-#include "empathy-account-manager.h"
 #include "empathy-contact-monitor.h"
 #include "empathy-contact-list.h"
 #include "empathy-utils.h"
@@ -37,7 +37,7 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyContactManager)
 typedef struct {
 	GHashTable     *lists;
-	EmpathyAccountManager *account_manager;
+	TpAccountManager *account_manager;
 	EmpathyContactMonitor *contact_monitor;
 } EmpathyContactManagerPriv;
 
@@ -132,14 +132,21 @@ contact_manager_disconnect_foreach (gpointer key,
 }
 
 static void
-contact_manager_new_connection_cb (EmpathyAccountManager *account_manager,
-				   TpConnection *connection,
+contact_manager_new_connection_cb (TpAccount *account,
+				   guint old_status,
+				   guint new_status,
+				   guint reason,
+				   gchar *dbus_error_name,
+				   GHashTable *details,
 				   EmpathyContactManager *self)
 {
 	EmpathyContactManagerPriv *priv = GET_PRIV (self);
 	EmpathyTpContactList      *list;
+	TpConnection              *connection;
 
-	if (g_hash_table_lookup (priv->lists, connection)) {
+	connection = tp_account_get_connection (account);
+
+	if (connection == NULL || g_hash_table_lookup (priv->lists, connection)) {
 		return;
 	}
 
@@ -174,9 +181,6 @@ contact_manager_finalize (GObject *object)
 			      object);
 	g_hash_table_destroy (priv->lists);
 
-	g_signal_handlers_disconnect_by_func (priv->account_manager,
-					      contact_manager_new_connection_cb,
-					      object);
 	g_object_unref (priv->account_manager);
 
 	if (priv->contact_monitor) {
@@ -233,9 +237,39 @@ empathy_contact_manager_class_init (EmpathyContactManagerClass *klass)
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+			     GAsyncResult *result,
+			     gpointer user_data)
+{
+	GList *accounts, *l;
+	EmpathyContactManager *manager = user_data;
+	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+
+	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+		return;
+	}
+
+	accounts = tp_account_manager_get_valid_accounts (account_manager);
+
+	for (l = accounts; l != NULL; l = l->next) {
+		TpAccount *account = l->data;
+		TpConnection *conn = tp_account_get_connection (account);
+
+		if (conn != NULL) {
+			contact_manager_new_connection_cb (account, 0, 0, 0,
+							   NULL, NULL, manager);
+		}
+
+		empathy_signal_connect_weak (account, "status-changed",
+		    G_CALLBACK (contact_manager_new_connection_cb),
+		    G_OBJECT (manager));
+	}
+	g_list_free (accounts);
+}
+
+static void
 empathy_contact_manager_init (EmpathyContactManager *manager)
 {
-	GList *connections, *l;
 	EmpathyContactManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (manager,
 		EMPATHY_TYPE_CONTACT_MANAGER, EmpathyContactManagerPriv);
 
@@ -244,21 +278,11 @@ empathy_contact_manager_init (EmpathyContactManager *manager)
 					     empathy_proxy_equal,
 					     (GDestroyNotify) g_object_unref,
 					     (GDestroyNotify) g_object_unref);
-	priv->account_manager = empathy_account_manager_dup_singleton ();
+	priv->account_manager = tp_account_manager_dup ();
 	priv->contact_monitor = NULL;
 
-	g_signal_connect (priv->account_manager, "new-connection",
-			  G_CALLBACK (contact_manager_new_connection_cb),
-			  manager);
-
-	/* Get ContactList for existing connections */
-	connections = empathy_account_manager_dup_connections (priv->account_manager);
-	for (l = connections; l; l = l->next) {
-		contact_manager_new_connection_cb (priv->account_manager,
-						   l->data, manager);
-		g_object_unref (l->data);
-	}
-	g_list_free (connections);
+	tp_account_manager_prepare_async (priv->account_manager, NULL,
+	    account_manager_prepared_cb, manager);
 }
 
 EmpathyContactManager *
