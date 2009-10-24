@@ -24,7 +24,7 @@
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 
-#include <libempathy/empathy-account-manager.h>
+#include <telepathy-glib/account-manager.h>
 
 #include "check-helpers.h"
 #include "check-empathy-helpers.h"
