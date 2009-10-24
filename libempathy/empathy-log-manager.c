@@ -158,7 +158,7 @@ empathy_log_manager_add_message (EmpathyLogManager *manager,
 
 gboolean
 empathy_log_manager_exists (EmpathyLogManager *manager,
-                            EmpathyAccount *account,
+                            TpAccount *account,
                             const gchar *chat_id,
                             gboolean chatroom)
 {
@@ -182,7 +182,7 @@ empathy_log_manager_exists (EmpathyLogManager *manager,
 
 GList *
 empathy_log_manager_get_dates (EmpathyLogManager *manager,
-                               EmpathyAccount *account,
+                               TpAccount *account,
                                const gchar *chat_id,
                                gboolean chatroom)
 {
@@ -218,7 +218,7 @@ empathy_log_manager_get_dates (EmpathyLogManager *manager,
 
 GList *
 empathy_log_manager_get_messages_for_date (EmpathyLogManager *manager,
-                                           EmpathyAccount *account,
+                                           TpAccount *account,
                                            const gchar *chat_id,
                                            gboolean chatroom,
                                            const gchar *date)
@@ -259,7 +259,7 @@ log_manager_message_date_cmp (gconstpointer a,
 
 GList *
 empathy_log_manager_get_filtered_messages (EmpathyLogManager *manager,
-					   EmpathyAccount *account,
+					   TpAccount *account,
 					   const gchar *chat_id,
 					   gboolean chatroom,
 					   guint num_messages,
@@ -319,7 +319,7 @@ empathy_log_manager_get_filtered_messages (EmpathyLogManager *manager,
 
 GList *
 empathy_log_manager_get_chats (EmpathyLogManager *manager,
-                               EmpathyAccount *account)
+                               TpAccount *account)
 {
   GList *l, *out = NULL;
   EmpathyLogManagerPriv *priv;
