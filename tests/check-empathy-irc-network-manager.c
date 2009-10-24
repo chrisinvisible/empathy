@@ -440,7 +440,6 @@ START_TEST (test_modify_user_file)
   /* check networks and servers */
   for (l = networks; l != NULL; l = g_slist_next (l))
     {
-      EmpathyIrcNetwork *network;
       gchar *name;
 
       network = l->data;
@@ -457,7 +456,6 @@ START_TEST (test_modify_user_file)
           servers = empathy_irc_network_get_servers (network);
           for (ll = servers; ll != NULL; ll = g_slist_next (ll))
             {
-              EmpathyIrcServer *server;
               gchar *address;
 
               server = ll->data;
@@ -613,7 +611,6 @@ START_TEST (test_modify_both_files)
   /* check networks and servers */
   for (l = networks; l != NULL; l = g_slist_next (l))
     {
-      EmpathyIrcNetwork *network;
       gchar *name;
 
       network = l->data;
@@ -628,7 +625,6 @@ START_TEST (test_modify_both_files)
           servers = empathy_irc_network_get_servers (network);
           for (ll = servers; ll != NULL; ll = g_slist_next (ll))
             {
-              EmpathyIrcServer *server;
               gchar *address;
 
               server = ll->data;
@@ -676,8 +672,6 @@ START_TEST (test_modify_both_files)
       else if (strcmp (name, "Undernet") == 0)
         {
           /* modify global network */
-          EmpathyIrcServer *server;
-
           server = empathy_irc_server_new ("us.undernet.org", 6667, FALSE);
           empathy_irc_network_append_server (network, server);
           g_object_unref (server);
