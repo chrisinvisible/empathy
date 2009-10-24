@@ -28,13 +28,12 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
-#include <libempathy/empathy-account.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include <glib/gi18n.h>
@@ -77,24 +76,12 @@ import_widget_account_id_in_list (GList *accounts,
 
   for (l = accounts; l; l = l->next)
     {
-      EmpathyAccount *account = l->data;
-      const gchar *account_string;
-      GValue *value;
-      gboolean result;
+      TpAccount *account = l->data;
       const GHashTable *parameters;
 
-      parameters = empathy_account_get_parameters (account);
+      parameters = tp_account_get_parameters (account);
 
-      value = g_hash_table_lookup ((GHashTable *) parameters, "account");
-
-      if (value == NULL)
-        continue;
-
-      account_string = g_value_get_string (value);
-
-      result = tp_strdiff (account_string, account_id);
-
-      if (!result)
+      if (!tp_strdiff (tp_asv_get_string (parameters, "account"), account_id))
         return TRUE;
     }
 
@@ -102,13 +89,19 @@ import_widget_account_id_in_list (GList *accounts,
 }
 
 static void
-import_widget_add_accounts_to_model (EmpathyImportWidget *self)
+account_manager_prepared_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
 {
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  EmpathyImportWidget *self = user_data;
   GtkTreeModel *model;
   GtkTreeIter iter;
   GList *l;
   EmpathyImportWidgetPriv *priv = GET_PRIV (self);
-  EmpathyAccountManager *manager = empathy_account_manager_dup_singleton ();
+
+  if (!tp_account_manager_prepare_finish (manager, result, NULL))
+    return;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 
@@ -128,14 +121,13 @@ import_widget_add_accounts_to_model (EmpathyImportWidget *self)
 
       value = g_hash_table_lookup (data->settings, "account");
 
-      accounts = empathy_account_manager_dup_accounts (manager);
+      accounts = tp_account_manager_get_valid_accounts (manager);
 
       /* Only set the "Import" cell to be active if there isn't already an
        * account set up with the same account id. */
       import = !import_widget_account_id_in_list (accounts,
           g_value_get_string (value));
 
-      g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
       g_list_free (accounts);
 
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
@@ -148,6 +140,17 @@ import_widget_add_accounts_to_model (EmpathyImportWidget *self)
           COL_ACCOUNT_DATA, data,
           -1);
     }
+}
+
+static void
+import_widget_add_accounts_to_model (EmpathyImportWidget *self)
+{
+  TpAccountManager *manager;
+
+  manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (manager, NULL,
+      account_manager_prepared_cb, self);
 
   g_object_unref (manager);
 }
@@ -157,12 +160,12 @@ import_widget_create_account_cb (GObject *source,
   GAsyncResult *result,
   gpointer user_data)
 {
-  EmpathyAccount *account;
+  TpAccount *account;
   GError *error = NULL;
   EmpathyImportWidget *self = user_data;
 
-  account = empathy_account_manager_create_account_finish (
-    EMPATHY_ACCOUNT_MANAGER (source), result, &error);
+  account = tp_account_manager_create_account_finish (
+    TP_ACCOUNT_MANAGER (source), result, &error);
 
   if (account == NULL)
     {
@@ -181,12 +184,12 @@ static void
 import_widget_add_account (EmpathyImportWidget *self,
     EmpathyImportAccountData *data)
 {
-  EmpathyAccountManager *account_manager;
+  TpAccountManager *account_manager;
   gchar *display_name;
   GHashTable *properties;
   GValue *username;
 
-  account_manager = empathy_account_manager_dup_singleton ();
+  account_manager = tp_account_manager_dup ();
 
   DEBUG ("connection_manager: %s\n", data->connection_manager);
 
@@ -200,7 +203,7 @@ import_widget_add_account (EmpathyImportWidget *self,
 
   properties = g_hash_table_new (NULL, NULL);
 
-  empathy_account_manager_create_account_async (account_manager,
+  tp_account_manager_create_account_async (account_manager,
       (const gchar*) data->connection_manager, data->protocol, display_name,
       data->settings, properties, import_widget_create_account_cb,
       g_object_ref (self));
