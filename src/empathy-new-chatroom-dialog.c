@@ -354,7 +354,7 @@ static void
 new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 {
 	EmpathyAccountChooser *account_chooser;
-	EmpathyAccount        *account;
+	TpAccount             *account;
 	const gchar           *protocol;
 	const gchar           *room;
 
@@ -364,7 +364,7 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 	if (account == NULL)
 		return;
 
-	protocol = empathy_account_get_protocol (account);
+	protocol = tp_account_get_protocol (account);
 
 	gtk_entry_set_text (GTK_ENTRY (dialog->entry_server), "");
 
@@ -396,7 +396,7 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 					EmpathyNewChatroomDialog *dialog)
 {
 	EmpathyAccountChooser *account_chooser;
-	EmpathyAccount        *account;
+	TpAccount             *account;
 	gboolean               listing = FALSE;
 	gboolean               expanded = FALSE;
 
