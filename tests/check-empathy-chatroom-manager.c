@@ -5,6 +5,7 @@
 
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <check.h>
 
@@ -13,7 +14,6 @@
 #include "check-empathy-helpers.h"
 
 #include <libempathy/empathy-chatroom-manager.h>
-#include <libempathy/empathy-account-manager.h>
 
 #define CHATROOM_SAMPLE "chatrooms-sample.xml"
 #define CHATROOM_FILE "chatrooms.xml"
