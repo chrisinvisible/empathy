@@ -32,7 +32,6 @@
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-account.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
 #include <libempathy/empathy-debug.h>
