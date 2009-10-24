@@ -35,8 +35,8 @@
 #endif
 
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-account.h>
 
+#include <telepathy-glib/account.h>
 #include <telepathy-glib/connection-manager.h>
 #include <telepathy-glib/util.h>
 #include <dbus/dbus-protocol.h>
@@ -570,10 +570,10 @@ account_widget_account_enabled_cb (GObject *source_object,
     gpointer user_data)
 {
   GError *error = NULL;
-  EmpathyAccount *account = EMPATHY_ACCOUNT (source_object);
+  TpAccount *account = TP_ACCOUNT (source_object);
   EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
 
-  empathy_account_set_enabled_finish (account, res, &error);
+  tp_account_set_enabled_finish (account, res, &error);
 
   if (error != NULL)
     {
@@ -592,7 +592,7 @@ account_widget_applied_cb (GObject *source_object,
     gpointer user_data)
 {
   GError *error = NULL;
-  EmpathyAccount *account;
+  TpAccount *account;
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source_object);
   EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
@@ -613,7 +613,7 @@ account_widget_applied_cb (GObject *source_object,
       if (priv->creating_account)
         {
           /* By default, when an account is created, we enable it. */
-          empathy_account_set_enabled_async (account, TRUE,
+          tp_account_set_enabled_async (account, TRUE,
               account_widget_account_enabled_cb, widget);
         }
       else if (priv->enabled_checkbox != NULL)
@@ -629,12 +629,12 @@ account_widget_applied_cb (GObject *source_object,
                 NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox));
 #endif
 
-          if (empathy_account_is_enabled (account) && enabled_checked)
+          if (tp_account_is_enabled (account) && enabled_checked)
             {
               /* After having applied changes to a user account, we
                * automatically reconnect it. This is done so the new
                * information entered by the user is validated on the server. */
-              empathy_account_reconnect_async (account, NULL, NULL);
+              tp_account_reconnect_async (account, NULL, NULL);
             }
         }
     }
@@ -1047,13 +1047,13 @@ account_widget_destroy_cb (GtkWidget *widget,
 }
 
 static void
-empathy_account_widget_enabled_cb (EmpathyAccount *account,
+empathy_account_widget_enabled_cb (TpAccount *account,
       GParamSpec *spec,
       gpointer user_data)
 {
   EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
-  gboolean enabled = empathy_account_is_enabled (account);
+  gboolean enabled = tp_account_is_enabled (account);
 
   if (priv->enabled_checkbox != NULL)
     {
@@ -1079,7 +1079,7 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
 #endif /* HAVE_MOBLIN */
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (user_data);
-  EmpathyAccount *account;
+  TpAccount *account;
 #ifndef HAVE_MOBLIN
   gboolean state;
 
@@ -1089,7 +1089,7 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
   account = empathy_account_settings_get_account (priv->settings);
 
   /* Enable the account according to the value of the "Enabled" checkbox */
-  empathy_account_set_enabled_async (account, state, NULL, NULL);
+  tp_account_set_enabled_async (account, state, NULL, NULL);
 }
 
 static void
@@ -1153,7 +1153,7 @@ do_constructed (GObject *obj)
 {
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  EmpathyAccount *account;
+  TpAccount *account;
   const gchar *protocol, *cm_name;
   guint i = 0;
   struct {
@@ -1295,7 +1295,7 @@ do_constructed (GObject *obj)
       guint nb_rows, nb_columns;
       gboolean is_enabled;
 
-      is_enabled = empathy_account_is_enabled (account);
+      is_enabled = tp_account_is_enabled (account);
 
 #ifndef HAVE_MOBLIN
       priv->enabled_checkbox =
@@ -1373,7 +1373,7 @@ do_dispose (GObject *obj)
 
   if (priv->settings != NULL)
     {
-      EmpathyAccount *account;
+      TpAccount *account;
       account = empathy_account_settings_get_account (priv->settings);
 
       if (account != NULL)
