@@ -59,6 +59,7 @@ typedef struct {
 	guint           ext_away_timeout;
 
 	TpAccountManager *manager;
+	GHashTable *connect_times;
 
 	TpConnectionPresenceType requested_presence_type;
 	gchar *requested_status_message;
@@ -307,6 +308,9 @@ idle_finalize (GObject *object)
 
 	g_object_unref (priv->connectivity);
 
+	g_hash_table_destroy (priv->connect_times);
+	priv->connect_times = NULL;
+
 	idle_ext_away_stop (EMPATHY_IDLE (object));
 }
 
@@ -438,6 +442,30 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 }
 
 static void
+account_status_changed_cb (TpAccount  *account,
+			   guint       old_status,
+			   guint       new_status,
+			   guint       reason,
+			   gchar      *dbus_error_name,
+			   GHashTable *details,
+			   gpointer    user_data)
+{
+	EmpathyIdle *idle = EMPATHY_IDLE (user_data);
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	GTimeVal val;
+
+	if (new_status != TP_CONNECTION_STATUS_CONNECTED) {
+		return;
+	}
+
+	g_get_current_time (&val);
+
+	g_hash_table_insert (priv->connect_times,
+			     g_strdup (tp_proxy_get_object_path (account)),
+			     GINT_TO_POINTER (val.tv_sec));
+}
+
+static void
 account_manager_ready_cb (GObject *source_object,
 			  GAsyncResult *result,
 			  gpointer user_data)
@@ -447,6 +475,7 @@ account_manager_ready_cb (GObject *source_object,
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
 	TpConnectionPresenceType state;
 	gchar *status, *status_message;
+	GList *accounts, *l;
 
 	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
 		return;
@@ -457,6 +486,14 @@ account_manager_ready_cb (GObject *source_object,
 
 	idle_presence_changed_cb (account_manager, state, status,
 		status_message, idle);
+
+	accounts = tp_account_manager_get_valid_accounts (priv->manager);
+	for (l = accounts; l != NULL; l = l->next) {
+		empathy_signal_connect_weak (l->data, "status-changed",
+					     G_CALLBACK (account_status_changed_cb),
+					     G_OBJECT (idle));
+	}
+	g_list_free (accounts);
 
 	g_free (status);
 	g_free (status_message);
@@ -496,6 +533,9 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->connectivity = empathy_connectivity_dup_singleton ();
 	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
 	    "state-change", G_CALLBACK (idle_state_change_cb), idle);
+
+	priv->connect_times = g_hash_table_new_full (g_str_hash, g_str_equal,
+						    (GDestroyNotify) g_free, NULL);
 }
 
 EmpathyIdle *
@@ -673,4 +713,32 @@ empathy_idle_get_requested_presence (EmpathyIdle *idle,
 	}
 
 	return priv->requested_presence_type;
+}
+
+gboolean
+empathy_idle_account_is_just_connected (EmpathyIdle *idle,
+					TpAccount *account)
+{
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	GTimeVal val;
+	gpointer ptr;
+	glong t;
+
+	if (tp_account_get_connection_status (account, NULL)
+	    != TP_CONNECTION_STATUS_CONNECTED) {
+		return FALSE;
+	}
+
+	ptr = g_hash_table_lookup (priv->connect_times,
+				   tp_proxy_get_object_path (account));
+
+	if (ptr == NULL) {
+		return FALSE;
+	}
+
+	t = GPOINTER_TO_INT (ptr);
+
+	g_get_current_time (&val);
+
+	return (val.tv_sec - t) < 10;
 }

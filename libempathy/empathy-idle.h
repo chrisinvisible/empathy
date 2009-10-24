@@ -69,6 +69,8 @@ TpConnectionPresenceType empathy_idle_get_requested_presence (EmpathyIdle *idle,
 							      gchar **status,
 							      gchar **status_message);
 
+gboolean empathy_idle_account_is_just_connected (EmpathyIdle *idle,
+						 TpAccount *account);
 
 G_END_DECLS
 
