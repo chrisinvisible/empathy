@@ -26,7 +26,7 @@
 
 #include <gtk/gtk.h>
 
-#include <libempathy/empathy-account.h>
+#include <telepathy-glib/account.h>
 
 G_BEGIN_DECLS
 
@@ -55,7 +55,7 @@ typedef struct {
 
 GType empathy_accounts_dialog_get_type (void);
 GtkWidget *empathy_accounts_dialog_show (GtkWindow *parent,
-    EmpathyAccount *selected_account);
+    TpAccount *selected_account);
 
 G_END_DECLS
 
