@@ -34,9 +34,9 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-log-manager.h>
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-utils.h>
@@ -64,7 +64,7 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChat)
 typedef struct {
 	EmpathyTpChat     *tp_chat;
-	EmpathyAccount    *account;
+	TpAccount         *account;
 	gchar             *id;
 	gchar             *name;
 	gchar             *subject;
@@ -72,7 +72,7 @@ typedef struct {
 	gboolean           show_contacts;
 
 	EmpathyLogManager *log_manager;
-	EmpathyAccountManager *account_manager;
+	TpAccountManager  *account_manager;
 	GSList            *sent_messages;
 	gint               sent_messages_index;
 	GList             *compositors;
@@ -196,15 +196,19 @@ chat_connect_channel_reconnected (EmpathyDispatchOperation *dispatch,
 }
 
 static void
-chat_new_connection_cb (EmpathyAccountManager *manager,
-			TpConnection *connection,
+chat_new_connection_cb (TpAccount   *account,
+			guint        old_status,
+			guint        new_status,
+			guint        reason,
+			gchar       *dbus_error_name,
+			GHashTable  *details,
 			EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
-	EmpathyAccount *account;
+	TpConnection *connection;
 
-	account = empathy_account_manager_get_account_for_connection (manager,
-		connection);
+	connection = tp_account_get_connection (account);
+
 	if (!priv->tp_chat && account == priv->account &&
 	    priv->handle_type != TP_HANDLE_TYPE_NONE &&
 	    !EMP_STR_EMPTY (priv->id)) {
@@ -1540,9 +1544,6 @@ chat_finalize (GObject *object)
 
 	chat_composing_remove_timeout (chat);
 
-	g_signal_handlers_disconnect_by_func (priv->account_manager,
-					      chat_new_connection_cb, object);
-
 	g_object_unref (priv->account_manager);
 	g_object_unref (priv->log_manager);
 
@@ -1621,7 +1622,7 @@ empathy_chat_class_init (EmpathyChatClass *klass)
 					 g_param_spec_object ("account",
 							      "Account of the chat",
 							      "The account of the chat",
-							      EMPATHY_TYPE_ACCOUNT,
+							      TP_TYPE_ACCOUNT,
 							      G_PARAM_READABLE |
 							      G_PARAM_STATIC_STRINGS));
 	g_object_class_install_property (object_class,
@@ -1699,6 +1700,31 @@ chat_block_events_timeout_cb (gpointer data)
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+			     GAsyncResult *result,
+			     gpointer user_data)
+{
+	GList *accounts, *l;
+	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyChat *chat = user_data;
+
+	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+		return;
+	}
+
+	accounts = tp_account_manager_get_valid_accounts (account_manager);
+
+	for (l = accounts; l != NULL; l = l->next) {
+		TpAccount *account = l->data;
+		empathy_signal_connect_weak (account, "status-changed",
+					     G_CALLBACK (chat_new_connection_cb),
+					     G_OBJECT (chat));
+	}
+
+	g_list_free (accounts);
+}
+
+static void
 empathy_chat_init (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (chat,
@@ -1709,12 +1735,10 @@ empathy_chat_init (EmpathyChat *chat)
 	priv->contacts_width = -1;
 	priv->sent_messages = NULL;
 	priv->sent_messages_index = -1;
-	priv->account_manager = empathy_account_manager_dup_singleton ();
+	priv->account_manager = tp_account_manager_dup ();
 
-	g_signal_connect (priv->account_manager,
-			  "new-connection",
-			  G_CALLBACK (chat_new_connection_cb),
-			  chat);
+	tp_account_manager_prepare_async (priv->account_manager, NULL,
+					  account_manager_prepared_cb, chat);
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS,
@@ -1767,10 +1791,7 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 
 	priv->tp_chat = g_object_ref (tp_chat);
 	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	priv->account = empathy_account_manager_get_account_for_connection (
-							     priv->account_manager,
-							     connection);
-	g_object_ref (priv->account);
+	priv->account = g_object_ref (empathy_get_account_for_connection (connection));
 
 	g_signal_connect (tp_chat, "destroy",
 			  G_CALLBACK (chat_destroy_cb),
@@ -1813,7 +1834,7 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	show_pending_messages (chat);
 }
 
-EmpathyAccount *
+TpAccount *
 empathy_chat_get_account (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
