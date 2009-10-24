@@ -29,13 +29,13 @@
 #include <stdlib.h>
 #include <glib/gstdio.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/defs.h>
 
 #include "empathy-log-store.h"
 #include "empathy-log-store-empathy.h"
 #include "empathy-log-manager.h"
-#include "empathy-account-manager.h"
 #include "empathy-contact.h"
 #include "empathy-time.h"
 #include "empathy-utils.h"
@@ -63,7 +63,7 @@ typedef struct
 {
   gchar *basedir;
   gchar *name;
-  EmpathyAccountManager *account_manager;
+  TpAccountManager *account_manager;
 } EmpathyLogStoreEmpathyPriv;
 
 static void log_store_iface_init (gpointer g_iface,gpointer iface_data);
@@ -105,15 +105,15 @@ empathy_log_store_empathy_init (EmpathyLogStoreEmpathy *self)
     PACKAGE_NAME, "logs", NULL);
 
   priv->name = g_strdup ("Empathy");
-  priv->account_manager = empathy_account_manager_dup_singleton ();
+  priv->account_manager = tp_account_manager_dup ();
 }
 
 static gchar *
-log_store_account_to_dirname (EmpathyAccount *account)
+log_store_account_to_dirname (TpAccount *account)
 {
   const gchar *name;
 
-  name = empathy_account_get_unique_name (account);
+  name = tp_proxy_get_object_path (account);
   if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
     name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
 
@@ -123,7 +123,7 @@ log_store_account_to_dirname (EmpathyAccount *account)
 
 static gchar *
 log_store_empathy_get_dir (EmpathyLogStore *self,
-                           EmpathyAccount *account,
+                           TpAccount *account,
                            const gchar *chat_id,
                            gboolean chatroom)
 {
@@ -176,7 +176,7 @@ log_store_empathy_get_timestamp_from_message (EmpathyMessage *message)
 
 static gchar *
 log_store_empathy_get_filename (EmpathyLogStore *self,
-                                EmpathyAccount *account,
+                                TpAccount *account,
                                 const gchar *chat_id,
                                 gboolean chatroom)
 {
@@ -202,7 +202,7 @@ log_store_empathy_add_message (EmpathyLogStore *self,
                                GError **error)
 {
   FILE *file;
-  EmpathyAccount *account;
+  TpAccount *account;
   EmpathyContact *sender;
   const gchar *body_str;
   const gchar *str;
@@ -289,7 +289,7 @@ log_store_empathy_add_message (EmpathyLogStore *self,
 
 static gboolean
 log_store_empathy_exists (EmpathyLogStore *self,
-                          EmpathyAccount *account,
+                          TpAccount *account,
                           const gchar *chat_id,
                           gboolean chatroom)
 {
@@ -305,7 +305,7 @@ log_store_empathy_exists (EmpathyLogStore *self,
 
 static GList *
 log_store_empathy_get_dates (EmpathyLogStore *self,
-                             EmpathyAccount *account,
+                             TpAccount *account,
                              const gchar *chat_id,
                              gboolean chatroom)
 {
@@ -357,7 +357,7 @@ log_store_empathy_get_dates (EmpathyLogStore *self,
 
 static gchar *
 log_store_empathy_get_filename_for_date (EmpathyLogStore *self,
-                                         EmpathyAccount *account,
+                                         TpAccount *account,
                                          const gchar *chat_id,
                                          gboolean chatroom,
                                          const gchar *date)
@@ -406,11 +406,13 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
   else
     account_name = strv[len-3];
 
-  accounts = empathy_account_manager_dup_accounts (priv->account_manager);
+  /* FIXME: This assumes the account manager is prepared, but the
+   * synchronous API forces this. */
+  accounts = tp_account_manager_get_valid_accounts (priv->account_manager);
 
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
-      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      TpAccount *account = TP_ACCOUNT (l->data);
       gchar *name;
 
       name = log_store_account_to_dirname (account);
@@ -434,7 +436,7 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
 
 static GList *
 log_store_empathy_get_messages_for_file (EmpathyLogStore *self,
-                                         EmpathyAccount *account,
+                                         TpAccount *account,
                                          const gchar *filename)
 {
   GList *messages = NULL;
@@ -703,7 +705,7 @@ log_store_empathy_get_chats_for_dir (EmpathyLogStore *self,
 
 static GList *
 log_store_empathy_get_messages_for_date (EmpathyLogStore *self,
-                                         EmpathyAccount *account,
+                                         TpAccount *account,
                                          const gchar *chat_id,
                                          gboolean chatroom,
                                          const gchar *date)
@@ -726,7 +728,7 @@ log_store_empathy_get_messages_for_date (EmpathyLogStore *self,
 
 static GList *
 log_store_empathy_get_chats (EmpathyLogStore *self,
-                              EmpathyAccount *account)
+                              TpAccount *account)
 {
   gchar *dir;
   GList *hits;
@@ -753,7 +755,7 @@ log_store_empathy_get_name (EmpathyLogStore *self)
 
 static GList *
 log_store_empathy_get_filtered_messages (EmpathyLogStore *self,
-                                         EmpathyAccount *account,
+                                         TpAccount *account,
                                          const gchar *chat_id,
                                          gboolean chatroom,
                                          guint num_messages,
