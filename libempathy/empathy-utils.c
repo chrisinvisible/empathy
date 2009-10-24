@@ -523,3 +523,37 @@ empathy_get_account_for_connection (TpConnection *connection)
 
   return account;
 }
+
+gboolean
+empathy_account_manager_get_accounts_connected (gboolean *connecting)
+{
+  TpAccountManager *manager;
+  GList *accounts, *l;
+  gboolean out_connecting = FALSE;
+  gboolean out_connected = FALSE;
+
+  manager = tp_account_manager_dup ();
+  accounts = tp_account_manager_get_valid_accounts (manager);
+
+  for (l = accounts; l != NULL; l = l->next)
+    {
+      TpConnectionStatus s = tp_account_get_connection_status (
+          TP_ACCOUNT (l->data), NULL);
+
+      if (s == TP_CONNECTION_STATUS_CONNECTING)
+        out_connecting = TRUE;
+      else if (s == TP_CONNECTION_STATUS_CONNECTED)
+        out_connected = TRUE;
+
+      if (out_connecting && out_connected)
+        break;
+    }
+
+  g_list_free (accounts);
+  g_object_unref (manager);
+
+  if (connecting != NULL)
+    *connecting = out_connecting;
+
+  return out_connected;
+}
