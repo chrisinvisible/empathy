@@ -22,14 +22,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/gtypes.h>
 
 #include "empathy-account-settings.h"
-#include "empathy-account-manager.h"
 #include "empathy-connection-managers.h"
 #include "empathy-utils.h"
+#include "empathy-idle.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -54,12 +55,11 @@ struct _EmpathyAccountSettingsPriv
 {
   gboolean dispose_has_run;
   EmpathyConnectionManagers *managers;
-  EmpathyAccountManager *account_manager;
-  gulong account_manager_ready_id;
+  TpAccountManager *account_manager;
 
   TpConnectionManager *manager;
 
-  EmpathyAccount *account;
+  TpAccount *account;
   gchar *cm_name;
   gchar *protocol;
   gchar *display_name;
@@ -72,7 +72,6 @@ struct _EmpathyAccountSettingsPriv
   GArray *required_params;
 
   gulong managers_ready_id;
-  gulong account_ready_id;
 
   GSimpleAsyncResult *apply_result;
 };
@@ -87,7 +86,7 @@ empathy_account_settings_init (EmpathyAccountSettings *obj)
 
   /* allocate any data required by the object here */
   priv->managers = empathy_connection_managers_dup_singleton ();
-  priv->account_manager = empathy_account_manager_dup_singleton ();
+  priv->account_manager = tp_account_manager_dup ();
 
   priv->parameters = g_hash_table_new_full (g_str_hash, g_str_equal,
     g_free, (GDestroyNotify) tp_g_value_slice_free);
@@ -97,8 +96,10 @@ empathy_account_settings_init (EmpathyAccountSettings *obj)
 
 static void empathy_account_settings_dispose (GObject *object);
 static void empathy_account_settings_finalize (GObject *object);
-static void empathy_account_settings_ready_cb (GObject *obj,
-  GParamSpec *spec, gpointer user_data);
+static void empathy_account_settings_account_ready_cb (GObject *source_object,
+    GAsyncResult *result, gpointer user_data);
+static void empathy_account_settings_managers_ready_cb (GObject *obj,
+    GParamSpec *pspec, gpointer user_data);
 static void empathy_account_settings_check_readyness (
     EmpathyAccountSettings *self);
 
@@ -181,11 +182,11 @@ empathy_account_settings_constructed (GObject *object)
       g_free (priv->protocol);
 
       priv->cm_name =
-        g_strdup (empathy_account_get_connection_manager (priv->account));
+        g_strdup (tp_account_get_connection_manager (priv->account));
       priv->protocol =
-        g_strdup (empathy_account_get_protocol (priv->account));
+        g_strdup (tp_account_get_protocol (priv->account));
       priv->icon_name = g_strdup
-        (empathy_account_get_icon_name (priv->account));
+        (tp_account_get_icon_name (priv->account));
     }
   else
     {
@@ -198,10 +199,10 @@ empathy_account_settings_constructed (GObject *object)
 
   if (!priv->ready)
     {
-      g_signal_connect (priv->account, "notify::ready",
-        G_CALLBACK (empathy_account_settings_ready_cb), self);
+      tp_account_prepare_async (priv->account, NULL,
+          empathy_account_settings_account_ready_cb, self);
       g_signal_connect (priv->managers, "notify::ready",
-        G_CALLBACK (empathy_account_settings_ready_cb), self);
+        G_CALLBACK (empathy_account_settings_managers_ready_cb), self);
     }
 
   if (G_OBJECT_CLASS (
@@ -229,8 +230,8 @@ empathy_account_settings_class_init (
   g_object_class_install_property (object_class, PROP_ACCOUNT,
     g_param_spec_object ("account",
       "Account",
-      "The EmpathyAccount backing these settings",
-      EMPATHY_TYPE_ACCOUNT,
+      "The TpAccount backing these settings",
+      TP_TYPE_ACCOUNT,
       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
   g_object_class_install_property (object_class, PROP_CM_NAME,
@@ -293,18 +294,9 @@ empathy_account_settings_dispose (GObject *object)
     g_object_unref (priv->manager);
   priv->manager = NULL;
 
-  if (priv->account_manager_ready_id != 0)
-    g_signal_handler_disconnect (priv->account_manager,
-        priv->account_manager_ready_id);
-  priv->account_manager_ready_id = 0;
-
   if (priv->account_manager != NULL)
     g_object_unref (priv->account_manager);
   priv->account_manager = NULL;
-
-  if (priv->account_ready_id != 0)
-    g_signal_handler_disconnect (priv->account, priv->account_ready_id);
-  priv->account_ready_id = 0;
 
   if (priv->account != NULL)
     g_object_unref (priv->account);
@@ -360,7 +352,8 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
   if (priv->ready)
     return;
 
-  if (priv->account != NULL && !empathy_account_is_ready (priv->account))
+  if (priv->account != NULL
+      && !tp_account_is_prepared (priv->account, TP_ACCOUNT_FEATURE_CORE))
       return;
 
   if (!empathy_connection_managers_is_ready (priv->managers))
@@ -376,11 +369,11 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
     {
       g_free (priv->display_name);
       priv->display_name =
-        g_strdup (empathy_account_get_display_name (priv->account));
+        g_strdup (tp_account_get_display_name (priv->account));
 
       g_free (priv->icon_name);
       priv->icon_name =
-        g_strdup (empathy_account_get_icon_name (priv->account));
+        g_strdup (tp_account_get_icon_name (priv->account));
     }
 
   tp_protocol = tp_connection_manager_get_protocol (priv->manager,
@@ -416,8 +409,22 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
 }
 
 static void
-empathy_account_settings_ready_cb (GObject *obj,
-    GParamSpec *spec,
+empathy_account_settings_account_ready_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
+  TpAccount *account = TP_ACCOUNT (source_object);
+
+  if (!tp_account_prepare_finish (account, result, NULL))
+    return;
+
+  empathy_account_settings_check_readyness (settings);
+}
+
+static void
+empathy_account_settings_managers_ready_cb (GObject *object,
+    GParamSpec *pspec,
     gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
@@ -438,7 +445,7 @@ empathy_account_settings_new (const gchar *connection_manager,
 }
 
 EmpathyAccountSettings *
-empathy_account_settings_new_for_account (EmpathyAccount *account)
+empathy_account_settings_new_for_account (TpAccount *account)
 {
   return g_object_new (EMPATHY_TYPE_ACCOUNT_SETTINGS,
       "account", account,
@@ -506,7 +513,7 @@ empathy_account_settings_get_display_name (EmpathyAccountSettings *settings)
   return priv->display_name;
 }
 
-EmpathyAccount *
+TpAccount *
 empathy_account_settings_get_account (EmpathyAccountSettings *settings)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
@@ -621,7 +628,7 @@ empathy_account_settings_get (EmpathyAccountSettings *settings,
     {
       const GHashTable *parameters;
 
-      parameters = empathy_account_get_parameters (priv->account);
+      parameters = tp_account_get_parameters (priv->account);
       result = tp_asv_lookup (parameters, param);
 
       if (result != NULL)
@@ -910,10 +917,10 @@ account_settings_display_name_set_cb (GObject *src,
     gpointer user_data)
 {
   GError *error = NULL;
-  EmpathyAccount *account = EMPATHY_ACCOUNT (src);
+  TpAccount *account = TP_ACCOUNT (src);
   GSimpleAsyncResult *set_result = user_data;
 
-  empathy_account_set_display_name_finish (account, res, &error);
+  tp_account_set_display_name_finish (account, res, &error);
 
   if (error != NULL)
     {
@@ -950,7 +957,7 @@ empathy_account_settings_set_display_name_async (
       return;
     }
 
-  empathy_account_set_display_name_async (priv->account, name,
+  tp_account_set_display_name_async (priv->account, name,
       account_settings_display_name_set_cb, result);
 }
 
@@ -977,10 +984,10 @@ account_settings_icon_name_set_cb (GObject *src,
     gpointer user_data)
 {
   GError *error = NULL;
-  EmpathyAccount *account = EMPATHY_ACCOUNT (src);
+  TpAccount *account = TP_ACCOUNT (src);
   GSimpleAsyncResult *set_result = user_data;
 
-  empathy_account_set_icon_name_finish (account, res, &error);
+  tp_account_set_icon_name_finish (account, res, &error);
 
   if (error != NULL)
     {
@@ -1017,7 +1024,7 @@ empathy_account_settings_set_icon_name_async (
       return;
     }
 
-  empathy_account_set_icon_name_async (priv->account, name,
+  tp_account_set_icon_name_async (priv->account, name,
       account_settings_icon_name_set_cb, result);
 }
 
@@ -1048,8 +1055,8 @@ empathy_account_settings_account_updated (GObject *source,
   GSimpleAsyncResult *r;
   GError *error = NULL;
 
-  if (!empathy_account_update_settings_finish (EMPATHY_ACCOUNT (source),
-    result, &error))
+  if (!tp_account_update_parameters_finish (TP_ACCOUNT (source),
+          result, NULL, &error))
     {
       g_simple_async_result_set_from_error (priv->apply_result, error);
       g_error_free (error);
@@ -1073,12 +1080,12 @@ empathy_account_settings_created_cb (GObject *source,
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
-  EmpathyAccount *account;
+  TpAccount *account;
   GError *error = NULL;
   GSimpleAsyncResult *r;
 
-  account = empathy_account_manager_create_account_finish (
-    EMPATHY_ACCOUNT_MANAGER (source), result, &error);
+  account = tp_account_manager_create_account_finish (
+    TP_ACCOUNT_MANAGER (source), result, &error);
 
   if (account == NULL)
     {
@@ -1106,11 +1113,13 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
   TpConnectionPresenceType type;
   gchar *status;
   gchar *message;
+  EmpathyIdle *idle;
 
   properties = tp_asv_new (NULL, NULL);
 
-  type = empathy_account_manager_get_requested_global_presence
-    (priv->account_manager, &status, &message);
+  idle = empathy_idle_dup_singleton ();
+  type = empathy_idle_get_requested_presence (idle, &status, &message);
+  g_object_unref (idle);
 
   if (type != TP_CONNECTION_PRESENCE_TYPE_UNSET)
     {
@@ -1142,7 +1151,7 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
   tp_asv_set_string (properties, TP_IFACE_ACCOUNT ".Icon",
       priv->icon_name);
 
-  empathy_account_manager_create_account_async (priv->account_manager,
+  tp_account_manager_create_account_async (priv->account_manager,
     priv->cm_name, priv->protocol, priv->display_name,
     priv->parameters, properties,
     empathy_account_settings_created_cb,
@@ -1152,22 +1161,19 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
 }
 
 static void
-empathy_account_settings_manager_ready_cb (EmpathyAccountManager *manager,
-    GParamSpec *spec,
+empathy_account_settings_manager_ready_cb (GObject *source_object,
+    GAsyncResult *result,
     gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
 
-  if (empathy_account_manager_is_ready (manager))
-    {
-      g_assert (priv->apply_result != NULL && priv->account == NULL);
-      g_signal_handler_disconnect (priv->account_manager,
-        priv->account_manager_ready_id);
-      priv->account_manager_ready_id = 0;
+  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
+    return;
 
-      empathy_account_settings_do_create_account (settings);
-    }
+  g_assert (priv->apply_result != NULL && priv->account == NULL);
+  empathy_account_settings_do_create_account (settings);
 }
 
 void
@@ -1180,8 +1186,8 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
   if (priv->apply_result != NULL)
     {
       g_simple_async_report_error_in_idle (G_OBJECT (settings),
-        callback, user_data,
-        G_IO_ERROR, G_IO_ERROR_PENDING, "Applying already in progress");
+          callback, user_data,
+          G_IO_ERROR, G_IO_ERROR_PENDING, "Applying already in progress");
       return;
     }
 
@@ -1190,20 +1196,14 @@ empathy_account_settings_apply_async (EmpathyAccountSettings *settings,
 
   if (priv->account == NULL)
     {
-      if (empathy_account_manager_is_ready (priv->account_manager))
-        empathy_account_settings_do_create_account (settings);
-      else
-        priv->account_manager_ready_id = g_signal_connect (
-            priv->account_manager,
-            "notify::ready",
-            G_CALLBACK (empathy_account_settings_manager_ready_cb),
-            settings);
+      tp_account_manager_prepare_async (priv->account_manager, NULL,
+          empathy_account_settings_manager_ready_cb, settings);
     }
   else
     {
-      empathy_account_update_settings_async (priv->account,
-        priv->parameters, (const gchar **)priv->unset_parameters->data,
-        empathy_account_settings_account_updated, settings);
+      tp_account_update_parameters_async (priv->account,
+          priv->parameters, (const gchar **)priv->unset_parameters->data,
+          empathy_account_settings_account_updated, settings);
     }
 }
 
@@ -1224,12 +1224,12 @@ empathy_account_settings_apply_finish (EmpathyAccountSettings *settings,
 
 gboolean
 empathy_account_settings_has_account (EmpathyAccountSettings *settings,
-    EmpathyAccount *account)
+    TpAccount *account)
 {
   EmpathyAccountSettingsPriv *priv;
 
   g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), FALSE);
-  g_return_val_if_fail (EMPATHY_IS_ACCOUNT (account), FALSE);
+  g_return_val_if_fail (TP_IS_ACCOUNT (account), FALSE);
 
   priv = GET_PRIV (settings);
 
@@ -1262,7 +1262,7 @@ empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
         {
           const GHashTable *account_params;
 
-          account_params = empathy_account_get_parameters (priv->account);
+          account_params = tp_account_get_parameters (priv->account);
           if (tp_asv_lookup (account_params, current))
             continue;
         }
