@@ -38,6 +38,7 @@
 #include <libebook/e-book.h>
 #include <libnotify/notify.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/connection-manager.h>
@@ -49,7 +50,6 @@
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connectivity.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-debugger.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -105,16 +105,12 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
       id = empathy_tp_chat_get_id (tp_chat);
       if (!EMP_STR_EMPTY (id))
         {
-          EmpathyAccountManager *manager;
           TpConnection *connection;
-          EmpathyAccount *account;
+          TpAccount *account;
 
-          manager = empathy_account_manager_dup_singleton ();
           connection = empathy_tp_chat_get_connection (tp_chat);
-          account = empathy_account_manager_get_account_for_connection (
-              manager, connection);
+          account = empathy_get_account_for_connection (connection);
           chat = empathy_chat_window_find_chat (account, id);
-          g_object_unref (manager);
         }
 
       if (chat)
@@ -152,7 +148,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 static gboolean
 should_create_salut_account (void)
 {
-  EmpathyAccountManager *manager;
+  TpAccountManager *manager;
   gboolean salut_created = FALSE;
   GList *accounts, *l;
 
@@ -167,18 +163,22 @@ should_create_salut_account (void)
       return FALSE;
     }
 
-  manager = empathy_account_manager_dup_singleton ();
-  accounts = empathy_account_manager_dup_accounts (manager);
+  /* FIXME: this assumes the account manager is already prepared */
+  manager = tp_account_manager_dup ();
+  accounts = tp_account_manager_get_valid_accounts (manager);
 
   for (l = accounts; l != NULL;  l = g_list_next (l))
     {
-      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      TpAccount *account = TP_ACCOUNT (l->data);
 
-      if (!tp_strdiff (empathy_account_get_protocol (account), "local-xmpp"))
-        salut_created = TRUE;
-
-      g_object_unref (account);
+      if (!tp_strdiff (tp_account_get_protocol (account), "local-xmpp"))
+        {
+          salut_created = TRUE;
+          break;
+        }
     }
+
+  g_list_free (accounts);
 
   g_object_unref (manager);
 
@@ -199,7 +199,7 @@ salut_account_created (GObject *source,
     gpointer user_data)
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
-  EmpathyAccount *account;
+  TpAccount *account;
   GError *error = NULL;
 
   if (!empathy_account_settings_apply_finish (settings, result, &error))
@@ -211,7 +211,7 @@ salut_account_created (GObject *source,
 
   account = empathy_account_settings_get_account (settings);
 
-  empathy_account_set_enabled_async (account, TRUE, NULL, NULL);
+  tp_account_set_enabled_async (account, TRUE, NULL, NULL);
   empathy_conf_set_bool (empathy_conf_get (),
       EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
       TRUE);
@@ -317,21 +317,20 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
 }
 
 static gboolean
-has_non_salut_accounts (EmpathyAccountManager *manager)
+has_non_salut_accounts (TpAccountManager *manager)
 {
   gboolean ret = FALSE;
   GList *accounts, *l;
 
-  accounts = empathy_account_manager_dup_accounts (manager);
+  accounts = tp_account_manager_get_valid_accounts (manager);
 
   for (l = accounts ; l != NULL; l = g_list_next (l))
     {
-      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
-
-      if (tp_strdiff (empathy_account_get_protocol (l->data), "local-xmpp"))
-        ret = TRUE;
-
-      g_object_unref (account);
+      if (tp_strdiff (tp_account_get_protocol (l->data), "local-xmpp"))
+        {
+          ret = TRUE;
+          break;
+        }
     }
 
   g_list_free (accounts);
@@ -342,11 +341,13 @@ has_non_salut_accounts (EmpathyAccountManager *manager)
 static void
 maybe_show_account_assistant (void)
 {
-  EmpathyAccountManager *manager;
-  manager = empathy_account_manager_dup_singleton ();
+  TpAccountManager *manager;
+  manager = tp_account_manager_dup ();
 
   if (!has_non_salut_accounts (manager))
     empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()));
+
+  g_object_unref (manager);
 }
 
 static gboolean
@@ -443,7 +444,7 @@ migrate_config_to_xdg_dir (void)
 
 static void
 do_show_accounts_ui (GtkWindow *window,
-    EmpathyAccountManager *manager)
+    TpAccountManager *manager)
 {
 
   GtkWidget *ui;
@@ -459,11 +460,13 @@ do_show_accounts_ui (GtkWindow *window,
 }
 
 static void
-account_manager_ready_for_accounts_cb (EmpathyAccountManager *manager,
-    GParamSpec *spec,
+account_manager_ready_for_accounts_cb (GObject *source_object,
+    GAsyncResult *result,
     gpointer user_data)
 {
-  if (!empathy_account_manager_is_ready (manager))
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+
+  if (!tp_account_manager_prepare_finish (manager, result, NULL))
     return;
 
   do_show_accounts_ui (user_data, manager);
@@ -473,24 +476,15 @@ static void
 show_accounts_ui (GtkWindow *window,
     gboolean force)
 {
-  EmpathyAccountManager *manager;
+  TpAccountManager *manager;
 
-  manager = empathy_account_manager_dup_singleton ();
-  if (empathy_account_manager_is_ready (manager))
-    {
-      if (force)
-        do_show_accounts_ui (window, manager);
-      else
-        maybe_show_account_assistant ();
-    }
-  else if (force)
-    {
-      /* Only if we we're forced to show the widget connect to ready, otherwise
-       * the initial readyness will cause the accounts ui to be shown when
-       * needed */
-      g_signal_connect (manager, "notify::ready",
-        G_CALLBACK (account_manager_ready_for_accounts_cb), window);
-    }
+  if (!force)
+    return;
+
+  manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (manager, NULL,
+      account_manager_ready_for_accounts_cb, window);
 
   g_object_unref (manager);
 }
@@ -608,11 +602,13 @@ default_log_handler (const gchar *log_domain,
 #endif /* ENABLE_DEBUG */
 
 static void
-account_manager_ready_cb (EmpathyAccountManager *manager,
-    GParamSpec *spec,
+account_manager_ready_cb (GObject *source_object,
+    GAsyncResult *result,
     gpointer user_data)
 {
-  if (!empathy_account_manager_is_ready (manager))
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+
+  if (!tp_account_manager_prepare_finish (manager, result, NULL))
     return;
 
   if (should_create_salut_account () || !empathy_import_mc4_has_imported ())
@@ -723,37 +719,43 @@ setup_dispatcher (void)
 }
 
 static void
-account_connection_notify_cb (EmpathyAccount *account,
-    GParamSpec *pspec,
+account_status_changed_cb (TpAccount *account,
+    guint old_status,
+    guint new_status,
+    guint reason,
+    gchar *dbus_error_name,
+    GHashTable *details,
     EmpathyChatroom *room)
 {
   TpConnection *conn;
 
-  conn = empathy_account_get_connection (account);
-
-  if (conn == NULL)
-    return;
+  conn = tp_account_get_connection (account);
 
   empathy_dispatcher_join_muc (conn,
       empathy_chatroom_get_room (room), NULL, NULL);
 }
 
 static void
-account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
-    GParamSpec *pspec,
-    EmpathyChatroomManager *chatroom_manager)
+account_manager_chatroom_ready_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
 {
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  EmpathyChatroomManager *chatroom_manager = user_data;
   GList *accounts, *l;
 
-  accounts = empathy_account_manager_dup_accounts (account_manager);
+  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
+    return;
+
+  accounts = tp_account_manager_get_valid_accounts (account_manager);
 
   for (l = accounts; l != NULL; l = g_list_next (l))
     {
-      EmpathyAccount *account = EMPATHY_ACCOUNT (l->data);
+      TpAccount *account = TP_ACCOUNT (l->data);
       TpConnection *conn;
       GList *chatrooms, *p;
 
-      conn = empathy_account_get_connection (account);
+      conn = tp_account_get_connection (account);
 
       chatrooms = empathy_chatroom_manager_get_chatrooms (
           chatroom_manager, account);
@@ -767,8 +769,8 @@ account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
 
           if (conn == NULL)
             {
-              g_signal_connect (G_OBJECT (account), "notify::connection",
-                  G_CALLBACK (account_connection_notify_cb), room);
+              g_signal_connect (G_OBJECT (account), "status-changed",
+                  G_CALLBACK (account_status_changed_cb), room);
             }
           else
             {
@@ -780,29 +782,18 @@ account_manager_chatroom_ready_cb (EmpathyAccountManager *account_manager,
       g_list_free (chatrooms);
     }
 
-  g_list_foreach (accounts, (GFunc) g_object_unref, NULL);
   g_list_free (accounts);
 }
 
 static void
 chatroom_manager_ready_cb (EmpathyChatroomManager *chatroom_manager,
     GParamSpec *pspec,
-    EmpathyAccountManager *account_manager)
+    gpointer user_data)
 {
-  gboolean ready;
+  TpAccountManager *account_manager = user_data;
 
-  g_object_get (G_OBJECT (account_manager), "ready", &ready, NULL);
-
-  if (ready)
-    {
-      account_manager_chatroom_ready_cb (account_manager, NULL,
-          chatroom_manager);
-    }
-  else
-    {
-      g_signal_connect (account_manager, "notify::ready",
-          G_CALLBACK (account_manager_chatroom_ready_cb), chatroom_manager);
-    }
+  tp_account_manager_prepare_async (account_manager, NULL,
+      account_manager_chatroom_ready_cb, chatroom_manager);
 }
 
 int
@@ -813,7 +804,7 @@ main (int argc, char *argv[])
 #endif
   EmpathyStatusIcon *icon;
   EmpathyDispatcher *dispatcher;
-  EmpathyAccountManager *account_manager;
+  TpAccountManager *account_manager;
   EmpathyLogManager *log_manager;
   EmpathyChatroomManager *chatroom_manager;
   EmpathyCallFactory *call_factory;
@@ -916,7 +907,7 @@ main (int argc, char *argv[])
 
   if (account_dialog_only)
     {
-      account_manager = empathy_account_manager_dup_singleton ();
+      account_manager = tp_account_manager_dup ();
       show_accounts_ui (NULL, TRUE);
 
       gtk_main ();
@@ -948,9 +939,9 @@ main (int argc, char *argv[])
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
   /* account management */
-  account_manager = empathy_account_manager_dup_singleton ();
-  g_signal_connect (account_manager, "notify::ready",
-      G_CALLBACK (account_manager_ready_cb), NULL);
+  account_manager = tp_account_manager_dup ();
+  tp_account_manager_prepare_async (account_manager, NULL,
+      account_manager_ready_cb, NULL);
 
   /* Handle channels */
   dispatcher = setup_dispatcher ();
