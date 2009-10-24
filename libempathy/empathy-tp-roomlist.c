@@ -28,8 +28,6 @@
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
 
-#include "empathy-account.h"
-
 #include "empathy-tp-roomlist.h"
 #include "empathy-chatroom.h"
 #include "empathy-utils.h"
@@ -41,7 +39,7 @@
 typedef struct {
 	TpConnection *connection;
 	TpChannel    *channel;
-	EmpathyAccount    *account;
+	TpAccount    *account;
 	gboolean      is_listing;
 	gboolean      start_requested;
 } EmpathyTpRoomlistPriv;
@@ -354,7 +352,7 @@ tp_roomlist_constructed (GObject *list)
 {
 	EmpathyTpRoomlistPriv *priv = GET_PRIV (list);
 
-	priv->connection = empathy_account_get_connection (priv->account);
+	priv->connection = tp_account_get_connection (priv->account);
 	g_object_ref (priv->connection);
 
 	tp_cli_connection_call_request_channel (priv->connection, -1,
@@ -421,7 +419,7 @@ empathy_tp_roomlist_class_init (EmpathyTpRoomlistClass *klass)
 					 g_param_spec_object ("account",
 							      "The Account",
 							      "The account on which it lists rooms",
-							      EMPATHY_TYPE_ACCOUNT,
+							      TP_TYPE_ACCOUNT,
 							      G_PARAM_READWRITE |
 							      G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
@@ -477,7 +475,7 @@ empathy_tp_roomlist_init (EmpathyTpRoomlist *list)
 }
 
 EmpathyTpRoomlist *
-empathy_tp_roomlist_new (EmpathyAccount *account)
+empathy_tp_roomlist_new (TpAccount *account)
 {
 	EmpathyTpRoomlist *list;
 
