@@ -30,8 +30,9 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
+#include <telepathy-glib/account-manager.h>
+
 #include <libempathy/empathy-log-manager.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-chatroom.h>
 #include <libempathy/empathy-message.h>
@@ -95,11 +96,11 @@ static void     log_window_chats_setup                     (EmpathyLogWindow *wi
 static void     log_window_chats_accounts_changed_cb       (GtkWidget        *combobox,
 							    EmpathyLogWindow *window);
 static void     log_window_chats_set_selected              (EmpathyLogWindow *window,
-							    EmpathyAccount   *account,
+							    TpAccount        *account,
 							    const gchar      *chat_id,
 							    gboolean          is_chatroom);
 static gboolean log_window_chats_get_selected              (EmpathyLogWindow *window,
-							    EmpathyAccount  **account,
+							    TpAccount       **account,
 							    gchar           **chat_id,
 							    gboolean         *is_chatroom);
 static void     log_window_chats_get_messages              (EmpathyLogWindow *window,
@@ -134,16 +135,42 @@ enum {
 	COL_CHAT_COUNT
 };
 
+static void
+account_manager_prepared_cb (GObject *source_object,
+			     GAsyncResult *result,
+			     gpointer user_data)
+{
+	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyLogWindow *window = user_data;
+	guint account_num;
+	GList *accounts;
+
+	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+		return;
+	}
+
+	accounts = tp_account_manager_get_valid_accounts (account_manager);
+	account_num = g_list_length (accounts);
+	g_list_free (accounts);
+
+	if (account_num > 1) {
+		gtk_widget_show (window->vbox_chats);
+		gtk_widget_show (window->account_chooser_chats);
+	} else {
+		gtk_widget_hide (window->vbox_chats);
+		gtk_widget_hide (window->account_chooser_chats);
+	}
+}
+
 GtkWidget *
-empathy_log_window_show (EmpathyAccount   *account,
+empathy_log_window_show (TpAccount  *account,
 			const gchar *chat_id,
 			gboolean     is_chatroom,
 			GtkWindow   *parent)
 {
 	static EmpathyLogWindow *window = NULL;
 	EmpathyAccountChooser   *account_chooser;
-	EmpathyAccountManager  *account_manager;
-	gint                    account_num;
+	TpAccountManager        *account_manager;
 	GtkBuilder             *gui;
 	gchar                  *filename;
 
@@ -229,17 +256,10 @@ empathy_log_window_show (EmpathyAccount   *account,
 			  window);
 
 	/* Populate */
-	account_manager = empathy_account_manager_dup_singleton ();
-	account_num = empathy_account_manager_get_count (account_manager);
+	account_manager = tp_account_manager_dup ();
+	tp_account_manager_prepare_async (account_manager, NULL,
+					  account_manager_prepared_cb, window);
 	g_object_unref (account_manager);
-
-	if (account_num > 1) {
-		gtk_widget_show (window->vbox_chats);
-		gtk_widget_show (window->account_chooser_chats);
-	} else {
-		gtk_widget_hide (window->vbox_chats);
-		gtk_widget_hide (window->account_chooser_chats);
-	}
 
 	/* Search List */
 	log_window_find_setup (window);
@@ -302,7 +322,7 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 	GtkTreeView   *view;
 	GtkTreeModel  *model;
 	GtkTreeIter    iter;
-	EmpathyAccount     *account;
+	TpAccount     *account;
 	gchar         *chat_id;
 	gboolean       is_chatroom;
 	gchar         *date;
@@ -418,8 +438,8 @@ log_window_find_populate (EmpathyLogWindow *window,
 		}
 
 		date_readable = empathy_log_manager_get_date_readable (hit->date);
-		account_name = empathy_account_get_display_name (hit->account);
-		account_icon = empathy_account_get_icon_name (hit->account);
+		account_name = tp_account_get_display_name (hit->account);
+		account_icon = tp_account_get_icon_name (hit->account);
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,
@@ -465,7 +485,7 @@ log_window_find_setup (EmpathyLogWindow *window)
 	store = gtk_list_store_new (COL_FIND_COUNT,
 				    G_TYPE_STRING,          /* account icon name */
 				    G_TYPE_STRING,          /* account name */
-				    EMPATHY_TYPE_ACCOUNT,   /* account */
+				    TP_TYPE_ACCOUNT,        /* account */
 				    G_TYPE_STRING,          /* chat name */
 				    G_TYPE_STRING,          /* chat id */
 				    G_TYPE_BOOLEAN,         /* is chatroom */
@@ -609,7 +629,7 @@ static void
 log_window_chats_populate (EmpathyLogWindow *window)
 {
 	EmpathyAccountChooser *account_chooser;
-	EmpathyAccount       *account;
+	TpAccount             *account;
 	GList                *chats, *l;
 
 	GtkTreeView          *view;
@@ -687,7 +707,7 @@ log_window_chats_setup (EmpathyLogWindow *window)
 	store = gtk_list_store_new (COL_CHAT_COUNT,
 				    G_TYPE_STRING,        /* icon */
 				    G_TYPE_STRING,        /* name */
-				    EMPATHY_TYPE_ACCOUNT, /* account */
+				    TP_TYPE_ACCOUNT,      /* account */
 				    G_TYPE_STRING,        /* id */
 				    G_TYPE_BOOLEAN);      /* is chatroom */
 
@@ -740,7 +760,7 @@ log_window_chats_accounts_changed_cb (GtkWidget       *combobox,
 
 static void
 log_window_chats_set_selected  (EmpathyLogWindow *window,
-				EmpathyAccount  *account,
+				TpAccount        *account,
 				const gchar     *chat_id,
 				gboolean         is_chatroom)
 {
@@ -764,7 +784,7 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 	}
 
 	for (ok = TRUE; ok; ok = gtk_tree_model_iter_next (model, &iter)) {
-		EmpathyAccount *this_account;
+		TpAccount *this_account;
 		gchar     *this_chat_id;
 		gboolean   this_is_chatroom;
 
@@ -793,7 +813,7 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 
 static gboolean
 log_window_chats_get_selected (EmpathyLogWindow  *window,
-			       EmpathyAccount  **account,
+			       TpAccount       **account,
 			       gchar           **chat_id,
 			       gboolean         *is_chatroom)
 {
@@ -802,7 +822,7 @@ log_window_chats_get_selected (EmpathyLogWindow  *window,
 	GtkTreeSelection *selection;
 	GtkTreeIter       iter;
 	gchar            *id = NULL;
-	EmpathyAccount   *acc = NULL;
+	TpAccount        *acc = NULL;
 	gboolean          room = FALSE;
 
 	view = GTK_TREE_VIEW (window->treeview_chats);
@@ -840,7 +860,7 @@ static void
 log_window_chats_get_messages (EmpathyLogWindow *window,
 			       const gchar     *date_to_show)
 {
-	EmpathyAccount     *account;
+	TpAccount     *account;
 	gchar         *chat_id;
 	gboolean       is_chatroom;
 	EmpathyMessage *message;
@@ -1000,7 +1020,7 @@ static void
 log_window_calendar_chats_month_changed_cb (GtkWidget       *calendar,
 					    EmpathyLogWindow *window)
 {
-	EmpathyAccount     *account;
+	TpAccount     *account;
 	gchar         *chat_id;
 	gboolean       is_chatroom;
 	guint          year_selected;
