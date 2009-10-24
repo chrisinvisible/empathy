@@ -34,13 +34,13 @@
 #include <glib/gi18n.h>
 #include <libnotify/notification.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-chatroom-manager.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-images.h>
@@ -413,7 +413,7 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	EmpathyContact        *remote_contact;
 	const gchar           *name;
 	const gchar           *id;
-	EmpathyAccount        *account;
+	TpAccount             *account;
 	const gchar           *subject;
 	const gchar           *status = NULL;
 	GtkWidget             *widget;
@@ -436,7 +436,7 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	remote_contact = empathy_chat_get_remote_contact (chat);
 
 	DEBUG ("Updating chat tab, name=%s, account=%s, subject=%s, remote_contact=%p",
-		name, empathy_account_get_unique_name (account), subject, remote_contact);
+		name, tp_proxy_get_object_path (account), subject, remote_contact);
 
 	/* Update tab image */
 	if (empathy_chat_get_tp_chat (chat) == NULL) {
@@ -480,7 +480,7 @@ chat_window_update_chat_tab (EmpathyChat *chat)
 	append_markup_printf (tooltip,
 			      "<b>%s</b><small> (%s)</small>",
 			      id,
-			      empathy_account_get_display_name (account));
+			      tp_account_get_display_name (account));
 
 	if (!EMP_STR_EMPTY (status)) {
 		append_markup_printf (tooltip, "\n<i>%s</i>", status);
@@ -575,7 +575,7 @@ chat_window_conv_activate_cb (GtkAction         *action,
 	is_room = empathy_chat_is_room (priv->current_chat);
 	if (is_room) {
 		const gchar *room;
-		EmpathyAccount   *account;
+		TpAccount   *account;
 		gboolean     found = FALSE;
 		EmpathyChatroom *chatroom;
 
@@ -624,7 +624,7 @@ chat_window_favorite_toggled_cb (GtkToggleAction   *toggle_action,
 {
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
 	gboolean               active;
-	EmpathyAccount        *account;
+	TpAccount             *account;
 	const gchar           *room;
 	EmpathyChatroom       *chatroom;
 
@@ -1281,15 +1281,18 @@ chat_window_drag_data_received (GtkWidget        *widget,
 	if (info == DND_DRAG_TYPE_CONTACT_ID) {
 		EmpathyChat           *chat = NULL;
 		EmpathyChatWindow     *old_window;
-		EmpathyAccount        *account = NULL;
-		EmpathyAccountManager *account_manager;
+		TpAccount             *account = NULL;
+		TpAccountManager      *account_manager;
 		const gchar           *id;
 		gchar                **strv;
 		const gchar           *account_id;
 		const gchar           *contact_id;
 
 		id = (const gchar*) gtk_selection_data_get_data (selection);
-		account_manager = empathy_account_manager_dup_singleton ();
+
+		/* FIXME: Perhaps should be sure that the account manager is
+		 * prepared before calling _ensure_account on it. */
+		account_manager = tp_account_manager_dup ();
 
 		DEBUG ("DND contact from roster with id:'%s'", id);
 
@@ -1298,7 +1301,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 			account_id = strv[0];
 			contact_id = strv[1];
 			account =
-				empathy_account_manager_get_account (account_manager, account_id);
+				tp_account_manager_ensure_account (account_manager, account_id);
 			if (account != NULL)
 				chat = empathy_chat_window_find_chat (account, contact_id);
 		}
@@ -1312,7 +1315,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		if (!chat) {
 			TpConnection *connection;
 
-			connection = empathy_account_get_connection (account);
+			connection = tp_account_get_connection (account);
 
 			if (connection) {
 				empathy_dispatcher_chat_with_contact_id (
@@ -1798,7 +1801,7 @@ empathy_chat_window_has_focus (EmpathyChatWindow *window)
 }
 
 EmpathyChat *
-empathy_chat_window_find_chat (EmpathyAccount   *account,
+empathy_chat_window_find_chat (TpAccount   *account,
 			       const gchar *id)
 {
 	GList *l;
