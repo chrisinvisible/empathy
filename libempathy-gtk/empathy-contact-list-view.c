@@ -31,9 +31,9 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-list.h>
@@ -244,9 +244,9 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 				      guint              time_)
 {
 	EmpathyContactListViewPriv *priv;
-	EmpathyAccountManager      *account_manager;
+	TpAccountManager           *account_manager;
 	EmpathyTpContactFactory    *factory = NULL;
-	EmpathyAccount             *account = NULL;
+	TpAccount                  *account = NULL;
 	GtkTreeModel               *model;
 	GtkTreeViewDropPosition     position;
 	GtkTreePath                *path;
@@ -298,17 +298,19 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		context->action == GDK_ACTION_COPY ? "copy" : "",
 		id);
 
-	account_manager = empathy_account_manager_dup_singleton ();
+	/* FIXME: should probably make sure the account manager is prepared
+	 * before calling _ensure_account on it. */
+	account_manager = tp_account_manager_dup ();
 	strv = g_strsplit (id, ":", 2);
 	if (g_strv_length (strv) == 2) {
 		account_id = strv[0];
 		contact_id = strv[1];
-		account = empathy_account_manager_get_account (account_manager, account_id);
+		account = tp_account_manager_ensure_account (account_manager, account_id);
 	}
 	if (account) {
 		TpConnection *connection;
 
-		connection = empathy_account_get_connection (account);
+		connection = tp_account_get_connection (account);
 		if (connection) {
 			factory = empathy_tp_contact_factory_dup_singleton (connection);
 		}
@@ -458,7 +460,7 @@ contact_list_view_drag_data_get (GtkWidget        *widget,
 	GtkTreeIter                 iter;
 	GtkTreeModel               *model;
 	EmpathyContact             *contact;
-	EmpathyAccount             *account;
+	TpAccount                  *account;
 	const gchar                *contact_id;
 	const gchar                *account_id;
 	gchar                      *str;
@@ -488,7 +490,7 @@ contact_list_view_drag_data_get (GtkWidget        *widget,
 	}
 
 	account = empathy_contact_get_account (contact);
-	account_id = empathy_account_get_unique_name (account);
+	account_id = tp_proxy_get_object_path (account);
 	contact_id = empathy_contact_get_id (contact);
 	g_object_unref (contact);
 	str = g_strconcat (account_id, ":", contact_id, NULL);
