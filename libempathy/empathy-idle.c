@@ -454,15 +454,13 @@ account_status_changed_cb (TpAccount  *account,
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
 	GTimeVal val;
 
-	if (new_status != TP_CONNECTION_STATUS_CONNECTED) {
-		return;
+	if (new_status == TP_CONNECTION_STATUS_CONNECTED) {
+		g_get_current_time (&val);
+		g_hash_table_insert (priv->connect_times, account,
+				     GINT_TO_POINTER (val.tv_sec));
+	} else if (new_status == TP_CONNECTION_STATUS_DISCONNECTED) {
+		g_hash_table_remove (priv->connect_times, account);
 	}
-
-	g_get_current_time (&val);
-
-	g_hash_table_insert (priv->connect_times,
-			     g_strdup (tp_proxy_get_object_path (account)),
-			     GINT_TO_POINTER (val.tv_sec));
 }
 
 static void
@@ -534,8 +532,7 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
 	    "state-change", G_CALLBACK (idle_state_change_cb), idle);
 
-	priv->connect_times = g_hash_table_new_full (g_str_hash, g_str_equal,
-						    (GDestroyNotify) g_free, NULL);
+	priv->connect_times = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 EmpathyIdle *
@@ -729,8 +726,7 @@ empathy_idle_account_is_just_connected (EmpathyIdle *idle,
 		return FALSE;
 	}
 
-	ptr = g_hash_table_lookup (priv->connect_times,
-				   tp_proxy_get_object_path (account));
+	ptr = g_hash_table_lookup (priv->connect_times, account);
 
 	if (ptr == NULL) {
 		return FALSE;
