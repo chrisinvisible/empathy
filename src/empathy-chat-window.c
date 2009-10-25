@@ -349,8 +349,7 @@ chat_window_update (EmpathyChatWindow *window)
 	menu = gtk_ui_manager_get_widget (priv->ui_manager,
 		"/chats_menubar/menu_contact");
 	orig_submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (menu));
-	if (!GTK_WIDGET_VISIBLE (orig_submenu))
-	{
+	if (orig_submenu == NULL || !GTK_WIDGET_VISIBLE (orig_submenu)) {
 		submenu = empathy_chat_get_contact_menu (priv->current_chat);
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
 		gtk_widget_show (menu);
