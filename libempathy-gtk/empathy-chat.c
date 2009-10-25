@@ -390,74 +390,51 @@ chat_command_join_cb (EmpathyDispatchOperation *dispatch,
 	}
 }
 
-static void
-chat_command_query_cb (EmpathyDispatchOperation *dispatch,
-		       const GError             *error,
-		       gpointer                  user_data)
-{
-	EmpathyChat *chat = user_data;
-
-	if (error != NULL) {
-		DEBUG ("Error: %s", error->message);
-		empathy_chat_view_append_event (chat->view,
-			_("Failed to query contact"));
-	}
-}
-
 typedef struct {
 	EmpathyChat *chat;
-	gchar *msg;
+	gchar *message;
 } ChatCommandMsgData;
 
 static void
 chat_command_msg_cb (EmpathyDispatchOperation *dispatch,
-		     const GError             *error,
-		     gpointer                  user_data)
+			      const GError             *error,
+			      gpointer                  user_data)
 {
 	ChatCommandMsgData *data = user_data;
-	EmpathyTpChat *tpchat;
 
 	if (error != NULL) {
 		empathy_chat_view_append_event (data->chat->view,
-			_("Failed to msg contact"));
+			_("Failed to open private chat"));
 		goto OUT;
 	}
 
-	tpchat = EMPATHY_TP_CHAT (
-		empathy_dispatch_operation_get_channel_wrapper (dispatch));
-
-	if (empathy_dispatch_operation_claim (dispatch)) {
+	if (!EMP_STR_EMPTY (data->message)) {
+		EmpathyTpChat *tpchat;
 		EmpathyMessage *message;
-		gchar *event;
 
-		message = empathy_message_new (data->msg);
+		tpchat = EMPATHY_TP_CHAT (
+			empathy_dispatch_operation_get_channel_wrapper (dispatch));
+
+		message = empathy_message_new (data->message);
 		empathy_tp_chat_send (tpchat, message);
 		g_object_unref (message);
-
-		event = g_strdup_printf (_("[%s]: %s"),
-			empathy_tp_chat_get_id (tpchat),
-			data->msg);
-		empathy_chat_view_append_event (data->chat->view, event);
-		g_free (event);
-
-		empathy_tp_chat_close (tpchat);
 	}
 
 OUT:
-	g_free (data->msg);
+	g_free (data->message);
 	g_slice_free (ChatCommandMsgData, data);
 }
 
 static void
 chat_command_clear (EmpathyChat *chat,
-		    const gchar *str)
+		    GStrv        strv)
 {
 	empathy_chat_view_clear (chat->view);
 }
 
 static void
 chat_command_topic (EmpathyChat *chat,
-		    const gchar *str)
+		    GStrv        strv)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	EmpathyTpChatProperty *property;
@@ -466,103 +443,181 @@ chat_command_topic (EmpathyChat *chat,
 	property = empathy_tp_chat_get_property (priv->tp_chat, "subject");
 	if (property == NULL) {
 		empathy_chat_view_append_event (chat->view,
-			_("This conversation does not have topic"));
+			_("Topic not supported on this conversation"));
 		return;
 	}
 
 	if (!(property->flags & TP_PROPERTY_FLAG_WRITE)) {
 		empathy_chat_view_append_event (chat->view,
-			_("You need to be a channel operator to do that"));
+			_("You are not allowed to change the topic"));
 		return;
 	}
 
 	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, str);
+	g_value_set_string (&value, strv[1]);
 	empathy_tp_chat_set_property (priv->tp_chat, "subject", &value);
 	g_value_unset (&value);
 }
 
 static void
 chat_command_join (EmpathyChat *chat,
-		   const gchar *str)
+		   GStrv        strv)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	TpConnection *connection;
 
 	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	empathy_dispatcher_join_muc (connection, str,
+	empathy_dispatcher_join_muc (connection, strv[1],
 				     chat_command_join_cb,
 				     chat);
 }
 
 static void
-chat_command_query (EmpathyChat *chat,
-		   const gchar *str)
-{
-	EmpathyChatPriv *priv = GET_PRIV (chat);
-	TpConnection *connection;
-
-	/* FIXME: We should probably search in members alias. But this
-	 * is enough for IRC */
-	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	empathy_dispatcher_chat_with_contact_id (connection, str,
-						 chat_command_query_cb,
-						 chat);
-}
-
-static void
-chat_command_msg (EmpathyChat *chat,
-		  const gchar *str)
+chat_command_msg_internal (EmpathyChat *chat,
+			   const gchar *contact_id,
+			   const gchar *message)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	TpConnection *connection;
 	ChatCommandMsgData *data;
-	gchar *id, *msg = NULL;
 
-	id = g_strdup (str);
-	if (id != NULL) {
-		msg = strchr (id, ' ');
-		if (msg != NULL) {
-			*msg = '\0';
-			g_strstrip (++msg);
-		}
-	}
+	data = g_slice_new (ChatCommandMsgData);
+	data->chat = chat;
+	data->message = g_strdup (message);
+	connection = empathy_tp_chat_get_connection (priv->tp_chat);
+	empathy_dispatcher_chat_with_contact_id (connection, contact_id,
+						 chat_command_msg_cb,
+						 data);
+}
 
-	if (EMP_STR_EMPTY (id) || EMP_STR_EMPTY (msg)) {
-		empathy_chat_view_append_event (chat->view,
-			_("Usage: /msg pseudo message"));
-		g_free (id);
-		return;
+static void
+chat_command_query (EmpathyChat *chat,
+		    GStrv        strv)
+{
+	gchar *msg = NULL;
+
+	/* message part is optional, check if we have one */
+	msg = strchr (strv[1], ' ');
+	if (msg != NULL) {
+		msg[0] = '\0';
+		msg++;
+		g_strstrip (msg + 1);
+		g_strstrip (strv[1]);
 	}
 
 	/* FIXME: We should probably search in members alias. But this
 	 * is enough for IRC */
-	data = g_slice_new (ChatCommandMsgData);
-	data->chat = chat;
-	data->msg = g_strdup (msg);
-	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	empathy_dispatcher_chat_with_contact_id (connection, id,
-						 chat_command_msg_cb,
-						 data);
-	g_free (id);
+	chat_command_msg_internal (chat, strv[1], msg);
 }
 
-typedef void (*ChatCommandFunc) (EmpathyChat *chat, const gchar *str);
+static void
+chat_command_msg (EmpathyChat *chat,
+		  GStrv        strv)
+{
+	/* FIXME: We should probably search in members alias. But this
+	 * is enough for IRC */
+	chat_command_msg_internal (chat, strv[1], strv[2]);
+}
+
+static void chat_command_help (EmpathyChat *chat, GStrv strv);
+
+typedef void (*ChatCommandFunc) (EmpathyChat *chat, GStrv strv);
 
 typedef struct {
-	const gchar *str;
+	const gchar *prefix;
+	guint n_parts;
 	ChatCommandFunc func;
+	const gchar *help;
 } ChatCommandItem;
 
 static ChatCommandItem commands[] = {
-	{"/clear", chat_command_clear},
-	{"/topic ", chat_command_topic},
-	{"/join ", chat_command_join},
-	{"/j ", chat_command_join},
-	{"/query ", chat_command_query},
-	{"/msg ", chat_command_msg},
-	{NULL, NULL}
+	{"clear", 1, chat_command_clear,
+	 N_("Usage: /clear, clear all messages from the current conversation")},
+
+	{"topic", 2, chat_command_topic,
+	 N_("Usage: /topic <topic>, set the topic of the current conversation")},
+
+	{"join", 2, chat_command_join,
+	 N_("Usage: /join <chatroom id>, join a new chatroom")},
+
+	{"j", 2, chat_command_join,
+	 N_("Usage: /j <chatroom id>, join a new chatroom")},
+
+	{"query", 2, chat_command_query,
+	 N_("Usage: /query <contact id> [<message>], open a private chat")},
+
+	{"msg", 3, chat_command_msg,
+	 N_("Usage: /msg <contact id> <message>, open a private chat")},
+
+	{"help", 2, chat_command_help,
+	 N_("Usage: /help <command>, show usage of the command")},
 };
+
+static void
+chat_command_show_help (EmpathyChat     *chat,
+			ChatCommandItem *item)
+{
+	empathy_chat_view_append_event (chat->view, gettext (item->help));
+}
+
+static void
+chat_command_help (EmpathyChat *chat,
+		   GStrv        strv)
+{
+	guint i;
+
+	for (i = 0; i < G_N_ELEMENTS (commands); i++) {
+		if (!tp_strdiff (strv[1], commands[i].prefix)) {
+			chat_command_show_help (chat, &commands[i]);
+			return;
+		}
+	}
+}
+
+static GStrv
+chat_command_parse (const gchar *text, guint n_parts)
+{
+	GPtrArray *array;
+	gchar *item;
+
+	DEBUG ("Parse command, parts=%d text=\"%s\":", n_parts, text);
+
+	array = g_ptr_array_sized_new (n_parts + 1);
+	while (n_parts > 1) {
+		const gchar *end;
+
+		/* Skip white spaces */
+		while (*text == ' ') {
+			text++;
+		}
+
+		end = strchr (text, ' ');
+		if (end == NULL) {
+			break;
+		}
+
+		item = g_strndup (text, end - text);
+		g_ptr_array_add (array, item);
+		DEBUG ("\tITEM: \"%s\"", item);
+
+		text = end;
+		n_parts--;
+	}
+
+	/* Append last part if not empty */
+	item = g_strstrip (g_strdup (text));
+	if (!EMP_STR_EMPTY (item)) {
+		g_ptr_array_add (array, item);
+		DEBUG ("\tITEM: \"%s\"", item);
+	} else {
+		g_free (item);
+	}
+
+	/* Make the array NULL-terminated */
+	g_ptr_array_add (array, NULL);
+
+	return (GStrv) g_ptr_array_free (array, FALSE);
+}
 
 static void
 chat_send (EmpathyChat  *chat,
@@ -580,13 +635,32 @@ chat_send (EmpathyChat  *chat,
 
 	chat_sent_message_add (chat, msg);
 
-	for (i = 0; commands[i].str != NULL; i++) {
-		if (g_str_has_prefix (msg, commands[i].str)) {
-			gchar *str;
+	if (msg[0] == '/') {
+		for (i = 0; i < G_N_ELEMENTS (commands); i++) {
+			GStrv strv;
 
-			str = g_strstrip (g_strdup (msg + strlen (commands[i].str)));
-			commands[i].func (chat, str);
-			g_free (str);
+			if (!g_str_has_prefix (msg + 1, commands[i].prefix)) {
+				continue;
+			}
+
+			/* We can't use g_strsplit here because it does
+			 * not deal correctly if we have more than one space
+			 * between args */
+			strv = chat_command_parse (msg + 1, commands[i].n_parts);
+
+			if (tp_strdiff (strv[0], commands[i].prefix)) {
+				g_strfreev (strv);
+				continue;
+			}
+
+			if (g_strv_length (strv) != commands[i].n_parts) {
+				chat_command_show_help (chat, &commands[i]);
+				g_strfreev (strv);
+				return;
+			}
+
+			commands[i].func (chat, strv);
+			g_strfreev (strv);
 			return;
 		}
 	}
