@@ -191,33 +191,107 @@ theme_adium_open_address_cb (GtkMenuItem *menuitem,
 	g_free (uri);
 }
 
-static gchar *
-theme_adium_parse_body (EmpathyThemeAdium *theme,
-			const gchar       *text)
+static void
+theme_adium_parser_escape (GString *string,
+			   const gchar *text,
+			   gssize len)
 {
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
-	gboolean               use_smileys = FALSE;
-	GSList                *smileys, *l;
-	GString               *string;
-	gint                   i;
-	GRegex                *uri_regex;
-	GMatchInfo            *match_info;
-	gboolean               match;
-	gchar                 *ret = NULL;
-	gint                   prev;
+	gchar *escaped;
+
+	escaped = g_markup_escape_text (text, len);
+	g_string_append (string, escaped);
+	g_free (escaped);
+}
+
+static void
+theme_adium_parser_newline (GString *string,
+			    const gchar *text,
+			    gssize len)
+{
+	gint i;
+	gint prev = 0;
+
+	if (len < 0) {
+		len = G_MAXSSIZE;
+	}
+
+	/* Replace \n by <br/> */
+	for (i = 0; i < len && text[i] != '\0'; i++) {
+		if (text[i] == '\n') {
+			theme_adium_parser_escape (string, text + prev, i - prev);
+			g_string_append (string, "<br/>");
+			prev = i + 1;
+		}
+	}
+	theme_adium_parser_escape (string, text + prev, i - prev);
+}
+
+static void
+theme_adium_parser_smiley (GString *string,
+			   const gchar *text,
+			   gssize len)
+{
+	gboolean  use_smileys = FALSE;
+	gint      last = 0;
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
 			       &use_smileys);
 
+	if (use_smileys) {
+		EmpathySmileyManager *smiley_manager;
+		GSList *hits, *l;
+
+		smiley_manager = empathy_smiley_manager_dup_singleton ();
+		hits = empathy_smiley_manager_parse_len (smiley_manager, text, len);
+
+		for (l = hits; l; l = l->next) {
+			EmpathySmileyHit *hit = l->data;
+
+			if (hit->start > last) {
+				/* Append the text between last smiley (or the
+				 * start of the message) and this smiley */
+				theme_adium_parser_newline (string, text + last,
+							    hit->start - last);
+			}
+
+			/* Replace smileys by a <img/> tag */
+			g_string_append (string, "<abbr title=\"");
+			g_string_append_len (string, text + hit->start,
+					     hit->end - hit->start);
+			g_string_append_printf (string, "\"><img src=\"%s\" alt=\"",
+						hit->path);
+			g_string_append_len (string, text + hit->start,
+					     hit->end - hit->start);
+			g_string_append (string, "\"/></abbr>");
+
+			last = hit->end;
+
+			empathy_smiley_hit_free (hit);
+		}
+		g_slist_free (hits);
+		g_object_unref (smiley_manager);
+	}
+
+	theme_adium_parser_newline (string, text + last, len - last);
+}
+
+static void
+theme_adium_parser_url (GString *string,
+			const gchar *text,
+			gssize len)
+{
+	GRegex     *uri_regex;
+	GMatchInfo *match_info;
+	gboolean    match;
+	gint        last = 0;
+
 	/* Add <a href></a> arround links */
 	uri_regex = empathy_uri_regex_dup_singleton ();
-	match = g_regex_match (uri_regex, text, 0, &match_info);
+	match = g_regex_match_full (uri_regex, text, len, 0, 0, &match_info, NULL);
 	if (match) {
-		gint last = 0;
 		gint s = 0, e = 0;
 
-		string = g_string_sized_new (strlen (text));
 		do {
 			gchar *real_url;
 
@@ -226,87 +300,52 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 			if (s > last) {
 				/* Append the text between last link (or the
 				 * start of the message) and this link */
-				gchar *str;
-				str = g_markup_escape_text (text + last, s - last);
-				g_string_append (string, str);
-				g_free (str);
+				theme_adium_parser_smiley (string, text + last,
+							   s - last);
 			}
 
 			/* Append the link inside <a href=""></a> tag */
 			real_url = empathy_make_absolute_url_len (text + s, e - s);
 
-			g_string_append (string, "<a href=\"");
-			g_string_append (string, real_url);
-			g_string_append (string, "\">");
+			g_string_append_printf (string, "<a href=\"%s\">",
+				real_url);
 			g_string_append_len (string, text + s, e - s);
 			g_string_append (string, "</a>");
 
 			g_free (real_url);
 			last = e;
 		} while (g_match_info_next (match_info, NULL));
-
-		if (e < (gint) strlen (text)) {
-			/* Append the text after the last link */
-			gchar *str;
-			str = g_markup_escape_text (text + e, strlen (text) - e);
-			g_string_append (string, str);
-			g_free (str);
-		}
-
-		g_free (ret);
-		text = ret = g_string_free (string, FALSE);
-	} else if (use_smileys) {
-		/* Replace smileys by a <img/> tag */
-		string = g_string_sized_new (strlen (text));
-		smileys = empathy_smiley_manager_parse (priv->smiley_manager, text);
-		for (l = smileys; l; l = l->next) {
-			EmpathySmiley *smiley;
-
-			smiley = l->data;
-			if (smiley->path) {
-				g_string_append_printf (string,
-							"<abbr title='%s'><img src=\"%s\"/ alt=\"%s\"/></abbr>",
-							smiley->str, smiley->path, smiley->str);
-			} else {
-				gchar *str;
-
-				str = g_markup_escape_text (smiley->str, -1);
-				g_string_append (string, str);
-				g_free (str);
-			}
-			empathy_smiley_free (smiley);
-		}
-		g_slist_free (smileys);
-
-		g_free (ret);
-		text = ret = g_string_free (string, FALSE);
-	} else {
-		text = ret = g_markup_escape_text (text, -1);
 	}
+
+	theme_adium_parser_smiley (string, text + last, len - last);
 
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
+}
 
-	/* Replace \n by <br/> */
-	string = NULL;
-	prev = 0;
-	for (i = 0; text[i] != '\0'; i++) {
-		if (text[i] == '\n') {
-			if (!string ) {
-				string = g_string_sized_new (strlen (text));
-			}
-			g_string_append_len (string, text + prev, i - prev);
-			g_string_append (string, "<br/>");
-			prev = i + 1;
-		}
-	}
-	if (string) {
-		g_string_append (string, text + prev);
-		g_free (ret);
-		text = ret = g_string_free (string, FALSE);
-	}
+static gchar *
+theme_adium_parse_body (const gchar *text)
+{
+	GString *string;
 
-	return ret;
+	/* We parse text in 4 steps: url, smiley, newline, escape.
+	 * For each step, we detect the position of tokens in the text, and
+	 * we give text between each token to the next level parser.
+	 *
+	 * For example the string "Hello :)\n www.test.com"
+	 * 1) The url parser detects "www.test.com" and gives "Hello :)\n " to
+	 *    the smiley parser, then insert the <a> tag for the link.
+	 * 2) The smiley parser will detect ":)". It first gives "Hello "
+	 *    to the newline parser, then insert the <img/> tag for the smiley,
+	 *    and finally give "\n " to the newline parser.
+	 * 3a) The newline parser gets "Hello " and escape it.
+	 * 3b) The newline parser gets "\n " and replace to "<br/> ".
+	 */
+
+	string = g_string_sized_new (strlen (text));
+	theme_adium_parser_url (string, text, -1);
+
+	return g_string_free (string, FALSE);
 }
 
 static void
@@ -442,7 +481,7 @@ theme_adium_append_message (EmpathyChatView *view,
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 	EmpathyContact        *sender;
 	TpAccount             *account;
-	gchar                 *dup_body = NULL;
+	gchar                 *body_escaped;
 	const gchar           *body;
 	const gchar           *name;
 	const gchar           *contact_id;
@@ -472,10 +511,7 @@ theme_adium_append_message (EmpathyChatView *view,
 		service_name = tp_account_get_protocol (account);
 	timestamp = empathy_message_get_timestamp (msg);
 	body = empathy_message_get_body (msg);
-	dup_body = theme_adium_parse_body (theme, body);
-	if (dup_body) {
-		body = dup_body;
-	}
+	body_escaped = theme_adium_parse_body (body);
 	name = empathy_contact_get_name (sender);
 	contact_id = empathy_contact_get_id (sender);
 
@@ -483,10 +519,10 @@ theme_adium_append_message (EmpathyChatView *view,
 	if (empathy_message_get_tptype (msg) == TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION) {
 		gchar *str;
 
-		str = g_strdup_printf ("%s %s", name, body);
+		str = g_strdup_printf ("%s %s", name, body_escaped);
 		empathy_chat_view_append_event (view, str);
 		g_free (str);
-		g_free (dup_body);
+		g_free (body_escaped);
 		return;
 	}
 
@@ -607,7 +643,7 @@ theme_adium_append_message (EmpathyChatView *view,
 	}
 
 	if (html != NULL) {
-		theme_adium_append_html (theme, func, html, len, body,
+		theme_adium_append_html (theme, func, html, len, body_escaped,
 					 avatar_filename, name, contact_id,
 					 service_name, message_classes->str,
 					 timestamp);
@@ -623,7 +659,7 @@ theme_adium_append_message (EmpathyChatView *view,
 	priv->last_timestamp = timestamp;
 	priv->last_is_backlog = is_backlog;
 
-	g_free (dup_body);
+	g_free (body_escaped);
 	g_string_free (message_classes, TRUE);
 }
 
