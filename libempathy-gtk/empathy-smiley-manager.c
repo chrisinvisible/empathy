@@ -371,6 +371,89 @@ empathy_smiley_manager_parse (EmpathySmileyManager *manager,
 	return g_slist_reverse (smileys);
 }
 
+static EmpathySmileyHit *
+smiley_hit_new (SmileyManagerTree *tree,
+		guint              start,
+		guint              end)
+{
+	EmpathySmileyHit *hit;
+
+	hit = g_slice_new (EmpathySmileyHit);
+	hit->pixbuf = tree->pixbuf;
+	hit->path = tree->path;
+	hit->start = start;
+	hit->end = end;
+
+	return hit;
+}
+
+void
+empathy_smiley_hit_free (EmpathySmileyHit *hit)
+{
+	g_slice_free (EmpathySmileyHit, hit);
+}
+
+GSList *
+empathy_smiley_manager_parse_len (EmpathySmileyManager *manager,
+				  const gchar          *text,
+				  gssize                len)
+{
+	EmpathySmileyManagerPriv *priv = GET_PRIV (manager);
+	EmpathySmileyHit         *hit;
+	GSList                   *hits = NULL;
+	SmileyManagerTree        *cur_tree = priv->tree;
+	const gchar              *cur_str;
+	const gchar              *start = NULL;
+
+	g_return_val_if_fail (EMPATHY_IS_SMILEY_MANAGER (manager), NULL);
+	g_return_val_if_fail (text != NULL, NULL);
+
+	if (len < 0) {
+		len = G_MAXSSIZE;
+	}
+
+	for (cur_str = text;
+	     *cur_str && cur_str - text < len;
+	     cur_str = g_utf8_next_char (cur_str)) {
+		SmileyManagerTree *child;
+		gunichar           c;
+
+		c = g_utf8_get_char (cur_str);
+		child = smiley_manager_tree_find_child (cur_tree, c);
+
+		if (child) {
+			if (cur_tree == priv->tree) {
+				start = cur_str;
+			}
+			cur_tree = child;
+			continue;
+		}
+
+		if (cur_tree->pixbuf != NULL) {
+			hit = smiley_hit_new (cur_tree, start - text,
+					      cur_str - text);
+			hits = g_slist_prepend (hits, hit);
+
+			cur_tree = smiley_manager_tree_find_child (priv->tree, c);
+			if (cur_tree) {
+				start = cur_str;
+			} else {
+				cur_tree = priv->tree;
+			}
+		} else if (cur_tree != priv->tree) {
+			cur_str = start;
+			cur_tree = priv->tree;
+		}
+	}
+
+	if (cur_tree->pixbuf != NULL) {
+		hit = smiley_hit_new (cur_tree, start - text, cur_str - text);
+		hits = g_slist_prepend (hits, hit);
+	}
+
+	return g_slist_reverse (hits);
+}
+
 GSList *
 empathy_smiley_manager_get_all (EmpathySmileyManager *manager)
 {
