@@ -81,32 +81,22 @@ smiley_manager_tree_free (SmileyManagerTree *tree)
 	g_slice_free (SmileyManagerTree, tree);
 }
 
-/* Note: This function takes the ownership of str */
 static EmpathySmiley *
-smiley_new (GdkPixbuf *pixbuf, gchar *str, const gchar *path)
+smiley_new (GdkPixbuf *pixbuf, const gchar *str)
 {
 	EmpathySmiley *smiley;
 
 	smiley = g_slice_new0 (EmpathySmiley);
-	if (pixbuf) {
-		smiley->pixbuf = g_object_ref (pixbuf);
-	}
-	smiley->str = str;
-	smiley->path = path;
+	smiley->pixbuf = g_object_ref (pixbuf);
+	smiley->str = g_strdup (str);
 
 	return smiley;
 }
 
-void
-empathy_smiley_free (EmpathySmiley *smiley)
+static void
+smiley_free (EmpathySmiley *smiley)
 {
-	if (!smiley) {
-		return;
-	}
-
-	if (smiley->pixbuf) {
-		g_object_unref (smiley->pixbuf);
-	}
+	g_object_unref (smiley->pixbuf);
 	g_free (smiley->str);
 	g_slice_free (EmpathySmiley, smiley);
 }
@@ -115,16 +105,9 @@ static void
 smiley_manager_finalize (GObject *object)
 {
 	EmpathySmileyManagerPriv *priv = GET_PRIV (object);
-	GSList                   *l;
 
 	smiley_manager_tree_free (priv->tree);
-	for (l = priv->smileys; l; l = l->next) {
-		EmpathySmiley *smiley = l->data;
-
-		/* The smiley got the ownership of the path */
-		g_free ((gchar *) smiley->path);
-		empathy_smiley_free (smiley);
-	}
+	g_slist_foreach (priv->smileys, (GFunc) smiley_free, NULL);
 	g_slist_free (priv->smileys);
 }
 
@@ -247,7 +230,7 @@ smiley_manager_add_valist (EmpathySmileyManager *manager,
 	/* We give the ownership of path to the smiley */
 	g_object_set_data_full (G_OBJECT (pixbuf), "smiley_str",
 				g_strdup (first_str), g_free);
-	smiley = smiley_new (pixbuf, g_strdup (first_str), path);
+	smiley = smiley_new (pixbuf, first_str);
 	priv->smileys = g_slist_prepend (priv->smileys, smiley);
 }
 
@@ -305,72 +288,6 @@ empathy_smiley_manager_load (EmpathySmileyManager *manager)
 	empathy_smiley_manager_add (manager, "face-worried",    ":-S",   ":S",   ":-s", ":s", NULL);
 }
 
-GSList *
-empathy_smiley_manager_parse (EmpathySmileyManager *manager,
-			      const gchar          *text)
-{
-	EmpathySmileyManagerPriv *priv = GET_PRIV (manager);
-	EmpathySmiley            *smiley;
-	SmileyManagerTree        *cur_tree = priv->tree;
-	const gchar              *t;
-	const gchar              *cur_str = text;
-	GSList                   *smileys = NULL;
-
-	g_return_val_if_fail (EMPATHY_IS_SMILEY_MANAGER (manager), NULL);
-	g_return_val_if_fail (text != NULL, NULL);
-
-	for (t = text; *t; t = g_utf8_next_char (t)) {
-		SmileyManagerTree *child;
-		gunichar           c;
-
-		c = g_utf8_get_char (t);
-		child = smiley_manager_tree_find_child (cur_tree, c);
-
-		if (cur_tree == priv->tree) {
-			if (child) {
-				if (t > cur_str) {
-					smiley = smiley_new (NULL,
-							     g_strndup (cur_str, t - cur_str),
-							     NULL);
-					smileys = g_slist_prepend (smileys, smiley);
-				}
-				cur_str = t;
-				cur_tree = child;
-			}
-
-			continue;
-		}
-
-		if (child) {
-			cur_tree = child;
-			continue;
-		}
-
-		smiley = smiley_new (cur_tree->pixbuf,
-				     g_strndup (cur_str, t - cur_str),
-				     cur_tree->path);
-		smileys = g_slist_prepend (smileys, smiley);
-		if (cur_tree->pixbuf) {
-			cur_str = t;
-			cur_tree = smiley_manager_tree_find_child (priv->tree, c);
-
-			if (!cur_tree) {
-				cur_tree = priv->tree;
-			}
-		} else {
-			cur_str = t;
-			cur_tree = priv->tree;
-		}
-	}
-
-	smiley = smiley_new (cur_tree->pixbuf,
-			     g_strndup (cur_str, t - cur_str),
-			     cur_tree->path);
-	smileys = g_slist_prepend (smileys, smiley);
-
-	return g_slist_reverse (smileys);
-}
-
 static EmpathySmileyHit *
 smiley_hit_new (SmileyManagerTree *tree,
 		guint              start,
@@ -390,6 +307,8 @@ smiley_hit_new (SmileyManagerTree *tree,
 void
 empathy_smiley_hit_free (EmpathySmileyHit *hit)
 {
+	g_return_if_fail (hit != NULL);
+
 	g_slice_free (EmpathySmileyHit, hit);
 }
 

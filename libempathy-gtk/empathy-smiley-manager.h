@@ -50,7 +50,6 @@ struct _EmpathySmileyManagerClass {
 typedef struct {
 	GdkPixbuf   *pixbuf;
 	gchar       *str;
-	const gchar *path;
 } EmpathySmiley;
 
 typedef struct {
@@ -72,15 +71,12 @@ void                  empathy_smiley_manager_add             (EmpathySmileyManag
 							      const gchar          *first_str,
 							      ...);
 GSList *              empathy_smiley_manager_get_all         (EmpathySmileyManager *manager);
-GSList *              empathy_smiley_manager_parse           (EmpathySmileyManager *manager,
-							      const gchar          *text);
 GSList *              empathy_smiley_manager_parse_len       (EmpathySmileyManager *manager,
 							      const gchar          *text,
 							      gssize                len);
 GtkWidget *           empathy_smiley_menu_new                (EmpathySmileyManager *manager,
 							      EmpathySmileyMenuFunc func,
 							      gpointer              user_data);
-void                  empathy_smiley_free                    (EmpathySmiley        *smiley);
 void                  empathy_smiley_hit_free                (EmpathySmileyHit     *hit);
 
 G_END_DECLS
