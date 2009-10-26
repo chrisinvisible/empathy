@@ -1262,7 +1262,8 @@ chat_text_view_insert_text_with_emoticons (EmpathyChatTextView *view,
 {
 	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
 	gboolean                 use_smileys = FALSE;
-	GSList                  *smileys, *l;
+	GSList                  *hits, *l;
+	gint                     last = 0;
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
@@ -1273,19 +1274,25 @@ chat_text_view_insert_text_with_emoticons (EmpathyChatTextView *view,
 		return;
 	}
 
-	smileys = empathy_smiley_manager_parse (priv->smiley_manager, str);
-	for (l = smileys; l; l = l->next) {
-		EmpathySmiley *smiley;
+	hits = empathy_smiley_manager_parse_len (priv->smiley_manager, str, -1);
+	for (l = hits; l; l = l->next) {
+		EmpathySmileyHit *hit = l->data;
 
-		smiley = l->data;
-		if (smiley->pixbuf) {
-			gtk_text_buffer_insert_pixbuf (priv->buffer, iter, smiley->pixbuf);
-		} else {
-			gtk_text_buffer_insert (priv->buffer, iter, smiley->str, -1);
+		if (hit->start > last) {
+			/* Append the text between last smiley (or the
+			 * start of the message) and this smiley */
+			gtk_text_buffer_insert (priv->buffer, iter, str + last,
+						hit->start - last);
 		}
-		empathy_smiley_free (smiley);
+		gtk_text_buffer_insert_pixbuf (priv->buffer, iter, hit->pixbuf);
+
+		last = hit->end;
+
+		empathy_smiley_hit_free (hit);
 	}
-	g_slist_free (smileys);
+	g_slist_free (hits);
+
+	gtk_text_buffer_insert (priv->buffer, iter, str + last, -1);
 }
 
 void

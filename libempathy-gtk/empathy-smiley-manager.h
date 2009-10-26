@@ -56,8 +56,8 @@ typedef struct {
 typedef struct {
 	GdkPixbuf   *pixbuf;
 	const gchar *path;
-	gint        start;
-	gint        end;
+	gint         start;
+	gint         end;
 } EmpathySmileyHit;
 
 typedef void (*EmpathySmileyMenuFunc) (EmpathySmileyManager *manager,
