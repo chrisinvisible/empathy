@@ -1,3 +1,131 @@
+NEW in 2.29.1
+=============
+
+The "Let's drop half of our code" release.
+
+This is the first release in the 2.29.x development branch.
+Most users should continue to use the 2.28.x stable branch for now.
+
+In this release we removed the megaphone and nothere applets which were not
+really maintained and were about to die with GNOME 3 anyway.
+We also stopped pretending being a library and stopped to ship libempathy
+and libempathy-gtk as shared libraries. We encourage projects to use
+telepathy-glib instead and help us create a new telepathy-gtk library.
+
+The Empathy plugin for nautilus-sendto has been moved in Empathy itself.
+Distributions should add a build dependency on nautilus-sendto if they
+want to build this plugin.
+
+
+Bugs fixed:
+ - Fixed #593318, Empathy theme doesn't work (and opens a folder in Nautilus!)
+ - Fixed #591360, Incoming message while menu is open freezes X (Rob Bradford)
+ - Fixed #594619, asserts in empathy_idle_set_presence() after suspend/resume (Jonny Lamb)
+ - Fixed #594893, icq accounts import from pidgin not working
+ - Fixed #595275, Invalid read when terminating an audio call
+ - Fixed #598423, empathy crashed when dnding an avatar image (Cosimo Cecchi)
+ - Fixed #598452, crashed with SIGSEGV in contact_list_store_iface_setup() (Guillaume Desmottes)
+ - Fixed #599612, crash when typoing room name (Guillaume Desmottes)
+ - Fixed #581488, copy/paste is broken
+ - Fixed #520206, Room auto-connect doesn't work
+ - Fixed #532737, using *_run_* calls prevents quitting Empathy (Will Thompson)
+ - Fixed #550127, Chat windows don't show when we are reconnected
+ - Fixed #571876, Get rid of deprecated Bonobo
+ - Fixed #584034, The Map View doesn't have a "Best Fit" button (Olivier Le Thanh Duong)
+ - Fixed #585957, Weird preferences (Pierre-Luc Beaudoin)
+ - Fixed #589408, Add respond button to notifications (Rob Bradford)
+ - Fixed #589409, the Event struct in EmpathyEventManager should contain an enum with the event type (Guillaume Desmottes)
+ - Fixed #593334, Use GOptionContext to parse options
+ - Fixed #593883, Empathy misbehaviour
+ - Fixed #594160, Empathy forgets IRC bookmarks
+ - Fixed #594308, Spelling mistake: "Criterion" not "Criterium" (Guillaume Desmottes)
+ - Fixed #594569, Empathy 2.27.92 fails to build
+ - Fixed #594653, empathy crashed with SIGSEGV in empathy_account_settings_get_uint32() (Guillaume Desmottes)
+ - Fixed #594654, empathy crashed with SIGSEGV in empathy_account_settings_get_default()
+ - Fixed #594776, cannot add yahoo account (Frédéric Péters)
+ - Fixed #594890, Empathy crashing with CSW (Danielle Madeley)
+ - Fixed #594906, empathy crashed with SIGSEGV in empathy_audio_sink_set_volume()
+ - Fixed #594908, empathy crashed with SIGSEGV in tp_contact_list_got_added_members_cb()
+ - Fixed #594997, Doesn't respawn existing channel when trying to reopen it
+ - Fixed #595180, crash when dragging user from roster to MUC window
+ - Fixed #595417, Pasting text into a disconnected chat window crashes (Cosimo Cecchi)
+ - Fixed #595521, EmpathyIdle should wait for account manager to be ready
+ - Fixed #595666, double click on a contact should raise the window
+ - Fixed #595737, Where does default font size comes from?
+ - Fixed #595921, "Missing" icon is used on protocols without specific icons (Cosimo Cecchi)
+ - Fixed #595945, Crash when doing nothing (Cosimo Cecchi)
+ - Fixed #595962, Criticals endlessly if you open and contract a group too fast. (Will Thompson)
+ - Fixed #596044, --hide-contact-list doesn't work (Cosimo Cecchi)
+ - Fixed #596075, Add nautilus-sendto plugin
+ - Fixed #596101, Debug: gabble logs disappear 5 seconds after disconnection (Cosimo Cecchi)
+ - Fixed #596303, Missing file fallback for Adium themes not implemented. (Xavier Claessens)
+ - Fixed #596317, Adium themes always attempt to combine consecutive messages. (Xavier Claessens)
+ - Fixed #596956, Empathy crash at startup
+ - Fixed #597125, libnotify chat bubbles aren't displayed once the first bubble disappeared (Rob Bradford)
+ - Fixed #597289, Info dialog says "Edit contact information"
+ - Fixed #597293, libempathy header files are wrong
+ - Fixed #597416, empathy crashed with SIGSEGV in empathy_account_settings_get_account() (Guillaume Desmottes)
+ - Fixed #597680, contact status doesn't change after disconnection (Guillaume Desmottes)
+ - Fixed #598332, Crash when CM crashes during a channel request. (Mike Ruprecht)
+ - Fixed #598354, Presence chooser shouldn't be sensitive when there are no accounts (Sjoerd Simons)
+ - Fixed #598355, Use pretty names for protocol in account display names (Sjoerd Simons)
+ - Fixed #598408, Changing display name can crash empathy (Guillaume Desmottes)
+ - Fixed #598432, empathy crashed with SIGSEGV in empathy_call_window_audio_input_level_changed_cb() (Guillaume Desmottes)
+ - Fixed #598453, empathy crashed with SIGSEGV in empathy_call_window_got_self_contact_cb() (Guillaume Desmottes)
+ - Fixed #598628, Empathy start isn't idempotent
+ - Fixed #598954, Empathy crashes with SIGSEGV when trying spellcheck (Felix Kaser)
+ - Fixed #599039, Should the python bindings be removed? (Jonny Lamb)
+ - Fixed #599042, Remove applets (Jonny Lamb)
+ - Fixed #599086, Remove libempathy and libempathy-gtk shared libraries (Jonny Lamb)
+ - Fixed #599087, Stop building gtk-doc HTML (Jonny Lamb)
+ - Fixed #599243, fails testsuite for a coding style problem in a comment ! (Guillaume Desmottes)
+ - Fixed #599386, Empathy protocol chooser shouldn't cache TpConnectionManagerProtocol (Guillaume Desmottes)
+
+Translations:
+ - Updated as Translation (Amitakhya Phukan)
+ - Updated ast Translation (Astur)
+ - Updated bg Translation (Alexander Shopov, Yavor Doganov)
+ - Updated bn_IN Translation (Runa Bhattacharjee)
+ - Updated bn Translation (Jamil Ahmed)
+ - Updated ca Translation (Gil Forcada)
+ - Updated cs Translation (Petr Kovar)
+ - Updated da Translation (Ask H. Larsen, Kenneth Nielsen)
+ - Updated de Translation (Mario Blättermann)
+ - Updated el Translation (Kostas Papadimas)
+ - Updated en_GB Translation (Philip Withnall)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated fi Translation (Ilkka Tuohela)
+ - Updated fr Translation (Claude Paroz)
+ - Updated gl Translation (Antón Méixome)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated hi Translation (Rajesh Ranjan)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande)
+ - Updated ja Translation (Kentaro Kazuhama)
+ - Updated kn Translation (Shankar Prasad)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated mai Translation (Rajesh Ranjan)
+ - Updated ml Translation (Praveen Arimbrathodiyil)
+ - Updated pl Translation (Tomasz Dominikowski, Piotr Drąg)
+ - Updated pt_BR Translation (André Gondim)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated ro Translation (Lucian Adrian Grijincu)
+ - Updated ru Translation (Leonid Kanter)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (drtvasudevan)
+ - Updated te Translation (krishnababu k)
+ - Updated th Translation (Theppitak Karoonboonyanan)
+ - Updated tr Translation (Baris Cicek)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+ - Updated zh_HK Translation (Chao-Hsiung Liao)
+ - Updated zh_TW Translation (Chao-Hsiung Liao)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated el Documentation translation (Jennie Petoumenou)
+
 NEW in 2.28.0
 ==============
 Bugs fixed:
