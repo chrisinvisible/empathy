@@ -627,11 +627,15 @@ theme_adium_append_event (EmpathyChatView *view,
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 
 	if (priv->data->status_html) {
+		gchar *str_escaped;
+
+		str_escaped = g_markup_escape_text (str, -1);
 		theme_adium_append_html (theme, "appendMessage",
 					 priv->data->status_html,
 					 priv->data->status_len,
-					 str, NULL, NULL, NULL, NULL, "event",
-					 empathy_time_get_current ());
+					 str_escaped, NULL, NULL, NULL, NULL,
+					 "event", empathy_time_get_current ());
+		g_free (str_escaped);
 	}
 
 	/* There is no last contact */
