@@ -1445,7 +1445,7 @@ dispatcher_request_handles_cb (TpConnection *connection,
 
   if (error != NULL)
     {
-      EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
+      EmpathyDispatcher *self = request_data->dispatcher;
       EmpathyDispatcherPriv *priv = GET_PRIV (self);
       ConnectionData *cd;
 
