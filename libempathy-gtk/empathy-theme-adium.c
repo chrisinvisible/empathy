@@ -274,6 +274,8 @@ theme_adium_parse_body (EmpathyThemeAdium *theme,
 
 		g_free (ret);
 		text = ret = g_string_free (string, FALSE);
+	} else {
+		text = ret = g_markup_escape_text (text, -1);
 	}
 
 	g_match_info_free (match_info);
