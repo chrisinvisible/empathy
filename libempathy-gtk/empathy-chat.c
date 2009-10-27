@@ -481,6 +481,8 @@ chat_command_msg_internal (EmpathyChat *chat,
 	TpConnection *connection;
 	ChatCommandMsgData *data;
 
+	/* FIXME: We should probably search in members alias. But this
+	 * is enough for IRC */
 	data = g_slice_new (ChatCommandMsgData);
 	data->chat = chat;
 	data->message = g_strdup (message);
@@ -494,28 +496,15 @@ static void
 chat_command_query (EmpathyChat *chat,
 		    GStrv        strv)
 {
-	gchar *msg = NULL;
-
-	/* message part is optional, check if we have one */
-	msg = strchr (strv[1], ' ');
-	if (msg != NULL) {
-		msg[0] = '\0';
-		msg++;
-		g_strstrip (msg + 1);
-		g_strstrip (strv[1]);
-	}
-
-	/* FIXME: We should probably search in members alias. But this
-	 * is enough for IRC */
-	chat_command_msg_internal (chat, strv[1], msg);
+	/* If <message> part is not defined,
+	 * strv[2] will be the terminal NULL */
+	chat_command_msg_internal (chat, strv[1], strv[2]);
 }
 
 static void
 chat_command_msg (EmpathyChat *chat,
 		  GStrv        strv)
 {
-	/* FIXME: We should probably search in members alias. But this
-	 * is enough for IRC */
 	chat_command_msg_internal (chat, strv[1], strv[2]);
 }
 
@@ -525,39 +514,45 @@ typedef void (*ChatCommandFunc) (EmpathyChat *chat, GStrv strv);
 
 typedef struct {
 	const gchar *prefix;
-	guint n_parts;
+	guint min_parts;
+	guint max_parts;
 	ChatCommandFunc func;
 	const gchar *help;
 } ChatCommandItem;
 
 static ChatCommandItem commands[] = {
-	{"clear", 1, chat_command_clear,
-	 N_("Usage: /clear, clear all messages from the current conversation")},
+	{"clear", 1, 1, chat_command_clear,
+	 N_("/clear, clear all messages from the current conversation")},
 
-	{"topic", 2, chat_command_topic,
-	 N_("Usage: /topic <topic>, set the topic of the current conversation")},
+	{"topic", 2, 2, chat_command_topic,
+	 N_("/topic <topic>, set the topic of the current conversation")},
 
-	{"join", 2, chat_command_join,
-	 N_("Usage: /join <chatroom id>, join a new chatroom")},
+	{"join", 2, 2, chat_command_join,
+	 N_("/join <chatroom id>, join a new chatroom")},
 
-	{"j", 2, chat_command_join,
-	 N_("Usage: /j <chatroom id>, join a new chatroom")},
+	{"j", 2, 2, chat_command_join,
+	 N_("/j <chatroom id>, join a new chatroom")},
 
-	{"query", 2, chat_command_query,
-	 N_("Usage: /query <contact id> [<message>], open a private chat")},
+	{"query", 2, 3, chat_command_query,
+	 N_("/query <contact id> [<message>], open a private chat")},
 
-	{"msg", 3, chat_command_msg,
-	 N_("Usage: /msg <contact id> <message>, open a private chat")},
+	{"msg", 3, 3, chat_command_msg,
+	 N_("/msg <contact id> <message>, open a private chat")},
 
-	{"help", 2, chat_command_help,
-	 N_("Usage: /help <command>, show usage of the command")},
+	{"help", 1, 2, chat_command_help,
+	 N_("/help [<command>], show all supported commands. "
+	    "If <command> is defined, show its usage.")},
 };
 
 static void
 chat_command_show_help (EmpathyChat     *chat,
 			ChatCommandItem *item)
 {
-	empathy_chat_view_append_event (chat->view, gettext (item->help));
+	gchar *str;
+
+	str = g_strdup_printf (_("Usage: %s"), _(item->help));
+	empathy_chat_view_append_event (chat->view, str);
+	g_free (str);
 }
 
 static void
@@ -565,6 +560,16 @@ chat_command_help (EmpathyChat *chat,
 		   GStrv        strv)
 {
 	guint i;
+
+	/* If <command> part is not defined,
+	 * strv[1] will be the terminal NULL */
+	if (strv[1] == NULL) {
+		for (i = 0; i < G_N_ELEMENTS (commands); i++) {
+			empathy_chat_view_append_event (chat->view,
+				_(commands[i].help));
+		}
+		return;
+	}
 
 	for (i = 0; i < G_N_ELEMENTS (commands); i++) {
 		if (!tp_strdiff (strv[1], commands[i].prefix)) {
@@ -575,15 +580,15 @@ chat_command_help (EmpathyChat *chat,
 }
 
 static GStrv
-chat_command_parse (const gchar *text, guint n_parts)
+chat_command_parse (const gchar *text, guint max_parts)
 {
 	GPtrArray *array;
 	gchar *item;
 
-	DEBUG ("Parse command, parts=%d text=\"%s\":", n_parts, text);
+	DEBUG ("Parse command, parts=%d text=\"%s\":", max_parts, text);
 
-	array = g_ptr_array_sized_new (n_parts + 1);
-	while (n_parts > 1) {
+	array = g_ptr_array_sized_new (max_parts + 1);
+	while (max_parts > 1) {
 		const gchar *end;
 
 		/* Skip white spaces */
@@ -601,7 +606,7 @@ chat_command_parse (const gchar *text, guint n_parts)
 		DEBUG ("\tITEM: \"%s\"", item);
 
 		text = end;
-		n_parts--;
+		max_parts--;
 	}
 
 	/* Append last part if not empty */
@@ -638,6 +643,7 @@ chat_send (EmpathyChat  *chat,
 	if (msg[0] == '/') {
 		for (i = 0; i < G_N_ELEMENTS (commands); i++) {
 			GStrv strv;
+			guint strv_len;
 
 			if (!g_str_has_prefix (msg + 1, commands[i].prefix)) {
 				continue;
@@ -646,14 +652,16 @@ chat_send (EmpathyChat  *chat,
 			/* We can't use g_strsplit here because it does
 			 * not deal correctly if we have more than one space
 			 * between args */
-			strv = chat_command_parse (msg + 1, commands[i].n_parts);
+			strv = chat_command_parse (msg + 1, commands[i].max_parts);
 
 			if (tp_strdiff (strv[0], commands[i].prefix)) {
 				g_strfreev (strv);
 				continue;
 			}
 
-			if (g_strv_length (strv) != commands[i].n_parts) {
+			strv_len = g_strv_length (strv);
+			if (strv_len < commands[i].min_parts ||
+			    strv_len > commands[i].max_parts) {
 				chat_command_show_help (chat, &commands[i]);
 				g_strfreev (strv);
 				return;
