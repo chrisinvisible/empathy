@@ -470,6 +470,7 @@ AC_OUTPUT([
    nautilus-sendto-plugin/Makefile
    help/Makefile
    tests/Makefile
+   tests/interactive/Makefile
    tests/xml/Makefile
    tools/Makefile
    shave
