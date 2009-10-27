@@ -2,14 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <check.h>
-#include "check-helpers.h"
-#include "check-libempathy.h"
 #include "check-irc-helper.h"
+#include "test-helper.h"
 
 #include <libempathy/empathy-irc-server.h>
 
-START_TEST (test_empathy_irc_server_new)
+static void
+test_empathy_irc_server_new (void)
 {
   EmpathyIrcServer *server;
 
@@ -18,14 +17,14 @@ START_TEST (test_empathy_irc_server_new)
 
   g_object_unref (server);
 }
-END_TEST
 
-START_TEST (test_property_change)
+static void
+test_property_change (void)
 {
   EmpathyIrcServer *server;
 
   server = empathy_irc_server_new ("test.localhost", 6667, TRUE);
-  fail_if (server == NULL);
+  g_assert (server != NULL);
 
   g_object_set (server,
       "address", "test2.localhost",
@@ -37,7 +36,6 @@ START_TEST (test_property_change)
 
   g_object_unref (server);
 }
-END_TEST
 
 static gboolean modified = FALSE;
 
@@ -48,46 +46,53 @@ modified_cb (EmpathyIrcServer *server,
   modified = TRUE;
 }
 
-START_TEST (test_modified_signal)
+static void
+test_modified_signal (void)
 {
   EmpathyIrcServer *server;
 
   server = empathy_irc_server_new ("test.localhost", 6667, TRUE);
-  fail_if (server == NULL);
+  g_assert (server != NULL);
 
   g_signal_connect (server, "modified", G_CALLBACK (modified_cb), NULL);
 
   /* address */
   g_object_set (server, "address", "test2.localhost", NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (server, "address", "test2.localhost", NULL);
-  fail_if (modified);
+  g_assert (!modified);
 
   /* port */
   g_object_set (server, "port", 6668, NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (server, "port", 6668, NULL);
-  fail_if (modified);
+  g_assert (!modified);
 
   /* ssl */
   g_object_set (server, "ssl", FALSE, NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (server, "ssl", FALSE, NULL);
-  fail_if (modified);
+  g_assert (!modified);
 
   g_object_unref (server);
 }
-END_TEST
 
-TCase *
-make_empathy_irc_server_tcase (void)
+int
+main (int argc,
+    char **argv)
 {
-    TCase *tc = tcase_create ("empathy-irc-server");
-    tcase_add_test (tc, test_empathy_irc_server_new);
-    tcase_add_test (tc, test_property_change);
-    tcase_add_test (tc, test_modified_signal);
-    return tc;
+  int result;
+
+  test_init (argc, argv);
+
+  g_test_add_func ("/irc-server/new", test_empathy_irc_server_new);
+  g_test_add_func ("/irc-server/property-change", test_property_change);
+  g_test_add_func ("/irc-server/modified-signal", test_modified_signal);
+
+  result = g_test_run ();
+  test_deinit ();
+  return result;
 }

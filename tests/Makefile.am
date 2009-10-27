@@ -24,10 +24,15 @@ LDADD =								\
 	$(EMPATHY_LIBS)
 
 TEST_PROGS =                                     \
-     empathy-utils-test
+     empathy-utils-test                          \
+     empathy-irc-server-test
 
 empathy_utils_test_SOURCES = empathy-utils-test.c \
      test-helper.c test-helper.h
+
+empathy_irc_server_test_SOURCES = empathy-irc-server-test.c \
+     test-helper.c test-helper.h                       \
+     check-irc-helper.h check-irc-helper.c
 
 check_PROGRAMS = check-main $(TEST_PROGS)
 
@@ -41,7 +46,6 @@ check_main_SOURCES =                             \
     check-empathy-helpers.c                      \
     check-irc-helper.h                           \
     check-irc-helper.c                           \
-    check-empathy-irc-server.c                   \
     check-empathy-irc-network.c                  \
     check-empathy-irc-network-manager.c          \
     check-empathy-chatroom.c                     \

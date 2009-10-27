@@ -10,7 +10,7 @@ check_server (EmpathyIrcServer *server,
   guint port;
   gboolean ssl;
 
-  fail_if (server == NULL);
+  g_assert (server != NULL);
 
   g_object_get (server,
       "address", &address,
@@ -18,9 +18,9 @@ check_server (EmpathyIrcServer *server,
       "ssl", &ssl,
       NULL);
 
-  fail_if (address == NULL || strcmp (address, _address) != 0);
-  fail_if (port != _port);
-  fail_if (ssl != _ssl);
+  g_assert (address != NULL && strcmp (address, _address) == 0);
+  g_assert (port == _port);
+  g_assert (ssl == _ssl);
 
   g_free (address);
 }
@@ -36,18 +36,18 @@ check_network (EmpathyIrcNetwork *network,
   GSList *servers, *l;
   guint i;
 
-  fail_if (network == NULL);
+  g_assert (network != NULL);
 
   g_object_get (network,
       "name", &name,
       "charset", &charset,
       NULL);
 
-  fail_if (name == NULL || strcmp (name, _name) != 0);
-  fail_if (charset == NULL || strcmp (charset, _charset) != 0);
+  g_assert (name != NULL && strcmp (name, _name) == 0);
+  g_assert (charset != NULL && strcmp (charset, _charset) == 0);
 
   servers = empathy_irc_network_get_servers (network);
-  fail_if (g_slist_length (servers) != nb_servers);
+  g_assert (g_slist_length (servers) == nb_servers);
 
   /* Is that the right servers ? */
   for (l = servers, i = 0; l != NULL; l = g_slist_next (l), i++)
@@ -65,10 +65,10 @@ check_network (EmpathyIrcNetwork *network,
           "ssl", &ssl,
           NULL);
 
-      fail_if (address == NULL || strcmp (address, _servers[i].address)
-          != 0);
-      fail_if (port != _servers[i].port);
-      fail_if (ssl != _servers[i].ssl);
+      g_assert (address != NULL && strcmp (address, _servers[i].address)
+          == 0);
+      g_assert (port == _servers[i].port);
+      g_assert (ssl == _servers[i].ssl);
 
       g_free (address);
     }
