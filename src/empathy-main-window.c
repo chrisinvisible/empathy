@@ -78,6 +78,15 @@
 /* Name in the geometry file */
 #define GEOMETRY_NAME "main-window"
 
+/* Response ID for GtkInfoBar-Edit Button */
+#define EMPATHY_RESPONSE_EDIT 8
+
+/* Response ID for GtkInfoBar-Retry Button */
+#define EMPATHY_RESPONSE_RETRY 12
+
+/* Response ID for GtkInfoBar-Disable Button */
+#define EMPATHY_RESPONSE_DISABLE 14
+
 typedef struct {
 	EmpathyContactListView  *list_view;
 	EmpathyContactListStore *list_store;
@@ -307,28 +316,28 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 }
 
 static void
-main_window_error_edit_clicked_cb (GtkButton         *button,
+main_window_error_infobar_button_clicked_cb (GtkInfoBar         *info_bar,
+				   gint response_id,
 				   EmpathyMainWindow *window)
 {
 	TpAccount *account;
 	GtkWidget *error_widget;
 
-	account = g_object_get_data (G_OBJECT (button), "account");
-	empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
+	account = g_object_get_data (G_OBJECT (info_bar), "account");
+	switch (response_id) {
+	case EMPATHY_RESPONSE_EDIT:
+		empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
+		break;
+	case EMPATHY_RESPONSE_DISABLE:
+		empathy_account_set_enabled_async (account, FALSE, NULL, NULL);
+		break;
+	case EMPATHY_RESPONSE_RETRY:
+		empathy_account_reconnect_async (account, NULL, NULL);
+		break;
+	default:
+		break;
+	}
 
-	error_widget = g_hash_table_lookup (window->errors, account);
-	gtk_widget_destroy (error_widget);
-	g_hash_table_remove (window->errors, account);
-}
-
-static void
-main_window_error_clear_clicked_cb (GtkButton         *button,
-				    EmpathyMainWindow *window)
-{
-	TpAccount *account;
-	GtkWidget *error_widget;
-
-	account = g_object_get_data (G_OBJECT (button), "account");
 	error_widget = g_hash_table_lookup (window->errors, account);
 	gtk_widget_destroy (error_widget);
 	g_hash_table_remove (window->errors, account);
@@ -340,15 +349,9 @@ main_window_error_display (EmpathyMainWindow *window,
 			   const gchar       *message)
 {
 	GtkWidget *child;
-	GtkWidget *table;
-	GtkWidget *image;
-	GtkWidget *button_edit;
-	GtkWidget *alignment;
-	GtkWidget *hbox;
+	GtkWidget *content_area;
 	GtkWidget *label;
-	GtkWidget *fixed;
-	GtkWidget *vbox;
-	GtkWidget *button_close;
+	GtkWidget *image;
 	gchar     *str;
 
 	child = g_hash_table_lookup (window->errors, account);
@@ -365,99 +368,43 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	child = gtk_vbox_new (FALSE, 0);
+	child = gtk_info_bar_new ();
+	gtk_widget_set_no_show_all (child, TRUE);
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), child, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (child), 6);
 	gtk_widget_show (child);
 
-	table = gtk_table_new (2, 4, FALSE);
-	gtk_widget_show (table);
-	gtk_box_pack_start (GTK_BOX (child), table, TRUE, TRUE, 0);
-	gtk_table_set_row_spacings (GTK_TABLE (table), 12);
-	gtk_table_set_col_spacings (GTK_TABLE (table), 6);
-
-	image = gtk_image_new_from_stock (GTK_STOCK_DISCONNECT, GTK_ICON_SIZE_MENU);
-	gtk_widget_show (image);
-	gtk_table_attach (GTK_TABLE (table), image, 0, 1, 0, 2,
-			  (GtkAttachOptions) (GTK_FILL),
-			  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (image), 0.5, 0);
-
-	button_edit = gtk_button_new ();
-	gtk_widget_show (button_edit);
-	gtk_table_attach (GTK_TABLE (table), button_edit, 1, 2, 1, 2,
-			  (GtkAttachOptions) (GTK_FILL),
-			  (GtkAttachOptions) (0), 0, 0);
-
-	alignment = gtk_alignment_new (0.5, 0.5, 0, 0);
-	gtk_widget_show (alignment);
-	gtk_container_add (GTK_CONTAINER (button_edit), alignment);
-
-	hbox = gtk_hbox_new (FALSE, 2);
-	gtk_widget_show (hbox);
-	gtk_container_add (GTK_CONTAINER (alignment), hbox);
-
-	image = gtk_image_new_from_stock (GTK_STOCK_EDIT, GTK_ICON_SIZE_BUTTON);
-	gtk_widget_show (image);
-	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
-
-	label = gtk_label_new_with_mnemonic (_("_Edit account"));
-	gtk_widget_show (label);
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-
-	fixed = gtk_fixed_new ();
-	gtk_widget_show (fixed);
-	gtk_table_attach (GTK_TABLE (table), fixed, 2, 3, 1, 2,
-			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-			  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	vbox = gtk_vbox_new (FALSE, 6);
-	gtk_widget_show (vbox);
-	gtk_table_attach (GTK_TABLE (table), vbox, 3, 4, 0, 2,
-			  (GtkAttachOptions) (GTK_FILL),
-			  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	button_close = gtk_button_new ();
-	gtk_widget_show (button_close);
-	gtk_box_pack_start (GTK_BOX (vbox), button_close, FALSE, FALSE, 0);
-	gtk_button_set_relief (GTK_BUTTON (button_close), GTK_RELIEF_NONE);
-
-
-	image = gtk_image_new_from_stock ("gtk-close", GTK_ICON_SIZE_MENU);
-	gtk_widget_show (image);
-	gtk_container_add (GTK_CONTAINER (button_close), image);
-
 	label = gtk_label_new ("");
 	gtk_widget_show (label);
-	gtk_table_attach (GTK_TABLE (table), label, 1, 3, 0, 1,
-			  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-			  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
-	gtk_widget_set_size_request (label, 175, -1);
-	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
 
-	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
+	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
+													 GTK_ICON_SIZE_DIALOG);
+	gtk_widget_show (image);
+
+	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (child));
+	gtk_container_add (GTK_CONTAINER (content_area), image);
+	gtk_container_add (GTK_CONTAINER (content_area), label);
+
+	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+													 GTK_STOCK_EDIT, EMPATHY_RESPONSE_EDIT);
+	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+													 _("_Retry"), EMPATHY_RESPONSE_RETRY);
+	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+													 _("_Disable"), EMPATHY_RESPONSE_DISABLE);
+	g_signal_connect (child, "response",
+										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
+										window);
+	
+	str = g_markup_printf_escaped ("<b>%s</b>\n\n%s",
 				       tp_account_get_display_name (account),
 				       message);
 	gtk_label_set_markup (GTK_LABEL (label), str);
 	g_free (str);
 
 	g_object_set_data (G_OBJECT (child), "label", label);
-	g_object_set_data_full (G_OBJECT (button_edit),
+	g_object_set_data_full (G_OBJECT (child),
 				"account", g_object_ref (account),
 				g_object_unref);
-	g_object_set_data_full (G_OBJECT (button_close),
-				"account", g_object_ref (account),
-				g_object_unref);
-
-	g_signal_connect (button_edit, "clicked",
-			  G_CALLBACK (main_window_error_edit_clicked_cb),
-			  window);
-
-	g_signal_connect (button_close, "clicked",
-			  G_CALLBACK (main_window_error_clear_clicked_cb),
-			  window);
 
 	gtk_widget_show (window->errors_vbox);
 
