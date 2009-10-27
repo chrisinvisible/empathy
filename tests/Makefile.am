@@ -26,7 +26,8 @@ LDADD =								\
 TEST_PROGS =                                     \
      empathy-utils-test
 
-empathy_utils_test_SOURCES = empathy-utils-test.c
+empathy_utils_test_SOURCES = empathy-utils-test.c \
+     test-helper.c test-helper.h
 
 check_PROGRAMS = check-main $(TEST_PROGS)
 

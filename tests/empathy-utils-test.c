@@ -2,23 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <glib.h>
-
 #include <libempathy/empathy-utils.h>
-
-static void
-test_init (int argc,
-    char **argv)
-{
-  g_test_init (&argc, &argv, NULL);
-  g_type_init ();
-}
-
-static void
-test_deinit (void)
-{
-  ;
-}
+#include "test-helper.h"
 
 static void
 test_substring (void)
