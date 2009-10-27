@@ -23,14 +23,19 @@ LDADD =								\
 	$(top_builddir)/libempathy/libempathy.la		\
 	$(EMPATHY_LIBS)
 
-check_PROGRAMS = check-main
+TEST_PROGS =                                     \
+     empathy-utils-test
+
+empathy_utils_test_SOURCES = empathy-utils-test.c
+
+check_PROGRAMS = check-main $(TEST_PROGS)
+
 TESTS = check-main
 check_main_SOURCES =                             \
     check-main.c                                 \
     check-helpers.c                              \
     check-helpers.h                              \
     check-libempathy.h                           \
-    check-empathy-utils.c                        \
     check-empathy-helpers.h                      \
     check-empathy-helpers.c                      \
     check-irc-helper.h                           \
@@ -44,7 +49,7 @@ check_main_SOURCES =                             \
 check_c_sources = \
     $(check_main_SOURCES)
 include $(top_srcdir)/tools/check-coding-style.mk
-check-local: check-coding-style
+check-local: test check-coding-style
 
 check_main_LDADD = \
     @CHECK_LIBS@ \
@@ -59,3 +64,17 @@ check_main_CFLAGS = \
 TESTS_ENVIRONMENT = EMPATHY_SRCDIR=@abs_top_srcdir@ \
 		    MC_PROFILE_DIR=@abs_top_srcdir@/tests \
 		    MC_MANAGER_DIR=@abs_top_srcdir@/tests
+
+test-report: test-report.xml
+	gtester-report $(top_builddir)/tests/$@.xml > \
+	  $(top_builddir)/tests/$@.html
+
+test-report.xml: ${TEST_PROGS} test
+
+test: ${TEST_PROGS}
+	gtester -o test-report.xml -k --verbose ${TEST_PROGS}
+
+test-%: empathy-%-test
+	gtester -o $@-report.xml -k --verbose $<
+
+.PHONY: test test-report
