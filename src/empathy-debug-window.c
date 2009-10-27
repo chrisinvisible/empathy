@@ -733,6 +733,13 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
   tp_list_connection_names (priv->dbus, debug_window_list_connection_names_cb,
       debug_window, NULL, NULL);
 
+  /* add Mission Control */
+  gtk_list_store_append (priv->cms, &iter);
+  gtk_list_store_set (priv->cms, &iter,
+      COL_CM_NAME, "misson-control",
+      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
+      -1);
+
   priv->name_owner_changed_signal =
       tp_cli_dbus_daemon_connect_to_name_owner_changed (priv->dbus,
       debug_window_name_owner_changed_cb, debug_window, NULL, NULL, NULL);
