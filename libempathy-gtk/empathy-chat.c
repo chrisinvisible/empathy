@@ -508,6 +508,31 @@ chat_command_msg (EmpathyChat *chat,
 	chat_command_msg_internal (chat, strv[1], strv[2]);
 }
 
+static void
+chat_command_me (EmpathyChat *chat,
+		  GStrv        strv)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	EmpathyMessage *message;
+
+	message = empathy_message_new (strv[1]);
+	empathy_message_set_tptype (message, TP_CHANNEL_TEXT_MESSAGE_TYPE_ACTION);
+	empathy_tp_chat_send (priv->tp_chat, message);
+	g_object_unref (message);
+}
+
+static void
+chat_command_say (EmpathyChat *chat,
+		  GStrv        strv)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	EmpathyMessage *message;
+
+	message = empathy_message_new (strv[1]);
+	empathy_tp_chat_send (priv->tp_chat, message);
+	g_object_unref (message);
+}
+
 static void chat_command_help (EmpathyChat *chat, GStrv strv);
 
 typedef void (*ChatCommandFunc) (EmpathyChat *chat, GStrv strv);
@@ -538,6 +563,14 @@ static ChatCommandItem commands[] = {
 
 	{"msg", 3, 3, chat_command_msg,
 	 N_("/msg <contact id> <message>, open a private chat")},
+
+	{"me", 2, 2, chat_command_me,
+	 N_("/me <message>, send an ACTION message to the current conversation")},
+
+	{"say", 2, 2, chat_command_say,
+	 N_("/say <message>, send <message> to the current conversation. "
+	    "This is used to send a message starting with a '/'. For example: "
+	    "\"/say /join is used to join a new chatroom\"")},
 
 	{"help", 1, 2, chat_command_help,
 	 N_("/help [<command>], show all supported commands. "
@@ -572,7 +605,7 @@ chat_command_help (EmpathyChat *chat,
 	}
 
 	for (i = 0; i < G_N_ELEMENTS (commands); i++) {
-		if (!tp_strdiff (strv[1], commands[i].prefix)) {
+		if (g_ascii_strcasecmp (strv[1], commands[i].prefix) == 0) {
 			chat_command_show_help (chat, &commands[i]);
 			return;
 		}
@@ -592,12 +625,13 @@ chat_command_parse (const gchar *text, guint max_parts)
 		const gchar *end;
 
 		/* Skip white spaces */
-		while (*text == ' ') {
+		while (g_ascii_isspace (*text)) {
 			text++;
 		}
 
-		end = strchr (text, ' ');
-		if (end == NULL) {
+		/* Search the end of this part, until first space. */
+		for (end = text; *end != '\0' && !g_ascii_isspace (*end); end++);
+		if (*end == '\0') {
 			break;
 		}
 
@@ -624,6 +658,13 @@ chat_command_parse (const gchar *text, guint max_parts)
 	return (GStrv) g_ptr_array_free (array, FALSE);
 }
 
+static gboolean
+has_prefix_case (const gchar *s,
+		  const gchar *prefix)
+{
+	return g_ascii_strncasecmp (s, prefix, strlen (prefix)) == 0;
+}
+
 static void
 chat_send (EmpathyChat  *chat,
 	   const gchar *msg)
@@ -641,11 +682,14 @@ chat_send (EmpathyChat  *chat,
 	chat_sent_message_add (chat, msg);
 
 	if (msg[0] == '/') {
+		gboolean second_slash = FALSE;
+		const gchar *iter = msg + 1;
+
 		for (i = 0; i < G_N_ELEMENTS (commands); i++) {
 			GStrv strv;
 			guint strv_len;
 
-			if (!g_str_has_prefix (msg + 1, commands[i].prefix)) {
+			if (!has_prefix_case (msg + 1, commands[i].prefix)) {
 				continue;
 			}
 
@@ -654,7 +698,7 @@ chat_send (EmpathyChat  *chat,
 			 * between args */
 			strv = chat_command_parse (msg + 1, commands[i].max_parts);
 
-			if (tp_strdiff (strv[0], commands[i].prefix)) {
+			if (g_ascii_strcasecmp (strv[0], commands[i].prefix) != 0) {
 				g_strfreev (strv);
 				continue;
 			}
@@ -671,17 +715,28 @@ chat_send (EmpathyChat  *chat,
 			g_strfreev (strv);
 			return;
 		}
+
+		/* Also allow messages with two slashes before the
+		 * first space, so it is possible to send a /unix/path.
+		 * This heuristic is kind of crap. */
+		while (*iter != '\0' && !g_ascii_isspace (*iter)) {
+			if (*iter == '/') {
+				second_slash = TRUE;
+				break;
+			}
+			iter++;
+		}
+
+		if (!second_slash) {
+			empathy_chat_view_append_event (chat->view,
+				_("Unsupported command"));
+			return;
+		}
 	}
 
-	message = empathy_message_new_from_entry (msg);
-
-	if (message == NULL) {
-		empathy_chat_view_append_event (chat->view,
-			_("Unsupported command"));
-	} else {
-		empathy_tp_chat_send (priv->tp_chat, message);
-		g_object_unref (message);
-	}
+	message = empathy_message_new (msg);
+	empathy_tp_chat_send (priv->tp_chat, message);
+	g_object_unref (message);
 }
 
 static void
