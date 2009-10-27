@@ -2,14 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <check.h>
-#include "check-helpers.h"
-#include "check-libempathy.h"
 #include "check-irc-helper.h"
+#include "test-helper.h"
 
 #include <libempathy/empathy-irc-network.h>
 
-START_TEST (test_empathy_irc_network_new)
+static void
+test_empathy_irc_network_new (void)
 {
   EmpathyIrcNetwork *network;
 
@@ -18,9 +17,9 @@ START_TEST (test_empathy_irc_network_new)
 
   g_object_unref (network);
 }
-END_TEST
 
-START_TEST (test_property_change)
+static void
+test_property_change (void)
 {
   EmpathyIrcNetwork *network;
 
@@ -37,7 +36,6 @@ START_TEST (test_property_change)
   g_object_unref (network);
 
 }
-END_TEST
 
 static gboolean modified;
 
@@ -48,7 +46,8 @@ modified_cb (EmpathyIrcNetwork *network,
   modified = TRUE;
 }
 
-START_TEST (test_modified_signal)
+static void
+test_modified_signal (void)
 {
   EmpathyIrcNetwork *network;
 
@@ -59,14 +58,13 @@ START_TEST (test_modified_signal)
   g_signal_connect (network, "modified", G_CALLBACK (modified_cb), NULL);
 
   g_object_set (network, "name", "Network2", NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (network, "name", "Network2", NULL);
-  fail_if (modified);
+  g_assert (!modified);
 
   g_object_unref (network);
 }
-END_TEST
 
 static void
 add_servers (EmpathyIrcNetwork *network,
@@ -83,12 +81,13 @@ add_servers (EmpathyIrcNetwork *network,
           servers[i].port, servers[i].ssl);
       modified = FALSE;
       empathy_irc_network_append_server (network, server);
-      fail_if (!modified);
+      g_assert (modified);
       g_object_unref (server);
     }
 }
 
-START_TEST (test_add_server)
+static void
+test_add_server (void)
 {
   EmpathyIrcNetwork *network;
   EmpathyIrcServer *server;
@@ -119,11 +118,11 @@ START_TEST (test_add_server)
   /* Now let's remove the 3rd server */
   servers = empathy_irc_network_get_servers (network);
   l = g_slist_nth (servers, 2);
-  fail_if (l == NULL);
+  g_assert (l != NULL);
   server = l->data;
   modified = FALSE;
   empathy_irc_network_remove_server (network, server);
-  fail_if (!modified);
+  g_assert (modified);
 
   /* free the list */
   g_slist_foreach (servers, (GFunc) g_object_unref, NULL);
@@ -134,9 +133,9 @@ START_TEST (test_add_server)
 
   g_object_unref (network);
 }
-END_TEST
 
-START_TEST (test_modified_signal_because_of_server)
+static void
+test_modified_signal_because_of_server (void)
 {
   EmpathyIrcNetwork *network;
   EmpathyIrcServer *server;
@@ -152,25 +151,25 @@ START_TEST (test_modified_signal_because_of_server)
   /* Change server properties */
   modified = FALSE;
   g_object_set (server, "address", "server2", NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (server, "port", 6668, NULL);
-  fail_if (!modified);
+  g_assert (modified);
   modified = FALSE;
   g_object_set (server, "ssl", TRUE, NULL);
-  fail_if (!modified);
+  g_assert (modified);
 
   empathy_irc_network_remove_server (network, server);
   modified = FALSE;
   g_object_set (server, "address", "server3", NULL);
   /* We removed the server so the network is not modified anymore */
-  fail_if (modified);
+  g_assert (!modified);
 
   g_object_unref (network);
 }
-END_TEST
 
-START_TEST (test_empathy_irc_network_set_server_position)
+static void
+test_empathy_irc_network_set_server_position (void)
 {
   EmpathyIrcNetwork *network;
   GSList *servers, *l;
@@ -197,7 +196,7 @@ START_TEST (test_empathy_irc_network_set_server_position)
 
   /* get servers list */
   servers = empathy_irc_network_get_servers (network);
-  fail_if (g_slist_length (servers) != 4);
+  g_assert (g_slist_length (servers) == 4);
   modified = FALSE;
 
   /* server1 go to the last position */
@@ -215,7 +214,7 @@ START_TEST (test_empathy_irc_network_set_server_position)
   l = l->next;
   empathy_irc_network_set_server_position (network, l->data, 1);
 
-  fail_if (!modified);
+  g_assert (modified);
 
   /* free the list */
   g_slist_foreach (servers, (GFunc) g_object_unref, NULL);
@@ -224,17 +223,25 @@ START_TEST (test_empathy_irc_network_set_server_position)
   /* Check if servers are sorted */
   check_network (network, "Network1", "UTF-8", test_servers_sorted, 4);
 }
-END_TEST
 
-TCase *
-make_empathy_irc_network_tcase (void)
+int
+main (int argc,
+    char **argv)
 {
-    TCase *tc = tcase_create ("empathy-irc-network");
-    tcase_add_test (tc, test_empathy_irc_network_new);
-    tcase_add_test (tc, test_property_change);
-    tcase_add_test (tc, test_modified_signal);
-    tcase_add_test (tc, test_add_server);
-    tcase_add_test (tc, test_modified_signal_because_of_server);
-    tcase_add_test (tc, test_empathy_irc_network_set_server_position);
-    return tc;
+  int result;
+
+  test_init (argc, argv);
+
+  g_test_add_func ("/irc-network/new", test_empathy_irc_network_new);
+  g_test_add_func ("/irc-network/property-change", test_property_change);
+  g_test_add_func ("/irc-network/modified-signal", test_modified_signal);
+  g_test_add_func ("/irc-network/add-server", test_add_server);
+  g_test_add_func ("/irc-network/modified-signal-because-of-server",
+      test_modified_signal_because_of_server);
+  g_test_add_func ("/irc-network/set-server-position",
+      test_empathy_irc_network_set_server_position);
+
+  result = g_test_run ();
+  test_deinit ();
+  return result;
 }

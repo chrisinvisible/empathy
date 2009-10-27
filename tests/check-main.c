@@ -16,7 +16,6 @@ make_libempathy_suite (void)
 {
     Suite *s = suite_create ("libempathy");
 
-    suite_add_tcase (s, make_empathy_irc_network_tcase ());
     suite_add_tcase (s, make_empathy_irc_network_manager_tcase ());
     suite_add_tcase (s, make_empathy_chatroom_tcase ());
     suite_add_tcase (s, make_empathy_chatroom_manager_tcase ());
