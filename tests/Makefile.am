@@ -34,15 +34,15 @@ empathy_utils_test_SOURCES = empathy-utils-test.c \
 
 empathy_irc_server_test_SOURCES = empathy-irc-server-test.c \
      test-helper.c test-helper.h                       \
-     check-irc-helper.h check-irc-helper.c
+     test-irc-helper.h test-irc-helper.c
 
 empathy_irc_network_test_SOURCES = empathy-irc-network-test.c \
      test-helper.c test-helper.h                       \
-     check-irc-helper.h check-irc-helper.c
+     test-irc-helper.h test-irc-helper.c
 
 empathy_irc_network_manager_test_SOURCES = empathy-irc-network-manager-test.c \
      test-helper.c test-helper.h                       \
-     check-irc-helper.h check-irc-helper.c
+     test-irc-helper.h test-irc-helper.c
 
 empathy_chatroom_test_SOURCES = empathy-chatroom-test.c \
      test-helper.c test-helper.h

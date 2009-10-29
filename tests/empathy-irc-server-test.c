@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "check-irc-helper.h"
+#include "test-irc-helper.h"
 #include "test-helper.h"
 
 #include <libempathy/empathy-irc-server.h>

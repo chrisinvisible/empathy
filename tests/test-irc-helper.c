@@ -1,4 +1,4 @@
-#include "check-irc-helper.h"
+#include "test-irc-helper.h"
 
 void
 check_server (EmpathyIrcServer *server,

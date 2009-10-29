@@ -3,7 +3,7 @@
 #include <string.h>
 #include <glib/gstdio.h>
 
-#include "check-irc-helper.h"
+#include "test-irc-helper.h"
 #include "test-helper.h"
 
 #include <libempathy/empathy-irc-network-manager.h>
