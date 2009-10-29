@@ -371,7 +371,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_EDIT, INFO_BAR_RESPONSE_EDIT,
 													_("_Retry"), INFO_BAR_RESPONSE_RETRY,
 													_("_Disable"), INFO_BAR_RESPONSE_DISABLE, NULL);
-
+	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
 	g_signal_connect (info_bar, "response",
 										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
 										window);
