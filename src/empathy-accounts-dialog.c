@@ -1762,7 +1762,9 @@ do_constructor (GType type,
   if (dialog_singleton)
     {
       retval = G_OBJECT (dialog_singleton);
-      g_object_ref (retval);
+      /* We don't ref the object as the caller is not suppose to unref it.
+       * The dialog is unreffed in accounts_dialog_destroy_cb when the window
+       * has been destroyed. */
     }
   else
     {
