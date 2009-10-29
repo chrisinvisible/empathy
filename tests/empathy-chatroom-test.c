@@ -2,10 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <check.h>
-#include "check-helpers.h"
-#include "check-libempathy.h"
 #include "check-empathy-helpers.h"
+#include "test-helper.h"
 
 #include <libempathy/empathy-chatroom.h>
 
@@ -146,14 +144,22 @@ START_TEST (test_change_favorite)
 END_TEST
 #endif
 
-TCase *
-make_empathy_chatroom_tcase (void)
+int
+main (int argc,
+    char **argv)
 {
-    TCase *tc = tcase_create ("empathy-chatroom");
-    /*
-    tcase_add_test (tc, test_empathy_chatroom_new);
-    tcase_add_test (tc, test_favorite_and_auto_connect);
-    tcase_add_test (tc, test_change_favorite);
-    */
-    return tc;
+  int result;
+
+  test_init (argc, argv);
+
+#if 0
+  g_test_add_func ("/chatroom/new", test_empathy_chatroom_new);
+  g_test_add_func ("/chatroom/favorite-and-auto-connect",
+      test_favorite_and_auto_connect);
+  g_test_add_func ("/chatroom/change-favorite", test_change_favorite);
+#endif
+
+  result = g_test_run ();
+  test_deinit ();
+  return result;
 }
