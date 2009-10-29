@@ -348,15 +348,15 @@ main_window_error_display (EmpathyMainWindow *window,
 			   TpAccount         *account,
 			   const gchar       *message)
 {
-	GtkWidget *child;
+	GtkWidget *info_bar;
 	GtkWidget *content_area;
 	GtkWidget *label;
 	GtkWidget *image;
 	gchar     *str;
 
-	child = g_hash_table_lookup (window->errors, account);
-	if (child) {
-		label = g_object_get_data (G_OBJECT (child), "label");
+	info_bar = g_hash_table_lookup (window->errors, account);
+	if (info_bar) {
+		label = g_object_get_data (G_OBJECT (info_bar), "label");
 
 		/* Just set the latest error and return */
 		str = g_markup_printf_escaped ("<b>%s</b>\n%s",
@@ -368,11 +368,11 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	child = gtk_info_bar_new ();
-	gtk_widget_set_no_show_all (child, TRUE);
-	gtk_box_pack_start (GTK_BOX (window->errors_vbox), child, FALSE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (child), 6);
-	gtk_widget_show (child);
+	info_bar = gtk_info_bar_new ();
+	gtk_widget_set_no_show_all (info_bar, TRUE);
+	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (info_bar), 6);
+	gtk_widget_show (info_bar);
 
 	label = gtk_label_new ("");
 	gtk_widget_show (label);
@@ -381,17 +381,17 @@ main_window_error_display (EmpathyMainWindow *window,
 													 GTK_ICON_SIZE_DIALOG);
 	gtk_widget_show (image);
 
-	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (child));
+	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
 	gtk_container_add (GTK_CONTAINER (content_area), image);
 	gtk_container_add (GTK_CONTAINER (content_area), label);
 
-	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
 													 GTK_STOCK_EDIT, EMPATHY_RESPONSE_EDIT);
-	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
 													 _("_Retry"), EMPATHY_RESPONSE_RETRY);
-	gtk_info_bar_add_button (GTK_INFO_BAR (child),
+	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
 													 _("_Disable"), EMPATHY_RESPONSE_DISABLE);
-	g_signal_connect (child, "response",
+	g_signal_connect (info_bar, "response",
 										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
 										window);
 
@@ -401,14 +401,14 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_label_set_markup (GTK_LABEL (label), str);
 	g_free (str);
 
-	g_object_set_data (G_OBJECT (child), "label", label);
-	g_object_set_data_full (G_OBJECT (child),
+	g_object_set_data (G_OBJECT (info_bar), "label", label);
+	g_object_set_data_full (G_OBJECT (info_bar),
 				"account", g_object_ref (account),
 				g_object_unref);
 
 	gtk_widget_show (window->errors_vbox);
 
-	g_hash_table_insert (window->errors, g_object_ref (account), child);
+	g_hash_table_insert (window->errors, g_object_ref (account), info_bar);
 }
 
 static void
