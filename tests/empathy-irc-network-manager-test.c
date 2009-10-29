@@ -3,11 +3,9 @@
 #include <string.h>
 #include <glib/gstdio.h>
 
-#include <check.h>
-#include "check-helpers.h"
-#include "check-libempathy.h"
 #include "check-irc-helper.h"
 #include "check-empathy-helpers.h"
+#include "test-helper.h"
 
 #include <libempathy/empathy-irc-network-manager.h>
 
@@ -15,7 +13,8 @@
 #define USER_SAMPLE "user-irc-networks-sample.xml"
 #define USER_FILE "user-irc-networks.xml"
 
-START_TEST (test_empathy_irc_network_manager_add)
+static void
+test_empathy_irc_network_manager_add (void)
 {
   EmpathyIrcNetworkManager *mgr;
   EmpathyIrcNetwork *network;
@@ -23,47 +22,47 @@ START_TEST (test_empathy_irc_network_manager_add)
   gchar *name;
 
   mgr = empathy_irc_network_manager_new (NULL, NULL);
-  fail_if (mgr == NULL);
+  g_assert (mgr != NULL);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (networks != NULL);
+  g_assert (networks == NULL);
 
   /* add a network */
   network = empathy_irc_network_new ("My Network");
-  fail_if (network == NULL);
+  g_assert (network != NULL);
   empathy_irc_network_manager_add (mgr, network);
   g_object_unref (network);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 1);
+  g_assert (g_slist_length (networks) == 1);
   g_object_get (networks->data, "name", &name, NULL);
-  fail_if (name == NULL || strcmp (name, "My Network") != 0);
+  g_assert (name != NULL && strcmp (name, "My Network") == 0);
   g_free (name);
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
 
   /* add another network having the same name */
   network = empathy_irc_network_new ("My Network");
-  fail_if (network == NULL);
+  g_assert (network != NULL);
   empathy_irc_network_manager_add (mgr, network);
   g_object_unref (network);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 2);
+  g_assert (g_slist_length (networks) == 2);
   g_object_get (networks->data, "name", &name, NULL);
-  fail_if (name == NULL || strcmp (name, "My Network") != 0);
+  g_assert (name != NULL && strcmp (name, "My Network") == 0);
   g_free (name);
   g_object_get (g_slist_next (networks)->data, "name", &name, NULL);
-  fail_if (name == NULL || strcmp (name, "My Network") != 0);
+  g_assert (name != NULL || strcmp (name, "My Network") == 0);
   g_free (name);
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
 
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_load_global_file)
+static void
+test_load_global_file (void)
 {
   EmpathyIrcNetworkManager *mgr;
   gchar *global_file, *user_file;
@@ -88,14 +87,14 @@ START_TEST (test_load_global_file)
       "global-file", &global_file,
       "user-file", &user_file,
       NULL);
-  fail_if (global_file == NULL || strcmp (global_file, global_file_orig) != 0);
-  fail_if (user_file != NULL);
+  g_assert (global_file != NULL || strcmp (global_file, global_file_orig) == 0);
+  g_assert (user_file == NULL);
   g_free (global_file);
   g_free (global_file_orig);
   g_free (user_file);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 4);
+  g_assert (g_slist_length (networks) == 4);
 
   network_checked[0] = network_checked[1] = network_checked[2] =
     network_checked[3] = FALSE;
@@ -105,7 +104,7 @@ START_TEST (test_load_global_file)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "Freenode") == 0)
         {
@@ -129,19 +128,18 @@ START_TEST (test_load_global_file)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2] ||
-      !network_checked[3]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2] &&
+      network_checked[3]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
 static gboolean
 remove_network_named (EmpathyIrcNetworkManager *mgr,
@@ -159,7 +157,7 @@ remove_network_named (EmpathyIrcNetworkManager *mgr,
       gchar *name;
 
       g_object_get (network, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, network_name) == 0)
         {
@@ -176,7 +174,8 @@ remove_network_named (EmpathyIrcNetworkManager *mgr,
   return removed;
 }
 
-START_TEST (test_empathy_irc_network_manager_remove)
+static void
+test_empathy_irc_network_manager_remove (void)
 {
   EmpathyIrcNetworkManager *mgr;
   GSList *networks, *l;
@@ -196,10 +195,10 @@ START_TEST (test_empathy_irc_network_manager_remove)
   g_free (global_file_orig);
 
   result = remove_network_named (mgr, "GIMPNet");
-  fail_if (!result);
+  g_assert (result);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 3);
+  g_assert (g_slist_length (networks) == 3);
 
   network_checked[0] = network_checked[1] = network_checked[2] = FALSE;
   /* check networks and servers */
@@ -208,7 +207,7 @@ START_TEST (test_empathy_irc_network_manager_remove)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "Freenode") == 0)
         {
@@ -227,20 +226,20 @@ START_TEST (test_empathy_irc_network_manager_remove)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_load_user_file)
+static void
+test_load_user_file (void)
 {
   EmpathyIrcNetworkManager *mgr;
   gchar *global_file, *user_file;
@@ -264,14 +263,14 @@ START_TEST (test_load_user_file)
       "global-file", &global_file,
       "user-file", &user_file,
       NULL);
-  fail_if (global_file != NULL);
-  fail_if (user_file == NULL || strcmp (user_file, user_file_orig) != 0);
+  g_assert (global_file == NULL);
+  g_assert (user_file != NULL && strcmp (user_file, user_file_orig) == 0);
   g_free (global_file);
   g_free (user_file);
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 3);
+  g_assert (g_slist_length (networks) == 3);
 
   network_checked[0] = network_checked[1] = network_checked[2] = FALSE;
   /* check networks and servers */
@@ -280,7 +279,7 @@ START_TEST (test_load_user_file)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "GIMPNet") == 0)
         {
@@ -299,20 +298,20 @@ START_TEST (test_load_user_file)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_load_both_files)
+static void
+test_load_both_files (void)
 {
   EmpathyIrcNetworkManager *mgr;
   gchar *global_file, *user_file;
@@ -341,15 +340,15 @@ START_TEST (test_load_both_files)
       "global-file", &global_file,
       "user-file", &user_file,
       NULL);
-  fail_if (global_file == NULL || strcmp (global_file, global_file_orig) != 0);
-  fail_if (user_file == NULL || strcmp (user_file, user_file_orig) != 0);
+  g_assert (global_file != NULL && strcmp (global_file, global_file_orig) == 0);
+  g_assert (user_file != NULL && strcmp (user_file, user_file_orig) == 0);
   g_free (global_file);
   g_free (global_file_orig);
   g_free (user_file);
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 5);
+  g_assert (g_slist_length (networks) == 5);
 
   network_checked[0] = network_checked[1] = network_checked[2] =
     network_checked[3] = network_checked[4] = FALSE;
@@ -359,7 +358,7 @@ START_TEST (test_load_both_files)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "Freenode") == 0)
         {
@@ -388,21 +387,21 @@ START_TEST (test_load_both_files)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2] ||
-      !network_checked[3] || !network_checked[4]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2] &&
+      network_checked[3] && network_checked[4]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_modify_user_file)
+static void
+test_modify_user_file (void)
 {
   EmpathyIrcNetworkManager *mgr;
   EmpathyIrcNetwork *network;
@@ -428,13 +427,13 @@ START_TEST (test_modify_user_file)
       "global-file", &global_file,
       "user-file", &user_file,
       NULL);
-  fail_if (global_file != NULL);
-  fail_if (user_file == NULL || strcmp (user_file, user_file_orig) != 0);
+  g_assert (global_file == NULL);
+  g_assert (user_file != NULL && strcmp (user_file, user_file_orig) == 0);
   g_free (global_file);
   g_free (user_file);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 3);
+  g_assert (g_slist_length (networks) == 3);
 
   network_modified[0] = network_modified[1] = FALSE;
   /* check networks and servers */
@@ -444,7 +443,7 @@ START_TEST (test_modify_user_file)
 
       network = l->data;
       g_object_get (network, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "GIMPNet") == 0)
         {
@@ -477,7 +476,7 @@ START_TEST (test_modify_user_file)
                 }
               else
                 {
-                  fail_if (TRUE);
+                  g_assert_not_reached ();
                 }
 
               g_free (address);
@@ -500,12 +499,12 @@ START_TEST (test_modify_user_file)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_modified[0] || !network_modified[1]);
+  g_assert (network_modified[0] && network_modified[1]);
 
   /* Add a new network */
   network = empathy_irc_network_new ("Great Server");
@@ -525,7 +524,7 @@ START_TEST (test_modify_user_file)
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 3);
+  g_assert (g_slist_length (networks) == 3);
 
   network_checked[0] = network_checked[1] = network_checked[2] = FALSE;
   /* check networks and servers */
@@ -534,7 +533,7 @@ START_TEST (test_modify_user_file)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "GIMPNet") == 0)
         {
@@ -553,20 +552,20 @@ START_TEST (test_modify_user_file)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_modify_both_files)
+static void
+test_modify_both_files (void)
 {
   EmpathyIrcNetworkManager *mgr;
   EmpathyIrcNetwork *network;
@@ -596,15 +595,15 @@ START_TEST (test_modify_both_files)
       "global-file", &global_file,
       "user-file", &user_file,
       NULL);
-  fail_if (global_file == NULL || strcmp (global_file, global_file_orig) != 0);
-  fail_if (user_file == NULL || strcmp (user_file, user_file_orig) != 0);
+  g_assert (global_file != NULL && strcmp (global_file, global_file_orig) == 0);
+  g_assert (user_file != NULL && strcmp (user_file, user_file_orig) == 0);
   g_free (global_file);
   g_free (global_file_orig);
   g_free (user_file);
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 5);
+  g_assert (g_slist_length (networks) == 5);
 
   network_modified[0] = network_modified[1] = network_modified[2] =
     network_modified[3] = FALSE;
@@ -615,7 +614,7 @@ START_TEST (test_modify_both_files)
 
       network = l->data;
       g_object_get (network, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "GIMPNet") == 0)
         {
@@ -646,7 +645,7 @@ START_TEST (test_modify_both_files)
                 }
               else
                 {
-                  fail_if (TRUE);
+                  g_assert_not_reached ();
                 }
 
               g_free (address);
@@ -684,13 +683,13 @@ START_TEST (test_modify_both_files)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_modified[0] || !network_modified[1] || !network_modified[2]
-      || !network_modified[3]);
+  g_assert (network_modified[0] && network_modified[1] && network_modified[2]
+      && network_modified[3]);
 
   /* Add a new network */
   network = empathy_irc_network_new ("Great Server");
@@ -713,7 +712,7 @@ START_TEST (test_modify_both_files)
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 4);
+  g_assert (g_slist_length (networks) == 4);
 
   network_checked[0] = network_checked[1] = network_checked[2] =
     network_checked[3] = FALSE;
@@ -723,7 +722,7 @@ START_TEST (test_modify_both_files)
       gchar *name;
 
       g_object_get (l->data, "name", &name, NULL);
-      fail_if (name == NULL);
+      g_assert (name != NULL);
 
       if (strcmp (name, "GIMPNet") == 0)
         {
@@ -747,21 +746,21 @@ START_TEST (test_modify_both_files)
         }
       else
         {
-          fail_if (TRUE);
+          g_assert_not_reached ();
         }
 
       g_free (name);
     }
-  fail_if (!network_checked[0] || !network_checked[1] || !network_checked[2] ||
-      !network_checked[3]);
+  g_assert (network_checked[0] && network_checked[1] && network_checked[2] &&
+      network_checked[3]);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_empathy_irc_network_manager_find_network_by_address)
+static void
+test_empathy_irc_network_manager_find_network_by_address (void)
 {
   EmpathyIrcNetworkManager *mgr;
   EmpathyIrcNetwork *network;
@@ -776,23 +775,23 @@ START_TEST (test_empathy_irc_network_manager_find_network_by_address)
 
   network = empathy_irc_network_manager_find_network_by_address (mgr,
       "irc.freenode.net");
-  fail_if (network == NULL);
+  g_assert (network != NULL);
   check_network (network, "Freenode", "UTF-8", freenode_servers, 2);
 
   network = empathy_irc_network_manager_find_network_by_address (mgr,
       "irc.eu.freenode.net");
-  fail_if (network == NULL);
+  g_assert (network != NULL);
   check_network (network, "Freenode", "UTF-8", freenode_servers, 2);
 
   network = empathy_irc_network_manager_find_network_by_address (mgr,
       "unknown");
-  fail_if (network != NULL);
+  g_assert (network == NULL);
 
   g_object_unref (mgr);
 }
-END_TEST
 
-START_TEST (test_no_modify_with_empty_user_file)
+static void
+test_no_modify_with_empty_user_file (void)
 {
   EmpathyIrcNetworkManager *mgr;
   GSList *networks;
@@ -813,26 +812,40 @@ START_TEST (test_no_modify_with_empty_user_file)
   g_free (user_file_orig);
 
   networks = empathy_irc_network_manager_get_networks (mgr);
-  fail_if (g_slist_length (networks) != 0);
+  g_assert (g_slist_length (networks) == 0);
 
   g_slist_foreach (networks, (GFunc) g_object_unref, NULL);
   g_slist_free (networks);
   g_object_unref (mgr);
 }
-END_TEST
 
-TCase *
-make_empathy_irc_network_manager_tcase (void)
+int
+main (int argc,
+    char **argv)
 {
-    TCase *tc = tcase_create ("empathy-irc-network-manager");
-    tcase_add_test (tc, test_empathy_irc_network_manager_add);
-    tcase_add_test (tc, test_load_global_file);
-    tcase_add_test (tc, test_empathy_irc_network_manager_remove);
-    tcase_add_test (tc, test_load_user_file);
-    tcase_add_test (tc, test_load_both_files);
-    tcase_add_test (tc, test_modify_user_file);
-    tcase_add_test (tc, test_modify_both_files);
-    tcase_add_test (tc, test_empathy_irc_network_manager_find_network_by_address);
-    tcase_add_test (tc, test_no_modify_with_empty_user_file);
-    return tc;
+  int result;
+
+  test_init (argc, argv);
+
+  g_test_add_func ("/irc-network-manager/add",
+      test_empathy_irc_network_manager_add);
+  g_test_add_func ("/irc-network-manager/load-global-file",
+      test_load_global_file);
+  g_test_add_func ("/irc-network-manager/remove",
+      test_empathy_irc_network_manager_remove);
+  g_test_add_func ("/irc-network-manager/load-user-file", test_load_user_file);
+  g_test_add_func ("/irc-network-manager/load-both-files",
+      test_load_both_files);
+  g_test_add_func ("/irc-network-manager/modify-user-file",
+      test_modify_user_file);
+  g_test_add_func ("/irc-network-manager/modify-both-files",
+      test_modify_both_files);
+  g_test_add_func ("/irc-network-manager/find-network-by-address",
+      test_empathy_irc_network_manager_find_network_by_address);
+  g_test_add_func ("/irc-network-manager/no-modify-with-empty-user-file",
+      test_no_modify_with_empty_user_file);
+
+  result = g_test_run ();
+  test_deinit ();
+  return result;
 }

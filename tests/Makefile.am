@@ -26,7 +26,8 @@ LDADD =								\
 TEST_PROGS =                                     \
      empathy-utils-test                          \
      empathy-irc-server-test                     \
-     empathy-irc-network-test
+     empathy-irc-network-test                    \
+     empathy-irc-network-manager-test
 
 empathy_utils_test_SOURCES = empathy-utils-test.c \
      test-helper.c test-helper.h
@@ -38,6 +39,11 @@ empathy_irc_server_test_SOURCES = empathy-irc-server-test.c \
 empathy_irc_network_test_SOURCES = empathy-irc-network-test.c \
      test-helper.c test-helper.h                       \
      check-irc-helper.h check-irc-helper.c
+
+empathy_irc_network_manager_test_SOURCES = empathy-irc-network-manager-test.c \
+     test-helper.c test-helper.h                       \
+     check-irc-helper.h check-irc-helper.c             \
+     check-empathy-helpers.h check-empathy-helpers.c
 
 check_PROGRAMS = check-main $(TEST_PROGS)
 
@@ -51,7 +57,6 @@ check_main_SOURCES =                             \
     check-empathy-helpers.c                      \
     check-irc-helper.h                           \
     check-irc-helper.c                           \
-    check-empathy-irc-network-manager.c          \
     check-empathy-chatroom.c                     \
     check-empathy-chatroom-manager.c
 

@@ -54,11 +54,11 @@ copy_xml_file (const gchar *orig,
 
   sample = get_xml_file (orig);
   result = g_file_get_contents (sample, &buffer, &length, NULL);
-  fail_if (!result);
+  g_assert (result);
 
   file = get_user_xml_file (dest);
   result = g_file_set_contents (file, buffer, length, NULL);
-  fail_if (!result);
+  g_assert (result);
 
   g_free (sample);
   g_free (file);
