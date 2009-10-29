@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <check.h>
-#include "check-helpers.h"
-
 #include <libempathy/empathy-irc-server.h>
 #include <libempathy/empathy-irc-network.h>
 #include <libempathy/empathy-irc-network-manager.h>

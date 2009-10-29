@@ -26,7 +26,6 @@
 
 #include <telepathy-glib/account-manager.h>
 
-#include "check-helpers.h"
 #include "check-empathy-helpers.h"
 
 gchar *

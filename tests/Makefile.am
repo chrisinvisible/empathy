@@ -2,8 +2,6 @@ SUBDIRS = interactive xml
 
 CLEANFILES=
 
-include $(top_srcdir)/rules/check.mak
-
 SUPPRESSIONS=valgrind.supp dlopen.supp
 
 EXTRA_DIST = 		\
@@ -53,33 +51,7 @@ empathy_chatroom_test_SOURCES = empathy-chatroom-test.c \
 empathy_chatroom_manager_test_SOURCES = empathy-chatroom-manager-test.c \
      test-helper.c test-helper.h
 
-check_PROGRAMS = check-main $(TEST_PROGS)
-
-TESTS = check-main
-check_main_SOURCES =                             \
-    check-main.c                                 \
-    check-helpers.c                              \
-    check-helpers.h                              \
-    check-libempathy.h                           \
-    check-empathy-helpers.h                      \
-    check-empathy-helpers.c                      \
-    check-irc-helper.h                           \
-    check-irc-helper.c
-
-check_c_sources = \
-    $(check_main_SOURCES)
-include $(top_srcdir)/tools/check-coding-style.mk
-check-local: test check-coding-style
-
-check_main_LDADD = \
-    @CHECK_LIBS@ \
-    $(top_builddir)/libempathy-gtk/libempathy-gtk.la	\
-    $(top_builddir)/libempathy/libempathy.la		\
-    $(AM_LDFLAGS)
-
-check_main_CFLAGS = \
-    @CHECK_CFLAGS@ \
-    $(AM_CFLAGS)
+check_PROGRAMS = $(TEST_PROGS)
 
 TESTS_ENVIRONMENT = EMPATHY_SRCDIR=@abs_top_srcdir@ \
 		    MC_PROFILE_DIR=@abs_top_srcdir@/tests \
