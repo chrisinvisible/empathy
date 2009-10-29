@@ -353,6 +353,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *label;
 	GtkWidget *image;
 	gchar     *str;
+	const gchar     *icon_name;
 
 	info_bar = g_hash_table_lookup (window->errors, account);
 	if (info_bar) {
@@ -381,15 +382,15 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_container_set_border_width (GTK_CONTAINER (info_bar), 6);
 	gtk_widget_show (info_bar);
 
-	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
-													 GTK_ICON_SIZE_DIALOG);
+	icon_name = empathy_account_get_icon_name (account);
+	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_DIALOG);
 	gtk_widget_show (image);
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n\n%s",
 				       tp_account_get_display_name (account),
 				       message);
-	label = gtk_label_new ("");
-	gtk_label_set_markup (GTK_LABEL (label), str);
+	label = gtk_label_new (str);
+	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
 	gtk_widget_show (label);
 	g_free (str);
 
