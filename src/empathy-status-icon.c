@@ -155,17 +155,21 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 
 	if (priv->event) {
 		gchar *message_esc = NULL;
+		gchar *header_esc = NULL;
 
 		if (priv->event->message != NULL)
 			message_esc = g_markup_escape_text (priv->event->message, -1);
 
+		if (priv->event->header != NULL)
+			header_esc = g_markup_escape_text (priv->event->header, -1);
+
 		if (priv->notification) {
 			notify_notification_update (priv->notification,
-						    priv->event->header, message_esc,
+						    header_esc, message_esc,
 						    NULL);
 		} else {
 			priv->notification = notify_notification_new_with_status_icon
-				(priv->event->header, message_esc, NULL, priv->icon);
+				(header_esc, message_esc, NULL, priv->icon);
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
@@ -194,6 +198,7 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 		notify_notification_show (priv->notification, NULL);
 
 		g_free (message_esc);
+		g_free (header_esc);
 	} else {
 		notification_close_helper (priv);
 	}
