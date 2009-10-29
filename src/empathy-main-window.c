@@ -395,8 +395,8 @@ main_window_error_display (EmpathyMainWindow *window,
 	g_free (str);
 
 	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
-	gtk_container_add (GTK_CONTAINER (content_area), image);
-	gtk_container_add (GTK_CONTAINER (content_area), label);
+	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (content_area), label, FALSE, FALSE, 0);
 
 	g_object_set_data (G_OBJECT (info_bar), "label", label);
 	g_object_set_data_full (G_OBJECT (info_bar),
