@@ -79,13 +79,13 @@
 #define GEOMETRY_NAME "main-window"
 
 /* Response ID for GtkInfoBar-Edit Button */
-#define EMPATHY_RESPONSE_EDIT 8
+#define INFO_BAR_RESPONSE_EDIT 8
 
 /* Response ID for GtkInfoBar-Retry Button */
-#define EMPATHY_RESPONSE_RETRY 12
+#define INFO_BAR_RESPONSE_RETRY 12
 
 /* Response ID for GtkInfoBar-Disable Button */
-#define EMPATHY_RESPONSE_DISABLE 14
+#define INFO_BAR_RESPONSE_DISABLE 14
 
 typedef struct {
 	EmpathyContactListView  *list_view;
@@ -316,7 +316,7 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 }
 
 static void
-main_window_error_infobar_button_clicked_cb (GtkInfoBar         *info_bar,
+main_window_error_infobar_button_clicked_cb (GtkInfoBar *info_bar,
 				   gint response_id,
 				   EmpathyMainWindow *window)
 {
@@ -325,13 +325,13 @@ main_window_error_infobar_button_clicked_cb (GtkInfoBar         *info_bar,
 
 	account = g_object_get_data (G_OBJECT (info_bar), "account");
 	switch (response_id) {
-	case EMPATHY_RESPONSE_EDIT:
+	case INFO_BAR_RESPONSE_EDIT:
 		empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
 		break;
-	case EMPATHY_RESPONSE_DISABLE:
+	case INFO_BAR_RESPONSE_DISABLE:
 		empathy_account_set_enabled_async (account, FALSE, NULL, NULL);
 		break;
-	case EMPATHY_RESPONSE_RETRY:
+	case INFO_BAR_RESPONSE_RETRY:
 		empathy_account_reconnect_async (account, NULL, NULL);
 		break;
 	default:
@@ -368,38 +368,34 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	info_bar = gtk_info_bar_new ();
+	info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_EDIT, INFO_BAR_RESPONSE_EDIT,
+													_("_Retry"), INFO_BAR_RESPONSE_RETRY,
+													_("_Disable"), INFO_BAR_RESPONSE_DISABLE, NULL);
+
+	g_signal_connect (info_bar, "response",
+										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
+										window);
+
 	gtk_widget_set_no_show_all (info_bar, TRUE);
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (info_bar), 6);
 	gtk_widget_show (info_bar);
 
-	label = gtk_label_new ("");
-	gtk_widget_show (label);
-
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_WARNING,
 													 GTK_ICON_SIZE_DIALOG);
 	gtk_widget_show (image);
 
-	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
-	gtk_container_add (GTK_CONTAINER (content_area), image);
-	gtk_container_add (GTK_CONTAINER (content_area), label);
-
-	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
-													 GTK_STOCK_EDIT, EMPATHY_RESPONSE_EDIT);
-	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
-													 _("_Retry"), EMPATHY_RESPONSE_RETRY);
-	gtk_info_bar_add_button (GTK_INFO_BAR (info_bar),
-													 _("_Disable"), EMPATHY_RESPONSE_DISABLE);
-	g_signal_connect (info_bar, "response",
-										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
-										window);
-
 	str = g_markup_printf_escaped ("<b>%s</b>\n\n%s",
 				       tp_account_get_display_name (account),
 				       message);
+	label = gtk_label_new ("");
 	gtk_label_set_markup (GTK_LABEL (label), str);
+	gtk_widget_show (label);
 	g_free (str);
+
+	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (content_area), image);
+	gtk_container_add (GTK_CONTAINER (content_area), label);
 
 	g_object_set_data (G_OBJECT (info_bar), "label", label);
 	g_object_set_data_full (G_OBJECT (info_bar),
