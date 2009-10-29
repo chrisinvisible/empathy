@@ -4,7 +4,6 @@
 #include <glib/gstdio.h>
 
 #include "check-irc-helper.h"
-#include "check-empathy-helpers.h"
 #include "test-helper.h"
 
 #include <libempathy/empathy-irc-network-manager.h>

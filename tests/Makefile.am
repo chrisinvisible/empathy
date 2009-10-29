@@ -42,8 +42,7 @@ empathy_irc_network_test_SOURCES = empathy-irc-network-test.c \
 
 empathy_irc_network_manager_test_SOURCES = empathy-irc-network-manager-test.c \
      test-helper.c test-helper.h                       \
-     check-irc-helper.h check-irc-helper.c             \
-     check-empathy-helpers.h check-empathy-helpers.c
+     check-irc-helper.h check-irc-helper.c
 
 empathy_chatroom_test_SOURCES = empathy-chatroom-test.c \
      test-helper.c test-helper.h

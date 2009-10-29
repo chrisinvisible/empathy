@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "check-empathy-helpers.h"
 #include "test-helper.h"
 
 #include <libempathy/empathy-chatroom.h>
