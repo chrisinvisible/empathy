@@ -1,11 +1,7 @@
-SUBDIRS = tools extensions po data libempathy libempathy-gtk src help
+SUBDIRS = tools extensions po data libempathy libempathy-gtk src help tests
 
 if HAVE_NST
 SUBDIRS += nautilus-sendto-plugin
-endif
-
-if HAVE_TESTS
-SUBDIRS += tests
 endif
 
 ACLOCAL_AMFLAGS = -I m4

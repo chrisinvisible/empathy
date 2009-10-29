@@ -421,29 +421,6 @@ fi
 AM_CONDITIONAL(HAVE_NST, test "x$have_nst" = "xyes")
 
 # -----------------------------------------------------------
-# Tests
-# -----------------------------------------------------------
-AC_ARG_ENABLE(tests,
-              AS_HELP_STRING([--enable-tests=@<:@no/yes/auto@:>@],
-                             [build tests]), ,
-                             enable_tests=auto)
-
-if test "x$enable_tests" != "xno"; then
-   PKG_CHECK_MODULES(CHECK,
-   [
-      check >= 0.9.4
-   ], have_check="yes", have_check="no")
-else
-   have_check=no
-fi
-
-if test "x$enable_tests" = "xyes" -a "x$have_check" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find check dependencies.])
-fi
-
-AM_CONDITIONAL(HAVE_TESTS, test "x$have_check" = "xyes")
-
-# -----------------------------------------------------------
 # Coding style checks
 # -----------------------------------------------------------
 AC_ARG_ENABLE(coding-style-checks,
@@ -483,7 +460,6 @@ Configure summary:
 	Compiler Flags..............:  ${CFLAGS} ${ERROR_CFLAGS}
 	Prefix......................:  ${prefix}
 	Shaved build................:  ${enable_shave}
-	Tests.......................:  ${have_check}
 	Coding style checks.........:  ${ENABLE_CODING_STYLE_CHECKS}
 
     Features:
