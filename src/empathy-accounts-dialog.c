@@ -1762,9 +1762,7 @@ do_constructor (GType type,
   if (dialog_singleton)
     {
       retval = G_OBJECT (dialog_singleton);
-      /* We don't ref the object as the caller is not suppose to unref it.
-       * The dialog is unreffed in accounts_dialog_destroy_cb when the window
-       * has been destroyed. */
+      g_object_ref (retval);
     }
   else
     {
@@ -1774,6 +1772,9 @@ do_constructor (GType type,
 
       dialog_singleton = EMPATHY_ACCOUNTS_DIALOG (retval);
       g_object_add_weak_pointer (retval, (gpointer) &dialog_singleton);
+      /* We add an extra reference that we'll release when the dialog is
+       * destroyed (accounts_dialog_destroy_cb) */
+      g_object_ref (retval);
     }
 
   return retval;
@@ -1912,6 +1913,9 @@ empathy_accounts_dialog_show (GtkWindow *parent,
     }
 
   gtk_window_present (GTK_WINDOW (priv->window));
+  /* EmpathyAccountsDialog kepts a ref on itself until the dialog is
+   * destroyed so we can release the ref returned by the constructor now. */
+  g_object_unref (dialog);
 
   return priv->window;
 }
