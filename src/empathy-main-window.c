@@ -394,7 +394,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	g_signal_connect (child, "response",
 										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
 										window);
-	
+
 	str = g_markup_printf_escaped ("<b>%s</b>\n\n%s",
 				       tp_account_get_display_name (account),
 				       message);
