@@ -23,6 +23,7 @@
  *          Martyn Russell <martyn@imendio.com>
  *          Geert-Jan Van den Bogaerde <geertjan@gnome.org>
  *          Xavier Claessens <xclaesse@gmail.com>
+ *          Rômulo Fernandes Machado <romulo@castorgroup.net>
  */
 
 #include <config.h>
@@ -338,8 +339,8 @@ chat_window_update (EmpathyChatWindow *window)
 	DEBUG ("Update window");
 
 	/* Update menu */
-	gtk_action_set_sensitive (priv->menu_tabs_next, !last_page);
-	gtk_action_set_sensitive (priv->menu_tabs_prev, !first_page);
+	gtk_action_set_sensitive (priv->menu_tabs_next, TRUE);
+	gtk_action_set_sensitive (priv->menu_tabs_prev, TRUE);
 	gtk_action_set_sensitive (priv->menu_tabs_detach, num_pages > 1);
 	gtk_action_set_sensitive (priv->menu_tabs_left, !first_page);
 	gtk_action_set_sensitive (priv->menu_tabs_right, !last_page);
@@ -824,6 +825,50 @@ chat_window_paste_activate_cb (GtkAction         *action,
 	priv = GET_PRIV (window);
 
 	empathy_chat_paste (priv->current_chat);
+}
+
+static void
+chat_window_tabs_next_activate_cb (GtkAction         *action,
+				   EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	EmpathyChat           *chat;
+	gint                  index_, numPages;
+
+	priv = GET_PRIV (window);
+
+	chat = priv->current_chat;
+	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
+	numPages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
+
+	if (index_ == (numPages - 1)) {
+		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), 0);
+		return;
+	}
+
+	gtk_notebook_next_page (GTK_NOTEBOOK (priv->notebook));
+}
+
+static void
+chat_window_tabs_previous_activate_cb (GtkAction         *action,
+				   EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	EmpathyChat           *chat;
+	gint                  index_, numPages;
+
+	priv = GET_PRIV (window);
+
+	chat = priv->current_chat;
+	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
+	numPages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
+
+	if (index_ <= 0) {
+		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), numPages - 1);
+		return;
+	}
+
+	gtk_notebook_prev_page (GTK_NOTEBOOK (priv->notebook));
 }
 
 static void
@@ -1505,6 +1550,8 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_edit_cut", "activate", chat_window_cut_activate_cb,
 			      "menu_edit_copy", "activate", chat_window_copy_activate_cb,
 			      "menu_edit_paste", "activate", chat_window_paste_activate_cb,
+			      "menu_tabs_next", "activate", chat_window_tabs_next_activate_cb,
+			      "menu_tabs_prev", "activate", chat_window_tabs_previous_activate_cb,
 			      "menu_tabs_left", "activate", chat_window_tabs_left_activate_cb,
 			      "menu_tabs_right", "activate", chat_window_tabs_right_activate_cb,
 			      "menu_tabs_detach", "activate", chat_window_detach_activate_cb,
@@ -1559,16 +1606,6 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			  "delete_event",
 			  G_CALLBACK (chat_window_delete_event_cb),
 			  window);
-
-	g_signal_connect_swapped (priv->menu_tabs_prev,
-				  "activate",
-				  G_CALLBACK (gtk_notebook_prev_page),
-				  priv->notebook);
-	g_signal_connect_swapped (priv->menu_tabs_next,
-				  "activate",
-				  G_CALLBACK (gtk_notebook_next_page),
-				  priv->notebook);
-
 	g_signal_connect (priv->dialog,
 			  "focus_in_event",
 			  G_CALLBACK (chat_window_focus_in_event_cb),
