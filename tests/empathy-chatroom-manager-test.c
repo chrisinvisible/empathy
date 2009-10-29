@@ -7,13 +7,10 @@
 #include <gconf/gconf-client.h>
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
-#include <check.h>
-
-#include "check-helpers.h"
-#include "check-libempathy.h"
-#include "check-empathy-helpers.h"
 
 #include <libempathy/empathy-chatroom-manager.h>
+
+#include "test-helper.h"
 
 #define CHATROOM_SAMPLE "chatrooms-sample.xml"
 #define CHATROOM_FILE "chatrooms.xml"
@@ -387,16 +384,27 @@ START_TEST (test_empathy_chatroom_manager_change_chatroom)
 END_TEST
 #endif
 
-TCase *
-make_empathy_chatroom_manager_tcase (void)
+int
+main (int argc,
+    char **argv)
 {
-    TCase *tc = tcase_create ("empathy-chatroom-manager");
-    /*
-    tcase_add_test (tc, test_empathy_chatroom_manager_dup_singleton);
-    tcase_add_test (tc, test_empathy_chatroom_manager_add);
-    tcase_add_test (tc, test_empathy_chatroom_manager_remove);
-    tcase_add_test (tc, test_empathy_chatroom_manager_change_favorite);
-    tcase_add_test (tc, test_empathy_chatroom_manager_change_chatroom);
-    */
-    return tc;
+  int result;
+
+  test_init (argc, argv);
+
+#if 0
+  g_test_add_func ("/chatroom-manager/dup-singleton",
+      test_empathy_chatroom_manager_dup_singleton);
+  g_test_add_func ("/chatroom-manager/add", test_empathy_chatroom_manager_add);
+  g_test_add_func ("/chatroom-manager/remove",
+      test_empathy_chatroom_manager_remove);
+  g_test_add_func ("/chatroom-manager/change-favorite",
+      test_empathy_chatroom_manager_change_favorite);
+  g_test_add_func ("/chatroom-manager/change-chatroom",
+      test_empathy_chatroom_manager_change_chatroom);
+#endif
+
+  result = g_test_run ();
+  test_deinit ();
+  return result;
 }

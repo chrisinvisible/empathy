@@ -28,7 +28,8 @@ TEST_PROGS =                                     \
      empathy-irc-server-test                     \
      empathy-irc-network-test                    \
      empathy-irc-network-manager-test            \
-     empathy-chatroom-test
+     empathy-chatroom-test                       \
+     empathy-chatroom-manager-test
 
 empathy_utils_test_SOURCES = empathy-utils-test.c \
      test-helper.c test-helper.h
@@ -49,6 +50,9 @@ empathy_irc_network_manager_test_SOURCES = empathy-irc-network-manager-test.c \
 empathy_chatroom_test_SOURCES = empathy-chatroom-test.c \
      test-helper.c test-helper.h
 
+empathy_chatroom_manager_test_SOURCES = empathy-chatroom-manager-test.c \
+     test-helper.c test-helper.h
+
 check_PROGRAMS = check-main $(TEST_PROGS)
 
 TESTS = check-main
@@ -60,8 +64,7 @@ check_main_SOURCES =                             \
     check-empathy-helpers.h                      \
     check-empathy-helpers.c                      \
     check-irc-helper.h                           \
-    check-irc-helper.c                           \
-    check-empathy-chatroom-manager.c
+    check-irc-helper.c
 
 check_c_sources = \
     $(check_main_SOURCES)
