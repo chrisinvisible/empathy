@@ -144,11 +144,11 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
     }
 }
 
-/* Salut account creation */
+/* Salut account creation. The TpAccountManager first argument
+ * must already be prepared when calling this function. */
 static gboolean
-should_create_salut_account (void)
+should_create_salut_account (TpAccountManager *manager)
 {
-  TpAccountManager *manager;
   gboolean salut_created = FALSE;
   GList *accounts, *l;
 
@@ -163,8 +163,6 @@ should_create_salut_account (void)
       return FALSE;
     }
 
-  /* FIXME: this assumes the account manager is already prepared */
-  manager = tp_account_manager_dup ();
   accounts = tp_account_manager_get_valid_accounts (manager);
 
   for (l = accounts; l != NULL;  l = g_list_next (l))
@@ -179,8 +177,6 @@ should_create_salut_account (void)
     }
 
   g_list_free (accounts);
-
-  g_object_unref (manager);
 
   if (salut_created)
     {
@@ -232,8 +228,12 @@ use_conn_notify_cb (EmpathyConf *conf,
 }
 
 static void
-create_salut_account_if_needed (EmpathyConnectionManagers *managers)
+create_salut_account_am_ready_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
 {
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  EmpathyConnectionManagers *managers = user_data;
   EmpathyAccountSettings  *settings;
   TpConnectionManager *manager;
   const TpConnectionManagerProtocol *protocol;
@@ -246,22 +246,28 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
   gchar      *jid = NULL;
   GError     *error = NULL;
 
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      goto out;
+    }
 
-  if (!should_create_salut_account ())
-    return;
+  if (!should_create_salut_account (account_manager))
+    goto out;
 
   manager = empathy_connection_managers_get_cm (managers, "salut");
   if (manager == NULL)
     {
       DEBUG ("Salut not installed, not making a salut account");
-      return;
+      goto out;
     }
 
   protocol = tp_connection_manager_get_protocol (manager, "local-xmpp");
   if (protocol == NULL)
     {
       DEBUG ("Salut doesn't support local-xmpp!!");
-      return;
+      goto out;
     }
 
   DEBUG ("Trying to add a salut account...");
@@ -272,7 +278,7 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
       DEBUG ("Failed to get self econtact: %s",
           error ? error->message : "No error given");
       g_clear_error (&error);
-      return;
+      goto out;
     }
 
   settings = empathy_account_settings_new ("salut", "local-xmpp",
@@ -314,6 +320,22 @@ create_salut_account_if_needed (EmpathyConnectionManagers *managers)
   g_object_unref (settings);
   g_object_unref (contact);
   g_object_unref (book);
+
+ out:
+  g_object_unref (managers);
+}
+
+static void
+create_salut_account_if_needed (EmpathyConnectionManagers *managers)
+{
+  TpAccountManager *manager;
+
+  manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (manager, NULL,
+      create_salut_account_am_ready_cb, g_object_ref (managers));
+
+  g_object_unref (manager);
 }
 
 static gboolean
@@ -621,7 +643,8 @@ account_manager_ready_cb (GObject *source_object,
       return;
     }
 
-  if (should_create_salut_account () || !empathy_import_mc4_has_imported ())
+  if (should_create_salut_account (manager)
+      || !empathy_import_mc4_has_imported ())
     {
       EmpathyConnectionManagers *managers;
       managers = empathy_connection_managers_dup_singleton ();
