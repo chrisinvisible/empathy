@@ -723,6 +723,9 @@ empathy_idle_get_requested_presence (EmpathyIdle *idle,
 	return priv->requested_presence_type;
 }
 
+/* This function returns %TRUE if EmpathyIdle considers the account
+ * @account as having just connected recently. Otherwise, it returns
+ * %FALSE. In doubt, %FALSE is returned. */
 gboolean
 empathy_idle_account_is_just_connected (EmpathyIdle *idle,
 					TpAccount *account)
