@@ -59,6 +59,8 @@ typedef struct {
 	guint           ext_away_timeout;
 
 	TpAccountManager *manager;
+
+	/* pointer to a TpAccount --> glong of time of connection */
 	GHashTable *connect_times;
 
 	TpConnectionPresenceType requested_presence_type;
