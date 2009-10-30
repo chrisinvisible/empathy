@@ -78,15 +78,6 @@
 /* Name in the geometry file */
 #define GEOMETRY_NAME "main-window"
 
-/* Response ID for GtkInfoBar-Edit Button */
-#define INFO_BAR_RESPONSE_EDIT 8
-
-/* Response ID for GtkInfoBar-Retry Button */
-#define INFO_BAR_RESPONSE_RETRY 12
-
-/* Response ID for GtkInfoBar-Disable Button */
-#define INFO_BAR_RESPONSE_DISABLE 14
-
 typedef struct {
 	EmpathyContactListView  *list_view;
 	EmpathyContactListStore *list_store;
@@ -325,14 +316,7 @@ main_window_error_infobar_button_clicked_cb (GtkInfoBar *info_bar,
 
 	account = g_object_get_data (G_OBJECT (info_bar), "account");
 	switch (response_id) {
-	case INFO_BAR_RESPONSE_EDIT:
-		empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
-		break;
-	case INFO_BAR_RESPONSE_DISABLE:
-		empathy_account_set_enabled_async (account, FALSE, NULL, NULL);
-		break;
-	case INFO_BAR_RESPONSE_RETRY:
-		empathy_account_reconnect_async (account, NULL, NULL);
+	case GTK_RESPONSE_CLOSE:
 		break;
 	default:
 		break;
@@ -369,9 +353,7 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_EDIT, INFO_BAR_RESPONSE_EDIT,
-													_("_Retry"), INFO_BAR_RESPONSE_RETRY,
-													_("_Disable"), INFO_BAR_RESPONSE_DISABLE, NULL);
+	info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, NULL);
 	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
 	g_signal_connect (info_bar, "response",
 										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
