@@ -40,6 +40,10 @@
 /* Number of seconds before entering extended autoaway. */
 #define EXT_AWAY_TIME (30*60)
 
+/* Number of seconds to consider an account in the "just connected" state
+ * for. */
+#define ACCOUNT_IS_JUST_CONNECTED_SECONDS 10
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIdle)
 typedef struct {
 	DBusGProxy     *gs_proxy;
@@ -743,5 +747,5 @@ empathy_idle_account_is_just_connected (EmpathyIdle *idle,
 
 	g_get_current_time (&val);
 
-	return (val.tv_sec - t) < 10;
+	return (val.tv_sec - t) < ACCOUNT_IS_JUST_CONNECTED_SECONDS;
 }
