@@ -503,8 +503,6 @@ empathy_get_account_for_connection (TpConnection *connection)
 
   manager = tp_account_manager_dup ();
 
-  /* FIXME: assumes account manager is prepared */
-
   accounts = tp_account_manager_get_valid_accounts (manager);
 
   for (l = accounts; l != NULL; l = l->next)
