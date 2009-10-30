@@ -299,7 +299,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		id);
 
 	/* FIXME: should probably make sure the account manager is prepared
-	 * before calling _ensure_account on it. */
+	 * before calling _ensure_account on it. See bug 600115. */
 	account_manager = tp_account_manager_dup ();
 	strv = g_strsplit (id, ":", 2);
 	if (g_strv_length (strv) == 2) {
