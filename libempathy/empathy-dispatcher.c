@@ -1985,7 +1985,7 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
   TpConnection *connection;
 
   /* FIXME: should probably find out whether the account manager is prepared
-   * before ensuring. */
+   * before ensuring. See bug #600111. */
   account = tp_account_manager_ensure_account (priv->account_manager,
     account_path);
   g_assert (account != NULL);
