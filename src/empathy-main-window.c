@@ -383,7 +383,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_widget_show (info_bar);
 
 	icon_name = empathy_account_get_icon_name (account);
-	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_DIALOG);
+	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_widget_show (image);
 
 	str = g_markup_printf_escaped ("<b>%s</b> - %s",
