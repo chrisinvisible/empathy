@@ -465,9 +465,14 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
     gpointer user_data)
 {
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   do_show_accounts_ui (user_data, manager);
 }
@@ -607,9 +612,14 @@ account_manager_ready_cb (GObject *source_object,
     gpointer user_data)
 {
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   if (should_create_salut_account () || !empathy_import_mc4_has_imported ())
     {
@@ -743,9 +753,14 @@ account_manager_chatroom_ready_cb (GObject *source_object,
   TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
   EmpathyChatroomManager *chatroom_manager = user_data;
   GList *accounts, *l;
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   accounts = tp_account_manager_get_valid_accounts (account_manager);
 

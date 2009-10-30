@@ -402,9 +402,14 @@ account_manager_ready_cb (GObject *source_object,
 {
   EmpathyChatroomManager *self = EMPATHY_CHATROOM_MANAGER (user_data);
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   chatroom_manager_get_all (self);
 }

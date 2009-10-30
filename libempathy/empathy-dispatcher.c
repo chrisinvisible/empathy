@@ -1122,9 +1122,14 @@ account_manager_prepared_cb (GObject *source_object,
   GList *accounts, *l;
   EmpathyDispatcher *self = user_data;
   TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   accounts = tp_account_manager_get_valid_accounts (account_manager);
   for (l = accounts; l; l = l->next)

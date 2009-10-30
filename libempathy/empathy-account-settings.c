@@ -415,9 +415,14 @@ empathy_account_settings_account_ready_cb (GObject *source_object,
 {
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   TpAccount *account = TP_ACCOUNT (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_prepare_finish (account, result, NULL))
-    return;
+  if (!tp_account_prepare_finish (account, result, &error))
+    {
+      DEBUG ("Failed to prepare account: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   empathy_account_settings_check_readyness (settings);
 }
@@ -1168,9 +1173,14 @@ empathy_account_settings_manager_ready_cb (GObject *source_object,
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   g_assert (priv->apply_result != NULL && priv->account == NULL);
   empathy_account_settings_do_create_account (settings);

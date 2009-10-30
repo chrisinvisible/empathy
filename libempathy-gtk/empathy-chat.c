@@ -1707,8 +1707,11 @@ account_manager_prepared_cb (GObject *source_object,
 	GList *accounts, *l;
 	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
 	EmpathyChat *chat = user_data;
+	GError *error = NULL;
 
-	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
+		DEBUG ("Failed to prepare the account manager: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 

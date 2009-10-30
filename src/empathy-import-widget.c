@@ -99,9 +99,14 @@ account_manager_prepared_cb (GObject *source_object,
   GtkTreeIter iter;
   GList *l;
   EmpathyImportWidgetPriv *priv = GET_PRIV (self);
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 

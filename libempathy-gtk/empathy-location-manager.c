@@ -231,9 +231,14 @@ publish_to_all_am_prepared_cb (GObject *source_object,
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
   PublishToAllData *data = user_data;
   GList *accounts, *l;
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (manager, result, NULL))
-    goto out;
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      goto out;
+    }
 
   accounts = tp_account_manager_get_valid_accounts (manager);
   for (l = accounts; l; l = l->next)
@@ -671,9 +676,14 @@ account_manager_prepared_cb (GObject *source_object,
   GList *accounts, *l;
   TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
   EmpathyLocationManager *self = user_data;
+  GError *error = NULL;
 
-  if (!tp_account_manager_prepare_finish (account_manager, result, NULL))
-    return;
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   accounts = tp_account_manager_get_valid_accounts (account_manager);
   for (l = accounts; l != NULL; l = l->next)

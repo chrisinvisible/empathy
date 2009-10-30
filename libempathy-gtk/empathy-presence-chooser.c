@@ -724,8 +724,11 @@ update_sensitivity_am_prepared_cb (GObject *source_object,
 	EmpathyPresenceChooserPriv *priv = GET_PRIV (chooser);
 	gboolean sensitive = FALSE;
 	GList *accounts, *l;
+	GError *error = NULL;
 
-	if (!tp_account_manager_prepare_finish (manager, result, NULL)) {
+	if (!tp_account_manager_prepare_finish (manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 

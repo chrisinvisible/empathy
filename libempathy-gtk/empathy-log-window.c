@@ -144,8 +144,11 @@ account_manager_prepared_cb (GObject *source_object,
 	EmpathyLogWindow *window = user_data;
 	guint account_num;
 	GList *accounts;
+	GError *error = NULL;
 
-	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 

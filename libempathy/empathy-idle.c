@@ -474,8 +474,11 @@ account_manager_ready_cb (GObject *source_object,
 	TpConnectionPresenceType state;
 	gchar *status, *status_message;
 	GList *accounts, *l;
+	GError *error = NULL;
 
-	if (!tp_account_manager_prepare_finish (account_manager, result, NULL)) {
+	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 

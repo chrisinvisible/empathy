@@ -36,6 +36,9 @@
 #include "empathy-ui-utils.h"
 #include "empathy-account-chooser.h"
 
+#define DEBUG_FLAG EMPATHY_DEBUG_OTHER
+#include <libempathy/empathy-debug.h>
+
 /**
  * SECTION:empathy-account-chooser
  * @title:EmpathyAccountChooser
@@ -447,8 +450,11 @@ account_manager_prepared_cb (GObject *source_object,
 	GList *accounts, *l;
 	TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
 	EmpathyAccountChooser *chooser = user_data;
+	GError *error = NULL;
 
-	if (!tp_account_manager_prepare_finish (manager, result, NULL)) {
+	if (!tp_account_manager_prepare_finish (manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 
