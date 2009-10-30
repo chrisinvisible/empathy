@@ -360,7 +360,7 @@ main_window_error_display (EmpathyMainWindow *window,
 		label = g_object_get_data (G_OBJECT (info_bar), "label");
 
 		/* Just set the latest error and return */
-		str = g_markup_printf_escaped ("<b>%s</b>\n%s",
+		str = g_markup_printf_escaped ("<b>%s</b> - %s",
 					       tp_account_get_display_name (account),
 					       message);
 		gtk_label_set_markup (GTK_LABEL (label), str);
@@ -386,7 +386,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_DIALOG);
 	gtk_widget_show (image);
 
-	str = g_markup_printf_escaped ("<b>%s</b>\n\n%s",
+	str = g_markup_printf_escaped ("<b>%s</b> - %s",
 				       tp_account_get_display_name (account),
 				       message);
 	label = gtk_label_new (str);
