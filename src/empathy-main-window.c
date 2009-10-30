@@ -361,7 +361,6 @@ main_window_error_display (EmpathyMainWindow *window,
 
 	gtk_widget_set_no_show_all (info_bar, TRUE);
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (info_bar), 6);
 	gtk_widget_show (info_bar);
 
 	icon_name = empathy_account_get_icon_name (account);
