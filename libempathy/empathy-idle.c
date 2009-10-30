@@ -630,10 +630,12 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 
 	g_return_if_fail (status != NULL);
 
-	/* FIXME: Should be sure that the account manager is prepared, but
+	/* We possibly should be sure that the account manager is prepared, but
 	 * sometimes this isn't possible, like when exiting. In other words,
 	 * we need a callback to empathy_idle_set_presence to be sure the
-	 * presence is set on all accounts successfully. */
+	 * presence is set on all accounts successfully.
+	 * However, in practice, this is fine as we've already prepared the
+	 * account manager here in _init. */
 	tp_account_manager_set_all_requested_presences (priv->manager,
 		status_type, status, status_message);
 }
