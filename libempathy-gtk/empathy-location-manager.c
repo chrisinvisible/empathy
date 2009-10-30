@@ -251,6 +251,7 @@ publish_to_all_am_prepared_cb (GObject *source_object,
   g_list_free (accounts);
 
 out:
+  g_object_unref (data->self);
   g_slice_free (PublishToAllData, data);
 }
 
@@ -262,7 +263,7 @@ publish_to_all_connections (EmpathyLocationManager *self,
   PublishToAllData *data;
 
   data = g_slice_new0 (PublishToAllData);
-  data->self = self;
+  data->self = g_object_ref (self);
   data->force_publication = force_publication;
 
   tp_account_manager_prepare_async (priv->account_manager, NULL,
