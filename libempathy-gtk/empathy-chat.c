@@ -73,8 +73,8 @@ typedef struct {
 
 	EmpathyLogManager *log_manager;
 	EmpathyAccountManager *account_manager;
-	GSList            *input_history;
-	gint               input_history_index;
+	GList             *input_history;
+	GList             *input_history_current;
 	GList             *compositors;
 	GCompletion       *completion;
 	guint              composing_stop_timeout_id;
@@ -367,13 +367,23 @@ chat_input_history_entry_get_text (InputHistoryEntry *entry)
 	return entry->text;
 }
 
+static GList *
+chat_input_history_remove_item (GList *list,
+                                GList *item)
+{
+	list = g_list_remove_link (list, item);
+	chat_input_history_entry_free (item->data);
+	g_list_free_1 (item);
+	return list;
+}
+
 static void
 chat_input_history_revert (EmpathyChat *chat)
 {
-	EmpathyChatPriv *priv;
-	GSList         *list;
-	GSList         *item1;
-	GSList         *item2;
+	EmpathyChatPriv   *priv;
+	GList             *list;
+	GList             *item1;
+	GList             *item2;
 	InputHistoryEntry *entry;
 
 	priv = GET_PRIV (chat);
@@ -385,92 +395,98 @@ chat_input_history_revert (EmpathyChat *chat)
 	}
 
 	/* Delete temporary entry */
-	if (priv->input_history_index != -1) {
+	if (priv->input_history_current != NULL) {
 		item1 = list;
-		list = g_slist_remove_link (list, item1);
-		chat_input_history_entry_free (item1->data);
-		g_slist_free_1 (item1);
-		priv->input_history_index--;
+		list = chat_input_history_remove_item (list, item1);
+		if (priv->input_history_current == item1) {
+			/* Removed temporary entry was current entry */
+			priv->input_history = list;
+			priv->input_history_current = NULL;
+			return;
+		}
+	}
+	else {
+		/* There is no entry to revert */
+		return;
 	}
 
-	/* Restore the current history message to original value */
-	if (priv->input_history_index >= 0) {
-		item1 = g_slist_nth (list, priv->input_history_index);
-		entry = item1->data;
-		chat_input_history_entry_revert (entry);
+	/* Restore the current history entry to original value */
+	item1 = priv->input_history_current;
+	entry = item1->data;
+	chat_input_history_entry_revert (entry);
 
-		/* Remove restored entry if there is other occurance before this entry */
-		item2 = g_slist_find_custom (list, chat_input_history_entry_get_text (entry),
+	/* Remove restored entry if there is other occurance before this entry */
+	item2 = g_list_find_custom (list, chat_input_history_entry_get_text (entry),
+	                            (GCompareFunc) chat_input_history_entry_cmp);
+	if (item2 != item1) {
+		list = chat_input_history_remove_item (list, item1);
+	}
+	else {
+		/* Remove other occurance of the restored entry */
+		item2 = g_list_find_custom (item1->next,
+		                            chat_input_history_entry_get_text (entry),
 		                            (GCompareFunc) chat_input_history_entry_cmp);
-		if (item2 != item1) {
-			list = g_slist_remove_link (list, item1);
-			chat_input_history_entry_free (item1->data);
-			g_slist_free1 (item1);
+		if (item2 != NULL) {
+			list = chat_input_history_remove_item (list, item2);
 		}
-		else {
-			/* Remove other occurance of the restored entry */
-			item2 = g_slist_find_custom (item1->next,
-			                             chat_input_history_entry_get_text (entry),
-			                             (GCompareFunc) chat_input_history_entry_cmp);
-			if (item2 != NULL) {
-				list = g_slist_remove_link (list, item2);
-				chat_input_history_entry_free (item2->data);
-				g_slist_free1 (item2);
-			}
-		}
-
 	}
 
-	priv->input_history_index = -1;
+	priv->input_history_current = NULL;
 	priv->input_history = list;
-
 }
 
 static void
 chat_input_history_add (EmpathyChat  *chat,
-                        const gchar *str)
+                        const gchar *str,
+                        gboolean temporary)
 {
-	EmpathyChatPriv *priv;
-	GSList         *list;
-	GSList         *item;
+	EmpathyChatPriv   *priv;
+	GList             *list;
+	GList             *item;
 	InputHistoryEntry *entry;
 
 	priv = GET_PRIV (chat);
 
 	list = priv->input_history;
 
-	/* Remove any other occurances of this entry */
-	while ((item = g_slist_find_custom (list, str, (GCompareFunc) chat_input_history_entry_cmp)) != NULL) {
-		list = g_slist_remove_link (list, item);
-		chat_input_history_entry_free (item->data);
-		g_slist_free1 (item);
-	}
+	/* Remove any other occurances of this entry, if not temporary */
+	if (!temporary) {
+		while ((item = g_list_find_custom (list, str,
+		    (GCompareFunc) chat_input_history_entry_cmp)) != NULL) {
+			list = chat_input_history_remove_item (list, item);
+		}
 
-	/* Trim the list to the last 10 items */
-	while (g_slist_length (list) > 10) {
-		item = g_slist_last (list);
-		if (item != NULL) {
-			list = g_slist_remove_link (list, item);
-			chat_input_history_entry_free (item->data);
-			g_slist_free1 (item);
+		/* Trim the list to the last 10 items */
+		while (g_list_length (list) > 10) {
+			item = g_list_last (list);
+			if (item != NULL) {
+				list = chat_input_history_remove_item (list, item);
+			}
 		}
 	}
 
+
+
 	/* Add new entry */
 	entry = chat_input_history_entry_new_with_text (str);
-	list = g_slist_prepend (list, entry);
+	list = g_list_prepend (list, entry);
 
-	/* Set list and reset the index */
+	/* Set the list and the current item pointer */
 	priv->input_history = list;
-	priv->input_history_index = -1;
+	if (temporary) {
+		priv->input_history_current = list;
+	}
+	else {
+		priv->input_history_current = NULL;
+	}
 }
 
 static const gchar *
 chat_input_history_get_next (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv;
-	gint            max;
-	InputHistoryEntry *entry;
+	GList           *item;
+	const gchar     *msg;
 
 	priv = GET_PRIV (chat);
 
@@ -478,42 +494,54 @@ chat_input_history_get_next (EmpathyChat *chat)
 		DEBUG ("No input history, next entry is NULL");
 		return NULL;
 	}
+	g_assert (priv->input_history_current != NULL);
 
-	max = g_slist_length (priv->input_history) - 1;
-
-	if (priv->input_history_index < max) {
-		priv->input_history_index++;
+	if ((item = g_list_next (priv->input_history_current)) == NULL)
+	{
+		item = priv->input_history_current;
 	}
 
-	DEBUG ("Returning next entry index:%d", priv->input_history_index);
+	msg = chat_input_history_entry_get_text (item->data);
 
-	entry = g_slist_nth_data (priv->input_history, priv->input_history_index);
-	return chat_input_history_entry_get_text (entry);
+	DEBUG ("Returning next entry: '%s'", msg);
+
+	priv->input_history_current = item;
+
+	return msg;
 }
 
 static const gchar *
-chat_input_history_get_last (EmpathyChat *chat)
+chat_input_history_get_prev (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv;
-	InputHistoryEntry *entry;
+	GList           *item;
+	const gchar     *msg;
 
 	g_return_val_if_fail (EMPATHY_IS_CHAT (chat), NULL);
 
 	priv = GET_PRIV (chat);
 
 	if (priv->input_history == NULL) {
-		DEBUG ("No input history, last entry is NULL");
+		DEBUG ("No input history, previous entry is NULL");
 		return NULL;
 	}
 
-	if (priv->input_history_index > 0) {
-			priv->input_history_index--;
+	if (priv->input_history_current == NULL)
+	{
+		return NULL;
+	}
+	else if ((item = g_list_previous (priv->input_history_current)) == NULL)
+	{
+		item = priv->input_history_current;
 	}
 
-	DEBUG ("Returning last entry index:%d", priv->input_history_index);
+	msg = chat_input_history_entry_get_text (item->data);
 
-	entry = g_slist_nth_data (priv->input_history, priv->input_history_index);
-	return chat_input_history_entry_get_text (entry);
+	DEBUG ("Returning previous entry: '%s'", msg);
+
+	priv->input_history_current = item;
+
+	return msg;
 }
 
 static void
@@ -530,17 +558,15 @@ chat_input_history_update (EmpathyChat *chat,
 	gtk_text_buffer_get_bounds (buffer, &start, &end);
 	text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 
-	if (priv->input_history_index == -1) {
+	if (priv->input_history_current == NULL) {
 		/* Add the current text temporarily to the history */
-		chat_input_history_add (chat, text);
-		priv->input_history_index++;
-
+		chat_input_history_add (chat, text, TRUE);
 		g_free (text);
 		return;
 	}
 
 	/* Save the changes in the history */
-	entry = g_slist_nth_data (priv->input_history, priv->input_history_index);
+	entry = priv->input_history_current->data;
 	if (tp_strdiff (chat_input_history_entry_get_text (entry), text)) {
 		chat_input_history_entry_update_text (entry, text);
 	}
@@ -561,7 +587,7 @@ chat_send (EmpathyChat  *chat,
 
 	priv = GET_PRIV (chat);
 
-	chat_input_history_add (chat, msg);
+	chat_input_history_add (chat, msg, FALSE);
 
 	if (strcmp (msg, "/clear") == 0) {
 		empathy_chat_view_clear (chat->view);
@@ -874,7 +900,7 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		if (event->keyval == GDK_Up) {
 			str = chat_input_history_get_next (chat);
 		} else {
-			str = chat_input_history_get_last (chat);
+			str = chat_input_history_get_prev (chat);
 		}
 
 		g_signal_handlers_block_by_func (buffer,
@@ -1707,8 +1733,8 @@ chat_finalize (GObject *object)
 
 	DEBUG ("Finalized: %p", object);
 
-	g_slist_foreach (priv->input_history, (GFunc) chat_input_history_entry_free, NULL);
-	g_slist_free (priv->input_history);
+	g_list_foreach (priv->input_history, (GFunc) chat_input_history_entry_free, NULL);
+	g_list_free (priv->input_history);
 
 	g_list_foreach (priv->compositors, (GFunc) g_object_unref, NULL);
 	g_list_free (priv->compositors);
@@ -1883,7 +1909,7 @@ empathy_chat_init (EmpathyChat *chat)
 	priv->log_manager = empathy_log_manager_dup_singleton ();
 	priv->contacts_width = -1;
 	priv->input_history = NULL;
-	priv->input_history_index = -1;
+	priv->input_history_current = NULL;
 	priv->account_manager = empathy_account_manager_dup_singleton ();
 
 	g_signal_connect (priv->account_manager,
