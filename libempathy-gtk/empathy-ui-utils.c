@@ -1569,3 +1569,17 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 
 	gtk_widget_show (widget);
 }
+
+void
+empathy_string_parser_substr (GString *string,
+			      const gchar *text,
+			      gssize len,
+			      EmpathyStringParser *parsers)
+{
+	if (parsers != NULL && parsers[0] != NULL) {
+		parsers[0] (string, text, len, parsers + 1);
+	} else {
+		g_string_append_len (string, text, len);
+	}
+}
+

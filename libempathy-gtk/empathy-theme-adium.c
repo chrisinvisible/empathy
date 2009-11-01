@@ -194,7 +194,8 @@ theme_adium_open_address_cb (GtkMenuItem *menuitem,
 static void
 theme_adium_parser_escape (GString *string,
 			   const gchar *text,
-			   gssize len)
+			   gssize len,
+			   gpointer user_data)
 {
 	gchar *escaped;
 
@@ -206,7 +207,8 @@ theme_adium_parser_escape (GString *string,
 static void
 theme_adium_parser_newline (GString *string,
 			    const gchar *text,
-			    gssize len)
+			    gssize len,
+			    gpointer user_data)
 {
 	gint i;
 	gint prev = 0;
@@ -218,18 +220,20 @@ theme_adium_parser_newline (GString *string,
 	/* Replace \n by <br/> */
 	for (i = 0; i < len && text[i] != '\0'; i++) {
 		if (text[i] == '\n') {
-			theme_adium_parser_escape (string, text + prev, i - prev);
+			empathy_string_parser_substr (string, text + prev,
+						      i - prev, user_data);
 			g_string_append (string, "<br/>");
 			prev = i + 1;
 		}
 	}
-	theme_adium_parser_escape (string, text + prev, i - prev);
+	empathy_string_parser_substr (string, text + prev, i - prev, user_data);
 }
 
 static void
 theme_adium_parser_smiley (GString *string,
 			   const gchar *text,
-			   gssize len)
+			   gssize len,
+			   gpointer user_data)
 {
 	gboolean  use_smileys = FALSE;
 	gint      last = 0;
@@ -251,8 +255,9 @@ theme_adium_parser_smiley (GString *string,
 			if (hit->start > last) {
 				/* Append the text between last smiley (or the
 				 * start of the message) and this smiley */
-				theme_adium_parser_newline (string, text + last,
-							    hit->start - last);
+				empathy_string_parser_substr (string, text + last,
+							      hit->start - last,
+							      user_data);
 			}
 
 			/* Replace smileys by a <img/> tag */
@@ -273,13 +278,14 @@ theme_adium_parser_smiley (GString *string,
 		g_object_unref (smiley_manager);
 	}
 
-	theme_adium_parser_newline (string, text + last, len - last);
+	empathy_string_parser_substr (string, text + last, len - last, user_data);
 }
 
 static void
 theme_adium_parser_url (GString *string,
 			const gchar *text,
-			gssize len)
+			gssize len,
+			gpointer user_data)
 {
 	GRegex     *uri_regex;
 	GMatchInfo *match_info;
@@ -300,8 +306,9 @@ theme_adium_parser_url (GString *string,
 			if (s > last) {
 				/* Append the text between last link (or the
 				 * start of the message) and this link */
-				theme_adium_parser_smiley (string, text + last,
-							   s - last);
+				empathy_string_parser_substr (string, text + last,
+							      s - last,
+							      user_data);
 			}
 
 			/* Append the link inside <a href=""></a> tag */
@@ -317,11 +324,19 @@ theme_adium_parser_url (GString *string,
 		} while (g_match_info_next (match_info, NULL));
 	}
 
-	theme_adium_parser_smiley (string, text + last, len - last);
+	empathy_string_parser_substr (string, text + last, len - last, user_data);
 
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 }
+
+static EmpathyStringParser string_parsers[] = {
+	theme_adium_parser_url,
+	theme_adium_parser_smiley,
+	theme_adium_parser_newline,
+	theme_adium_parser_escape,
+	NULL,
+};
 
 static gchar *
 theme_adium_parse_body (const gchar *text)
@@ -343,7 +358,7 @@ theme_adium_parse_body (const gchar *text)
 	 */
 
 	string = g_string_sized_new (strlen (text));
-	theme_adium_parser_url (string, text, -1);
+	empathy_string_parser_substr (string, text, -1, string_parsers);
 
 	return g_string_free (string, FALSE);
 }

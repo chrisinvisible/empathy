@@ -117,6 +117,18 @@ gchar *     empathy_make_absolute_url                   (const gchar *url);
 gchar *     empathy_make_absolute_url_len               (const gchar *url,
 							 guint len);
 
+/* String parser */
+typedef void (*EmpathyStringParser) (GString *string,
+				     const gchar *text,
+				     gssize len,
+				     gpointer user_data);
+
+void
+empathy_string_parser_substr (GString *string,
+			      const gchar *text,
+			      gssize len,
+			      EmpathyStringParser *parsers);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UI_UTILS_H__ */
