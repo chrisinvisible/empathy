@@ -216,18 +216,15 @@ theme_adium_parser_newline (GString *string,
 	empathy_string_parser_substr (string, text + prev, i - prev, user_data);
 }
 
+static gboolean use_smileys = FALSE;
+
 static void
 theme_adium_parser_smiley (GString *string,
 			   const gchar *text,
 			   gssize len,
 			   gpointer user_data)
 {
-	gboolean  use_smileys = FALSE;
-	gint      last = 0;
-
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-			       &use_smileys);
+	gint last = 0;
 
 	if (use_smileys) {
 		EmpathySmileyManager *smiley_manager;
@@ -280,6 +277,10 @@ static gchar *
 theme_adium_parse_body (const gchar *text)
 {
 	GString *string;
+
+	empathy_conf_get_bool (empathy_conf_get (),
+			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
+			       &use_smileys);
 
 	/* We parse text in 4 steps: url, smiley, newline, escape.
 	 * For each step, we detect the position of tokens in the text, and
