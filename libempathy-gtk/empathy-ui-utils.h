@@ -129,6 +129,18 @@ empathy_string_parser_substr (GString *string,
 			      gssize len,
 			      EmpathyStringParser *parsers);
 
+void
+empathy_string_parser_link (GString *string,
+			    const gchar *text,
+			    gssize len,
+			    gpointer user_data);
+
+void
+empathy_string_parser_escape (GString *string,
+			      const gchar *text,
+			      gssize len,
+			      gpointer user_data);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UI_UTILS_H__ */

@@ -192,19 +192,6 @@ theme_adium_open_address_cb (GtkMenuItem *menuitem,
 }
 
 static void
-theme_adium_parser_escape (GString *string,
-			   const gchar *text,
-			   gssize len,
-			   gpointer user_data)
-{
-	gchar *escaped;
-
-	escaped = g_markup_escape_text (text, len);
-	g_string_append (string, escaped);
-	g_free (escaped);
-}
-
-static void
 theme_adium_parser_newline (GString *string,
 			    const gchar *text,
 			    gssize len,
@@ -281,60 +268,11 @@ theme_adium_parser_smiley (GString *string,
 	empathy_string_parser_substr (string, text + last, len - last, user_data);
 }
 
-static void
-theme_adium_parser_url (GString *string,
-			const gchar *text,
-			gssize len,
-			gpointer user_data)
-{
-	GRegex     *uri_regex;
-	GMatchInfo *match_info;
-	gboolean    match;
-	gint        last = 0;
-
-	/* Add <a href></a> arround links */
-	uri_regex = empathy_uri_regex_dup_singleton ();
-	match = g_regex_match_full (uri_regex, text, len, 0, 0, &match_info, NULL);
-	if (match) {
-		gint s = 0, e = 0;
-
-		do {
-			gchar *real_url;
-
-			g_match_info_fetch_pos (match_info, 0, &s, &e);
-
-			if (s > last) {
-				/* Append the text between last link (or the
-				 * start of the message) and this link */
-				empathy_string_parser_substr (string, text + last,
-							      s - last,
-							      user_data);
-			}
-
-			/* Append the link inside <a href=""></a> tag */
-			real_url = empathy_make_absolute_url_len (text + s, e - s);
-
-			g_string_append_printf (string, "<a href=\"%s\">",
-				real_url);
-			g_string_append_len (string, text + s, e - s);
-			g_string_append (string, "</a>");
-
-			g_free (real_url);
-			last = e;
-		} while (g_match_info_next (match_info, NULL));
-	}
-
-	empathy_string_parser_substr (string, text + last, len - last, user_data);
-
-	g_match_info_free (match_info);
-	g_regex_unref (uri_regex);
-}
-
 static EmpathyStringParser string_parsers[] = {
-	theme_adium_parser_url,
+	empathy_string_parser_link,
 	theme_adium_parser_smiley,
 	theme_adium_parser_newline,
-	theme_adium_parser_escape,
+	empathy_string_parser_escape,
 	NULL,
 };
 
