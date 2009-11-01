@@ -729,7 +729,8 @@ chat_send (EmpathyChat  *chat,
 
 		if (!second_slash) {
 			empathy_chat_view_append_event (chat->view,
-				_("Unsupported command"));
+				_("Unknown command, see /help for the available"
+				  " commands"));
 			return;
 		}
 	}
