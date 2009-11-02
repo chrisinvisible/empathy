@@ -1147,6 +1147,26 @@ do_get_property (GObject *object,
     }
 }
 
+static void
+idle_state_change_cb (EmpathyIdle *idle,
+    GParamSpec *spec,
+    EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  TpConnectionPresenceType state;
+
+  state = empathy_idle_get_state (priv->idle);
+
+  if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+    {
+      g_object_set (priv->apply_button, "label", GTK_STOCK_CONNECT, NULL);
+    }
+  else
+    {
+      g_object_set (priv->apply_button, "label", GTK_STOCK_APPLY, NULL);
+    }
+}
+
 #define WIDGET(cm, proto) \
   { #cm, #proto, "empathy-account-widget-"#proto".ui", \
     account_widget_build_##proto }
@@ -1251,6 +1271,9 @@ do_constructed (GObject *obj)
         {
           TpConnectionPresenceType state;
           priv->idle = empathy_idle_dup_singleton ();
+
+          empathy_signal_connect_weak (priv->idle, "notify::state",
+              G_CALLBACK (idle_state_change_cb), obj);
 
           state = empathy_idle_get_state (priv->idle);
 
