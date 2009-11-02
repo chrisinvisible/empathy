@@ -71,6 +71,9 @@ typedef struct {
   /* An EmpathyAccountWidget can be used to either create an account or
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
+  /* If we are creating a new account, this member is set to TRUE once the
+   * account has been created */
+  gboolean account_created;
 
   EmpathyIdle *idle;
 
@@ -575,6 +578,7 @@ account_widget_account_enabled_cb (GObject *source_object,
   GError *error = NULL;
   TpAccount *account = TP_ACCOUNT (source_object);
   EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
 
   tp_account_set_enabled_finish (account, res, &error);
 
@@ -585,6 +589,7 @@ account_widget_account_enabled_cb (GObject *source_object,
     }
   else
     {
+      priv->account_created = TRUE;
       g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
     }
 }
@@ -1550,6 +1555,11 @@ gboolean
 empathy_account_widget_contains_pending_changes (EmpathyAccountWidget *widget)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+
+  if (priv->creating_account && !priv->account_created)
+    /* We always want to warn the user if he's in the process of creating a
+     * new account which hasn't been actually created yet. */
+    return TRUE;
 
   return priv->contains_pending_changes;
 }
