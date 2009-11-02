@@ -61,6 +61,10 @@
  * unsaved changes */
 #define PENDING_CHANGES_QUESTION_PRIMARY_TEXT \
   _("There are unsaved modification regarding your %s account.")
+/* The primary text of the dialog shown to the user when he is about to lose
+ * an unsaved new account */
+#define UNSAVED_NEW_ACCOUNT_QUESTION_PRIMARY_TEXT \
+  _("Your new account has not been saved yet.")
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, G_TYPE_OBJECT);
@@ -363,7 +367,7 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
     gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, account, -1);
 
-  return *account != NULL && priv->setting_widget_object != NULL
+  return priv->setting_widget_object != NULL
       && empathy_account_widget_contains_pending_changes (
           priv->setting_widget_object);
 }
@@ -495,6 +499,22 @@ accounts_dialog_add_pending_changes_response_cb (GtkDialog *message_dialog,
     }
 }
 
+static gchar *
+get_dialog_primary_text (TpAccount *account)
+{
+  if (account != NULL)
+    {
+      /* Existing account */
+      return g_strdup_printf (PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
+          tp_account_get_display_name (account));
+    }
+  else
+    {
+      /* Newly created account */
+      return g_strdup (UNSAVED_NEW_ACCOUNT_QUESTION_PRIMARY_TEXT);
+    }
+}
+
 static void
 accounts_dialog_button_add_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
@@ -503,9 +523,7 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
-      gchar *question_dialog_primary_text = g_strdup_printf (
-          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
-          tp_account_get_display_name (account));
+      gchar *question_dialog_primary_text = get_dialog_primary_text (account);
 
       accounts_dialog_show_question_dialog (dialog,
           question_dialog_primary_text,
@@ -999,12 +1017,8 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
       /* The currently selected account has some unsaved changes. We ask
        * the user if he really wants to lose his changes and select another
        * account */
-      gchar *question_dialog_primary_text;
+      gchar *question_dialog_primary_text = get_dialog_primary_text (account);
       priv->destination_row = gtk_tree_row_reference_new (model, path);
-
-      question_dialog_primary_text = g_strdup_printf (
-          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
-          tp_account_get_display_name (account));
 
       accounts_dialog_show_question_dialog (dialog,
           question_dialog_primary_text,
@@ -1450,10 +1464,7 @@ accounts_dialog_response_cb (GtkWidget *widget,
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
-      gchar *question_dialog_primary_text;
-      question_dialog_primary_text = g_strdup_printf (
-          PENDING_CHANGES_QUESTION_PRIMARY_TEXT,
-          tp_account_get_display_name (account));
+      gchar *question_dialog_primary_text = get_dialog_primary_text (account);
 
       accounts_dialog_show_question_dialog (dialog,
           question_dialog_primary_text,
