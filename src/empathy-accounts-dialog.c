@@ -1285,6 +1285,7 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
 static void
 accounts_dialog_account_validity_changed_cb (TpAccountManager *manager,
     TpAccount *account,
+    gboolean valid,
     EmpathyAccountsDialog *dialog)
 {
   accounts_dialog_add_account (dialog, account);
