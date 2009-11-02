@@ -99,23 +99,21 @@ new_message_dialog_account_changed_cb (GtkWidget               *widget,
 	while (members) {
 		EmpathyContact *contact = members->data;
 
-		if (empathy_contact_is_online (contact)) {
-			DEBUG ("Adding contact ID %s, Name %s",
-			       empathy_contact_get_id (contact),
-			       empathy_contact_get_name (contact));
+		DEBUG ("Adding contact ID %s, Name %s",
+		       empathy_contact_get_id (contact),
+		       empathy_contact_get_name (contact));
 
-			tmpstr = g_strdup_printf ("%s (%s)",
-				empathy_contact_get_name (contact),
-				empathy_contact_get_id (contact));
+		tmpstr = g_strdup_printf ("%s (%s)",
+			empathy_contact_get_name (contact),
+			empathy_contact_get_id (contact));
 
-			gtk_list_store_insert_with_values (store, &iter, -1,
-				COMPLETION_COL_TEXT, tmpstr,
-				COMPLETION_COL_ID, empathy_contact_get_id (contact),
-				COMPLETION_COL_NAME, empathy_contact_get_name (contact),
-				-1);
+		gtk_list_store_insert_with_values (store, &iter, -1,
+			COMPLETION_COL_TEXT, tmpstr,
+			COMPLETION_COL_ID, empathy_contact_get_id (contact),
+			COMPLETION_COL_NAME, empathy_contact_get_name (contact),
+			-1);
 
-			g_free (tmpstr);
-		}
+		g_free (tmpstr);
 
 		g_object_unref (contact);
 		members = g_list_delete_link (members, members);
