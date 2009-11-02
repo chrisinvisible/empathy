@@ -35,6 +35,7 @@
 #endif
 
 #include <libempathy/empathy-utils.h>
+#include <libempathy/empathy-idle.h>
 
 #include <telepathy-glib/account.h>
 #include <telepathy-glib/connection-manager.h>
@@ -70,6 +71,8 @@ typedef struct {
   /* An EmpathyAccountWidget can be used to either create an account or
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
+
+  EmpathyIdle *idle;
 
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
@@ -1240,10 +1243,35 @@ do_constructed (GObject *obj)
   if (!priv->simple)
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
+      const gchar *apply_button_id;
 
       priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
-      priv->apply_button = gtk_button_new_from_stock (
-        priv->creating_account ? GTK_STOCK_CONNECT : GTK_STOCK_APPLY);
+
+      if (priv->creating_account)
+        {
+          TpConnectionPresenceType state;
+          priv->idle = empathy_idle_dup_singleton ();
+
+          state = empathy_idle_get_state (priv->idle);
+
+          if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+            {
+              /* We are online, display a Connect button */
+              apply_button_id = GTK_STOCK_CONNECT;
+            }
+          else
+            {
+              /* We are offline, display a Save button */
+              apply_button_id = GTK_STOCK_SAVE;
+            }
+        }
+      else
+        {
+          /* We are editing an existing account, display an Apply button */
+          apply_button_id = GTK_STOCK_APPLY;
+        }
+
+      priv->apply_button = gtk_button_new_from_stock (apply_button_id);
 
 #ifdef HAVE_MOBLIN
       if (priv->creating_account)
@@ -1384,6 +1412,12 @@ do_dispose (GObject *obj)
 
       g_object_unref (priv->settings);
       priv->settings = NULL;
+    }
+
+  if (priv->idle != NULL)
+    {
+      g_object_unref (priv->idle);
+      priv->idle = NULL;
     }
 
   if (G_OBJECT_CLASS (empathy_account_widget_parent_class)->dispose != NULL)
