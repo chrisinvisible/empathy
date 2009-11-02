@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2003-2007 Imendio AB
  * Copyright (C) 2007-2008 Collabora Ltd.
@@ -32,6 +31,8 @@
 #include <glib/gi18n-lib.h>
 
 #include <libxml/uri.h>
+
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/connection.h>
 #include <telepathy-glib/channel.h>
 #include <telepathy-glib/dbus.h>
@@ -489,4 +490,68 @@ empathy_signal_connect_weak (gpointer instance,
 
   g_object_weak_ref (instance_obj, instance_destroyed_cb, ctx);
   g_object_weak_ref (user_data, user_data_destroyed_cb, ctx);
+}
+
+/* Note: this function depends on the account manager having its core feature
+ * prepared. */
+TpAccount *
+empathy_get_account_for_connection (TpConnection *connection)
+{
+  TpAccountManager *manager;
+  TpAccount *account = NULL;
+  GList *accounts, *l;
+
+  manager = tp_account_manager_dup ();
+
+  accounts = tp_account_manager_get_valid_accounts (manager);
+
+  for (l = accounts; l != NULL; l = l->next)
+    {
+      TpAccount *a = l->data;
+
+      if (tp_account_get_connection (a) == connection)
+        {
+          account = a;
+          break;
+        }
+    }
+
+  g_list_free (accounts);
+  g_object_unref (manager);
+
+  return account;
+}
+
+gboolean
+empathy_account_manager_get_accounts_connected (gboolean *connecting)
+{
+  TpAccountManager *manager;
+  GList *accounts, *l;
+  gboolean out_connecting = FALSE;
+  gboolean out_connected = FALSE;
+
+  manager = tp_account_manager_dup ();
+  accounts = tp_account_manager_get_valid_accounts (manager);
+
+  for (l = accounts; l != NULL; l = l->next)
+    {
+      TpConnectionStatus s = tp_account_get_connection_status (
+          TP_ACCOUNT (l->data), NULL);
+
+      if (s == TP_CONNECTION_STATUS_CONNECTING)
+        out_connecting = TRUE;
+      else if (s == TP_CONNECTION_STATUS_CONNECTED)
+        out_connected = TRUE;
+
+      if (out_connecting && out_connected)
+        break;
+    }
+
+  g_list_free (accounts);
+  g_object_unref (manager);
+
+  if (connecting != NULL)
+    *connecting = out_connecting;
+
+  return out_connected;
 }

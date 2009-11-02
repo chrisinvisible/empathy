@@ -27,8 +27,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/account-manager.h>
+
 #include <libempathy/empathy-contact-manager.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-utils.h>
 
@@ -327,14 +328,14 @@ empathy_contact_personal_dialog_show (GtkWindow *parent)
  */
 
 static gboolean
-can_add_contact_to_account (EmpathyAccount *account,
+can_add_contact_to_account (TpAccount *account,
 			    gpointer   user_data)
 {
 	EmpathyContactManager *contact_manager;
 	TpConnection          *connection;
 	gboolean               result;
 
-	connection = empathy_account_get_connection (account);
+	connection = tp_account_get_connection (account);
 	if (connection == NULL)
 		return FALSE;
 

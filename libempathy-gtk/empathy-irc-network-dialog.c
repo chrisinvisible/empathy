@@ -28,7 +28,6 @@
 #include <gtk/gtk.h>
 
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-account.h>
 
 #include <libempathy/empathy-irc-network-manager.h>
 #include "empathy-ui-utils.h"

@@ -25,11 +25,11 @@
 #ifndef __EMPATHY_LOG_WINDOW_H__
 #define __EMPATHY_LOG_WINDOW_H__
 
-#include <libempathy/empathy-account.h>
+#include <telepathy-glib/account.h>
 
 G_BEGIN_DECLS
 
-GtkWidget * empathy_log_window_show (EmpathyAccount   *account,
+GtkWidget * empathy_log_window_show (TpAccount   *account,
 				     const gchar *chat_id,
 				     gboolean     chatroom,
 				     GtkWindow   *parent);

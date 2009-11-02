@@ -24,11 +24,11 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gconf/gconf-client.h>
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/defs.h>
 #include <dbus/dbus-protocol.h>
 #include <gnome-keyring.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connection-managers.h>
 
@@ -189,12 +189,12 @@ _move_contents (const gchar *old, const gchar *new)
 }
 
 static void
-_move_logs (EmpathyAccount *account, const gchar *account_name)
+_move_logs (TpAccount *account, const gchar *account_name)
 {
   gchar *old_path, *new_path, *escaped;
   const gchar *name;
 
-  name = empathy_account_get_unique_name (account);
+  name = tp_proxy_get_object_path (account);
   if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
     name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
 
@@ -215,7 +215,7 @@ _create_account_cb (GObject *source,
   GAsyncResult *result,
   gpointer user_data)
 {
-  EmpathyAccount *account;
+  TpAccount *account;
   GError *error = NULL;
   Misc *misc = (Misc *) user_data;
 
@@ -233,7 +233,7 @@ _create_account_cb (GObject *source,
 
   _move_logs (account, misc->account_name);
 
-  empathy_account_set_enabled_async (account,
+  tp_account_set_enabled_async (account,
       misc->enable, NULL, NULL);
 
   g_free (misc->account_name);

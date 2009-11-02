@@ -30,11 +30,11 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/interfaces.h>
 
 #include "empathy-tp-chat.h"
 #include "empathy-chatroom-manager.h"
-#include "empathy-account-manager.h"
 #include "empathy-utils.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
@@ -51,8 +51,8 @@ typedef struct
 {
   GList *chatrooms;
   gchar *file;
-  EmpathyAccountManager *account_manager;
-  gulong account_manager_ready_handler_id;
+  TpAccountManager *account_manager;
+
   /* source id of the autosave timer */
   gint save_timer_id;
   gboolean ready;
@@ -105,7 +105,7 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 			continue;
 		}
 
-		account_id = empathy_account_get_unique_name (
+                account_id = tp_proxy_get_object_path (
 		  empathy_chatroom_get_account (chatroom));
 
 		node = xmlNewChild (root, NULL, (const xmlChar *) "chatroom", NULL);
@@ -184,7 +184,7 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 {
 	EmpathyChatroomManagerPriv *priv;
 	EmpathyChatroom            *chatroom;
-	EmpathyAccount             *account;
+	TpAccount                  *account;
 	xmlNodePtr                 child;
 	gchar                     *str;
 	gchar                     *name;
@@ -230,7 +230,7 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 		xmlFree (str);
 	}
 
-	account = empathy_account_manager_get_account (priv->account_manager,
+	account = tp_account_manager_ensure_account (priv->account_manager,
 		account_id);
 	if (!account) {
 		g_free (name);
@@ -369,12 +369,6 @@ chatroom_manager_finalize (GObject *object)
 
   priv = GET_PRIV (object);
 
-  if (priv->account_manager_ready_handler_id > 0)
-    {
-      g_signal_handler_disconnect (priv->account_manager,
-          priv->account_manager_ready_handler_id);
-    }
-
   g_object_unref (priv->account_manager);
 
   if (priv->save_timer_id > 0)
@@ -402,18 +396,22 @@ chatroom_manager_finalize (GObject *object)
 }
 
 static void
-account_manager_ready_cb (GObject *gobject,
-                          GParamSpec *pspec,
+account_manager_ready_cb (GObject *source_object,
+                          GAsyncResult *result,
                           gpointer user_data)
 {
   EmpathyChatroomManager *self = EMPATHY_CHATROOM_MANAGER (user_data);
-  EmpathyChatroomManagerPriv *priv = GET_PRIV (self);
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   chatroom_manager_get_all (self);
-
-  g_signal_handler_disconnect (gobject,
-      priv->account_manager_ready_handler_id);
-  priv->account_manager_ready_handler_id = 0;
 }
 
 static GObject *
@@ -440,16 +438,10 @@ empathy_chatroom_manager_constructor (GType type,
   chatroom_manager_singleton = self;
   g_object_add_weak_pointer (obj, (gpointer) &chatroom_manager_singleton);
 
-  priv->account_manager = empathy_account_manager_dup_singleton ();
+  priv->account_manager = tp_account_manager_dup ();
 
-  priv->account_manager_ready_handler_id = 0;
-
-  if (empathy_account_manager_is_ready (priv->account_manager))
-    chatroom_manager_get_all (self);
-  else
-    priv->account_manager_ready_handler_id =  g_signal_connect (
-        G_OBJECT (priv->account_manager), "notify::ready",
-        G_CALLBACK (account_manager_ready_cb), self);
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      account_manager_ready_cb, self);
 
   if (priv->file == NULL)
     {
@@ -612,7 +604,7 @@ empathy_chatroom_manager_remove (EmpathyChatroomManager *manager,
 
 EmpathyChatroom *
 empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
-                               EmpathyAccount *account,
+                               TpAccount *account,
                                const gchar *room)
 {
 	EmpathyChatroomManagerPriv *priv;
@@ -625,7 +617,7 @@ empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
 
 	for (l = priv->chatrooms; l; l = l->next) {
 		EmpathyChatroom *chatroom;
-		EmpathyAccount *this_account;
+		TpAccount *this_account;
 		const gchar    *this_room;
 
 		chatroom = l->data;
@@ -643,7 +635,7 @@ empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
 
 GList *
 empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
-				       EmpathyAccount *account)
+				       TpAccount *account)
 {
 	EmpathyChatroomManagerPriv *priv;
 	GList                     *chatrooms, *l;
@@ -672,7 +664,7 @@ empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
 
 guint
 empathy_chatroom_manager_get_count (EmpathyChatroomManager *manager,
-				   EmpathyAccount *account)
+				   TpAccount *account)
 {
 	EmpathyChatroomManagerPriv *priv;
 	GList                     *l;
@@ -731,14 +723,13 @@ static void
 chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
   EmpathyDispatchOperation *operation, gpointer manager)
 {
-  EmpathyChatroomManagerPriv *priv = GET_PRIV (manager);
   EmpathyChatroom *chatroom;
   TpChannel *channel;
   EmpathyTpChat *chat;
   const gchar *roomname;
   GQuark channel_type;
   TpHandleType handle_type;
-  EmpathyAccount *account;
+  TpAccount *account;
   TpConnection *connection;
 
   channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
@@ -756,8 +747,7 @@ chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
   chat = EMPATHY_TP_CHAT (
     empathy_dispatch_operation_get_channel_wrapper (operation));
   connection = empathy_tp_chat_get_connection (chat);
-  account = empathy_account_manager_get_account_for_connection (
-      priv->account_manager, connection);
+  account = empathy_get_account_for_connection (connection);
 
   roomname = empathy_tp_chat_get_id (chat);
 

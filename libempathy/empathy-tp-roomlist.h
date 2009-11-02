@@ -24,8 +24,8 @@
 
 #include <glib.h>
 
+#include <telepathy-glib/account.h>
 #include <telepathy-glib/connection.h>
-#include <libempathy/empathy-account.h>
 
 G_BEGIN_DECLS
 
@@ -49,7 +49,7 @@ struct _EmpathyTpRoomlistClass {
 };
 
 GType              empathy_tp_roomlist_get_type   (void) G_GNUC_CONST;
-EmpathyTpRoomlist *empathy_tp_roomlist_new        (EmpathyAccount *account);
+EmpathyTpRoomlist *empathy_tp_roomlist_new        (TpAccount *account);
 gboolean           empathy_tp_roomlist_is_listing (EmpathyTpRoomlist *list);
 void               empathy_tp_roomlist_start      (EmpathyTpRoomlist *list);
 void               empathy_tp_roomlist_stop       (EmpathyTpRoomlist *list);

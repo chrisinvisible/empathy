@@ -26,6 +26,7 @@
 
 #include <glib/gi18n.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include <geoclue/geoclue-master.h>
@@ -35,7 +36,6 @@
 #include "empathy-location-manager.h"
 #include "empathy-conf.h"
 
-#include "libempathy/empathy-account-manager.h"
 #include "libempathy/empathy-enum-types.h"
 #include "libempathy/empathy-location.h"
 #include "libempathy/empathy-tp-contact-factory.h"
@@ -63,7 +63,7 @@ typedef struct {
     GeoclueAddress *gc_address;
 
     gboolean reduce_accuracy;
-    EmpathyAccountManager *account_manager;
+    TpAccountManager *account_manager;
 
     /* The idle id for publish_on_idle func */
     guint timeout_id;
@@ -217,21 +217,57 @@ publish_location (EmpathyLocationManager *self,
   g_object_unref (factory);
 }
 
+typedef struct
+{
+  EmpathyLocationManager *self;
+  gboolean force_publication;
+} PublishToAllData;
+
+static void
+publish_to_all_am_prepared_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  PublishToAllData *data = user_data;
+  GList *accounts, *l;
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      goto out;
+    }
+
+  accounts = tp_account_manager_get_valid_accounts (manager);
+  for (l = accounts; l; l = l->next)
+    {
+      TpConnection *conn = tp_account_get_connection (TP_ACCOUNT (l->data));
+
+      if (conn != NULL)
+        publish_location (data->self, conn, data->force_publication);
+    }
+  g_list_free (accounts);
+
+out:
+  g_object_unref (data->self);
+  g_slice_free (PublishToAllData, data);
+}
+
 static void
 publish_to_all_connections (EmpathyLocationManager *self,
     gboolean force_publication)
 {
   EmpathyLocationManagerPriv *priv = GET_PRIV (self);
-  GList *connections = NULL, *l;
+  PublishToAllData *data;
 
-  connections = empathy_account_manager_dup_connections (priv->account_manager);
-  for (l = connections; l; l = l->next)
-    {
-      publish_location (self, l->data, force_publication);
-      g_object_unref (l->data);
-    }
-  g_list_free (connections);
+  data = g_slice_new0 (PublishToAllData);
+  data->self = g_object_ref (self);
+  data->force_publication = force_publication;
 
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      publish_to_all_am_prepared_cb, data);
 }
 
 static gboolean
@@ -246,11 +282,19 @@ publish_on_idle (gpointer user_data)
 }
 
 static void
-new_connection_cb (EmpathyAccountManager *manager,
-    TpConnection *conn,
+new_connection_cb (TpAccount *account,
+    guint old_status,
+    guint new_status,
+    guint reason,
+    gchar *dbus_error_name,
+    GHashTable *details,
     gpointer *self)
 {
   EmpathyLocationManagerPriv *priv = GET_PRIV (self);
+  TpConnection *conn;
+
+  conn = tp_account_get_connection (account);
+
   DEBUG ("New connection %p", conn);
 
   /* Don't publish if it is already planned (ie startup) */
@@ -626,6 +670,34 @@ accuracy_cb (EmpathyConf  *conf,
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GList *accounts, *l;
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  EmpathyLocationManager *self = user_data;
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  accounts = tp_account_manager_get_valid_accounts (account_manager);
+  for (l = accounts; l != NULL; l = l->next)
+    {
+      TpAccount *account = TP_ACCOUNT (l->data);
+
+      empathy_signal_connect_weak (account, "status-changed",
+          G_CALLBACK (new_connection_cb), G_OBJECT (self));
+    }
+  g_list_free (accounts);
+}
+
+static void
 empathy_location_manager_init (EmpathyLocationManager *self)
 {
   EmpathyConf               *conf;
@@ -638,10 +710,10 @@ empathy_location_manager_init (EmpathyLocationManager *self)
       g_free, (GDestroyNotify) tp_g_value_slice_free);
 
   /* Setup account status callbacks */
-  priv->account_manager = empathy_account_manager_dup_singleton ();
-  g_signal_connect (priv->account_manager,
-    "new-connection",
-    G_CALLBACK (new_connection_cb), self);
+  priv->account_manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      account_manager_prepared_cb, self);
 
   /* Setup settings status callbacks */
   conf = empathy_conf_get ();

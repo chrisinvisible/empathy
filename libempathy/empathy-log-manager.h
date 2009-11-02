@@ -63,7 +63,7 @@ struct _EmpathyLogManagerClass
 
 struct _EmpathyLogSearchHit
 {
-  EmpathyAccount *account;
+  TpAccount *account;
   gchar     *chat_id;
   gboolean   is_chatroom;
   gchar     *filename;
@@ -79,17 +79,17 @@ gboolean empathy_log_manager_add_message (EmpathyLogManager *manager,
     const gchar *chat_id, gboolean chatroom, EmpathyMessage *message,
     GError **error);
 gboolean empathy_log_manager_exists (EmpathyLogManager *manager,
-    EmpathyAccount *account, const gchar *chat_id, gboolean chatroom);
+    TpAccount *account, const gchar *chat_id, gboolean chatroom);
 GList *empathy_log_manager_get_dates (EmpathyLogManager *manager,
-    EmpathyAccount *account, const gchar *chat_id, gboolean chatroom);
+    TpAccount *account, const gchar *chat_id, gboolean chatroom);
 GList *empathy_log_manager_get_messages_for_date (EmpathyLogManager *manager,
-    EmpathyAccount *account, const gchar *chat_id, gboolean chatroom,
+    TpAccount *account, const gchar *chat_id, gboolean chatroom,
     const gchar *date);
 GList *empathy_log_manager_get_filtered_messages (EmpathyLogManager *manager,
-    EmpathyAccount *account, const gchar *chat_id, gboolean chatroom,
+    TpAccount *account, const gchar *chat_id, gboolean chatroom,
     guint num_messages, EmpathyLogMessageFilter filter, gpointer user_data);
 GList *empathy_log_manager_get_chats (EmpathyLogManager *manager,
-    EmpathyAccount *account);
+    TpAccount *account);
 GList *empathy_log_manager_search_new (EmpathyLogManager *manager,
     const gchar *text);
 void empathy_log_manager_search_free (GList *hits);

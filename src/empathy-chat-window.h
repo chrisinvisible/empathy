@@ -31,7 +31,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <libempathy/empathy-account.h>
+#include <telepathy-glib/account.h>
+
 #include <libempathy-gtk/empathy-chat.h>
 
 G_BEGIN_DECLS
@@ -69,7 +70,7 @@ void               empathy_chat_window_move_chat      (EmpathyChatWindow *old_wi
 void               empathy_chat_window_switch_to_chat (EmpathyChatWindow *window,
 						       EmpathyChat       *chat);
 gboolean           empathy_chat_window_has_focus      (EmpathyChatWindow *window);
-EmpathyChat *      empathy_chat_window_find_chat      (EmpathyAccount   *account,
+EmpathyChat *      empathy_chat_window_find_chat      (TpAccount        *account,
 						       const gchar      *id);
 void               empathy_chat_window_present_chat   (EmpathyChat      *chat);
 

@@ -27,7 +27,8 @@
 
 #include <glib-object.h>
 
-#include "empathy-account.h"
+#include <telepathy-glib/account.h>
+
 #include "empathy-chatroom.h"
 #include "empathy-dispatcher.h"
 
@@ -59,12 +60,12 @@ gboolean               empathy_chatroom_manager_add           (EmpathyChatroomMa
 void                   empathy_chatroom_manager_remove        (EmpathyChatroomManager *manager,
 							      EmpathyChatroom        *chatroom);
 EmpathyChatroom *       empathy_chatroom_manager_find          (EmpathyChatroomManager *manager,
-							      EmpathyAccount           *account,
-							      const gchar              *room);
+							      TpAccount               *account,
+							      const gchar             *room);
 GList *                empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
-							      EmpathyAccount          *account);
+							      TpAccount               *account);
 guint                  empathy_chatroom_manager_get_count     (EmpathyChatroomManager *manager,
-							      EmpathyAccount          *account);
+							      TpAccount               *account);
 void                   empathy_chatroom_manager_observe       (EmpathyChatroomManager *manager,
 							      EmpathyDispatcher *dispatcher);
 

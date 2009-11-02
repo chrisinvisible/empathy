@@ -20,12 +20,13 @@
 #define __CHECK_EMPATHY_HELPERS_H__
 
 #include <glib.h>
-#include <libempathy/empathy-account.h>
+
+#include <telepathy-glib/account.h>
 
 gchar * get_xml_file (const gchar *filename);
 gchar * get_user_xml_file (const gchar *filename);
 void copy_xml_file (const gchar *orig, const gchar *dest);
-EmpathyAccount * get_test_account (void);
-void destroy_test_account (EmpathyAccount *account);
+TpAccount * get_test_account (void);
+void destroy_test_account (TpAccount *account);
 
 #endif /* #ifndef __CHECK_EMPATHY_HELPERS_H__ */

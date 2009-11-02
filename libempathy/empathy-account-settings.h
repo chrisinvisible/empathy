@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 
-#include <libempathy/empathy-account.h>
+#include <telepathy-glib/account.h>
 #include <telepathy-glib/connection-manager.h>
 
 G_BEGIN_DECLS
@@ -66,7 +66,7 @@ EmpathyAccountSettings * empathy_account_settings_new (
     const char *display_name);
 
 EmpathyAccountSettings * empathy_account_settings_new_for_account (
-    EmpathyAccount *account);
+    TpAccount *account);
 
 gboolean empathy_account_settings_is_ready (EmpathyAccountSettings *settings);
 
@@ -74,11 +74,11 @@ const gchar *empathy_account_settings_get_cm (EmpathyAccountSettings *settings);
 const gchar *empathy_account_settings_get_protocol (
     EmpathyAccountSettings *settings);
 
-EmpathyAccount *empathy_account_settings_get_account (
+TpAccount *empathy_account_settings_get_account (
     EmpathyAccountSettings *settings);
 
 gboolean empathy_account_settings_has_account (
-    EmpathyAccountSettings *settings, EmpathyAccount *account);
+    EmpathyAccountSettings *settings, TpAccount *account);
 
 TpConnectionManagerParam *empathy_account_settings_get_tp_params (
     EmpathyAccountSettings *settings);

@@ -24,11 +24,12 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
 
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-dispatcher.h>
+#include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-tp-chat.h>
@@ -918,13 +919,16 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
     TpConnectionPresenceType previous,
     EmpathyEventManager *manager)
 {
-  EmpathyAccount *account;
+  TpAccount *account;
   gchar *header = NULL;
   gboolean preference = FALSE;
+  EmpathyIdle *idle;
 
   account = empathy_contact_get_account (contact);
-  if (empathy_account_is_just_connected (account))
-    return;
+  idle = empathy_idle_dup_singleton ();
+
+  if (empathy_idle_account_is_just_connected (idle, account))
+    goto out;
 
   if (tp_connection_presence_type_cmp_availability (previous,
      TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
@@ -960,6 +964,9 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
         }
     }
   g_free (header);
+
+out:
+  g_object_unref (idle);
 }
 
 

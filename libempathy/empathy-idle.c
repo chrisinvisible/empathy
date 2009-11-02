@@ -26,10 +26,10 @@
 #include <glib/gi18n-lib.h>
 #include <dbus/dbus-glib.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 
-#include "empathy-account-manager.h"
 #include "empathy-idle.h"
 #include "empathy-utils.h"
 #include "empathy-connectivity.h"
@@ -39,6 +39,10 @@
 
 /* Number of seconds before entering extended autoaway. */
 #define EXT_AWAY_TIME (30*60)
+
+/* Number of seconds to consider an account in the "just connected" state
+ * for. */
+#define ACCOUNT_IS_JUST_CONNECTED_SECONDS 10
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIdle)
 typedef struct {
@@ -58,7 +62,14 @@ typedef struct {
 	gboolean        is_idle;
 	guint           ext_away_timeout;
 
-	EmpathyAccountManager *manager;
+	TpAccountManager *manager;
+
+	/* pointer to a TpAccount --> glong of time of connection */
+	GHashTable *connect_times;
+
+	TpConnectionPresenceType requested_presence_type;
+	gchar *requested_status_message;
+
 } EmpathyIdlePriv;
 
 typedef enum {
@@ -81,8 +92,20 @@ G_DEFINE_TYPE (EmpathyIdle, empathy_idle, G_TYPE_OBJECT);
 
 static EmpathyIdle * idle_singleton = NULL;
 
+static const gchar *presence_type_to_status[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
+	NULL,
+	"offline",
+	"available",
+	"away",
+	"xa",
+	"hidden",
+	"busy",
+	NULL,
+	NULL,
+};
+
 static void
-idle_presence_changed_cb (EmpathyAccountManager *manager,
+idle_presence_changed_cb (TpAccountManager *manager,
 			  TpConnectionPresenceType state,
 			  gchar          *status,
 			  gchar          *status_message,
@@ -279,6 +302,7 @@ idle_finalize (GObject *object)
 	priv = GET_PRIV (object);
 
 	g_free (priv->status);
+	g_free (priv->requested_status_message);
 
 	if (priv->gs_proxy) {
 		g_object_unref (priv->gs_proxy);
@@ -289,6 +313,9 @@ idle_finalize (GObject *object)
 	priv->state_change_signal_id = 0;
 
 	g_object_unref (priv->connectivity);
+
+	g_hash_table_destroy (priv->connect_times);
+	priv->connect_times = NULL;
 
 	idle_ext_away_stop (EMPATHY_IDLE (object));
 }
@@ -421,21 +448,59 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 }
 
 static void
-account_manager_ready_cb (EmpathyAccountManager *account_manager,
-			  GParamSpec *pspec,
-			  EmpathyIdle *idle)
+account_status_changed_cb (TpAccount  *account,
+			   guint       old_status,
+			   guint       new_status,
+			   guint       reason,
+			   gchar      *dbus_error_name,
+			   GHashTable *details,
+			   gpointer    user_data)
 {
-	EmpathyIdlePriv *priv;
+	EmpathyIdle *idle = EMPATHY_IDLE (user_data);
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	GTimeVal val;
+
+	if (new_status == TP_CONNECTION_STATUS_CONNECTED) {
+		g_get_current_time (&val);
+		g_hash_table_insert (priv->connect_times, account,
+				     GINT_TO_POINTER (val.tv_sec));
+	} else if (new_status == TP_CONNECTION_STATUS_DISCONNECTED) {
+		g_hash_table_remove (priv->connect_times, account);
+	}
+}
+
+static void
+account_manager_ready_cb (GObject *source_object,
+			  GAsyncResult *result,
+			  gpointer user_data)
+{
+	EmpathyIdle *idle = EMPATHY_IDLE (user_data);
+	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
 	TpConnectionPresenceType state;
 	gchar *status, *status_message;
+	GList *accounts, *l;
+	GError *error = NULL;
 
-	priv = GET_PRIV (idle);
+	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
+		return;
+	}
 
-	state = empathy_account_manager_get_global_presence (priv->manager,
+	state = tp_account_manager_get_most_available_presence (priv->manager,
 		&status, &status_message);
 
 	idle_presence_changed_cb (account_manager, state, status,
 		status_message, idle);
+
+	accounts = tp_account_manager_get_valid_accounts (priv->manager);
+	for (l = accounts; l != NULL; l = l->next) {
+		empathy_signal_connect_weak (l->data, "status-changed",
+					     G_CALLBACK (account_status_changed_cb),
+					     G_OBJECT (idle));
+	}
+	g_list_free (accounts);
 
 	g_free (status);
 	g_free (status_message);
@@ -450,18 +515,12 @@ empathy_idle_init (EmpathyIdle *idle)
 	idle->priv = priv;
 	priv->is_idle = FALSE;
 
-	priv->manager = empathy_account_manager_dup_singleton ();
+	priv->manager = tp_account_manager_dup ();
 
-	if (empathy_account_manager_is_ready (priv->manager)) {
-		priv->state = empathy_account_manager_get_global_presence (priv->manager,
-			NULL, &priv->status);
-	} else {
-		g_signal_connect (priv->manager, "notify::ready",
-			G_CALLBACK (account_manager_ready_cb), idle);
-	}
+	tp_account_manager_prepare_async (priv->manager, NULL,
+	    account_manager_ready_cb, idle);
 
-
-	g_signal_connect (priv->manager, "global-presence-changed",
+	g_signal_connect (priv->manager, "most-available-presence-changed",
 		G_CALLBACK (idle_presence_changed_cb), idle);
 
 	priv->gs_proxy = dbus_g_proxy_new_for_name (tp_get_bus (),
@@ -481,6 +540,8 @@ empathy_idle_init (EmpathyIdle *idle)
 	priv->connectivity = empathy_connectivity_dup_singleton ();
 	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
 	    "state-change", G_CALLBACK (idle_state_change_cb), idle);
+
+	priv->connect_times = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 EmpathyIdle *
@@ -567,26 +628,21 @@ empathy_idle_do_set_presence (EmpathyIdle *idle,
 			   const gchar *status_message)
 {
 	EmpathyIdlePriv *priv = GET_PRIV (idle);
-	const gchar *statuses[NUM_TP_CONNECTION_PRESENCE_TYPES] = {
-		NULL,
-		"offline",
-		"available",
-		"away",
-		"xa",
-		"hidden",
-		"busy",
-		NULL,
-		NULL,
-	};
 	const gchar *status;
 
 	g_assert (status_type > 0 && status_type < NUM_TP_CONNECTION_PRESENCE_TYPES);
 
-	status = statuses[status_type];
+	status = presence_type_to_status[status_type];
 
 	g_return_if_fail (status != NULL);
 
-	empathy_account_manager_request_global_presence (priv->manager,
+	/* We possibly should be sure that the account manager is prepared, but
+	 * sometimes this isn't possible, like when exiting. In other words,
+	 * we need a callback to empathy_idle_set_presence to be sure the
+	 * presence is set on all accounts successfully.
+	 * However, in practice, this is fine as we've already prepared the
+	 * account manager here in _init. */
+	tp_account_manager_set_all_requested_presences (priv->manager,
 		status_type, status, status_message);
 }
 
@@ -601,6 +657,10 @@ empathy_idle_set_presence (EmpathyIdle *idle,
 	priv = GET_PRIV (idle);
 
 	DEBUG ("Changing presence to %s (%d)", status, state);
+
+	g_free (priv->requested_status_message);
+	priv->requested_presence_type = state;
+	priv->requested_status_message = g_strdup (status);
 
 	/* Do not set translated default messages */
 	default_status = empathy_presence_get_default_message (state);
@@ -645,3 +705,50 @@ empathy_idle_set_auto_away (EmpathyIdle *idle,
 	g_object_notify (G_OBJECT (idle), "auto-away");
 }
 
+TpConnectionPresenceType
+empathy_idle_get_requested_presence (EmpathyIdle *idle,
+    gchar **status,
+    gchar **status_message)
+{
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+
+	if (status != NULL) {
+		*status = g_strdup (presence_type_to_status[priv->requested_presence_type]);
+	}
+
+	if (status_message != NULL) {
+		*status_message = g_strdup (priv->requested_status_message);
+	}
+
+	return priv->requested_presence_type;
+}
+
+/* This function returns %TRUE if EmpathyIdle considers the account
+ * @account as having just connected recently. Otherwise, it returns
+ * %FALSE. In doubt, %FALSE is returned. */
+gboolean
+empathy_idle_account_is_just_connected (EmpathyIdle *idle,
+					TpAccount *account)
+{
+	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	GTimeVal val;
+	gpointer ptr;
+	glong t;
+
+	if (tp_account_get_connection_status (account, NULL)
+	    != TP_CONNECTION_STATUS_CONNECTED) {
+		return FALSE;
+	}
+
+	ptr = g_hash_table_lookup (priv->connect_times, account);
+
+	if (ptr == NULL) {
+		return FALSE;
+	}
+
+	t = GPOINTER_TO_INT (ptr);
+
+	g_get_current_time (&val);
+
+	return (val.tv_sec - t) < ACCOUNT_IS_JUST_CONNECTED_SECONDS;
+}

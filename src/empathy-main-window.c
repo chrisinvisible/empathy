@@ -27,9 +27,11 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include <telepathy-glib/account-manager.h>
+
 #include <libempathy/empathy-contact.h>
+#include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-account-manager.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-chatroom.h>
@@ -79,7 +81,7 @@
 typedef struct {
 	EmpathyContactListView  *list_view;
 	EmpathyContactListStore *list_store;
-	EmpathyAccountManager   *account_manager;
+	TpAccountManager        *account_manager;
 	EmpathyChatroomManager  *chatroom_manager;
 	EmpathyEventManager     *event_manager;
 	guint                    flash_timeout_id;
@@ -305,7 +307,7 @@ static void
 main_window_error_edit_clicked_cb (GtkButton         *button,
 				   EmpathyMainWindow *window)
 {
-	EmpathyAccount *account;
+	TpAccount *account;
 	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
@@ -320,7 +322,7 @@ static void
 main_window_error_clear_clicked_cb (GtkButton         *button,
 				    EmpathyMainWindow *window)
 {
-	EmpathyAccount *account;
+	TpAccount *account;
 	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
@@ -331,7 +333,7 @@ main_window_error_clear_clicked_cb (GtkButton         *button,
 
 static void
 main_window_error_display (EmpathyMainWindow *window,
-			   EmpathyAccount    *account,
+			   TpAccount         *account,
 			   const gchar       *message)
 {
 	GtkWidget *child;
@@ -352,7 +354,7 @@ main_window_error_display (EmpathyMainWindow *window,
 
 		/* Just set the latest error and return */
 		str = g_markup_printf_escaped ("<b>%s</b>\n%s",
-					       empathy_account_get_display_name (account),
+					       tp_account_get_display_name (account),
 					       message);
 		gtk_label_set_markup (GTK_LABEL (label), str);
 		g_free (str);
@@ -433,7 +435,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
-				       empathy_account_get_display_name (account),
+				       tp_account_get_display_name (account),
 				       message);
 	gtk_label_set_markup (GTK_LABEL (label), str);
 	g_free (str);
@@ -460,18 +462,15 @@ main_window_error_display (EmpathyMainWindow *window,
 }
 
 static void
-main_window_update_status (EmpathyMainWindow *window, EmpathyAccountManager *manager)
+main_window_update_status (EmpathyMainWindow *window)
 {
-	int  connected;
-	int  connecting;
+	gboolean connected, connecting;
 	GList *l;
 
-	/* Count number of connected/connecting/disconnected accounts */
-	connected = empathy_account_manager_get_connected_accounts (manager);
-	connecting = empathy_account_manager_get_connecting_accounts (manager);
+	connected = empathy_account_manager_get_accounts_connected (&connecting);
 
 	/* Update the spinner state */
-	if (connecting > 0) {
+	if (connecting) {
 		ephy_spinner_start (EPHY_SPINNER (window->throbber));
 	} else {
 		ephy_spinner_stop (EPHY_SPINNER (window->throbber));
@@ -479,19 +478,20 @@ main_window_update_status (EmpathyMainWindow *window, EmpathyAccountManager *man
 
 	/* Update widgets sensibility */
 	for (l = window->actions_connected; l; l = l->next) {
-		gtk_action_set_sensitive (l->data, (connected > 0));
+		gtk_action_set_sensitive (l->data, connected);
 	}
 }
 
 static void
-main_window_connection_changed_cb (EmpathyAccountManager *manager,
-				   EmpathyAccount *account,
-				   TpConnectionStatusReason reason,
-				   TpConnectionStatus current,
-				   TpConnectionStatus previous,
+main_window_connection_changed_cb (TpAccount  *account,
+                                   guint       old_status,
+                                   guint       current,
+                                   guint       reason,
+                                   gchar      *dbus_error_name,
+                                   GHashTable *details,
 				   EmpathyMainWindow *window)
 {
-	main_window_update_status (window, manager);
+	main_window_update_status (window);
 
 	if (current == TP_CONNECTION_STATUS_DISCONNECTED &&
 	    reason != TP_CONNECTION_STATUS_REASON_REQUESTED) {
@@ -572,15 +572,17 @@ main_window_contact_presence_changed_cb (EmpathyContactMonitor *monitor,
 					 TpConnectionPresenceType previous,
 					 EmpathyMainWindow *window)
 {
-	EmpathyAccount *account;
-	gboolean should_play;
+  TpAccount *account;
+  gboolean should_play = FALSE;
+  EmpathyIdle *idle;
 
-	account = empathy_contact_get_account (contact);
-	should_play = !empathy_account_is_just_connected (account);
+  account = empathy_contact_get_account (contact);
+  idle = empathy_idle_dup_singleton ();
 
-	if (!should_play) {
-		return;
-	}
+  should_play = !empathy_idle_account_is_just_connected (idle, account);
+
+  if (!should_play)
+    goto out;
 
   if (tp_connection_presence_type_cmp_availability (previous,
      TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
@@ -601,6 +603,9 @@ main_window_contact_presence_changed_cb (EmpathyContactMonitor *monitor,
         empathy_sound_play (GTK_WIDGET (window->window),
           EMPATHY_SOUND_CONTACT_CONNECTED);
     }
+
+out:
+  g_object_unref (idle);
 }
 
 static void
@@ -640,10 +645,6 @@ main_window_destroy_cb (GtkWidget         *widget,
 {
 	/* Save user-defined accelerators. */
 	main_window_accels_save ();
-
-	g_signal_handlers_disconnect_by_func (window->account_manager,
-					      main_window_connection_changed_cb,
-					      window);
 
 	if (window->size_timeout_id) {
 		g_source_remove (window->size_timeout_id);
@@ -845,12 +846,12 @@ main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 static void
 main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 {
-	EmpathyAccount *account;
+	TpAccount      *account;
 	TpConnection   *connection;
 	const gchar    *room;
 
 	account = empathy_chatroom_get_account (chatroom);
-	connection = empathy_account_get_connection (account);
+	connection = tp_account_get_connection (account);
 	room = empathy_chatroom_get_room (chatroom);
 
 	if (connection != NULL) {
@@ -1121,12 +1122,27 @@ main_window_configure_event_cb (GtkWidget         *widget,
 }
 
 static void
-main_window_account_created_or_deleted_cb (EmpathyAccountManager  *manager,
-					   EmpathyAccount         *account,
-					   EmpathyMainWindow      *window)
+main_window_account_removed_cb (TpAccountManager  *manager,
+				TpAccount         *account,
+				EmpathyMainWindow *window)
 {
+	GList *a;
+
+	a = tp_account_manager_get_valid_accounts (manager);
+
 	gtk_action_set_sensitive (window->view_history,
-		empathy_account_manager_get_count (manager) > 0);
+		g_list_length (a) > 0);
+
+	g_list_free (a);
+}
+
+static void
+main_window_account_validity_changed_cb (TpAccountManager *manager,
+					 TpAccount *account,
+					 gboolean valid,
+					 EmpathyMainWindow *window)
+{
+	main_window_account_removed_cb (manager, account, window);
 }
 
 static void
@@ -1167,6 +1183,33 @@ GtkWidget *
 empathy_main_window_get (void)
 {
   return main_window != NULL ? main_window->window : NULL;
+}
+
+static void
+account_manager_prepared_cb (GObject *source_object,
+			     GAsyncResult *result,
+			     gpointer user_data)
+{
+	GList *accounts, *j;
+	TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyMainWindow *window = user_data;
+	GError *error = NULL;
+
+	if (!tp_account_manager_prepare_finish (manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	accounts = tp_account_manager_get_valid_accounts (window->account_manager);
+	for (j = accounts; j != NULL; j = j->next) {
+		TpAccount *account = TP_ACCOUNT (j->data);
+
+		g_signal_connect (account, "status-changed",
+				  G_CALLBACK (main_window_connection_changed_cb),
+				  window);
+	}
+	g_list_free (accounts);
 }
 
 GtkWidget *
@@ -1250,11 +1293,10 @@ empathy_main_window_show (void)
 	gtk_action_set_visible (show_map_widget, FALSE);
 #endif
 
-	window->account_manager = empathy_account_manager_dup_singleton ();
+	window->account_manager = tp_account_manager_dup ();
 
-	g_signal_connect (window->account_manager,
-			  "account-connection-changed",
-			  G_CALLBACK (main_window_connection_changed_cb), window);
+	tp_account_manager_prepare_async (window->account_manager, NULL,
+					  account_manager_prepared_cb, window);
 
 	window->errors = g_hash_table_new_full (g_direct_hash,
 						g_direct_equal,
@@ -1352,13 +1394,13 @@ empathy_main_window_show (void)
 			  G_CALLBACK (main_window_event_removed_cb),
 			  window);
 
-	g_signal_connect (window->account_manager, "account-created",
-			  G_CALLBACK (main_window_account_created_or_deleted_cb),
+	g_signal_connect (window->account_manager, "account-validity-changed",
+			  G_CALLBACK (main_window_account_validity_changed_cb),
 			  window);
-	g_signal_connect (window->account_manager, "account-deleted",
-			  G_CALLBACK (main_window_account_created_or_deleted_cb),
+	g_signal_connect (window->account_manager, "account-removed",
+			  G_CALLBACK (main_window_account_removed_cb),
 			  window);
-	main_window_account_created_or_deleted_cb (window->account_manager, NULL, window);
+	main_window_account_removed_cb (window->account_manager, NULL, window);
 
 	l = empathy_event_manager_get_events (window->event_manager);
 	while (l) {
@@ -1404,7 +1446,7 @@ empathy_main_window_show (void)
 						 EMPATHY_PREFS_UI_SHOW_AVATARS,
 						 window);
 
-	main_window_update_status (window, window->account_manager);
+	main_window_update_status (window);
 
 	return window->window;
 }

@@ -25,10 +25,10 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include "empathy-contact.h"
-#include "empathy-account-manager.h"
 #include "empathy-utils.h"
 #include "empathy-enum-types.h"
 #include "empathy-marshal.h"
@@ -39,7 +39,7 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyContact)
 typedef struct {
   TpContact *tp_contact;
-  EmpathyAccount *account;
+  TpAccount *account;
   gchar *id;
   gchar *name;
   EmpathyAvatar *avatar;
@@ -159,7 +159,7 @@ empathy_contact_class_init (EmpathyContactClass *class)
       g_param_spec_object ("account",
         "The account",
         "The account associated with the contact",
-        EMPATHY_TYPE_ACCOUNT,
+        TP_TYPE_ACCOUNT,
         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
@@ -409,7 +409,7 @@ empathy_contact_new (TpContact *tp_contact)
 }
 
 EmpathyContact *
-empathy_contact_new_for_log (EmpathyAccount *account,
+empathy_contact_new_for_log (TpAccount *account,
                              const gchar *id,
                              const gchar *name,
                              gboolean is_user)
@@ -554,7 +554,7 @@ empathy_contact_set_avatar (EmpathyContact *contact,
   g_object_notify (G_OBJECT (contact), "avatar");
 }
 
-EmpathyAccount *
+TpAccount *
 empathy_contact_get_account (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv;
@@ -565,16 +565,12 @@ empathy_contact_get_account (EmpathyContact *contact)
 
   if (priv->account == NULL && priv->tp_contact != NULL)
     {
-      EmpathyAccountManager *manager;
       TpConnection *connection;
 
       /* FIXME: This assume the account manager already exists */
-      manager = empathy_account_manager_dup_singleton ();
       connection = tp_contact_get_connection (priv->tp_contact);
-      priv->account = empathy_account_manager_get_account_for_connection (
-          manager, connection);
-      g_object_ref (priv->account);
-      g_object_unref (manager);
+      priv->account =
+        g_object_ref (empathy_get_account_for_connection (connection));
     }
 
   return priv->account;
@@ -855,7 +851,7 @@ static gchar *
 contact_get_avatar_filename (EmpathyContact *contact,
                              const gchar *token)
 {
-  EmpathyAccount *account;
+  TpAccount *account;
   gchar *avatar_path;
   gchar *avatar_file;
   gchar *token_escaped;
@@ -869,8 +865,8 @@ contact_get_avatar_filename (EmpathyContact *contact,
   avatar_path = g_build_filename (g_get_user_cache_dir (),
       "telepathy",
       "avatars",
-      empathy_account_get_connection_manager (account),
-      empathy_account_get_protocol (account),
+      tp_account_get_connection_manager (account),
+      tp_account_get_protocol (account),
       NULL);
   g_mkdir_with_parents (avatar_path, 0700);
 

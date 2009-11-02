@@ -32,11 +32,11 @@
 #include <libnotify/notification.h>
 #include <libnotify/notify.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-idle.h>
-#include <libempathy/empathy-account-manager.h>
 
 #include <libempathy-gtk/empathy-presence-chooser.h>
 #include <libempathy-gtk/empathy-conf.h>
@@ -60,7 +60,7 @@
 typedef struct {
 	GtkStatusIcon       *icon;
 	EmpathyIdle         *idle;
-	EmpathyAccountManager *account_manager;
+	TpAccountManager    *account_manager;
 	gboolean             showing_event_icon;
 	guint                blink_timeout;
 	EmpathyEventManager *event_manager;
@@ -511,20 +511,18 @@ status_icon_create_menu (EmpathyStatusIcon *icon)
 }
 
 static void
-status_icon_connection_changed_cb (EmpathyAccountManager *manager,
-				   EmpathyAccount *account,
-				   TpConnectionStatusReason reason,
-				   TpConnectionStatus current,
-				   TpConnectionStatus previous,
-				   EmpathyStatusIcon *icon)
+status_icon_status_changed_cb (TpAccount *account,
+			       TpConnectionStatus current,
+			       TpConnectionStatus previous,
+			       TpConnectionStatusReason reason,
+			       gchar *dbus_error_name,
+			       GHashTable *details,
+			       EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
-	int connected_accounts;
 
-	/* Check for a connected account */
-	connected_accounts = empathy_account_manager_get_connected_accounts (manager);
-
-	gtk_action_set_sensitive (priv->new_message_item, connected_accounts > 0);
+	gtk_action_set_sensitive (priv->new_message_item,
+				  empathy_account_manager_get_accounts_connected (NULL));
 }
 
 static void
@@ -535,10 +533,6 @@ status_icon_finalize (GObject *object)
 	if (priv->blink_timeout) {
 		g_source_remove (priv->blink_timeout);
 	}
-
-	g_signal_handlers_disconnect_by_func (priv->account_manager,
-					      status_icon_connection_changed_cb,
-					      object);
 
 	if (priv->notification) {
 		notify_notification_close (priv->notification, NULL);
@@ -564,6 +558,31 @@ empathy_status_icon_class_init (EmpathyStatusIconClass *klass)
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+			     GAsyncResult *result,
+			     gpointer user_data)
+{
+	GList *list, *l;
+	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyStatusIcon *icon = user_data;
+	GError *error = NULL;
+
+	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	list = tp_account_manager_get_valid_accounts (account_manager);
+	for (l = list; l != NULL; l = l->next) {
+		empathy_signal_connect_weak (l->data, "status-changed",
+					     G_CALLBACK (status_icon_status_changed_cb),
+					     G_OBJECT (icon));
+	}
+	g_list_free (list);
+}
+
+static void
 empathy_status_icon_init (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (icon,
@@ -572,13 +591,12 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 
 	icon->priv = priv;
 	priv->icon = gtk_status_icon_new ();
-	priv->account_manager = empathy_account_manager_dup_singleton ();
+	priv->account_manager = tp_account_manager_dup ();
 	priv->idle = empathy_idle_dup_singleton ();
 	priv->event_manager = empathy_event_manager_dup_singleton ();
 
-	g_signal_connect (priv->account_manager,
-			  "account-connection-changed",
-			  G_CALLBACK (status_icon_connection_changed_cb), icon);
+	tp_account_manager_prepare_async (priv->account_manager, NULL,
+	    account_manager_prepared_cb, icon);
 
 	/* make icon listen and respond to MAIN_WINDOW_HIDDEN changes */
 	empathy_conf_notify_add (empathy_conf_get (),

@@ -28,6 +28,7 @@
 
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 #include <telepathy-glib/connection.h>
 #include <telepathy-glib/util.h>
@@ -45,7 +46,6 @@
 #include "empathy-handler.h"
 #include "empathy-utils.h"
 #include "empathy-tube-handler.h"
-#include "empathy-account-manager.h"
 #include "empathy-tp-contact-factory.h"
 #include "empathy-chatroom-manager.h"
 #include "empathy-utils.h"
@@ -58,7 +58,7 @@ typedef struct
 {
   gboolean dispose_has_run;
 
-  EmpathyAccountManager *account_manager;
+  TpAccountManager *account_manager;
   /* connection to connection data mapping */
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
@@ -890,11 +890,18 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
 }
 
 static void
-dispatcher_new_connection_cb (EmpathyAccountManager *manager,
-                              TpConnection *connection,
+dispatcher_status_changed_cb (TpAccount *account,
+                              guint old_status,
+                              guint new_status,
+                              guint reason,
+                              gchar *dbus_error_name,
+                              GHashTable *details,
                               EmpathyDispatcher *self)
 {
-  dispatcher_init_connection_if_needed (self, connection);
+  TpConnection *conn = tp_account_get_connection (account);
+
+  if (conn != NULL)
+    dispatcher_init_connection_if_needed (self, conn);
 }
 
 static void
@@ -992,9 +999,6 @@ dispatcher_finalize (GObject *object)
         remove_idle_handlers, NULL);
       g_hash_table_destroy (priv->request_channel_class_async_ids);
     }
-
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      dispatcher_new_connection_cb, object);
 
   for (l = priv->channels; l; l = l->next)
     {
@@ -1111,18 +1115,46 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+                             GAsyncResult *result,
+                             gpointer user_data)
+{
+  GList *accounts, *l;
+  EmpathyDispatcher *self = user_data;
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  accounts = tp_account_manager_get_valid_accounts (account_manager);
+  for (l = accounts; l; l = l->next)
+    {
+      TpAccount *a = l->data;
+      TpConnection *conn = tp_account_get_connection (a);
+
+      if (conn != NULL)
+        dispatcher_status_changed_cb (a, 0, 0, 0, NULL, NULL, self);
+
+      empathy_signal_connect_weak (a, "status-changed",
+          G_CALLBACK (dispatcher_status_changed_cb),
+          G_OBJECT (self));
+    }
+  g_list_free (accounts);
+}
+
+static void
 empathy_dispatcher_init (EmpathyDispatcher *self)
 {
-  GList *connections, *l;
   EmpathyDispatcherPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
     EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherPriv);
 
   self->priv = priv;
-  priv->account_manager = empathy_account_manager_dup_singleton ();
-
-  g_signal_connect (priv->account_manager, "new-connection",
-    G_CALLBACK (dispatcher_new_connection_cb),
-    self);
+  priv->account_manager = tp_account_manager_dup ();
 
   priv->connections = g_hash_table_new_full (g_direct_hash, g_direct_equal,
     g_object_unref, (GDestroyNotify) free_connection_data);
@@ -1132,15 +1164,8 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
 
   priv->channels = NULL;
 
-  connections = empathy_account_manager_dup_connections (
-      priv->account_manager);
-  for (l = connections; l; l = l->next)
-    {
-      dispatcher_new_connection_cb (priv->account_manager, l->data,
-          self);
-      g_object_unref (l->data);
-    }
-  g_list_free (connections);
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      account_manager_prepared_cb, self);
 
   priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
     g_direct_equal);
@@ -1956,15 +1981,16 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
   EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   guint i;
-  EmpathyAccount *account;
+  TpAccount *account;
   TpConnection *connection;
 
-  account = empathy_account_manager_ensure_account (priv->account_manager,
+  /* FIXME: should probably find out whether the account manager is prepared
+   * before ensuring. See bug #600111. */
+  account = tp_account_manager_ensure_account (priv->account_manager,
     account_path);
   g_assert (account != NULL);
 
-  connection = empathy_account_get_connection_for_path (account,
-      connection_path);
+  connection = tp_account_ensure_connection (account, connection_path);
   if (connection == NULL)
     {
       g_set_error_literal (error, TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,

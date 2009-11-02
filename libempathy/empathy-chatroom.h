@@ -24,7 +24,8 @@
 
 #include <glib-object.h>
 
-#include <libempathy/empathy-account.h>
+#include <telepathy-glib/account.h>
+
 #include <libempathy/empathy-tp-chat.h>
 
 G_BEGIN_DECLS
@@ -51,14 +52,14 @@ struct _EmpathyChatroomClass {
 };
 
 GType            empathy_chatroom_get_type        (void) G_GNUC_CONST;
-EmpathyChatroom *empathy_chatroom_new             (EmpathyAccount  *account);
-EmpathyChatroom *empathy_chatroom_new_full        (EmpathyAccount  *account,
+EmpathyChatroom *empathy_chatroom_new             (TpAccount       *account);
+EmpathyChatroom *empathy_chatroom_new_full        (TpAccount       *account,
 						   const gchar     *room,
 						   const gchar     *name,
 						   gboolean         auto_connect);
-EmpathyAccount *     empathy_chatroom_get_account      (EmpathyChatroom *chatroom);
+TpAccount *     empathy_chatroom_get_account      (EmpathyChatroom *chatroom);
 void            empathy_chatroom_set_account      (EmpathyChatroom *chatroom,
-						   EmpathyAccount  *account);
+						   TpAccount       *account);
 const gchar *   empathy_chatroom_get_room         (EmpathyChatroom *chatroom);
 void            empathy_chatroom_set_room         (EmpathyChatroom *chatroom,
 						   const gchar     *room);

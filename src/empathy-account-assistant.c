@@ -225,7 +225,7 @@ account_assistant_account_enabled_cb (GObject *source,
   EmpathyAccountAssistant *self = user_data;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
-  empathy_account_set_enabled_finish (EMPATHY_ACCOUNT (source),
+  tp_account_set_enabled_finish (TP_ACCOUNT (source),
       result, &error);
 
   if (error)
@@ -249,7 +249,7 @@ account_assistant_apply_account_cb (GObject *source,
   EmpathyAccountAssistant *self = user_data;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
-  EmpathyAccount *account;
+  TpAccount *account;
 
   empathy_account_settings_apply_finish (settings, result, &error);
 
@@ -265,7 +265,7 @@ account_assistant_apply_account_cb (GObject *source,
 
   /* enable the newly created account */
   account = empathy_account_settings_get_account (settings);
-  empathy_account_set_enabled_async (account, TRUE,
+  tp_account_set_enabled_async (account, TRUE,
       account_assistant_account_enabled_cb, self);
 }
 

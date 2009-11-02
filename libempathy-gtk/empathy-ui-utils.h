@@ -35,7 +35,6 @@
 #include <gtk/gtk.h>
 
 #include <libempathy/empathy-contact.h>
-#include <libempathy/empathy-account.h>
 #include <libempathy/empathy-ft-handler.h>
 
 #include "empathy-chat-view.h"

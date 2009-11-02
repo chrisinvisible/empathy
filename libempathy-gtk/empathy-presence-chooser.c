@@ -33,13 +33,13 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-status-presets.h>
-#include <libempathy/empathy-account-manager.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -114,7 +114,7 @@ typedef struct {
 	TpConnectionPresenceType   flash_state_2;
 	guint        flash_timeout_id;
 
-	EmpathyAccountManager *account_manager;
+	TpAccountManager *account_manager;
 } EmpathyPresenceChooserPriv;
 
 /* States to be listed in the menu.
@@ -715,21 +715,32 @@ presence_chooser_entry_focus_out_cb (EmpathyPresenceChooser *chooser,
 }
 
 static void
-presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
+update_sensitivity_am_prepared_cb (GObject *source_object,
+				   GAsyncResult *result,
+				   gpointer user_data)
 {
+	TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+	EmpathyPresenceChooser *chooser = user_data;
 	EmpathyPresenceChooserPriv *priv = GET_PRIV (chooser);
 	gboolean sensitive = FALSE;
 	GList *accounts, *l;
+	GError *error = NULL;
 
-	accounts = empathy_account_manager_dup_accounts (priv->account_manager);
+	if (!tp_account_manager_prepare_finish (manager, result, &error)) {
+		DEBUG ("Failed to prepare account manager: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	accounts = tp_account_manager_get_valid_accounts (manager);
 
 	for (l = accounts ; l != NULL ; l = g_list_next (l)) {
-		EmpathyAccount *a = EMPATHY_ACCOUNT (l->data);
+		TpAccount *a = TP_ACCOUNT (l->data);
 
-		if (empathy_account_is_enabled (a))
+		if (tp_account_is_enabled (a)) {
 			sensitive = TRUE;
-
-		g_object_unref (a);
+			break;
+		}
 	}
 
 	g_list_free (accounts);
@@ -741,9 +752,29 @@ presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
 }
 
 static void
+presence_chooser_update_sensitivity (EmpathyPresenceChooser *chooser)
+{
+	EmpathyPresenceChooserPriv *priv = GET_PRIV (chooser);
+
+	tp_account_manager_prepare_async (priv->account_manager, NULL,
+					  update_sensitivity_am_prepared_cb,
+					  chooser);
+}
+
+static void
+presence_chooser_account_manager_account_validity_changed_cb (
+	TpAccountManager *manager,
+	TpAccount *account,
+	gboolean valid,
+	EmpathyPresenceChooser *chooser)
+{
+	presence_chooser_update_sensitivity (chooser);
+}
+
+static void
 presence_chooser_account_manager_account_changed_cb (
-	EmpathyAccountManager *manager,
-	EmpathyAccount *account,
+	TpAccountManager *manager,
+	TpAccount *account,
 	EmpathyPresenceChooser *chooser)
 {
 	presence_chooser_update_sensitivity (chooser);
@@ -825,12 +856,12 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 		G_CALLBACK (presence_chooser_presence_changed_cb),
 		chooser);
 
-	priv->account_manager = empathy_account_manager_dup_singleton ();
+	priv->account_manager = tp_account_manager_dup ();
 
-	empathy_signal_connect_weak (priv->account_manager, "account-created",
-		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
+	empathy_signal_connect_weak (priv->account_manager, "account-validity-changed",
+		G_CALLBACK (presence_chooser_account_manager_account_validity_changed_cb),
 		G_OBJECT (chooser));
-	empathy_signal_connect_weak (priv->account_manager, "account-deleted",
+	empathy_signal_connect_weak (priv->account_manager, "account-removed",
 		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
 		G_OBJECT (chooser));
 	empathy_signal_connect_weak (priv->account_manager, "account-enabled",

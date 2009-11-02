@@ -85,6 +85,10 @@ void empathy_signal_connect_weak (gpointer instance,
     GCallback c_handler,
     GObject *user_data);
 
+TpAccount * empathy_get_account_for_connection (TpConnection *connection);
+
+gboolean empathy_account_manager_get_accounts_connected (gboolean *connecting);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_UTILS_H__ */
