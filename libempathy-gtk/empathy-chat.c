@@ -891,9 +891,13 @@ chat_send (EmpathyChat  *chat,
 		for (i = 0; i < G_N_ELEMENTS (commands); i++) {
 			GStrv strv;
 			guint strv_len;
+			gchar c;
 
-			if (!has_prefix_case (msg + 1, commands[i].prefix) ||
-			    !g_ascii_isspace (msg + 1 + strlen (commands[i].prefix))) {
+			if (!has_prefix_case (msg + 1, commands[i].prefix)) {
+				continue;
+			}
+			c = *(msg + 1 + strlen (commands[i].prefix));
+			if (c != '\0' && !g_ascii_isspace (c)) {
 				continue;
 			}
 
