@@ -630,7 +630,8 @@ chat_command_parse (const gchar *text, guint max_parts)
 		}
 
 		/* Search the end of this part, until first space. */
-		for (end = text; *end != '\0' && !g_ascii_isspace (*end); end++);
+		for (end = text; *end != '\0' && !g_ascii_isspace (*end); end++)
+			/* Do nothing */;
 		if (*end == '\0') {
 			break;
 		}
