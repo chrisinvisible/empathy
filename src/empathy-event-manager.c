@@ -338,14 +338,14 @@ event_channel_process_voip_func (EventPriv *event)
 
   button = gtk_dialog_add_button (GTK_DIALOG (dialog),
       _("_Reject"), GTK_RESPONSE_REJECT);
-  image = gtk_image_new_from_icon_name (GTK_STOCK_CANCEL,
+  image = gtk_image_new_from_icon_name ("call-stop",
     GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (button), image);
 
   button = gtk_dialog_add_button (GTK_DIALOG (dialog),
       _("_Answer"), GTK_RESPONSE_ACCEPT);
 
-  image = gtk_image_new_from_icon_name (GTK_STOCK_APPLY, GTK_ICON_SIZE_BUTTON);
+  image = gtk_image_new_from_icon_name ("call-start", GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (button), image);
 
   g_signal_connect (dialog, "response",
