@@ -812,6 +812,9 @@ chat_command_help (EmpathyChat *chat,
 			return;
 		}
 	}
+
+	empathy_chat_view_append_event (chat->view,
+		_("Unknown command"));
 }
 
 static GStrv
