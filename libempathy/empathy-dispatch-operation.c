@@ -210,6 +210,13 @@ dispatch_operation_connection_ready (TpConnection *connection,
   EmpathyTpContactFactory *factory;
   TpHandle handle;
 
+  if (error != NULL)
+    goto out;
+
+  if (priv->status >= EMPATHY_DISPATCHER_OPERATION_STATE_CLAIMED)
+    /* no point to get more information */
+    goto out;
+
   handle = tp_channel_get_handle (priv->channel, NULL);
 
   factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
@@ -218,6 +225,8 @@ dispatch_operation_connection_ready (TpConnection *connection,
       dispatcher_operation_got_contact_cb, NULL, NULL, G_OBJECT (self));
 
   g_object_unref (factory);
+out:
+  g_object_unref (self);
 }
 
 static void
@@ -239,6 +248,9 @@ empathy_dispatch_operation_constructed (GObject *object)
 
   if (handle_type == TP_HANDLE_TYPE_CONTACT && priv->contact == NULL)
     {
+      /* Ensure to keep the self object alive while the call_when_ready is
+       * running */
+      g_object_ref (self);
       tp_connection_call_when_ready (priv->connection,
           dispatch_operation_connection_ready, object);
       return;
