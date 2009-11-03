@@ -542,14 +542,19 @@ accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
     {
       GtkTreeView  *view;
       GtkTreeModel *model;
+      GtkTreeSelection *selection;
 
       view = GTK_TREE_VIEW (priv->treeview);
       model = gtk_tree_view_get_model (view);
+      selection = gtk_tree_view_get_selection (view);
 
       if (gtk_tree_model_iter_n_children (model, NULL) > 0)
         {
-          /* We have configured accounts, select the first one */
-          accounts_dialog_model_select_first (dialog);
+          /* We have configured accounts, select the first one if there
+           * is no other account selected already. */
+          if (!gtk_tree_selection_get_selected (selection, NULL, NULL))
+            accounts_dialog_model_select_first (dialog);
+
           return;
         }
       if (empathy_connection_managers_get_cms_num (priv->cms) > 0)
