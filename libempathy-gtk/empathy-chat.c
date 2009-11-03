@@ -73,8 +73,8 @@ typedef struct {
 
 	EmpathyLogManager *log_manager;
 	TpAccountManager  *account_manager;
-	GSList            *sent_messages;
-	gint               sent_messages_index;
+	GList             *input_history;
+	GList             *input_history_current;
 	GList             *compositors;
 	GCompletion       *completion;
 	guint              composing_stop_timeout_id;
@@ -93,6 +93,13 @@ typedef struct {
 	GtkWidget         *label_topic;
 	GtkWidget         *contact_list_view;
 } EmpathyChatPriv;
+
+typedef struct {
+	gchar *text; /* Original message that was specified
+	              * upon entry creation. */
+	gchar *modified_text; /* Message that was modified by user.
+	                       * When no modifications were made, it is NULL */
+} InputHistoryEntry;
 
 enum {
 	COMPOSING,
@@ -295,89 +302,280 @@ chat_composing_stop (EmpathyChat *chat)
 				   TP_CHANNEL_CHAT_STATE_ACTIVE);
 }
 
-static void
-chat_sent_message_add (EmpathyChat  *chat,
-		       const gchar *str)
+static gint
+chat_input_history_entry_cmp (InputHistoryEntry *entry,
+                              const gchar *text)
 {
-	EmpathyChatPriv *priv;
-	GSList         *list;
-	GSList         *item;
-
-	priv = GET_PRIV (chat);
-
-	/* Save the sent message in our repeat buffer */
-	list = priv->sent_messages;
-
-	/* Remove any other occurances of this msg */
-	while ((item = g_slist_find_custom (list, str, (GCompareFunc) strcmp)) != NULL) {
-		list = g_slist_remove_link (list, item);
-		g_free (item->data);
-		g_slist_free1 (item);
-	}
-
-	/* Trim the list to the last 10 items */
-	while (g_slist_length (list) > 10) {
-		item = g_slist_last (list);
-		if (item) {
-			list = g_slist_remove_link (list, item);
-			g_free (item->data);
-			g_slist_free1 (item);
+	if (!tp_strdiff (entry->text, text)) {
+		if (entry->modified_text != NULL) {
+			/* Modified entry and single string cannot be equal. */
+			return 1;
 		}
+		return 0;
+	}
+	return 1;
+}
+
+static InputHistoryEntry *
+chat_input_history_entry_new_with_text (const gchar *text)
+{
+	InputHistoryEntry *entry;
+	entry = g_slice_new0 (InputHistoryEntry);
+	entry->text = g_strdup (text);
+
+	return entry;
+}
+
+static void
+chat_input_history_entry_free (InputHistoryEntry *entry)
+{
+	g_free (entry->text);
+	g_free (entry->modified_text);
+	g_slice_free (InputHistoryEntry, entry);
+}
+
+static void
+chat_input_history_entry_revert (InputHistoryEntry *entry)
+{
+	g_free (entry->modified_text);
+	entry->modified_text = NULL;
+}
+
+static void
+chat_input_history_entry_update_text (InputHistoryEntry *entry,
+                                      const gchar *text)
+{
+	gchar *old;
+
+	if (!tp_strdiff (text, entry->text)) {
+		g_free (entry->modified_text);
+		entry->modified_text = NULL;
+		return;
 	}
 
-	/* Add new message */
-	list = g_slist_prepend (list, g_strdup (str));
-
-	/* Set list and reset the index */
-	priv->sent_messages = list;
-	priv->sent_messages_index = -1;
+	old = entry->modified_text;
+	entry->modified_text = g_strdup (text);
+	g_free (old);
 }
 
 static const gchar *
-chat_sent_message_get_next (EmpathyChat *chat)
+chat_input_history_entry_get_text (InputHistoryEntry *entry)
 {
-	EmpathyChatPriv *priv;
-	gint            max;
-
-	priv = GET_PRIV (chat);
-
-	if (!priv->sent_messages) {
-		DEBUG ("No sent messages, next message is NULL");
+	if (entry == NULL) {
 		return NULL;
 	}
 
-	max = g_slist_length (priv->sent_messages) - 1;
+	if (entry->modified_text != NULL) {
+		return entry->modified_text;
+	}
+	return entry->text;
+}
 
-	if (priv->sent_messages_index < max) {
-		priv->sent_messages_index++;
+static GList *
+chat_input_history_remove_item (GList *list,
+                                GList *item)
+{
+	list = g_list_remove_link (list, item);
+	chat_input_history_entry_free (item->data);
+	g_list_free_1 (item);
+	return list;
+}
+
+static void
+chat_input_history_revert (EmpathyChat *chat)
+{
+	EmpathyChatPriv   *priv;
+	GList             *list;
+	GList             *item1;
+	GList             *item2;
+	InputHistoryEntry *entry;
+
+	priv = GET_PRIV (chat);
+	list = priv->input_history;
+
+	if (list == NULL) {
+		DEBUG ("No input history");
+		return;
 	}
 
-	DEBUG ("Returning next message index:%d", priv->sent_messages_index);
+	/* Delete temporary entry */
+	if (priv->input_history_current != NULL) {
+		item1 = list;
+		list = chat_input_history_remove_item (list, item1);
+		if (priv->input_history_current == item1) {
+			/* Removed temporary entry was current entry */
+			priv->input_history = list;
+			priv->input_history_current = NULL;
+			return;
+		}
+	}
+	else {
+		/* There is no entry to revert */
+		return;
+	}
 
-	return g_slist_nth_data (priv->sent_messages, priv->sent_messages_index);
+	/* Restore the current history entry to original value */
+	item1 = priv->input_history_current;
+	entry = item1->data;
+	chat_input_history_entry_revert (entry);
+
+	/* Remove restored entry if there is other occurance before this entry */
+	item2 = g_list_find_custom (list, chat_input_history_entry_get_text (entry),
+	                            (GCompareFunc) chat_input_history_entry_cmp);
+	if (item2 != item1) {
+		list = chat_input_history_remove_item (list, item1);
+	}
+	else {
+		/* Remove other occurance of the restored entry */
+		item2 = g_list_find_custom (item1->next,
+		                            chat_input_history_entry_get_text (entry),
+		                            (GCompareFunc) chat_input_history_entry_cmp);
+		if (item2 != NULL) {
+			list = chat_input_history_remove_item (list, item2);
+		}
+	}
+
+	priv->input_history_current = NULL;
+	priv->input_history = list;
+}
+
+static void
+chat_input_history_add (EmpathyChat  *chat,
+                        const gchar *str,
+                        gboolean temporary)
+{
+	EmpathyChatPriv   *priv;
+	GList             *list;
+	GList             *item;
+	InputHistoryEntry *entry;
+
+	priv = GET_PRIV (chat);
+
+	list = priv->input_history;
+
+	/* Remove any other occurances of this entry, if not temporary */
+	if (!temporary) {
+		while ((item = g_list_find_custom (list, str,
+		    (GCompareFunc) chat_input_history_entry_cmp)) != NULL) {
+			list = chat_input_history_remove_item (list, item);
+		}
+
+		/* Trim the list to the last 10 items */
+		while (g_list_length (list) > 10) {
+			item = g_list_last (list);
+			if (item != NULL) {
+				list = chat_input_history_remove_item (list, item);
+			}
+		}
+	}
+
+
+
+	/* Add new entry */
+	entry = chat_input_history_entry_new_with_text (str);
+	list = g_list_prepend (list, entry);
+
+	/* Set the list and the current item pointer */
+	priv->input_history = list;
+	if (temporary) {
+		priv->input_history_current = list;
+	}
+	else {
+		priv->input_history_current = NULL;
+	}
 }
 
 static const gchar *
-chat_sent_message_get_last (EmpathyChat *chat)
+chat_input_history_get_next (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv;
+	GList           *item;
+	const gchar     *msg;
+
+	priv = GET_PRIV (chat);
+
+	if (priv->input_history == NULL) {
+		DEBUG ("No input history, next entry is NULL");
+		return NULL;
+	}
+	g_assert (priv->input_history_current != NULL);
+
+	if ((item = g_list_next (priv->input_history_current)) == NULL)
+	{
+		item = priv->input_history_current;
+	}
+
+	msg = chat_input_history_entry_get_text (item->data);
+
+	DEBUG ("Returning next entry: '%s'", msg);
+
+	priv->input_history_current = item;
+
+	return msg;
+}
+
+static const gchar *
+chat_input_history_get_prev (EmpathyChat *chat)
+{
+	EmpathyChatPriv *priv;
+	GList           *item;
+	const gchar     *msg;
 
 	g_return_val_if_fail (EMPATHY_IS_CHAT (chat), NULL);
 
 	priv = GET_PRIV (chat);
 
-	if (!priv->sent_messages) {
-		DEBUG ("No sent messages, last message is NULL");
+	if (priv->input_history == NULL) {
+		DEBUG ("No input history, previous entry is NULL");
 		return NULL;
 	}
 
-	if (priv->sent_messages_index >= 0) {
-		priv->sent_messages_index--;
+	if (priv->input_history_current == NULL)
+	{
+		return NULL;
+	}
+	else if ((item = g_list_previous (priv->input_history_current)) == NULL)
+	{
+		item = priv->input_history_current;
 	}
 
-	DEBUG ("Returning last message index:%d", priv->sent_messages_index);
+	msg = chat_input_history_entry_get_text (item->data);
 
-	return g_slist_nth_data (priv->sent_messages, priv->sent_messages_index);
+	DEBUG ("Returning previous entry: '%s'", msg);
+
+	priv->input_history_current = item;
+
+	return msg;
+}
+
+static void
+chat_input_history_update (EmpathyChat *chat,
+                           GtkTextBuffer *buffer)
+{
+	EmpathyChatPriv      *priv;
+	GtkTextIter           start, end;
+	gchar                *text;
+	InputHistoryEntry    *entry;
+
+	priv = GET_PRIV (chat);
+
+	gtk_text_buffer_get_bounds (buffer, &start, &end);
+	text = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+
+	if (priv->input_history_current == NULL) {
+		/* Add the current text temporarily to the history */
+		chat_input_history_add (chat, text, TRUE);
+		g_free (text);
+		return;
+	}
+
+	/* Save the changes in the history */
+	entry = priv->input_history_current->data;
+	if (tp_strdiff (chat_input_history_entry_get_text (entry), text)) {
+		chat_input_history_entry_update_text (entry, text);
+	}
+
+	g_free (text);
 }
 
 static void
@@ -393,7 +591,7 @@ chat_send (EmpathyChat  *chat,
 
 	priv = GET_PRIV (chat);
 
-	chat_sent_message_add (chat, msg);
+	chat_input_history_add (chat, msg, FALSE);
 
 	if (strcmp (msg, "/clear") == 0) {
 		empathy_chat_view_clear (chat->view);
@@ -428,6 +626,8 @@ chat_input_text_view_send (EmpathyChat *chat)
 
 	/* clear the input field */
 	gtk_text_buffer_set_text (buffer, "", -1);
+	/* delete input history modifications */
+	chat_input_history_revert (chat);
 
 	chat_send (chat, msg);
 	g_free (msg);
@@ -699,11 +899,12 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		const gchar   *str;
 
 		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
+		chat_input_history_update (chat, buffer);
 
 		if (event->keyval == GDK_Up) {
-			str = chat_sent_message_get_next (chat);
+			str = chat_input_history_get_next (chat);
 		} else {
-			str = chat_sent_message_get_last (chat);
+			str = chat_input_history_get_prev (chat);
 		}
 
 		g_signal_handlers_block_by_func (buffer,
@@ -1536,8 +1737,8 @@ chat_finalize (GObject *object)
 
 	DEBUG ("Finalized: %p", object);
 
-	g_slist_foreach (priv->sent_messages, (GFunc) g_free, NULL);
-	g_slist_free (priv->sent_messages);
+	g_list_foreach (priv->input_history, (GFunc) chat_input_history_entry_free, NULL);
+	g_list_free (priv->input_history);
 
 	g_list_foreach (priv->compositors, (GFunc) g_object_unref, NULL);
 	g_list_free (priv->compositors);
@@ -1736,8 +1937,8 @@ empathy_chat_init (EmpathyChat *chat)
 	chat->priv = priv;
 	priv->log_manager = empathy_log_manager_dup_singleton ();
 	priv->contacts_width = -1;
-	priv->sent_messages = NULL;
-	priv->sent_messages_index = -1;
+	priv->input_history = NULL;
+	priv->input_history_current = NULL;
 	priv->account_manager = tp_account_manager_dup ();
 
 	tp_account_manager_prepare_async (priv->account_manager, NULL,
