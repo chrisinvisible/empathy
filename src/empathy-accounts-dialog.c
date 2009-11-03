@@ -218,9 +218,6 @@ get_default_display_name (EmpathyAccountSettings *settings)
   login_id = empathy_account_settings_get_string (settings, "account");
   protocol = empathy_account_settings_get_protocol (settings);
 
-  if ((p = empathy_protocol_name_to_display_name (protocol)) != NULL)
-    protocol = p;
-
   if (login_id != NULL)
     {
       if (!tp_strdiff (protocol, "irc"))
@@ -240,8 +237,14 @@ get_default_display_name (EmpathyAccountSettings *settings)
         {
           default_display_name = g_strdup (login_id);
         }
+
+      return default_display_name;
     }
-  else if (protocol != NULL)
+
+  if ((p = empathy_protocol_name_to_display_name (protocol)) != NULL)
+    protocol = p;
+
+  if (protocol != NULL)
     {
       /* To translators: The parameter is the protocol name. The resulting
        * string will be something like: "Jabber Account" */
