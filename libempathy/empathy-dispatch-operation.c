@@ -196,6 +196,9 @@ dispatcher_operation_got_contact_cb (EmpathyTpContactFactory *factory,
   priv->contact = g_object_ref (contact);
   g_object_notify (G_OBJECT (self), "contact");
 
+  /* Ensure to keep the self object alive while the call_when_ready is
+   * running */
+  g_object_ref (self);
   tp_channel_call_when_ready (priv->channel,
     empathy_dispatch_operation_channel_ready_cb, self);
 }
@@ -256,6 +259,7 @@ empathy_dispatch_operation_constructed (GObject *object)
       return;
     }
 
+  g_object_ref (self);
   tp_channel_call_when_ready (priv->channel,
     empathy_dispatch_operation_channel_ready_cb, self);
 }
@@ -445,9 +449,13 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
 
   /* The error will be handled in empathy_dispatch_operation_invalidated */
   if (error != NULL)
-    return;
+    goto out;
 
   g_assert (channel == priv->channel);
+
+  if (priv->status >= EMPATHY_DISPATCHER_OPERATION_STATE_CLAIMED)
+    /* no point to get more information */
+    goto out;
 
   /* If the channel wrapper is defined, we assume it's ready */
   if (priv->channel_wrapper != NULL)
@@ -464,7 +472,7 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
         {
           priv->ready_handler = g_signal_connect (chat, "notify::ready",
             G_CALLBACK (empathy_dispatcher_operation_tp_chat_ready_cb), self);
-          return;
+          goto out;
         }
     }
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
@@ -481,6 +489,8 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
 ready:
   empathy_dispatch_operation_set_status (self,
     EMPATHY_DISPATCHER_OPERATION_STATE_PENDING);
+out:
+  g_object_unref (self);
 }
 
 EmpathyDispatchOperation *
