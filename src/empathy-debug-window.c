@@ -114,22 +114,22 @@ log_level_to_string (guint level)
   switch (level)
     {
     case EMP_DEBUG_LEVEL_ERROR:
-      return _("Error");
+      return "Error";
       break;
     case EMP_DEBUG_LEVEL_CRITICAL:
-      return _("Critical");
+      return "Critical";
       break;
     case EMP_DEBUG_LEVEL_WARNING:
-      return _("Warning");
+      return "Warning";
       break;
     case EMP_DEBUG_LEVEL_MESSAGE:
-      return _("Message");
+      return "Message";
       break;
     case EMP_DEBUG_LEVEL_INFO:
-      return _("Info");
+      return "Info";
       break;
     case EMP_DEBUG_LEVEL_DEBUG:
-      return _("Debug");
+      return "Debug";
       break;
     default:
       g_assert_not_reached ();
