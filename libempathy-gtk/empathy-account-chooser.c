@@ -303,6 +303,14 @@ empathy_account_chooser_get_connection (EmpathyAccountChooser *chooser)
 	priv = GET_PRIV (chooser);
 
 	account = empathy_account_chooser_dup_account (chooser);
+
+	/* if the returned account is NULL, then the account manager probably
+	 * hasn't been prepared yet. It should be safe to return NULL here
+	 * though. */
+	if (account == NULL) {
+		return NULL;
+	}
+
 	connection = tp_account_get_connection (account);
 	g_object_unref (account);
 
