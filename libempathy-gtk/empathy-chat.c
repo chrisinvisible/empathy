@@ -690,7 +690,8 @@ chat_send (EmpathyChat  *chat,
 			GStrv strv;
 			guint strv_len;
 
-			if (!has_prefix_case (msg + 1, commands[i].prefix)) {
+			if (!has_prefix_case (msg + 1, commands[i].prefix) ||
+			    !g_ascii_isspace (msg + 1 + strlen (commands[i].prefix))) {
 				continue;
 			}
 
@@ -698,11 +699,6 @@ chat_send (EmpathyChat  *chat,
 			 * not deal correctly if we have more than one space
 			 * between args */
 			strv = chat_command_parse (msg + 1, commands[i].max_parts);
-
-			if (g_ascii_strcasecmp (strv[0], commands[i].prefix) != 0) {
-				g_strfreev (strv);
-				continue;
-			}
 
 			strv_len = g_strv_length (strv);
 			if (strv_len < commands[i].min_parts ||
