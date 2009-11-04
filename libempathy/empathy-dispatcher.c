@@ -837,23 +837,21 @@ dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
 }
 
 static void
-dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
-    TpConnection *connection)
+connection_ready_cb (TpConnection *connection,
+    const GError *error,
+    gpointer user_data)
 {
-  EmpathyDispatcherPriv *priv = GET_PRIV (self);
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
   GPtrArray   *capabilities;
   GType        cap_type;
   GValue       cap = {0, };
   const gchar *remove_ = NULL;
 
-  if (g_hash_table_lookup (priv->connections, connection) != NULL)
-    return;
-
-  g_hash_table_insert (priv->connections, g_object_ref (connection),
-    new_connection_data ());
-
-  g_signal_connect (connection, "invalidated",
-    G_CALLBACK (dispatcher_connection_invalidated_cb), self);
+  if (error != NULL)
+    {
+      DEBUG ("Error: %s", error->message);
+      goto out;
+    }
 
   if (tp_proxy_has_interface_by_id (TP_PROXY (connection),
       TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS))
@@ -887,6 +885,29 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
 
   g_value_unset (&cap);
   g_ptr_array_free (capabilities, TRUE);
+out:
+  g_object_unref (self);
+}
+
+static void
+dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
+    TpConnection *connection)
+{
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
+
+  if (g_hash_table_lookup (priv->connections, connection) != NULL)
+    return;
+
+  g_hash_table_insert (priv->connections, g_object_ref (connection),
+    new_connection_data ());
+
+  g_signal_connect (connection, "invalidated",
+    G_CALLBACK (dispatcher_connection_invalidated_cb), self);
+
+  /* Ensure to keep the self object alive while the call_when_ready is
+   * running */
+  g_object_ref (self);
+  tp_connection_call_when_ready (connection, connection_ready_cb, self);
 }
 
 static void
