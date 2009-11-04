@@ -29,6 +29,7 @@
 #include "empathy-tp-call.h"
 #include "empathy-tp-contact-factory.h"
 #include "empathy-utils.h"
+#include "empathy-marshal.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_TP
 #include "empathy-debug.h"
@@ -45,6 +46,15 @@ typedef struct
   EmpathyTpCallStream *audio;
   EmpathyTpCallStream *video;
 } EmpathyTpCallPriv;
+
+/* signal enum */
+enum {
+  AUDIO_STREAM_ERROR,
+  VIDEO_STREAM_ERROR,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = {0};
 
 enum
 {
@@ -364,6 +374,34 @@ tp_call_async_cb (TpProxy *proxy,
       DEBUG ("Error %s: %s", (gchar *) user_data, error->message);
 }
 
+static void
+tp_call_stream_error_cb (TpChannel *channel,
+    guint stream_id,
+    guint error_code,
+    const gchar *msg,
+    gpointer user_data,
+    GObject *call)
+{
+  EmpathyTpCall *self = EMPATHY_TP_CALL (call);
+  EmpathyTpCallPriv *priv = GET_PRIV (self);
+
+  DEBUG ("Stream error on stream %u: %s (code: %u)", stream_id, msg,
+      error_code);
+
+  if (priv->audio->id == stream_id)
+    {
+      g_signal_emit (call, signals[AUDIO_STREAM_ERROR], 0, error_code, msg);
+    }
+  else if (priv->video->id == stream_id)
+    {
+      g_signal_emit (call, signals[VIDEO_STREAM_ERROR], 0, error_code, msg);
+    }
+  else
+    {
+      DEBUG ("Unknown stream id: %u", stream_id);
+    }
+}
+
 static GObject *
 tp_call_constructor (GType type,
                      guint n_construct_params,
@@ -390,6 +428,8 @@ tp_call_constructor (GType type,
       tp_call_stream_state_changed_cb, NULL, NULL, G_OBJECT (call), NULL);
   tp_cli_channel_type_streamed_media_connect_to_stream_direction_changed (priv->channel,
       tp_call_stream_direction_changed_cb, NULL, NULL, G_OBJECT (call), NULL);
+  tp_cli_channel_type_streamed_media_connect_to_stream_error (priv->channel,
+      tp_call_stream_error_cb, NULL, NULL, G_OBJECT (call), NULL);
   tp_cli_channel_type_streamed_media_call_list_streams (priv->channel, -1,
       tp_call_request_streams_cb, NULL, NULL, G_OBJECT (call));
 
@@ -532,6 +572,24 @@ empathy_tp_call_class_init (EmpathyTpCallClass *klass)
       g_param_spec_pointer ("video-stream", "Video stream data",
       "Video stream data",
       G_PARAM_READABLE | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
+
+  signals[AUDIO_STREAM_ERROR] =
+    g_signal_new ("audio-stream-error",
+      G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_LAST, 0,
+      NULL, NULL,
+      _empathy_marshal_VOID__UINT_STRING,
+      G_TYPE_NONE,
+      2, G_TYPE_UINT, G_TYPE_STRING);
+
+  signals[VIDEO_STREAM_ERROR] =
+    g_signal_new ("video-stream-error",
+      G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_LAST, 0,
+      NULL, NULL,
+      _empathy_marshal_VOID__UINT_STRING,
+      G_TYPE_NONE,
+      2, G_TYPE_UINT, G_TYPE_STRING);
 }
 
 static void
