@@ -1281,6 +1281,58 @@ tp_contact_factory_finalize (GObject *object)
 	G_OBJECT_CLASS (empathy_tp_contact_factory_parent_class)->finalize (object);
 }
 
+static void
+connection_ready_cb (TpConnection *connection,
+				const GError *error,
+				gpointer user_data)
+{
+	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (user_data);
+	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
+
+	if (error != NULL)
+		goto out;
+
+	/* FIXME: This should be moved to TpContact */
+	tp_cli_connection_interface_avatars_connect_to_avatar_updated (priv->connection,
+								       tp_contact_factory_avatar_updated_cb,
+								       NULL, NULL,
+								       G_OBJECT (tp_factory),
+								       NULL);
+	tp_cli_connection_interface_avatars_connect_to_avatar_retrieved (priv->connection,
+									 tp_contact_factory_avatar_retrieved_cb,
+									 NULL, NULL,
+									 G_OBJECT (tp_factory),
+									 NULL);
+	tp_cli_connection_interface_capabilities_connect_to_capabilities_changed (priv->connection,
+										  tp_contact_factory_capabilities_changed_cb,
+										  NULL, NULL,
+										  G_OBJECT (tp_factory),
+										  NULL);
+
+
+	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
+									   tp_contact_factory_location_updated_cb,
+									   NULL, NULL,
+									   G_OBJECT (tp_factory),
+									   NULL);
+
+
+	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
+									  -1,
+									  tp_contact_factory_got_avatar_requirements_cb,
+									  NULL, NULL,
+									  G_OBJECT (tp_factory));
+
+	tp_cli_dbus_properties_call_get (priv->connection, -1,
+		TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
+		"RequestableChannelClasses",
+		get_requestable_channel_classes_cb, NULL, NULL,
+		G_OBJECT (tp_factory));
+
+out:
+	g_object_unref (tp_factory);
+}
+
 static GObject *
 tp_contact_factory_constructor (GType                  type,
 				guint                  n_props,
@@ -1292,41 +1344,11 @@ tp_contact_factory_constructor (GType                  type,
 	tp_factory = G_OBJECT_CLASS (empathy_tp_contact_factory_parent_class)->constructor (type, n_props, props);
 	priv = GET_PRIV (tp_factory);
 
-	/* FIXME: This should be moved to TpContact */
-	tp_cli_connection_interface_avatars_connect_to_avatar_updated (priv->connection,
-								       tp_contact_factory_avatar_updated_cb,
-								       NULL, NULL,
-								       tp_factory,
-								       NULL);
-	tp_cli_connection_interface_avatars_connect_to_avatar_retrieved (priv->connection,
-									 tp_contact_factory_avatar_retrieved_cb,
-									 NULL, NULL,
-									 tp_factory,
-									 NULL);
-	tp_cli_connection_interface_capabilities_connect_to_capabilities_changed (priv->connection,
-										  tp_contact_factory_capabilities_changed_cb,
-										  NULL, NULL,
-										  tp_factory,
-										  NULL);
-
-
-	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
-									   tp_contact_factory_location_updated_cb,
-									   NULL, NULL,
-									   G_OBJECT (tp_factory),
-									   NULL);
-
-	/* FIXME: This should be moved to TpConnection */
-	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
-									  -1,
-									  tp_contact_factory_got_avatar_requirements_cb,
-									  NULL, NULL,
-									  tp_factory);
-	tp_cli_dbus_properties_call_get (priv->connection, -1,
-		TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
-		"RequestableChannelClasses",
-		get_requestable_channel_classes_cb, NULL, NULL,
-		G_OBJECT (tp_factory));
+	/* Ensure to keep the self object alive while the call_when_ready is
+	 * running */
+	g_object_ref (tp_factory);
+	tp_connection_call_when_ready (priv->connection, connection_ready_cb,
+		tp_factory);
 
 	return tp_factory;
 }
