@@ -1439,7 +1439,7 @@ empathy_debug_window_class_init (EmpathyDebugWindowClass *klass)
 GtkWidget *
 empathy_debug_window_new (GtkWindow *parent)
 {
-  g_return_val_if_fail (GTK_IS_WINDOW (parent), NULL);
+  g_return_val_if_fail (parent == NULL || GTK_IS_WINDOW (parent), NULL);
 
   return GTK_WIDGET (g_object_new (EMPATHY_TYPE_DEBUG_WINDOW,
       "transient-for", parent, NULL));

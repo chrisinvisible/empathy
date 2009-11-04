@@ -1065,7 +1065,7 @@ static void
 main_window_help_debug_cb (GtkAction         *action,
 			   EmpathyMainWindow *window)
 {
-	empathy_debug_window_new (GTK_WINDOW (window->window));
+	empathy_debug_window_new (NULL);
 }
 
 static void
