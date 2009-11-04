@@ -105,6 +105,7 @@ struct _EmpathyCallWindowPriv
   gboolean outgoing;
 
   GtkUIManager *ui_manager;
+  GtkWidget *errors_vbox;
   GtkWidget *video_output;
   GtkWidget *video_preview;
   GtkWidget *remote_user_avatar_widget;
@@ -697,6 +698,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
   filename = empathy_file_lookup ("empathy-call-window.ui", "src");
   gui = empathy_builder_get_file (filename,
     "call_window_vbox", &top_vbox,
+    "errors_vbox", &priv->errors_vbox,
     "pane", &priv->pane,
     "statusbar", &priv->statusbar,
     "redial", &priv->redial_button,
@@ -1460,6 +1462,102 @@ empathy_call_window_update_timer (gpointer user_data)
   return TRUE;
 }
 
+static void
+display_error (EmpathyCallWindow *self,
+    const gchar *img,
+    const gchar *title,
+    const gchar *desc)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GtkWidget *info_bar;
+  GtkWidget *content_area;
+  GtkWidget *image;
+  GtkWidget *label;
+  gchar *txt;
+
+  /* Create info bar */
+  info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+      NULL);
+
+  gtk_widget_set_no_show_all (info_bar, TRUE);
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
+
+  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+
+  /* Add image */
+  image = gtk_image_new_from_icon_name (img, GTK_ICON_SIZE_DIALOG);
+  gtk_widget_show (image);
+  gtk_container_add (GTK_CONTAINER (content_area), image);
+
+  /* Add text */
+  txt = g_strdup_printf ("<b>%s</b>\n%s", title, desc);
+
+  label = gtk_label_new ("");
+  gtk_label_set_markup (GTK_LABEL (label), txt);
+  g_free (txt);
+  gtk_widget_show (label);
+  gtk_container_add (GTK_CONTAINER (content_area), label);
+
+  g_signal_connect (info_bar, "response",
+      G_CALLBACK (gtk_widget_destroy), NULL);
+
+  gtk_box_pack_start (GTK_BOX (priv->errors_vbox), info_bar,
+      FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
+  gtk_widget_show (info_bar);
+}
+
+static gchar *
+media_stream_error_to_txt (EmpathyCallWindow *self,
+    TpMediaStreamError error)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  switch (error)
+    {
+      case TP_MEDIA_STREAM_ERROR_CODEC_NEGOTIATION_FAILED:
+        return g_strdup_printf ("You don't have any common codec with %s.",
+          empathy_contact_get_name (priv->contact));
+
+      /* TODO: support more error */
+      default:
+        return NULL;
+    }
+}
+
+static void
+empathy_call_window_audio_stream_error (EmpathyTpCall *call,
+    guint code,
+    const gchar *msg,
+    EmpathyCallWindow *self)
+{
+  gchar *desc;
+
+  desc = media_stream_error_to_txt (self, code);
+  if (desc == NULL)
+    return;
+
+  display_error (self, "gnome-stock-mic", _("Can't establish audio stream"),
+      desc);
+  g_free (desc);
+}
+
+static void
+empathy_call_window_video_stream_error (EmpathyTpCall *call,
+    guint code,
+    const gchar *msg,
+    EmpathyCallWindow *self)
+{
+  gchar *desc;
+
+  desc = media_stream_error_to_txt (self, code);
+  if (desc == NULL)
+    return;
+
+  display_error (self, "camera-web", _("Can't establish video stream"),
+      desc);
+  g_free (desc);
+}
+
 static gboolean
 empathy_call_window_connected (gpointer user_data)
 {
@@ -1753,9 +1851,29 @@ empathy_call_window_update_avatars_visibility (EmpathyTpCall *call,
 }
 
 static void
+call_handler_notify_tp_call_cb (EmpathyCallHandler *handler,
+    GParamSpec *spec,
+    EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  EmpathyTpCall *call;
+
+  g_object_get (priv->handler, "tp-call", &call, NULL);
+  g_assert (call != NULL);
+
+  empathy_signal_connect_weak (call, "audio-stream-error",
+      G_CALLBACK (empathy_call_window_audio_stream_error), G_OBJECT (self));
+  empathy_signal_connect_weak (call, "video-stream-error",
+      G_CALLBACK (empathy_call_window_video_stream_error), G_OBJECT (self));
+
+  g_object_unref (call);
+}
+
+static void
 empathy_call_window_realized_cb (GtkWidget *widget, EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
+  EmpathyTpCall *call;
 
   g_signal_connect (priv->handler, "conference-added",
     G_CALLBACK (empathy_call_window_conference_added_cb), window);
@@ -1769,6 +1887,24 @@ empathy_call_window_realized_cb (GtkWidget *widget, EmpathyCallWindow *window)
     G_CALLBACK (empathy_call_window_sink_added_cb), window);
   g_signal_connect (priv->handler, "stream-closed",
     G_CALLBACK (empathy_call_window_channel_stream_closed_cb), window);
+
+  g_object_get (priv->handler, "tp-call", &call, NULL);
+  if (call != NULL)
+    {
+      empathy_signal_connect_weak (call, "audio-stream-error",
+        G_CALLBACK (empathy_call_window_audio_stream_error), G_OBJECT (window));
+      empathy_signal_connect_weak (call, "video-stream-error",
+        G_CALLBACK (empathy_call_window_video_stream_error), G_OBJECT (window));
+
+      g_object_unref (call);
+    }
+  else
+    {
+      /* tp-call doesn't exist yet, we'll connect signals once it has been
+       * set */
+      g_signal_connect (priv->handler, "notify::tp-call",
+        G_CALLBACK (call_handler_notify_tp_call_cb), window);
+    }
 
   gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
 }
