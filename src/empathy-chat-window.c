@@ -362,15 +362,7 @@ chat_window_update (EmpathyChatWindow *window)
 	}
 
 	/* Update window title */
-	if (n_chats == 1) {
-		gtk_window_set_title (GTK_WINDOW (priv->dialog), name);
-	} else {
-		gchar *title;
-
-		title = g_strdup_printf (_("Conversations (%d)"), n_chats);
-		gtk_window_set_title (GTK_WINDOW (priv->dialog), title);
-		g_free (title);
-	}
+	gtk_window_set_title (GTK_WINDOW (priv->dialog), name);
 
 	/* Update window icon */
 	if (priv->chats_new_msg) {
