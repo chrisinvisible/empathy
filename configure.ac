@@ -169,6 +169,7 @@ PKG_CHECK_MODULES(EMPATHY,
    dbus-glib-1
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-farsight
+   farsight2-0.10
    gstreamer-0.10
    unique-1.0
    gnome-keyring-1 >= $KEYRING_REQUIRED
