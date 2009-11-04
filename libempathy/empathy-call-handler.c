@@ -455,6 +455,7 @@ empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
     empathy_dispatch_operation_get_channel_wrapper (operation));
 
   g_object_ref (priv->call);
+  g_object_notify (G_OBJECT (self), "tp-call");
 
   empathy_call_handler_start_tpfs (self);
 
