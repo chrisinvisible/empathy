@@ -321,7 +321,7 @@ empathy_contact_log_menu_item_new (EmpathyContact *contact)
 					       FALSE);
 	g_object_unref (manager);
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("_View Previous Conversations"));
+	item = gtk_image_menu_item_new_with_mnemonic (_("_Previous Conversations"));
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_LOG,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
