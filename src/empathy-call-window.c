@@ -1519,7 +1519,7 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
             _("You don't have any codecs in common with %s."),
           empathy_contact_get_name (priv->contact));
 
-      /* TODO: support more error */
+      /* TODO: support more errors */
       default:
         return NULL;
     }
