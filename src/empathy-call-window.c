@@ -1536,10 +1536,16 @@ empathy_call_window_stream_error (EmpathyCallWindow *self,
 
   desc = media_stream_error_to_txt (self, code);
   if (desc == NULL)
-    return;
-
-  display_error (self, icon, title, desc);
-  g_free (desc);
+    {
+      /* No description, use the error message. That's not great as it's not
+       * localized but it's better than nothing. */
+      display_error (self, icon, title, msg);
+    }
+  else
+    {
+      display_error (self, icon, title, desc);
+      g_free (desc);
+    }
 }
 
 static void
