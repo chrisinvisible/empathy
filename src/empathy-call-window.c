@@ -1544,6 +1544,13 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
             _("You don't have any codecs in common with %s."),
           empathy_contact_get_name (priv->contact));
 
+      case TP_MEDIA_STREAM_ERROR_CONNECTION_FAILED:
+        return g_strdup_printf (
+            _("Can't establish a connection to %s. "
+              "One of you might be on a network that does not allow "
+              "direct connections."),
+          empathy_contact_get_name (priv->contact));
+
       /* TODO: support more errors */
       default:
         return NULL;
