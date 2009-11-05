@@ -309,47 +309,41 @@ _submenu_notify_visible_changed_cb (GObject    *object,
 }
 
 static void
-chat_window_update (EmpathyChatWindow *window)
+chat_window_menu_context_update (EmpathyChatWindowPriv *priv,
+			      gint num_pages)
 {
-	EmpathyChatWindowPriv *priv = GET_PRIV (window);
-	gboolean               first_page;
-	gboolean               last_page;
-	gboolean               is_connected;
-	gint                   num_pages;
-	gint                   page_num;
-	gint                   i;
-	const gchar           *name;
-	guint                  n_chats;
-	GdkPixbuf             *icon;
-	EmpathyContact        *remote_contact;
-	gboolean               avatar_in_icon;
-	GtkWidget             *chat;
-	GtkWidget             *chat_close_button;
-	GtkWidget             *menu, *submenu, *orig_submenu;
+	gboolean first_page;
+	gboolean last_page;
+	gboolean is_connected;
+	gint     page_num;
 
-	/* Get information */
 	page_num = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
-	num_pages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
 	first_page = (page_num == 0);
 	last_page = (page_num == (num_pages - 1));
 	is_connected = empathy_chat_get_tp_chat (priv->current_chat) != NULL;
-	name = empathy_chat_get_name (priv->current_chat);
-	n_chats = g_list_length (priv->chats);
 
-	DEBUG ("Update window");
+	DEBUG ("Update window : Menu Contexts (Tabs & Conv)");
 
-	/* Update menu */
 	gtk_action_set_sensitive (priv->menu_tabs_next, TRUE);
 	gtk_action_set_sensitive (priv->menu_tabs_prev, TRUE);
 	gtk_action_set_sensitive (priv->menu_tabs_detach, num_pages > 1);
 	gtk_action_set_sensitive (priv->menu_tabs_left, !first_page);
 	gtk_action_set_sensitive (priv->menu_tabs_right, !last_page);
 	gtk_action_set_sensitive (priv->menu_conv_insert_smiley, is_connected);
+}
 
-	/* Update Contact menu */
+static void
+chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
+				 EmpathyChatWindow     *window)
+{
+	GtkWidget *menu, *submenu, *orig_submenu;
+
 	menu = gtk_ui_manager_get_widget (priv->ui_manager,
 		"/chats_menubar/menu_contact");
 	orig_submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (menu));
+
+	DEBUG ("Update window : Contact Menu");
+
 	if (orig_submenu == NULL || !GTK_WIDGET_VISIBLE (orig_submenu)) {
 		submenu = empathy_chat_get_contact_menu (priv->current_chat);
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
@@ -360,9 +354,31 @@ chat_window_update (EmpathyChatWindow *window)
 					     (GCallback)_submenu_notify_visible_changed_cb,
 					     G_OBJECT (window));
 	}
+}
 
-	/* Update window title */
+static void
+chat_window_title_update (EmpathyChatWindowPriv *priv)
+{
+	const gchar *name;
+
+	name = empathy_chat_get_name (priv->current_chat);
+
+	DEBUG ("Update window : Title");
+
 	gtk_window_set_title (GTK_WINDOW (priv->dialog), name);
+}
+
+static void
+chat_window_icon_update (EmpathyChatWindowPriv *priv)
+{
+	GdkPixbuf      *icon;
+	EmpathyContact *remote_contact;
+	gboolean        avatar_in_icon;
+	guint           n_chats;
+
+	n_chats = g_list_length (priv->chats);
+
+	DEBUG ("Update window : Icon");
 
 	/* Update window icon */
 	if (priv->chats_new_msg) {
@@ -385,6 +401,17 @@ chat_window_update (EmpathyChatWindow *window)
 			gtk_window_set_icon_name (GTK_WINDOW (priv->dialog), NULL);
 		}
 	}
+}
+
+static void
+chat_window_close_button_update (EmpathyChatWindowPriv *priv,
+				 gint num_pages)
+{
+	GtkWidget *chat;
+	GtkWidget *chat_close_button;
+	gint       i;
+
+	DEBUG ("Update window : Close Button");
 
 	if (num_pages == 1) {
 		chat = gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), 0);
@@ -399,6 +426,31 @@ chat_window_update (EmpathyChatWindow *window)
 			gtk_widget_show (chat_close_button);
 		}
 	}
+}
+
+static void
+chat_window_update (EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv = GET_PRIV (window);
+	gint                   num_pages;
+
+	num_pages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
+
+	DEBUG ("Update window");
+
+	/* Update Tab menu */
+	chat_window_menu_context_update (priv,
+					 num_pages);
+
+	chat_window_contact_menu_update (priv,
+					 window);
+
+	chat_window_title_update (priv);
+
+	chat_window_icon_update (priv);
+
+	chat_window_close_button_update (priv,
+					 num_pages);
 }
 
 static void
