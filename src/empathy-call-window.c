@@ -1526,10 +1526,11 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 }
 
 static void
-empathy_call_window_audio_stream_error (EmpathyTpCall *call,
+empathy_call_window_stream_error (EmpathyCallWindow *self,
     guint code,
     const gchar *msg,
-    EmpathyCallWindow *self)
+    const gchar *icon,
+    const gchar *title)
 {
   gchar *desc;
 
@@ -1537,9 +1538,18 @@ empathy_call_window_audio_stream_error (EmpathyTpCall *call,
   if (desc == NULL)
     return;
 
-  display_error (self, "gnome-stock-mic", _("Can't establish audio stream"),
-      desc);
+  display_error (self, icon, title, desc);
   g_free (desc);
+}
+
+static void
+empathy_call_window_audio_stream_error (EmpathyTpCall *call,
+    guint code,
+    const gchar *msg,
+    EmpathyCallWindow *self)
+{
+  empathy_call_window_stream_error (self, code, msg,
+      "gnome-stock-mic", _("Can't establish audio stream"));
 }
 
 static void
@@ -1548,15 +1558,8 @@ empathy_call_window_video_stream_error (EmpathyTpCall *call,
     const gchar *msg,
     EmpathyCallWindow *self)
 {
-  gchar *desc;
-
-  desc = media_stream_error_to_txt (self, code);
-  if (desc == NULL)
-    return;
-
-  display_error (self, "camera-web", _("Can't establish video stream"),
-      desc);
-  g_free (desc);
+  empathy_call_window_stream_error (self, code, msg,
+      "camera-web", _("Can't establish video stream"));
 }
 
 static gboolean
