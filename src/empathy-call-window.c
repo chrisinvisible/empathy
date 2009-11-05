@@ -1497,7 +1497,7 @@ display_error (EmpathyCallWindow *self,
   /* Add text */
   txt = g_strdup_printf ("<b>%s</b>\n%s", title, desc);
 
-  label = gtk_label_new ("");
+  label = gtk_label_new (NULL);
   gtk_label_set_markup (GTK_LABEL (label), txt);
   g_free (txt);
 
@@ -1512,7 +1512,7 @@ display_error (EmpathyCallWindow *self,
 
       txt = g_strdup_printf ("<i>%s</i>", details);
 
-      label = gtk_label_new ("");
+      label = gtk_label_new (NULL);
       gtk_label_set_markup (GTK_LABEL (label), txt);
       gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
       gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
