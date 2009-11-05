@@ -1466,11 +1466,13 @@ static void
 display_error (EmpathyCallWindow *self,
     const gchar *img,
     const gchar *title,
-    const gchar *desc)
+    const gchar *desc,
+    const gchar *details)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GtkWidget *info_bar;
   GtkWidget *content_area;
+  GtkWidget *vbox;
   GtkWidget *image;
   GtkWidget *label;
   gchar *txt;
@@ -1489,20 +1491,43 @@ display_error (EmpathyCallWindow *self,
   gtk_widget_show (image);
   gtk_container_add (GTK_CONTAINER (content_area), image);
 
+  vbox = gtk_vbox_new (FALSE, 3);
+  gtk_container_add (GTK_CONTAINER (content_area), vbox);
+
   /* Add text */
   txt = g_strdup_printf ("<b>%s</b>\n%s", title, desc);
 
   label = gtk_label_new ("");
   gtk_label_set_markup (GTK_LABEL (label), txt);
   g_free (txt);
-  gtk_widget_show (label);
-  gtk_container_add (GTK_CONTAINER (content_area), label);
+
+  gtk_container_add (GTK_CONTAINER (vbox), label);
+
+  /* Add details */
+  if (details != NULL)
+    {
+      GtkWidget *expander;
+
+      expander = gtk_expander_new (_("Details"));
+
+      txt = g_strdup_printf ("<i>%s</i>", details);
+
+      label = gtk_label_new ("");
+      gtk_label_set_markup (GTK_LABEL (label), txt);
+      gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+      gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
+      g_free (txt);
+
+      gtk_container_add (GTK_CONTAINER (expander), label);
+      gtk_container_add (GTK_CONTAINER (vbox), expander);
+    }
 
   g_signal_connect (info_bar, "response",
       G_CALLBACK (gtk_widget_destroy), NULL);
 
   gtk_box_pack_start (GTK_BOX (priv->errors_vbox), info_bar,
       FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
+  gtk_widget_show_all (vbox);
   gtk_widget_show (info_bar);
 }
 
@@ -1539,11 +1564,11 @@ empathy_call_window_stream_error (EmpathyCallWindow *self,
     {
       /* No description, use the error message. That's not great as it's not
        * localized but it's better than nothing. */
-      display_error (self, icon, title, msg);
+      display_error (self, icon, title, msg, NULL);
     }
   else
     {
-      display_error (self, icon, title, desc);
+      display_error (self, icon, title, desc, msg);
       g_free (desc);
     }
 }
