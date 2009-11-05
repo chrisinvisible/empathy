@@ -1209,6 +1209,11 @@ account_manager_prepared_cb (GObject *source_object,
 				  G_CALLBACK (main_window_connection_changed_cb),
 				  window);
 	}
+
+	/* Disable the "Previous Conversations" menu entry if there is no account */
+	gtk_action_set_sensitive (window->view_history,
+		g_list_length (accounts) > 0);
+
 	g_list_free (accounts);
 }
 
@@ -1400,7 +1405,6 @@ empathy_main_window_show (void)
 	g_signal_connect (window->account_manager, "account-removed",
 			  G_CALLBACK (main_window_account_removed_cb),
 			  window);
-	main_window_account_removed_cb (window->account_manager, NULL, window);
 
 	l = empathy_event_manager_get_events (window->event_manager);
 	while (l) {
