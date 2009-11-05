@@ -1508,7 +1508,7 @@ display_error (EmpathyCallWindow *self,
     {
       GtkWidget *expander;
 
-      expander = gtk_expander_new (_("Details"));
+      expander = gtk_expander_new (_("Technical Details"));
 
       txt = g_strdup_printf ("<i>%s</i>", details);
 
