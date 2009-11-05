@@ -1860,7 +1860,8 @@ call_handler_notify_tp_call_cb (EmpathyCallHandler *handler,
   EmpathyTpCall *call;
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
-  g_assert (call != NULL);
+  if (call == NULL)
+    return;
 
   empathy_signal_connect_weak (call, "audio-stream-error",
       G_CALLBACK (empathy_call_window_audio_stream_error), G_OBJECT (self));
