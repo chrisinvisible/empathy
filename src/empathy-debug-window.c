@@ -895,6 +895,48 @@ debug_window_button_press_event_cb (GtkTreeView *view,
   return FALSE;
 }
 
+static gchar *
+debug_window_format_timestamp (gdouble timestamp)
+{
+  struct tm *tstruct;
+  char time_str[32];
+  gint ms;
+  time_t sec;
+  gchar *text;
+
+  ms = (int) ((timestamp - (int) timestamp)*1e6);
+  sec = (long) timestamp;
+  tstruct = localtime ((time_t *) &sec);
+  if (!strftime (time_str, sizeof (time_str), "%x %T", tstruct))
+    {
+      DEBUG ("Failed to format timestamp: %e", timestamp);
+      time_str[0] = '\0';
+    }
+
+  text = g_strdup_printf ("%s.%d", time_str, ms);
+
+  return text;
+}
+
+static void
+debug_window_time_formatter (GtkTreeViewColumn *tree_column,
+    GtkCellRenderer *cell,
+    GtkTreeModel *tree_model,
+    GtkTreeIter *iter,
+    gpointer data)
+{
+  gdouble timestamp;
+  gchar *time_str;
+
+  gtk_tree_model_get (tree_model, iter, COL_DEBUG_TIMESTAMP, &timestamp, -1);
+
+  time_str = debug_window_format_timestamp (timestamp);
+
+  g_object_set (G_OBJECT (cell), "text", time_str, NULL);
+
+  g_free (time_str);
+}
+
 static gboolean
 debug_window_store_filter_foreach (GtkTreeModel *model,
     GtkTreePath *path,
@@ -904,7 +946,7 @@ debug_window_store_filter_foreach (GtkTreeModel *model,
   GFileOutputStream *output_stream = (GFileOutputStream *) user_data;
   gchar *domain, *category, *message, *level_str, *level_upper;
   gdouble timestamp;
-  gchar *line;
+  gchar *line, *time_str;
   GError *error = NULL;
   gboolean out = FALSE;
 
@@ -918,9 +960,13 @@ debug_window_store_filter_foreach (GtkTreeModel *model,
 
   level_upper = g_ascii_strup (level_str, -1);
 
-  line = g_strdup_printf ("%s%s%s-%s: %e: %s\n",
+  time_str = debug_window_format_timestamp (timestamp);
+
+  line = g_strdup_printf ("%s%s%s-%s: %s: %s\n",
       domain, EMP_STR_EMPTY (category) ? "" : "/",
-      category, level_upper, timestamp, message);
+      category, level_upper, time_str, message);
+
+  g_free (time_str);
 
   g_output_stream_write (G_OUTPUT_STREAM (output_stream), line,
       strlen (line), NULL, &error);
@@ -1020,7 +1066,7 @@ debug_window_copy_model_foreach (GtkTreeModel *model,
   gchar *tmp;
   gchar *domain, *category, *message, *level_str, *level_upper;
   gdouble timestamp;
-  gchar *line;
+  gchar *line, *time_str;
 
   gtk_tree_model_get (model, iter,
       COL_DEBUG_TIMESTAMP, &timestamp,
@@ -1032,9 +1078,13 @@ debug_window_copy_model_foreach (GtkTreeModel *model,
 
   level_upper = g_ascii_strup (level_str, -1);
 
-  line = g_strdup_printf ("%s%s%s-%s: %e: %s\n",
+  time_str = debug_window_format_timestamp (timestamp);
+
+  line = g_strdup_printf ("%s%s%s-%s: %s: %s\n",
       domain, EMP_STR_EMPTY (category) ? "" : "/",
-      category, level_upper, timestamp, message);
+      category, level_upper, time_str, message);
+
+  g_free (time_str);
 
   tmp = g_strconcat (*text, line, NULL);
 
@@ -1270,8 +1320,9 @@ debug_window_constructor (GType type,
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0, NULL);
 
-  gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (priv->view),
-      -1, _("Time"), renderer, "text", COL_DEBUG_TIMESTAMP, NULL);
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (priv->view),
+      -1, _("Time"), renderer,
+      (GtkTreeCellDataFunc) debug_window_time_formatter, NULL, NULL);
   gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (priv->view),
       -1, _("Domain"), renderer, "text", COL_DEBUG_DOMAIN, NULL);
   gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (priv->view),
