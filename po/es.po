@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-11-03 18:56+0000\n"
-"PO-Revision-Date: 2009-11-03 20:47+0100\n"
+"POT-Creation-Date: 2009-11-06 14:01+0000\n"
+"PO-Revision-Date: 2009-11-06 16:03+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -606,16 +606,16 @@ msgstr "Todo"
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1308
+#: ../libempathy-gtk/empathy-account-widget.c:1289
 msgid "L_og in"
 msgstr "Iniciar _sesión"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1358
+#: ../libempathy-gtk/empathy-account-widget.c:1353
 msgid "Enabled"
 msgstr "Activada"
 
 #.  Translators: this is used only when built on a moblin platform 
-#: ../libempathy-gtk/empathy-account-widget.c:1364
+#: ../libempathy-gtk/empathy-account-widget.c:1359
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -935,12 +935,10 @@ msgid "Failed to reconnect this chat"
 msgstr "Falló al reconectar a este chat"
 
 #: ../libempathy-gtk/empathy-chat.c:591
-#| msgid "_Invite to chatroom"
 msgid "Failed to join chatroom"
 msgstr "Falló al unirse a la sala"
 
 #: ../libempathy-gtk/empathy-chat.c:609
-#| msgid "Failed to reconnect this chat"
 msgid "Failed to open private chat"
 msgstr "Falló al abrir el chat privado"
 
@@ -1000,14 +998,10 @@ msgstr ""
 
 #: ../libempathy-gtk/empathy-chat.c:788
 #, c-format
-#| msgid ""
-#| "\n"
-#| "Message: %s"
 msgid "Usage: %s"
 msgstr "Uso: %s"
 
 #: ../libempathy-gtk/empathy-chat.c:817
-#| msgid "Unknown reason"
 msgid "Unknown command"
 msgstr "Comando desconocido"
 
@@ -1122,7 +1116,7 @@ msgstr " (%s)"
 msgid "%s has joined the room"
 msgstr "%s ha entrado en la sala"
 
-#: ../libempathy-gtk/empathy-chat.c:1908 ../src/empathy-call-window.c:1295
+#: ../libempathy-gtk/empathy-chat.c:1908 ../src/empathy-call-window.c:1297
 msgid "Disconnected"
 msgstr "Desconectado"
 
@@ -1135,7 +1129,7 @@ msgstr "Conectado"
 msgid "Conversation"
 msgstr "Conversación"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:512
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:556
 msgid "Topic:"
 msgstr "Tema:"
 
@@ -1222,8 +1216,9 @@ msgid "_Video Call"
 msgstr "Llamada de _vídeo"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:324
-msgid "_View Previous Conversations"
-msgstr "_Ver conversaciones previas"
+#: ../src/empathy-main-window.ui.h:24
+msgid "_Previous Conversations"
+msgstr "Conversaciones an_teriores"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:346
 msgid "Send file"
@@ -1798,19 +1793,19 @@ msgstr "Occidental"
 msgid "Vietnamese"
 msgstr "Vietnamita"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:141
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:108
 msgid "The contact selected cannot receive files."
 msgstr "El contacto seleccionado no puede recibir archivos."
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:147
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:114
 msgid "The contact selected is offline."
 msgstr "El contacto seleccionado está desconectado."
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:202
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:169
 msgid "No error message"
 msgstr "Sin mensaje de eeror"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:278
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
@@ -1913,7 +1908,7 @@ msgstr "Ocurrió un error"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1388
+#: ../src/empathy-accounts-dialog.c:1369
 #, c-format
 msgid "New %s account"
 msgstr "Cuenta de %s nueva"
@@ -2037,40 +2032,16 @@ msgstr ""
 "Va a crear una cuenta nueva que descartará sus cambios.\n"
 "¿Seguro que quiere continuar?"
 
-#: ../src/empathy-accounts-dialog.c:824
-#, c-format
-msgid ""
-"You are about to remove your %s account!\n"
-"Are you sure you want to proceed?"
-msgstr ""
-"Va a eliminar su cuenta %s\n"
-"¿Seguro que quiere continuar?"
-
-#. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:828
+#: ../src/empathy-accounts-dialog.c:823
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "¿Quiere quitar %s de su equipo?"
 
-#: ../src/empathy-accounts-dialog.c:834
-msgid ""
-"Any associated conversations and chat rooms will NOT be removed if you "
-"decide to proceed.\n"
-"\n"
-"Should you decide to add the account back at a later time, they will still "
-"be available."
-msgstr ""
-"Cualquier conversación o sala de chat asociada NO se eliminará si decide "
-"continuar.\n"
-"\n"
-"Si decidiera volver a añadir la cuenta más tarde, estarán aún disponibles."
-
-#. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:841
+#: ../src/empathy-accounts-dialog.c:827
 msgid "This will not remove your account on the server."
 msgstr "Esto no quitará su cuenta del servidor."
 
-#: ../src/empathy-accounts-dialog.c:1028
+#: ../src/empathy-accounts-dialog.c:1009
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2078,7 +2049,7 @@ msgstr ""
 "Va a seleccionar otra cuenta lo que descartará sus cambios.\n"
 "¿Seguro que quiere continuar?"
 
-#: ../src/empathy-accounts-dialog.c:1474
+#: ../src/empathy-accounts-dialog.c:1455
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2087,7 +2058,7 @@ msgstr ""
 "¿Seguro que quiere continuar?"
 
 #.  Translators: this is used only when built on a moblin platform 
-#: ../src/empathy-accounts-dialog.c:1645
+#: ../src/empathy-accounts-dialog.c:1626
 msgid "_Next"
 msgstr "_Siguiente"
 
@@ -2135,60 +2106,91 @@ msgstr "_Usar una cuenta ya existente"
 msgid "account"
 msgstr "cuenta"
 
-#: ../src/empathy-call-window.c:427
+#: ../src/empathy-call-window.c:428
 msgid "Contrast"
 msgstr "Contraste"
 
-#: ../src/empathy-call-window.c:430
+#: ../src/empathy-call-window.c:431
 msgid "Brightness"
 msgstr "Brillo"
 
-#: ../src/empathy-call-window.c:433
+#: ../src/empathy-call-window.c:434
 msgid "Gamma"
 msgstr "Gamma"
 
-#: ../src/empathy-call-window.c:541
+#: ../src/empathy-call-window.c:542
 msgid "Volume"
 msgstr "Volumen"
 
-#: ../src/empathy-call-window.c:675
+#: ../src/empathy-call-window.c:676
 msgid "Connecting..."
 msgstr "Conectando…"
 
-#: ../src/empathy-call-window.c:782
+#: ../src/empathy-call-window.c:784
 msgid "_Sidebar"
 msgstr "Barra _lateral"
 
-#: ../src/empathy-call-window.c:801
+#: ../src/empathy-call-window.c:803
 msgid "Dialpad"
 msgstr "Teclado de llamada"
 
-#: ../src/empathy-call-window.c:807
+#: ../src/empathy-call-window.c:809
 msgid "Audio input"
 msgstr "Entrada de sonido"
 
-#: ../src/empathy-call-window.c:811
+#: ../src/empathy-call-window.c:813
 msgid "Video input"
 msgstr "Entrada de vídeo"
 
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
-#: ../src/empathy-call-window.c:874
+#: ../src/empathy-call-window.c:876
 #, c-format
 msgid "Call with %s"
 msgstr "Llamar con %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:955
+#: ../src/empathy-call-window.c:957
 msgid "Call"
 msgstr "Llamar"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1455
+#: ../src/empathy-call-window.c:1457
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Conectado — %d:%02dm"
+
+#: ../src/empathy-call-window.c:1511
+#| msgid "Contact Details"
+msgid "Technical Details"
+msgstr "Detalles técnicos"
+
+#: ../src/empathy-call-window.c:1544
+#, c-format
+msgid ""
+"%s's software does not understand any of the video formats supported by your "
+"computer"
+msgstr ""
+"El software de «%s» no entiende ninguno de los formatos de vídeo soportados "
+"por su equipo"
+
+#: ../src/empathy-call-window.c:1550
+#, c-format
+msgid ""
+"Can't establish a connection to %s. One of you might be on a network that "
+"does not allow direct connections."
+msgstr ""
+"No se puede establecer una conexión con %s. Uno de los dos puede estar en "
+"una red que no acepta conexiones directas."
+
+#: ../src/empathy-call-window.c:1591
+msgid "Can't establish audio stream"
+msgstr "No se puede establecer el flujo de sonido"
+
+#: ../src/empathy-call-window.c:1601
+msgid "Can't establish video stream"
+msgstr "No se puede establecer el flujo de vídeo"
 
 #: ../src/empathy-call-window.ui.h:1
 msgid "Hang up"
@@ -2218,12 +2220,7 @@ msgstr "_Llamar"
 msgid "_View"
 msgstr "_Ver"
 
-#: ../src/empathy-chat-window.c:370
-#, c-format
-msgid "Conversations (%d)"
-msgstr "Conversaciones (%d)"
-
-#: ../src/empathy-chat-window.c:516
+#: ../src/empathy-chat-window.c:560
 msgid "Typing a message."
 msgstr "Tecleando un mensaje."
 
@@ -2595,7 +2592,7 @@ msgstr "Error del certificado"
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: ../src/empathy-main-window.c:1332
+#: ../src/empathy-main-window.c:1337
 msgid "Show and edit accounts"
 msgstr "Mostrar y editar cuentas"
 
@@ -2670,10 +2667,6 @@ msgstr "Información p_ersonal"
 #: ../src/empathy-main-window.ui.h:23
 msgid "_Preferences"
 msgstr "Prefere_ncias"
-
-#: ../src/empathy-main-window.ui.h:24
-msgid "_Previous Conversations"
-msgstr "Conversaciones an_teriores"
 
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Room"
@@ -2947,70 +2940,94 @@ msgstr ""
 msgid "Contact Map View"
 msgstr "Vista del mapa de contactos"
 
-#: ../src/empathy-debug-window.c:117 ../src/empathy-debug-window.c:1255
-msgid "Error"
-msgstr "Error"
-
-#: ../src/empathy-debug-window.c:120 ../src/empathy-debug-window.c:1249
-msgid "Critical"
-msgstr "Crítico"
-
-#: ../src/empathy-debug-window.c:123 ../src/empathy-debug-window.c:1243
-msgid "Warning"
-msgstr "Advertencia"
-
-#: ../src/empathy-debug-window.c:126 ../src/empathy-debug-window.c:1237
-#: ../src/empathy-debug-window.c:1285
-msgid "Message"
-msgstr "Mensaje"
-
-#: ../src/empathy-debug-window.c:129 ../src/empathy-debug-window.c:1231
-msgid "Info"
-msgstr "Información"
-
-#: ../src/empathy-debug-window.c:132 ../src/empathy-debug-window.c:1225
-msgid "Debug"
-msgstr "Depurar"
-
-#: ../src/empathy-debug-window.c:996
+#: ../src/empathy-debug-window.c:1042
 msgid "Save"
 msgstr "Guardar"
 
-#: ../src/empathy-debug-window.c:1114
+#: ../src/empathy-debug-window.c:1164
 msgid "Debug Window"
 msgstr "Depurar ventana"
 
-#: ../src/empathy-debug-window.c:1193
+#: ../src/empathy-debug-window.c:1243
 msgid "Pause"
 msgstr "Pausar"
 
-#: ../src/empathy-debug-window.c:1205
+#: ../src/empathy-debug-window.c:1255
 msgid "Level "
 msgstr "Nivel "
 
-#: ../src/empathy-debug-window.c:1274
+#: ../src/empathy-debug-window.c:1275
+msgid "Debug"
+msgstr "Depurar"
+
+#: ../src/empathy-debug-window.c:1281
+msgid "Info"
+msgstr "Información"
+
+#: ../src/empathy-debug-window.c:1287 ../src/empathy-debug-window.c:1336
+msgid "Message"
+msgstr "Mensaje"
+
+#: ../src/empathy-debug-window.c:1293
+msgid "Warning"
+msgstr "Advertencia"
+
+#: ../src/empathy-debug-window.c:1299
+msgid "Critical"
+msgstr "Crítico"
+
+#: ../src/empathy-debug-window.c:1305
+msgid "Error"
+msgstr "Error"
+
+#: ../src/empathy-debug-window.c:1324
 msgid "Time"
 msgstr "Hora"
 
-#: ../src/empathy-debug-window.c:1276
+#: ../src/empathy-debug-window.c:1327
 msgid "Domain"
 msgstr "Dominio"
 
-#: ../src/empathy-debug-window.c:1278
+#: ../src/empathy-debug-window.c:1329
 msgid "Category"
 msgstr "Categoría"
 
-#: ../src/empathy-debug-window.c:1280
+#: ../src/empathy-debug-window.c:1331
 msgid "Level"
 msgstr "Nivel"
 
-#: ../src/empathy-debug-window.c:1312
+#: ../src/empathy-debug-window.c:1363
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr ""
 "El gestor de conexiones seleccionado no soporta la extensión de depuración "
 "remota."
+
+#~ msgid "_View Previous Conversations"
+#~ msgstr "_Ver conversaciones previas"
+
+#~ msgid ""
+#~ "You are about to remove your %s account!\n"
+#~ "Are you sure you want to proceed?"
+#~ msgstr ""
+#~ "Va a eliminar su cuenta %s\n"
+#~ "¿Seguro que quiere continuar?"
+
+#~ msgid ""
+#~ "Any associated conversations and chat rooms will NOT be removed if you "
+#~ "decide to proceed.\n"
+#~ "\n"
+#~ "Should you decide to add the account back at a later time, they will "
+#~ "still be available."
+#~ msgstr ""
+#~ "Cualquier conversación o sala de chat asociada NO se eliminará si decide "
+#~ "continuar.\n"
+#~ "\n"
+#~ "Si decidiera volver a añadir la cuenta más tarde, estarán aún disponibles."
+
+#~ msgid "Conversations (%d)"
+#~ msgstr "Conversaciones (%d)"
 
 #~ msgid "Can't set an empty display name"
 #~ msgstr "No se puede establecer ningún nombre para mostrar"
