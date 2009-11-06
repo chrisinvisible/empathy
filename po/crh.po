@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-31 18:50-0500\n"
-"PO-Revision-Date: 2009-11-06 01:40-0600\n"
+"POT-Creation-Date: 2009-11-06 01:56-0600\n"
+"PO-Revision-Date: 2009-11-06 01:57-0600\n"
 "Last-Translator: Reşat SABIQ <tilde.birlik@gmail.com>\n"
 "Language-Team: Qırımtatarca (Qırım Türkçesi) <tilde-birlik-tercime@lists."
 "sourceforge.net>\n"
@@ -552,31 +552,37 @@ msgid "Facebook Chat"
 msgstr "Facebook Subeti"
 
 #: ../libempathy/empathy-time.c:137
+#, c-format
 msgid "%d second ago"
 msgid_plural "%d seconds ago"
 msgstr[0] "%d saniye evel"
 
 #: ../libempathy/empathy-time.c:142
+#, c-format
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "%d daqqa evel"
 
 #: ../libempathy/empathy-time.c:147
+#, c-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
 msgstr[0] "%d saat evel"
 
 #: ../libempathy/empathy-time.c:152
+#, c-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d kün evel"
 
 #: ../libempathy/empathy-time.c:157
+#, c-format
 msgid "%d week ago"
 msgid_plural "%d weeks ago"
 msgstr[0] "%d afta evel"
 
 #: ../libempathy/empathy-time.c:162
+#, c-format
 msgid "%d month ago"
 msgid_plural "%d months ago"
 msgstr[0] "%d ay evel"
@@ -591,6 +597,7 @@ msgstr "Episi"
 
 #: ../libempathy-gtk/empathy-account-widget.c:433
 #: ../libempathy-gtk/empathy-account-widget.c:489
+#, c-format
 msgid "%s:"
 msgstr "%s:"
 
@@ -954,10 +961,12 @@ msgid "unknown"
 msgstr "namalüm"
 
 #: ../libempathy-gtk/empathy-chat.c:554
+#, c-format
 msgid "Error sending message '%s': %s"
 msgstr "'%s' mesajı yiberilgende hata : %s"
 
 #: ../libempathy-gtk/empathy-chat.c:584
+#, c-format
 msgid "Topic set to: %s"
 msgstr "Mevzu şöyle tesbit etildi: %s"
 
@@ -984,6 +993,7 @@ msgid "_Spelling Suggestions"
 msgstr "_İmlâ Telqinleri"
 
 #: ../libempathy-gtk/empathy-chat.c:1177
+#, c-format
 msgid "%s has disconnected"
 msgstr "%s bağlantısını kesti"
 
@@ -991,10 +1001,12 @@ msgstr "%s bağlantısını kesti"
 #. * if the kicked should come before the kicker in your locale.
 #.
 #: ../libempathy-gtk/empathy-chat.c:1184
+#, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%1$s, %2$s tarafından def etildi"
 
 #: ../libempathy-gtk/empathy-chat.c:1187
+#, c-format
 msgid "%s was kicked"
 msgstr "%s def etildi"
 
@@ -1002,14 +1014,17 @@ msgstr "%s def etildi"
 #. * if the banned should come before the banner in your locale.
 #.
 #: ../libempathy-gtk/empathy-chat.c:1195
+#, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%1$s, %2$s tarafından man etildi"
 
 #: ../libempathy-gtk/empathy-chat.c:1198
+#, c-format
 msgid "%s was banned"
 msgstr "%s man etildi"
 
 #: ../libempathy-gtk/empathy-chat.c:1202
+#, c-format
 msgid "%s has left the room"
 msgstr "%s odanı terk etti"
 
@@ -1019,10 +1034,12 @@ msgstr "%s odanı terk etti"
 #. * please let us know. :-)
 #.
 #: ../libempathy-gtk/empathy-chat.c:1211
+#, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
 #: ../libempathy-gtk/empathy-chat.c:1234
+#, c-format
 msgid "%s has joined the room"
 msgstr "%s odağa qoşuldı"
 
@@ -1084,6 +1101,7 @@ msgid "Subscription Request"
 msgstr "Abunelik İstemi"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1414
+#, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Kerçekten '%s' zümresini çetleştirmege isteysiñizmi?"
 
@@ -1098,6 +1116,7 @@ msgid "_Remove"
 msgstr "Çetleş_tir"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:1493
+#, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Kerçekten '%s' temasını çetleştirmege isteysiñizmi?"
 
@@ -1117,10 +1136,12 @@ msgstr "_Subet"
 
 # tüklü
 #: ../libempathy-gtk/empathy-contact-menu.c:253
+msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Davuşlı Çağırış"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:285
+msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Video Çağırış"
 
@@ -1838,6 +1859,7 @@ msgid "There has been an error."
 msgstr "Bir hata olğandır."
 
 #: ../src/empathy-account-assistant.c:141
+#, c-format
 msgid "The error message was: <span style=\"italic\">%s</span>"
 msgstr "Hata mesajı şöyle edi: <span style=\"italic\">%s</span>"
 
@@ -1860,7 +1882,8 @@ msgstr "Bir hata asıl oldı"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1428
+#: ../src/empathy-accounts-dialog.c:1431
+#, c-format
 msgid "New %s account"
 msgstr "Yañı %s esabı"
 
@@ -1945,6 +1968,7 @@ msgstr "Mevcut esaplarıñıznı ital etiñiz"
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
 #: ../src/empathy-accounts-dialog.c:63
+#, c-format
 msgid "There are unsaved modification regarding your %s account."
 msgstr "%s esabıñız ile alâqadar saqlanmağan deñişiklikler bar."
 
@@ -1953,21 +1977,23 @@ msgstr "%s esabıñız ile alâqadar saqlanmağan deñişiklikler bar."
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../src/empathy-accounts-dialog.c:234
+#: ../src/empathy-accounts-dialog.c:231
+#, c-format
 msgid "%1$s on %2$s"
 msgstr "%2$s üzerinde %1$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../src/empathy-accounts-dialog.c:246
+#: ../src/empathy-accounts-dialog.c:249
+#, c-format
 msgid "%s Account"
 msgstr "%s Esabı"
 
-#: ../src/empathy-accounts-dialog.c:250
+#: ../src/empathy-accounts-dialog.c:253
 msgid "New account"
 msgstr "Yañı esap"
 
-#: ../src/empathy-accounts-dialog.c:514
+#: ../src/empathy-accounts-dialog.c:517
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1975,7 +2001,8 @@ msgstr ""
 "Yañı bir esap icat etmek üzresiñiz ki, neticede deñişiklikleriñiz\n"
 "taşlanacaq. Devam etmege istegeniñizden eminsiñizmi?"
 
-#: ../src/empathy-accounts-dialog.c:798
+#: ../src/empathy-accounts-dialog.c:801
+#, c-format
 msgid ""
 "You are about to remove your %s account!\n"
 "Are you sure you want to proceed?"
@@ -1984,11 +2011,12 @@ msgstr ""
 "Devam etmege istegeniñizden eminsiñizmi?"
 
 #. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:802
+#: ../src/empathy-accounts-dialog.c:805
+#, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "%s bilgisayarıñızdan kerçekten çetleştirilsinmi?"
 
-#: ../src/empathy-accounts-dialog.c:808
+#: ../src/empathy-accounts-dialog.c:811
 msgid ""
 "Any associated conversations and chat rooms will NOT be removed if you "
 "decide to proceed.\n"
@@ -2003,11 +2031,11 @@ msgstr ""
 "olacaqlardır."
 
 #. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:815
+#: ../src/empathy-accounts-dialog.c:818
 msgid "This will not remove your account on the server."
 msgstr "Bu, sunucıdaki esabıñıznı çetleştirmez."
 
-#: ../src/empathy-accounts-dialog.c:1006
+#: ../src/empathy-accounts-dialog.c:1009
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2015,7 +2043,7 @@ msgstr ""
 "Başqa bir esap saylamaq üzresiñiz ki, neticede deñişiklikleriñiz \n"
 "taşlanacaq. Devam etmege istegeniñizden eminsiñizmi?"
 
-#: ../src/empathy-accounts-dialog.c:1505
+#: ../src/empathy-accounts-dialog.c:1508
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2024,7 +2052,7 @@ msgstr ""
 "taşlanacaq. Devam etmege istegeniñizden eminsiñizmi?"
 
 #.  Translators: this is used only when built on a moblin platform 
-#: ../src/empathy-accounts-dialog.c:1671
+#: ../src/empathy-accounts-dialog.c:1674
 msgid "_Next"
 msgstr "_Soñraki"
 
@@ -2108,6 +2136,7 @@ msgstr "Video kirdisi"
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
 #: ../src/empathy-call-window.c:874
+#, c-format
 msgid "Call with %s"
 msgstr "%s ile çağırt"
 
@@ -2119,6 +2148,7 @@ msgstr "Çağırt"
 
 #. Translators: number of minutes:seconds the caller has been connected
 #: ../src/empathy-call-window.c:1455
+#, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Bağlanğan - %d:%02dd"
 
@@ -2151,6 +2181,7 @@ msgid "_View"
 msgstr "_Körünim"
 
 #: ../src/empathy-chat-window.c:369
+#, c-format
 msgid "Conversations (%d)"
 msgstr "Qonuşmalar (%d)"
 
@@ -2240,6 +2271,7 @@ msgid "Incoming call"
 msgstr "Kelici çağırtma"
 
 #: ../src/empathy-event-manager.c:325
+#, c-format
 msgid "%s is calling you, do you want to answer?"
 msgstr "%s sizni çağırta, cevap bermege isteysiñizmi?"
 
@@ -2252,10 +2284,12 @@ msgid "_Answer"
 msgstr "_Cevapla"
 
 #: ../src/empathy-event-manager.c:446
+#, c-format
 msgid "Incoming call from %s"
 msgstr "%s tarafından kelici çağırtma"
 
 #: ../src/empathy-event-manager.c:490
+#, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s sizge bir davetiye teklif ete"
 
@@ -2273,6 +2307,7 @@ msgstr "Oda daveti"
 
 # tüklü
 #: ../src/empathy-event-manager.c:631
+#, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s sizni %s subetine qoşulmağa davet ete"
 
@@ -2286,18 +2321,22 @@ msgid "_Join"
 msgstr "_Qoşul"
 
 #: ../src/empathy-event-manager.c:683
+#, c-format
 msgid "%s invited you to join %s"
 msgstr "%s sizni %s subetine qoşulmağa davet etti"
 
 #: ../src/empathy-event-manager.c:709
+#, c-format
 msgid "Incoming file transfer from %s"
 msgstr "%s tarafından kelici dosye aqtarımı"
 
 #: ../src/empathy-event-manager.c:889
+#, c-format
 msgid "Subscription requested by %s"
 msgstr "%s abunelik istey"
 
 #: ../src/empathy-event-manager.c:893
+#, c-format
 msgid ""
 "\n"
 "Message: %s"
@@ -2307,49 +2346,59 @@ msgstr ""
 
 #. someone is logging off
 #: ../src/empathy-event-manager.c:929
+#, c-format
 msgid "%s is now offline."
 msgstr "%s şimdi devre-tışıdır."
 
 #. someone is logging in
 #: ../src/empathy-event-manager.c:945
+#, c-format
 msgid "%s is now online."
 msgstr "%s şimdi devre-içidir."
 
 #. Translators: time left, when it is more than one hour
 #: ../src/empathy-ft-manager.c:101
+#, c-format
 msgid "%u:%02u.%02u"
 msgstr "%u:%02u.%02u"
 
 #. Translators: time left, when is is less than one hour
 #: ../src/empathy-ft-manager.c:104
+#, c-format
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
 
 #: ../src/empathy-ft-manager.c:180
+msgctxt "file transfer percent"
 msgid "Unknown"
 msgstr "Namalüm"
 
 #: ../src/empathy-ft-manager.c:275
+#, c-format
 msgid "%s of %s at %s/s"
 msgstr "%s / %s, %s/s nisbetinde"
 
 #: ../src/empathy-ft-manager.c:276
+#, c-format
 msgid "%s of %s"
 msgstr "%s / %s"
 
 #. translators: first %s is filename, second %s is the contact name
 #: ../src/empathy-ft-manager.c:307
+#, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr "%2$s temasından \"%1$s\" alına"
 
 #. translators: first %s is filename, second %s is the contact name
 #: ../src/empathy-ft-manager.c:310
+#, c-format
 msgid "Sending \"%s\" to %s"
 msgstr "\"%s\" %s temasına yiberile"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
 #: ../src/empathy-ft-manager.c:340
+#, c-format
 msgid "Error receiving \"%s\" from %s"
 msgstr "\"%s\" %s temasından alınğanda hata"
 
@@ -2358,6 +2407,7 @@ msgid "Error receiving a file"
 msgstr "Bir dosye alğanda hata"
 
 #: ../src/empathy-ft-manager.c:348
+#, c-format
 msgid "Error sending \"%s\" to %s"
 msgstr "\"%s\" %s temasına yiberilgende hata"
 
@@ -2368,12 +2418,14 @@ msgstr "Bir dosye yiberilgende hata"
 #. translators: first %s is filename, second %s
 #. * is the contact name
 #: ../src/empathy-ft-manager.c:490
+#, c-format
 msgid "\"%s\" received from %s"
 msgstr "%2$s temasından \"%1$s\" alındı"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
 #: ../src/empathy-ft-manager.c:495
+#, c-format
 msgid "\"%s\" sent to %s"
 msgstr "\"%s\" %s temasına yiberildi"
 
@@ -2386,10 +2438,12 @@ msgid "Waiting for the other participant's response"
 msgstr "Diger iştirakçiniñ cevabı beklene"
 
 #: ../src/empathy-ft-manager.c:643 ../src/empathy-ft-manager.c:681
+#, c-format
 msgid "Checking integrity of \"%s\""
 msgstr "\"%s\" bütünligi teşkerile"
 
 #: ../src/empathy-ft-manager.c:646 ../src/empathy-ft-manager.c:684
+#, c-format
 msgid "Hashing \"%s\""
 msgstr "Qıyımlana (heşlene) \"%s\""
 
@@ -2441,6 +2495,7 @@ msgid "Source"
 msgstr "Menba"
 
 #: ../src/empathy-import-mc4-accounts.c:106
+#, c-format
 msgid "%s account"
 msgstr "%s esabı"
 
@@ -2595,6 +2650,10 @@ msgid "Members"
 msgstr "Azalar"
 
 #: ../src/empathy-new-chatroom-dialog.c:494
+#, c-format
+msgctxt ""
+"Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/no "
+"and a number."
 msgid ""
 "<b>%s</b>\n"
 "Invite required: %s\n"
@@ -2832,10 +2891,12 @@ msgid "_Quit"
 msgstr "_Çıq"
 
 #: ../src/empathy-tube-dispatch.c:376
+#, c-format
 msgid "Unable to start application for service %s: %s"
 msgstr "%s hızmeti içün uyğulama başlatılalmay: %s"
 
 #: ../src/empathy-tube-dispatch.c:447
+#, c-format
 msgid ""
 "An invitation was offered for service %s, but you don't have the needed "
 "application to handle it"
