@@ -1533,6 +1533,7 @@ display_error (EmpathyCallWindow *self,
 
 static gchar *
 media_stream_error_to_txt (EmpathyCallWindow *self,
+    gboolean audio,
     TpMediaStreamError error)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
@@ -1540,10 +1541,16 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
   switch (error)
     {
       case TP_MEDIA_STREAM_ERROR_CODEC_NEGOTIATION_FAILED:
-        return g_strdup_printf (
-            _("%s's software does not understand any of the video formats "
-              "supported by your computer"),
-          empathy_contact_get_name (priv->contact));
+        if (audio)
+          return g_strdup_printf (
+              _("%s's software does not understand any of the audio formats "
+                "supported by your computer"),
+            empathy_contact_get_name (priv->contact));
+        else
+          return g_strdup_printf (
+              _("%s's software does not understand any of the video formats "
+                "supported by your computer"),
+            empathy_contact_get_name (priv->contact));
 
       case TP_MEDIA_STREAM_ERROR_CONNECTION_FAILED:
         return g_strdup_printf (
@@ -1560,6 +1567,7 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 
 static void
 empathy_call_window_stream_error (EmpathyCallWindow *self,
+    gboolean audio,
     guint code,
     const gchar *msg,
     const gchar *icon,
@@ -1567,7 +1575,7 @@ empathy_call_window_stream_error (EmpathyCallWindow *self,
 {
   gchar *desc;
 
-  desc = media_stream_error_to_txt (self, code);
+  desc = media_stream_error_to_txt (self, audio, code);
   if (desc == NULL)
     {
       /* No description, use the error message. That's not great as it's not
@@ -1587,7 +1595,7 @@ empathy_call_window_audio_stream_error (EmpathyTpCall *call,
     const gchar *msg,
     EmpathyCallWindow *self)
 {
-  empathy_call_window_stream_error (self, code, msg,
+  empathy_call_window_stream_error (self, TRUE, code, msg,
       "gnome-stock-mic", _("Can't establish audio stream"));
 }
 
@@ -1597,7 +1605,7 @@ empathy_call_window_video_stream_error (EmpathyTpCall *call,
     const gchar *msg,
     EmpathyCallWindow *self)
 {
-  empathy_call_window_stream_error (self, code, msg,
+  empathy_call_window_stream_error (self, FALSE, code, msg,
       "camera-web", _("Can't establish video stream"));
 }
 
