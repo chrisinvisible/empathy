@@ -820,26 +820,11 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
     }
 
   question_dialog_primary_text = g_strdup_printf (
-#ifndef HAVE_MOBLIN
-      _("You are about to remove your %s account!\n"
-          "Are you sure you want to proceed?"),
-#else
-      /* Translators: this is used only when built on a moblin platform */
       _("Do you want to remove %s from your computer?"),
-#endif /* HAVE_MOBLIN */
       tp_account_get_display_name (account));
 
   accounts_dialog_show_question_dialog (dialog, question_dialog_primary_text,
-#ifndef HAVE_MOBLIN
-      _("Any associated conversations and chat rooms will NOT be "
-          "removed if you decide to proceed.\n"
-          "\n"
-          "Should you decide to add the account back at a later time, "
-          "they will still be available."),
-#else
-      /* Translators: this is used only when built on a moblin platform */
       _("This will not remove your account on the server."),
-#endif /* HAVE_MOBLIN */
       G_CALLBACK (accounts_dialog_delete_account_response_cb),
       dialog,
       GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
