@@ -863,9 +863,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
       accounts_dialog_model_pixbuf_data_func,
       dialog,
       NULL);
-#ifdef HAVE_MOBLIN
   g_object_set (cell, "ypad", 4, NULL);
-#endif
 
   /* Name renderer */
   cell = gtk_cell_renderer_text_new ();
