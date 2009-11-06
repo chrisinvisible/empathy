@@ -1268,7 +1268,6 @@ do_constructed (GObject *obj)
   if (!priv->simple)
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
-      const gchar *apply_button_id;
 
       priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
 
@@ -1284,29 +1283,25 @@ do_constructed (GObject *obj)
 
           if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
             {
-              /* We are online, display a Connect button */
-              apply_button_id = GTK_STOCK_CONNECT;
+              /* We are online, display a Login button */
+              GtkWidget *image;
+
+              priv->apply_button = gtk_button_new_with_mnemonic (_("L_og in"));
+              image = gtk_image_new_from_stock (GTK_STOCK_CONNECT,
+                  GTK_ICON_SIZE_BUTTON);
+              gtk_button_set_image (GTK_BUTTON (priv->apply_button), image);
             }
           else
             {
               /* We are offline, display a Save button */
-              apply_button_id = GTK_STOCK_SAVE;
+              priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
             }
         }
       else
         {
           /* We are editing an existing account, display an Apply button */
-          apply_button_id = GTK_STOCK_APPLY;
+          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
         }
-
-      priv->apply_button = gtk_button_new_from_stock (apply_button_id);
-
-#ifdef HAVE_MOBLIN
-      if (priv->creating_account)
-	/* Translators: this is used only when built on a moblin platform */
-	gtk_button_set_label (GTK_BUTTON (priv->apply_button),
-            _("L_og in"));
-#endif
 
       gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
           TRUE, 3);
