@@ -35,41 +35,16 @@
 #include <libempathy/empathy-ft-factory.h>
 #include <libempathy/empathy-ft-handler.h>
 #include <libempathy/empathy-tp-file.h>
-#include <libempathy/empathy-account-manager.h>
 
 #include <libempathy-gtk/empathy-contact-selector.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "nautilus-sendto-plugin.h"
 
-static EmpathyAccountManager *acc_manager = NULL;
 static EmpathyFTFactory *factory = NULL;
 static guint transfers = 0;
 
 static gboolean destroy (NstPlugin *plugin);
-
-static void
-handle_account_manager_ready ()
-{
-  TpConnectionPresenceType presence;
-
-  presence = empathy_account_manager_get_global_presence (acc_manager,
-      NULL, NULL);
-
-  if (presence < TP_CONNECTION_PRESENCE_TYPE_AVAILABLE)
-    return;
-}
-
-static void
-acc_manager_ready_cb (EmpathyAccountManager *am,
-    GParamSpec *pspec,
-    gpointer _user_data)
-{
-  if (!empathy_account_manager_is_ready (am))
-    return;
-
-  handle_account_manager_ready ();
-}
 
 static gboolean
 init (NstPlugin *plugin)
@@ -77,14 +52,6 @@ init (NstPlugin *plugin)
   g_print ("Init %s plugin\n", plugin->info->id);
 
   empathy_gtk_init ();
-
-  acc_manager = empathy_account_manager_dup_singleton ();
-
-  if (empathy_account_manager_is_ready (acc_manager))
-    handle_account_manager_ready ();
-  else
-    g_signal_connect (acc_manager, "notify::ready",
-        G_CALLBACK (acc_manager_ready_cb), NULL);
 
   return TRUE;
 }
@@ -262,9 +229,6 @@ send_files (NstPlugin *plugin,
 static gboolean
 destroy (NstPlugin *plugin)
 {
-  if (acc_manager)
-    g_object_unref (acc_manager);
-
   if (factory)
     g_object_unref (factory);
 
