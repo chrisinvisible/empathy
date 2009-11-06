@@ -1570,6 +1570,11 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
         else
           return g_strdup (_("Your computer doesn't support any video format"));
 
+      case TP_MEDIA_STREAM_ERROR_INVALID_CM_BEHAVIOR:
+        return g_strdup (_("Something not expected happened. "
+              "Please report this bug and attach logs gathered "
+              "from the 'Debug' window in the Help menu."));
+
       /* TODO: support more errors */
       default:
         return NULL;
