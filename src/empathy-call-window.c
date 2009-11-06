@@ -1541,7 +1541,8 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
     {
       case TP_MEDIA_STREAM_ERROR_CODEC_NEGOTIATION_FAILED:
         return g_strdup_printf (
-            _("You don't have any codecs in common with %s."),
+            _("%s's software does not understand any of the video formats "
+              "supported by your computer"),
           empathy_contact_get_name (priv->contact));
 
       case TP_MEDIA_STREAM_ERROR_CONNECTION_FAILED:
