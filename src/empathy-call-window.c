@@ -1575,6 +1575,9 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
               "Please report this bug and attach logs gathered "
               "from the 'Debug' window in the Help menu."));
 
+      case TP_MEDIA_STREAM_ERROR_MEDIA_ERROR:
+        return g_strdup (_("There was a failure in the call engine"));
+
       /* TODO: support more errors */
       default:
         return NULL;
