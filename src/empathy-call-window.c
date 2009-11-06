@@ -1564,6 +1564,12 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
               "direct connections."),
           empathy_contact_get_name (priv->contact));
 
+      case TP_MEDIA_STREAM_ERROR_NO_CODECS:
+        if (audio)
+          return g_strdup (_("Your computer doesn't support any audio format"));
+        else
+          return g_strdup (_("Your computer doesn't support any video format"));
+
       /* TODO: support more errors */
       default:
         return NULL;
