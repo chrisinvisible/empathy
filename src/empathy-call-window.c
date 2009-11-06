@@ -1564,6 +1564,9 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
               "direct connections."),
           empathy_contact_get_name (priv->contact));
 
+      case TP_MEDIA_STREAM_ERROR_NETWORK_ERROR:
+          return g_strdup (_("There was a failure on the network"));
+
       case TP_MEDIA_STREAM_ERROR_NO_CODECS:
         if (audio)
           return g_strdup (_("Your computer doesn't support any audio format"));
@@ -1578,7 +1581,6 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
       case TP_MEDIA_STREAM_ERROR_MEDIA_ERROR:
         return g_strdup (_("There was a failure in the call engine"));
 
-      /* TODO: support more errors */
       default:
         return NULL;
     }
