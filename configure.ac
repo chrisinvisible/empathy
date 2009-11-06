@@ -404,9 +404,9 @@ AC_SUBST(MOBLIN_LIBS)
 AC_ARG_ENABLE(nautilus-sendto,
               AS_HELP_STRING([--enable-nautilus-sendto=@<:@no/yes/auto@:>@],
                              [build nautilus-sendto plugin]), ,
-                             enable_nst=auto)
+                             enable_nautilus_sendto=auto)
 
-if test "x$enable_nst" != "xno"; then
+if test "x$enable_nautilus_sendto" != "xno"; then
    PKG_CHECK_MODULES(NST,
    [
       nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
@@ -415,7 +415,7 @@ else
    have_nst=no
 fi
 
-if test "x$enable_nst" = "xyes" -a "x$have_nst" != "xyes"; then
+if test "x$enable_nautilus_sendto" = "xyes" -a "x$have_nst" != "xyes"; then
    AC_MSG_ERROR([Couldn't find nautilus-sendto dependencies.])
 fi
 
