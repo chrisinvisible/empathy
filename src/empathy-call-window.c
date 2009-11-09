@@ -1779,16 +1779,6 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
       case TP_MEDIA_STREAM_TYPE_VIDEO:
         if (priv->video_input != NULL)
           {
-            EmpathyTpCall *call;
-            g_object_get (priv->handler, "tp-call", &call, NULL);
-
-            if (empathy_tp_call_is_sending_video (call))
-              {
-                display_video_preview (self, TRUE);
-              }
-
-            g_object_unref (call);
-
             if (priv->video_tee != NULL)
               {
                 pad = gst_element_get_request_pad (priv->video_tee, "src%d");
