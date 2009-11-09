@@ -683,6 +683,9 @@ account_manager_ready_cb (GObject *source_object,
     {
       maybe_show_account_assistant ();
     }
+
+  g_object_unref (idle);
+  g_object_unref (connectivity);
 }
 
 static EmpathyDispatcher *
