@@ -2309,9 +2309,6 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 
   gtk_widget_show_all (priv->content_hbox);
 
-  if (!empathy_call_handler_has_initial_video (priv->handler))
-    gtk_widget_hide (priv->self_user_output_frame);
-
   priv->outgoing = TRUE;
   empathy_call_window_set_state_connecting (window);
 
