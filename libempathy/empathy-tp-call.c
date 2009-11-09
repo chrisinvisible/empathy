@@ -773,3 +773,24 @@ empathy_tp_call_is_sending_video (EmpathyTpCall *call)
   return priv->video->direction & TP_MEDIA_STREAM_DIRECTION_SEND ?
       TRUE : FALSE;
 }
+
+const gchar *
+empathy_tp_call_get_connection_manager (EmpathyTpCall *self)
+{
+  EmpathyTpCallPriv *priv = GET_PRIV (self);
+  TpConnection *conn;
+  TpAccount *account;
+
+  if (priv->channel == NULL)
+    return NULL;
+
+  conn = tp_channel_borrow_connection (priv->channel);
+  if (conn == NULL)
+    return NULL;
+
+  account = empathy_get_account_for_connection (conn);
+  if (account == NULL)
+    return NULL;
+
+  return tp_account_get_connection_manager (account);
+}

@@ -88,6 +88,8 @@ gboolean empathy_tp_call_has_dtmf (EmpathyTpCall *call);
 gboolean empathy_tp_call_is_receiving_video (EmpathyTpCall *call);
 gboolean empathy_tp_call_is_sending_video (EmpathyTpCall *call);
 
+const gchar * empathy_tp_call_get_connection_manager (EmpathyTpCall *self);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_TP_CALL_H__ */
