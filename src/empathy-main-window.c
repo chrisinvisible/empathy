@@ -1214,6 +1214,8 @@ account_manager_prepared_cb (GObject *source_object,
 				  window);
 	}
 
+	main_window_update_status (window);
+
 	/* Disable the "Previous Conversations" menu entry if there is no account */
 	gtk_action_set_sensitive (window->view_history,
 		g_list_length (accounts) > 0);
@@ -1453,8 +1455,6 @@ empathy_main_window_show (void)
 	main_window_notify_contact_list_size_cb (conf,
 						 EMPATHY_PREFS_UI_SHOW_AVATARS,
 						 window);
-
-	main_window_update_status (window);
 
 	return window->window;
 }
