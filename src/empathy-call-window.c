@@ -1900,28 +1900,6 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
 }
 
 static void
-empathy_call_window_update_self_avatar_visibility (EmpathyCallWindow *window)
-{
-  EmpathyCallWindowPriv *priv = GET_PRIV (window);
-
-  if (gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (priv->always_show_preview)))
-    {
-      if (priv->video_preview != NULL)
-        {
-          gtk_widget_hide (priv->self_user_avatar_widget);
-          gtk_widget_show (priv->video_preview);
-        }
-      else
-        {
-          if (priv->video_preview != NULL)
-            gtk_widget_hide (priv->video_preview);
-
-          gtk_widget_show (priv->self_user_avatar_widget);
-        }
-    }
-}
-
-static void
 empathy_call_window_update_avatars_visibility (EmpathyTpCall *call,
     EmpathyCallWindow *window)
 {
@@ -1937,8 +1915,6 @@ empathy_call_window_update_avatars_visibility (EmpathyTpCall *call,
       gtk_widget_hide (priv->video_output);
       gtk_widget_show (priv->remote_user_avatar_widget);
     }
-
-  empathy_call_window_update_self_avatar_visibility (window);
 }
 
 static void
