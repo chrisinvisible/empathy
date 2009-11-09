@@ -1464,6 +1464,7 @@ empathy_call_window_update_timer (gpointer user_data)
 
 static void
 display_error (EmpathyCallWindow *self,
+    EmpathyTpCall *call,
     const gchar *img,
     const gchar *title,
     const gchar *desc,
@@ -1538,10 +1539,12 @@ display_error (EmpathyCallWindow *self,
 
 static gchar *
 media_stream_error_to_txt (EmpathyCallWindow *self,
+    EmpathyTpCall *call,
     gboolean audio,
     TpMediaStreamError error)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  const gchar *cm;
 
   switch (error)
     {
@@ -1574,9 +1577,11 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
           return g_strdup (_("Your computer doesn't support any video format"));
 
       case TP_MEDIA_STREAM_ERROR_INVALID_CM_BEHAVIOR:
-        return g_strdup (_("Something not expected happened. "
+        cm = empathy_tp_call_get_connection_manager (call);
+        return g_strdup_printf (_("Something not expected happened in a "
+              "Telepathy component (%s). "
               "Please report this bug and attach logs gathered "
-              "from the 'Debug' window in the Help menu."));
+              "from the 'Debug' window in the Help menu."), cm);
 
       case TP_MEDIA_STREAM_ERROR_MEDIA_ERROR:
         return g_strdup (_("There was a failure in the call engine"));
@@ -1588,6 +1593,7 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 
 static void
 empathy_call_window_stream_error (EmpathyCallWindow *self,
+    EmpathyTpCall *call,
     gboolean audio,
     guint code,
     const gchar *msg,
@@ -1596,16 +1602,16 @@ empathy_call_window_stream_error (EmpathyCallWindow *self,
 {
   gchar *desc;
 
-  desc = media_stream_error_to_txt (self, audio, code);
+  desc = media_stream_error_to_txt (self, call, audio, code);
   if (desc == NULL)
     {
       /* No description, use the error message. That's not great as it's not
        * localized but it's better than nothing. */
-      display_error (self, icon, title, msg, NULL);
+      display_error (self, call, icon, title, msg, NULL);
     }
   else
     {
-      display_error (self, icon, title, desc, msg);
+      display_error (self, call, icon, title, desc, msg);
       g_free (desc);
     }
 }
@@ -1616,7 +1622,7 @@ empathy_call_window_audio_stream_error (EmpathyTpCall *call,
     const gchar *msg,
     EmpathyCallWindow *self)
 {
-  empathy_call_window_stream_error (self, TRUE, code, msg,
+  empathy_call_window_stream_error (self, call, TRUE, code, msg,
       "gnome-stock-mic", _("Can't establish audio stream"));
 }
 
@@ -1626,7 +1632,7 @@ empathy_call_window_video_stream_error (EmpathyTpCall *call,
     const gchar *msg,
     EmpathyCallWindow *self)
 {
-  empathy_call_window_stream_error (self, FALSE, code, msg,
+  empathy_call_window_stream_error (self, call, FALSE, code, msg,
       "camera-web", _("Can't establish video stream"));
 }
 
