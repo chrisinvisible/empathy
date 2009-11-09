@@ -1021,6 +1021,16 @@ empathy_call_window_constructed (GObject *object)
 
   empathy_call_window_setup_avatars (self, priv->handler);
   empathy_call_window_set_state_connecting (self);
+
+  if (empathy_call_handler_has_initial_video (priv->handler))
+    {
+      /* Enable 'send video' buttons and display the preview */
+      gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video), TRUE);
+      gtk_toggle_tool_button_set_active (
+          GTK_TOGGLE_TOOL_BUTTON (priv->camera_button), TRUE);
+
+      display_video_preview (self, TRUE);
+    }
 }
 
 static void empathy_call_window_dispose (GObject *object);
