@@ -50,6 +50,8 @@ typedef struct {
 	EmpathyConnectivity *connectivity;
 	gulong state_change_signal_id;
 
+	gboolean ready;
+
 	TpConnectionPresenceType      state;
 	gchar          *status;
 	TpConnectionPresenceType      flash_state;
@@ -482,6 +484,8 @@ account_manager_ready_cb (GObject *source_object,
 	GList *accounts, *l;
 	GError *error = NULL;
 
+	priv->ready = TRUE;
+
 	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
 		DEBUG ("Failed to prepare account manager: %s", error->message);
 		g_error_free (error);
@@ -557,6 +561,10 @@ empathy_idle_get_state (EmpathyIdle *idle)
 
 	priv = GET_PRIV (idle);
 
+	if (G_UNLIKELY (!priv->ready))
+		g_critical (G_STRLOC ": %s called before AccountManager ready",
+				G_STRFUNC);
+
 	return priv->state;
 }
 
@@ -577,6 +585,10 @@ empathy_idle_get_status (EmpathyIdle *idle)
 	EmpathyIdlePriv *priv;
 
 	priv = GET_PRIV (idle);
+
+	if (G_UNLIKELY (!priv->ready))
+		g_critical (G_STRLOC ": %s called before AccountManager ready",
+				G_STRFUNC);
 
 	if (!priv->status) {
 		return empathy_presence_get_default_message (priv->state);
@@ -602,6 +614,10 @@ empathy_idle_get_flash_state (EmpathyIdle *idle)
 	EmpathyIdlePriv *priv;
 
 	priv = GET_PRIV (idle);
+
+	if (G_UNLIKELY (!priv->ready))
+		g_critical (G_STRLOC ": %s called before AccountManager ready",
+				G_STRFUNC);
 
 	return priv->flash_state;
 }
