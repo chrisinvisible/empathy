@@ -83,6 +83,7 @@
 
 static gboolean account_dialog_only = FALSE;
 static gboolean start_hidden = FALSE;
+static gboolean no_connect = FALSE;
 
 static void
 dispatch_cb (EmpathyDispatcher *dispatcher,
@@ -642,6 +643,9 @@ account_manager_ready_cb (GObject *source_object,
 {
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
   GError *error = NULL;
+  EmpathyIdle *idle;
+  EmpathyConnectivity *connectivity;
+  gboolean autoconnect = TRUE;
 
   if (!tp_account_manager_prepare_finish (manager, result, &error))
     {
@@ -649,6 +653,19 @@ account_manager_ready_cb (GObject *source_object,
       g_error_free (error);
       return;
     }
+
+  /* Autoconnect */
+  idle = empathy_idle_dup_singleton ();
+  connectivity = empathy_connectivity_dup_singleton ();
+
+  empathy_conf_get_bool (empathy_conf_get (),
+      EMPATHY_PREFS_AUTOCONNECT, &autoconnect);
+  if (autoconnect && !no_connect &&
+      tp_connection_presence_type_cmp_availability
+          (empathy_idle_get_state (idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+            <= 0)
+      /* if current state is Offline, then put it online */
+      empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
   if (should_create_salut_account (manager)
       || !empathy_import_mc4_has_imported ())
@@ -857,8 +874,6 @@ main (int argc, char *argv[])
   GtkWidget *window;
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
-  gboolean autoconnect = TRUE;
-  gboolean no_connect = FALSE;
   GError *error = NULL;
   TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
@@ -973,15 +988,6 @@ main (int argc, char *argv[])
       connectivity);
   empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
       use_conn_notify_cb, connectivity);
-
-  /* Autoconnect */
-  empathy_conf_get_bool (empathy_conf_get (),
-      EMPATHY_PREFS_AUTOCONNECT, &autoconnect);
-  if (autoconnect && !no_connect &&
-      tp_connection_presence_type_cmp_availability
-          (empathy_idle_get_state (idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
-            <= 0)
-      empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
   /* account management */
   account_manager = tp_account_manager_dup ();
