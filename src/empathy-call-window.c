@@ -44,6 +44,9 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-sound.h>
 
+#define DEBUG_FLAG EMPATHY_DEBUG_VOIP
+#include <libempathy/empathy-debug.h>
+
 #include "empathy-call-window.h"
 #include "empathy-call-window-fullscreen.h"
 #include "empathy-sidebar.h"
@@ -666,6 +669,33 @@ empathy_call_window_setup_video_preview (EmpathyCallWindow *window)
   gst_element_set_state (preview, GST_STATE_PLAYING);
   gst_element_set_state (priv->video_input, GST_STATE_PLAYING);
   gst_element_set_state (priv->video_tee, GST_STATE_PLAYING);
+}
+
+static void
+display_video_preview (EmpathyCallWindow *self,
+    gboolean display)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  if (display)
+    {
+      /* Display the preview and hide the self avatar */
+      DEBUG ("Show video preview");
+
+      if (priv->video_preview == NULL)
+        empathy_call_window_setup_video_preview (self);
+      gtk_widget_show (priv->video_preview);
+      gtk_widget_hide (priv->self_user_avatar_widget);
+    }
+  else
+    {
+      /* Display the self avatar and hide the preview */
+      DEBUG ("Show self avatar");
+
+      if (priv->video_preview != NULL)
+        gtk_widget_hide (priv->video_preview);
+      gtk_widget_show (priv->self_user_avatar_widget);
+    }
 }
 
 static void
@@ -1754,11 +1784,7 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
 
             if (empathy_tp_call_is_sending_video (call))
               {
-                empathy_call_window_setup_video_preview (self);
-
-                if (priv->video_preview != NULL)
-                  gtk_widget_show (priv->video_preview);
-                gtk_widget_hide (priv->self_user_avatar_widget);
+                display_video_preview (self, TRUE);
               }
 
             g_object_unref (call);
@@ -2154,7 +2180,7 @@ empathy_call_window_set_send_video (EmpathyCallWindow *window,
      default. */
   if (send)
     {
-      empathy_call_window_setup_video_preview (window);
+      display_video_preview (window, TRUE);
     }
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
@@ -2205,20 +2231,17 @@ static void
 empathy_call_window_always_show_preview_toggled_cb (GtkToggleAction *toggle,
   EmpathyCallWindow *window)
 {
-  gboolean show_preview_toggled;
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  show_preview_toggled = gtk_toggle_action_get_active (toggle);
-
-  if (show_preview_toggled)
+  if (gtk_toggle_action_get_active (toggle))
     {
-      empathy_call_window_setup_video_preview (window);
-      gtk_widget_show (priv->self_user_output_frame);
-      empathy_call_window_update_self_avatar_visibility (window);
+      display_video_preview (window, TRUE);
     }
   else
     {
-      gtk_widget_hide (priv->self_user_output_frame);
+      /* disable preview if we are not sending */
+      if (!priv->sending_video)
+        display_video_preview (window, FALSE);
     }
 }
 
