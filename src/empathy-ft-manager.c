@@ -1093,6 +1093,7 @@ ft_manager_build_ui (EmpathyFTManager *manager)
 static void
 empathy_ft_manager_finalize (GObject *object)
 {
+  EmpathyFTManager *self = EMPATHY_FT_MANAGER (object);
   EmpathyFTManagerPriv *priv = GET_PRIV (object);
 
   DEBUG ("FT Manager %p", object);
@@ -1100,7 +1101,10 @@ empathy_ft_manager_finalize (GObject *object)
   g_hash_table_destroy (priv->ft_handler_to_row_ref);
 
   if (priv->save_geometry_id != 0)
-    g_source_remove (priv->save_geometry_id);
+    {
+      g_source_remove (priv->save_geometry_id);
+      ft_manager_save_geometry_timeout_cb (self);
+    }
 
   G_OBJECT_CLASS (empathy_ft_manager_parent_class)->finalize (object);
 }
