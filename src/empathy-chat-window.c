@@ -1510,6 +1510,7 @@ chat_window_finalize (GObject *object)
 	g_object_unref (priv->chatroom_manager);
 	if (priv->save_geometry_id != 0) {
 		g_source_remove (priv->save_geometry_id);
+		chat_window_save_geometry_timeout_cb (window);
 	}
 
 	if (priv->notification != NULL) {
