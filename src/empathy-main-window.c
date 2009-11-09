@@ -117,6 +117,9 @@ typedef struct {
 
 static EmpathyMainWindow *main_window = NULL;
 
+static gboolean main_window_configure_event_timeout_cb (
+    EmpathyMainWindow *window);
+
 static void
 main_window_flash_stop (EmpathyMainWindow *window)
 {
@@ -648,6 +651,7 @@ main_window_destroy_cb (GtkWidget         *widget,
 
 	if (window->size_timeout_id) {
 		g_source_remove (window->size_timeout_id);
+		main_window_configure_event_timeout_cb (window);
 	}
 
 	g_list_free (window->actions_connected);
