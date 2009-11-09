@@ -863,7 +863,6 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
       accounts_dialog_model_pixbuf_data_func,
       dialog,
       NULL);
-  g_object_set (cell, "ypad", 4, NULL);
 
   /* Name renderer */
   cell = gtk_cell_renderer_text_new ();
@@ -880,6 +879,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   g_signal_connect (cell, "editing-started",
       G_CALLBACK (accounts_dialog_name_editing_started_cb),
       dialog);
+  g_object_set (cell, "ypad", 4, NULL);
 
   /* Delete column */
   cell = empathy_cell_renderer_activatable_new ();
