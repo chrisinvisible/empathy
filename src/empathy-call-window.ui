@@ -39,10 +39,10 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleAction" id="show_preview">
-            <property name="name">show_preview</property>
-            <property name="label" translatable="yes">Video preview</property>
-            <property name="active">True</property>
+          <object class="GtkToggleAction" id="always_show_preview">
+            <property name="name">always_show_preview</property>
+            <property name="label" translatable="yes">Always Show Video Preview</property>
+            <property name="active">False</property>
           </object>
         </child>
         <child>
@@ -62,7 +62,7 @@
           <menuitem action="menuredial"/>
         </menu>
         <menu action="view">
-          <menuitem action="show_preview"/>
+          <menuitem action="always_show_preview"/>
           <menuitem action="menufullscreen"/>
         </menu>
       </menubar>

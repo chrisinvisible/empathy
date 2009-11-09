@@ -119,7 +119,7 @@ struct _EmpathyCallWindowPriv
   GtkWidget *camera_button;
   GtkWidget *toolbar;
   GtkWidget *pane;
-  GtkAction *show_preview;
+  GtkAction *always_show_preview;
   GtkAction *send_video;
   GtkAction *redial;
   GtkAction *menu_fullscreen;
@@ -209,7 +209,7 @@ static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
 static void empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
   EmpathyCallWindow *window);
 
-static void empathy_call_window_show_preview_toggled_cb (
+static void empathy_call_window_always_show_preview_toggled_cb (
   GtkToggleAction *toggle, EmpathyCallWindow *window);
 
 static void empathy_call_window_mic_toggled_cb (
@@ -707,7 +707,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "toolbar", &priv->toolbar,
     "send_video", &priv->send_video,
     "menuredial", &priv->redial,
-    "show_preview", &priv->show_preview,
+    "always_show_preview", &priv->always_show_preview,
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
     NULL);
@@ -721,7 +721,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "microphone", "toggled", empathy_call_window_mic_toggled_cb,
     "camera", "toggled", empathy_call_window_camera_toggled_cb,
     "send_video", "toggled", empathy_call_window_send_video_toggled_cb,
-    "show_preview", "toggled", empathy_call_window_show_preview_toggled_cb,
+    "always_show_preview", "toggled",
+        empathy_call_window_always_show_preview_toggled_cb,
     "menufullscreen", "activate", empathy_call_window_fullscreen_cb,
     NULL);
 
@@ -975,18 +976,6 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
 }
 
 static void
-empathy_call_window_setup_video_preview_visibility (EmpathyCallWindow *self,
-    EmpathyCallHandler *handler)
-{
-  EmpathyCallWindowPriv *priv = GET_PRIV (self);
-  gboolean initial_video =
-    empathy_call_handler_has_initial_video (priv->handler);
-
-  gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
-      initial_video);
-}
-
-static void
 empathy_call_window_constructed (GObject *object)
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
@@ -1001,7 +990,6 @@ empathy_call_window_constructed (GObject *object)
     g_object_unref (call);
 
   empathy_call_window_setup_avatars (self, priv->handler);
-  empathy_call_window_setup_video_preview_visibility (self, priv->handler);
   empathy_call_window_set_state_connecting (self);
 }
 
@@ -1310,10 +1298,6 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
           GTK_TOGGLE_TOOL_BUTTON (priv->camera_button), initial_video);
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->mic_button), TRUE);
-
-      gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
-          FALSE);
-      gtk_action_set_sensitive (priv->show_preview, FALSE);
 
       gtk_progress_bar_set_fraction (
           GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
@@ -1674,11 +1658,6 @@ empathy_call_window_connected (gpointer user_data)
   priv->sending_video = can_send_video ?
     empathy_tp_call_is_sending_video (call) : FALSE;
 
-  gtk_action_set_sensitive (priv->show_preview, TRUE);
-  gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
-      priv->sending_video
-      || gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (
-              priv->show_preview)));
   gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video),
       priv->sending_video && priv->video_input != NULL);
   gtk_toggle_tool_button_set_active (
@@ -1776,9 +1755,6 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
             if (empathy_tp_call_is_sending_video (call))
               {
                 empathy_call_window_setup_video_preview (self);
-
-                gtk_toggle_action_set_active (
-                    GTK_TOGGLE_ACTION (priv->show_preview), TRUE);
 
                 if (priv->video_preview != NULL)
                   gtk_widget_show (priv->video_preview);
@@ -1902,7 +1878,7 @@ empathy_call_window_update_self_avatar_visibility (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  if (gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (priv->show_preview)))
+  if (gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (priv->always_show_preview)))
     {
       if (priv->video_preview != NULL)
         {
@@ -2179,8 +2155,6 @@ empathy_call_window_set_send_video (EmpathyCallWindow *window,
   if (send)
     {
       empathy_call_window_setup_video_preview (window);
-      gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->show_preview),
-          TRUE);
     }
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
@@ -2228,7 +2202,7 @@ empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
 }
 
 static void
-empathy_call_window_show_preview_toggled_cb (GtkToggleAction *toggle,
+empathy_call_window_always_show_preview_toggled_cb (GtkToggleAction *toggle,
   EmpathyCallWindow *window)
 {
   gboolean show_preview_toggled;
