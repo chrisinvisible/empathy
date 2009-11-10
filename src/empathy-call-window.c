@@ -2154,10 +2154,7 @@ empathy_call_window_set_send_video (EmpathyCallWindow *window,
 
   /* When we start sending video, we want to show the video preview by
      default. */
-  if (send)
-    {
-      display_video_preview (window, TRUE);
-    }
+  display_video_preview (window, send);
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
   empathy_tp_call_request_video_stream_direction (call, send);
