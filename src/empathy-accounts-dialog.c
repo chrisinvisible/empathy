@@ -1834,7 +1834,7 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 
   if (selected_account)
     {
-      if (empathy_connection_managers_is_ready (priv->cms))
+      if (priv->cms != NULL && empathy_connection_managers_is_ready (priv->cms))
         accounts_dialog_set_selected_account (dialog, selected_account);
       else
         /* save the selection to set it later when the cms
