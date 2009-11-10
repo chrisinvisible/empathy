@@ -307,21 +307,43 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 }
 
 static void
-main_window_error_infobar_button_clicked_cb (GtkInfoBar *info_bar,
-				   gint response_id,
+main_window_error_retry_clicked_cb (GtkButton *button,
 				   EmpathyMainWindow *window)
 {
 	TpAccount *account;
 	GtkWidget *error_widget;
 
-	account = g_object_get_data (G_OBJECT (info_bar), "account");
-	switch (response_id) {
-	case GTK_RESPONSE_CLOSE:
-		break;
-	default:
-		break;
-	}
+	account = g_object_get_data (G_OBJECT (button), "account");
+	empathy_account_reconnect_async (account, NULL, NULL);
 
+	error_widget = g_hash_table_lookup (window->errors, account);
+	gtk_widget_destroy (error_widget);
+	g_hash_table_remove (window->errors, account);
+}
+
+static void
+main_window_error_edit_clicked_cb (GtkButton *button,
+				   EmpathyMainWindow *window)
+{
+	EmpathyAccount *account;
+	GtkWidget *error_widget;
+
+	account = g_object_get_data (G_OBJECT (button), "account");
+	empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
+
+	error_widget = g_hash_table_lookup (window->errors, account);
+	gtk_widget_destroy (error_widget);
+	g_hash_table_remove (window->errors, account);
+}
+
+static void
+main_window_error_close_clicked_cb (GtkButton *button,
+				    EmpathyMainWindow *window)
+{
+	EmpathyAccount *account;
+	GtkWidget *error_widget;
+
+	account = g_object_get_data (G_OBJECT (button), "account");
 	error_widget = g_hash_table_lookup (window->errors, account);
 	gtk_widget_destroy (error_widget);
 	g_hash_table_remove (window->errors, account);
@@ -336,6 +358,12 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *content_area;
 	GtkWidget *label;
 	GtkWidget *image;
+	GtkWidget *retry_button;
+	GtkWidget *edit_button;
+	GtkWidget *close_button;
+	GtkWidget *action_area;
+	GtkWidget *action_table;
+	GtkRcStyle *rc_style;
 	gchar     *str;
 	const gchar     *icon_name;
 
@@ -354,11 +382,8 @@ main_window_error_display (EmpathyMainWindow *window,
 		return;
 	}
 
-	info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, NULL);
+	info_bar = gtk_info_bar_new ();
 	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
-	g_signal_connect (info_bar, "response",
-										G_CALLBACK (main_window_error_infobar_button_clicked_cb),
-										window);
 
 	gtk_widget_set_no_show_all (info_bar, TRUE);
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
@@ -377,13 +402,72 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (content_area), label, FALSE, FALSE, 0);
 
+	/* make small style for the buttons */
+	rc_style = gtk_rc_style_new ();
+	rc_style->xthickness = rc_style->ythickness = 4;
+
+	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
+	retry_button = gtk_button_new ();
+	gtk_button_set_image (GTK_BUTTON (retry_button), image);
+	gtk_widget_modify_style (retry_button, rc_style);
+	gtk_widget_show (retry_button);
+
+	image = gtk_image_new_from_stock (GTK_STOCK_EDIT, GTK_ICON_SIZE_BUTTON);
+	edit_button = gtk_button_new ();
+	gtk_button_set_image (GTK_BUTTON (edit_button), image);
+	gtk_widget_modify_style (edit_button, rc_style);
+	gtk_widget_show (edit_button);
+
+	image = gtk_image_new_from_stock (GTK_STOCK_CLOSE, GTK_ICON_SIZE_BUTTON);
+	close_button = gtk_button_new ();
+	gtk_button_set_image (GTK_BUTTON (close_button), image);
+	gtk_widget_modify_style (close_button, rc_style);
+	gtk_widget_show (close_button);
+
+	action_table = gtk_table_new (1, 3, FALSE);
+	gtk_table_set_col_spacings (GTK_TABLE (action_table), 2);
+	gtk_widget_show (action_table);
+
+	action_area = gtk_info_bar_get_action_area (GTK_INFO_BAR (info_bar));
+	gtk_box_pack_start (GTK_BOX (action_area), action_table, FALSE, FALSE, 0);
+
+	gtk_table_attach (GTK_TABLE (action_table), retry_button, 0, 1, 0, 1,
+										(GtkAttachOptions) (GTK_SHRINK),
+										(GtkAttachOptions) (GTK_SHRINK), 0, 0);
+	gtk_table_attach (GTK_TABLE (action_table), edit_button, 1, 2, 0, 1,
+										(GtkAttachOptions) (GTK_SHRINK),
+										(GtkAttachOptions) (GTK_SHRINK), 0, 0);
+	gtk_table_attach (GTK_TABLE (action_table), close_button, 2, 3, 0, 1,
+										(GtkAttachOptions) (GTK_SHRINK),
+										(GtkAttachOptions) (GTK_SHRINK), 0, 0);
+
 	g_object_set_data (G_OBJECT (info_bar), "label", label);
 	g_object_set_data_full (G_OBJECT (info_bar),
 				"account", g_object_ref (account),
 				g_object_unref);
+	g_object_set_data_full (G_OBJECT (edit_button),
+				"account", g_object_ref (account),
+				g_object_unref);
+	g_object_set_data_full (G_OBJECT (close_button),
+				"account", g_object_ref (account),
+				g_object_unref);
+	g_object_set_data_full (G_OBJECT (retry_button),
+				"account", g_object_ref (account),
+				g_object_unref);
+
+	g_signal_connect (edit_button, "clicked",
+			  G_CALLBACK (main_window_error_edit_clicked_cb),
+			  window);
+	g_signal_connect (close_button, "clicked",
+			  G_CALLBACK (main_window_error_close_clicked_cb),
+			  window);
+	g_signal_connect (retry_button, "clicked",
+			  G_CALLBACK (main_window_error_retry_clicked_cb),
+			  window);
 
 	gtk_widget_show (window->errors_vbox);
 
+	gtk_rc_style_unref (rc_style);
 	g_hash_table_insert (window->errors, g_object_ref (account), info_bar);
 }
 
