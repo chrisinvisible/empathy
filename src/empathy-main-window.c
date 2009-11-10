@@ -410,18 +410,21 @@ main_window_error_display (EmpathyMainWindow *window,
 	retry_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (retry_button), image);
 	gtk_widget_modify_style (retry_button, rc_style);
+	gtk_widget_set_tooltip_text (retry_button, _("Reconnect"));
 	gtk_widget_show (retry_button);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_EDIT, GTK_ICON_SIZE_BUTTON);
 	edit_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (edit_button), image);
 	gtk_widget_modify_style (edit_button, rc_style);
+	gtk_widget_set_tooltip_text (edit_button, _("Edit Account"));
 	gtk_widget_show (edit_button);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_CLOSE, GTK_ICON_SIZE_BUTTON);
 	close_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (close_button), image);
 	gtk_widget_modify_style (close_button, rc_style);
+	gtk_widget_set_tooltip_text (close_button, _("Close"));
 	gtk_widget_show (close_button);
 
 	action_table = gtk_table_new (1, 3, FALSE);
