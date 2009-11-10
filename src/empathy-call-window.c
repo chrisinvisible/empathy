@@ -645,6 +645,7 @@ empathy_call_window_setup_video_preview (EmpathyCallWindow *window)
       return;
     }
 
+  DEBUG ("Create video preview");
   g_assert (priv->video_tee == NULL);
 
   priv->video_tee = gst_element_factory_make ("tee", NULL);
@@ -1097,6 +1098,7 @@ static void
 empathy_call_window_video_stream_changed_cb (EmpathyTpCall *call,
     GParamSpec *property, EmpathyCallWindow *self)
 {
+  DEBUG ("video stream changed");
   empathy_call_window_update_avatars_visibility (call, self);
 }
 
@@ -1808,6 +1810,7 @@ empathy_call_window_remove_video_input (EmpathyCallWindow *self)
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GstElement *preview;
 
+  DEBUG ("remove video input");
   preview = empathy_video_widget_get_element (
     EMPATHY_VIDEO_WIDGET (priv->video_preview));
 
