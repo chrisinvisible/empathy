@@ -339,14 +339,15 @@ main_window_error_display (EmpathyMainWindow *window,
 	gchar     *str;
 	const gchar     *icon_name;
 
+	str = g_markup_printf_escaped ("<b>%s</b> - %s",
+					       empathy_account_get_display_name (account),
+					       message);
+
 	info_bar = g_hash_table_lookup (window->errors, account);
 	if (info_bar) {
 		label = g_object_get_data (G_OBJECT (info_bar), "label");
 
 		/* Just set the latest error and return */
-		str = g_markup_printf_escaped ("<b>%s</b> - %s",
-					       tp_account_get_display_name (account),
-					       message);
 		gtk_label_set_markup (GTK_LABEL (label), str);
 		g_free (str);
 
@@ -367,9 +368,6 @@ main_window_error_display (EmpathyMainWindow *window,
 	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_widget_show (image);
 
-	str = g_markup_printf_escaped ("<b>%s</b> - %s",
-				       tp_account_get_display_name (account),
-				       message);
 	label = gtk_label_new (str);
 	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
 	gtk_widget_show (label);
