@@ -1351,6 +1351,9 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       priv->call_started = FALSE;
 
       could_disconnect = TRUE;
+
+      /* TODO: display the self avatar of the preview (depends if the "Always
+       * Show Video Preview" is enabled or not) */
     }
 
   return could_disconnect;
