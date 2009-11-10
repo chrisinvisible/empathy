@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-11-06 20:43+0000\n"
-"PO-Revision-Date: 2009-11-06 21:46+0100\n"
+"POT-Creation-Date: 2009-11-10 14:59+0000\n"
+"PO-Revision-Date: 2009-11-10 21:03+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -482,7 +482,7 @@ msgstr "El archivo seleccionado no es un archivo regular"
 msgid "The selected file is empty"
 msgstr "El archivo seleccionado está vacío"
 
-#: ../libempathy/empathy-tp-contact-list.c:844 ../src/empathy.c:292
+#: ../libempathy/empathy-tp-contact-list.c:844 ../src/empathy.c:293
 msgid "People nearby"
 msgstr "Gente cerca"
 
@@ -1196,12 +1196,12 @@ msgid "Removing contact"
 msgstr "Quitando el contacto"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:195
-#: ../src/empathy-main-window.ui.h:11
+#: ../src/empathy-main-window.ui.h:12
 msgid "_Add Contact..."
 msgstr "_Añadir contacto…"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:222
-#: ../src/empathy-main-window.ui.h:12
+#: ../src/empathy-main-window.ui.h:13
 msgid "_Chat"
 msgstr "_Chat"
 
@@ -1233,7 +1233,7 @@ msgid "Infor_mation"
 msgstr "Infor_mación"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
-#: ../src/empathy-chat-window.ui.h:10 ../src/empathy-main-window.ui.h:16
+#: ../src/empathy-chat-window.ui.h:10 ../src/empathy-main-window.ui.h:17
 msgid "_Edit"
 msgstr "_Editar"
 
@@ -1262,7 +1262,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1009
-#: ../src/empathy-main-window.c:1020
+#: ../src/empathy-main-window.c:1034
 msgid "Group"
 msgstr "Grupo"
 
@@ -1395,7 +1395,7 @@ msgid "Client:"
 msgstr "Cliente:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:7
-#: ../src/empathy-main-window.c:1003
+#: ../src/empathy-main-window.c:1017
 msgid "Contact"
 msgstr "Contacto"
 
@@ -1809,19 +1809,19 @@ msgstr "Sin mensaje de eeror"
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
-#: ../src/empathy.c:871
+#: ../src/empathy.c:889
 msgid "Don't connect on startup"
 msgstr "No conectarse automáticamente al inicio"
 
-#: ../src/empathy.c:875
+#: ../src/empathy.c:893
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "No mostrar la lista de contactos o cualquier otro diálogo al inicio"
 
-#: ../src/empathy.c:879
+#: ../src/empathy.c:897
 msgid "Show the accounts dialog"
 msgstr "Mostrar el diálogo de las cuentas"
 
-#: ../src/empathy.c:891
+#: ../src/empathy.c:909
 msgid "- Empathy IM Client"
 msgstr "- Cliente de mensajería instantánea Empathy"
 
@@ -2167,9 +2167,6 @@ msgstr "Detalles técnicos"
 
 #: ../src/empathy-call-window.c:1546
 #, c-format
-#| msgid ""
-#| "%s's software does not understand any of the video formats supported by "
-#| "your computer"
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
 "computer"
@@ -2240,26 +2237,27 @@ msgid "C_lear"
 msgstr "_Limpiar"
 
 #: ../src/empathy-chat-window.ui.h:2
+#| msgid "Contact"
+msgid "C_ontact"
+msgstr "C_ontacto"
+
+#: ../src/empathy-chat-window.ui.h:3
 msgid "Chat"
 msgstr "Chat"
 
-#: ../src/empathy-chat-window.ui.h:3
+#: ../src/empathy-chat-window.ui.h:4
 msgid "Insert _Smiley"
 msgstr "Insertar _emoticono"
 
-#: ../src/empathy-chat-window.ui.h:4
+#: ../src/empathy-chat-window.ui.h:5
 msgid "Move Tab _Left"
 msgstr "Mover solapa a la _izquierda"
 
-#: ../src/empathy-chat-window.ui.h:5
+#: ../src/empathy-chat-window.ui.h:6
 msgid "Move Tab _Right"
 msgstr "Mover solapa a la _derecha"
 
-#: ../src/empathy-chat-window.ui.h:6
-msgid "_Contact"
-msgstr "Con_tacto"
-
-#: ../src/empathy-chat-window.ui.h:7 ../src/empathy-main-window.ui.h:14
+#: ../src/empathy-chat-window.ui.h:7 ../src/empathy-main-window.ui.h:15
 msgid "_Contents"
 msgstr "Índ_ice"
 
@@ -2275,7 +2273,7 @@ msgstr "_Desacoplar solapa"
 msgid "_Favorite Chatroom"
 msgstr "Sala de chat _favorita"
 
-#: ../src/empathy-chat-window.ui.h:12 ../src/empathy-main-window.ui.h:18
+#: ../src/empathy-chat-window.ui.h:12 ../src/empathy-main-window.ui.h:19
 msgid "_Help"
 msgstr "Ay_uda"
 
@@ -2543,67 +2541,78 @@ msgstr "Origen"
 msgid "%s account"
 msgstr "Cuenta %s"
 
-#: ../src/empathy-main-window.c:401
-msgid "_Edit account"
-msgstr "_Editar cuenta"
+#: ../src/empathy-main-window.c:413
+#| msgid "Disconnected"
+msgid "Reconnect"
+msgstr "Reconectar"
 
-#: ../src/empathy-main-window.c:502
+#: ../src/empathy-main-window.c:420
+#| msgid "_Edit account"
+msgid "Edit Account"
+msgstr "Editar cuenta"
+
+#: ../src/empathy-main-window.c:427
+#| msgid "Closed"
+msgid "Close"
+msgstr "Cerrar"
+
+#: ../src/empathy-main-window.c:515
 msgid "No error specified"
 msgstr "No se especificó el error"
 
-#: ../src/empathy-main-window.c:505
+#: ../src/empathy-main-window.c:518
 msgid "Network error"
 msgstr "Error de red"
 
-#: ../src/empathy-main-window.c:508
+#: ../src/empathy-main-window.c:521
 msgid "Authentication failed"
 msgstr "Falló la autenticación"
 
-#: ../src/empathy-main-window.c:511
+#: ../src/empathy-main-window.c:524
 msgid "Encryption error"
 msgstr "Error de cifrado"
 
-#: ../src/empathy-main-window.c:514
+#: ../src/empathy-main-window.c:527
 msgid "Name in use"
 msgstr "Nombre en uso"
 
-#: ../src/empathy-main-window.c:517
+#: ../src/empathy-main-window.c:530
 msgid "Certificate not provided"
 msgstr "No se proporcionó el certificado"
 
-#: ../src/empathy-main-window.c:520
+#: ../src/empathy-main-window.c:533
 msgid "Certificate untrusted"
 msgstr "Certificado sin confianza"
 
-#: ../src/empathy-main-window.c:523
+#: ../src/empathy-main-window.c:536
 msgid "Certificate expired"
 msgstr "El certificado ha expirado"
 
-#: ../src/empathy-main-window.c:526
+#: ../src/empathy-main-window.c:539
 msgid "Certificate not activated"
 msgstr "El certificado no está activado"
 
-#: ../src/empathy-main-window.c:529
+#: ../src/empathy-main-window.c:542
 msgid "Certificate hostname mismatch"
 msgstr "El nombre del equipo del certificado no coincide"
 
-#: ../src/empathy-main-window.c:532
+#: ../src/empathy-main-window.c:545
 msgid "Certificate fingerprint mismatch"
 msgstr "La huella del certificado no coincide"
 
-#: ../src/empathy-main-window.c:535
+#: ../src/empathy-main-window.c:548
 msgid "Certificate self-signed"
 msgstr "Certificado firmado consigo mismo"
 
-#: ../src/empathy-main-window.c:538
+#: ../src/empathy-main-window.c:551
 msgid "Certificate error"
 msgstr "Error del certificado"
 
-#: ../src/empathy-main-window.c:541
+#: ../src/empathy-main-window.c:554
 msgid "Unknown error"
 msgstr "Error desconocido"
 
-#: ../src/empathy-main-window.c:1337
+#: ../src/empathy-main-window.c:1353
 msgid "Show and edit accounts"
 msgstr "Mostrar y editar cuentas"
 
@@ -2636,48 +2645,49 @@ msgid "Normal Size With _Avatars"
 msgstr "Tamaño normal con _avatares"
 
 #: ../src/empathy-main-window.ui.h:8
+#| msgid "Preferences"
+msgid "P_references"
+msgstr "Prefere_ncias"
+
+#: ../src/empathy-main-window.ui.h:9
 msgid "Sort by _Name"
 msgstr "Ordenar por _nombre"
 
-#: ../src/empathy-main-window.ui.h:9
+#: ../src/empathy-main-window.ui.h:10
 msgid "Sort by _Status"
 msgstr "Ordenar por es_tado"
 
-#: ../src/empathy-main-window.ui.h:10
+#: ../src/empathy-main-window.ui.h:11
 msgid "_Accounts"
 msgstr "_Cuentas"
 
-#: ../src/empathy-main-window.ui.h:13
+#: ../src/empathy-main-window.ui.h:14
 msgid "_Compact Size"
 msgstr "Tamaño _compacto"
 
-#: ../src/empathy-main-window.ui.h:15
+#: ../src/empathy-main-window.ui.h:16
 msgid "_Debug"
 msgstr "_Depurar"
 
-#: ../src/empathy-main-window.ui.h:17
+#: ../src/empathy-main-window.ui.h:18
 msgid "_File Transfers"
 msgstr "_Transferencias de archivos"
 
-#: ../src/empathy-main-window.ui.h:19
+#: ../src/empathy-main-window.ui.h:20
 msgid "_Join..."
 msgstr "_Unirse…"
 
-#: ../src/empathy-main-window.ui.h:20 ../src/empathy-status-icon.ui.h:2
+#: ../src/empathy-main-window.ui.h:21 ../src/empathy-status-icon.ui.h:2
 msgid "_New Conversation..."
 msgstr "_Conversación nueva…"
 
-#: ../src/empathy-main-window.ui.h:21
+#: ../src/empathy-main-window.ui.h:22
 msgid "_Offline Contacts"
 msgstr "Contactos _desconectados"
 
-#: ../src/empathy-main-window.ui.h:22
+#: ../src/empathy-main-window.ui.h:23
 msgid "_Personal Information"
 msgstr "Información p_ersonal"
-
-#: ../src/empathy-main-window.ui.h:23
-msgid "_Preferences"
-msgstr "Prefere_ncias"
 
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Room"
@@ -3015,6 +3025,12 @@ msgstr ""
 "El gestor de conexiones seleccionado no soporta la extensión de depuración "
 "remota."
 
+#~ msgid "_Contact"
+#~ msgstr "Con_tacto"
+
+#~ msgid "_Preferences"
+#~ msgstr "Prefere_ncias"
+
 #~ msgid "_View Previous Conversations"
 #~ msgstr "_Ver conversaciones previas"
 
@@ -3308,9 +3324,6 @@ msgstr ""
 
 #~ msgid "menuitem2"
 #~ msgstr "elemento de menú 2"
-
-#~ msgid "Closed"
-#~ msgstr "Cerrado"
 
 #~ msgid "End this call?"
 #~ msgstr "¿Finalizar esta llamada?"
