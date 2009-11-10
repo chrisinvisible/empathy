@@ -314,7 +314,7 @@ main_window_error_retry_clicked_cb (GtkButton *button,
 	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
-	empathy_account_reconnect_async (account, NULL, NULL);
+	tp_account_reconnect_async (account, NULL, NULL);
 
 	error_widget = g_hash_table_lookup (window->errors, account);
 	gtk_widget_destroy (error_widget);
@@ -325,7 +325,7 @@ static void
 main_window_error_edit_clicked_cb (GtkButton *button,
 				   EmpathyMainWindow *window)
 {
-	EmpathyAccount *account;
+	TpAccount *account;
 	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
@@ -340,7 +340,7 @@ static void
 main_window_error_close_clicked_cb (GtkButton *button,
 				    EmpathyMainWindow *window)
 {
-	EmpathyAccount *account;
+	TpAccount *account;
 	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
@@ -368,7 +368,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	const gchar     *icon_name;
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
-					       empathy_account_get_display_name (account),
+					       tp_account_get_display_name (account),
 					       message);
 
 	info_bar = g_hash_table_lookup (window->errors, account);
@@ -389,7 +389,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
 	gtk_widget_show (info_bar);
 
-	icon_name = empathy_account_get_icon_name (account);
+	icon_name = tp_account_get_icon_name (account);
 	image = gtk_image_new_from_icon_name (icon_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_widget_show (image);
 
