@@ -339,7 +339,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	gchar     *str;
 	const gchar     *icon_name;
 
-	str = g_markup_printf_escaped ("<b>%s</b> - %s",
+	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
 					       empathy_account_get_display_name (account),
 					       message);
 
