@@ -92,6 +92,7 @@ typedef struct {
 	GtkWidget         *hbox_topic;
 	GtkWidget         *label_topic;
 	GtkWidget         *contact_list_view;
+	GtkWidget         *info_bar_vbox;
 } EmpathyChatPriv;
 
 typedef struct {
@@ -1949,6 +1950,7 @@ chat_create_ui (EmpathyChat *chat)
 					"hbox_topic", &priv->hbox_topic,
 					"label_topic", &priv->label_topic,
 					"scrolled_window_contacts", &priv->scrolled_window_contacts,
+					"info_bar_vbox", &priv->info_bar_vbox,
 					NULL);
 	g_free (filename);
 
@@ -2311,6 +2313,151 @@ empathy_chat_get_tp_chat (EmpathyChat *chat)
 	return priv->tp_chat;
 }
 
+static void display_password_info_bar (EmpathyChat *self,
+			  gboolean retry);
+
+static void
+provide_password_cb (GObject *tp_chat,
+			  GAsyncResult *res,
+			  gpointer user_data)
+{
+	EmpathyChat *self = EMPATHY_CHAT (user_data);
+	EmpathyChatPriv *priv = GET_PRIV (self);
+	GError *error = NULL;
+
+	if (!empathy_tp_chat_provide_password_finish (EMPATHY_TP_CHAT (tp_chat), res,
+			       &error)) {
+		DEBUG ("error: %s", error->message);
+		/* FIXME: what should we do if that's another error? Close the channel?
+		 * Display the raw D-Bus error to the user isn't very useful */
+		if (g_error_matches (error, TP_ERRORS, TP_ERROR_AUTHENTICATION_FAILED))
+			display_password_info_bar (self, TRUE);
+		g_error_free (error);
+		return;
+	}
+
+	/* Room joined */
+	gtk_widget_set_sensitive (priv->hpaned, TRUE);
+	gtk_widget_grab_focus (self->input_text_view);
+}
+
+static void
+password_infobar_response_cb (GtkWidget *info_bar,
+			  gint response_id,
+			  EmpathyChat *self)
+{
+	EmpathyChatPriv *priv = GET_PRIV (self);
+	GtkWidget *entry;
+	const gchar *password;
+
+	if (response_id != GTK_RESPONSE_OK)
+		goto out;
+
+	entry = g_object_get_data (G_OBJECT (info_bar), "password-entry");
+	g_assert (entry != NULL);
+
+	password = gtk_entry_get_text (GTK_ENTRY (entry));
+
+	empathy_tp_chat_provide_password_async (priv->tp_chat, password,
+			       provide_password_cb, self);
+
+out:
+	gtk_widget_destroy (info_bar);
+}
+
+static void
+password_entry_activate_cb (GtkWidget *entry,
+			  GtkWidget *info_bar)
+{
+	gtk_info_bar_response (GTK_INFO_BAR (info_bar), GTK_RESPONSE_OK);
+}
+
+static void
+passwd_join_button_cb (GtkButton *button,
+			  GtkWidget *info_bar)
+{
+	gtk_info_bar_response (GTK_INFO_BAR (info_bar), GTK_RESPONSE_OK);
+}
+
+static void
+display_password_info_bar (EmpathyChat *self,
+			  gboolean retry)
+{
+	EmpathyChatPriv *priv = GET_PRIV (self);
+	GtkWidget *info_bar;
+	GtkWidget *content_area;
+	GtkWidget *hbox;
+	GtkWidget *image;
+	GtkWidget *label;
+	GtkWidget *entry;
+	GtkWidget *alig;
+	GtkWidget *button;
+	GtkMessageType type;
+	const gchar *msg, *button_label;
+
+	if (retry) {
+		/* Previous password was wrong */
+		type = GTK_MESSAGE_ERROR;
+		msg = _("Wrong password; please try again:");
+		button_label = _("Retry");
+	}
+	else {
+		/* First time we're trying to join */
+		type = GTK_MESSAGE_QUESTION;
+		msg = _("This room is protected by a password:");
+		button_label = _("Join");
+	}
+
+	info_bar = gtk_info_bar_new ();
+	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), type);
+
+	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+
+	hbox = gtk_hbox_new (FALSE, 3);
+	gtk_container_add (GTK_CONTAINER (content_area), hbox);
+
+	/* Add image */
+	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_AUTHENTICATION,
+			       GTK_ICON_SIZE_DIALOG);
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+
+	/* Add message */
+	label = gtk_label_new (msg);
+	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+
+	/* Add password entry */
+	entry = gtk_entry_new ();
+	gtk_entry_set_visibility (GTK_ENTRY (entry), FALSE);
+	gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
+
+	g_signal_connect (entry, "activate",
+			       G_CALLBACK (password_entry_activate_cb), info_bar);
+
+	/* Focus the password entry once it's realized */
+	g_signal_connect (entry, "realize", G_CALLBACK (gtk_widget_grab_focus), NULL);
+
+	/* Add 'Join' button */
+	alig = gtk_alignment_new (0, 0.5, 0, 0);
+
+	button = gtk_button_new_with_label (button_label);
+	gtk_container_add (GTK_CONTAINER (alig), button);
+	gtk_box_pack_start (GTK_BOX (hbox), alig, FALSE, FALSE, 0);
+
+	g_signal_connect (button, "clicked", G_CALLBACK (passwd_join_button_cb),
+			       info_bar);
+
+	g_object_set_data (G_OBJECT (info_bar), "password-entry", entry);
+
+	gtk_box_pack_start (GTK_BOX (priv->info_bar_vbox), info_bar,
+			       FALSE, FALSE, 3);
+	gtk_widget_show_all (hbox);
+
+	g_signal_connect (info_bar, "response",
+			       G_CALLBACK (password_infobar_response_cb), self);
+
+	gtk_widget_show_all (info_bar);
+}
+
 void
 empathy_chat_set_tp_chat (EmpathyChat   *chat,
 			  EmpathyTpChat *tp_chat)
@@ -2393,6 +2540,11 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	 * the pending messages to be show when it's set on the object after it has
 	 * been created */
 	show_pending_messages (chat);
+
+	if (empathy_tp_chat_password_needed (tp_chat)) {
+		display_password_info_bar (chat, FALSE);
+		gtk_widget_set_sensitive (priv->hpaned, FALSE);
+	}
 }
 
 TpAccount *
