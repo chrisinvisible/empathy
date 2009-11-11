@@ -55,6 +55,10 @@ typedef struct {
 	GQueue                *pending_messages_queue;
 	gboolean               had_properties_list;
 	GPtrArray             *properties;
+	TpChannelPasswordFlags password_flags;
+	/* TRUE if we fetched the password flag of the channel or if it's not needed
+	 * (channel doesn't implement the Password interface) */
+	gboolean               got_password_flags;
 	gboolean               ready;
 } EmpathyTpChatPriv;
 
@@ -1035,6 +1039,20 @@ tp_chat_got_self_contact_cb (EmpathyTpContactFactory *factory,
 	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
 }
 
+static void
+got_password_flags_cb (TpChannel *proxy,
+			     guint password_flags,
+			     const GError *error,
+			     gpointer user_data,
+			     GObject *weak_object)
+{
+	EmpathyTpChat *self = EMPATHY_TP_CHAT (weak_object);
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+
+	priv->got_password_flags = TRUE;
+	priv->password_flags = password_flags;
+}
+
 static GObject *
 tp_chat_constructor (GType                  type,
 		     guint                  n_props,
@@ -1103,6 +1121,17 @@ tp_chat_constructor (GType                  type,
 									       tp_chat_property_flags_changed_cb,
 									       NULL, NULL,
 									       G_OBJECT (chat), NULL);
+	}
+
+	/* Check if the chat is password protected */
+	if (tp_proxy_has_interface_by_id (priv->channel,
+					  TP_IFACE_QUARK_CHANNEL_INTERFACE_PASSWORD)) {
+		priv->got_password_flags = FALSE;
+		tp_cli_channel_interface_password_call_get_password_flags (priv->channel,
+									       -1, got_password_flags_cb, chat, NULL, chat);
+	} else {
+		/* No Password interface, so no need to fetch the password flags */
+		priv->got_password_flags = TRUE;
 	}
 
 	return chat;
@@ -1477,3 +1506,10 @@ empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
 	g_list_free (msgs);
 }
 
+gboolean
+empathy_tp_chat_password_needed (EmpathyTpChat *self)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+
+	return priv->password_flags & TP_CHANNEL_PASSWORD_FLAG_PROVIDE;
+}
