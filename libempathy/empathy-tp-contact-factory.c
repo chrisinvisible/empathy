@@ -1069,18 +1069,35 @@ get_contact_by_handle_cb (TpConnection *connection,
 {
 	GetContactsData *data = user_data;
 	EmpathyContact  *contact = NULL;
+	GError *err = NULL;
 
 	if (n_contacts == 1) {
 		contact = dup_contact_for_tp_contact (data->tp_factory,
 						      contacts[0]);
 	}
+	else {
+		if (error == NULL) {
+			/* tp-glib will provide an error only if the whole operation failed,
+			 * but not if, for example, the handle was invalid. We create an error
+			 * so the caller of empathy_tp_contact_factory_get_from_handle can
+			 * rely on the error to check if the operation succeeded or not. */
+
+			err = g_error_new_literal (TP_ERRORS, TP_ERROR_INVALID_HANDLE,
+						      "handle is invalid");
+		}
+		else {
+			err = g_error_copy (error);
+		}
+	}
 
 	if (data->callback.contact_cb) {
 		data->callback.contact_cb (data->tp_factory,
 				           contact,
-				           error,
+				           err,
 				           data->user_data, weak_object);
 	}
+
+	g_clear_error (&err);
 }
 
 void
