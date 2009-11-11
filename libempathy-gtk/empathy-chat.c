@@ -1421,7 +1421,9 @@ chat_input_realize_cb (GtkWidget   *widget,
 		       EmpathyChat *chat)
 {
 	DEBUG ("Setting focus to the input text view");
-	gtk_widget_grab_focus (widget);
+	if (gtk_widget_is_sensitive (widget)) {
+		gtk_widget_grab_focus (widget);
+	}
 }
 
 static void
