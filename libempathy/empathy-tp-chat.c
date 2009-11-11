@@ -1521,3 +1521,57 @@ empathy_tp_chat_password_needed (EmpathyTpChat *self)
 
 	return priv->password_flags & TP_CHANNEL_PASSWORD_FLAG_PROVIDE;
 }
+
+static void
+provide_password_cb (TpChannel *channel,
+				      gboolean correct,
+				      const GError *error,
+				      gpointer user_data,
+				      GObject *weak_object)
+{
+	GSimpleAsyncResult *result = user_data;
+
+	if (error != NULL) {
+			g_simple_async_result_set_from_error (result, error);
+	}
+	else if (!correct) {
+			/* The current D-Bus API is a bit weird so re-use the
+			* AuthenticationFailed error */
+			g_simple_async_result_set_error (result, TP_ERRORS,
+									 TP_ERROR_AUTHENTICATION_FAILED, "Wrong password");
+	}
+
+	g_simple_async_result_complete (result);
+	g_object_unref (result);
+}
+
+void
+empathy_tp_chat_provide_password_async (EmpathyTpChat *self,
+						     const gchar *password,
+						     GAsyncReadyCallback callback,
+						     gpointer user_data)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+	GSimpleAsyncResult *result;
+
+	result = g_simple_async_result_new (G_OBJECT (self),
+					callback, user_data, empathy_tp_chat_provide_password_finish);
+
+	tp_cli_channel_interface_password_call_provide_password (priv->channel, -1,
+		password, provide_password_cb, result, NULL, G_OBJECT (self));
+}
+
+gboolean
+empathy_tp_chat_provide_password_finish (EmpathyTpChat *self,
+						      GAsyncResult *result,
+						      GError **error)
+{
+	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+		error))
+		return FALSE;
+
+	g_return_val_if_fail (g_simple_async_result_is_valid (result,
+					G_OBJECT (self), empathy_tp_chat_provide_password_finish), FALSE);
+
+	return TRUE;
+}
