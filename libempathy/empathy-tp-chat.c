@@ -777,10 +777,15 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 
-	if (priv->ready || priv->user == NULL ||
-	    (priv->members == NULL && priv->remote_contact == NULL)) {
+	if (priv->ready)
 		return;
-	}
+
+	if (priv->user == NULL)
+		return;
+
+	/* We need either the members (room) or the remote contact (private chat) */
+	if (priv->members == NULL && priv->remote_contact == NULL)
+		return;
 
 	DEBUG ("Ready!");
 
