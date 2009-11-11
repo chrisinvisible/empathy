@@ -68,6 +68,7 @@ enum {
 	PROP_0,
 	PROP_CHANNEL,
 	PROP_REMOTE_CONTACT,
+	PROP_PASSWORD_NEEDED,
 	PROP_READY,
 };
 
@@ -1151,6 +1152,7 @@ tp_chat_get_property (GObject    *object,
 		      GValue     *value,
 		      GParamSpec *pspec)
 {
+	EmpathyTpChat *self = EMPATHY_TP_CHAT (object);
 	EmpathyTpChatPriv *priv = GET_PRIV (object);
 
 	switch (param_id) {
@@ -1162,6 +1164,9 @@ tp_chat_get_property (GObject    *object,
 		break;
 	case PROP_READY:
 		g_value_set_boolean (value, priv->ready);
+		break;
+	case PROP_PASSWORD_NEEDED:
+		g_value_set_boolean (value, empathy_tp_chat_password_needed (self));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -1220,6 +1225,14 @@ empathy_tp_chat_class_init (EmpathyTpChatClass *klass)
 					 g_param_spec_boolean ("ready",
 							       "Is the object ready",
 							       "This object can't be used until this becomes true",
+							       FALSE,
+							       G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_PASSWORD_NEEDED,
+					 g_param_spec_boolean ("password-needed",
+							       "password needed",
+							       "TRUE if a password is needed to join the channel",
 							       FALSE,
 							       G_PARAM_READABLE));
 
