@@ -373,17 +373,15 @@ empathy_dispatch_operation_dispose (GObject *object)
 
   g_object_unref (priv->connection);
 
+  if (priv->ready_handler != 0)
+    g_signal_handler_disconnect (priv->channel_wrapper,
+      priv->ready_handler);
+
   if (priv->channel_wrapper != NULL)
     g_object_unref (priv->channel_wrapper);
 
-  if (priv->ready_handler != 0)
-    g_signal_handler_disconnect (priv->channel_wrapper,
-      priv->invalidated_handler);
-
-
   g_signal_handler_disconnect (priv->channel, priv->invalidated_handler);
   g_object_unref (priv->channel);
-
 
   if (priv->contact != NULL)
     g_object_unref (priv->contact);
