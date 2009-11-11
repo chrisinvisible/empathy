@@ -2458,6 +2458,17 @@ display_password_info_bar (EmpathyChat *self,
 	gtk_widget_show_all (info_bar);
 }
 
+static void
+chat_password_needed_changed_cb (EmpathyChat *self)
+{
+	EmpathyChatPriv *priv = GET_PRIV (self);
+
+	if (empathy_tp_chat_password_needed (priv->tp_chat)) {
+		display_password_info_bar (self, FALSE);
+		gtk_widget_set_sensitive (priv->hpaned, FALSE);
+	}
+}
+
 void
 empathy_chat_set_tp_chat (EmpathyChat   *chat,
 			  EmpathyTpChat *tp_chat)
@@ -2503,6 +2514,9 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	g_signal_connect_swapped (tp_chat, "notify::remote-contact",
 				  G_CALLBACK (chat_remote_contact_changed_cb),
 				  chat);
+	g_signal_connect_swapped (tp_chat, "notify::password-needed",
+				  G_CALLBACK (chat_password_needed_changed_cb),
+				  chat);
 
 	/* Get initial value of properties */
 	properties = empathy_tp_chat_get_properties (priv->tp_chat);
@@ -2541,10 +2555,8 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 	 * been created */
 	show_pending_messages (chat);
 
-	if (empathy_tp_chat_password_needed (tp_chat)) {
-		display_password_info_bar (chat, FALSE);
-		gtk_widget_set_sensitive (priv->hpaned, FALSE);
-	}
+	/* check if a password is needed */
+	chat_password_needed_changed_cb (chat);
 }
 
 TpAccount *
