@@ -787,8 +787,14 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 	if (priv->user == NULL)
 		return;
 
-	/* We need either the members (room) or the remote contact (private chat) */
-	if (priv->members == NULL && priv->remote_contact == NULL)
+	if (!priv->got_password_flags)
+		return;
+
+	/* We need either the members (room) or the remote contact (private chat).
+	 * If the chat is protected by a password we can't get these information so
+	 * consider the chat as ready so it can be presented to the user. */
+	if (!empathy_tp_chat_password_needed (chat) && priv->members == NULL &&
+						      priv->remote_contact == NULL)
 		return;
 
 	DEBUG ("Ready!");
@@ -1051,6 +1057,8 @@ got_password_flags_cb (TpChannel *proxy,
 
 	priv->got_password_flags = TRUE;
 	priv->password_flags = password_flags;
+
+	tp_chat_check_if_ready (EMPATHY_TP_CHAT (self));
 }
 
 static GObject *
