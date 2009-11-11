@@ -1047,6 +1047,28 @@ tp_chat_got_self_contact_cb (EmpathyTpContactFactory *factory,
 }
 
 static void
+password_flags_changed_cb (TpChannel *channel,
+    guint added,
+    guint removed,
+    gpointer user_data,
+    GObject *weak_object)
+{
+	EmpathyTpChat *self = EMPATHY_TP_CHAT (weak_object);
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+	gboolean was_needed, needed;
+
+	was_needed = empathy_tp_chat_password_needed (self);
+
+	priv->password_flags |= added;
+	priv->password_flags ^= removed;
+
+	needed = empathy_tp_chat_password_needed (self);
+
+	if (was_needed != needed)
+		g_object_notify (G_OBJECT (self), "password-needed");
+}
+
+static void
 got_password_flags_cb (TpChannel *proxy,
 			     guint password_flags,
 			     const GError *error,
@@ -1136,6 +1158,11 @@ tp_chat_constructor (GType                  type,
 	if (tp_proxy_has_interface_by_id (priv->channel,
 					  TP_IFACE_QUARK_CHANNEL_INTERFACE_PASSWORD)) {
 		priv->got_password_flags = FALSE;
+
+		tp_cli_channel_interface_password_connect_to_password_flags_changed (
+									       priv->channel, password_flags_changed_cb, chat, NULL,
+									       G_OBJECT (chat), NULL);
+
 		tp_cli_channel_interface_password_call_get_password_flags (priv->channel,
 									       -1, got_password_flags_cb, chat, NULL, chat);
 	} else {
