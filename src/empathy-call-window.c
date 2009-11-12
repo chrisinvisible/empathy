@@ -1472,6 +1472,7 @@ display_error (EmpathyCallWindow *self,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GtkWidget *info_bar;
   GtkWidget *content_area;
+  GtkWidget *hbox;
   GtkWidget *vbox;
   GtkWidget *image;
   GtkWidget *label;
@@ -1486,13 +1487,18 @@ display_error (EmpathyCallWindow *self,
 
   content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
 
+  /* hbox containing the image and the messages vbox */
+  hbox = gtk_hbox_new (FALSE, 3);
+  gtk_container_add (GTK_CONTAINER (content_area), hbox);
+
   /* Add image */
   image = gtk_image_new_from_icon_name (img, GTK_ICON_SIZE_DIALOG);
   gtk_widget_show (image);
-  gtk_container_add (GTK_CONTAINER (content_area), image);
+  gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
 
+  /* vbox containing the main message and the details expander */
   vbox = gtk_vbox_new (FALSE, 3);
-  gtk_container_add (GTK_CONTAINER (content_area), vbox);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
   /* Add text */
   txt = g_strdup_printf ("<b>%s</b>\n%s", title, desc);
@@ -1502,7 +1508,7 @@ display_error (EmpathyCallWindow *self,
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
   g_free (txt);
 
-  gtk_container_add (GTK_CONTAINER (vbox), label);
+  gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 0);
 
   /* Add details */
   if (details != NULL)
@@ -1520,7 +1526,7 @@ display_error (EmpathyCallWindow *self,
       g_free (txt);
 
       gtk_container_add (GTK_CONTAINER (expander), label);
-      gtk_container_add (GTK_CONTAINER (vbox), expander);
+      gtk_box_pack_start (GTK_BOX (vbox), expander, TRUE, TRUE, 0);
     }
 
   g_signal_connect (info_bar, "response",
@@ -1528,7 +1534,7 @@ display_error (EmpathyCallWindow *self,
 
   gtk_box_pack_start (GTK_BOX (priv->errors_vbox), info_bar,
       FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
-  gtk_widget_show_all (vbox);
+  gtk_widget_show_all (hbox);
   gtk_widget_show (info_bar);
 }
 
