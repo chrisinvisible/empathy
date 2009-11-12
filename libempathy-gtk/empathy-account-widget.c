@@ -1594,3 +1594,55 @@ empathy_account_widget_new_for_protocol (EmpathyAccountSettings *settings,
 
   return self;
 }
+
+gchar *
+empathy_account_widget_get_default_display_name (EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const gchar *login_id;
+  const gchar *protocol, *p;
+  gchar *default_display_name;
+
+  login_id = empathy_account_settings_get_string (priv->settings, "account");
+  protocol = empathy_account_settings_get_protocol (priv->settings);
+
+  if (login_id != NULL)
+    {
+      if (!tp_strdiff (protocol, "irc"))
+        {
+          const gchar* server;
+          server = empathy_account_settings_get_string (priv->settings,
+              "server");
+
+          /* To translators: The first parameter is the login id and the
+           * second one is the server. The resulting string will be something
+           * like: "MyUserName on chat.freenode.net".
+           * You should reverse the order of these arguments if the
+           * server should come before the login id in your locale.*/
+          default_display_name = g_strdup_printf (_("%1$s on %2$s"),
+              login_id, server);
+        }
+      else
+        {
+          default_display_name = g_strdup (login_id);
+        }
+
+      return default_display_name;
+    }
+
+  if ((p = empathy_protocol_name_to_display_name (protocol)) != NULL)
+    protocol = p;
+
+  if (protocol != NULL)
+    {
+      /* To translators: The parameter is the protocol name. The resulting
+       * string will be something like: "Jabber Account" */
+      default_display_name = g_strdup_printf (_("%s Account"), protocol);
+    }
+  else
+    {
+      default_display_name = g_strdup (_("New account"));
+    }
+
+  return default_display_name;
+}

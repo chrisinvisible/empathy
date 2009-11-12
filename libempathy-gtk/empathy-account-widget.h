@@ -70,6 +70,9 @@ gboolean empathy_account_widget_contains_pending_changes
 void empathy_account_widget_discard_pending_changes
     (EmpathyAccountWidget *widget);
 
+gchar * empathy_account_widget_get_default_display_name (
+    EmpathyAccountWidget *widget);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_WIDGET_H__ */

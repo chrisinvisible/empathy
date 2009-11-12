@@ -208,56 +208,6 @@ empathy_account_dialog_widget_cancelled_cb (
     g_object_unref (settings);
 }
 
-static gchar *
-get_default_display_name (EmpathyAccountSettings *settings)
-{
-  const gchar *login_id;
-  const gchar *protocol, *p;
-  gchar *default_display_name;
-
-  login_id = empathy_account_settings_get_string (settings, "account");
-  protocol = empathy_account_settings_get_protocol (settings);
-
-  if (login_id != NULL)
-    {
-      if (!tp_strdiff (protocol, "irc"))
-        {
-          const gchar* server;
-          server = empathy_account_settings_get_string (settings, "server");
-
-          /* To translators: The first parameter is the login id and the
-           * second one is the server. The resulting string will be something
-           * like: "MyUserName on chat.freenode.net".
-           * You should reverse the order of these arguments if the
-           * server should come before the login id in your locale.*/
-          default_display_name = g_strdup_printf (_("%1$s on %2$s"),
-              login_id, server);
-        }
-      else
-        {
-          default_display_name = g_strdup (login_id);
-        }
-
-      return default_display_name;
-    }
-
-  if ((p = empathy_protocol_name_to_display_name (protocol)) != NULL)
-    protocol = p;
-
-  if (protocol != NULL)
-    {
-      /* To translators: The parameter is the protocol name. The resulting
-       * string will be something like: "Jabber Account" */
-      default_display_name = g_strdup_printf (_("%s Account"), protocol);
-    }
-  else
-    {
-      default_display_name = g_strdup (_("New account"));
-    }
-
-  return default_display_name;
-}
-
 static void
 empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
@@ -266,7 +216,8 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
 
-  display_name = get_default_display_name (settings);
+  display_name = empathy_account_widget_get_default_display_name (
+      widget_object);
 
   empathy_account_settings_set_display_name_async (settings,
       display_name, NULL, NULL);
