@@ -1482,7 +1482,6 @@ display_error (EmpathyCallWindow *self,
   info_bar = gtk_info_bar_new_with_buttons (GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
       NULL);
 
-  gtk_widget_set_no_show_all (info_bar, TRUE);
   gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
 
   content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
@@ -1493,7 +1492,6 @@ display_error (EmpathyCallWindow *self,
 
   /* Add image */
   image = gtk_image_new_from_icon_name (img, GTK_ICON_SIZE_DIALOG);
-  gtk_widget_show (image);
   gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
 
   /* vbox containing the main message and the details expander */
@@ -1535,8 +1533,7 @@ display_error (EmpathyCallWindow *self,
 
   gtk_box_pack_start (GTK_BOX (priv->errors_vbox), info_bar,
       FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
-  gtk_widget_show_all (hbox);
-  gtk_widget_show (info_bar);
+  gtk_widget_show_all (info_bar);
 }
 
 static gchar *
