@@ -1506,6 +1506,7 @@ display_error (EmpathyCallWindow *self,
   label = gtk_label_new (NULL);
   gtk_label_set_markup (GTK_LABEL (label), txt);
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
   g_free (txt);
 
   gtk_box_pack_start (GTK_BOX (vbox), label, TRUE, TRUE, 0);
