@@ -147,7 +147,7 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
 	GdkPixbuf *pixbuf = NULL;
 
-	if (!empathy_notification_is_enabled ()) {
+	if (!empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		/* always close the notification if this happens */
 		notification_close_helper (priv);
 		return;
@@ -331,7 +331,7 @@ status_icon_event_updated_cb (EmpathyEventManager *manager,
 		return;
 	}
 
-	if (empathy_notification_is_enabled ()) {
+	if (empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		status_icon_update_notification (icon);
 	}
 
@@ -388,7 +388,7 @@ status_icon_idle_notify_cb (EmpathyStatusIcon *icon)
 	status_icon_update_icon (icon);
 	status_icon_update_tooltip (icon);
 
-	if (!empathy_notification_is_enabled ()) {
+	if (!empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		/* dismiss the outstanding notification if present */
 
 		if (priv->notification) {

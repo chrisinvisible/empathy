@@ -82,7 +82,8 @@ EmpathyNotifyManager * empathy_notify_manager_dup_singleton (void);
 gboolean empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
     const gchar *capa);
 
-gboolean empathy_notification_is_enabled  (void);
+gboolean empathy_notify_manager_notification_is_enabled  (
+    EmpathyNotifyManager *self);
 
 GdkPixbuf * empathy_notify_manager_get_pixbuf_for_notification (
     EmpathyNotifyManager *self,

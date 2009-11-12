@@ -162,7 +162,7 @@ empathy_notify_manager_get_pixbuf_for_notification (EmpathyNotifyManager *self,
 }
 
 gboolean
-empathy_notification_is_enabled (void)
+empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
 {
   EmpathyConf *conf;
   gboolean res;

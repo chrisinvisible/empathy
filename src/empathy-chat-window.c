@@ -1080,7 +1080,7 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
 	gboolean res;
 
-	if (!empathy_notification_is_enabled ()) {
+	if (!empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		return;
 	} else {
 		empathy_conf_get_bool (empathy_conf_get (),
