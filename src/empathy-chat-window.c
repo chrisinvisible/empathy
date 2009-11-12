@@ -52,10 +52,10 @@
 #include <libempathy-gtk/empathy-smiley-manager.h>
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
+#include <libempathy-gtk/empathy-notify-manager.h>
 
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
-#include "empathy-misc.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>

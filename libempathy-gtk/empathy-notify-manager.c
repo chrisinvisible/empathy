@@ -25,6 +25,9 @@
 
 #include <libempathy/empathy-utils.h>
 
+#include <libempathy-gtk/empathy-ui-utils.h>
+#include <libempathy-gtk/empathy-conf.h>
+
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
 
@@ -140,4 +143,45 @@ empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
   EmpathyNotifyManagerPriv *priv = GET_PRIV (self);
 
   return g_hash_table_lookup (priv->capabilities, capa) != NULL;
+}
+
+GdkPixbuf *
+empathy_misc_get_pixbuf_for_notification (EmpathyContact *contact,
+    const char *icon_name)
+{
+  GdkPixbuf *pixbuf = NULL;
+
+  if (contact != NULL)
+    pixbuf = empathy_pixbuf_avatar_from_contact_scaled (contact, 48, 48);
+
+  if (pixbuf == NULL)
+    pixbuf = empathy_pixbuf_from_icon_name_sized (icon_name, 48);
+
+  return pixbuf;
+}
+
+gboolean
+empathy_notification_is_enabled (void)
+{
+  EmpathyConf *conf;
+  gboolean res;
+
+  conf = empathy_conf_get ();
+  res = FALSE;
+
+  empathy_conf_get_bool (conf, EMPATHY_PREFS_NOTIFICATIONS_ENABLED, &res);
+
+  if (!res)
+    return FALSE;
+
+  if (!empathy_check_available_state ())
+    {
+      empathy_conf_get_bool (conf, EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
+          &res);
+
+      if (res)
+        return FALSE;
+    }
+
+  return TRUE;
 }

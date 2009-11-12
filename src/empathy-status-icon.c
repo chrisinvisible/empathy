@@ -49,7 +49,6 @@
 #include "empathy-status-icon.h"
 #include "empathy-preferences.h"
 #include "empathy-event-manager.h"
-#include "empathy-misc.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_DISPATCHER
 #include <libempathy/empathy-debug.h>

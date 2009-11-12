@@ -51,6 +51,15 @@ G_BEGIN_DECLS
 #define EMPATHY_IS_NOTIFY_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_NOTIFY_MANAGER))
 #define EMPATHY_NOTIFY_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_NOTIFY_MANAGER, EmpathyNotifyManagerClass))
 
+/* FIXME: this should *really* belong to libnotify. */
+typedef enum {
+    EMPATHY_NOTIFICATION_CLOSED_INVALID = 0,
+    EMPATHY_NOTIFICATION_CLOSED_EXPIRED = 1,
+    EMPATHY_NOTIFICATION_CLOSED_DISMISSED = 2,
+    EMPATHY_NOTIFICATION_CLOSED_PROGRAMMATICALY = 3,
+    EMPATHY_NOTIFICATION_CLOSED_RESERVED = 4
+} EmpathyNotificationClosedReason;
+
 typedef struct _EmpathyNotifyManager      EmpathyNotifyManager;
 typedef struct _EmpathyNotifyManagerClass EmpathyNotifyManagerClass;
 
@@ -72,6 +81,11 @@ EmpathyNotifyManager * empathy_notify_manager_dup_singleton (void);
 
 gboolean empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
     const gchar *capa);
+
+gboolean empathy_notification_is_enabled  (void);
+GdkPixbuf * empathy_misc_get_pixbuf_for_notification (EmpathyContact *contact,
+    const char *icon_name);
+
 
 G_END_DECLS
 
