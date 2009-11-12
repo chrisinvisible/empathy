@@ -1608,6 +1608,7 @@ empathy_account_widget_get_default_display_name (EmpathyAccountWidget *self)
 
   if (login_id != NULL)
     {
+      /* TODO: this should be done in empathy-account-widget-irc */
       if (!tp_strdiff (protocol, "irc"))
         {
           const gchar* server;
