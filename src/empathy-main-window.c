@@ -470,7 +470,7 @@ main_window_error_display (EmpathyMainWindow *window,
 
 	gtk_widget_show (window->errors_vbox);
 
-	gtk_rc_style_unref (rc_style);
+	g_object_unref (rc_style);
 	g_hash_table_insert (window->errors, g_object_ref (account), info_bar);
 }
 
