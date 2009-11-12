@@ -34,8 +34,10 @@
 
 typedef struct
 {
-  gboolean dispose_has_run;
+  /* owned (gchar *) => TRUE */
+  GHashTable *capabilities;
 
+  gboolean dispose_has_run;
 } EmpathyNotifyManagerPriv;
 
 G_DEFINE_TYPE (EmpathyNotifyManager, empathy_notify_manager, G_TYPE_OBJECT);
@@ -49,6 +51,7 @@ notify_manager_constructor (GType type,
 {
   GObject *retval;
   EmpathyNotifyManagerPriv *priv;
+  GList *list, *l;
 
   if (notify_manager != NULL)
     return g_object_ref (notify_manager);
@@ -60,6 +63,18 @@ notify_manager_constructor (GType type,
   g_object_add_weak_pointer (retval, (gpointer) &notify_manager);
 
   priv = GET_PRIV (notify_manager);
+
+  /* fetch capabilities */
+  list = notify_get_server_caps ();
+  for (l = list; l != NULL; l = g_list_next (l))
+    {
+      gchar *capa = l->data;
+
+      DEBUG ("add capability: %s", capa);
+      /* owernship of the string is transfered to the hash table */
+      g_hash_table_insert (priv->capabilities, capa, GUINT_TO_POINTER (TRUE));
+    }
+  g_list_free (list);
 
   return retval;
 }
@@ -80,6 +95,10 @@ notify_manager_dispose (GObject *object)
 static void
 notify_manager_finalize (GObject *object)
 {
+  EmpathyNotifyManagerPriv *priv = GET_PRIV (object);
+
+  g_hash_table_destroy (priv->capabilities);
+
   G_OBJECT_CLASS (empathy_notify_manager_parent_class)->finalize (object);
 }
 
@@ -102,6 +121,9 @@ empathy_notify_manager_init (EmpathyNotifyManager *self)
     EMPATHY_TYPE_NOTIFY_MANAGER, EmpathyNotifyManagerPriv);
 
   self->priv = priv;
+
+  priv->capabilities = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
+      NULL);
 }
 
 EmpathyNotifyManager *
