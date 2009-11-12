@@ -174,7 +174,8 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
-			if (empathy_notify_manager_has_capability (priv->notify_mgr, "actions")) {
+			if (empathy_notify_manager_has_capability (priv->notify_mgr,
+			           EMPATHY_NOTIFY_MANAGER_CAPA_ACTIONS)) {
 				notify_notification_add_action (priv->notification,
 					"respond",
 					_("Respond"),
