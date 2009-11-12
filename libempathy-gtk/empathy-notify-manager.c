@@ -146,7 +146,8 @@ empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
 }
 
 GdkPixbuf *
-empathy_misc_get_pixbuf_for_notification (EmpathyContact *contact,
+empathy_notify_manager_get_pixbuf_for_notification (EmpathyNotifyManager *self,
+    EmpathyContact *contact,
     const char *icon_name)
 {
   GdkPixbuf *pixbuf = NULL;

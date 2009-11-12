@@ -187,7 +187,8 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
 		}
 
-		pixbuf = empathy_misc_get_pixbuf_for_notification (priv->event->contact,
+		pixbuf = empathy_notify_manager_get_pixbuf_for_notification (
+								   priv->notify_mgr, priv->event->contact,
 								   priv->event->icon_name);
 
 		if (pixbuf != NULL) {

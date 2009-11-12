@@ -75,6 +75,7 @@ typedef struct {
 	gboolean     dnd_same_window;
 	guint        save_geometry_id;
 	EmpathyChatroomManager *chatroom_manager;
+	EmpathyNotifyManager *notify_mgr;
 	GtkWidget   *dialog;
 	GtkWidget   *notebook;
 	NotifyNotification *notification;
@@ -1111,7 +1112,8 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 				  G_CALLBACK (chat_window_notification_closed_cb), cb_data);
 	}
 
-	pixbuf = empathy_misc_get_pixbuf_for_notification (sender, EMPATHY_IMAGE_NEW_MESSAGE);
+	pixbuf = empathy_notify_manager_get_pixbuf_for_notification (priv->notify_mgr,
+		sender, EMPATHY_IMAGE_NEW_MESSAGE);
 
 	if (pixbuf != NULL) {
 		notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
@@ -1508,6 +1510,7 @@ chat_window_finalize (GObject *object)
 
 	g_object_unref (priv->ui_manager);
 	g_object_unref (priv->chatroom_manager);
+	g_object_unref (priv->notify_mgr);
 	if (priv->save_geometry_id != 0) {
 		g_source_remove (priv->save_geometry_id);
 		chat_window_save_geometry_timeout_cb (window);
@@ -1690,6 +1693,8 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	priv->chats_new_msg = NULL;
 	priv->chats_composing = NULL;
 	priv->current_chat = NULL;
+
+	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
 }
 
 EmpathyChatWindow *
