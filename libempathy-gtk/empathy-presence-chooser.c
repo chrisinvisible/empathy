@@ -951,6 +951,12 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 	status = empathy_idle_get_status (priv->idle);
 	flash_state = empathy_idle_get_flash_state (priv->idle);
 
+	/* An unset presence here doesn't make any sense. Force it to appear as
+	 * offline. */
+	if (state == TP_CONNECTION_PRESENCE_TYPE_UNSET) {
+		state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+	}
+
 	/* look through the model and attempt to find a matching state */
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX (chooser));
 	for (valid = gtk_tree_model_get_iter_first (model, &iter);

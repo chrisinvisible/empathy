@@ -239,6 +239,13 @@ status_icon_update_icon (EmpathyStatusIcon *icon)
 		TpConnectionPresenceType state;
 
 		state = empathy_idle_get_state (priv->idle);
+
+		/* An unset presence type here doesn't make sense. Force it
+		 * to be offline. */
+		if (state == TP_CONNECTION_PRESENCE_TYPE_UNSET) {
+			state = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+		}
+
 		icon_name = empathy_icon_name_for_presence (state);
 	}
 
