@@ -43,6 +43,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
+#include <libempathy-gtk/empathy-notify-manager.h>
 
 #include "empathy-accounts-dialog.h"
 #include "empathy-status-icon.h"
@@ -61,6 +62,7 @@ typedef struct {
 	GtkStatusIcon       *icon;
 	EmpathyIdle         *idle;
 	TpAccountManager    *account_manager;
+	EmpathyNotifyManager *notify_mgr;
 	gboolean             showing_event_icon;
 	guint                blink_timeout;
 	EmpathyEventManager *event_manager;
@@ -73,7 +75,6 @@ typedef struct {
 	GtkAction           *show_window_item;
 	GtkAction           *new_message_item;
 	GtkAction           *status_item;
-	gboolean             notify_supports_actions;
 } EmpathyStatusIconPriv;
 
 G_DEFINE_TYPE (EmpathyStatusIcon, empathy_status_icon, G_TYPE_OBJECT);
@@ -173,7 +174,7 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 			notify_notification_set_timeout (priv->notification,
 							 NOTIFY_EXPIRES_DEFAULT);
 
-			if (priv->notify_supports_actions) {
+			if (empathy_notify_manager_has_capability (priv->notify_mgr, "actions")) {
 				notify_notification_add_action (priv->notification,
 					"respond",
 					_("Respond"),
@@ -552,6 +553,7 @@ status_icon_finalize (GObject *object)
 	g_object_unref (priv->account_manager);
 	g_object_unref (priv->event_manager);
 	g_object_unref (priv->ui_manager);
+	g_object_unref (priv->notify_mgr);
 }
 
 static void
@@ -594,7 +596,6 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (icon,
 		EMPATHY_TYPE_STATUS_ICON, EmpathyStatusIconPriv);
-	GList *list, *l;
 
 	icon->priv = priv;
 	priv->icon = gtk_status_icon_new ();
@@ -634,15 +635,7 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 			  icon);
 
 	/* Query the notification daemon to check if it supports actions */
-	priv->notify_supports_actions = FALSE;
-	list = notify_get_server_caps ();
-	for (l = list; l != NULL; l = g_list_next (l)) {
-		gchar *caps = l->data;
-		if (!tp_strdiff (caps, "actions"))
-			priv->notify_supports_actions = TRUE;
-		g_free (caps);
-	}
-	g_list_free (list);
+	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
 }
 
 EmpathyStatusIcon *
