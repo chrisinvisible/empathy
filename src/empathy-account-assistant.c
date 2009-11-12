@@ -250,8 +250,18 @@ account_assistant_apply_account_cb (GObject *source,
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (source);
   TpAccount *account;
+  gchar *display_name;
 
   empathy_account_settings_apply_finish (settings, result, &error);
+
+  /* set default display name */
+  display_name = empathy_account_widget_get_default_display_name (
+      priv->current_widget_object);
+
+  empathy_account_settings_set_display_name_async (settings,
+      display_name, NULL, NULL);
+
+  g_free (display_name);
 
   priv->is_creating = FALSE;
 
