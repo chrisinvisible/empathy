@@ -8,8 +8,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 DISTCHECK_CONFIGURE_FLAGS =		\
 	--disable-scrollkeeper		\
-	--disable-schemas-install	\
-	--enable-gtk-doc
+	--disable-schemas-install
 
 EXTRA_DIST = 			\
         ChangeLog               \
