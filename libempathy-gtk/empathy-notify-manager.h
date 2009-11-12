@@ -51,6 +51,9 @@ GType empathy_notify_manager_get_type (void) G_GNUC_CONST;
 /* Get the notify_manager singleton */
 EmpathyNotifyManager * empathy_notify_manager_dup_singleton (void);
 
+gboolean empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
+    const gchar *capa);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_NOTIFY_MANAGER_H__ */

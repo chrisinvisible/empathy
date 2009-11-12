@@ -132,3 +132,12 @@ empathy_notify_manager_dup_singleton (void)
   return EMPATHY_NOTIFY_MANAGER (g_object_new (EMPATHY_TYPE_NOTIFY_MANAGER,
         NULL));
 }
+
+gboolean
+empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
+    const gchar *capa)
+{
+  EmpathyNotifyManagerPriv *priv = GET_PRIV (self);
+
+  return g_hash_table_lookup (priv->capabilities, capa) != NULL;
+}
