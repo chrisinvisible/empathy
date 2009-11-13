@@ -635,7 +635,6 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 			  G_CALLBACK (status_icon_popup_menu_cb),
 			  icon);
 
-	/* Query the notification daemon to check if it supports actions */
 	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
 }
 
