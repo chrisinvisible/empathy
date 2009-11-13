@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-11-05 14:29+0000\n"
-"PO-Revision-Date: 2009-11-06 07:40+0100\n"
+"POT-Creation-Date: 2009-11-12 17:43+0000\n"
+"PO-Revision-Date: 2009-11-13 07:16+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -224,11 +224,11 @@ msgstr "Privzeta mapa za shranjevanje datotek ob prenosih."
 
 #: ../data/empathy.schemas.in.h:48
 msgid "The last directory that an avatar image was chosen from."
-msgstr "Zadnja mapa, iz katere je bila izbrana podoba."
+msgstr "Zadnja mapa iz katere je bila izbrana podoba."
 
 #: ../data/empathy.schemas.in.h:49
 msgid "The theme that is used to display the conversation in chat windows."
-msgstr "Tema, uporabljena za prikaz pogovorov v klepetalnih oknih."
+msgstr "Tema uporabljena za prikaz pogovorov v klepetalnih oknih."
 
 #: ../data/empathy.schemas.in.h:50
 msgid "Use graphical smileys"
@@ -395,7 +395,7 @@ msgid "The selected file is empty"
 msgstr "Izbrana datoteka je prazna"
 
 #: ../libempathy/empathy-tp-contact-list.c:844
-#: ../src/empathy.c:292
+#: ../src/empathy.c:293
 msgid "People nearby"
 msgstr "Uporabniki v bližini"
 
@@ -532,16 +532,16 @@ msgstr "Vse"
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1308
+#: ../libempathy-gtk/empathy-account-widget.c:1289
 msgid "L_og in"
 msgstr "_Prijava"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1358
+#: ../libempathy-gtk/empathy-account-widget.c:1353
 msgid "Enabled"
 msgstr "Omogočeno"
 
 #. Translators: this is used only when built on a moblin platform 
-#: ../libempathy-gtk/empathy-account-widget.c:1364
+#: ../libempathy-gtk/empathy-account-widget.c:1359
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -1047,7 +1047,7 @@ msgid "Conversation"
 msgstr "Pogovor"
 
 #: ../libempathy-gtk/empathy-chat.ui.h:1
-#: ../src/empathy-chat-window.c:504
+#: ../src/empathy-chat-window.c:556
 msgid "Topic:"
 msgstr "Tema:"
 
@@ -1114,12 +1114,12 @@ msgid "Removing contact"
 msgstr "Odstranjevanje stika"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:195
-#: ../src/empathy-main-window.ui.h:11
+#: ../src/empathy-main-window.ui.h:12
 msgid "_Add Contact..."
 msgstr "_Dodaj stik ..."
 
 #: ../libempathy-gtk/empathy-contact-menu.c:222
-#: ../src/empathy-main-window.ui.h:12
+#: ../src/empathy-main-window.ui.h:13
 msgid "_Chat"
 msgstr "_Klepet"
 
@@ -1152,7 +1152,7 @@ msgstr "_Podrobnosti"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
 #: ../src/empathy-chat-window.ui.h:10
-#: ../src/empathy-main-window.ui.h:16
+#: ../src/empathy-main-window.ui.h:17
 msgid "_Edit"
 msgstr "_Uredi"
 
@@ -1181,7 +1181,7 @@ msgid "Select"
 msgstr "Izberi"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:1009
-#: ../src/empathy-main-window.c:1020
+#: ../src/empathy-main-window.c:1034
 msgid "Group"
 msgstr "Skupina"
 
@@ -1281,15 +1281,15 @@ msgstr "Zemljepisna širina:"
 msgid "Altitude:"
 msgstr "Nadmorska višina:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1353
+#: ../libempathy-gtk/empathy-contact-widget.c:1367
 msgid "<b>Location</b>"
 msgstr "<b>Lega</b>"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1366
+#: ../libempathy-gtk/empathy-contact-widget.c:1380
 msgid "<b>Location</b>, "
 msgstr "<b>Lega</b>, "
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1416
+#: ../libempathy-gtk/empathy-contact-widget.c:1430
 msgid "%B %e, %Y at %R UTC"
 msgstr "%e.%B.%Y ob %R UTC"
 
@@ -1314,7 +1314,7 @@ msgid "Client:"
 msgstr "Odjemalec:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:7
-#: ../src/empathy-main-window.c:1003
+#: ../src/empathy-main-window.c:1017
 msgid "Contact"
 msgstr "Stik"
 
@@ -1453,7 +1453,7 @@ msgid "Set your presence and current status"
 msgstr "Nastavitev navzočnosti in trenutnega stanja"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1129
+#: ../libempathy-gtk/empathy-presence-chooser.c:1135
 msgid "Custom messages..."
 msgstr "Sporočila po meri ..."
 
@@ -1708,35 +1708,35 @@ msgstr "zahodnoevropska"
 msgid "Vietnamese"
 msgstr "vietnamska"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:141
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:108
 msgid "The contact selected cannot receive files."
 msgstr "Izbrani stik ne sprejema datotek."
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:147
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:114
 msgid "The contact selected is offline."
 msgstr "Izbrani stik ni povezan v omrežje."
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:202
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:169
 msgid "No error message"
 msgstr "Ni sporočil o napakah"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:278
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
 msgid "Instant Message (Empathy)"
 msgstr "Trenutno sporočanje (Empathy)"
 
-#: ../src/empathy.c:871
+#: ../src/empathy.c:889
 msgid "Don't connect on startup"
 msgstr "Brez samodejne povezave ob zagonu"
 
-#: ../src/empathy.c:875
+#: ../src/empathy.c:893
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ne prikaži seznama stikov in drugih pogovornih oken ob zagonu"
 
-#: ../src/empathy.c:879
+#: ../src/empathy.c:897
 msgid "Show the accounts dialog"
 msgstr "Prikaži pogovorno okno računov"
 
-#: ../src/empathy.c:891
+#: ../src/empathy.c:909
 msgid "- Empathy IM Client"
 msgstr "- Empathy sporočilnik"
 
@@ -1805,7 +1805,7 @@ msgstr "Prišlo je do napake"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1388
+#: ../src/empathy-accounts-dialog.c:1369
 #, c-format
 msgid "New %s account"
 msgstr "Nov %s račun"
@@ -1922,37 +1922,16 @@ msgstr ""
 "Ustvarjen bo nov račun, trenutne spremembe pa bodo izgubljene!\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:824
-#, c-format
-msgid ""
-"You are about to remove your %s account!\n"
-"Are you sure you want to proceed?"
-msgstr ""
-"Odstranjen bo vaš račun %s!\n"
-"Ali ste prepričani, da želite nadaljevati?"
-
-#. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:828
+#: ../src/empathy-accounts-dialog.c:823
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Ali želite odstraniti %s iz račinalnika?"
 
-#: ../src/empathy-accounts-dialog.c:834
-msgid ""
-"Any associated conversations and chat rooms will NOT be removed if you decide to proceed.\n"
-"\n"
-"Should you decide to add the account back at a later time, they will still be available."
-msgstr ""
-"Pogovori in klepetalnice NE bodo izbrisani, v primeru, da se odločite nadaljevati.\n"
-"\n"
-"V primeru, da boste kasneje želeli obnoviti svoj račun, bodo podatki še vedno na voljo."
-
-#. Translators: this is used only when built on a moblin platform
-#: ../src/empathy-accounts-dialog.c:841
+#: ../src/empathy-accounts-dialog.c:827
 msgid "This will not remove your account on the server."
 msgstr "S tem bo odstranjen račun s strežnika."
 
-#: ../src/empathy-accounts-dialog.c:1028
+#: ../src/empathy-accounts-dialog.c:1009
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1960,7 +1939,7 @@ msgstr ""
 "Izbran bo nov račun, trenutne spremembe pa bodo izgubljene\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:1474
+#: ../src/empathy-accounts-dialog.c:1455
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1969,7 +1948,7 @@ msgstr ""
 "Ali ste prepričani, da želite nadaljevati?"
 
 #. Translators: this is used only when built on a moblin platform 
-#: ../src/empathy-accounts-dialog.c:1645
+#: ../src/empathy-accounts-dialog.c:1626
 msgid "_Next"
 msgstr "_Naslednji"
 
@@ -2068,20 +2047,30 @@ msgstr "Pokliči"
 msgid "Connected — %d:%02dm"
 msgstr "Povezan - %d:%02d m"
 
-#: ../src/empathy-call-window.c:1511
+#: ../src/empathy-call-window.c:1517
 msgid "Technical Details"
 msgstr "Tehnične podrobnosti:"
 
-#: ../src/empathy-call-window.c:1544
+#: ../src/empathy-call-window.c:1551
 #, c-format
-msgid "You don't have any codecs in common with %s."
-msgstr "Ni ustreznih kodekov povezanih z %s."
+msgid "%s's software does not understand any of the audio formats supported by your computer"
+msgstr "%s's program ne prepozna zvočnih zapisov podprtih na tem sistemu"
 
-#: ../src/empathy-call-window.c:1583
+#: ../src/empathy-call-window.c:1556
+#, c-format
+msgid "%s's software does not understand any of the video formats supported by your computer"
+msgstr "%s's program ne prepozna video zapisov podprtih na tem sistemu"
+
+#: ../src/empathy-call-window.c:1562
+#, c-format
+msgid "Can't establish a connection to %s. One of you might be on a network that does not allow direct connections."
+msgstr "Ni mogoče ustvariti povezave z %s. Eden izmed odjemalcev je v omrežju, ki ne dovoli neposrednega povezovanja."
+
+#: ../src/empathy-call-window.c:1604
 msgid "Can't establish audio stream"
 msgstr "Ni mogoče uvesti zvočnega pretoka"
 
-#: ../src/empathy-call-window.c:1593
+#: ../src/empathy-call-window.c:1614
 msgid "Can't establish video stream"
 msgstr "Ni mogoče uvesti slikovnega pretoka"
 
@@ -2114,7 +2103,7 @@ msgstr "_Klic"
 msgid "_View"
 msgstr "_Pogled"
 
-#: ../src/empathy-chat-window.c:508
+#: ../src/empathy-chat-window.c:560
 msgid "Typing a message."
 msgstr "Pisanje sporočila."
 
@@ -2123,27 +2112,27 @@ msgid "C_lear"
 msgstr "Po_čisti"
 
 #: ../src/empathy-chat-window.ui.h:2
+msgid "C_ontact"
+msgstr "S_tik"
+
+#: ../src/empathy-chat-window.ui.h:3
 msgid "Chat"
 msgstr "Klepet"
 
-#: ../src/empathy-chat-window.ui.h:3
+#: ../src/empathy-chat-window.ui.h:4
 msgid "Insert _Smiley"
 msgstr "Vstavi _smeška"
 
-#: ../src/empathy-chat-window.ui.h:4
+#: ../src/empathy-chat-window.ui.h:5
 msgid "Move Tab _Left"
 msgstr "Premakni zavihek _levo"
 
-#: ../src/empathy-chat-window.ui.h:5
+#: ../src/empathy-chat-window.ui.h:6
 msgid "Move Tab _Right"
 msgstr "Premakni zavihek _desno"
 
-#: ../src/empathy-chat-window.ui.h:6
-msgid "_Contact"
-msgstr "_Stik"
-
 #: ../src/empathy-chat-window.ui.h:7
-#: ../src/empathy-main-window.ui.h:14
+#: ../src/empathy-main-window.ui.h:15
 msgid "_Contents"
 msgstr "_Vsebina"
 
@@ -2160,7 +2149,7 @@ msgid "_Favorite Chatroom"
 msgstr "_Priljibljena klepetalnica"
 
 #: ../src/empathy-chat-window.ui.h:12
-#: ../src/empathy-main-window.ui.h:18
+#: ../src/empathy-main-window.ui.h:19
 msgid "_Help"
 msgstr "_Pomoč"
 
@@ -2426,67 +2415,75 @@ msgstr "Vir"
 msgid "%s account"
 msgstr "%s račun"
 
-#: ../src/empathy-main-window.c:401
-msgid "_Edit account"
-msgstr "_Uredi račun"
+#: ../src/empathy-main-window.c:413
+msgid "Reconnect"
+msgstr "_Ponovno poveži"
 
-#: ../src/empathy-main-window.c:502
+#: ../src/empathy-main-window.c:420
+msgid "Edit Account"
+msgstr "Uredi račun"
+
+#: ../src/empathy-main-window.c:427
+msgid "Close"
+msgstr "Zapri"
+
+#: ../src/empathy-main-window.c:515
 msgid "No error specified"
 msgstr "Ni določene napake"
 
-#: ../src/empathy-main-window.c:505
+#: ../src/empathy-main-window.c:518
 msgid "Network error"
 msgstr "Napaka omrežja"
 
-#: ../src/empathy-main-window.c:508
+#: ../src/empathy-main-window.c:521
 msgid "Authentication failed"
 msgstr "Overitev ni uspela"
 
-#: ../src/empathy-main-window.c:511
+#: ../src/empathy-main-window.c:524
 msgid "Encryption error"
 msgstr "Napaka šifriranja"
 
-#: ../src/empathy-main-window.c:514
+#: ../src/empathy-main-window.c:527
 msgid "Name in use"
 msgstr "Ime je v uporabi"
 
-#: ../src/empathy-main-window.c:517
+#: ../src/empathy-main-window.c:530
 msgid "Certificate not provided"
 msgstr "Potrdilo ni na voljo"
 
-#: ../src/empathy-main-window.c:520
+#: ../src/empathy-main-window.c:533
 msgid "Certificate untrusted"
 msgstr "Potrdilo ni overjeno"
 
-#: ../src/empathy-main-window.c:523
+#: ../src/empathy-main-window.c:536
 msgid "Certificate expired"
 msgstr "Potrdilo je preteklo"
 
-#: ../src/empathy-main-window.c:526
+#: ../src/empathy-main-window.c:539
 msgid "Certificate not activated"
 msgstr "Potrdilo ni potrjeno"
 
-#: ../src/empathy-main-window.c:529
+#: ../src/empathy-main-window.c:542
 msgid "Certificate hostname mismatch"
 msgstr "Neustrezno potrdilo gostitelja"
 
-#: ../src/empathy-main-window.c:532
+#: ../src/empathy-main-window.c:545
 msgid "Certificate fingerprint mismatch"
 msgstr "Neustrezen prstni odtis potrdila"
 
-#: ../src/empathy-main-window.c:535
+#: ../src/empathy-main-window.c:548
 msgid "Certificate self-signed"
 msgstr "Potrdilo je samo-podpisano"
 
-#: ../src/empathy-main-window.c:538
+#: ../src/empathy-main-window.c:551
 msgid "Certificate error"
 msgstr "Napaka potrdila"
 
-#: ../src/empathy-main-window.c:541
+#: ../src/empathy-main-window.c:554
 msgid "Unknown error"
 msgstr "Neznana napaka"
 
-#: ../src/empathy-main-window.c:1337
+#: ../src/empathy-main-window.c:1353
 msgid "Show and edit accounts"
 msgstr "Prikaži in uredi račune"
 
@@ -2519,49 +2516,49 @@ msgid "Normal Size With _Avatars"
 msgstr "Normalno s _podobami"
 
 #: ../src/empathy-main-window.ui.h:8
+msgid "P_references"
+msgstr "Nas_tavitve"
+
+#: ../src/empathy-main-window.ui.h:9
 msgid "Sort by _Name"
 msgstr "Razvrsti po _imenu"
 
-#: ../src/empathy-main-window.ui.h:9
+#: ../src/empathy-main-window.ui.h:10
 msgid "Sort by _Status"
 msgstr "Razvrsti po _stanju"
 
-#: ../src/empathy-main-window.ui.h:10
+#: ../src/empathy-main-window.ui.h:11
 msgid "_Accounts"
 msgstr "_Računi"
 
-#: ../src/empathy-main-window.ui.h:13
+#: ../src/empathy-main-window.ui.h:14
 msgid "_Compact Size"
 msgstr "_Zgoščeno"
 
-#: ../src/empathy-main-window.ui.h:15
+#: ../src/empathy-main-window.ui.h:16
 msgid "_Debug"
 msgstr "Raz_hrošči"
 
-#: ../src/empathy-main-window.ui.h:17
+#: ../src/empathy-main-window.ui.h:18
 msgid "_File Transfers"
 msgstr "Prenosi _datotek"
 
-#: ../src/empathy-main-window.ui.h:19
+#: ../src/empathy-main-window.ui.h:20
 msgid "_Join..."
 msgstr "Pr_idruži se ..."
 
-#: ../src/empathy-main-window.ui.h:20
+#: ../src/empathy-main-window.ui.h:21
 #: ../src/empathy-status-icon.ui.h:2
 msgid "_New Conversation..."
 msgstr "_Nov pogovor ..."
 
-#: ../src/empathy-main-window.ui.h:21
+#: ../src/empathy-main-window.ui.h:22
 msgid "_Offline Contacts"
 msgstr "Nepri_sotni stiki"
 
-#: ../src/empathy-main-window.ui.h:22
+#: ../src/empathy-main-window.ui.h:23
 msgid "_Personal Information"
 msgstr "_Osebni podatki"
-
-#: ../src/empathy-main-window.ui.h:23
-msgid "_Preferences"
-msgstr "_Lastnosti"
 
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Room"
@@ -2812,67 +2809,91 @@ msgstr "Prejeli ste vabilo za storitev %s, za katero pa nimate ustreznega zunanj
 msgid "Contact Map View"
 msgstr "Prikaz zemljevida stikov"
 
-#: ../src/empathy-debug-window.c:996
+#: ../src/empathy-debug-window.c:1042
 msgid "Save"
 msgstr "Shrani"
 
-#: ../src/empathy-debug-window.c:1114
+#: ../src/empathy-debug-window.c:1164
 msgid "Debug Window"
 msgstr "Razhroščevalno okno"
 
-#: ../src/empathy-debug-window.c:1193
+#: ../src/empathy-debug-window.c:1243
 msgid "Pause"
 msgstr "Premor"
 
-#: ../src/empathy-debug-window.c:1205
+#: ../src/empathy-debug-window.c:1255
 msgid "Level "
 msgstr "Raven"
 
-#: ../src/empathy-debug-window.c:1225
+#: ../src/empathy-debug-window.c:1275
 msgid "Debug"
 msgstr "Razhrošči"
 
-#: ../src/empathy-debug-window.c:1231
+#: ../src/empathy-debug-window.c:1281
 msgid "Info"
 msgstr "Informacije"
 
-#: ../src/empathy-debug-window.c:1237
-#: ../src/empathy-debug-window.c:1285
+#: ../src/empathy-debug-window.c:1287
+#: ../src/empathy-debug-window.c:1336
 msgid "Message"
 msgstr "Sporočilo"
 
-#: ../src/empathy-debug-window.c:1243
+#: ../src/empathy-debug-window.c:1293
 msgid "Warning"
 msgstr "Opozorilo"
 
-#: ../src/empathy-debug-window.c:1249
+#: ../src/empathy-debug-window.c:1299
 msgid "Critical"
 msgstr "Kritično"
 
-#: ../src/empathy-debug-window.c:1255
+#: ../src/empathy-debug-window.c:1305
 msgid "Error"
 msgstr "Napaka"
 
-#: ../src/empathy-debug-window.c:1274
+#: ../src/empathy-debug-window.c:1324
 msgid "Time"
 msgstr "Čas"
 
-#: ../src/empathy-debug-window.c:1276
+#: ../src/empathy-debug-window.c:1327
 msgid "Domain"
 msgstr "Domena"
 
-#: ../src/empathy-debug-window.c:1278
+#: ../src/empathy-debug-window.c:1329
 msgid "Category"
 msgstr "Kategorija"
 
-#: ../src/empathy-debug-window.c:1280
+#: ../src/empathy-debug-window.c:1331
 msgid "Level"
 msgstr "Raven"
 
-#: ../src/empathy-debug-window.c:1312
+#: ../src/empathy-debug-window.c:1363
 msgid "The selected connection manager does not support the remote debugging extension."
 msgstr "Izbrani upravljalnik povezav ne podpira razširitve za oddaljeno razhroščevanje."
 
+#~ msgid ""
+#~ "You are about to remove your %s account!\n"
+#~ "Are you sure you want to proceed?"
+#~ msgstr ""
+#~ "Odstranjen bo vaš račun %s!\n"
+#~ "Ali ste prepričani, da želite nadaljevati?"
+#~ msgid ""
+#~ "Any associated conversations and chat rooms will NOT be removed if you "
+#~ "decide to proceed.\n"
+#~ "\n"
+#~ "Should you decide to add the account back at a later time, they will "
+#~ "still be available."
+#~ msgstr ""
+#~ "Pogovori in klepetalnice NE bodo izbrisani, v primeru, da se odločite "
+#~ "nadaljevati.\n"
+#~ "\n"
+#~ "V primeru, da boste kasneje želeli obnoviti svoj račun, bodo podatki še "
+#~ "vedno na voljo."
+#~ msgid "You don't have any codecs in common with %s."
+#~ msgstr "Ni ustreznih kodekov povezanih z %s."
+#~ msgid "_Contact"
+#~ msgstr "_Stik"
+#~ msgid "_Preferences"
+#~ msgstr "_Lastnosti"
 #~ msgid "Can't set an empty display name"
 #~ msgstr "Ni mogoče nastaviti praznega zaslonskega imena"
 #~ msgid "Unsupported command"
@@ -3082,8 +3103,6 @@ msgstr "Izbrani upravljalnik povezav ne podpira razširitve za oddaljeno razhro�
 #~ msgstr "Razvrsti po _imenu"
 #~ msgid "Sort by s_tate"
 #~ msgstr "Razvrsti po s_tanju"
-#~ msgid "Closed"
-#~ msgstr "Zaprto"
 #~ msgid "End this call?"
 #~ msgstr "Ali je klic končan?"
 #~ msgid "Closing this window will end the call in progress."
