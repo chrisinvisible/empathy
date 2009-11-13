@@ -27,36 +27,35 @@ noinst_LTLIBRARIES = libempathy-gtk.la
 
 libempathy_gtk_handwritten_source =            	\
 	empathy-account-chooser.c		\
-	empathy-account-widget.c		\
-	empathy-account-widget-private.h	\
 	empathy-account-widget-irc.c		\
+	empathy-account-widget-private.h	\
 	empathy-account-widget-sip.c		\
+	empathy-account-widget.c		\
+	empathy-audio-sink.c			\
+	empathy-audio-src.c			\
 	empathy-avatar-chooser.c		\
 	empathy-avatar-image.c			\
 	empathy-cell-renderer-activatable.c	\
 	empathy-cell-renderer-expander.c	\
 	empathy-cell-renderer-text.c		\
-	empathy-chat.c				\
 	empathy-chat-text-view.c		\
 	empathy-chat-view.c			\
+	empathy-chat.c				\
 	empathy-conf.c				\
 	empathy-contact-dialogs.c		\
 	empathy-contact-list-store.c		\
 	empathy-contact-list-view.c		\
 	empathy-contact-menu.c			\
-	empathy-share-my-desktop.c		\
 	empathy-contact-selector.c		\
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
-	empathy-audio-sink.c			\
-	empathy-audio-src.c			\
-	empathy-video-src.c			\
-	empathy-video-widget.c			\
 	empathy-irc-network-dialog.c		\
+	empathy-kludge-label.c			\
 	empathy-log-window.c			\
 	empathy-new-message-dialog.c		\
 	empathy-presence-chooser.c		\
 	empathy-protocol-chooser.c		\
+	empathy-share-my-desktop.c		\
 	empathy-smiley-manager.c		\
 	empathy-sound.c				\
 	empathy-spell.c				\
@@ -64,41 +63,41 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-theme-boxes.c			\
 	empathy-theme-irc.c			\
 	empathy-theme-manager.c			\
-	empathy-kludge-label.c			\
-	empathy-ui-utils.c
+	empathy-ui-utils.c			\
+	empathy-video-src.c			\
+	empathy-video-widget.c
 
 libempathy_gtk_headers =			\
 	empathy-account-chooser.h		\
-	empathy-account-widget.h		\
 	empathy-account-widget-irc.h		\
 	empathy-account-widget-sip.h		\
+	empathy-account-widget.h		\
+	empathy-audio-sink.h			\
+	empathy-audio-src.h			\
 	empathy-avatar-chooser.h		\
 	empathy-avatar-image.h			\
 	empathy-cell-renderer-activatable.h	\
 	empathy-cell-renderer-expander.h	\
 	empathy-cell-renderer-text.h		\
-	empathy-chat.h				\
 	empathy-chat-text-view.h		\
 	empathy-chat-view.h			\
+	empathy-chat.h				\
 	empathy-conf.h				\
 	empathy-contact-dialogs.h		\
 	empathy-contact-list-store.h		\
 	empathy-contact-list-view.h		\
 	empathy-contact-menu.h			\
-	empathy-share-my-desktop.h		\
 	empathy-contact-selector.h		\
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
-	empathy-audio-sink.h			\
-	empathy-audio-src.h			\
-	empathy-video-src.h			\
-	empathy-video-widget.h			\
 	empathy-images.h			\
 	empathy-irc-network-dialog.h		\
+	empathy-kludge-label.h			\
 	empathy-log-window.h			\
 	empathy-new-message-dialog.h		\
 	empathy-presence-chooser.h		\
 	empathy-protocol-chooser.h		\
+	empathy-share-my-desktop.h		\
 	empathy-smiley-manager.h		\
 	empathy-sound.h				\
 	empathy-spell.h				\
@@ -106,8 +105,9 @@ libempathy_gtk_headers =			\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\
-	empathy-kludge-label.h			\
-	empathy-ui-utils.h
+	empathy-ui-utils.h			\
+	empathy-video-src.h			\
+	empathy-video-widget.h
 
 libempathy_gtk_la_SOURCES =			\
 	$(libempathy_gtk_handwritten_source)	\
