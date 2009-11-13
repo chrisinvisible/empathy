@@ -86,16 +86,16 @@ void           empathy_tp_chat_acknowledge_message (EmpathyTpChat *chat,
 void           empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
 						     const GList *messages);
 
-gboolean       empathy_tp_chat_password_needed (EmpathyTpChat *chat);
+gboolean       empathy_tp_chat_password_needed      (EmpathyTpChat *chat);
 
-void empathy_tp_chat_provide_password_async (EmpathyTpChat *chat,
-						     const gchar *password,
-						     GAsyncReadyCallback callback,
-						     gpointer user_data);
+void           empathy_tp_chat_provide_password_async (EmpathyTpChat *chat,
+						       const gchar *password,
+						       GAsyncReadyCallback callback,
+						       gpointer user_data);
 
-gboolean empathy_tp_chat_provide_password_finish (EmpathyTpChat *chat,
-						     GAsyncResult *result,
-						     GError **error);
+gboolean       empathy_tp_chat_provide_password_finish (EmpathyTpChat *chat,
+							GAsyncResult *result,
+							GError **error);
 
 G_END_DECLS
 

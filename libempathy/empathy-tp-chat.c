@@ -795,7 +795,7 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 	 * If the chat is protected by a password we can't get these information so
 	 * consider the chat as ready so it can be presented to the user. */
 	if (!empathy_tp_chat_password_needed (chat) && priv->members == NULL &&
-						      priv->remote_contact == NULL)
+	    priv->remote_contact == NULL)
 		return;
 
 	DEBUG ("Ready!");
@@ -1159,12 +1159,12 @@ tp_chat_constructor (GType                  type,
 					  TP_IFACE_QUARK_CHANNEL_INTERFACE_PASSWORD)) {
 		priv->got_password_flags = FALSE;
 
-		tp_cli_channel_interface_password_connect_to_password_flags_changed (
-									       priv->channel, password_flags_changed_cb, chat, NULL,
-									       G_OBJECT (chat), NULL);
+		tp_cli_channel_interface_password_connect_to_password_flags_changed
+			(priv->channel, password_flags_changed_cb, chat, NULL,
+			 G_OBJECT (chat), NULL);
 
-		tp_cli_channel_interface_password_call_get_password_flags (priv->channel,
-									       -1, got_password_flags_cb, chat, NULL, chat);
+		tp_cli_channel_interface_password_call_get_password_flags
+			(priv->channel, -1, got_password_flags_cb, chat, NULL, chat);
 	} else {
 		/* No Password interface, so no need to fetch the password flags */
 		priv->got_password_flags = TRUE;
@@ -1572,13 +1572,13 @@ provide_password_cb (TpChannel *channel,
 	GSimpleAsyncResult *result = user_data;
 
 	if (error != NULL) {
-			g_simple_async_result_set_from_error (result, error);
+		g_simple_async_result_set_from_error (result, error);
 	}
 	else if (!correct) {
-			/* The current D-Bus API is a bit weird so re-use the
-			* AuthenticationFailed error */
-			g_simple_async_result_set_error (result, TP_ERRORS,
-									 TP_ERROR_AUTHENTICATION_FAILED, "Wrong password");
+		/* The current D-Bus API is a bit weird so re-use the
+		 * AuthenticationFailed error */
+		g_simple_async_result_set_error (result, TP_ERRORS,
+						 TP_ERROR_AUTHENTICATION_FAILED, "Wrong password");
 	}
 
 	g_simple_async_result_complete (result);
@@ -1595,10 +1595,12 @@ empathy_tp_chat_provide_password_async (EmpathyTpChat *self,
 	GSimpleAsyncResult *result;
 
 	result = g_simple_async_result_new (G_OBJECT (self),
-					callback, user_data, empathy_tp_chat_provide_password_finish);
+					    callback, user_data,
+					    empathy_tp_chat_provide_password_finish);
 
-	tp_cli_channel_interface_password_call_provide_password (priv->channel, -1,
-		password, provide_password_cb, result, NULL, G_OBJECT (self));
+	tp_cli_channel_interface_password_call_provide_password
+		(priv->channel, -1, password, provide_password_cb, result,
+		 NULL, G_OBJECT (self));
 }
 
 gboolean
@@ -1611,7 +1613,7 @@ empathy_tp_chat_provide_password_finish (EmpathyTpChat *self,
 		return FALSE;
 
 	g_return_val_if_fail (g_simple_async_result_is_valid (result,
-					G_OBJECT (self), empathy_tp_chat_provide_password_finish), FALSE);
+							      G_OBJECT (self), empathy_tp_chat_provide_password_finish), FALSE);
 
 	return TRUE;
 }

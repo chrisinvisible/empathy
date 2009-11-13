@@ -2314,19 +2314,19 @@ empathy_chat_get_tp_chat (EmpathyChat *chat)
 }
 
 static void display_password_info_bar (EmpathyChat *self,
-			  gboolean retry);
+				       gboolean retry);
 
 static void
 provide_password_cb (GObject *tp_chat,
-			  GAsyncResult *res,
-			  gpointer user_data)
+		     GAsyncResult *res,
+		     gpointer user_data)
 {
 	EmpathyChat *self = EMPATHY_CHAT (user_data);
 	EmpathyChatPriv *priv = GET_PRIV (self);
 	GError *error = NULL;
 
 	if (!empathy_tp_chat_provide_password_finish (EMPATHY_TP_CHAT (tp_chat), res,
-			       &error)) {
+						      &error)) {
 		DEBUG ("error: %s", error->message);
 		/* FIXME: what should we do if that's another error? Close the channel?
 		 * Display the raw D-Bus error to the user isn't very useful */
@@ -2343,8 +2343,8 @@ provide_password_cb (GObject *tp_chat,
 
 static void
 password_infobar_response_cb (GtkWidget *info_bar,
-			  gint response_id,
-			  EmpathyChat *self)
+			      gint response_id,
+			      EmpathyChat *self)
 {
 	EmpathyChatPriv *priv = GET_PRIV (self);
 	GtkWidget *entry;
@@ -2359,9 +2359,9 @@ password_infobar_response_cb (GtkWidget *info_bar,
 	password = gtk_entry_get_text (GTK_ENTRY (entry));
 
 	empathy_tp_chat_provide_password_async (priv->tp_chat, password,
-			       provide_password_cb, self);
+						provide_password_cb, self);
 
-out:
+ out:
 	gtk_widget_destroy (info_bar);
 }
 
@@ -2381,7 +2381,7 @@ passwd_join_button_cb (GtkButton *button,
 
 static void
 display_password_info_bar (EmpathyChat *self,
-			  gboolean retry)
+			   gboolean retry)
 {
 	EmpathyChatPriv *priv = GET_PRIV (self);
 	GtkWidget *info_bar;
@@ -2418,7 +2418,7 @@ display_password_info_bar (EmpathyChat *self,
 
 	/* Add image */
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_AUTHENTICATION,
-			       GTK_ICON_SIZE_DIALOG);
+					  GTK_ICON_SIZE_DIALOG);
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
 
 	/* Add message */
@@ -2431,7 +2431,7 @@ display_password_info_bar (EmpathyChat *self,
 	gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
 	g_signal_connect (entry, "activate",
-			       G_CALLBACK (password_entry_activate_cb), info_bar);
+			  G_CALLBACK (password_entry_activate_cb), info_bar);
 
 	/* Focus the password entry once it's realized */
 	g_signal_connect (entry, "realize", G_CALLBACK (gtk_widget_grab_focus), NULL);
@@ -2444,16 +2444,16 @@ display_password_info_bar (EmpathyChat *self,
 	gtk_box_pack_start (GTK_BOX (hbox), alig, FALSE, FALSE, 0);
 
 	g_signal_connect (button, "clicked", G_CALLBACK (passwd_join_button_cb),
-			       info_bar);
+			  info_bar);
 
 	g_object_set_data (G_OBJECT (info_bar), "password-entry", entry);
 
 	gtk_box_pack_start (GTK_BOX (priv->info_bar_vbox), info_bar,
-			       FALSE, FALSE, 3);
+			    FALSE, FALSE, 3);
 	gtk_widget_show_all (hbox);
 
 	g_signal_connect (info_bar, "response",
-			       G_CALLBACK (password_infobar_response_cb), self);
+			  G_CALLBACK (password_infobar_response_cb), self);
 
 	gtk_widget_show_all (info_bar);
 }
