@@ -101,11 +101,11 @@ empathy_notify_manager_init (EmpathyNotifyManager *self)
   list = notify_get_server_caps ();
   for (l = list; l != NULL; l = g_list_next (l))
     {
-      gchar *capa = l->data;
+      gchar *cap = l->data;
 
-      DEBUG ("add capability: %s", capa);
+      DEBUG ("add capability: %s", cap);
       /* owernship of the string is transfered to the hash table */
-      g_hash_table_insert (priv->capabilities, capa, GUINT_TO_POINTER (TRUE));
+      g_hash_table_insert (priv->capabilities, cap, GUINT_TO_POINTER (TRUE));
     }
   g_list_free (list);
 }
@@ -118,11 +118,11 @@ empathy_notify_manager_dup_singleton (void)
 
 gboolean
 empathy_notify_manager_has_capability (EmpathyNotifyManager *self,
-    const gchar *capa)
+    const gchar *cap)
 {
   EmpathyNotifyManagerPriv *priv = GET_PRIV (self);
 
-  return g_hash_table_lookup (priv->capabilities, capa) != NULL;
+  return g_hash_table_lookup (priv->capabilities, cap) != NULL;
 }
 
 GdkPixbuf *
