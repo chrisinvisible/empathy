@@ -27,32 +27,32 @@ noinst_LTLIBRARIES = libempathy.la
 
 libempathy_headers =				\
 	empathy-account-settings.h		\
-	empathy-chatroom.h			\
-	empathy-chatroom-manager.h		\
 	empathy-call-factory.h			\
 	empathy-call-handler.h			\
+	empathy-chatroom-manager.h		\
+	empathy-chatroom.h			\
+	empathy-connection-managers.h		\
 	empathy-connectivity.h			\
-	empathy-contact.h			\
 	empathy-contact-groups.h		\
 	empathy-contact-list.h			\
 	empathy-contact-manager.h		\
 	empathy-contact-monitor.h		\
-	empathy-connection-managers.h		\
+	empathy-contact.h			\
 	empathy-debug.h				\
 	empathy-debugger.h			\
-	empathy-dispatcher.h			\
 	empathy-dispatch-operation.h		\
+	empathy-dispatcher.h			\
 	empathy-ft-factory.h			\
 	empathy-ft-handler.h			\
 	empathy-handler.h			\
 	empathy-idle.h				\
-	empathy-irc-network.h			\
 	empathy-irc-network-manager.h		\
+	empathy-irc-network.h			\
 	empathy-irc-server.h			\
 	empathy-location.h			\
 	empathy-log-manager.h			\
-	empathy-log-store.h			\
 	empathy-log-store-empathy.h		\
+	empathy-log-store.h			\
 	empathy-message.h			\
 	empathy-status-presets.h		\
 	empathy-time.h				\
@@ -69,31 +69,31 @@ libempathy_headers =				\
 libempathy_la_SOURCES =					\
 	$(libempathy_headers)				\
 	empathy-account-settings.c			\
-	empathy-chatroom.c				\
-	empathy-chatroom-manager.c			\
 	empathy-call-factory.c				\
 	empathy-call-handler.c				\
+	empathy-chatroom-manager.c			\
+	empathy-chatroom.c				\
+	empathy-connection-managers.c			\
 	empathy-connectivity.c				\
-	empathy-contact.c				\
 	empathy-contact-groups.c			\
 	empathy-contact-list.c				\
 	empathy-contact-manager.c			\
 	empathy-contact-monitor.c			\
-	empathy-connection-managers.c			\
+	empathy-contact.c				\
 	empathy-debug.c					\
 	empathy-debugger.c				\
-	empathy-dispatcher.c				\
 	empathy-dispatch-operation.c			\
+	empathy-dispatcher.c				\
 	empathy-ft-factory.c				\
 	empathy-ft-handler.c				\
 	empathy-handler.c				\
 	empathy-idle.c					\
-	empathy-irc-network.c				\
 	empathy-irc-network-manager.c			\
+	empathy-irc-network.c				\
 	empathy-irc-server.c				\
 	empathy-log-manager.c				\
-	empathy-log-store.c				\
 	empathy-log-store-empathy.c			\
+	empathy-log-store.c				\
 	empathy-message.c				\
 	empathy-status-presets.c			\
 	empathy-time.c					\
