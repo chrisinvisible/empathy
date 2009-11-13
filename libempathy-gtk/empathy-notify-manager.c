@@ -53,8 +53,6 @@ notify_manager_constructor (GType type,
     GObjectConstructParam *construct_params)
 {
   GObject *retval;
-  EmpathyNotifyManagerPriv *priv;
-  GList *list, *l;
 
   if (notify_manager != NULL)
     return g_object_ref (notify_manager);
@@ -64,20 +62,6 @@ notify_manager_constructor (GType type,
 
   notify_manager = EMPATHY_NOTIFY_MANAGER (retval);
   g_object_add_weak_pointer (retval, (gpointer) &notify_manager);
-
-  priv = GET_PRIV (notify_manager);
-
-  /* fetch capabilities */
-  list = notify_get_server_caps ();
-  for (l = list; l != NULL; l = g_list_next (l))
-    {
-      gchar *capa = l->data;
-
-      DEBUG ("add capability: %s", capa);
-      /* owernship of the string is transfered to the hash table */
-      g_hash_table_insert (priv->capabilities, capa, GUINT_TO_POINTER (TRUE));
-    }
-  g_list_free (list);
 
   return retval;
 }
@@ -122,11 +106,24 @@ empathy_notify_manager_init (EmpathyNotifyManager *self)
 {
   EmpathyNotifyManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
     EMPATHY_TYPE_NOTIFY_MANAGER, EmpathyNotifyManagerPriv);
+  GList *list, *l;
 
   self->priv = priv;
 
   priv->capabilities = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
       NULL);
+
+  /* fetch capabilities */
+  list = notify_get_server_caps ();
+  for (l = list; l != NULL; l = g_list_next (l))
+    {
+      gchar *capa = l->data;
+
+      DEBUG ("add capability: %s", capa);
+      /* owernship of the string is transfered to the hash table */
+      g_hash_table_insert (priv->capabilities, capa, GUINT_TO_POINTER (TRUE));
+    }
+  g_list_free (list);
 }
 
 EmpathyNotifyManager *
