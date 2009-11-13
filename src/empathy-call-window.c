@@ -1572,9 +1572,11 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 
       case TP_MEDIA_STREAM_ERROR_NO_CODECS:
         if (audio)
-          return g_strdup (_("Your computer doesn't support any audio format"));
+          return g_strdup (_("The audio formats necessary for this call "
+                "are not installed on your computer"));
         else
-          return g_strdup (_("Your computer doesn't support any video format"));
+          return g_strdup (_("The video formats necessary for this call "
+                "are not installed on your computer"));
 
       case TP_MEDIA_STREAM_ERROR_INVALID_CM_BEHAVIOR:
         cm = empathy_tp_call_get_connection_manager (call);
