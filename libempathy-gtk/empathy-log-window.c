@@ -285,13 +285,17 @@ empathy_log_window_show (TpAccount  *account,
 	log_window_chats_setup (window);
 	log_window_chats_populate (window);
 
-	/* Chat will be selected once the account chooser is ready */
 	if (account && chat_id) {
-		g_signal_connect (account_chooser, "ready",
-				  G_CALLBACK (account_chooser_ready_cb), window);
 		window->selected_account = account;
 		window->selected_chat_id = g_strdup (chat_id);
 		window->selected_is_chatroom = is_chatroom;
+
+		if (empathy_account_chooser_is_ready (account_chooser))
+			account_chooser_ready_cb (account_chooser, window);
+		else
+			/* Chat will be selected once the account chooser is ready */
+			g_signal_connect (account_chooser, "ready",
+					  G_CALLBACK (account_chooser_ready_cb), window);
 	}
 
 	if (parent) {
