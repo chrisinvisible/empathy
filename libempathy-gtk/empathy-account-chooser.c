@@ -123,6 +123,13 @@ enum {
 	PROP_HAS_ALL_OPTION,
 };
 
+enum {
+	READY,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 G_DEFINE_TYPE (EmpathyAccountChooser, empathy_account_chooser, GTK_TYPE_COMBO_BOX);
 
 static void
@@ -146,6 +153,16 @@ empathy_account_chooser_class_init (EmpathyAccountChooserClass *klass)
 							       "Have a separate option in the list to mean ALL accounts",
 							       FALSE,
 							       G_PARAM_READWRITE));
+
+	signals[READY] =
+		g_signal_new ("ready",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (object_class, sizeof (EmpathyAccountChooserPriv));
 }
@@ -479,6 +496,8 @@ account_manager_prepared_cb (GObject *source_object,
 	}
 
 	g_list_free (accounts);
+
+	g_signal_emit (chooser, signals[READY], 0);
 }
 
 static void
