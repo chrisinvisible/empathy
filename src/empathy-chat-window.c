@@ -268,8 +268,8 @@ chat_window_create_label (EmpathyChatWindow *window,
 		/* We don't want focus/keynav for the button to avoid clutter, and
 		 * Ctrl-W works anyway.
 		 */
-		GTK_WIDGET_UNSET_FLAGS (close_button, GTK_CAN_FOCUS);
-		GTK_WIDGET_UNSET_FLAGS (close_button, GTK_CAN_DEFAULT);
+		gtk_widget_set_can_focus (close_button, FALSE);
+		gtk_widget_set_can_default (close_button, FALSE);
 
 		/* Set the name to make the special rc style match. */
 		gtk_widget_set_name (close_button, "empathy-close-button");

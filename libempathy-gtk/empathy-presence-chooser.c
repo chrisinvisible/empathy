@@ -385,7 +385,7 @@ presence_chooser_set_status_editing (EmpathyPresenceChooser *self,
 
 		/* attempt to get the toplevel for this widget */
 		window = gtk_widget_get_toplevel (GTK_WIDGET (self));
-		if (GTK_WIDGET_TOPLEVEL (window) && GTK_IS_WINDOW (window)) {
+		if (gtk_widget_is_toplevel (window) && GTK_IS_WINDOW (window)) {
 			/* unset the focus */
 			gtk_window_set_focus (GTK_WINDOW (window), NULL);
 		}
@@ -530,7 +530,7 @@ presence_chooser_entry_button_press_event_cb (EmpathyPresenceChooser *self,
 
 	if (!priv->editing_status &&
 	    event->button == 1 &&
-	    !GTK_WIDGET_HAS_FOCUS (entry)) {
+	    !gtk_widget_has_focus (entry)) {
 		gtk_widget_grab_focus (entry);
 		gtk_editable_select_region (GTK_EDITABLE (entry), 0, -1);
 
@@ -598,7 +598,7 @@ presence_chooser_changed_cb (GtkComboBox *self, gpointer user_data)
 
 		/* attempt to get the toplevel for this widget */
 		window = gtk_widget_get_toplevel (GTK_WIDGET (self));
-		if (!GTK_WIDGET_TOPLEVEL (window) || !GTK_IS_WINDOW (window)) {
+		if (!gtk_widget_is_toplevel (window) || !GTK_IS_WINDOW (window)) {
 			window = NULL;
 		}
 

@@ -190,6 +190,7 @@ avatar_image_button_press_event (GtkWidget *widget, GdkEventButton *event)
 	gint                   popup_width, popup_height;
 	gint                   width, height;
 	GdkPixbuf             *pixbuf;
+	GtkAllocation          allocation;
 
 	priv = GET_PRIV (widget);
 
@@ -205,8 +206,9 @@ avatar_image_button_press_event (GtkWidget *widget, GdkEventButton *event)
 	popup_width = gdk_pixbuf_get_width (priv->pixbuf);
 	popup_height = gdk_pixbuf_get_height (priv->pixbuf);
 
-	width = priv->image->allocation.width;
-	height = priv->image->allocation.height;
+	gtk_widget_get_allocation (priv->image, &allocation);
+	width = allocation.width;
+	height = allocation.height;
 
 	/* Don't show a popup if the popup is smaller then the currently avatar
 	 * image.

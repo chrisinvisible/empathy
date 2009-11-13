@@ -96,7 +96,7 @@ empathy_video_widget_init (EmpathyVideoWidget *obj)
     gtk_widget_modify_bg (GTK_WIDGET (obj), GTK_STATE_NORMAL,
       &black);
 
-  GTK_WIDGET_UNSET_FLAGS (GTK_WIDGET (obj), GTK_DOUBLE_BUFFERED);
+  gtk_widget_set_double_buffered (GTK_WIDGET (obj), FALSE);
 }
 
 static void
@@ -425,14 +425,16 @@ empathy_video_widget_expose_event (GtkWidget *widget, GdkEventExpose *event)
 {
   EmpathyVideoWidget *self = EMPATHY_VIDEO_WIDGET (widget);
   EmpathyVideoWidgetPriv *priv = GET_PRIV (self);
+  GtkAllocation allocation;
 
   if (event != NULL && event->count > 0)
     return TRUE;
 
   if (priv->overlay == NULL)
     {
+      gtk_widget_get_allocation (widget, &allocation);
       gdk_window_clear_area (gtk_widget_get_window (widget), 0, 0,
-        widget->allocation.width, widget->allocation.height);
+                             allocation.width, allocation.height);
       return TRUE;
     }
 

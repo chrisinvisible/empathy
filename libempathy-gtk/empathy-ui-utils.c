@@ -1322,7 +1322,7 @@ empathy_get_toplevel_window (GtkWidget *widget)
 
 	toplevel = gtk_widget_get_toplevel (widget);
 	if (GTK_IS_WINDOW (toplevel) &&
-	    GTK_WIDGET_TOPLEVEL (toplevel)) {
+	    gtk_widget_is_toplevel (toplevel)) {
 		return GTK_WINDOW (toplevel);
 	}
 
@@ -1496,7 +1496,7 @@ empathy_send_file_with_file_chooser (EmpathyContact *contact)
 	gtk_widget_show (button);
 	gtk_dialog_add_action_widget (GTK_DIALOG (widget), button,
 				      GTK_RESPONSE_OK);
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (button, TRUE);
 	gtk_dialog_set_default_response (GTK_DIALOG (widget),
 					 GTK_RESPONSE_OK);
 

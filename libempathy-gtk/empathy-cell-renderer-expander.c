@@ -354,13 +354,15 @@ invalidate_node (GtkTreeView *tree_view,
 {
        GdkWindow    *bin_window;
        GdkRectangle  rect;
+       GtkAllocation allocation;
 
        bin_window = gtk_tree_view_get_bin_window (tree_view);
 
        gtk_tree_view_get_background_area (tree_view, path, NULL, &rect);
 
        rect.x = 0;
-       rect.width = GTK_WIDGET (tree_view)->allocation.width;
+       gtk_widget_get_allocation (GTK_WIDGET (tree_view), &allocation);
+       rect.width = allocation.width;
 
        gdk_window_invalidate_rect (bin_window, &rect, TRUE);
 }

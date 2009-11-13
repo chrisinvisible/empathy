@@ -477,7 +477,7 @@ status_preset_dialog_add_combo_press_event (GtkWidget *widget,
 					    GdkEventButton *event,
 					    EmpathyStatusPresetDialog *self)
 {
-	if (!GTK_WIDGET_HAS_FOCUS (widget)) {
+	if (!gtk_widget_has_focus (widget)) {
 		/* if the widget isn't focused, focus it and select the text */
 		gtk_widget_grab_focus (widget);
 		gtk_editable_select_region (GTK_EDITABLE (widget), 0, -1);

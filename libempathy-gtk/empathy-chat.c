@@ -1822,6 +1822,7 @@ chat_update_contacts_visibility (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	gboolean show;
+	GtkAllocation allocation;
 
 	show = priv->remote_contact == NULL && priv->show_contacts;
 
@@ -1839,7 +1840,8 @@ chat_update_contacts_visibility (EmpathyChat *chat)
 		 * chat view is bigger the contact list will take some space on
 		 * it but we make sure the chat view don't become smaller than
 		 * 250. Relax the size request once the resize is done */
-		min_width = MIN (priv->vbox_left->allocation.width, 250);
+		gtk_widget_get_allocation (priv->vbox_left, &allocation);
+		min_width = MIN (allocation.width, 250);
 		gtk_widget_set_size_request (priv->vbox_left, min_width, -1);
 		g_idle_add (chat_reset_size_request, priv->vbox_left);
 
@@ -2053,7 +2055,7 @@ chat_size_request (GtkWidget      *widget,
 
   child = gtk_bin_get_child (bin);
 
-  if (child && GTK_WIDGET_VISIBLE (child))
+  if (child && gtk_widget_get_visible (child))
     {
       GtkRequisition child_requisition;
 
@@ -2072,11 +2074,11 @@ chat_size_allocate (GtkWidget     *widget,
   GtkAllocation child_allocation;
   GtkWidget *child;
 
-  widget->allocation = *allocation;
+  gtk_widget_set_allocation (widget, allocation);
 
   child = gtk_bin_get_child (bin);
 
-  if (child && GTK_WIDGET_VISIBLE (child))
+  if (child && gtk_widget_get_visible (child))
     {
       child_allocation.x = allocation->x + gtk_container_get_border_width (GTK_CONTAINER (widget));
       child_allocation.y = allocation->y + gtk_container_get_border_width (GTK_CONTAINER (widget));

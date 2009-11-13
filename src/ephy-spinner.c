@@ -601,7 +601,7 @@ ephy_spinner_init (EphySpinner *spinner)
 
 	details = spinner->details = EPHY_SPINNER_GET_PRIVATE (spinner);
 
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (spinner), GTK_NO_WINDOW);
+	gtk_widget_set_has_window (GTK_WIDGET (spinner), FALSE);
 
 	details->cache = ephy_spinner_cache_ref ();
 	details->size = GTK_ICON_SIZE_DIALOG;
@@ -621,8 +621,9 @@ ephy_spinner_expose (GtkWidget *widget,
 	GdkGC *gc;
 	int x_offset, y_offset, width, height;
 	GdkRectangle pix_area, dest;
+	GtkAllocation allocation;
 
-	if (!GTK_WIDGET_DRAWABLE (spinner))
+	if (!gtk_widget_is_drawable (GTK_WIDGET (spinner)))
 	{
 		return FALSE;
 	}
@@ -652,11 +653,12 @@ ephy_spinner_expose (GtkWidget *widget,
 	height = gdk_pixbuf_get_height (pixbuf);
 
 	/* Compute the offsets for the image centered on our allocation */
-	x_offset = (widget->allocation.width - width) / 2;
-	y_offset = (widget->allocation.height - height) / 2;
+	gtk_widget_get_allocation (widget, &allocation);
+	x_offset = (allocation.width - width) / 2;
+	y_offset = (allocation.height - height) / 2;
 
-	pix_area.x = x_offset + widget->allocation.x;
-	pix_area.y = y_offset + widget->allocation.y;
+	pix_area.x = x_offset + allocation.x;
+	pix_area.y = y_offset + allocation.y;
 	pix_area.width = width;
 	pix_area.height = height;
 
@@ -667,8 +669,8 @@ ephy_spinner_expose (GtkWidget *widget,
 
 	gc = gdk_gc_new (gtk_widget_get_window (widget));
 	gdk_draw_pixbuf (gtk_widget_get_window (widget), gc, pixbuf,
-			 dest.x - x_offset - widget->allocation.x,
-			 dest.y - y_offset - widget->allocation.y,
+			 dest.x - x_offset - allocation.x,
+			 dest.y - y_offset - allocation.y,
 			 dest.x, dest.y,
 			 dest.width, dest.height,
 			 GDK_RGB_DITHER_MAX, 0, 0);

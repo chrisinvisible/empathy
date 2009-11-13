@@ -184,7 +184,7 @@ empathy_contact_information_dialog_show (EmpathyContact *contact,
 	gtk_dialog_add_action_widget (GTK_DIALOG (dialog),
 				      button,
 				      GTK_RESPONSE_CLOSE);
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (button, TRUE);
 	gtk_window_set_default (GTK_WINDOW (dialog), button);
 	gtk_widget_show (button);
 
@@ -243,7 +243,7 @@ empathy_contact_edit_dialog_show (EmpathyContact *contact,
 	gtk_dialog_add_action_widget (GTK_DIALOG (dialog),
 				      button,
 				      GTK_RESPONSE_CLOSE);
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (button, TRUE);
 	gtk_window_set_default (GTK_WINDOW (dialog), button);
 	gtk_widget_show (button);
 
@@ -294,7 +294,7 @@ empathy_contact_personal_dialog_show (GtkWindow *parent)
 	gtk_dialog_add_action_widget (GTK_DIALOG (personal_dialog),
 				      button,
 				      GTK_RESPONSE_CLOSE);
-	GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
+	gtk_widget_set_can_default (button, TRUE);
 	gtk_window_set_default (GTK_WINDOW (personal_dialog), button);
 	gtk_widget_show (button);
 

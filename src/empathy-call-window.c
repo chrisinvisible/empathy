@@ -2086,8 +2086,12 @@ empathy_call_window_state_event_cb (GtkWidget *widget,
       if (set_fullscreen)
         {
           gboolean sidebar_was_visible;
-          gint original_width = GTK_WIDGET (window)->allocation.width;
-          gint original_height = GTK_WIDGET (window)->allocation.height;
+          GtkAllocation allocation;
+          gint original_width, original_height;
+
+          gtk_widget_get_allocation (GTK_WIDGET (window), &allocation);
+          original_width = allocation.width;
+          original_height = allocation.height;
 
           g_object_get (priv->sidebar, "visible", &sidebar_was_visible, NULL);
 
@@ -2132,23 +2136,26 @@ empathy_call_window_sidebar_toggled_cb (GtkToggleButton *toggle,
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
   GtkWidget *arrow;
-  int w,h, handle_size;
+  int w, h, handle_size;
+  GtkAllocation allocation, sidebar_allocation;
 
-  w = GTK_WIDGET (window)->allocation.width;
-  h = GTK_WIDGET (window)->allocation.height;
+  gtk_widget_get_allocation (GTK_WIDGET (window), &allocation);
+  w = allocation.width;
+  h = allocation.height;
 
   gtk_widget_style_get (priv->pane, "handle_size", &handle_size, NULL);
 
+  gtk_widget_get_allocation (priv->sidebar, &sidebar_allocation);
   if (gtk_toggle_button_get_active (toggle))
     {
       arrow = gtk_arrow_new (GTK_ARROW_LEFT, GTK_SHADOW_NONE);
       gtk_widget_show (priv->sidebar);
-      w += priv->sidebar->allocation.width + handle_size;
+      w += sidebar_allocation.width + handle_size;
     }
   else
     {
       arrow = gtk_arrow_new (GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
-      w -= priv->sidebar->allocation.width + handle_size;
+      w -= sidebar_allocation.width + handle_size;
       gtk_widget_hide (priv->sidebar);
     }
 

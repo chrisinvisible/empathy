@@ -238,16 +238,18 @@ empathy_sidebar_menu_position_under (GtkMenu *menu,
                                          gpointer user_data)
 {
   GtkWidget *widget;
+  GtkAllocation allocation;
 
   g_return_if_fail (GTK_IS_BUTTON (user_data));
-  g_return_if_fail (GTK_WIDGET_NO_WINDOW (user_data));
+  g_return_if_fail (gtk_widget_get_has_window (user_data));
 
   widget = GTK_WIDGET (user_data);
 
   gdk_window_get_origin (gtk_widget_get_window (widget), x, y);
 
-  *x += widget->allocation.x;
-  *y += widget->allocation.y + widget->allocation.height;
+  gtk_widget_get_allocation (widget, &allocation);
+  *x += allocation.x;
+  *y += allocation.y + allocation.height;
 
   *push_in = FALSE;
 }
@@ -263,8 +265,10 @@ empathy_sidebar_select_button_press_cb (GtkWidget *widget,
     {
       GtkRequisition requisition;
       gint width;
+      GtkAllocation allocation;
 
-      width = widget->allocation.width;
+      gtk_widget_get_allocation (widget, &allocation);
+      width = allocation.width;
 
       gtk_widget_set_size_request (sidebar->priv->menu, -1, -1);
       gtk_widget_size_request (sidebar->priv->menu, &requisition);

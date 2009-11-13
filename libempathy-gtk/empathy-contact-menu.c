@@ -140,7 +140,7 @@ empathy_contact_add_menu_item_activated (GtkMenuItem *item,
 	GtkWidget *toplevel;
 
 	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (item));
-	if (!GTK_WIDGET_TOPLEVEL (toplevel) || !GTK_IS_WINDOW (toplevel)) {
+        if (!gtk_widget_is_toplevel (toplevel) || !GTK_IS_WINDOW (toplevel)) {
 		toplevel = NULL;
 	}
 

@@ -44,6 +44,7 @@ empathy_kludge_label_expose_event (GtkWidget      *self,
     PangoLayout *layout;
     PangoRectangle rect;
     GtkAllocation real_allocation;
+    GtkAllocation allocation;
     gboolean r;
 
     layout = gtk_label_get_layout (GTK_LABEL (self));
@@ -54,13 +55,15 @@ empathy_kludge_label_expose_event (GtkWidget      *self,
      * layout when painting it. This really sucks. We're going to compensate by
      * adding this value to the allocation.
      */
-    real_allocation = self->allocation;
-    self->allocation.x += rect.x;
+    gtk_widget_get_allocation (self, &allocation);
+    real_allocation = allocation;
+    allocation.x += rect.x;
+    gtk_widget_set_allocation (self, &allocation);
 
     r = GTK_WIDGET_CLASS (empathy_kludge_label_parent_class)->expose_event (
             self, event);
 
-    self->allocation = real_allocation;
+    gtk_widget_set_allocation (self, &real_allocation);
 
     return r;
 }
