@@ -113,8 +113,7 @@ empathy_notify_manager_init (EmpathyNotifyManager *self)
 EmpathyNotifyManager *
 empathy_notify_manager_dup_singleton (void)
 {
-  return EMPATHY_NOTIFY_MANAGER (g_object_new (EMPATHY_TYPE_NOTIFY_MANAGER,
-        NULL));
+  return g_object_new (EMPATHY_TYPE_NOTIFY_MANAGER, NULL);
 }
 
 gboolean
