@@ -70,6 +70,7 @@ void           empathy_account_chooser_set_filter         (EmpathyAccountChooser
 							   gpointer               user_data);
 gboolean       empathy_account_chooser_filter_is_connected (TpAccount            *account,
 							   gpointer               user_data);
+gboolean       empathy_account_chooser_is_ready (EmpathyAccountChooser *chooser);
 
 G_END_DECLS
 

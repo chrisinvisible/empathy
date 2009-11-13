@@ -64,6 +64,7 @@ typedef struct {
 	gboolean                        has_all_option;
 	EmpathyAccountChooserFilterFunc filter;
 	gpointer                        filter_data;
+	gboolean                        ready;
 } EmpathyAccountChooserPriv;
 
 typedef struct {
@@ -475,6 +476,7 @@ account_manager_prepared_cb (GObject *source_object,
 	GList *accounts, *l;
 	TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
 	EmpathyAccountChooser *chooser = user_data;
+	EmpathyAccountChooserPriv *priv = GET_PRIV (chooser);
 	GError *error = NULL;
 
 	if (!tp_account_manager_prepare_finish (manager, result, &error)) {
@@ -497,6 +499,7 @@ account_manager_prepared_cb (GObject *source_object,
 
 	g_list_free (accounts);
 
+	priv->ready = TRUE;
 	g_signal_emit (chooser, signals[READY], 0);
 }
 
@@ -836,3 +839,10 @@ empathy_account_chooser_filter_is_connected (TpAccount *account,
 	    == TP_CONNECTION_STATUS_CONNECTED);
 }
 
+gboolean
+empathy_account_chooser_is_ready (EmpathyAccountChooser *self)
+{
+	EmpathyAccountChooserPriv *priv = GET_PRIV (self);
+
+	return priv->ready;
+}
