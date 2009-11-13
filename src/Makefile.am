@@ -30,29 +30,29 @@ BUILT_SOURCES= \
 	empathy-tube-dispatch-enumtypes.c
 
 empathy_handwritten_source = \
-	empathy.c							\
 	empathy-about-dialog.c empathy-about-dialog.h			\
 	empathy-account-assistant.c empathy-account-assistant.h		\
 	empathy-accounts-dialog.c empathy-accounts-dialog.h		\
+	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
 	empathy-call-window.c empathy-call-window.h			\
-	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h			\
+	empathy-chat-window.c empathy-chat-window.h			\
 	empathy-chatrooms-window.c empathy-chatrooms-window.h		\
 	empathy-debug-window.c empathy-debug-window.h			\
-	empathy-chat-window.c empathy-chat-window.h			\
 	empathy-event-manager.c empathy-event-manager.h			\
-	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
 	empathy-ft-manager.c empathy-ft-manager.h			\
 	empathy-import-dialog.c empathy-import-dialog.h			\
-	empathy-import-widget.c empathy-import-widget.h			\
+	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
 	empathy-import-pidgin.c empathy-import-pidgin.h			\
 	empathy-import-utils.c empathy-import-utils.h			\
+	empathy-import-widget.c empathy-import-widget.h			\
 	empathy-main-window.c empathy-main-window.h			\
 	empathy-misc.c empathy-misc.h					\
 	empathy-new-chatroom-dialog.c empathy-new-chatroom-dialog.h	\
 	empathy-preferences.c empathy-preferences.h			\
-	empathy-sidebar.c empathy-sidebar.h			\
+	empathy-sidebar.c empathy-sidebar.h				\
 	empathy-status-icon.c empathy-status-icon.h			\
-	empathy-tube-dispatch.c empathy-tube-dispatch.h
+	empathy-tube-dispatch.c empathy-tube-dispatch.h			\
+	empathy.c
 
 empathy_SOURCES =							\
 	$(empathy_handwritten_source)					\
@@ -71,10 +71,10 @@ check-local: check-coding-style
 uidir = $(datadir)/empathy
 ui_DATA = 					\
 	empathy-accounts-dialog.ui		\
+	empathy-call-window-fullscreen.ui	\
 	empathy-call-window.ui			\
-	empathy-call-window-fullscreen.ui			\
-	empathy-chatrooms-window.ui		\
 	empathy-chat-window.ui			\
+	empathy-chatrooms-window.ui		\
 	empathy-ft-manager.ui			\
 	empathy-import-dialog.ui		\
 	empathy-main-window.ui			\
