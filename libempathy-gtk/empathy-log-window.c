@@ -72,6 +72,11 @@ typedef struct {
 	gchar             *last_find;
 
 	EmpathyLogManager *log_manager;
+
+	/* Those are only used while waiting for the account chooser to be ready */
+	TpAccount         *selected_account;
+	gchar             *selected_chat_id;
+	gboolean          selected_is_chatroom;
 } EmpathyLogWindow;
 
 static void     log_window_destroy_cb                      (GtkWidget        *widget,
@@ -163,6 +168,15 @@ account_manager_prepared_cb (GObject *source_object,
 		gtk_widget_hide (window->vbox_chats);
 		gtk_widget_hide (window->account_chooser_chats);
 	}
+}
+
+static void
+account_chooser_ready_cb (EmpathyAccountChooser *chooser,
+			EmpathyLogWindow *window)
+{
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (window->notebook), 1);
+	log_window_chats_set_selected (window, window->selected_account,
+				       window->selected_chat_id, window->selected_is_chatroom);
 }
 
 GtkWidget *
@@ -271,11 +285,13 @@ empathy_log_window_show (TpAccount  *account,
 	log_window_chats_setup (window);
 	log_window_chats_populate (window);
 
-	/* Select chat */
+	/* Chat will be selected once the account chooser is ready */
 	if (account && chat_id) {
-		gtk_notebook_set_current_page (GTK_NOTEBOOK (window->notebook), 1);
-		log_window_chats_set_selected (window, account,
-					       chat_id, is_chatroom);
+		g_signal_connect (account_chooser, "ready",
+				  G_CALLBACK (account_chooser_ready_cb), window);
+		window->selected_account = account;
+		window->selected_chat_id = g_strdup (chat_id);
+		window->selected_is_chatroom = is_chatroom;
 	}
 
 	if (parent) {
@@ -294,6 +310,7 @@ log_window_destroy_cb (GtkWidget       *widget,
 {
 	g_free (window->last_find);
 	g_object_unref (window->log_manager);
+	g_free (window->selected_chat_id);
 
 	g_free (window);
 }
