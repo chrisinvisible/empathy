@@ -103,7 +103,6 @@ gboolean empathy_contact_can_voip_audio (EmpathyContact *contact);
 gboolean empathy_contact_can_voip_video (EmpathyContact *contact);
 gboolean empathy_contact_can_send_files (EmpathyContact *contact);
 gboolean empathy_contact_can_use_stream_tube (EmpathyContact *contact);
-guint empathy_contact_hash (gconstpointer key);
 
 void empathy_contact_load_avatar_data (EmpathyContact *contact,
     const guchar *data, const gsize len, const gchar *format,
