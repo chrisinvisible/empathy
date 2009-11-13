@@ -734,7 +734,7 @@ account_widget_build_salut (EmpathyAccountWidget *self,
       "entry_jid", "jid",
       NULL);
 
-  self->ui_details->default_focus = g_strdup ("entry_nickname");
+  self->ui_details->default_focus = g_strdup ("entry_first_name");
 }
 
 static void
