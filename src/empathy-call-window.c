@@ -1545,6 +1545,8 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   const gchar *cm;
+  gchar *url;
+  gchar *result;
 
   switch (error)
     {
@@ -1580,10 +1582,17 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
 
       case TP_MEDIA_STREAM_ERROR_INVALID_CM_BEHAVIOR:
         cm = empathy_tp_call_get_connection_manager (call);
-        return g_strdup_printf (_("Something not expected happened in a "
-              "Telepathy component (%s). "
-              "Please report this bug and attach logs gathered "
-              "from the 'Debug' window in the Help menu."), cm);
+
+        url = g_strdup_printf ("http://bugs.freedesktop.org/enter_bug.cgi?"
+            "product=Telepathy&amp;component=%s", cm);
+
+        result = g_strdup_printf (
+            _("Something not expected happened in a Telepathy component. "
+              "Please <a href=\"%s\">report this bug</a> and attach "
+              "logs gathered from the 'Debug' window in the Help menu."), url);
+
+        g_free (url);
+        return result;
 
       case TP_MEDIA_STREAM_ERROR_MEDIA_ERROR:
         return g_strdup (_("There was a failure in the call engine"));
