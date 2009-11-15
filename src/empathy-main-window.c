@@ -117,9 +117,6 @@ typedef struct {
 
 static EmpathyMainWindow *main_window = NULL;
 
-static gboolean main_window_configure_event_timeout_cb (
-    EmpathyMainWindow *window);
-
 static void
 main_window_flash_stop (EmpathyMainWindow *window)
 {
@@ -659,11 +656,6 @@ main_window_destroy_cb (GtkWidget         *widget,
 	/* Save user-defined accelerators. */
 	main_window_accels_save ();
 
-	if (window->size_timeout_id) {
-		g_source_remove (window->size_timeout_id);
-		main_window_configure_event_timeout_cb (window);
-	}
-
 	g_list_free (window->actions_connected);
 
 	g_object_unref (window->account_manager);
@@ -1104,37 +1096,6 @@ main_window_throbber_button_press_event_cb (GtkWidget         *throbber_ebox,
 	return FALSE;
 }
 
-static gboolean
-main_window_configure_event_timeout_cb (EmpathyMainWindow *window)
-{
-	gint x, y, w, h;
-
-	gtk_window_get_size (GTK_WINDOW (window->window), &w, &h);
-	gtk_window_get_position (GTK_WINDOW (window->window), &x, &y);
-
-	empathy_geometry_save (GEOMETRY_NAME, x, y, w, h);
-
-	window->size_timeout_id = 0;
-
-	return FALSE;
-}
-
-static gboolean
-main_window_configure_event_cb (GtkWidget         *widget,
-				GdkEventConfigure *event,
-				EmpathyMainWindow *window)
-{
-	if (window->size_timeout_id) {
-		g_source_remove (window->size_timeout_id);
-	}
-
-	window->size_timeout_id = g_timeout_add_seconds (1,
-							 (GSourceFunc) main_window_configure_event_timeout_cb,
-							 window);
-
-	return FALSE;
-}
-
 static void
 main_window_account_removed_cb (TpAccountManager  *manager,
 				TpAccount         *account,
@@ -1247,7 +1208,6 @@ empathy_main_window_show (void)
 	GtkAction                *show_map_widget;
 	GtkToolItem              *item;
 	gboolean                  show_offline;
-	gint                      x, y, w, h;
 	gchar                    *filename;
 	GSList                   *l;
 
@@ -1282,7 +1242,6 @@ empathy_main_window_show (void)
 
 	empathy_builder_connect (gui, window,
 			      "main_window", "destroy", main_window_destroy_cb,
-			      "main_window", "configure_event", main_window_configure_event_cb,
 			      "chat_quit", "activate", main_window_chat_quit_cb,
 			      "chat_new_message", "activate", main_window_chat_new_message_cb,
 			      "view_history", "activate", main_window_view_history_cb,
@@ -1388,23 +1347,7 @@ empathy_main_window_show (void)
 	main_window_accels_load ();
 
 	/* Set window size. */
-	empathy_geometry_load (GEOMETRY_NAME, &x, &y, &w, &h);
-
-	if (w >= 1 && h >= 1) {
-		/* Use the defaults from the ui file if we
-		 * don't have good w, h geometry.
-		 */
-		DEBUG ("Configuring window default size w:%d, h:%d", w, h);
-		gtk_window_set_default_size (GTK_WINDOW (window->window), w, h);
-	}
-
-	if (x >= 0 && y >= 0) {
-		/* Let the window manager position it if we
-		 * don't have good x, y coordinates.
-		 */
-		DEBUG ("Configuring window default position x:%d, y:%d", x, y);
-		gtk_window_move (GTK_WINDOW (window->window), x, y);
-	}
+	empathy_geometry_bind (GTK_WINDOW (window->window), GEOMETRY_NAME);
 
 	/* Enable event handling */
 	window->event_manager = empathy_event_manager_dup_singleton ();

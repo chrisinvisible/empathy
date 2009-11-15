@@ -73,7 +73,6 @@ typedef struct {
 	GList       *chats_composing;
 	gboolean     page_added;
 	gboolean     dnd_same_window;
-	guint        save_geometry_id;
 	EmpathyChatroomManager *chatroom_manager;
 	EmpathyNotifyManager *notify_mgr;
 	GtkWidget   *dialog;
@@ -723,63 +722,6 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 	active = gtk_toggle_action_get_active (toggle_action);
 
 	empathy_chat_set_show_contacts (priv->current_chat, active);
-}
-
-static const gchar *
-chat_get_window_id_for_geometry (EmpathyChat *chat)
-{
-	const gchar *res = NULL;
-	gboolean     separate_windows;
-
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
-			       &separate_windows);
-
-	if (separate_windows) {
-		res = empathy_chat_get_id (chat);
-	}
-
-	return res ? res : "chat-window";
-}
-
-static gboolean
-chat_window_save_geometry_timeout_cb (EmpathyChatWindow *window)
-{
-	EmpathyChatWindowPriv *priv;
-	gint                  x, y, w, h;
-
-	priv = GET_PRIV (window);
-
-	gtk_window_get_size (GTK_WINDOW (priv->dialog), &w, &h);
-	gtk_window_get_position (GTK_WINDOW (priv->dialog), &x, &y);
-
-	empathy_geometry_save (chat_get_window_id_for_geometry (priv->current_chat),
-			       x, y, w, h);
-
-	priv->save_geometry_id = 0;
-
-	return FALSE;
-}
-
-static gboolean
-chat_window_configure_event_cb (GtkWidget         *widget,
-				GdkEventConfigure *event,
-				EmpathyChatWindow  *window)
-{
-	EmpathyChatWindowPriv *priv;
-
-	priv = GET_PRIV (window);
-
-	if (priv->save_geometry_id != 0) {
-		g_source_remove (priv->save_geometry_id);
-	}
-
-	priv->save_geometry_id =
-		g_timeout_add_seconds (1,
-				       (GSourceFunc) chat_window_save_geometry_timeout_cb,
-				       window);
-
-	return FALSE;
 }
 
 static void
@@ -1511,10 +1453,6 @@ chat_window_finalize (GObject *object)
 	g_object_unref (priv->ui_manager);
 	g_object_unref (priv->chatroom_manager);
 	g_object_unref (priv->notify_mgr);
-	if (priv->save_geometry_id != 0) {
-		g_source_remove (priv->save_geometry_id);
-		chat_window_save_geometry_timeout_cb (window);
-	}
 
 	if (priv->notification != NULL) {
 		notify_notification_close (priv->notification, NULL);
@@ -1591,7 +1529,6 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	g_free (filename);
 
 	empathy_builder_connect (gui, window,
-			      "chat_window", "configure-event", chat_window_configure_event_cb,
 			      "menu_conv", "activate", chat_window_conv_activate_cb,
 			      "menu_conv_clear", "activate", chat_window_clear_activate_cb,
 			      "menu_conv_favorite", "toggled", chat_window_favorite_toggled_cb,
@@ -1758,7 +1695,6 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 	GtkWidget             *label;
 	GtkWidget             *popup_label;
 	GtkWidget             *child;
-	gint                   x, y, w, h;
 
 	g_return_if_fail (window != NULL);
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
@@ -1770,21 +1706,18 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 
 	/* If this window has just been created, position it */
 	if (priv->chats == NULL) {
-		empathy_geometry_load (chat_get_window_id_for_geometry (chat), &x, &y, &w, &h);
+		const gchar *name = "chat-window";
+		gboolean     separate_windows;
 
-		if (x >= 0 && y >= 0) {
-			/* Let the window manager position it if we don't have
-			 * good x, y coordinates.
-			 */
-			gtk_window_move (GTK_WINDOW (priv->dialog), x, y);
+		empathy_conf_get_bool (empathy_conf_get (),
+				       EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
+				       &separate_windows);
+
+		if (separate_windows) {
+			name = empathy_chat_get_id (chat);
 		}
 
-		if (w > 0 && h > 0) {
-			/* Use the defaults from the ui file if we don't have
-			 * good w, h geometry.
-			 */
-			gtk_window_resize (GTK_WINDOW (priv->dialog), w, h);
-		}
+		empathy_geometry_bind (GTK_WINDOW (priv->dialog), name);
 	}
 
 	child = GTK_WIDGET (chat);

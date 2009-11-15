@@ -29,6 +29,7 @@
 #include <glib.h>
 #include <gdk/gdk.h>
 
+#include "libempathy/empathy-utils.h"
 #include "empathy-geometry.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
@@ -37,17 +38,67 @@
 #define GEOMETRY_DIR_CREATE_MODE  (S_IRUSR | S_IWUSR | S_IXUSR)
 #define GEOMETRY_FILE_CREATE_MODE (S_IRUSR | S_IWUSR)
 
-#define GEOMETRY_KEY_FILENAME     "geometry.ini"
-#define GEOMETRY_FORMAT           "%d,%d,%d,%d"
-#define GEOMETRY_GROUP_NAME       "geometry"
+#define GEOMETRY_KEY_FILENAME         "geometry.ini"
+#define GEOMETRY_FORMAT               "%d,%d,%d,%d"
+#define GEOMETRY_GROUP_NAME           "geometry"
+#define GEOMETRY_MAXIMIZED_GROUP_NAME "maximized"
 
-static gchar *geometry_get_filename (void);
+static guint store_id = 0;
 
-static gchar *
-geometry_get_filename (void)
+static void
+geometry_real_store (GKeyFile *key_file)
 {
+	gchar *filename;
+	gchar *content;
+	gsize length;
+	GError *error = NULL;
+
+	content = g_key_file_to_data (key_file, &length, &error);
+	if (error != NULL) {
+		DEBUG ("Error: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	filename = g_build_filename (g_get_user_config_dir (),
+		PACKAGE_NAME, GEOMETRY_KEY_FILENAME, NULL);
+
+	if (!g_file_set_contents (filename, content, length, &error)) {
+		DEBUG ("Error: %s", error->message);
+		g_error_free (error);
+	}
+
+	g_free (content);
+	g_free (filename);
+}
+
+static gboolean
+geometry_store_cb (gpointer key_file)
+{
+	geometry_real_store (key_file);
+	store_id = 0;
+
+	return FALSE;
+}
+
+static void
+geometry_schedule_store (GKeyFile *key_file)
+{
+	if (store_id != 0)
+		g_source_remove (store_id);
+
+	store_id = g_timeout_add_seconds (1, geometry_store_cb, key_file);
+}
+
+static GKeyFile *
+geometry_get_key_file (void)
+{
+	static GKeyFile *key_file = NULL;
 	gchar *dir;
 	gchar *filename;
+
+	if (key_file != NULL)
+		return key_file;
 
 	dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
 	if (!g_file_test (dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
@@ -58,135 +109,141 @@ geometry_get_filename (void)
 	filename = g_build_filename (dir, GEOMETRY_KEY_FILENAME, NULL);
 	g_free (dir);
 
-	return filename;
-}
-
-void
-empathy_geometry_save (const gchar *name,
-		      gint         x,
-		      gint         y,
-		      gint         w,
-		      gint         h)
-{
-	GError      *error = NULL;
-	GKeyFile    *key_file;
-	gchar       *filename;
-	GdkScreen   *screen;
-	gint         max_width;
-	gint         max_height;
-	gchar       *content;
-	gsize        length;
-	gchar       *str;
-	gchar       *escaped_name;
-
-	/* escape the name so that unwanted characters such as # are removed */
-	escaped_name = g_uri_escape_string (name, NULL, TRUE);
-
-	DEBUG ("Saving window geometry: name:%s x:%d, y:%d, w:%d, h:%d\n",
-		escaped_name, x, y, w, h);
-
-	screen = gdk_screen_get_default ();
-	max_width = gdk_screen_get_width (screen);
-	max_height = gdk_screen_get_height (screen);
-
-	w = CLAMP (w, 100, max_width);
-	h = CLAMP (h, 100, max_height);
-
-	x = CLAMP (x, 0, max_width - w);
-	y = CLAMP (y, 0, max_height - h);
-
-	str = g_strdup_printf (GEOMETRY_FORMAT, x, y, w, h);
-
 	key_file = g_key_file_new ();
-
-	filename = geometry_get_filename ();
-
 	g_key_file_load_from_file (key_file, filename, G_KEY_FILE_NONE, NULL);
-	g_key_file_set_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, str);
-
-	g_free (str);
-
-	content = g_key_file_to_data (key_file, &length, NULL);
-	if (!g_file_set_contents (filename, content, length, &error)) {
-		g_warning ("Couldn't save window geometry, error:%d->'%s'",
-			   error->code, error->message);
-		g_error_free (error);
-	}
-
-	g_free (content);
 	g_free (filename);
-	g_free (escaped_name);
-	g_key_file_free (key_file);
+
+	return key_file;
 }
 
 void
-empathy_geometry_load (const gchar *name,
-		      gint        *x,
-		      gint        *y,
-		      gint        *w,
-		      gint        *h)
+empathy_geometry_save (GtkWindow *window,
+		       const gchar *name)
 {
-	GKeyFile    *key_file;
-	gchar       *filename;
-	gchar       *str = NULL;
-	gchar       *escaped_name;
+	GKeyFile *key_file;
+	GdkWindow *gdk_window;
+	GdkWindowState window_state;
+	gchar *escaped_name;
+	gint x, y, w, h;
+	gboolean maximized;
+
+	g_return_if_fail (GTK_IS_WINDOW (window));
+	g_return_if_fail (!EMP_STR_EMPTY (name));
 
 	/* escape the name so that unwanted characters such as # are removed */
 	escaped_name = g_uri_escape_string (name, NULL, TRUE);
 
-	if (x) {
-		*x = -1;
-	}
+	/* Get window geometry */
+	gtk_window_get_position (window, &x, &y);
+	gtk_window_get_size (window, &w, &h);
+	gdk_window = gtk_widget_get_window (GTK_WIDGET (window));
+	window_state = gdk_window_get_state (gdk_window);
+	maximized = (window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0;
 
-	if (y) {
-		*y = -1;
-	}
+	key_file = geometry_get_key_file ();
 
-	if (w) {
-		*w = -1;
-	}
+	/* Save window size only if not maximized */
+	if (!maximized) {
+		gchar *str;
 
-	if (h) {
-		*h = -1;
-	}
-
-	key_file = g_key_file_new ();
-
-	filename = geometry_get_filename ();
-
-	if (g_key_file_load_from_file (key_file, filename, G_KEY_FILE_NONE, NULL)) {
-		str = g_key_file_get_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, NULL);
-	}
-
-	if (str) {
-		gint tmp_x, tmp_y, tmp_w, tmp_h;
-
-		sscanf (str, GEOMETRY_FORMAT, &tmp_x, &tmp_y, &tmp_w, &tmp_h);
-
-		if (x) {
-			*x = tmp_x;
-		}
-
-		if (y) {
-			*y = tmp_y;
-		}
-
-		if (w) {
-			*w = tmp_w;
-		}
-
-		if (h) {
-			*h = tmp_h;
-		}
-
+		str = g_strdup_printf (GEOMETRY_FORMAT, x, y, w, h);
+		g_key_file_set_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, str);
 		g_free (str);
 	}
 
-	DEBUG ("Loading window geometry: x:%d, y:%d, w:%d, h:%d\n",
-		x ? *x : -1, y ? *y : -1, w ? *w : -1, h ? *h : -1);
+	g_key_file_set_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP_NAME,
+				escaped_name, maximized);
 
-	g_free (filename);
+	geometry_schedule_store (key_file);
+}
+
+void
+empathy_geometry_load (GtkWindow *window,
+		       const gchar *name)
+{
+	GKeyFile *key_file;
+	gchar    *escaped_name;
+	gchar    *str;
+	gboolean  maximized;
+
+	g_return_if_fail (GTK_IS_WINDOW (window));
+	g_return_if_fail (!EMP_STR_EMPTY (name));
+
+	/* escape the name so that unwanted characters such as # are removed */
+	escaped_name = g_uri_escape_string (name, NULL, TRUE);
+
+	key_file = geometry_get_key_file ();
+
+	/* restore window size and position */
+	str = g_key_file_get_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, NULL);
+	if (str) {
+		gint x, y, w, h;
+
+		sscanf (str, GEOMETRY_FORMAT, &x, &y, &w, &h);
+		gtk_window_move (window, x, y);
+		gtk_window_resize (window, w, h);
+	}
+
+	/* restore window maximized state */
+	maximized = g_key_file_get_boolean (key_file,
+					    GEOMETRY_MAXIMIZED_GROUP_NAME,
+					    escaped_name, NULL);
+	if (maximized)
+		gtk_window_maximize (window);
+	else
+		gtk_window_unmaximize (window);
+
+	g_free (str);
 	g_free (escaped_name);
-	g_key_file_free (key_file);
+}
+
+static gboolean
+geometry_configure_event_cb (GtkWindow         *window,
+			     GdkEventConfigure *event,
+			     gchar             *name)
+{
+	empathy_geometry_save (window, name);
+	return FALSE;
+}
+
+static gboolean
+geometry_window_state_event_cb (GtkWindow           *window,
+				GdkEventWindowState *event,
+				gchar               *name)
+{
+	if ((event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) != 0)
+		empathy_geometry_save (window, name);
+
+	return FALSE;
+}
+
+void
+empathy_geometry_bind (GtkWindow *window,
+		       const gchar *name)
+{
+	g_return_if_fail (GTK_IS_WINDOW (window));
+	g_return_if_fail (!EMP_STR_EMPTY (name));
+
+	/* First load initial geometry */
+	empathy_geometry_load (window, name);
+
+	/* Track geometry changes */
+	g_signal_connect_data (window, "configure-event",
+		G_CALLBACK (geometry_configure_event_cb), g_strdup (name),
+		(GClosureNotify) g_free, 0);
+	g_signal_connect_data (window, "window-state-event",
+		G_CALLBACK (geometry_window_state_event_cb), g_strdup (name),
+		(GClosureNotify) g_free, 0);
+}
+
+void
+empathy_geometry_unbind (GtkWindow *window)
+{
+	g_signal_handlers_disconnect_matched (window,
+		G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+		geometry_configure_event_cb, NULL);
+	g_signal_handlers_disconnect_matched (window,
+		G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+		geometry_window_state_event_cb, NULL);
 }
 

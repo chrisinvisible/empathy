@@ -26,19 +26,20 @@
 #define __EMPATHY_GEOMETRY_H__
 
 #include <glib.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-void empathy_geometry_save (const gchar *name,
-			   gint         x,
-			   gint         y,
-			   gint         w,
-			   gint         h);
-void empathy_geometry_load (const gchar *name,
-			   gint        *x,
-			   gint        *y,
-			   gint        *w,
-			   gint        *h);
+void empathy_geometry_save (GtkWindow *window,
+			    const gchar *name);
+
+void empathy_geometry_load (GtkWindow *window,
+			    const gchar *name);
+
+void empathy_geometry_bind (GtkWindow *window,
+			    const gchar *name);
+
+void empathy_geometry_unbind (GtkWindow *window);
 
 G_END_DECLS
 

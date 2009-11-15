@@ -66,8 +66,6 @@ typedef struct {
   GtkWidget *open_button;
   GtkWidget *abort_button;
   GtkWidget *clear_button;
-
-  guint save_geometry_id;
 } EmpathyFTManagerPriv;
 
 enum
@@ -868,38 +866,6 @@ ft_manager_stop (EmpathyFTManager *manager)
   g_object_unref (handler);
 }
 
-static gboolean
-ft_manager_save_geometry_timeout_cb (EmpathyFTManager *manager)
-{
-  EmpathyFTManagerPriv *priv = GET_PRIV (manager);
-  gint x, y, w, h;
-
-  gtk_window_get_size (GTK_WINDOW (priv->window), &w, &h);
-  gtk_window_get_position (GTK_WINDOW (priv->window), &x, &y);
-
-  empathy_geometry_save ("ft-manager", x, y, w, h);
-
-  priv->save_geometry_id = 0;
-
-  return FALSE;
-}
-
-static gboolean
-ft_manager_configure_event_cb (GtkWidget *widget,
-                               GdkEventConfigure *event,
-                               EmpathyFTManager *manager)
-{
-  EmpathyFTManagerPriv *priv = GET_PRIV (manager);
-
-  if (priv->save_geometry_id != 0)
-    g_source_remove (priv->save_geometry_id);
-
-  priv->save_geometry_id = g_timeout_add (500,
-      (GSourceFunc) ft_manager_save_geometry_timeout_cb, manager);
-
-  return FALSE;
-}
-
 static void
 ft_manager_response_cb (GtkWidget *widget,
                         gint response,
@@ -970,7 +936,6 @@ static void
 ft_manager_build_ui (EmpathyFTManager *manager)
 {
   GtkBuilder *gui;
-  gint x, y, w, h;
   GtkTreeView *view;
   GtkListStore *liststore;
   GtkTreeViewColumn *column;
@@ -993,28 +958,13 @@ ft_manager_build_ui (EmpathyFTManager *manager)
       "ft_manager_dialog", "destroy", ft_manager_destroy_cb,
       "ft_manager_dialog", "response", ft_manager_response_cb,
       "ft_manager_dialog", "delete-event", ft_manager_delete_event_cb,
-      "ft_manager_dialog", "configure-event", ft_manager_configure_event_cb,
       "ft_manager_dialog", "key-press-event", ft_manager_key_press_event_cb,
       NULL);
 
   empathy_builder_unref_and_keep_widget (gui, priv->window);
 
   /* Window geometry. */
-  empathy_geometry_load ("ft-manager", &x, &y, &w, &h);
-
-  if (x >= 0 && y >= 0)
-    {
-      /* Let the window manager position it if we don't have
-       * good x, y coordinates. */
-      gtk_window_move (GTK_WINDOW (priv->window), x, y);
-    }
-
-  if (w > 0 && h > 0)
-    {
-      /* Use the defaults from the ui file if we don't have
-       * good w, h geometry. */
-      gtk_window_resize (GTK_WINDOW (priv->window), w, h);
-    }
+  empathy_geometry_bind (GTK_WINDOW (priv->window), "ft-manager");
 
   /* Setup the tree view */
   view = GTK_TREE_VIEW (priv->treeview);
@@ -1093,18 +1043,11 @@ ft_manager_build_ui (EmpathyFTManager *manager)
 static void
 empathy_ft_manager_finalize (GObject *object)
 {
-  EmpathyFTManager *self = EMPATHY_FT_MANAGER (object);
   EmpathyFTManagerPriv *priv = GET_PRIV (object);
 
   DEBUG ("FT Manager %p", object);
 
   g_hash_table_destroy (priv->ft_handler_to_row_ref);
-
-  if (priv->save_geometry_id != 0)
-    {
-      g_source_remove (priv->save_geometry_id);
-      ft_manager_save_geometry_timeout_cb (self);
-    }
 
   G_OBJECT_CLASS (empathy_ft_manager_parent_class)->finalize (object);
 }
