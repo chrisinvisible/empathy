@@ -296,6 +296,36 @@ account_widget_jabber_ssl_toggled_cb (GtkWidget *checkbutton_ssl,
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->spinbutton_port), port);
 }
 
+static void
+account_widget_combobox_changed_cb (GtkWidget *widget,
+    EmpathyAccountWidget *self)
+{
+  const gchar *value;
+  const GValue *v;
+  const gchar *default_value;
+  const gchar *param_name;
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  value = gtk_combo_box_get_active_text (GTK_COMBO_BOX (widget));
+  param_name = g_object_get_data (G_OBJECT (widget), "param_name");
+
+  v = empathy_account_settings_get_default (priv->settings, param_name);
+  default_value = g_value_get_string (v);
+
+  if (!tp_strdiff (value, default_value))
+    {
+      DEBUG ("Unset %s and restore to %s", param_name, default_value);
+      empathy_account_settings_unset (priv->settings, param_name);
+    }
+  else
+    {
+      DEBUG ("Setting %s to %s", param_name, value);
+      empathy_account_settings_set_string (priv->settings, param_name, value);
+    }
+
+  account_widget_handle_control_buttons_sensitivity (self);
+}
+
 void
 account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
@@ -370,6 +400,40 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
 
       g_signal_connect (widget, "toggled",
           G_CALLBACK (account_widget_checkbutton_toggled_cb),
+          self);
+    }
+  else if (GTK_IS_COMBO_BOX (widget))
+    {
+      /* Only support GtkComboBox created using gtk_combo_box_new_text () */
+      const gchar *str;
+      GtkTreeModel *model;
+      GtkTreeIter iter;
+      gboolean valid;
+
+      str = empathy_account_settings_get_string (priv->settings, param_name);
+      model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+
+      valid = gtk_tree_model_get_iter_first (model, &iter);
+      while (valid)
+        {
+          gchar *name;
+
+          gtk_tree_model_get (model, &iter, 0, &name, -1);
+          if (!tp_strdiff (name, str))
+            {
+              gtk_combo_box_set_active_iter (GTK_COMBO_BOX (widget), &iter);
+              valid = FALSE;
+            }
+          else
+            {
+              valid = gtk_tree_model_iter_next (model, &iter);
+            }
+
+          g_free (name);
+        }
+
+      g_signal_connect (widget, "changed",
+          G_CALLBACK (account_widget_combobox_changed_cb),
           self);
     }
   else
