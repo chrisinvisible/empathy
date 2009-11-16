@@ -43,6 +43,7 @@ typedef struct {
   GtkWidget *spinbutton_stun_part;
   GtkWidget *checkbutton_discover_stun;
   GtkWidget *combobox_transport;
+  GtkWidget *combobox_keep_alive_mechanism;
 } EmpathyAccountWidgetSip;
 
 static void
@@ -115,6 +116,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "spinbutton_port", "port",
           "checkbutton_loose-routing", "loose-routing",
           "checkbutton_discover-binding", "discover-binding",
+          "spinbutton_keepalive-interval", "keepalive-interval",
           NULL);
 
       account_widget_sip_discover_stun_toggled_cb (
@@ -150,6 +152,26 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           settings->combobox_transport, 1, 2, 6, 7);
 
       gtk_widget_show (settings->combobox_transport);
+
+      /* Create the 'keep-alive mechanism' combo box */
+      settings->combobox_keep_alive_mechanism = gtk_combo_box_new_text ();
+
+      gtk_combo_box_append_text (
+          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "auto");
+      gtk_combo_box_append_text (
+          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "register");
+      gtk_combo_box_append_text (
+          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "options");
+      gtk_combo_box_append_text (
+          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "none");
+
+      account_widget_setup_widget (self,
+          settings->combobox_keep_alive_mechanism, "keepalive-mechanism");
+
+      gtk_table_attach_defaults (GTK_TABLE (table_advanced),
+          settings->combobox_keep_alive_mechanism, 1, 2, 9, 10);
+
+      gtk_widget_show (settings->combobox_keep_alive_mechanism);
     }
 
   self->ui_details->widget = vbox_settings;
