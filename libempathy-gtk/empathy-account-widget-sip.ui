@@ -134,7 +134,7 @@
             <child>
               <object class="GtkTable" id="table_advanced_sip_settings">
                 <property name="visible">True</property>
-                <property name="n_rows">8</property>
+                <property name="n_rows">9</property>
                 <property name="n_columns">2</property>
                 <property name="column_spacing">6</property>
                 <property name="row_spacing">6</property>
@@ -311,6 +311,21 @@ username.</property>
                     <property name="right_attach">2</property>
                     <property name="top_attach">7</property>
                     <property name="bottom_attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="checkbutton_discover-binding">
+                    <property name="label" translatable="yes">Discover Binding</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="tooltip_text" translatable="yes">Update the registration binding if the external address for the client is discovered to be different from the local binding.</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
                   </packing>
                 </child>
                 <child>

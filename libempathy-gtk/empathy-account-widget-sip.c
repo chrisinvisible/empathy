@@ -114,6 +114,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "entry_proxy-host", "proxy-host",
           "spinbutton_port", "port",
           "checkbutton_loose-routing", "loose-routing",
+          "checkbutton_discover-binding", "discover-binding",
           NULL);
 
       account_widget_sip_discover_stun_toggled_cb (
