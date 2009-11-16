@@ -28,6 +28,7 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
+#include <telepathy-glib/util.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-account-widget.h"
@@ -44,6 +45,7 @@ typedef struct {
   GtkWidget *checkbutton_discover_stun;
   GtkWidget *combobox_transport;
   GtkWidget *combobox_keep_alive_mechanism;
+  GtkWidget *spinbutton_keepalive_interval;
 } EmpathyAccountWidgetSip;
 
 static void
@@ -63,6 +65,21 @@ account_widget_sip_discover_stun_toggled_cb (
   active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbox));
   gtk_widget_set_sensitive (settings->entry_stun_server, !active);
   gtk_widget_set_sensitive (settings->spinbutton_stun_part, !active);
+}
+
+static void
+keep_alive_mechanism_combobox_change_cb (GtkWidget *widget,
+    EmpathyAccountWidgetSip *self)
+{
+  const gchar *mechanism;
+  gboolean enabled;
+
+  /* Unsensitive the keep-alive spin button if keep-alive is disabled */
+  mechanism = gtk_combo_box_get_active_text (GTK_COMBO_BOX (widget));
+
+  enabled = tp_strdiff (mechanism, "none");
+
+  gtk_widget_set_sensitive (self->spinbutton_keepalive_interval, enabled);
 }
 
 void
@@ -102,6 +119,8 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "entry_stun-server", &settings->entry_stun_server,
           "spinbutton_stun-port", &settings->spinbutton_stun_part,
           "checkbutton_discover-stun", &settings->checkbutton_discover_stun,
+          "spinbutton_keepalive-interval",
+            &settings->spinbutton_keepalive_interval,
           NULL);
       settings->vbox_settings = vbox_settings;
 
@@ -164,6 +183,9 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "options");
       gtk_combo_box_append_text (
           GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "none");
+
+      g_signal_connect (settings->combobox_keep_alive_mechanism, "changed",
+          G_CALLBACK (keep_alive_mechanism_combobox_change_cb), settings);
 
       account_widget_setup_widget (self,
           settings->combobox_keep_alive_mechanism, "keepalive-mechanism");
