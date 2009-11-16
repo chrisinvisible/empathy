@@ -1,3 +1,86 @@
+NEW in 2.29.2
+=============
+
+The "Nintendo or Zappa" release.
+
+Empathy now uses the TpAccount API and so depends on telepathy-glib 0.9.0,
+but we strongly advise you to use the latest telepathy-glib release.
+
+This release brings support for a subset of IRC commands such as "/join".
+Empathy is also now able to join password protected chat rooms; note that
+this doesn't work with IRC channels at the moment because of a telepathy-idle
+bug (fd.o #25039).
+
+We also worked on improving error reporting to users. The contact list will now
+display a new info bar when an account is disconnected and the audio/video UI
+should give better feedback if an error occurs.
+
+Bugs fixed:
+ - Fixed #591360, Incoming message while menu is open freezes X
+ - Fixed #599612, crash when typoing room name
+ - Fixed #523918, Empathy sometimes loose messages
+ - Fixed #573407, Empathy and telepathy-idle don't pass on server commands to server
+ - Fixed #575763, Should display an error when RTP connection is impossible (Guillaume Desmottes)
+ - Fixed #579341, Should be able to join password protected rooms (Guillaume Desmottes)
+ - Fixed #580254, empathy_contact_hash() defined in header, but no such symbol (Guillaume Desmottes)
+ - Fixed #581789, An error message should be shown when required codecs are not installed. (Guillaume Desmottes)
+ - Fixed #583208, Status doesn't change on idle
+ - Fixed #583919, New conversation should have autocomplete for offline contacts too (Justin Forest)
+ - Fixed #585340, clean geoloc tooltip info
+ - Fixed #586098, Ctrl+Up loses typed text (Jerzy Mansarliński)
+ - Fixed #586287, the channel topic is missing the first time I open a channel
+ - Fixed #587216, Retry option whenever account connecting fails
+ - Fixed #589263, Empathy next tab or previous tab doesnt cycle. (Rômulo Fernandes Machado)
+ - Fixed #595922, time display not readable in debug window
+ - Fixed #597678, invert server and room forms in join room dialog (Guillaume Desmottes)
+ - Fixed #597819, No tray icon when no valid account configured (Jonny Lamb)
+ - Fixed #598550, Should warn user when he closes the accounts dialog with a not connected new account (Guillaume Desmottes)
+ - Fixed #599169, Should use new TpAccount API
+ - Fixed #599386, Empathy protocol chooser shouldn't cache TpConnectionManagerProtocol
+ - Fixed #599431, Empty notifications with butterfly contact (Guillaume Desmottes)
+ - Fixed #600023, Crash when trying to display the accounts dialog more than once (Guillaume Desmottes)
+ - Fixed #600427, "Connect" button should be "Save" when we are offline (Guillaume Desmottes)
+ - Fixed #600446, Crash when trying to add a new account (Guillaume Desmottes)
+ - Fixed #600473, Show current chat tab name in title bar. (Guillaume Desmottes)
+ - Fixed #600537, Crashed when opening Chat - New Conversation dialog (Jonny Lamb)
+ - Fixed #600551, crash in Empathy: Was doing nothing.. (Guillaume Desmottes)
+ - Fixed #600671, Debian#554325: fails to link when using binutils-gold (Guillaume Desmottes)
+ - Fixed #600705, accounts created in the assistant don't get a nice display name (Guillaume Desmottes)
+ - Fixed #600713, Connection is not ready when EmpathyDispatcher requests capabilities (Guillaume Desmottes)
+ - Fixed #600732, Reorganize chat_window_update (Ryan LaBelle)
+ - Fixed #600798, "Previous conversations" is always unsensitive (Guillaume Desmottes)
+ - Fixed #600958, Disabling build of nautilus-sendto plugin does not work
+ - Fixed #600961, nautilus-sendto plugin does not build (Jonny Lamb)
+ - Fixed #600962, Review Moblin specific changes (Guillaume Desmottes)
+ - Fixed #601150, Account spacing in the accounts dialog is not homogeneous (Guillaume Desmottes)
+ - Fixed #601190, Empathy does not appear to save window size on close (Guillaume Desmottes)
+ - Fixed #601233, Room menu is insensitive
+ - Fixed #601336, Conflicting English keyboard accelerators in chat window (Guillaume Desmottes)
+ - Fixed #601348, Duplicate English keyboard accelerators in "Edit" menu
+ - Fixed #601691, Refactoring of libnotify code (Guillaume Desmottes)
+ - Fixed #601796, Newly created account appears twice in the treeview (Guillaume Desmottes)
+ - Fixed #601807, Previous conversations doesn't work any more (Guillaume Desmottes)
+ - Fixed #602013, Maximized state of main window is not preserved, and size/position is sometimes forgotten after deiconify
+ - Fixed #602066, Support /nick command
+ - Fixed #599176, Should use GtkInfoBar to display connection errors
+ - Fixed #600946, Add more friendly strings for TpMediaStreamError
+ - Fixed #593327, Update the smiley list (Rodolphe)
+
+Translations:
+ - Updated crh Translation (Reşat SABIQ)
+ - Updated en@shaw Translation (Thomas Thurman)
+ - Updated es Translation (Jorge González)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande)
+ - Updated lv Translation (Rudolfs Mazurs)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated ta Translation (vasudeven, drtvasudevan)
+ - Updated zh_CN Translation (Aron Xu)
+
+Documentation translations:
+ - Updated it Documentation translation (Milo Casagrande)
+
 NEW in 2.29.1
 =============
 
