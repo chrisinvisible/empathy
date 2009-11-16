@@ -1263,7 +1263,7 @@ chat_text_view_insert_text_with_emoticons (EmpathyChatTextView *view,
 	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
 	gboolean                 use_smileys = FALSE;
 	GSList                  *hits, *l;
-	gint                     last = 0;
+	guint                    last = 0;
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,

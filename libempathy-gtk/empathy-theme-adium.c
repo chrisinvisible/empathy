@@ -224,7 +224,7 @@ theme_adium_parser_smiley (GString *string,
 			   gssize len,
 			   gpointer user_data)
 {
-	gint last = 0;
+	guint last = 0;
 
 	if (use_smileys) {
 		EmpathySmileyManager *smiley_manager;

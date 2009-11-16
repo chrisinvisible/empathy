@@ -55,8 +55,8 @@ typedef struct {
 typedef struct {
 	GdkPixbuf   *pixbuf; /* Pixbuf of the smiley */
 	const gchar *path;   /* Filename of the smiley image */
-	gint         start;  /* text[start:end] should be replaced by pixbuf */
-	gint         end;
+	guint        start;  /* text[start:end] should be replaced by pixbuf */
+	guint        end;
 } EmpathySmileyHit;
 
 typedef void (*EmpathySmileyMenuFunc) (EmpathySmileyManager *manager,
