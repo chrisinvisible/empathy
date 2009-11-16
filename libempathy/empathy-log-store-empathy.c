@@ -422,7 +422,6 @@ log_store_empathy_search_hit_new (EmpathyLogStore *self,
           hit->account = account;
           g_object_ref (account);
         }
-      g_object_unref (account);
       g_free (name);
     }
   g_list_free (accounts);
