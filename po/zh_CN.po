@@ -10,14 +10,16 @@
 # Funda Wang <fundawang@gmail.com>, 2009.
 # Aron Xu <aronxu@gnome.org>, 2009.
 # Lyper Lai <lyp069@gmail.com>, 2009.
+# Yun Nie <yun.nie@ptiglobal.net>, 2009.
+# Richard Ma <richard.ma.19850509@gmail.com>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gossip\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-16 19:23+0800\n"
-"PO-Revision-Date: 2009-10-09 17:06-0800\n"
-"Last-Translator: Yun Nie <yun.nie@ptiglobal.net>\n"
+"PO-Revision-Date: 2009-11-16 19:37+0800\n"
+"Last-Translator: Richard Ma <richard.ma.1850509@gmail.com>\n"
 "Language-Team: Simplified Chinese <i18n-zh@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -591,7 +593,7 @@ msgstr "%s 账户"
 
 #: ../libempathy-gtk/empathy-account-widget.c:1645
 msgid "New account"
-msgstr "新账户"
+msgstr "新建账户"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
 msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
@@ -853,11 +855,11 @@ msgstr "使用 _Yahoo 日本"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "What is your Yahoo! ID?"
-msgstr "您的 Yahoo ID 是什么？"
+msgstr "您的 Yahoo! ID 是什么？"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
 msgid "What is your Yahoo! password?"
-msgstr "您的 Yahoo！密码是什么？"
+msgstr "您的 Yahoo! 密码是什么？"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "Yahoo I_D:"
@@ -905,26 +907,24 @@ msgid "Failed to reconnect this chat"
 msgstr "重新连接到对话失败"
 
 #: ../libempathy-gtk/empathy-chat.c:592
-#, fuzzy
 msgid "Failed to join chatroom"
-msgstr "邀请到聊天室(_I)"
+msgstr "加入聊天室失败"
 
 #: ../libempathy-gtk/empathy-chat.c:610
-#, fuzzy
 msgid "Failed to open private chat"
-msgstr "重新连接到对话失败"
+msgstr "建立私人对话失败"
 
 #: ../libempathy-gtk/empathy-chat.c:649
 msgid "Topic not supported on this conversation"
-msgstr ""
+msgstr "不支持在此会话上设置主题"
 
 #: ../libempathy-gtk/empathy-chat.c:655
 msgid "You are not allowed to change the topic"
-msgstr ""
+msgstr "您不能更改主题"
 
 #: ../libempathy-gtk/empathy-chat.c:773
 msgid "/clear, clear all messages from the current conversation"
-msgstr ""
+msgstr "/clear, 清空当前会话的所有消息"
 
 #: ../libempathy-gtk/empathy-chat.c:776
 msgid "/topic <topic>, set the topic of the current conversation"
@@ -932,11 +932,11 @@ msgstr ""
 
 #: ../libempathy-gtk/empathy-chat.c:779
 msgid "/join <chatroom id>, join a new chatroom"
-msgstr ""
+msgstr "/join <chatroom id>, 加入聊天室"
 
 #: ../libempathy-gtk/empathy-chat.c:782
 msgid "/j <chatroom id>, join a new chatroom"
-msgstr ""
+msgstr "/j <chatroom id>, 加入聊天室"
 
 #: ../libempathy-gtk/empathy-chat.c:785
 msgid "/query <contact id> [<message>], open a private chat"
@@ -968,20 +968,17 @@ msgid ""
 msgstr ""
 
 #: ../libempathy-gtk/empathy-chat.c:812
-#, fuzzy, c-format
+#, c-format
 msgid "Usage: %s"
-msgstr ""
-"\n"
-"消息：%s"
+msgstr "用法：%s"
 
 #: ../libempathy-gtk/empathy-chat.c:841
-#, fuzzy
 msgid "Unknown command"
-msgstr "未知原因"
+msgstr "未知命令"
 
 #: ../libempathy-gtk/empathy-chat.c:962
 msgid "Unknown command, see /help for the available commands"
-msgstr ""
+msgstr "未知命令，请使用 /help 查阅可用命令"
 
 #: ../libempathy-gtk/empathy-chat.c:1100
 msgid "offline"
@@ -1795,14 +1792,13 @@ msgstr "无错误信息"
 
 #: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
 msgid "Instant Message (Empathy)"
-msgstr "即时消息（Empathy）"
+msgstr "即时消息(Empathy)"
 
 #: ../src/empathy.c:889
 msgid "Don't connect on startup"
 msgstr "启动时不自动登录"
 
 #: ../src/empathy.c:893
-#, fuzzy
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "启动时不显示联系人列表"
 
@@ -1851,8 +1847,9 @@ msgstr "一个 GNOME 即时消息客户端"
 #: ../src/empathy-about-dialog.c:125
 msgid "translator-credits"
 msgstr ""
-"翻译-贡献者YangZhang, <zyangmath@gmail.com>\n"
+"YangZhang, <zyangmath@gmail.com>\n"
 "Aron Xu <aronxu@gnome.org>\n"
+"\n"
 "Launchpad Contributions:\n"
 "  =KK= https://launchpad.net/~sevkme\n"
 "  AnThOnYhO https://launchpad.net/~anthonyho\n"
@@ -1864,7 +1861,7 @@ msgstr ""
 
 #: ../src/empathy-account-assistant.c:118
 msgid "There has been an error while importing the accounts."
-msgstr "导入账户时出现错误。"
+msgstr "建立帐户时发生错误。"
 
 #: ../src/empathy-account-assistant.c:121
 msgid "There has been an error while parsing the account details."
@@ -1908,7 +1905,7 @@ msgstr "新建 %s 账户"
 
 #: ../src/empathy-account-assistant.c:403
 msgid "What kind of chat account do you have?"
-msgstr "您有什么样的聊天账户？"
+msgstr "您已经拥有哪个类型的帐户？"
 
 #: ../src/empathy-account-assistant.c:409
 msgid "Do you have any other chat accounts you want to set up?"
@@ -1920,7 +1917,7 @@ msgstr "输入您的帐户详情"
 
 #: ../src/empathy-account-assistant.c:420
 msgid "What kind of chat account do you want to create?"
-msgstr "您想要创建什么样的聊天账户？"
+msgstr "您想创建那种类型的帐户？"
 
 #: ../src/empathy-account-assistant.c:426
 msgid "Do you want to create other chat accounts?"
@@ -2149,15 +2146,15 @@ msgstr ""
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
 "does not allow direct connections."
-msgstr ""
+msgstr "不能与 %s 建立连接。可能是两台计算机之一不允许直接连接。"
 
 #: ../src/empathy-call-window.c:1604
 msgid "Can't establish audio stream"
-msgstr ""
+msgstr "不能建立音频流"
 
 #: ../src/empathy-call-window.c:1614
 msgid "Can't establish video stream"
-msgstr ""
+msgstr "不能建立视频流"
 
 #: ../src/empathy-call-window.ui.h:1
 msgid "Hang up"
@@ -2196,9 +2193,8 @@ msgid "C_lear"
 msgstr "清除(_L)"
 
 #: ../src/empathy-chat-window.ui.h:2
-#, fuzzy
 msgid "C_ontact"
-msgstr "联系人"
+msgstr "联系人(_O)"
 
 #: ../src/empathy-chat-window.ui.h:3
 msgid "Chat"
@@ -2206,7 +2202,7 @@ msgstr "聊天"
 
 #: ../src/empathy-chat-window.ui.h:4
 msgid "Insert _Smiley"
-msgstr "插入表情(_M)"
+msgstr "插入表情(_S)"
 
 #: ../src/empathy-chat-window.ui.h:5
 msgid "Move Tab _Left"
@@ -2497,19 +2493,16 @@ msgid "%s account"
 msgstr "%s 账户"
 
 #: ../src/empathy-main-window.c:413
-#, fuzzy
 msgid "Reconnect"
-msgstr "已断开连接"
+msgstr "重新连接"
 
 #: ../src/empathy-main-window.c:420
-#, fuzzy
 msgid "Edit Account"
-msgstr "编辑账户(_E)"
+msgstr "编辑账户"
 
 #: ../src/empathy-main-window.c:427
-#, fuzzy
 msgid "Close"
-msgstr "已关闭"
+msgstr "关闭"
 
 #: ../src/empathy-main-window.c:515
 msgid "No error specified"
@@ -2794,7 +2787,7 @@ msgstr "位置"
 
 #: ../src/empathy-preferences.ui.h:13
 msgid "Location sources:"
-msgstr "定位来源："
+msgstr "位置来源："
 
 #: ../src/empathy-preferences.ui.h:14
 msgid "Notifications"
