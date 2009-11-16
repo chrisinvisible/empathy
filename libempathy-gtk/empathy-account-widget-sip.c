@@ -42,6 +42,7 @@ typedef struct {
   GtkWidget *entry_stun_server;
   GtkWidget *spinbutton_stun_part;
   GtkWidget *checkbutton_discover_stun;
+  GtkWidget *combobox_transport;
 } EmpathyAccountWidgetSip;
 
 static void
@@ -71,6 +72,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
   EmpathyAccountWidgetSip *settings;
   GtkWidget *vbox_settings;
   gboolean is_simple;
+  GtkWidget *table_advanced;
 
   g_object_get (self, "simple", &is_simple, NULL);
 
@@ -94,6 +96,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
 
       self->ui_details->gui = empathy_builder_get_file (filename,
           "table_common_settings", table_common_settings,
+          "table_advanced_sip_settings", &table_advanced,
           "vbox_sip_settings", &vbox_settings,
           "entry_stun-server", &settings->entry_stun_server,
           "spinbutton_stun-port", &settings->spinbutton_stun_part,
@@ -124,6 +127,27 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
 
       self->ui_details->add_forget = TRUE;
       self->ui_details->default_focus = g_strdup ("entry_userid");
+
+      /* Create the 'transport' combobox as Glade doesn't allow us to create a
+       * GtkComboBox using gtk_combo_box_new_text () */
+      settings->combobox_transport = gtk_combo_box_new_text ();
+
+      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
+          "auto");
+      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
+          "udp");
+      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
+          "tcp");
+      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
+          "tls");
+
+      account_widget_setup_widget (self, settings->combobox_transport,
+          "transport");
+
+      gtk_table_attach_defaults (GTK_TABLE (table_advanced),
+          settings->combobox_transport, 1, 2, 6, 7);
+
+      gtk_widget_show (settings->combobox_transport);
     }
 
   self->ui_details->widget = vbox_settings;

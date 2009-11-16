@@ -134,7 +134,7 @@
             <child>
               <object class="GtkTable" id="table_advanced_sip_settings">
                 <property name="visible">True</property>
-                <property name="n_rows">6</property>
+                <property name="n_rows">7</property>
                 <property name="n_columns">2</property>
                 <property name="column_spacing">6</property>
                 <property name="row_spacing">6</property>
@@ -286,6 +286,20 @@ username.</property>
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_transport">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Transport:</property>
+                  </object>
+                  <packing>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
               </object>
             </child>
