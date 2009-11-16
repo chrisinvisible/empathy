@@ -327,12 +327,22 @@ empathy_smiley_manager_parse_len (EmpathySmileyManager *manager,
 	g_return_val_if_fail (EMPATHY_IS_SMILEY_MANAGER (manager), NULL);
 	g_return_val_if_fail (text != NULL, NULL);
 
+	/* If len is negative, parse the string until we find '\0' */
 	if (len < 0) {
 		len = G_MAXSSIZE;
 	}
 
+	/* Parse the len first bytes of text to find smileys. Each time a smiley
+	 * is detected, append a EmpathySmileyHit struct to the returned list,
+	 * containing the smiley pixbuf and the position of the text to be
+	 * replaced by it.
+	 * cur_str is a pointer in the text showing the current position
+	 * of the parsing. It is always at the begining of an UTF-8 character,
+	 * because we support unicode smileys! For example we could want to
+	 * replace ™ by an image. */
+
 	for (cur_str = text;
-	     *cur_str && cur_str - text < len;
+	     *cur_str != '\0' && cur_str - text < len;
 	     cur_str = g_utf8_next_char (cur_str)) {
 		SmileyManagerTree *child;
 		gunichar           c;
@@ -340,19 +350,27 @@ empathy_smiley_manager_parse_len (EmpathySmileyManager *manager,
 		c = g_utf8_get_char (cur_str);
 		child = smiley_manager_tree_find_child (cur_tree, c);
 
+		/* If we have a child it means c is part of a smiley */
 		if (child) {
 			if (cur_tree == priv->tree) {
+				/* c is the first char of some smileys, keep
+				 * the begining position */
 				start = cur_str;
 			}
 			cur_tree = child;
 			continue;
 		}
 
+		/* c is not part of a smiley. let's check if we found a smiley
+		 * before it. */
 		if (cur_tree->pixbuf != NULL) {
+			/* found! */
 			hit = smiley_hit_new (cur_tree, start - text,
 					      cur_str - text);
 			hits = g_slist_prepend (hits, hit);
 
+			/* c was not part of this smiley, check if a new smiley
+			 * start with it. */
 			cur_tree = smiley_manager_tree_find_child (priv->tree, c);
 			if (cur_tree) {
 				start = cur_str;
@@ -360,11 +378,23 @@ empathy_smiley_manager_parse_len (EmpathySmileyManager *manager,
 				cur_tree = priv->tree;
 			}
 		} else if (cur_tree != priv->tree) {
+			/* We searched a smiley starting at 'start' but we ended
+			 * with no smiley. Look again starting from next char.
+			 *
+			 * For example ">:)" and ":(" are both valid smileys,
+			 * when parsing text ">:(" we first see '>' which could
+			 * be the start of a smiley. 'start' variable is set to
+			 * that position and we parse next char which is ':' and
+			 * is still potential smiley. Then we see '(' which is
+			 * NOT part of the smiley, ">:(" does not exist, so we
+			 * have to start again from ':' to find ":(" which is
+			 * correct smiley. */
 			cur_str = start;
 			cur_tree = priv->tree;
 		}
 	}
 
+	/* Check if last char of the text was the end of a smiley */
 	if (cur_tree->pixbuf != NULL) {
 		hit = smiley_hit_new (cur_tree, start - text, cur_str - text);
 		hits = g_slist_prepend (hits, hit);
