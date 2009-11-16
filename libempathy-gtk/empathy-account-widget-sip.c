@@ -107,6 +107,9 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "checkbutton_discover-stun", "discover-stun",
           "entry_stun-server", "stun-server",
           "spinbutton_stun-port", "stun-port",
+          "entry_auth-user", "auth-user",
+          "entry_proxy-host", "proxy-host",
+          "spinbutton_port", "port",
           NULL);
 
       account_widget_sip_discover_stun_toggled_cb (
