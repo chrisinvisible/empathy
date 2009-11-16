@@ -296,7 +296,7 @@ account_widget_jabber_ssl_toggled_cb (GtkWidget *checkbutton_ssl,
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->spinbutton_port), port);
 }
 
-static void
+void
 account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
     const gchar *param_name)
