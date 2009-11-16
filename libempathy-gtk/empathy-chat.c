@@ -712,6 +712,26 @@ chat_command_msg (EmpathyChat *chat,
 }
 
 static void
+chat_command_nick (EmpathyChat *chat,
+		   GStrv        strv)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	TpConnection *connection;
+	GHashTable *new_alias;
+	TpHandle handle;
+
+	connection = tp_account_get_connection (priv->account);
+	handle = tp_connection_get_self_handle (connection);
+	new_alias = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_hash_table_insert (new_alias, GUINT_TO_POINTER (handle), strv[1]);
+
+	tp_cli_connection_interface_aliasing_call_set_aliases (connection, -1,
+		new_alias, NULL, NULL, NULL, NULL);
+
+	g_hash_table_destroy (new_alias);
+}
+
+static void
 chat_command_me (EmpathyChat *chat,
 		  GStrv        strv)
 {
@@ -766,6 +786,9 @@ static ChatCommandItem commands[] = {
 
 	{"msg", 3, 3, chat_command_msg,
 	 N_("/msg <contact id> <message>, open a private chat")},
+
+	{"nick", 2, 2, chat_command_nick,
+	 N_("/nick <nickname>, change your nickname on current server")},
 
 	{"me", 2, 2, chat_command_me,
 	 N_("/me <message>, send an ACTION message to the current conversation")},
