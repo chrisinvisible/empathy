@@ -1,4 +1,3 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2006-2007 Imendio AB
  * Copyright (C) 2007-2008 Collabora Ltd.
@@ -31,13 +30,13 @@
 G_BEGIN_DECLS
 
 void empathy_geometry_save (GtkWindow *window,
-			    const gchar *name);
+    const gchar *name);
 
 void empathy_geometry_load (GtkWindow *window,
-			    const gchar *name);
+    const gchar *name);
 
 void empathy_geometry_bind (GtkWindow *window,
-			    const gchar *name);
+    const gchar *name);
 
 void empathy_geometry_unbind (GtkWindow *window);
 
