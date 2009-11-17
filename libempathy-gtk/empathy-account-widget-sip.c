@@ -196,7 +196,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "transport");
 
       gtk_table_attach_defaults (GTK_TABLE (table_advanced),
-          settings->combobox_transport, 1, 2, 6, 7);
+          settings->combobox_transport, 1, 2, 13, 14);
 
       gtk_widget_show (settings->combobox_transport);
 
