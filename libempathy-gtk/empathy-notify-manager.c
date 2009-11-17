@@ -23,6 +23,8 @@
 #include <libnotify/notification.h>
 #include <libnotify/notify.h>
 
+#include <telepathy-glib/account-manager.h>
+
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
@@ -39,6 +41,7 @@ typedef struct
 {
   /* owned (gchar *) => TRUE */
   GHashTable *capabilities;
+  TpAccountManager *account_manager;
 } EmpathyNotifyManagerPriv;
 
 G_DEFINE_TYPE (EmpathyNotifyManager, empathy_notify_manager, G_TYPE_OBJECT);
@@ -86,6 +89,22 @@ empathy_notify_manager_class_init (EmpathyNotifyManagerClass *klass)
 }
 
 static void
+account_manager_prepared_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+}
+
+static void
 empathy_notify_manager_init (EmpathyNotifyManager *self)
 {
   EmpathyNotifyManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
@@ -108,6 +127,11 @@ empathy_notify_manager_init (EmpathyNotifyManager *self)
       g_hash_table_insert (priv->capabilities, cap, GUINT_TO_POINTER (TRUE));
     }
   g_list_free (list);
+
+  priv->account_manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      account_manager_prepared_cb, self);
 }
 
 EmpathyNotifyManager *
@@ -144,8 +168,10 @@ empathy_notify_manager_get_pixbuf_for_notification (EmpathyNotifyManager *self,
 gboolean
 empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
 {
+  EmpathyNotifyManagerPriv *priv = GET_PRIV (self);
   EmpathyConf *conf;
   gboolean res;
+  TpConnectionPresenceType presence;
 
   conf = empathy_conf_get ();
   res = FALSE;
@@ -155,7 +181,19 @@ empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
   if (!res)
     return FALSE;
 
-  if (!empathy_check_available_state ())
+  if (!tp_account_manager_is_prepared (priv->account_manager,
+        TP_ACCOUNT_MANAGER_FEATURE_CORE))
+    {
+      DEBUG ("account manager is not ready yet; display the notification");
+      return TRUE;
+    }
+
+  presence = tp_account_manager_get_most_available_presence (
+      priv->account_manager,
+      NULL, NULL);
+
+  if (presence != TP_CONNECTION_PRESENCE_TYPE_AVAILABLE &&
+      presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
     {
       empathy_conf_get_bool (conf, EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
           &res);
