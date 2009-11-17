@@ -159,6 +159,7 @@
           <object class="GtkVBox" id="vbox_advanced">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
             <child>
               <object class="GtkTable" id="table_advanced_settings">
                 <property name="visible">True</property>
@@ -271,6 +272,7 @@
                 <child>
                   <object class="GtkAlignment" id="alignment_server_settings">
                     <property name="visible">True</property>
+                    <property name="top_padding">6</property>
                     <property name="left_padding">12</property>
                     <child>
                       <object class="GtkTable" id="table1">
