@@ -110,10 +110,6 @@ typedef struct {
 	TpConnectionPresenceType state;
 	PresenceChooserEntryType previous_type;
 
-	TpConnectionPresenceType   flash_state_1;
-	TpConnectionPresenceType   flash_state_2;
-	guint        flash_timeout_id;
-
 	TpAccountManager *account_manager;
 } EmpathyPresenceChooserPriv;
 
@@ -131,12 +127,6 @@ static struct { TpConnectionPresenceType state;
 
 static void            presence_chooser_finalize               (GObject                    *object);
 static void            presence_chooser_presence_changed_cb    (EmpathyPresenceChooser      *chooser);
-static gboolean        presence_chooser_flash_timeout_cb       (EmpathyPresenceChooser      *chooser);
-static void            presence_chooser_flash_start            (EmpathyPresenceChooser      *chooser,
-								TpConnectionPresenceType                  state_1,
-								TpConnectionPresenceType                  state_2);
-static void            presence_chooser_flash_stop             (EmpathyPresenceChooser      *chooser,
-								TpConnectionPresenceType                  state);
 static void            presence_chooser_menu_add_item          (GtkWidget                  *menu,
 								const gchar                *str,
 								TpConnectionPresenceType                  state);
@@ -891,10 +881,6 @@ presence_chooser_finalize (GObject *object)
 
 	priv = GET_PRIV (object);
 
-	if (priv->flash_timeout_id) {
-		g_source_remove (priv->flash_timeout_id);
-	}
-
 	if (priv->focus_out_idle_source) {
 		g_source_remove (priv->focus_out_idle_source);
 	}
@@ -934,7 +920,6 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv;
 	TpConnectionPresenceType    state;
-	TpConnectionPresenceType    flash_state;
 	const gchar                *status;
 	GtkTreeModel               *model;
 	GtkTreeIter                 iter;
@@ -949,7 +934,6 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 
 	priv->state = state = empathy_idle_get_state (priv->idle);
 	status = empathy_idle_get_status (priv->idle);
-	flash_state = empathy_idle_get_flash_state (priv->idle);
 
 	/* An unset presence here doesn't make any sense. Force it to appear as
 	 * offline. */
@@ -1009,82 +993,14 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 		ui_set_custom_state (chooser, state, status);
 	}
 
-	if (flash_state != TP_CONNECTION_PRESENCE_TYPE_UNSET) {
-		presence_chooser_flash_start (chooser, state, flash_state);
-	}
-	else {
-		presence_chooser_flash_stop (chooser, state);
-	}
+	entry = gtk_bin_get_child (GTK_BIN (chooser));
+	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry),
+	      GTK_ENTRY_ICON_PRIMARY,
+	      empathy_icon_name_for_presence (state));
 
 	entry = gtk_bin_get_child (GTK_BIN (chooser));
 	gtk_editable_set_editable (GTK_EDITABLE (entry),
 	    state != TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
-}
-
-static gboolean
-presence_chooser_flash_timeout_cb (EmpathyPresenceChooser *chooser)
-{
-	EmpathyPresenceChooserPriv *priv;
-	TpConnectionPresenceType    state;
-	static gboolean             on = FALSE;
-	GtkWidget                  *entry;
-
-	priv = GET_PRIV (chooser);
-
-	if (on) {
-		state = priv->flash_state_1;
-	}
-	else {
-		state = priv->flash_state_2;
-	}
-
-	entry = gtk_bin_get_child (GTK_BIN (chooser));
-	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry),
-					   GTK_ENTRY_ICON_PRIMARY,
-					   empathy_icon_name_for_presence (state));
-
-	on = !on;
-
-	return TRUE;
-}
-
-static void
-presence_chooser_flash_start (EmpathyPresenceChooser *chooser,
-			      TpConnectionPresenceType state_1,
-			      TpConnectionPresenceType state_2)
-{
-	EmpathyPresenceChooserPriv *priv;
-
-	g_return_if_fail (EMPATHY_IS_PRESENCE_CHOOSER (chooser));
-
-	priv = GET_PRIV (chooser);
-
-	priv->flash_state_1 = state_1;
-	priv->flash_state_2 = state_2;
-
-	if (!priv->flash_timeout_id) {
-		priv->flash_timeout_id = g_timeout_add (FLASH_TIMEOUT,
-			(GSourceFunc) presence_chooser_flash_timeout_cb,
-			chooser);
-	}
-}
-
-static void
-presence_chooser_flash_stop (EmpathyPresenceChooser *chooser,
-			     TpConnectionPresenceType state)
-{
-	EmpathyPresenceChooserPriv *priv = GET_PRIV (chooser);
-	GtkWidget *entry;
-
-	if (priv->flash_timeout_id) {
-		g_source_remove (priv->flash_timeout_id);
-		priv->flash_timeout_id = 0;
-	}
-
-	entry = gtk_bin_get_child (GTK_BIN (chooser));
-	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry),
-					   GTK_ENTRY_ICON_PRIMARY,
-					   empathy_icon_name_for_presence (state));
 }
 
 /**
