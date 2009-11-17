@@ -43,14 +43,14 @@ G_BEGIN_DECLS
   (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_ACCOUNTS_DIALOG, EmpathyAccountsDialogClass))
 
 typedef struct {
-  GObject parent;
+  GtkDialog parent;
 
   /* private */
   gpointer priv;
 } EmpathyAccountsDialog;
 
 typedef struct {
-  GObjectClass parent_class;
+  GtkDialogClass parent_class;
 } EmpathyAccountsDialogClass;
 
 GType empathy_accounts_dialog_get_type (void);

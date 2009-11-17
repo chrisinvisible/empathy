@@ -69,13 +69,11 @@
   _("Your new account has not been saved yet.")
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
-G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, G_TYPE_OBJECT);
+G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, GTK_TYPE_DIALOG);
 
 static EmpathyAccountsDialog *dialog_singleton = NULL;
 
 typedef struct {
-  GtkWidget *window;
-
   GtkWidget *alignment_settings;
   GtkWidget *alignment_infobar;
 
@@ -127,7 +125,7 @@ typedef struct {
   gboolean force_change_row;
   GtkTreeRowReference *destination_row;
 
-
+  gboolean dispose_has_run;
 } EmpathyAccountsDialogPriv;
 
 enum {
@@ -567,9 +565,8 @@ accounts_dialog_show_question_dialog (EmpathyAccountsDialog *dialog,
   va_list button_args;
   GtkWidget *message_dialog;
   const gchar *button_text;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  message_dialog = gtk_message_dialog_new (GTK_WINDOW (priv->window),
+  message_dialog = gtk_message_dialog_new (GTK_WINDOW (dialog),
       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
       GTK_MESSAGE_QUESTION,
       GTK_BUTTONS_NONE,
@@ -1490,20 +1487,12 @@ accounts_dialog_account_enabled_cb (TpAccountManager *manager,
 }
 
 static void
-accounts_dialog_button_help_clicked_cb (GtkWidget *button,
-    EmpathyAccountsDialog *dialog)
-{
-  empathy_url_show (button, "ghelp:empathy?accounts-window");
-}
-
-static void
 accounts_dialog_button_import_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   GtkWidget *import_dialog;
 
-  import_dialog = empathy_import_dialog_new (GTK_WINDOW (priv->window),
+  import_dialog = empathy_import_dialog_new (GTK_WINDOW (dialog),
       FALSE);
   gtk_widget_show (import_dialog);
 }
@@ -1521,33 +1510,6 @@ accounts_dialog_close_response_cb (GtkDialog *message_dialog,
     gtk_widget_destroy (account_dialog);
 }
 
-static void
-accounts_dialog_response_cb (GtkWidget *widget,
-    gint response,
-    EmpathyAccountsDialog *dialog)
-{
-  TpAccount *account = NULL;
-
-  if (accounts_dialog_has_pending_change (dialog, &account))
-    {
-      gchar *question_dialog_primary_text = get_dialog_primary_text (account);
-
-      accounts_dialog_show_question_dialog (dialog,
-          question_dialog_primary_text,
-          _("You are about to close the window, which will discard\n"
-              "your changes. Are you sure you want to proceed?"),
-          G_CALLBACK (accounts_dialog_close_response_cb),
-          widget,
-          GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
-          GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
-
-      g_free (question_dialog_primary_text);
-    }
-  else if (response == GTK_RESPONSE_CLOSE ||
-           response == GTK_RESPONSE_DELETE_EVENT)
-    gtk_widget_destroy (widget);
-}
-
 static gboolean
 accounts_dialog_delete_event_cb (GtkWidget *widget,
     GdkEvent *event,
@@ -1555,15 +1517,6 @@ accounts_dialog_delete_event_cb (GtkWidget *widget,
 {
   /* we maunally handle responses to delete events */
   return TRUE;
-}
-
-static void
-accounts_dialog_destroy_cb (GtkObject *obj,
-    EmpathyAccountsDialog *dialog)
-{
-  DEBUG ("%p", obj);
-
-  g_object_unref (dialog);
 }
 
 static void
@@ -1659,20 +1612,58 @@ accounts_dialog_manager_ready_cb (GObject *source_object,
 }
 
 static void
+dialog_response_cb (GtkWidget *widget,
+    gint response_id,
+    gpointer user_data)
+{
+  EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (widget);
+
+  if (response_id == GTK_RESPONSE_HELP)
+    {
+      empathy_url_show (widget, "ghelp:empathy?accounts-window");
+    }
+  else if (response_id == GTK_RESPONSE_CLOSE ||
+      response_id == GTK_RESPONSE_DELETE_EVENT)
+    {
+      TpAccount *account = NULL;
+
+      if (accounts_dialog_has_pending_change (dialog, &account))
+        {
+          gchar *question_dialog_primary_text = get_dialog_primary_text (
+              account);
+
+          accounts_dialog_show_question_dialog (dialog,
+              question_dialog_primary_text,
+              _("You are about to close the window, which will discard\n"
+                  "your changes. Are you sure you want to proceed?"),
+              G_CALLBACK (accounts_dialog_close_response_cb),
+              widget,
+              GTK_STOCK_CANCEL, GTK_RESPONSE_NO,
+              GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
+
+          g_free (question_dialog_primary_text);
+        }
+      else
+        {
+          gtk_widget_destroy (widget);
+        }
+    }
+}
+
+static void
 accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 {
+  GtkWidget *top_hbox;
   GtkBuilder                   *gui;
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
   GtkWidget                    *content_area;
-#ifdef HAVE_MOBLIN
-  GtkWidget                    *action_area;
-#endif
+  GtkWidget *action_area;
 
   filename = empathy_file_lookup ("empathy-accounts-dialog.ui", "src");
 
   gui = empathy_builder_get_file (filename,
-      "accounts_dialog", &priv->window,
+      "accounts_dialog_hbox", &top_hbox,
       "vbox_details", &priv->vbox_details,
       "frame_no_protocol", &priv->frame_no_protocol,
       "alignment_settings", &priv->alignment_settings,
@@ -1687,18 +1678,19 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   g_free (filename);
 
   empathy_builder_connect (gui, dialog,
-      "accounts_dialog", "response", accounts_dialog_response_cb,
-      "accounts_dialog", "destroy", accounts_dialog_destroy_cb,
-      "accounts_dialog", "delete-event", accounts_dialog_delete_event_cb,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
-      "button_help", "clicked", accounts_dialog_button_help_clicked_cb,
       "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
       NULL);
 
+  content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+
+  gtk_container_add (GTK_CONTAINER (content_area), top_hbox);
+
   g_object_unref (gui);
 
+  action_area = gtk_dialog_get_action_area (GTK_DIALOG (dialog));
+
 #ifdef HAVE_MOBLIN
-  action_area = gtk_dialog_get_action_area (GTK_DIALOG (priv->window));
   gtk_widget_hide (action_area);
 #endif
 
@@ -1710,7 +1702,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       dialog);
 
   if (priv->parent_window)
-    gtk_window_set_transient_for (GTK_WINDOW (priv->window),
+    gtk_window_set_transient_for (GTK_WINDOW (dialog),
         priv->parent_window);
 
   /* set up spinner */
@@ -1734,6 +1726,30 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_box_pack_start (GTK_BOX (content_area), priv->image_status,
       FALSE, FALSE, 0);
   gtk_container_add (GTK_CONTAINER (content_area), priv->label_status);
+
+  /* Tweak the dialog */
+  gtk_window_set_title (GTK_WINDOW (dialog), _("Accounts"));
+  gtk_window_set_role (GTK_WINDOW (dialog), "accounts");
+
+  gtk_window_set_default_size (GTK_WINDOW (dialog), 640, -1);
+
+  gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
+
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+
+  /* add dialog buttons */
+  gtk_button_box_set_layout (GTK_BUTTON_BOX (action_area), GTK_BUTTONBOX_END);
+
+  gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+      GTK_STOCK_HELP, GTK_RESPONSE_HELP,
+      GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+      NULL);
+
+  g_signal_connect (dialog, "response",
+      G_CALLBACK (dialog_response_cb), dialog);
+
+  g_signal_connect (dialog, "delete-event",
+      G_CALLBACK (accounts_dialog_delete_event_cb), dialog);
 }
 
 static void
@@ -1741,6 +1757,11 @@ do_dispose (GObject *obj)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->dispose_has_run)
+    return;
+
+  priv->dispose_has_run = TRUE;
 
   /* Disconnect signals */
   g_signal_handlers_disconnect_by_func (priv->account_manager,
@@ -1791,7 +1812,6 @@ do_constructor (GType type,
   if (dialog_singleton)
     {
       retval = G_OBJECT (dialog_singleton);
-      g_object_ref (retval);
     }
   else
     {
@@ -1801,9 +1821,6 @@ do_constructor (GType type,
 
       dialog_singleton = EMPATHY_ACCOUNTS_DIALOG (retval);
       g_object_add_weak_pointer (retval, (gpointer) &dialog_singleton);
-      /* We add an extra reference that we'll release when the dialog is
-       * destroyed (accounts_dialog_destroy_cb) */
-      g_object_ref (retval);
     }
 
   return retval;
@@ -1874,7 +1891,7 @@ do_constructed (GObject *object)
 
           empathy_conf_set_bool (empathy_conf_get (),
               EMPATHY_PREFS_IMPORT_ASKED, TRUE);
-          import_dialog = empathy_import_dialog_new (GTK_WINDOW (priv->window),
+          import_dialog = empathy_import_dialog_new (GTK_WINDOW (dialog),
               FALSE);
           gtk_widget_show (import_dialog);
         }
@@ -1938,10 +1955,7 @@ empathy_accounts_dialog_show (GtkWindow *parent,
         priv->initial_selection = g_object_ref (selected_account);
     }
 
-  gtk_window_present (GTK_WINDOW (priv->window));
-  /* EmpathyAccountsDialog kepts a ref on itself until the dialog is
-   * destroyed so we can release the ref returned by the constructor now. */
-  g_object_unref (dialog);
+  gtk_window_present (GTK_WINDOW (dialog));
 
-  return priv->window;
+  return GTK_WIDGET (dialog);
 }
