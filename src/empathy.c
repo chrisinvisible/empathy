@@ -646,6 +646,7 @@ account_manager_ready_cb (GObject *source_object,
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
   gboolean autoconnect = TRUE;
+  TpConnectionPresenceType presence;
 
   if (!tp_account_manager_prepare_finish (manager, result, &error))
     {
@@ -658,11 +659,14 @@ account_manager_ready_cb (GObject *source_object,
   idle = empathy_idle_dup_singleton ();
   connectivity = empathy_connectivity_dup_singleton ();
 
+  presence = tp_account_manager_get_most_available_presence (manager, NULL,
+      NULL);
+
   empathy_conf_get_bool (empathy_conf_get (),
       EMPATHY_PREFS_AUTOCONNECT, &autoconnect);
   if (autoconnect && !no_connect &&
       tp_connection_presence_type_cmp_availability
-          (empathy_idle_get_state (idle), TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+          (presence, TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
             <= 0)
       /* if current state is Offline, then put it online */
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
