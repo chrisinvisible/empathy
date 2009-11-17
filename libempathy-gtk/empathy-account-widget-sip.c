@@ -71,15 +71,22 @@ static void
 keep_alive_mechanism_combobox_change_cb (GtkWidget *widget,
     EmpathyAccountWidgetSip *self)
 {
-  const gchar *mechanism;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar *mechanism;
   gboolean enabled;
 
   /* Unsensitive the keep-alive spin button if keep-alive is disabled */
-  mechanism = gtk_combo_box_get_active_text (GTK_COMBO_BOX (widget));
+  if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter))
+    return;
+
+  model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+  gtk_tree_model_get (model, &iter, 0, &mechanism, -1);
 
   enabled = tp_strdiff (mechanism, "none");
 
   gtk_widget_set_sensitive (self->spinbutton_keepalive_interval, enabled);
+  g_free (mechanism);
 }
 
 void
@@ -109,6 +116,10 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
     }
   else
     {
+      GtkListStore *store;
+      GtkTreeIter iter;
+      GtkCellRenderer *renderer;
+
       settings = g_slice_new0 (EmpathyAccountWidgetSip);
       settings->self = self;
 
@@ -151,18 +162,29 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       self->ui_details->add_forget = TRUE;
       self->ui_details->default_focus = g_strdup ("entry_userid");
 
-      /* Create the 'transport' combobox as Glade doesn't allow us to create a
-       * GtkComboBox using gtk_combo_box_new_text () */
-      settings->combobox_transport = gtk_combo_box_new_text ();
+      /* Create the 'transport' combo box. The first column has to contain the
+       * value of the param. */
+      store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
+      settings->combobox_transport = gtk_combo_box_new_with_model (
+          GTK_TREE_MODEL (store));
 
-      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
-          "auto");
-      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
-          "udp");
-      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
-          "tcp");
-      gtk_combo_box_append_text (GTK_COMBO_BOX (settings->combobox_transport),
-          "tls");
+      renderer = gtk_cell_renderer_text_new ();
+      gtk_cell_layout_pack_start (
+          GTK_CELL_LAYOUT (settings->combobox_transport), renderer, TRUE);
+      gtk_cell_layout_add_attribute (
+          GTK_CELL_LAYOUT (settings->combobox_transport), renderer, "text", 1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "auto", 1, _("Auto"), -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "udp", 1, "UDP", -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "tcp", 1, "TCP", -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "tls", 1, "TLS", -1);
 
       account_widget_setup_widget (self, settings->combobox_transport,
           "transport");
@@ -173,16 +195,29 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       gtk_widget_show (settings->combobox_transport);
 
       /* Create the 'keep-alive mechanism' combo box */
-      settings->combobox_keep_alive_mechanism = gtk_combo_box_new_text ();
+      store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
+      settings->combobox_keep_alive_mechanism = gtk_combo_box_new_with_model (
+          GTK_TREE_MODEL (store));
 
-      gtk_combo_box_append_text (
-          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "auto");
-      gtk_combo_box_append_text (
-          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "register");
-      gtk_combo_box_append_text (
-          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "options");
-      gtk_combo_box_append_text (
-          GTK_COMBO_BOX (settings->combobox_keep_alive_mechanism), "none");
+      renderer = gtk_cell_renderer_text_new ();
+      gtk_cell_layout_pack_start (
+          GTK_CELL_LAYOUT (settings->combobox_keep_alive_mechanism), renderer,
+          TRUE);
+      gtk_cell_layout_add_attribute (
+          GTK_CELL_LAYOUT (settings->combobox_keep_alive_mechanism), renderer,
+          "text", 1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "auto", 1, _("Auto"), -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "register", 1, "Register", -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "options", 1, "Options", -1);
+
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter, 0, "none", 1, _("None"), -1);
 
       g_signal_connect (settings->combobox_keep_alive_mechanism, "changed",
           G_CALLBACK (keep_alive_mechanism_combobox_change_cb), settings);

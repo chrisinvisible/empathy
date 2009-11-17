@@ -300,13 +300,21 @@ static void
 account_widget_combobox_changed_cb (GtkWidget *widget,
     EmpathyAccountWidget *self)
 {
+  GtkTreeIter iter;
+  GtkTreeModel *model;
   const gchar *value;
   const GValue *v;
   const gchar *default_value;
   const gchar *param_name;
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
-  value = gtk_combo_box_get_active_text (GTK_COMBO_BOX (widget));
+  if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter))
+    return;
+
+  model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+  /* the param value is stored in the first column */
+  gtk_tree_model_get (model, &iter, 0, &value, -1);
+
   param_name = g_object_get_data (G_OBJECT (widget), "param_name");
 
   v = empathy_account_settings_get_default (priv->settings, param_name);
@@ -404,7 +412,8 @@ account_widget_setup_widget (EmpathyAccountWidget *self,
     }
   else if (GTK_IS_COMBO_BOX (widget))
     {
-      /* Only support GtkComboBox created using gtk_combo_box_new_text () */
+      /* The combo box's model has to contain the param value in its first
+       * column (as a string) */
       const gchar *str;
       GtkTreeModel *model;
       GtkTreeIter iter;
