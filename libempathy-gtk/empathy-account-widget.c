@@ -304,7 +304,7 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
   GtkTreeModel *model;
   const gchar *value;
   const GValue *v;
-  const gchar *default_value;
+  const gchar *default_value = NULL;
   const gchar *param_name;
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
@@ -318,7 +318,8 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
   param_name = g_object_get_data (G_OBJECT (widget), "param_name");
 
   v = empathy_account_settings_get_default (priv->settings, param_name);
-  default_value = g_value_get_string (v);
+  if (v != NULL)
+    default_value = g_value_get_string (v);
 
   if (!tp_strdiff (value, default_value))
     {
