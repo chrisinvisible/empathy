@@ -43,7 +43,7 @@ typedef struct {
   GtkWidget *label_stun_server;
   GtkWidget *entry_stun_server;
   GtkWidget *label_stun_port;
-  GtkWidget *spinbutton_stun_part;
+  GtkWidget *spinbutton_stun_port;
   GtkWidget *checkbutton_discover_stun;
   GtkWidget *combobox_transport;
   GtkWidget *combobox_keep_alive_mechanism;
@@ -68,7 +68,7 @@ account_widget_sip_discover_stun_toggled_cb (
   gtk_widget_set_sensitive (settings->label_stun_server, !active);
   gtk_widget_set_sensitive (settings->entry_stun_server, !active);
   gtk_widget_set_sensitive (settings->label_stun_port, !active);
-  gtk_widget_set_sensitive (settings->spinbutton_stun_part, !active);
+  gtk_widget_set_sensitive (settings->spinbutton_stun_port, !active);
 }
 
 static void
@@ -134,7 +134,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "label_stun-server", &settings->label_stun_server,
           "entry_stun-server", &settings->entry_stun_server,
           "label_stun-port", &settings->label_stun_port,
-          "spinbutton_stun-port", &settings->spinbutton_stun_part,
+          "spinbutton_stun-port", &settings->spinbutton_stun_port,
           "checkbutton_discover-stun", &settings->checkbutton_discover_stun,
           "spinbutton_keepalive-interval",
             &settings->spinbutton_keepalive_interval,
