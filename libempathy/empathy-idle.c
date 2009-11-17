@@ -54,7 +54,6 @@ typedef struct {
 
 	TpConnectionPresenceType      state;
 	gchar          *status;
-	TpConnectionPresenceType      flash_state;
 	gboolean        auto_away;
 
 	TpConnectionPresenceType      away_saved_state;
@@ -86,7 +85,6 @@ enum {
 	PROP_0,
 	PROP_STATE,
 	PROP_STATUS,
-	PROP_FLASH_STATE,
 	PROP_AUTO_AWAY
 };
 
@@ -361,9 +359,6 @@ idle_get_property (GObject    *object,
 	case PROP_STATUS:
 		g_value_set_string (value, empathy_idle_get_status (idle));
 		break;
-	case PROP_FLASH_STATE:
-		g_value_set_enum (value, empathy_idle_get_flash_state (idle));
-		break;
 	case PROP_AUTO_AWAY:
 		g_value_set_boolean (value, empathy_idle_get_auto_away (idle));
 		break;
@@ -391,9 +386,6 @@ idle_set_property (GObject      *object,
 		break;
 	case PROP_STATUS:
 		empathy_idle_set_status (idle, g_value_get_string (value));
-		break;
-	case PROP_FLASH_STATE:
-		empathy_idle_set_flash_state (idle, g_value_get_enum (value));
 		break;
 	case PROP_AUTO_AWAY:
 		empathy_idle_set_auto_away (idle, g_value_get_boolean (value));
@@ -429,14 +421,6 @@ empathy_idle_class_init (EmpathyIdleClass *klass)
 							      "status",
 							      NULL,
 							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_FLASH_STATE,
-					 g_param_spec_uint ("flash-state",
-							    "flash-state",
-							    "flash-state",
-							    0, NUM_TP_CONNECTION_PRESENCE_TYPES,
-							    TP_CONNECTION_PRESENCE_TYPE_UNSET,
-							    G_PARAM_READWRITE));
 
 	 g_object_class_install_property (object_class,
 					  PROP_AUTO_AWAY,
@@ -606,36 +590,6 @@ empathy_idle_set_status (EmpathyIdle *idle,
 	priv = GET_PRIV (idle);
 
 	empathy_idle_set_presence (idle, priv->state, status);
-}
-
-TpConnectionPresenceType
-empathy_idle_get_flash_state (EmpathyIdle *idle)
-{
-	EmpathyIdlePriv *priv;
-
-	priv = GET_PRIV (idle);
-
-	if (G_UNLIKELY (!priv->ready))
-		g_critical (G_STRLOC ": %s called before AccountManager ready",
-				G_STRFUNC);
-
-	return priv->flash_state;
-}
-
-void
-empathy_idle_set_flash_state (EmpathyIdle *idle,
-			      TpConnectionPresenceType   state)
-{
-	EmpathyIdlePriv *priv;
-
-	priv = GET_PRIV (idle);
-
-	priv->flash_state = state;
-
-	if (state == TP_CONNECTION_PRESENCE_TYPE_UNSET) {
-	}
-
-	g_object_notify (G_OBJECT (idle), "flash-state");
 }
 
 static void

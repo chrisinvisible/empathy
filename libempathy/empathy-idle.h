@@ -55,9 +55,6 @@ void         empathy_idle_set_state           (EmpathyIdle *idle,
 const gchar *empathy_idle_get_status          (EmpathyIdle *idle);
 void         empathy_idle_set_status          (EmpathyIdle *idle,
 					       const gchar *status);
-TpConnectionPresenceType   empathy_idle_get_flash_state     (EmpathyIdle *idle);
-void         empathy_idle_set_flash_state     (EmpathyIdle *idle,
-					       TpConnectionPresenceType   state);
 void         empathy_idle_set_presence        (EmpathyIdle *idle,
 					       TpConnectionPresenceType   state,
 					       const gchar *status);
