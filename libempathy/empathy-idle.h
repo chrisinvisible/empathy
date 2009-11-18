@@ -52,7 +52,6 @@ EmpathyIdle *empathy_idle_dup_singleton       (void);
 TpConnectionPresenceType   empathy_idle_get_state           (EmpathyIdle *idle);
 void         empathy_idle_set_state           (EmpathyIdle *idle,
 					       TpConnectionPresenceType   state);
-const gchar *empathy_idle_get_status          (EmpathyIdle *idle);
 void         empathy_idle_set_status          (EmpathyIdle *idle,
 					       const gchar *status);
 void         empathy_idle_set_presence        (EmpathyIdle *idle,

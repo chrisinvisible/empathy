@@ -340,6 +340,24 @@ idle_constructor (GType type,
 	return retval;
 }
 
+static const gchar *
+empathy_idle_get_status (EmpathyIdle *idle)
+{
+	EmpathyIdlePriv *priv;
+
+	priv = GET_PRIV (idle);
+
+	if (G_UNLIKELY (!priv->ready))
+		g_critical (G_STRLOC ": %s called before AccountManager ready",
+				G_STRFUNC);
+
+	if (!priv->status) {
+		return empathy_presence_get_default_message (priv->state);
+	}
+
+	return priv->status;
+}
+
 static void
 idle_get_property (GObject    *object,
 		   guint       param_id,
@@ -561,24 +579,6 @@ empathy_idle_set_state (EmpathyIdle *idle,
 	priv = GET_PRIV (idle);
 
 	empathy_idle_set_presence (idle, state, priv->status);
-}
-
-const gchar *
-empathy_idle_get_status (EmpathyIdle *idle)
-{
-	EmpathyIdlePriv *priv;
-
-	priv = GET_PRIV (idle);
-
-	if (G_UNLIKELY (!priv->ready))
-		g_critical (G_STRLOC ": %s called before AccountManager ready",
-				G_STRFUNC);
-
-	if (!priv->status) {
-		return empathy_presence_get_default_message (priv->state);
-	}
-
-	return priv->status;
 }
 
 void
