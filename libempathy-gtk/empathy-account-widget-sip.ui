@@ -135,8 +135,8 @@
             <child>
               <object class="GtkTable" id="table_advanced_sip_settings">
                 <property name="visible">True</property>
-                <property name="n_rows">15</property>
-                <property name="n_columns">2</property>
+                <property name="n_rows">13</property>
+                <property name="n_columns">4</property>
                 <property name="column_spacing">6</property>
                 <property name="row_spacing">6</property>
                 <child>
@@ -153,21 +153,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="spinbutton_stun-port">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adjustment1</property>
-                    <property name="climb_rate">1</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkEntry" id="entry_auth-user">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -177,9 +162,9 @@ username.</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">12</property>
-                    <property name="bottom_attach">13</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
                   </packing>
                 </child>
                 <child>
@@ -192,24 +177,8 @@ username.</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="spinbutton_port">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="tooltip_text" translatable="yes">Port of the proxy for outbound requests.</property>
-                    <property name="invisible_char">&#x2022;</property>
-                    <property name="adjustment">adjustment2</property>
-                    <property name="climb_rate">1</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
                   </packing>
                 </child>
                 <child>
@@ -221,9 +190,9 @@ username.</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">10</property>
-                    <property name="bottom_attach">11</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
                   </packing>
                 </child>
                 <child>
@@ -234,7 +203,7 @@ username.</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
+                    <property name="right_attach">4</property>
                   </packing>
                 </child>
                 <child>
@@ -245,9 +214,9 @@ username.</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
                   </packing>
                 </child>
                 <child>
@@ -258,29 +227,9 @@ username.</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">11</property>
-                    <property name="bottom_attach">12</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkAlignment" id="alignment6">
-                    <property name="visible">True</property>
-                    <property name="left_padding">24</property>
-                    <child>
-                      <object class="GtkLabel" id="label_stun-port">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">STUN port:</property>
-                        <property name="mnemonic_widget">spinbutton_stun-port</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
                   </packing>
                 </child>
                 <child>
@@ -319,7 +268,7 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
+                    <property name="right_attach">4</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                     <property name="x_options">GTK_FILL</property>
@@ -341,9 +290,9 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
                   </packing>
                 </child>
                 <child>
@@ -359,25 +308,8 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkAlignment" id="alignment9">
-                    <property name="visible">True</property>
-                    <property name="left_padding">12</property>
-                    <child>
-                      <object class="GtkLabel" id="label_port">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Port:</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
                   </packing>
                 </child>
                 <child>
@@ -388,9 +320,9 @@ username.</property>
                     <property name="use_markup">True</property>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">8</property>
-                    <property name="bottom_attach">9</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
                   </packing>
                 </child>
                 <child>
@@ -406,8 +338,8 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="top_attach">9</property>
-                    <property name="bottom_attach">10</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
                   </packing>
                 </child>
                 <child>
@@ -423,8 +355,8 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="top_attach">10</property>
-                    <property name="bottom_attach">11</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
                   </packing>
                 </child>
                 <child>
@@ -440,8 +372,8 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="top_attach">12</property>
-                    <property name="bottom_attach">13</property>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
                   </packing>
                 </child>
                 <child>
@@ -457,8 +389,8 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="top_attach">13</property>
-                    <property name="bottom_attach">14</property>
+                    <property name="top_attach">11</property>
+                    <property name="bottom_attach">12</property>
                   </packing>
                 </child>
                 <child>
@@ -476,10 +408,79 @@ username.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">14</property>
-                    <property name="bottom_attach">15</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">12</property>
+                    <property name="bottom_attach">13</property>
                   </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_stun-port">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Port:</property>
+                    <property name="mnemonic_widget">spinbutton_stun-port</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spinbutton_stun-port">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x2022;</property>
+                    <property name="adjustment">adjustment1</property>
+                    <property name="climb_rate">1</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_port">
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">Port:</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="right_attach">3</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spinbutton_port">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">&#x2022;</property>
+                    <property name="adjustment">adjustment2</property>
+                    <property name="climb_rate">1</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">3</property>
+                    <property name="right_attach">4</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
                 </child>
                 <child>
                   <placeholder/>
