@@ -272,17 +272,39 @@ presence_chooser_get_entry_type (EmpathyPresenceChooser *self)
 	return type;
 }
 
-static gboolean
-presence_chooser_is_preset (EmpathyPresenceChooser *self)
+static TpConnectionPresenceType
+get_state_and_status (EmpathyPresenceChooser *self,
+	gchar **status)
 {
 	EmpathyPresenceChooserPriv *priv = GET_PRIV (self);
 	TpConnectionPresenceType state;
-	const char *status;
+	gchar *tmp;
+
+	state = tp_account_manager_get_most_available_presence (
+		priv->account_manager, NULL, &tmp);
+	if (EMP_STR_EMPTY (tmp)) {
+		/* no message, use the default message */
+		g_free (tmp);
+		tmp = g_strdup (empathy_presence_get_default_message (state));
+	}
+
+	if (status != NULL)
+		*status = tmp;
+	else
+		g_free (tmp);
+
+	return state;
+}
+
+static gboolean
+presence_chooser_is_preset (EmpathyPresenceChooser *self)
+{
+	TpConnectionPresenceType state;
+	char *status;
 	GList *presets, *l;
 	gboolean match = FALSE;
 
-	state = empathy_idle_get_state (priv->idle);
-	status = empathy_idle_get_status (priv->idle);
+	state = get_state_and_status (self, &status);
 
 	presets = empathy_status_presets_get (state, -1);
 	for (l = presets; l; l = l->next) {
@@ -298,6 +320,7 @@ presence_chooser_is_preset (EmpathyPresenceChooser *self)
 
 	DEBUG ("is_preset(%i, %s) = %i", state, status, match);
 
+	g_free (status);
 	return match;
 }
 
@@ -457,15 +480,16 @@ presence_chooser_entry_icon_release_cb (EmpathyPresenceChooser *self,
 	else {
 		PresenceChooserEntryType type;
 		TpConnectionPresenceType state;
-		const char *status;
+		char *status;
 
 		type = presence_chooser_get_entry_type (self);
-		state = empathy_idle_get_state (priv->idle);
-		status = empathy_idle_get_status (priv->idle);
+		state = get_state_and_status (self, &status);
 
-		if (!empathy_status_presets_is_valid (state))
+		if (!empathy_status_presets_is_valid (state)) {
 			/* It doesn't make sense to add such presence as favorite */
+			g_free (status);
 			return;
+		}
 
 		if (presence_chooser_is_preset (self)) {
 			/* remove the entry */
@@ -480,6 +504,7 @@ presence_chooser_entry_icon_release_cb (EmpathyPresenceChooser *self,
 
 		/* update the icon */
 		presence_chooser_set_favorite_icon (self);
+		g_free (status);
 	}
 }
 
@@ -609,10 +634,12 @@ presence_chooser_changed_cb (GtkComboBox *self, gpointer user_data)
 		} else {
 			/* else preseed the text of their currently entered
 			 * status message */
-			const char *status;
+			char *status;
 
-			status = empathy_idle_get_status (priv->idle);
+			get_state_and_status (EMPATHY_PRESENCE_CHOOSER (self),
+				&status);
 			gtk_entry_set_text (GTK_ENTRY (entry), status);
+			g_free (status);
 		}
 
 		/* grab the focus */
@@ -739,6 +766,8 @@ update_sensitivity_am_prepared_cb (GObject *source_object,
 		sensitive = FALSE;
 
 	gtk_widget_set_sensitive (GTK_WIDGET (chooser), sensitive);
+
+	presence_chooser_presence_changed_cb (chooser);
 }
 
 static void
@@ -841,12 +870,12 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 			chooser);
 
 	priv->idle = empathy_idle_dup_singleton ();
-	presence_chooser_presence_changed_cb (chooser);
-	g_signal_connect_swapped (priv->idle, "notify::state",
-		G_CALLBACK (presence_chooser_presence_changed_cb),
-		chooser);
 
 	priv->account_manager = tp_account_manager_dup ();
+	g_signal_connect_swapped (priv->account_manager,
+		"most-available-presence-changed",
+		G_CALLBACK (presence_chooser_presence_changed_cb),
+		chooser);
 
 	empathy_signal_connect_weak (priv->account_manager, "account-validity-changed",
 		G_CALLBACK (presence_chooser_account_manager_account_validity_changed_cb),
@@ -920,7 +949,7 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv;
 	TpConnectionPresenceType    state;
-	const gchar                *status;
+	gchar                      *status;
 	GtkTreeModel               *model;
 	GtkTreeIter                 iter;
 	gboolean valid, match_state = FALSE, match = FALSE;
@@ -932,8 +961,8 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 		return;
 	}
 
-	priv->state = state = empathy_idle_get_state (priv->idle);
-	status = empathy_idle_get_status (priv->idle);
+	state = get_state_and_status (chooser, &status);
+	priv->state = state;
 
 	/* An unset presence here doesn't make any sense. Force it to appear as
 	 * offline. */
@@ -1001,6 +1030,8 @@ presence_chooser_presence_changed_cb (EmpathyPresenceChooser *chooser)
 	entry = gtk_bin_get_child (GTK_BIN (chooser));
 	gtk_editable_set_editable (GTK_EDITABLE (entry),
 	    state != TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+
+	g_free (status);
 }
 
 /**
