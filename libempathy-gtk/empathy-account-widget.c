@@ -336,7 +336,7 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
 }
 
 void
-account_widget_setup_widget (EmpathyAccountWidget *self,
+empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
     const gchar *param_name)
 {
@@ -606,7 +606,7 @@ accounts_widget_generic_setup (EmpathyAccountWidget *self,
         }
 
       if (widget)
-        account_widget_setup_widget (self, widget, param->name);
+        empathy_account_widget_setup_widget (self, widget, param->name);
 
       g_free (param_name_formatted);
     }
@@ -633,7 +633,8 @@ account_widget_handle_params_valist (EmpathyAccountWidget *self,
           continue;
         }
 
-      account_widget_setup_widget (self, GTK_WIDGET (object), param_name);
+      empathy_account_widget_setup_widget (self, GTK_WIDGET (object),
+          param_name);
     }
 }
 

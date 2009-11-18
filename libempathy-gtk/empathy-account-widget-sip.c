@@ -192,7 +192,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter, 0, "tls", 1, "TLS", -1);
 
-      account_widget_setup_widget (self, settings->combobox_transport,
+      empathy_account_widget_setup_widget (self, settings->combobox_transport,
           "transport");
 
       gtk_table_attach_defaults (GTK_TABLE (table_advanced),
@@ -228,7 +228,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       g_signal_connect (settings->combobox_keep_alive_mechanism, "changed",
           G_CALLBACK (keep_alive_mechanism_combobox_change_cb), settings);
 
-      account_widget_setup_widget (self,
+      empathy_account_widget_setup_widget (self,
           settings->combobox_keep_alive_mechanism, "keepalive-mechanism");
 
       gtk_table_attach_defaults (GTK_TABLE (table_advanced),

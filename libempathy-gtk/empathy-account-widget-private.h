@@ -42,7 +42,7 @@ void       empathy_account_widget_handle_params     (EmpathyAccountWidget *self,
 						     const gchar *first_widget,
 						     ...);
 
-void account_widget_setup_widget (EmpathyAccountWidget *self,
+void empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
     const gchar *param_name);
 
