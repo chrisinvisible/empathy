@@ -35,9 +35,9 @@
 #endif
 
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-idle.h>
 
 #include <telepathy-glib/account.h>
+#include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/connection-manager.h>
 #include <telepathy-glib/util.h>
 #include <dbus/dbus-protocol.h>
@@ -75,7 +75,7 @@ typedef struct {
    * account has been created */
   gboolean account_created;
 
-  EmpathyIdle *idle;
+  TpAccountManager *account_manager;
 
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
@@ -1153,23 +1153,58 @@ do_get_property (GObject *object,
 }
 
 static void
-idle_state_change_cb (EmpathyIdle *idle,
-    GParamSpec *spec,
+presence_changed_cb (TpAccountManager *manager,
+    TpConnectionPresenceType state,
+    const gchar *status,
+    const gchar *message,
     EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  TpConnectionPresenceType state;
-
-  state = empathy_idle_get_state (priv->idle);
 
   if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
     {
-      g_object_set (priv->apply_button, "label", GTK_STOCK_CONNECT, NULL);
+      /* We are online, display a Login button */
+      GtkWidget *image;
+
+      gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), FALSE);
+      gtk_button_set_label (GTK_BUTTON (priv->apply_button), _("L_og in"));
+
+      image = gtk_image_new_from_stock (GTK_STOCK_CONNECT,
+          GTK_ICON_SIZE_BUTTON);
+      gtk_button_set_image (GTK_BUTTON (priv->apply_button), image);
     }
   else
     {
-      g_object_set (priv->apply_button, "label", GTK_STOCK_APPLY, NULL);
+      /* We are offline, display a Save button */
+      gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
+      gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
+      gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_SAVE);
     }
+}
+
+static void
+account_manager_ready_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (user_data);
+  TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+  TpConnectionPresenceType state;
+
+  if (!tp_account_manager_prepare_finish (account_manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  state = tp_account_manager_get_most_available_presence (account_manager, NULL,
+      NULL);
+
+  /* simulate a presence change so the apply button will be changed
+   * if needed */
+  presence_changed_cb (account_manager, state, NULL, NULL, self);
 }
 
 #define WIDGET(cm, proto) \
@@ -1273,29 +1308,18 @@ do_constructed (GObject *obj)
 
       if (priv->creating_account)
         {
-          TpConnectionPresenceType state;
-          priv->idle = empathy_idle_dup_singleton ();
+          priv->account_manager = tp_account_manager_dup ();
 
-          empathy_signal_connect_weak (priv->idle, "notify::state",
-              G_CALLBACK (idle_state_change_cb), obj);
+          empathy_signal_connect_weak (priv->account_manager,
+              "most-available-presence-changed",
+              G_CALLBACK (presence_changed_cb), obj);
 
-          state = empathy_idle_get_state (priv->idle);
+          tp_account_manager_prepare_async (priv->account_manager, NULL,
+              account_manager_ready_cb, self);
 
-          if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
-            {
-              /* We are online, display a Login button */
-              GtkWidget *image;
-
-              priv->apply_button = gtk_button_new_with_mnemonic (_("L_og in"));
-              image = gtk_image_new_from_stock (GTK_STOCK_CONNECT,
-                  GTK_ICON_SIZE_BUTTON);
-              gtk_button_set_image (GTK_BUTTON (priv->apply_button), image);
-            }
-          else
-            {
-              /* We are offline, display a Save button */
-              priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
-            }
+          /* Assumre we are offline, display a Save button. We'll update
+           * it once the account manager is ready if needed */
+          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
         }
       else
         {
@@ -1437,10 +1461,10 @@ do_dispose (GObject *obj)
       priv->settings = NULL;
     }
 
-  if (priv->idle != NULL)
+  if (priv->account_manager != NULL)
     {
-      g_object_unref (priv->idle);
-      priv->idle = NULL;
+      g_object_unref (priv->account_manager);
+      priv->account_manager = NULL;
     }
 
   if (G_OBJECT_CLASS (empathy_account_widget_parent_class)->dispose != NULL)
