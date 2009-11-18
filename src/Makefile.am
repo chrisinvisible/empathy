@@ -22,8 +22,7 @@ LDADD =								\
 	$(WEBKIT_LIBS)
 
 bin_PROGRAMS =			\
-	empathy			\
-	empathy-logs
+	empathy
 
 BUILT_SOURCES= \
 	empathy-tube-dispatch-enumtypes.h \
@@ -58,8 +57,6 @@ empathy_SOURCES =							\
 	ephy-spinner.c ephy-spinner.h
 
 nodist_empathy_SOURCES = $(BUILT_SOURCES)
-
-empathy_logs_SOURCES = empathy-logs.c
 
 check_c_sources = \
     $(empathy_handwritten_source) \

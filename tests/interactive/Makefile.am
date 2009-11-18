@@ -13,6 +13,7 @@ LDADD =								\
 
 noinst_PROGRAMS =			\
 	contact-manager			\
+	empathy-logs			\
 	empetit				\
 	test-empathy-account-assistant \
 	test-empathy-presence-chooser	\
@@ -20,6 +21,7 @@ noinst_PROGRAMS =			\
 	test-empathy-protocol-chooser
 
 contact_manager_SOURCES = contact-manager.c
+empathy_logs_SOURCES = empathy-logs.c
 empetit_SOURCES = empetit.c
 test_empathy_presence_chooser_SOURCES = test-empathy-presence-chooser.c
 test_empathy_status_preset_dialog_SOURCES = test-empathy-status-preset-dialog.c
