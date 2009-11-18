@@ -38,9 +38,9 @@ struct _EmpathyAccountWidgetUIDetails {
 };
 
 
-void       empathy_account_widget_handle_params     (EmpathyAccountWidget *self,
-						     const gchar *first_widget,
-						     ...);
+void empathy_account_widget_handle_params (EmpathyAccountWidget *self,
+    const gchar *first_widget,
+    ...);
 
 void empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
