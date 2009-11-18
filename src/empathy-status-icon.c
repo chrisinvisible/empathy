@@ -36,7 +36,6 @@
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-idle.h>
 
 #include <libempathy-gtk/empathy-presence-chooser.h>
 #include <libempathy-gtk/empathy-conf.h>
@@ -59,7 +58,6 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyStatusIcon)
 typedef struct {
 	GtkStatusIcon       *icon;
-	EmpathyIdle         *idle;
 	TpAccountManager    *account_manager;
 	EmpathyNotifyManager *notify_mgr;
 	gboolean             showing_event_icon;
@@ -222,7 +220,8 @@ status_icon_update_tooltip (EmpathyStatusIcon *icon)
 								   priv->event->header);
 		gtk_status_icon_set_tooltip_markup (priv->icon, tooltip);
 	} else {
-		tooltip = g_strdup (empathy_idle_get_status (priv->idle));
+		tp_account_manager_get_most_available_presence (
+			priv->account_manager, &tooltip, NULL);
 		gtk_status_icon_set_tooltip_text (priv->icon, tooltip);
 	}
 
@@ -240,7 +239,8 @@ status_icon_update_icon (EmpathyStatusIcon *icon)
 	} else {
 		TpConnectionPresenceType state;
 
-		state = empathy_idle_get_state (priv->idle);
+		state = tp_account_manager_get_most_available_presence (
+			priv->account_manager, NULL, NULL);
 
 		/* An unset presence type here doesn't make sense. Force it
 		 * to be offline. */
@@ -381,7 +381,7 @@ status_icon_toggle_visibility (EmpathyStatusIcon *icon)
 }
 
 static void
-status_icon_idle_notify_cb (EmpathyStatusIcon *icon)
+status_icon_presence_changed_cb (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
 
@@ -550,7 +550,6 @@ status_icon_finalize (GObject *object)
 	}
 
 	g_object_unref (priv->icon);
-	g_object_unref (priv->idle);
 	g_object_unref (priv->account_manager);
 	g_object_unref (priv->event_manager);
 	g_object_unref (priv->ui_manager);
@@ -590,6 +589,8 @@ account_manager_prepared_cb (GObject *source_object,
 					     G_OBJECT (icon));
 	}
 	g_list_free (list);
+
+	status_icon_presence_changed_cb (icon);
 }
 
 static void
@@ -601,7 +602,6 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 	icon->priv = priv;
 	priv->icon = gtk_status_icon_new ();
 	priv->account_manager = tp_account_manager_dup ();
-	priv->idle = empathy_idle_dup_singleton ();
 	priv->event_manager = empathy_event_manager_dup_singleton ();
 
 	tp_account_manager_prepare_async (priv->account_manager, NULL,
@@ -614,10 +614,10 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 				 icon);
 
 	status_icon_create_menu (icon);
-	status_icon_idle_notify_cb (icon);
 
-	g_signal_connect_swapped (priv->idle, "notify",
-				  G_CALLBACK (status_icon_idle_notify_cb),
+	g_signal_connect_swapped (priv->account_manager,
+				  "most-available-presence-changed",
+				  G_CALLBACK (status_icon_presence_changed_cb),
 				  icon);
 	g_signal_connect (priv->event_manager, "event-added",
 			  G_CALLBACK (status_icon_event_added_cb),
