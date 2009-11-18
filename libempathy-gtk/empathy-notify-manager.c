@@ -68,6 +68,20 @@ notify_manager_constructor (GType type,
 }
 
 static void
+notify_manager_dispose (GObject *object)
+{
+  EmpathyNotifyManagerPriv *priv = GET_PRIV (object);
+
+  if (priv->account_manager != NULL)
+    {
+      g_object_unref (priv->account_manager);
+      priv->account_manager = NULL;
+    }
+
+  G_OBJECT_CLASS (empathy_notify_manager_parent_class)->dispose (object);
+}
+
+static void
 notify_manager_finalize (GObject *object)
 {
   EmpathyNotifyManagerPriv *priv = GET_PRIV (object);
@@ -82,6 +96,7 @@ empathy_notify_manager_class_init (EmpathyNotifyManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->dispose = notify_manager_dispose;
   object_class->finalize = notify_manager_finalize;
   object_class->constructor = notify_manager_constructor;
 
