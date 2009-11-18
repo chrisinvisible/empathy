@@ -196,7 +196,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           "transport");
 
       gtk_table_attach_defaults (GTK_TABLE (table_advanced),
-          settings->combobox_transport, 1, 2, 13, 14);
+          settings->combobox_transport, 1, 4, 11, 12);
 
       gtk_widget_show (settings->combobox_transport);
 
@@ -232,7 +232,7 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           settings->combobox_keep_alive_mechanism, "keepalive-mechanism");
 
       gtk_table_attach_defaults (GTK_TABLE (table_advanced),
-          settings->combobox_keep_alive_mechanism, 1, 2, 9, 10);
+          settings->combobox_keep_alive_mechanism, 1, 4, 7, 8);
 
       gtk_widget_show (settings->combobox_keep_alive_mechanism);
     }
