@@ -986,6 +986,7 @@ tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
 	const TpIntSet *members;
 	TpHandle handle;
 	EmpathyContact *old = NULL, *new = NULL;
+	ContactRenameData *rename_data = (ContactRenameData*) user_data;
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
@@ -994,8 +995,6 @@ tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
 
 	/* renamed members can only be delivered one at a time */
 	g_warn_if_fail (n_contacts == 1);
-
-	ContactRenameData *rename_data = (ContactRenameData*) user_data;
 
 	new = contacts[0];
 
@@ -1039,6 +1038,7 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 	EmpathyContact *actor_contact = NULL;
 	guint i;
 	ContactRenameData *rename_data;
+	TpHandle old_handle;
 
 	/* Contact renamed */
 	if (reason == TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED) {
@@ -1046,7 +1046,7 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 		g_warn_if_fail(removed->len == 1);
 		g_warn_if_fail(added->len == 1);
 
-		TpHandle old_handle = g_array_index (removed, guint, 0);
+		old_handle = g_array_index (removed, guint, 0);
 
 		rename_data = contact_rename_data_new (old_handle, reason, message);
 		empathy_tp_contact_factory_get_from_handles (priv->factory,

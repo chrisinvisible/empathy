@@ -1791,11 +1791,11 @@ chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 			 gboolean        is_member,
 			 EmpathyChat    *chat)
 {
-	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED != reason);
-
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	const gchar *name = empathy_contact_get_name (contact);
 	gchar *str;
+
+	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED != reason);
 
 	if (priv->block_events_timeout_id != 0)
 		return;
@@ -1819,9 +1819,9 @@ chat_member_renamed_cb (EmpathyTpChat  *tp_chat,
 			 gchar          *message,
 			 EmpathyChat    *chat)
 {
-	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED == reason);
-
 	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED == reason);
 
 	if (priv->block_events_timeout_id == 0) {
 		gchar *str;
