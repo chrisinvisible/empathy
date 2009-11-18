@@ -953,7 +953,7 @@ typedef struct
     const gchar *message;
 } ContactRenameData;
 
-static ContactRenameData*
+static ContactRenameData *
 contact_rename_data_new (TpHandle handle,
 			 guint reason,
 			 const gchar* message)
@@ -986,7 +986,7 @@ tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
 	const TpIntSet *members;
 	TpHandle handle;
 	EmpathyContact *old = NULL, *new = NULL;
-	ContactRenameData *rename_data = (ContactRenameData*) user_data;
+	ContactRenameData *rename_data = (ContactRenameData *) user_data;
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
@@ -1043,8 +1043,8 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 	/* Contact renamed */
 	if (reason == TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED) {
 		/* there can only be a single 'added' and a single 'removed' handle */
-		g_warn_if_fail(removed->len == 1);
-		g_warn_if_fail(added->len == 1);
+		g_warn_if_fail (removed->len == 1);
+		g_warn_if_fail (added->len == 1);
 
 		old_handle = g_array_index (removed, guint, 0);
 
