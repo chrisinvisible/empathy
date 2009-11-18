@@ -823,10 +823,6 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 									   tp_chat_state_changed_cb,
 									   NULL, NULL,
 									   G_OBJECT (chat), NULL);
-	tp_cli_channel_interface_chat_state_connect_to_chat_state_changed (priv->channel,
-									   tp_chat_state_changed_cb,
-									   NULL, NULL,
-									   G_OBJECT (chat), NULL);
 	priv->ready = TRUE;
 	g_object_notify (G_OBJECT (chat), "ready");
 }
