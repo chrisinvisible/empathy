@@ -950,7 +950,7 @@ typedef struct
 {
     TpHandle old_handle;
     guint reason;
-    const gchar *message;
+    gchar *message;
 } ContactRenameData;
 
 static ContactRenameData *
@@ -961,7 +961,7 @@ contact_rename_data_new (TpHandle handle,
 	ContactRenameData *data = g_new (ContactRenameData, 1);
 	data->old_handle = handle;
 	data->reason = reason;
-	data->message = message;
+	data->message = g_strdup (message);
 
 	return data;
 }
@@ -969,7 +969,8 @@ contact_rename_data_new (TpHandle handle,
 static void
 contact_rename_data_free (ContactRenameData* data)
 {
-    g_free (data);
+	g_free (data->message);
+	g_free (data);
 }
 
 static void
