@@ -714,7 +714,7 @@ event_manager_ft_got_contact_cb (EmpathyTpContactFactory *factory,
   EventManagerApproval *approval = (EventManagerApproval *) user_data;
   char *header;
 
-  approval->contact = contact;
+  approval->contact = g_object_ref (contact);
 
   header = g_strdup_printf (_("Incoming file transfer from %s"),
                             empathy_contact_get_name (approval->contact));
