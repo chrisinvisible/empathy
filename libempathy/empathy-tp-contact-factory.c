@@ -899,6 +899,7 @@ get_contacts_by_id_cb (TpConnection *connection,
 	contacts_array_free (n_contacts, empathy_contacts);
 }
 
+/* The callback is NOT given a reference to the EmpathyContact objects */
 void
 empathy_tp_contact_factory_get_from_ids (EmpathyTpContactFactory *tp_factory,
 					 guint                    n_ids,
@@ -1022,6 +1023,7 @@ get_contacts_by_handle_cb (TpConnection *connection,
 	contacts_array_free (n_contacts, empathy_contacts);
 }
 
+/* The callback is NOT given a reference to the EmpathyContact objects */
 void
 empathy_tp_contact_factory_get_from_handles (EmpathyTpContactFactory *tp_factory,
 					     guint n_handles,
