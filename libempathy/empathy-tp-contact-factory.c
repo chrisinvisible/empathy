@@ -966,8 +966,12 @@ get_contact_by_id_cb (TpConnection *connection,
 				           error,
 				           data->user_data, weak_object);
 	}
+
+	if (contact != NULL)
+		g_object_unref (contact);
 }
 
+/* The callback is NOT given a reference to the EmpathyContact objects */
 void
 empathy_tp_contact_factory_get_from_id (EmpathyTpContactFactory *tp_factory,
 					const gchar             *id,
@@ -1059,6 +1063,7 @@ empathy_tp_contact_factory_get_from_handles (EmpathyTpContactFactory *tp_factory
 					      weak_object);
 }
 
+/* The callback is NOT given a reference to the EmpathyContact objects */
 static void
 get_contact_by_handle_cb (TpConnection *connection,
 			  guint n_contacts,
@@ -1100,6 +1105,8 @@ get_contact_by_handle_cb (TpConnection *connection,
 	}
 
 	g_clear_error (&err);
+	if (contact != NULL)
+		g_object_unref (contact);
 }
 
 void
