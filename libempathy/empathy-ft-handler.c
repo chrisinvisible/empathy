@@ -1219,7 +1219,7 @@ contact_factory_contact_cb (EmpathyTpContactFactory *factory,
       return;
     }
 
-  priv->contact = contact;
+  priv->contact = g_object_ref (contact);
 
   cb_data->callback (handler, NULL, cb_data->user_data);
 }
