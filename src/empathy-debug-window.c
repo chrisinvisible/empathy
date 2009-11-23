@@ -31,6 +31,7 @@
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-account-chooser.h>
+#include <libempathy-gtk/empathy-geometry.h>
 
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
@@ -1163,6 +1164,7 @@ debug_window_constructor (GType type,
 
   gtk_window_set_title (GTK_WINDOW (object), _("Debug Window"));
   gtk_window_set_default_size (GTK_WINDOW (object), 800, 400);
+  empathy_geometry_bind (GTK_WINDOW (object), "debug-window");
 
   g_signal_connect (object, "key-press-event",
       G_CALLBACK (debug_window_key_press_event_cb), NULL);
