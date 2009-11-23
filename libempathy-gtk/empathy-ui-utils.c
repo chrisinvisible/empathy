@@ -1313,9 +1313,7 @@ empathy_window_present (GtkWindow *window,
 		 * reposition on the current workspace. */
 		gtk_window_get_position (window, &x, &y);
 		gtk_window_get_size (window, &w, &h);
-		if (x + w < 0 || y + h < 0 ||
-		    x > gdk_screen_width () ||
-		    y > gdk_screen_height ())
+		if (!EMPATHY_RECT_IS_ON_SCREEN (x, y, w, h))
 			gtk_widget_hide (GTK_WIDGET (window));
 	}
 

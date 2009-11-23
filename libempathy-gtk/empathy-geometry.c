@@ -30,6 +30,7 @@
 
 #include "libempathy/empathy-utils.h"
 #include "empathy-geometry.h"
+#include "empathy-ui-utils.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -147,9 +148,7 @@ empathy_geometry_save (GtkWindow *window,
   maximized = (window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0;
 
   /* Don't save off-screen positioning */
-  if (x + w < 0 || y + h < 0 ||
-      x > gdk_screen_width () ||
-      y > gdk_screen_height ())
+  if (!EMPATHY_RECT_IS_ON_SCREEN (x, y, w, h))
     return;
 
   key_file = geometry_get_key_file ();

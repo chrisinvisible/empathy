@@ -41,6 +41,11 @@
 
 G_BEGIN_DECLS
 
+#define EMPATHY_RECT_IS_ON_SCREEN(x,y,w,h) ((x) + (w) > 0 && \
+					    (y) + (h) > 0 && \
+					    (x) < gdk_screen_width () && \
+					    (y) < gdk_screen_height ())
+
 void            empathy_gtk_init                        (void);
 GRegex *        empathy_uri_regex_dup_singleton         (void);
 
