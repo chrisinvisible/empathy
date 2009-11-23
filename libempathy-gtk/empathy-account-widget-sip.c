@@ -184,13 +184,13 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       gtk_list_store_set (store, &iter, 0, "auto", 1, _("Auto"), -1);
 
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter, 0, "udp", 1, "UDP", -1);
+      gtk_list_store_set (store, &iter, 0, "udp", 1, _("UDP"), -1);
 
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter, 0, "tcp", 1, "TCP", -1);
+      gtk_list_store_set (store, &iter, 0, "tcp", 1, _("TCP"), -1);
 
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter, 0, "tls", 1, "TLS", -1);
+      gtk_list_store_set (store, &iter, 0, "tls", 1, _("TLS"), -1);
 
       empathy_account_widget_setup_widget (self, settings->combobox_transport,
           "transport");
@@ -217,10 +217,14 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
       gtk_list_store_set (store, &iter, 0, "auto", 1, _("Auto"), -1);
 
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter, 0, "register", 1, "Register", -1);
+      /* translators: this string is very specific to SIP's internal; maybe
+       * best to keep the English version. */
+      gtk_list_store_set (store, &iter, 0, "register", 1, _("Register"), -1);
 
       gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter, 0, "options", 1, "Options", -1);
+      /* translators: this string is very specific to SIP's internal; maybe
+       * best to keep the English version. */
+      gtk_list_store_set (store, &iter, 0, "options", 1, _("Options"), -1);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter, 0, "none", 1, _("None"), -1);
