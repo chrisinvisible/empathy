@@ -38,10 +38,16 @@
 #define GEOMETRY_DIR_CREATE_MODE  (S_IRUSR | S_IWUSR | S_IXUSR)
 #define GEOMETRY_FILE_CREATE_MODE (S_IRUSR | S_IWUSR)
 
-#define GEOMETRY_KEY_FILENAME         "geometry.ini"
-#define GEOMETRY_FORMAT               "%d,%d,%d,%d"
-#define GEOMETRY_GROUP_NAME           "geometry"
-#define GEOMETRY_MAXIMIZED_GROUP_NAME "maximized"
+/* geometry.ini file contains 2 groups:
+ *  - one with position and size of each window
+ *  - one with the maximized state of each window
+ * Windows are identified by a name. (e.g. "main-window") */
+#define GEOMETRY_FILENAME             "geometry.ini"
+#define GEOMETRY_POSITION_FORMAT      "%d,%d,%d,%d" /* "x,y,w,h" */
+#define GEOMETRY_POSITION_GROUP       "geometry"
+#define GEOMETRY_MAXIMIZED_GROUP      "maximized"
+
+/* Key used to keep window's name inside the object's qdata */
 #define GEOMETRY_NAME_KEY             "geometry-name-key"
 
 static guint store_id = 0;
@@ -63,7 +69,7 @@ geometry_real_store (GKeyFile *key_file)
     }
 
   filename = g_build_filename (g_get_user_config_dir (),
-    PACKAGE_NAME, GEOMETRY_KEY_FILENAME, NULL);
+    PACKAGE_NAME, GEOMETRY_FILENAME, NULL);
 
   if (!g_file_set_contents (filename, content, length, &error))
     {
@@ -110,7 +116,7 @@ geometry_get_key_file (void)
       g_mkdir_with_parents (dir, GEOMETRY_DIR_CREATE_MODE);
     }
 
-  filename = g_build_filename (dir, GEOMETRY_KEY_FILENAME, NULL);
+  filename = g_build_filename (dir, GEOMETRY_FILENAME, NULL);
   g_free (dir);
 
   key_file = g_key_file_new ();
@@ -158,13 +164,14 @@ empathy_geometry_save (GtkWindow *window,
     {
       gchar *str;
 
-      str = g_strdup_printf (GEOMETRY_FORMAT, x, y, w, h);
-      g_key_file_set_string (key_file, GEOMETRY_GROUP_NAME, escaped_name, str);
+      str = g_strdup_printf (GEOMETRY_POSITION_FORMAT, x, y, w, h);
+      g_key_file_set_string (key_file, GEOMETRY_POSITION_GROUP,
+          escaped_name, str);
       g_free (str);
     }
 
-  g_key_file_set_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP_NAME,
-        escaped_name, maximized);
+  g_key_file_set_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP,
+      escaped_name, maximized);
 
   geometry_schedule_store (key_file);
 }
@@ -187,20 +194,19 @@ empathy_geometry_load (GtkWindow *window,
   key_file = geometry_get_key_file ();
 
   /* restore window size and position */
-  str = g_key_file_get_string (key_file, GEOMETRY_GROUP_NAME, escaped_name,
-      NULL);
+  str = g_key_file_get_string (key_file, GEOMETRY_POSITION_GROUP,
+      escaped_name, NULL);
   if (str)
     {
       gint x, y, w, h;
 
-      sscanf (str, GEOMETRY_FORMAT, &x, &y, &w, &h);
+      sscanf (str, GEOMETRY_POSITION_FORMAT, &x, &y, &w, &h);
       gtk_window_move (window, x, y);
       gtk_window_resize (window, w, h);
     }
 
   /* restore window maximized state */
-  maximized = g_key_file_get_boolean (key_file,
-      GEOMETRY_MAXIMIZED_GROUP_NAME,
+  maximized = g_key_file_get_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP,
       escaped_name, NULL);
 
   if (maximized)
