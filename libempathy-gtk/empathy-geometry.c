@@ -142,6 +142,12 @@ empathy_geometry_save (GtkWindow *window,
   window_state = gdk_window_get_state (gdk_window);
   maximized = (window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0;
 
+  /* Don't save off-screen positioning */
+  if (x + w < 0 || y + h < 0 ||
+      x > gdk_screen_width () ||
+      y > gdk_screen_height ())
+    return;
+
   key_file = geometry_get_key_file ();
 
   /* Save window size only if not maximized */
