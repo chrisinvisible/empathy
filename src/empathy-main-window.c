@@ -1194,21 +1194,6 @@ account_manager_prepared_cb (GObject *source_object,
 	g_list_free (accounts);
 }
 
-static gboolean
-main_window_state_event_cb (GtkWidget           *widget,
-			    GdkEventWindowState *event,
-			    EmpathyMainWindow   *window)
-{
-	/* Force reloading geometry because some WM lose it in the
-	 * iconify/deiconify process */
-	if ((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) != 0 &&
-	    (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) == 0) {
-		empathy_geometry_load (GTK_WINDOW (window->window), GEOMETRY_NAME);
-	}
-
-	return FALSE;
-}
-
 GtkWidget *
 empathy_main_window_show (void)
 {
@@ -1257,7 +1242,6 @@ empathy_main_window_show (void)
 
 	empathy_builder_connect (gui, window,
 			      "main_window", "destroy", main_window_destroy_cb,
-			      "main_window", "window-state-event", main_window_state_event_cb,
 			      "chat_quit", "activate", main_window_chat_quit_cb,
 			      "chat_new_message", "activate", main_window_chat_new_message_cb,
 			      "view_history", "activate", main_window_view_history_cb,
