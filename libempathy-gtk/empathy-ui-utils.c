@@ -1302,14 +1302,26 @@ empathy_window_present (GtkWindow *window,
 	/* Move the window to the current workspace before trying to show it.
 	 * This is the behaviour people expect when clicking on the statusbar icon. */
 	gdk_window = gtk_widget_get_window (GTK_WIDGET (window));
-	if (gdk_window)
+	if (gdk_window) {
+		gint x, y;
+		gint w, h;
+
+		/* Has no effect if the WM has viewports, like compiz */
 		gdk_x11_window_move_to_current_desktop (gdk_window);
+
+		/* If window is still off-screen, hide it to force it to
+		 * reposition on the current workspace. */
+		gtk_window_get_position (window, &x, &y);
+		gtk_window_get_size (window, &w, &h);
+		if (x + w < 0 || y + h < 0 ||
+		    x > gdk_screen_width () ||
+		    y > gdk_screen_height ())
+			gtk_widget_hide (GTK_WIDGET (window));
+	}
 
 	timestamp = gtk_get_current_event_time ();
 	gtk_window_present_with_time (window, timestamp);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
-	/* FIXME: This shouldn't be required as gtk_window_present's doc says
-	 *        it deiconify automatically. */
 	gtk_window_deiconify (window);
 }
 
