@@ -538,7 +538,7 @@ unique_app_message_cb (UniqueApp *unique_app,
 
   if (command == COMMAND_ACCOUNTS_DIALOG)
     {
-      show_accounts_ui (window, TRUE);
+      show_accounts_ui (NULL, TRUE);
     }
   else
     {
