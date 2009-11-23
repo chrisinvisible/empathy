@@ -41,6 +41,7 @@
 #define GEOMETRY_FORMAT               "%d,%d,%d,%d"
 #define GEOMETRY_GROUP_NAME           "geometry"
 #define GEOMETRY_MAXIMIZED_GROUP_NAME "maximized"
+#define GEOMETRY_NAME_KEY             "geometry-name-key"
 
 static guint store_id = 0;
 
@@ -132,6 +133,9 @@ empathy_geometry_save (GtkWindow *window,
   g_return_if_fail (GTK_IS_WINDOW (window));
   g_return_if_fail (!EMP_STR_EMPTY (name));
 
+  if (!GTK_WIDGET_VISIBLE (window))
+    return;
+
   /* escape the name so that unwanted characters such as # are removed */
   escaped_name = g_uri_escape_string (name, NULL, TRUE);
 
@@ -212,49 +216,82 @@ empathy_geometry_load (GtkWindow *window,
 static gboolean
 geometry_configure_event_cb (GtkWindow *window,
     GdkEventConfigure *event,
-    gchar *name)
+    gpointer user_data)
 {
+  gchar *name;
+
+  name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
   empathy_geometry_save (window, name);
+
   return FALSE;
 }
 
 static gboolean
 geometry_window_state_event_cb (GtkWindow *window,
     GdkEventWindowState *event,
-    gchar *name)
+    gpointer user_data)
 {
   if ((event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) != 0)
-    empathy_geometry_save (window, name);
+    {
+      gchar *name;
+
+      name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+      empathy_geometry_save (window, name);
+    }
 
   return FALSE;
+}
+
+static void
+geometry_map_cb (GtkWindow *window,
+    gpointer user_data)
+{
+  gchar *name;
+
+  /* The WM will replace this window, restore its last position */
+  name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+  empathy_geometry_load (window, name);
 }
 
 void
 empathy_geometry_bind (GtkWindow *window,
     const gchar *name)
 {
+  gchar *str;
+
   g_return_if_fail (GTK_IS_WINDOW (window));
   g_return_if_fail (!EMP_STR_EMPTY (name));
 
-  /* First load initial geometry */
+  /* Check if this window is already bound */
+  str = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+  if (str != NULL)
+    return;
+
+  /* Store the geometry name in the window's data */
+  str = g_strdup (name);
+  g_object_set_data_full (G_OBJECT (window), GEOMETRY_NAME_KEY, str, g_free);
+
+  /* Load initial geometry */
   empathy_geometry_load (window, name);
 
   /* Track geometry changes */
-  g_signal_connect_data (window, "configure-event",
-    G_CALLBACK (geometry_configure_event_cb), g_strdup (name),
-    (GClosureNotify) g_free, 0);
-  g_signal_connect_data (window, "window-state-event",
-    G_CALLBACK (geometry_window_state_event_cb), g_strdup (name),
-    (GClosureNotify) g_free, 0);
+  g_signal_connect (window, "configure-event",
+    G_CALLBACK (geometry_configure_event_cb), NULL);
+  g_signal_connect (window, "window-state-event",
+    G_CALLBACK (geometry_window_state_event_cb), NULL);
+  g_signal_connect (window, "map",
+    G_CALLBACK (geometry_map_cb), NULL);
 }
 
 void
 empathy_geometry_unbind (GtkWindow *window)
 {
-  g_signal_handlers_disconnect_matched (window,
-    G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+  g_signal_handlers_disconnect_by_func (window,
     geometry_configure_event_cb, NULL);
-  g_signal_handlers_disconnect_matched (window,
-    G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+  g_signal_handlers_disconnect_by_func (window,
     geometry_window_state_event_cb, NULL);
+  g_signal_handlers_disconnect_by_func (window,
+    geometry_map_cb, NULL);
+
+  g_object_set_data (G_OBJECT (window), GEOMETRY_NAME_KEY, NULL);
 }
