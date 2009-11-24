@@ -49,10 +49,10 @@
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-ft-factory.h>
 
-#define SCHEMES "(https?|s?ftps?|nntp|news|javascript|about|ghelp|apt|telnet|"\
-		"file|webcal|mailto)"
-#define BODY "([^\\ \\n\'\"]+)"
-#define END_BODY "([^\\ \\n\'\"]*[^,;\?><()\\ \'\"\\.\\n])"
+#define SCHEMES   "([a-zA-Z\\+]+)"
+#define BODY_CHAR "[^\\ \\n\"\']"
+#define BODY      "("BODY_CHAR"+)"
+#define END_BODY  "("BODY_CHAR"*[^,;\?><()\\ \"\'\\.\\n])"
 #define URI_REGEX "("SCHEMES"://"END_BODY")" \
 		  "|((mailto:)?"BODY"@"BODY"\\."END_BODY")"\
 		  "|((www|ftp)\\."END_BODY")"
