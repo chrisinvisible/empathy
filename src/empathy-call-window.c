@@ -128,7 +128,6 @@ struct _EmpathyCallWindowPriv
   GtkWidget *camera_button;
   GtkWidget *toolbar;
   GtkWidget *pane;
-  GtkAction *always_show_preview;
   GtkAction *send_video;
   GtkAction *redial;
   GtkAction *menu_fullscreen;
@@ -220,9 +219,6 @@ static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
 
 static void empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
   EmpathyCallWindow *window);
-
-static void empathy_call_window_always_show_preview_toggled_cb (
-  GtkToggleAction *toggle, EmpathyCallWindow *window);
 
 static void empathy_call_window_mic_toggled_cb (
   GtkToggleToolButton *toggle, EmpathyCallWindow *window);
@@ -846,7 +842,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "toolbar", &priv->toolbar,
     "send_video", &priv->send_video,
     "menuredial", &priv->redial,
-    "always_show_preview", &priv->always_show_preview,
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
     "camera_off", &priv->tool_button_camera_off,
@@ -862,8 +857,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "microphone", "toggled", empathy_call_window_mic_toggled_cb,
     "camera", "toggled", empathy_call_window_camera_toggled_cb,
     "send_video", "toggled", empathy_call_window_send_video_toggled_cb,
-    "always_show_preview", "toggled",
-        empathy_call_window_always_show_preview_toggled_cb,
     "menufullscreen", "activate", empathy_call_window_fullscreen_cb,
     "camera_off", "toggled", tool_button_camera_off_toggled_cb,
     "camera_preview", "toggled", tool_button_camera_preview_toggled_cb,
@@ -2316,24 +2309,6 @@ empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
   empathy_call_window_set_send_video (window, active);
   gtk_toggle_tool_button_set_active (
       GTK_TOGGLE_TOOL_BUTTON (priv->camera_button), active);
-}
-
-static void
-empathy_call_window_always_show_preview_toggled_cb (GtkToggleAction *toggle,
-  EmpathyCallWindow *window)
-{
-  EmpathyCallWindowPriv *priv = GET_PRIV (window);
-
-  if (gtk_toggle_action_get_active (toggle))
-    {
-      display_video_preview (window, TRUE);
-    }
-  else
-    {
-      /* disable preview if we are not sending */
-      if (!priv->sending_video)
-        display_video_preview (window, FALSE);
-    }
 }
 
 static void
