@@ -814,22 +814,42 @@ tool_button_camera_preview_toggled_cb (GtkToggleToolButton *toggle,
 }
 
 static void
-tool_button_camera_on_toggled_cb (GtkToggleToolButton *toggle,
-  EmpathyCallWindow *window)
+enable_camera (EmpathyCallWindow *self)
 {
-  EmpathyCallWindowPriv *priv = GET_PRIV (window);
-  gboolean active;
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  if (priv->call_state != CONNECTED)
-    return;
+  priv->camera_state = CAMERA_STATE_ON;
+  empathy_call_window_set_send_video (self, TRUE);
 
-  active = (gtk_toggle_tool_button_get_active (toggle));
+  block_camera_control_signals (self);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+      priv->tool_button_camera_off), FALSE);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+        priv->tool_button_camera_preview), FALSE);
+  unblock_camera_control_signals (self);
+}
 
-  if (priv->sending_video == active)
-    return;
+static void
+tool_button_camera_on_toggled_cb (GtkToggleToolButton *toggle,
+  EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  empathy_call_window_set_send_video (window, active);
-  gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video), active);
+  if (!gtk_toggle_tool_button_get_active (toggle))
+    {
+      if (priv->camera_state == CAMERA_STATE_ON)
+        {
+          /* We can't change the state by disabling the button */
+          block_camera_control_signals (self);
+          gtk_toggle_tool_button_set_active (toggle, TRUE);
+          unblock_camera_control_signals (self);
+        }
+
+      return;
+    }
+
+  DEBUG ("enable camera");
+  enable_camera (self);
 }
 
 static void
