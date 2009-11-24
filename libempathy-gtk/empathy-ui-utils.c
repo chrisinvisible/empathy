@@ -53,7 +53,7 @@
 #define SCHEMES   "([a-zA-Z\\+]+)"
 #define BODY_CHAR "[^\\ \\n\"\']"
 #define BODY      "("BODY_CHAR"+)"
-#define END_BODY  "("BODY_CHAR"*[^,;\?><()\\ \"\'\\.\\n])"
+#define END_BODY  "("BODY_CHAR"*[^,;\\:\?><(){}\\[\\]\\ \"\'\\.\\n])"
 #define URI_REGEX "("SCHEMES"://"END_BODY")" \
 		  "|((mailto:)?"BODY"@"BODY"\\."END_BODY")"\
 		  "|((www|ftp)\\."END_BODY")"

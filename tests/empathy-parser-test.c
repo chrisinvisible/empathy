@@ -10,29 +10,16 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 static void
-test_replace_link (const gchar *text,
-                   gssize len,
-                   gpointer match_data,
-                   gpointer user_data)
+test_replace_match (const gchar *text,
+                    gssize len,
+                    gpointer match_data,
+                    gpointer user_data)
 {
   GString *string = user_data;
 
   g_string_append_c (string, '[');
   g_string_append_len (string, text, len);
   g_string_append_c (string, ']');
-}
-
-static void
-test_replace_smiley (const gchar *text,
-                     gssize len,
-                     gpointer match_data,
-                     gpointer user_data)
-{
-  GString *string = user_data;
-
-  g_string_append_c (string, '<');
-  g_string_append_len (string, text, len);
-  g_string_append_c (string, '>');
 }
 
 static void
@@ -52,14 +39,59 @@ test_parsers (void)
   guint i;
   gchar *tests[] =
     {
+      /* Basic link matches */
       "http://foo.com", "[http://foo.com]",
-      ":)http://foo.com :D", "<:)>[http://foo.com] <:D>",
+      "git://foo.com", "[git://foo.com]",
+      "git+ssh://foo.com", "[git+ssh://foo.com]",
+      "mailto:user@server.com", "[mailto:user@server.com]",
+      "www.foo.com", "[www.foo.com]",
+      "ftp.foo.com", "[ftp.foo.com]",
+      "user@server.com", "[user@server.com]",
+      "http://foo.com. bar", "[http://foo.com]. bar",
+      "http://foo.com; bar", "[http://foo.com]; bar",
+      "http://foo.com: bar", "[http://foo.com]: bar",
+      "http://foo.com:bar", "[http://foo.com:bar]",
+
+      /* They are not links! */
+      "http://", "http[:/]/", /* Hm... */
+      "www.", "www.",
+      "w.foo.com", "w.foo.com",
+      "@server.com", "@server.com",
+      "mailto:user@", "mailto:user@",
+      "mailto:user@.com", "mailto:user@.com",
+      "user@.com", "user@.com",
+
+      /* Links inside (), {}, [] or "" */
+      /* FIXME: How to test if the ending ] is matched or not? */
+      "Foo (www.foo.com)", "Foo ([www.foo.com])",
+      "Foo {www.foo.com}", "Foo {[www.foo.com]}",
+      "Foo [www.foo.com]", "Foo [[www.foo.com]]",
+      "Foo \"www.foo.com\"", "Foo \"[www.foo.com]\"",
+      "Foo (www.foo.com/bar(123)baz)", "Foo ([www.foo.com/bar(123)baz])",
+      "<a href=\"http://foo.com\">bar</a>", "<a href=\"[http://foo.com]\">bar</a>",
+
+      /* Basic smileys */
+      "a:)b", "a[:)]b",
+      ">:)", "[>:)]",
+      ">:(", ">[:(]",
+
+      /* Smileys and links mixed */
+      ":)http://foo.com", "[:)][http://foo.com]",
+      "a :) b http://foo.com c :( d www.test.com e", "a [:)] b [http://foo.com] c [:(] d [www.test.com] e",
+
+      /* FIXME: Known issues. Brackets should be counted by the parser */
+      //"Foo www.bar.com/test(123)", "Foo [www.bar.com/test(123)]",
+      //"Foo (www.bar.com/test(123))", "Foo ([www.bar.com/test(123)])",
+      //"Foo www.bar.com/test{123}", "Foo [www.bar.com/test{123}]",
+      //"Foo (:))", "Foo ([:)])",
+      //"Foo <a href=\"http://foo.com\">:)</a>", "Foo <a href=\"[http://foo.com]\">[:)]</a>",
+
       NULL, NULL
     };
   EmpathyStringParser parsers[] =
     {
-      {empathy_string_match_link, test_replace_link},
-      {empathy_string_match_smiley, test_replace_smiley},
+      {empathy_string_match_link, test_replace_match},
+      {empathy_string_match_smiley, test_replace_match},
       {empathy_string_match_all, test_replace_verbatim},
       {NULL, NULL}
     };
