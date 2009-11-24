@@ -51,8 +51,8 @@
 
 #define SCHEMES "(https?|s?ftps?|nntp|news|javascript|about|ghelp|apt|telnet|"\
 		"file|webcal|mailto)"
-#define BODY "([^\\ \\n]+)"
-#define END_BODY "([^\\ \\n]*[^,;\?><()\\ \"\\.\\n])"
+#define BODY "([^\\ \\n\"]+)"
+#define END_BODY "([^\\ \\n\"]*[^,;\?><()\\ \"\\.\\n])"
 #define URI_REGEX "("SCHEMES"://"END_BODY")" \
 		  "|((mailto:)?"BODY"@"BODY"\\."END_BODY")"\
 		  "|((www|ftp)\\."END_BODY")"
