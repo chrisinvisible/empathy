@@ -126,6 +126,7 @@ struct _EmpathyCallWindowPriv
   GtkAction *send_video;
   GtkAction *redial;
   GtkAction *menu_fullscreen;
+  GtkWidget *tool_button_camera_off;
 
   /* The frames and boxes that contain self and remote avatar and video
      input/output. When we redial, we destroy and re-create the boxes */
@@ -267,6 +268,24 @@ empathy_call_window_setup_toolbar (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GtkToolItem *tool_item;
+  GtkWidget *camera_off_icon;
+  GdkPixbuf *pixbuf, *modded_pixbuf;
+
+  /* set the icon of the 'camera off' button by greying off the webcam icon */
+  pixbuf = empathy_pixbuf_from_icon_name ("camera-web",
+      GTK_ICON_SIZE_SMALL_TOOLBAR);
+
+  modded_pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
+      gdk_pixbuf_get_width (pixbuf),
+      gdk_pixbuf_get_height (pixbuf));
+
+  gdk_pixbuf_saturate_and_pixelate (pixbuf, modded_pixbuf, 1.0, TRUE);
+  g_object_unref (pixbuf);
+
+  camera_off_icon = gtk_image_new_from_pixbuf (modded_pixbuf);
+  g_object_unref (modded_pixbuf);
+  gtk_tool_button_set_icon_widget (GTK_TOOL_BUTTON (
+        priv->tool_button_camera_off), camera_off_icon);
 
   /* Add an empty expanded GtkToolItem so the volume button is at the end of
    * the toolbar. */
@@ -741,6 +760,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "always_show_preview", &priv->always_show_preview,
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
+    "camera_off", &priv->tool_button_camera_off,
     NULL);
   g_free (filename);
 
