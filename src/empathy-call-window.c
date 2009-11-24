@@ -95,6 +95,12 @@ typedef enum {
   REDIALING
 } CallState;
 
+typedef enum {
+  CAMERA_STATE_OFF,
+  CAMERA_STATE_PREVIEW,
+  CAMERA_STATE_ON,
+} CameraState;
+
 /* private structure */
 typedef struct _EmpathyCallWindowPriv EmpathyCallWindowPriv;
 
@@ -127,6 +133,7 @@ struct _EmpathyCallWindowPriv
   GtkAction *redial;
   GtkAction *menu_fullscreen;
   GtkWidget *tool_button_camera_off;
+  GtkWidget *tool_button_camera_preview;
 
   /* The frames and boxes that contain self and remote avatar and video
      input/output. When we redial, we destroy and re-create the boxes */
@@ -177,6 +184,7 @@ struct _EmpathyCallWindowPriv
   GMutex *lock;
   gboolean call_started;
   gboolean sending_video;
+  CameraState camera_state;
 
   EmpathyCallWindowFullscreen *fullscreen;
   gboolean is_fullscreen;
@@ -262,6 +270,9 @@ static gboolean empathy_call_window_bus_message (GstBus *bus,
 static void
 empathy_call_window_volume_changed_cb (GtkScaleButton *button,
   gdouble value, EmpathyCallWindow *window);
+
+static void block_camera_control_signals (EmpathyCallWindow *self);
+static void unblock_camera_control_signals (EmpathyCallWindow *self);
 
 static void
 empathy_call_window_setup_toolbar (EmpathyCallWindow *self)
@@ -732,6 +743,84 @@ empathy_call_window_set_state_connecting (EmpathyCallWindow *window)
 }
 
 static void
+disable_camera (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  priv->camera_state = CAMERA_STATE_OFF;
+  display_video_preview (self, FALSE);
+
+  block_camera_control_signals (self);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+        priv->camera_button), FALSE);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+      priv->tool_button_camera_preview), FALSE);
+  unblock_camera_control_signals (self);
+}
+
+static void
+tool_button_camera_off_toggled_cb (GtkToggleToolButton *toggle,
+  EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  if (!gtk_toggle_tool_button_get_active (toggle))
+    {
+      if (priv->camera_state == CAMERA_STATE_OFF)
+        {
+          /* We can't change the state by disabling the button */
+          block_camera_control_signals (self);
+          gtk_toggle_tool_button_set_active (toggle, TRUE);
+          unblock_camera_control_signals (self);
+        }
+
+      return;
+    }
+
+  DEBUG ("disable camera");
+  disable_camera (self);
+}
+
+static void
+enable_preview (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  priv->camera_state = CAMERA_STATE_PREVIEW;
+  display_video_preview (self, TRUE);
+
+  block_camera_control_signals (self);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+      priv->tool_button_camera_off), FALSE);
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+        priv->camera_button), FALSE);
+  unblock_camera_control_signals (self);
+}
+
+static void
+tool_button_camera_preview_toggled_cb (GtkToggleToolButton *toggle,
+  EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  if (!gtk_toggle_tool_button_get_active (toggle))
+    {
+      if (priv->camera_state == CAMERA_STATE_PREVIEW)
+        {
+          /* We can't change the state by disabling the button */
+          block_camera_control_signals (self);
+          gtk_toggle_tool_button_set_active (toggle, TRUE);
+          unblock_camera_control_signals (self);
+        }
+
+      return;
+    }
+
+  DEBUG ("enable preview");
+  enable_preview (self);
+}
+
+static void
 empathy_call_window_init (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
@@ -761,6 +850,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
     "camera_off", &priv->tool_button_camera_off,
+    "camera_preview", &priv->tool_button_camera_preview,
     NULL);
   g_free (filename);
 
@@ -775,6 +865,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "always_show_preview", "toggled",
         empathy_call_window_always_show_preview_toggled_cb,
     "menufullscreen", "activate", empathy_call_window_fullscreen_cb,
+    "camera_off", "toggled", tool_button_camera_off_toggled_cb,
+    "camera_preview", "toggled", tool_button_camera_preview_toggled_cb,
     NULL);
 
   priv->lock = g_mutex_new ();
@@ -2466,4 +2558,33 @@ empathy_call_window_volume_changed_cb (GtkScaleButton *button,
 
   empathy_audio_sink_set_volume (EMPATHY_GST_AUDIO_SINK (priv->audio_output),
     value);
+}
+
+/* block all the signals related to camera control widgets. This is useful
+ * when we are manually updating the UI and so don't want to fire the
+ * callbacks */
+static void
+block_camera_control_signals (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  g_signal_handlers_block_by_func (priv->tool_button_camera_off,
+      tool_button_camera_off_toggled_cb, self);
+  g_signal_handlers_block_by_func (priv->tool_button_camera_preview,
+      tool_button_camera_preview_toggled_cb, self);
+  g_signal_handlers_block_by_func (priv->camera_button,
+      empathy_call_window_send_video_toggled_cb, self);
+}
+
+static void
+unblock_camera_control_signals (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  g_signal_handlers_unblock_by_func (priv->tool_button_camera_off,
+      tool_button_camera_off_toggled_cb, self);
+  g_signal_handlers_unblock_by_func (priv->tool_button_camera_preview,
+      tool_button_camera_preview_toggled_cb, self);
+  g_signal_handlers_unblock_by_func (priv->camera_button,
+      empathy_call_window_send_video_toggled_cb, self);
 }
