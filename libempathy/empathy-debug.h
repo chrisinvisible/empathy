@@ -44,6 +44,7 @@ typedef enum
   EMPATHY_DEBUG_SHARE_DESKTOP = 1 << 10,
   EMPATHY_DEBUG_CONNECTIVITY = 1 << 11,
   EMPATHY_DEBUG_IMPORT_MC4_ACCOUNTS = 1 << 11,
+  EMPATHY_DEBUG_TESTS = 1 << 12,
 } EmpathyDebugFlags;
 
 gboolean empathy_debug_flag_is_set (EmpathyDebugFlags flag);
