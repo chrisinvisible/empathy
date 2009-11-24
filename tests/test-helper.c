@@ -20,8 +20,9 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
-#include <libempathy/empathy-utils.h>
+#include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "test-helper.h"
 
@@ -30,7 +31,8 @@ test_init (int argc,
     char **argv)
 {
   g_test_init (&argc, &argv, NULL);
-  empathy_init ();
+  gtk_init (&argc, &argv);
+  empathy_gtk_init ();
 }
 
 void
