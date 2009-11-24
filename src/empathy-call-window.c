@@ -127,7 +127,6 @@ struct _EmpathyCallWindowPriv
   GtkWidget *mic_button;
   GtkWidget *toolbar;
   GtkWidget *pane;
-  GtkAction *send_video;
   GtkAction *redial;
   GtkAction *menu_fullscreen;
   GtkWidget *tool_button_camera_off;
@@ -213,9 +212,6 @@ static void empathy_call_window_sidebar_toggled_cb (GtkToggleButton *toggle,
 
 static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
   gboolean send);
-
-static void empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
-  EmpathyCallWindow *window);
 
 static void empathy_call_window_mic_toggled_cb (
   GtkToggleToolButton *toggle, EmpathyCallWindow *window);
@@ -892,7 +888,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "redial", &priv->redial_button,
     "microphone", &priv->mic_button,
     "toolbar", &priv->toolbar,
-    "send_video", &priv->send_video,
     "menuredial", &priv->redial,
     "ui_manager", &priv->ui_manager,
     "menufullscreen", &priv->menu_fullscreen,
@@ -908,7 +903,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "menuredial", "activate", empathy_call_window_redial_cb,
     "redial", "clicked", empathy_call_window_redial_cb,
     "microphone", "toggled", empathy_call_window_mic_toggled_cb,
-    "send_video", "toggled", empathy_call_window_send_video_toggled_cb,
     "menufullscreen", "activate", empathy_call_window_fullscreen_cb,
     "camera_off", "toggled", tool_button_camera_off_toggled_cb,
     "camera_preview", "toggled", tool_button_camera_preview_toggled_cb,
@@ -1184,7 +1178,6 @@ empathy_call_window_constructed (GObject *object)
   if (empathy_call_handler_has_initial_video (priv->handler))
     {
       /* Enable 'send video' buttons and display the preview */
-      gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video), TRUE);
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), TRUE);
 
@@ -1491,9 +1484,6 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
          initial state */
       gtk_widget_set_sensitive (priv->tool_button_camera_on, FALSE);
       gtk_widget_set_sensitive (priv->mic_button, FALSE);
-      gtk_action_set_sensitive (priv->send_video, FALSE);
-      gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video),
-          initial_video);
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), initial_video);
       gtk_toggle_tool_button_set_active (
@@ -1861,13 +1851,10 @@ empathy_call_window_connected (gpointer user_data)
   priv->sending_video = can_send_video ?
     empathy_tp_call_is_sending_video (call) : FALSE;
 
-  gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video),
-      priv->sending_video && priv->video_input != NULL);
   gtk_toggle_tool_button_set_active (
       GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on),
       priv->sending_video && priv->video_input != NULL);
   gtk_widget_set_sensitive (priv->tool_button_camera_on, can_send_video);
-  gtk_action_set_sensitive (priv->send_video, can_send_video);
 
   gtk_action_set_sensitive (priv->redial, FALSE);
   gtk_widget_set_sensitive (priv->redial_button, FALSE);
@@ -1989,11 +1976,9 @@ empathy_call_window_remove_video_input (EmpathyCallWindow *self)
   gtk_widget_destroy (priv->video_preview);
   priv->video_preview = NULL;
 
-  gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (priv->send_video), FALSE);
   gtk_toggle_tool_button_set_active (
       GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), FALSE);
   gtk_widget_set_sensitive (priv->tool_button_camera_on, FALSE);
-  gtk_action_set_sensitive (priv->send_video, FALSE);
 
   gtk_widget_show (priv->self_user_avatar_widget);
 }
@@ -2324,26 +2309,6 @@ empathy_call_window_set_send_video (EmpathyCallWindow *window,
   DEBUG ("%s sending video", send ? "start": "stop");
   empathy_tp_call_request_video_stream_direction (call, send);
   g_object_unref (call);
-}
-
-static void
-empathy_call_window_send_video_toggled_cb (GtkToggleAction *toggle,
-  EmpathyCallWindow *window)
-{
-  EmpathyCallWindowPriv *priv = GET_PRIV (window);
-  gboolean active;
-
-  if (priv->call_state != CONNECTED)
-    return;
-
-  active = (gtk_toggle_action_get_active (toggle));
-
-  if (priv->sending_video == active)
-    return;
-
-  empathy_call_window_set_send_video (window, active);
-  gtk_toggle_tool_button_set_active (
-      GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), active);
 }
 
 static void

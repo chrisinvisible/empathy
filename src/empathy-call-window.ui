@@ -11,13 +11,6 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleAction" id="send_video">
-            <property name="name">send_video</property>
-            <property name="label" translatable="yes">Send video</property>
-            <property name="sensitive">False</property>
-          </object>
-        </child>
-        <child>
           <object class="GtkAction" id="menuhangup">
             <property name="icon_name">call-stop</property>
             <property name="name">menuhangup</property>
@@ -50,7 +43,6 @@
     <ui>
       <menubar name="menubar1">
         <menu action="call">
-          <menuitem action="send_video"/>
           <menuitem action="menuhangup"/>
           <menuitem action="menuredial"/>
         </menu>
