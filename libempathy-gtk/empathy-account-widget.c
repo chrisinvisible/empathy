@@ -652,6 +652,11 @@ account_widget_account_enabled_cb (GObject *source_object,
 {
   GError *error = NULL;
   TpAccount *account = TP_ACCOUNT (source_object);
+  EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
+  TpConnectionPresenceType presence;
+  gchar *message = NULL;
+  gchar *status = NULL;
 
   tp_account_set_enabled_finish (account, res, &error);
 
@@ -660,6 +665,28 @@ account_widget_account_enabled_cb (GObject *source_object,
       DEBUG ("Could not enable the account: %s", error->message);
       g_error_free (error);
     }
+  else
+    {
+      /* only force presence if presence was offline, unknown or unset */
+      presence = tp_account_get_requested_presence (account, NULL, NULL);
+      switch (presence)
+        {
+        case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
+        case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:
+        case TP_CONNECTION_PRESENCE_TYPE_UNSET:
+          presence = tp_account_manager_get_most_available_presence (
+              priv->account_manager, &status, &message);
+          tp_account_request_presence_async (account, presence,
+              status, NULL, NULL, NULL);
+          break;
+        default:
+          /* do nothing if the presence is not offline */
+          break;
+        }
+    }
+
+  g_free (message);
+  g_free (status);
 }
 
 static void
@@ -690,7 +717,7 @@ account_widget_applied_cb (GObject *source_object,
         {
           /* By default, when an account is created, we enable it. */
           tp_account_set_enabled_async (account, TRUE,
-              account_widget_account_enabled_cb, NULL);
+              account_widget_account_enabled_cb, widget);
           priv->account_created = TRUE;
           g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
         }
@@ -1167,7 +1194,8 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
   account = empathy_account_settings_get_account (priv->settings);
 
   /* Enable the account according to the value of the "Enabled" checkbox */
-  tp_account_set_enabled_async (account, state, NULL, NULL);
+  tp_account_set_enabled_async (account, state,
+      account_widget_account_enabled_cb, user_data);
 }
 
 static void
@@ -1369,6 +1397,12 @@ do_constructed (GObject *obj)
           self);
     }
 
+  /* dup and init the account-manager */
+  priv->account_manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (priv->account_manager, NULL,
+      account_manager_ready_cb, self);
+
   /* handle apply and cancel button */
   if (!priv->simple)
     {
@@ -1378,18 +1412,13 @@ do_constructed (GObject *obj)
 
       if (priv->creating_account)
         {
-          priv->account_manager = tp_account_manager_dup ();
+          /* Assumre we are offline, display a Save button. We'll update
+           * it once the account manager is ready if needed */
+          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
 
           empathy_signal_connect_weak (priv->account_manager,
               "most-available-presence-changed",
               G_CALLBACK (presence_changed_cb), obj);
-
-          tp_account_manager_prepare_async (priv->account_manager, NULL,
-              account_manager_ready_cb, self);
-
-          /* Assumre we are offline, display a Save button. We'll update
-           * it once the account manager is ready if needed */
-          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
         }
       else
         {
