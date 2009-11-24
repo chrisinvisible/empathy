@@ -129,6 +129,7 @@ struct _EmpathyCallWindowPriv
   GtkWidget *pane;
   GtkAction *redial;
   GtkAction *menu_fullscreen;
+  GtkAction *action_camera;
   GtkWidget *tool_button_camera_off;
   GtkWidget *tool_button_camera_preview;
   GtkWidget *tool_button_camera_on;
@@ -744,6 +745,9 @@ disable_camera (EmpathyCallWindow *self)
         priv->tool_button_camera_on), FALSE);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
       priv->tool_button_camera_preview), FALSE);
+
+  gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
+      CAMERA_STATE_OFF);
   unblock_camera_control_signals (self);
 
   priv->camera_state = CAMERA_STATE_OFF;
@@ -791,6 +795,9 @@ enable_preview (EmpathyCallWindow *self)
       priv->tool_button_camera_off), FALSE);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_on), FALSE);
+
+  gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
+      CAMERA_STATE_PREVIEW);
   unblock_camera_control_signals (self);
 
   priv->camera_state = CAMERA_STATE_PREVIEW;
@@ -834,6 +841,9 @@ enable_camera (EmpathyCallWindow *self)
       priv->tool_button_camera_off), FALSE);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_preview), FALSE);
+
+  gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
+      CAMERA_STATE_ON);
   unblock_camera_control_signals (self);
 
   priv->camera_state = CAMERA_STATE_ON;
@@ -894,6 +904,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "camera_off", &priv->tool_button_camera_off,
     "camera_preview", &priv->tool_button_camera_preview,
     "camera_on", &priv->tool_button_camera_on,
+    "action_camera_off",  &priv->action_camera,
     NULL);
   g_free (filename);
 
