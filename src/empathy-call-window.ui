@@ -127,9 +127,38 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSeparatorToolItem" id="camera_separator">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="camera_off">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Camera Off</property>
+                <property name="sensitive">True</property>
+              </object>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleToolButton" id="camera_preview">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Preview</property>
+                <property name="icon_name">stock_person</property>
+                <property name="sensitive">True</property>
+              </object>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkToggleToolButton" id="camera">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Send video</property>
+                <property name="label" translatable="yes">Camera On</property>
                 <property name="icon_name">camera-web</property>
                 <property name="sensitive">False</property>
               </object>
