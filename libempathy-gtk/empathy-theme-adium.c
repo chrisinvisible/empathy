@@ -435,6 +435,28 @@ theme_adium_append_html (EmpathyThemeAdium *theme,
 }
 
 static void
+theme_adium_append_event_escaped (EmpathyChatView *view,
+				  const gchar     *escaped)
+{
+	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (view);
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+
+	if (priv->data->status_html) {
+		theme_adium_append_html (theme, "appendMessage",
+					 priv->data->status_html,
+					 priv->data->status_len,
+					 escaped, NULL, NULL, NULL, NULL,
+					 "event", empathy_time_get_current ());
+	}
+
+	/* There is no last contact */
+	if (priv->last_contact) {
+		g_object_unref (priv->last_contact);
+		priv->last_contact = NULL;
+	}
+}
+
+static void
 theme_adium_append_message (EmpathyChatView *view,
 			    EmpathyMessage  *msg)
 {
@@ -484,7 +506,7 @@ theme_adium_append_message (EmpathyChatView *view,
 		gchar *str;
 
 		str = g_strdup_printf ("%s %s", name, body);
-		empathy_chat_view_append_event (view, str);
+		theme_adium_append_event_escaped (view, str);
 		g_free (str);
 		g_free (dup_body);
 		return;
@@ -631,26 +653,11 @@ static void
 theme_adium_append_event (EmpathyChatView *view,
 			  const gchar     *str)
 {
-	EmpathyThemeAdium     *theme = EMPATHY_THEME_ADIUM (view);
-	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
+	gchar *str_escaped;
 
-	if (priv->data->status_html) {
-		gchar *str_escaped;
-
-		str_escaped = g_markup_escape_text (str, -1);
-		theme_adium_append_html (theme, "appendMessage",
-					 priv->data->status_html,
-					 priv->data->status_len,
-					 str_escaped, NULL, NULL, NULL, NULL,
-					 "event", empathy_time_get_current ());
-		g_free (str_escaped);
-	}
-
-	/* There is no last contact */
-	if (priv->last_contact) {
-		g_object_unref (priv->last_contact);
-		priv->last_contact = NULL;
-	}
+	str_escaped = g_markup_escape_text (str, -1);
+	theme_adium_append_event_escaped (view, str_escaped);
+	g_free (str_escaped);
 }
 
 static void
