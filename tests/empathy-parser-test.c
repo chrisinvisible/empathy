@@ -21,20 +21,34 @@ test_replace_link (GString *string,
 }
 
 static void
+test_replace_smiley (GString *string,
+                     const gchar *text,
+                     gssize len,
+                     gpointer user_data)
+{
+  g_string_append_c (string, '<');
+  g_string_append_len (string, text, len);
+  g_string_append_c (string, '>');
+}
+
+static void
 test_parsers (void)
 {
   guint i;
   gchar *tests[] =
     {
       "http://foo.com", "[http://foo.com]",
+      ":)http://foo.com :D", "<:)>[http://foo.com] <:D>",
       NULL, NULL
     };
   EmpathyStringParser parsers[] =
     {
       {empathy_string_match_link, test_replace_link},
+      {empathy_string_match_smiley, test_replace_smiley},
       {NULL, NULL}
     };
 
+  DEBUG ("Started");
   for (i = 0; tests[i] != NULL; i += 2)
     {
       GString *string;
