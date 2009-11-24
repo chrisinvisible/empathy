@@ -61,14 +61,21 @@ test_parsers (void)
       "mailto:user@.com", "mailto:user@.com",
       "user@.com", "user@.com",
 
-      /* Links inside (), {}, [] or "" */
+      /* Links inside (), {}, [], <> or "" */
       /* FIXME: How to test if the ending ] is matched or not? */
       "Foo (www.foo.com)", "Foo ([www.foo.com])",
       "Foo {www.foo.com}", "Foo {[www.foo.com]}",
       "Foo [www.foo.com]", "Foo [[www.foo.com]]",
+      "Foo <www.foo.com>", "Foo <[www.foo.com]>",
       "Foo \"www.foo.com\"", "Foo \"[www.foo.com]\"",
       "Foo (www.foo.com/bar(123)baz)", "Foo ([www.foo.com/bar(123)baz])",
       "<a href=\"http://foo.com\">bar</a>", "<a href=\"[http://foo.com]\">bar</a>",
+      /* FIXME; Known issue: With email addresses, any leading character is matched */
+      //"Foo (user@server.com)", "Foo ([user@server.com])",
+      //"Foo {user@server.com}", "Foo {[user@server.com]}",
+      //"Foo [user@server.com]", "Foo [[user@server.com]]",
+      //"Foo <user@server.com>", "Foo <[user@server.com]>",
+      "Foo \"user@server.com\"", "Foo \"[user@server.com]\"",
 
       /* Basic smileys */
       "a:)b", "a[:)]b",
@@ -79,7 +86,7 @@ test_parsers (void)
       ":)http://foo.com", "[:)][http://foo.com]",
       "a :) b http://foo.com c :( d www.test.com e", "a [:)] b [http://foo.com] c [:(] d [www.test.com] e",
 
-      /* FIXME: Known issues. Brackets should be counted by the parser */
+      /* FIXME: Known issue: Brackets should be counted by the parser */
       //"Foo www.bar.com/test(123)", "Foo [www.bar.com/test(123)]",
       //"Foo (www.bar.com/test(123))", "Foo ([www.bar.com/test(123)])",
       //"Foo www.bar.com/test{123}", "Foo [www.bar.com/test{123}]",
