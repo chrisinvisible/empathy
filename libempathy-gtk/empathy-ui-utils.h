@@ -118,18 +118,17 @@ gchar *     empathy_make_absolute_url_len               (const gchar *url,
 							 guint len);
 
 /* String parser */
-
 typedef struct _EmpathyStringParser EmpathyStringParser;
 
-typedef void (*EmpathyStringReplace) (GString *string,
-				      const gchar *text,
+typedef void (*EmpathyStringReplace) (const gchar *text,
 				      gssize len,
+				      gpointer match_data,
 				      gpointer user_data);
-typedef void (*EmpathyStringMatch) (GString *string,
-				    const gchar *text,
+typedef void (*EmpathyStringMatch) (const gchar *text,
 				    gssize len,
 				    EmpathyStringReplace replace_func,
-				    EmpathyStringParser *sub_parsers);
+				    EmpathyStringParser *sub_parsers,
+				    gpointer user_data);
 
 struct _EmpathyStringParser {
 	EmpathyStringMatch match_func;
@@ -137,31 +136,31 @@ struct _EmpathyStringParser {
 };
 
 void
-empathy_string_parser_substr (GString *string,
-			      const gchar *text,
+empathy_string_parser_substr (const gchar *text,
 			      gssize len,
-			      EmpathyStringParser *parsers);
+			      EmpathyStringParser *parsers,
+			      gpointer user_data);
 
 void
-empathy_string_match_link (GString *string,
-			   const gchar *text,
+empathy_string_match_link (const gchar *text,
 			   gssize len,
 			   EmpathyStringReplace replace_func,
-			   EmpathyStringParser *sub_parsers);
+			   EmpathyStringParser *sub_parsers,
+			   gpointer user_data);
 
 void
-empathy_string_match_smiley (GString *string,
-			     const gchar *text,
+empathy_string_match_smiley (const gchar *text,
 			     gssize len,
 			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers);
+			     EmpathyStringParser *sub_parsers,
+			     gpointer user_data);
 
 void
-empathy_string_match_escape (GString *string,
-			     const gchar *text,
-			     gssize len,
-			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers);
+empathy_string_match_all (const gchar *text,
+			  gssize len,
+			  EmpathyStringReplace replace_func,
+			  EmpathyStringParser *sub_parsers,
+			  gpointer user_data);
 
 G_END_DECLS
 

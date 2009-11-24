@@ -1572,25 +1572,24 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 }
 
 void
-empathy_string_parser_substr (GString *string,
-			      const gchar *text,
+empathy_string_parser_substr (const gchar *text,
 			      gssize len,
-			      EmpathyStringParser *parsers)
+			      EmpathyStringParser *parsers,
+			      gpointer user_data)
 {
 	if (parsers != NULL && parsers[0].match_func != NULL) {
-		parsers[0].match_func (string, text, len,
-			parsers[0].replace_func, parsers + 1);
-	} else {
-		g_string_append_len (string, text, len);
+		parsers[0].match_func (text, len,
+				       parsers[0].replace_func, parsers + 1,
+				       user_data);
 	}
 }
 
 void
-empathy_string_match_link (GString *string,
-			   const gchar *text,
+empathy_string_match_link (const gchar *text,
 			   gssize len,
 			   EmpathyStringReplace replace_func,
-			   EmpathyStringParser *sub_parsers)
+			   EmpathyStringParser *sub_parsers,
+			   gpointer user_data)
 {
 	GRegex     *uri_regex;
 	GMatchInfo *match_info;
@@ -1608,29 +1607,31 @@ empathy_string_match_link (GString *string,
 			if (s > last) {
 				/* Append the text between last link (or the
 				 * start of the message) and this link */
-				empathy_string_parser_substr (string, text + last,
+				empathy_string_parser_substr (text + last,
 							      s - last,
-							      sub_parsers);
+							      sub_parsers,
+							      user_data);
 			}
 
-			replace_func (string, text + s, e - s, NULL);
+			replace_func (text + s, e - s, NULL, user_data);
 
 			last = e;
 		} while (g_match_info_next (match_info, NULL));
 	}
 
-	empathy_string_parser_substr (string, text + last, len - last, sub_parsers);
+	empathy_string_parser_substr (text + last, len - last,
+				      sub_parsers, user_data);
 
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 }
 
 void
-empathy_string_match_smiley (GString *string,
-			     const gchar *text,
+empathy_string_match_smiley (const gchar *text,
 			     gssize len,
 			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers)
+			     EmpathyStringParser *sub_parsers,
+			     gpointer user_data)
 {
 	guint last = 0;
 	EmpathySmileyManager *smiley_manager;
@@ -1645,14 +1646,13 @@ empathy_string_match_smiley (GString *string,
 		if (hit->start > last) {
 			/* Append the text between last smiley (or the
 			 * start of the message) and this smiley */
-			empathy_string_parser_substr (string, text + last,
+			empathy_string_parser_substr (text + last,
 						      hit->start - last,
-						      sub_parsers);
+						      sub_parsers, user_data);
 		}
 
-		replace_func (string,
-			      text + hit->start, hit->end - hit->start,
-			      hit);
+		replace_func (text + hit->start, hit->end - hit->start,
+			      hit, user_data);
 
 		last = hit->end;
 
@@ -1661,20 +1661,17 @@ empathy_string_match_smiley (GString *string,
 	g_slist_free (hits);
 	g_object_unref (smiley_manager);
 
-	empathy_string_parser_substr (string, text + last, len - last, sub_parsers);
+	empathy_string_parser_substr (text + last, len - last,
+				      sub_parsers, user_data);
 }
 
 void
-empathy_string_match_escape (GString *string,
-			     const gchar *text,
-			     gssize len,
-			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers)
+empathy_string_match_all (const gchar *text,
+			  gssize len,
+			  EmpathyStringReplace replace_func,
+			  EmpathyStringParser *sub_parsers,
+			  gpointer user_data)
 {
-	gchar *escaped;
-
-	escaped = g_markup_escape_text (text, len);
-	g_string_append (string, escaped);
-	g_free (escaped);
+	replace_func (text, len, NULL, user_data);
 }
 

@@ -192,12 +192,13 @@ theme_adium_open_address_cb (GtkMenuItem *menuitem,
 }
 
 static void
-theme_adium_match_newline (GString *string,
-			   const gchar *text,
+theme_adium_match_newline (const gchar *text,
 			   gssize len,
 			   EmpathyStringReplace replace_func,
-			   EmpathyStringParser *sub_parsers)
+			   EmpathyStringParser *sub_parsers,
+			   gpointer user_data)
 {
+	GString *string = user_data;
 	gint i;
 	gint prev = 0;
 
@@ -208,21 +209,24 @@ theme_adium_match_newline (GString *string,
 	/* Replace \n by <br/> */
 	for (i = 0; i < len && text[i] != '\0'; i++) {
 		if (text[i] == '\n') {
-			empathy_string_parser_substr (string, text + prev,
-						      i - prev, sub_parsers);
+			empathy_string_parser_substr (text + prev,
+						      i - prev, sub_parsers,
+						      user_data);
 			g_string_append (string, "<br/>");
 			prev = i + 1;
 		}
 	}
-	empathy_string_parser_substr (string, text + prev, i - prev, sub_parsers);
+	empathy_string_parser_substr (text + prev, i - prev,
+				      sub_parsers, user_data);
 }
 
 static void
-theme_adium_replace_link (GString *string,
-			  const gchar *text,
+theme_adium_replace_link (const gchar *text,
 			  gssize len,
+			  gpointer match_data,
 			  gpointer user_data)
 {
+	GString *string = user_data;
 	gchar *real_url;
 
 	/* Append the link inside <a href=""></a> tag */
@@ -238,12 +242,13 @@ theme_adium_replace_link (GString *string,
 static gboolean use_smileys = FALSE;
 
 static void
-theme_adium_replace_smiley (GString *string,
-			    const gchar *text,
+theme_adium_replace_smiley (const gchar *text,
 			    gssize len,
+			    gpointer match_data,
 			    gpointer user_data)
 {
-	EmpathySmileyHit *hit = user_data;
+	EmpathySmileyHit *hit = match_data;
+	GString *string = user_data;
 
 	if (use_smileys) {
 		/* Replace smileys by a <img/> tag */
@@ -258,40 +263,55 @@ theme_adium_replace_smiley (GString *string,
 	}
 }
 
+static void
+theme_adium_replace_escaped (const gchar *text,
+			     gssize len,
+			     gpointer match_data,
+			     gpointer user_data)
+{
+	GString *string = user_data;
+	gchar *escaped;
+
+	escaped = g_markup_escape_text (text, len);
+	g_string_append (string, escaped);
+	g_free (escaped);
+}
+
 static EmpathyStringParser string_parsers[] = {
+	{empathy_string_match_link, theme_adium_replace_link},
+	{theme_adium_match_newline, NULL},
+	{empathy_string_match_all, theme_adium_replace_escaped},
+	{NULL, NULL}
+};
+
+static EmpathyStringParser string_parsers_with_smiley[] = {
 	{empathy_string_match_link, theme_adium_replace_link},
 	{empathy_string_match_smiley, theme_adium_replace_smiley},
 	{theme_adium_match_newline, NULL},
-	{empathy_string_match_escape, NULL},
+	{empathy_string_match_all, theme_adium_replace_escaped},
 	{NULL, NULL}
 };
 
 static gchar *
 theme_adium_parse_body (const gchar *text)
 {
+	EmpathyStringParser *parsers;
 	GString *string;
 
-	/* Get use_smileys value now to avoid getting it for each match */
+	/* Check if we have to parse smileys */
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
 			       &use_smileys);
+	if (use_smileys)
+		parsers = string_parsers_with_smiley;
+	else
+		parsers = string_parsers;
 
-	/* We parse text in 4 steps: url, smiley, newline, escape.
-	 * For each step, we detect the position of tokens in the text, and
-	 * we give text between each token to the next level parser.
-	 *
-	 * For example the string "Hello :)\n www.test.com"
-	 * 1) The url parser detects "www.test.com" and gives "Hello :)\n " to
-	 *    the smiley parser, then insert the <a> tag for the link.
-	 * 2) The smiley parser will detect ":)". It first gives "Hello "
-	 *    to the newline parser, then insert the <img/> tag for the smiley,
-	 *    and finally give "\n " to the newline parser.
-	 * 3a) The newline parser gets "Hello " and escape it.
-	 * 3b) The newline parser gets "\n " and replace to "<br/> ".
-	 */
-
+	/* Parse text and construct string with links and smileys replaced
+	 * by html tags. Also escape text to make sure html code is
+	 * displayed verbatim. */
 	string = g_string_sized_new (strlen (text));
-	empathy_string_parser_substr (string, text, -1, string_parsers);
+	empathy_string_parser_substr (text, -1, parsers, string);
 
 	return g_string_free (string, FALSE);
 }

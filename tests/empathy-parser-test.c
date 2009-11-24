@@ -10,25 +10,40 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 static void
-test_replace_link (GString *string,
-                   const gchar *text,
+test_replace_link (const gchar *text,
                    gssize len,
+                   gpointer match_data,
                    gpointer user_data)
 {
+  GString *string = user_data;
+
   g_string_append_c (string, '[');
   g_string_append_len (string, text, len);
   g_string_append_c (string, ']');
 }
 
 static void
-test_replace_smiley (GString *string,
-                     const gchar *text,
+test_replace_smiley (const gchar *text,
                      gssize len,
+                     gpointer match_data,
                      gpointer user_data)
 {
+  GString *string = user_data;
+
   g_string_append_c (string, '<');
   g_string_append_len (string, text, len);
   g_string_append_c (string, '>');
+}
+
+static void
+test_replace_verbatim (const gchar *text,
+                       gssize len,
+                       gpointer match_data,
+                       gpointer user_data)
+{
+  GString *string = user_data;
+
+  g_string_append_len (string, text, len);
 }
 
 static void
@@ -45,6 +60,7 @@ test_parsers (void)
     {
       {empathy_string_match_link, test_replace_link},
       {empathy_string_match_smiley, test_replace_smiley},
+      {empathy_string_match_all, test_replace_verbatim},
       {NULL, NULL}
     };
 
@@ -54,7 +70,7 @@ test_parsers (void)
       GString *string;
 
       string = g_string_new (NULL);
-      empathy_string_parser_substr (string, tests[i], -1, parsers);
+      empathy_string_parser_substr (tests[i], -1, parsers, string);
 
       DEBUG ("'%s' => '%s'", tests[i], string->str);
       g_assert_cmpstr (tests[i + 1], ==, string->str);

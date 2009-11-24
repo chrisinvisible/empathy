@@ -1256,44 +1256,60 @@ empathy_chat_text_view_set_only_if_date (EmpathyChatTextView *view,
 }
 
 static void
-chat_text_view_insert_text_with_emoticons (EmpathyChatTextView *view,
-					   GtkTextIter         *iter,
-					   const gchar         *str)
+chat_text_view_replace_link (const gchar *text,
+			     gssize len,
+			     gpointer match_data,
+			     gpointer user_data)
 {
-	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
-	gboolean                 use_smileys = FALSE;
-	GSList                  *hits, *l;
-	guint                    last = 0;
+	GtkTextBuffer *buffer = GTK_TEXT_BUFFER (user_data);
+	GtkTextIter iter;
 
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-			       &use_smileys);
-
-	if (!use_smileys) {
-		gtk_text_buffer_insert (priv->buffer, iter, str, -1);
-		return;
-	}
-
-	hits = empathy_smiley_manager_parse_len (priv->smiley_manager, str, -1);
-	for (l = hits; l; l = l->next) {
-		EmpathySmileyHit *hit = l->data;
-
-		if (hit->start > last) {
-			/* Append the text between last smiley (or the
-			 * start of the message) and this smiley */
-			gtk_text_buffer_insert (priv->buffer, iter, str + last,
-						hit->start - last);
-		}
-		gtk_text_buffer_insert_pixbuf (priv->buffer, iter, hit->pixbuf);
-
-		last = hit->end;
-
-		empathy_smiley_hit_free (hit);
-	}
-	g_slist_free (hits);
-
-	gtk_text_buffer_insert (priv->buffer, iter, str + last, -1);
+	gtk_text_buffer_get_end_iter (buffer, &iter);
+	gtk_text_buffer_insert_with_tags_by_name (buffer, &iter,
+						  text, len,
+						  EMPATHY_CHAT_TEXT_VIEW_TAG_LINK,
+						  NULL);
 }
+
+static void
+chat_text_view_replace_smiley (const gchar *text,
+			       gssize len,
+			       gpointer match_data,
+			       gpointer user_data)
+{
+	EmpathySmileyHit *hit = match_data;
+	GtkTextBuffer *buffer = GTK_TEXT_BUFFER (user_data);
+	GtkTextIter iter;
+
+	gtk_text_buffer_get_end_iter (buffer, &iter);
+	gtk_text_buffer_insert_pixbuf (buffer, &iter, hit->pixbuf);
+}
+
+static void
+chat_text_view_replace_verbatim (const gchar *text,
+				 gssize len,
+				 gpointer match_data,
+				 gpointer user_data)
+{
+	GtkTextBuffer *buffer = GTK_TEXT_BUFFER (user_data);
+	GtkTextIter iter;
+
+	gtk_text_buffer_get_end_iter (buffer, &iter);
+	gtk_text_buffer_insert (buffer, &iter, text, len);
+}
+
+static EmpathyStringParser string_parsers[] = {
+	{empathy_string_match_link, chat_text_view_replace_link},
+	{empathy_string_match_all, chat_text_view_replace_verbatim},
+	{NULL, NULL}
+};
+
+static EmpathyStringParser string_parsers_with_smiley[] = {
+	{empathy_string_match_link, chat_text_view_replace_link},
+	{empathy_string_match_smiley, chat_text_view_replace_smiley},
+	{empathy_string_match_all, chat_text_view_replace_verbatim},
+	{NULL, NULL}
+};
 
 void
 empathy_chat_text_view_append_body (EmpathyChatTextView *view,
@@ -1301,71 +1317,38 @@ empathy_chat_text_view_append_body (EmpathyChatTextView *view,
 				    const gchar         *tag)
 {
 	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
-	GtkTextIter              start_iter, end_iter;
-	GtkTextMark             *mark;
+	EmpathyStringParser     *parsers;
+	gboolean                 use_smileys;
+	GtkTextIter              start_iter;
 	GtkTextIter              iter;
-	GRegex                  *uri_regex;
-	GMatchInfo              *match_info;
-	gboolean                 match;
-	gint                     last = 0;
-	gint                     s = 0, e = 0;
-	gchar                   *tmp;
+	GtkTextMark             *mark;
 
-	priv = GET_PRIV (view);
+	/* Check if we have to parse smileys */
+	empathy_conf_get_bool (empathy_conf_get (),
+			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
+			       &use_smileys);
+	if (use_smileys)
+		parsers = string_parsers_with_smiley;
+	else
+		parsers = string_parsers;
 
+	/* Create a mark at the place we'll start inserting */
 	gtk_text_buffer_get_end_iter (priv->buffer, &start_iter);
 	mark = gtk_text_buffer_create_mark (priv->buffer, NULL, &start_iter, TRUE);
 
-	uri_regex = empathy_uri_regex_dup_singleton ();
-	for (match = g_regex_match (uri_regex, body, 0, &match_info); match;
-	     match = g_match_info_next (match_info, NULL)) {
-		if (!g_match_info_fetch_pos (match_info, 0, &s, &e))
-			continue;
+	/* Parse text for links/smileys and insert in the buffer */
+	empathy_string_parser_substr (body, -1, parsers, priv->buffer);
 
-		if (s > last) {
-			tmp = empathy_substring (body, last, s);
-
-			gtk_text_buffer_get_end_iter (priv->buffer, &iter);
-			chat_text_view_insert_text_with_emoticons (view,
-								   &iter,
-								   tmp);
-			g_free (tmp);
-		}
-
-		tmp = empathy_substring (body, s, e);
-
-		gtk_text_buffer_get_end_iter (priv->buffer, &iter);
-		gtk_text_buffer_insert_with_tags_by_name (priv->buffer,
-							  &iter,
-							  tmp,
-							  -1,
-							  EMPATHY_CHAT_TEXT_VIEW_TAG_LINK,
-							  NULL);
-
-		g_free (tmp);
-		last = e;
-	}
-	g_match_info_free (match_info);
-	g_regex_unref (uri_regex);
-
-	if (last < (gint) strlen (body)) {
-		gtk_text_buffer_get_end_iter (priv->buffer, &iter);
-		chat_text_view_insert_text_with_emoticons (view,
-							   &iter,
-							   body + last);
-	}
-
+	/* Insert a newline after the text inserted */
 	gtk_text_buffer_get_end_iter (priv->buffer, &iter);
 	gtk_text_buffer_insert (priv->buffer, &iter, "\n", 1);
 
 	/* Apply the style to the inserted text. */
 	gtk_text_buffer_get_iter_at_mark (priv->buffer, &start_iter, mark);
-	gtk_text_buffer_get_end_iter (priv->buffer, &end_iter);
-
-	gtk_text_buffer_apply_tag_by_name (priv->buffer,
-					   tag,
+	gtk_text_buffer_get_end_iter (priv->buffer, &iter);
+	gtk_text_buffer_apply_tag_by_name (priv->buffer, tag,
 					   &start_iter,
-					   &end_iter);
+					   &iter);
 
 	gtk_text_buffer_delete_mark (priv->buffer, mark);
 }
