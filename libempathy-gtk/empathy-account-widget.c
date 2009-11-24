@@ -652,20 +652,13 @@ account_widget_account_enabled_cb (GObject *source_object,
 {
   GError *error = NULL;
   TpAccount *account = TP_ACCOUNT (source_object);
-  EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
-  EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
 
   tp_account_set_enabled_finish (account, res, &error);
 
   if (error != NULL)
     {
-      DEBUG ("Could not automatically enable new account: %s", error->message);
+      DEBUG ("Could not enable the account: %s", error->message);
       g_error_free (error);
-    }
-  else
-    {
-      priv->account_created = TRUE;
-      g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
     }
 }
 
@@ -697,7 +690,9 @@ account_widget_applied_cb (GObject *source_object,
         {
           /* By default, when an account is created, we enable it. */
           tp_account_set_enabled_async (account, TRUE,
-              account_widget_account_enabled_cb, widget);
+              account_widget_account_enabled_cb, NULL);
+          priv->account_created = TRUE;
+          g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
         }
       else if (priv->enabled_checkbox != NULL)
         {
