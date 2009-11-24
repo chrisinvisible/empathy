@@ -40,6 +40,7 @@
 
 #include "empathy-ui-utils.h"
 #include "empathy-images.h"
+#include "empathy-smiley-manager.h"
 #include "empathy-conf.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
@@ -1576,33 +1577,32 @@ empathy_string_parser_substr (GString *string,
 			      gssize len,
 			      EmpathyStringParser *parsers)
 {
-	if (parsers != NULL && parsers[0] != NULL) {
-		parsers[0] (string, text, len, parsers + 1);
+	if (parsers != NULL && parsers[0].match_func != NULL) {
+		parsers[0].match_func (string, text, len,
+			parsers[0].replace_func, parsers + 1);
 	} else {
 		g_string_append_len (string, text, len);
 	}
 }
 
 void
-empathy_string_parser_link (GString *string,
-			    const gchar *text,
-			    gssize len,
-			    gpointer user_data)
+empathy_string_match_link (GString *string,
+			   const gchar *text,
+			   gssize len,
+			   EmpathyStringReplace replace_func,
+			   EmpathyStringParser *sub_parsers)
 {
 	GRegex     *uri_regex;
 	GMatchInfo *match_info;
 	gboolean    match;
 	gint        last = 0;
 
-	/* Add <a href></a> arround links */
 	uri_regex = empathy_uri_regex_dup_singleton ();
 	match = g_regex_match_full (uri_regex, text, len, 0, 0, &match_info, NULL);
 	if (match) {
 		gint s = 0, e = 0;
 
 		do {
-			gchar *real_url;
-
 			g_match_info_fetch_pos (match_info, 0, &s, &e);
 
 			if (s > last) {
@@ -1610,33 +1610,66 @@ empathy_string_parser_link (GString *string,
 				 * start of the message) and this link */
 				empathy_string_parser_substr (string, text + last,
 							      s - last,
-							      user_data);
+							      sub_parsers);
 			}
 
-			/* Append the link inside <a href=""></a> tag */
-			real_url = empathy_make_absolute_url_len (text + s, e - s);
+			replace_func (string, text + s, e - s, NULL);
 
-			g_string_append_printf (string, "<a href=\"%s\">",
-				real_url);
-			g_string_append_len (string, text + s, e - s);
-			g_string_append (string, "</a>");
-
-			g_free (real_url);
 			last = e;
 		} while (g_match_info_next (match_info, NULL));
 	}
 
-	empathy_string_parser_substr (string, text + last, len - last, user_data);
+	empathy_string_parser_substr (string, text + last, len - last, sub_parsers);
 
 	g_match_info_free (match_info);
 	g_regex_unref (uri_regex);
 }
 
 void
-empathy_string_parser_escape (GString *string,
-			      const gchar *text,
-			      gssize len,
-			      gpointer user_data)
+empathy_string_match_smiley (GString *string,
+			     const gchar *text,
+			     gssize len,
+			     EmpathyStringReplace replace_func,
+			     EmpathyStringParser *sub_parsers)
+{
+	guint last = 0;
+	EmpathySmileyManager *smiley_manager;
+	GSList *hits, *l;
+
+	smiley_manager = empathy_smiley_manager_dup_singleton ();
+	hits = empathy_smiley_manager_parse_len (smiley_manager, text, len);
+
+	for (l = hits; l; l = l->next) {
+		EmpathySmileyHit *hit = l->data;
+
+		if (hit->start > last) {
+			/* Append the text between last smiley (or the
+			 * start of the message) and this smiley */
+			empathy_string_parser_substr (string, text + last,
+						      hit->start - last,
+						      sub_parsers);
+		}
+
+		replace_func (string,
+			      text + hit->start, hit->end - hit->start,
+			      hit);
+
+		last = hit->end;
+
+		empathy_smiley_hit_free (hit);
+	}
+	g_slist_free (hits);
+	g_object_unref (smiley_manager);
+
+	empathy_string_parser_substr (string, text + last, len - last, sub_parsers);
+}
+
+void
+empathy_string_match_escape (GString *string,
+			     const gchar *text,
+			     gssize len,
+			     EmpathyStringReplace replace_func,
+			     EmpathyStringParser *sub_parsers)
 {
 	gchar *escaped;
 

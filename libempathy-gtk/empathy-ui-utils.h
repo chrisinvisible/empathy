@@ -118,10 +118,23 @@ gchar *     empathy_make_absolute_url_len               (const gchar *url,
 							 guint len);
 
 /* String parser */
-typedef void (*EmpathyStringParser) (GString *string,
-				     const gchar *text,
-				     gssize len,
-				     gpointer user_data);
+
+typedef struct _EmpathyStringParser EmpathyStringParser;
+
+typedef void (*EmpathyStringReplace) (GString *string,
+				      const gchar *text,
+				      gssize len,
+				      gpointer user_data);
+typedef void (*EmpathyStringMatch) (GString *string,
+				    const gchar *text,
+				    gssize len,
+				    EmpathyStringReplace replace_func,
+				    EmpathyStringParser *sub_parsers);
+
+struct _EmpathyStringParser {
+	EmpathyStringMatch match_func;
+	EmpathyStringReplace replace_func;
+};
 
 void
 empathy_string_parser_substr (GString *string,
@@ -130,16 +143,25 @@ empathy_string_parser_substr (GString *string,
 			      EmpathyStringParser *parsers);
 
 void
-empathy_string_parser_link (GString *string,
-			    const gchar *text,
-			    gssize len,
-			    gpointer user_data);
+empathy_string_match_link (GString *string,
+			   const gchar *text,
+			   gssize len,
+			   EmpathyStringReplace replace_func,
+			   EmpathyStringParser *sub_parsers);
 
 void
-empathy_string_parser_escape (GString *string,
-			      const gchar *text,
-			      gssize len,
-			      gpointer user_data);
+empathy_string_match_smiley (GString *string,
+			     const gchar *text,
+			     gssize len,
+			     EmpathyStringReplace replace_func,
+			     EmpathyStringParser *sub_parsers);
+
+void
+empathy_string_match_escape (GString *string,
+			     const gchar *text,
+			     gssize len,
+			     EmpathyStringReplace replace_func,
+			     EmpathyStringParser *sub_parsers);
 
 G_END_DECLS
 

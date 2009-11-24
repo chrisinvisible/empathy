@@ -192,10 +192,11 @@ theme_adium_open_address_cb (GtkMenuItem *menuitem,
 }
 
 static void
-theme_adium_parser_newline (GString *string,
-			    const gchar *text,
-			    gssize len,
-			    gpointer user_data)
+theme_adium_match_newline (GString *string,
+			   const gchar *text,
+			   gssize len,
+			   EmpathyStringReplace replace_func,
+			   EmpathyStringParser *sub_parsers)
 {
 	gint i;
 	gint prev = 0;
@@ -208,69 +209,61 @@ theme_adium_parser_newline (GString *string,
 	for (i = 0; i < len && text[i] != '\0'; i++) {
 		if (text[i] == '\n') {
 			empathy_string_parser_substr (string, text + prev,
-						      i - prev, user_data);
+						      i - prev, sub_parsers);
 			g_string_append (string, "<br/>");
 			prev = i + 1;
 		}
 	}
-	empathy_string_parser_substr (string, text + prev, i - prev, user_data);
+	empathy_string_parser_substr (string, text + prev, i - prev, sub_parsers);
+}
+
+static void
+theme_adium_replace_link (GString *string,
+			  const gchar *text,
+			  gssize len,
+			  gpointer user_data)
+{
+	gchar *real_url;
+
+	/* Append the link inside <a href=""></a> tag */
+	real_url = empathy_make_absolute_url_len (text, len);
+
+	g_string_append_printf (string, "<a href=\"%s\">", real_url);
+	g_string_append_len (string, text, len);
+	g_string_append (string, "</a>");
+
+	g_free (real_url);
 }
 
 static gboolean use_smileys = FALSE;
 
 static void
-theme_adium_parser_smiley (GString *string,
-			   const gchar *text,
-			   gssize len,
-			   gpointer user_data)
+theme_adium_replace_smiley (GString *string,
+			    const gchar *text,
+			    gssize len,
+			    gpointer user_data)
 {
-	guint last = 0;
+	EmpathySmileyHit *hit = user_data;
 
 	if (use_smileys) {
-		EmpathySmileyManager *smiley_manager;
-		GSList *hits, *l;
-
-		smiley_manager = empathy_smiley_manager_dup_singleton ();
-		hits = empathy_smiley_manager_parse_len (smiley_manager, text, len);
-
-		for (l = hits; l; l = l->next) {
-			EmpathySmileyHit *hit = l->data;
-
-			if (hit->start > last) {
-				/* Append the text between last smiley (or the
-				 * start of the message) and this smiley */
-				empathy_string_parser_substr (string, text + last,
-							      hit->start - last,
-							      user_data);
-			}
-
-			/* Replace smileys by a <img/> tag */
-			g_string_append (string, "<abbr title=\"");
-			g_string_append_len (string, text + hit->start,
-					     hit->end - hit->start);
-			g_string_append_printf (string, "\"><img src=\"%s\" alt=\"",
-						hit->path);
-			g_string_append_len (string, text + hit->start,
-					     hit->end - hit->start);
-			g_string_append (string, "\"/></abbr>");
-
-			last = hit->end;
-
-			empathy_smiley_hit_free (hit);
-		}
-		g_slist_free (hits);
-		g_object_unref (smiley_manager);
+		/* Replace smileys by a <img/> tag */
+		g_string_append (string, "<abbr title=\"");
+		g_string_append_len (string, text, len);
+		g_string_append_printf (string, "\"><img src=\"%s\" alt=\"",
+					hit->path);
+		g_string_append_len (string, text, len);
+		g_string_append (string, "\"/></abbr>");
+	} else {
+		g_string_append_len (string, text, len);
 	}
-
-	empathy_string_parser_substr (string, text + last, len - last, user_data);
 }
 
 static EmpathyStringParser string_parsers[] = {
-	empathy_string_parser_link,
-	theme_adium_parser_smiley,
-	theme_adium_parser_newline,
-	empathy_string_parser_escape,
-	NULL,
+	{empathy_string_match_link, theme_adium_replace_link},
+	{empathy_string_match_smiley, theme_adium_replace_smiley},
+	{theme_adium_match_newline, NULL},
+	{empathy_string_match_escape, NULL},
+	{NULL, NULL}
 };
 
 static gchar *
@@ -278,6 +271,7 @@ theme_adium_parse_body (const gchar *text)
 {
 	GString *string;
 
+	/* Get use_smileys value now to avoid getting it for each match */
 	empathy_conf_get_bool (empathy_conf_get (),
 			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
 			       &use_smileys);
