@@ -26,6 +26,42 @@
           </object>
         </child>
         <child>
+          <object class="GtkAction" id="camera">
+            <property name="name">camera</property>
+            <property name="label" translatable="yes">V_ideo</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="action_camera_off">
+            <property name="name">action_camera_off</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Video Off</property>
+            <property name="draw_as_radio">True</property>
+            <property name="value">0</property>
+            <property name="current-value">0</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="action_camera_preview">
+            <property name="name">action_camera_preview</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Video Preview</property>
+            <property name="draw_as_radio">True</property>
+            <property name="group">action_camera_off</property>
+            <property name="value">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRadioAction" id="action_camera_on">
+            <property name="name">action_camera_on</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Video On</property>
+            <property name="draw_as_radio">True</property>
+            <property name="group">action_camera_off</property>
+            <property name="value">2</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="view">
             <property name="name">view</property>
             <property name="label" translatable="yes">_View</property>
@@ -45,6 +81,11 @@
         <menu action="call">
           <menuitem action="menuhangup"/>
           <menuitem action="menuredial"/>
+        </menu>
+        <menu action="camera">
+          <menuitem action="action_camera_off"/>
+          <menuitem action="action_camera_preview"/>
+          <menuitem action="action_camera_on"/>
         </menu>
         <menu action="view">
           <menuitem action="menufullscreen"/>
