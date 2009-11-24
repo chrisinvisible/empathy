@@ -770,6 +770,9 @@ tool_button_camera_off_toggled_cb (GtkToggleToolButton *toggle,
       return;
     }
 
+  if (priv->camera_state == CAMERA_STATE_OFF)
+    return;
+
   DEBUG ("disable camera");
   disable_camera (self);
 }
@@ -809,6 +812,9 @@ tool_button_camera_preview_toggled_cb (GtkToggleToolButton *toggle,
       return;
     }
 
+  if (priv->camera_state == CAMERA_STATE_PREVIEW)
+    return;
+
   DEBUG ("enable preview");
   enable_preview (self);
 }
@@ -847,6 +853,9 @@ tool_button_camera_on_toggled_cb (GtkToggleToolButton *toggle,
 
       return;
     }
+
+  if (priv->camera_state == CAMERA_STATE_ON)
+    return;
 
   DEBUG ("enable camera");
   enable_camera (self);
