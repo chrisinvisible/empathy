@@ -1339,7 +1339,7 @@ chat_window_drag_motion (GtkWidget        *widget,
 			 GdkDragContext   *context,
 			 int               x,
 			 int               y,
-			 guint             time,
+			 guint             time_,
 			 EmpathyChatWindow *window)
 {
 	GdkAtom target;
@@ -1362,16 +1362,21 @@ chat_window_drag_motion (GtkWidget        *widget,
 
 		priv = GET_PRIV (window);
 		contact = empathy_chat_get_remote_contact (priv->current_chat);
-		if (!empathy_contact_is_online (contact)) {
-			gdk_drag_status (context, 0, time);
+		/* contact is NULL for multi-user chats.  We don't do
+		 * file transfers to MUCs.  We also don't send files
+		 * to offline contacts or contacts that don't support
+		 * file transfer.
+		 */
+		if ((contact == NULL) || !empathy_contact_is_online (contact)) {
+			gdk_drag_status (context, 0, time_);
 			return FALSE;
 		}
 		if (!(empathy_contact_get_capabilities (contact)
 			   & EMPATHY_CAPABILITIES_FT)) {
-			gdk_drag_status (context, 0, time);
+			gdk_drag_status (context, 0, time_);
 			return FALSE;
 		}
-		gdk_drag_status (context, GDK_ACTION_COPY, time);
+		gdk_drag_status (context, GDK_ACTION_COPY, time_);
 		return TRUE;
 	}
 
@@ -1382,12 +1387,12 @@ chat_window_drag_motion (GtkWidget        *widget,
 		   Otherwise, it opens a chat.  Should we use a different drag
 		   type for invites?  Should we allow ASK?
 		 */
-		gdk_drag_status (context, GDK_ACTION_COPY, time);
+		gdk_drag_status (context, GDK_ACTION_COPY, time_);
 		return TRUE;
 	}
 
 	/* Otherwise, it must be a notebook tab drag.  Set to MOVE. */
-	gdk_drag_status (context, GDK_ACTION_MOVE, time);
+	gdk_drag_status (context, GDK_ACTION_MOVE, time_);
 	return TRUE;
 }
 
@@ -1481,15 +1486,18 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		priv = GET_PRIV (window);
 		contact = empathy_chat_get_remote_contact (priv->current_chat);
 
-		if (!EMPATHY_IS_CONTACT (contact)) {
-			gtk_drag_finish (context, TRUE, FALSE, time);
+		/* contact is NULL when current_chat is a multi-user chat.
+		 * We don't do file transfers to MUCs, so just cancel the drag.
+		 */
+		if (contact == NULL) {
+			gtk_drag_finish (context, TRUE, FALSE, time_);
 			return;
 		}
 
 		data = (const gchar *) gtk_selection_data_get_data (selection);
 		empathy_send_file_from_uri_list (contact, data);
 
-		gtk_drag_finish (context, TRUE, FALSE, time);
+		gtk_drag_finish (context, TRUE, FALSE, time_);
 	}
 	else if (info == DND_DRAG_TYPE_TAB) {
 		EmpathyChat        **chat;
