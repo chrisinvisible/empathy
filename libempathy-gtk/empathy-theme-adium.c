@@ -228,12 +228,19 @@ theme_adium_replace_link (const gchar *text,
 {
 	GString *string = user_data;
 	gchar *real_url;
+	gchar *str;
 
 	/* Append the link inside <a href=""></a> tag */
 	real_url = empathy_make_absolute_url_len (text, len);
 
 	g_string_append_printf (string, "<a href=\"%s\">", real_url);
-	g_string_append_len (string, text, len);
+
+	/* The thing we are making a link of may contain
+	 * characters which need escaping */
+	str = g_markup_escape_text (text, len);
+	g_string_append (string, str);
+	g_free (str);
+
 	g_string_append (string, "</a>");
 
 	g_free (real_url);
