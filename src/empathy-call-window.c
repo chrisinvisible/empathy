@@ -740,8 +740,8 @@ disable_camera (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  priv->camera_state = CAMERA_STATE_OFF;
   display_video_preview (self, FALSE);
+  empathy_call_window_set_send_video (self, FALSE);
 
   block_camera_control_signals (self);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
@@ -749,6 +749,8 @@ disable_camera (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
       priv->tool_button_camera_preview), FALSE);
   unblock_camera_control_signals (self);
+
+  priv->camera_state = CAMERA_STATE_OFF;
 }
 
 static void
@@ -782,7 +784,10 @@ enable_preview (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  priv->camera_state = CAMERA_STATE_PREVIEW;
+  if (priv->camera_state == CAMERA_STATE_ON)
+    /* preview is already displayed so we just have to stop sending */
+    empathy_call_window_set_send_video (self, FALSE);
+
   display_video_preview (self, TRUE);
 
   block_camera_control_signals (self);
@@ -791,6 +796,8 @@ enable_preview (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_on), FALSE);
   unblock_camera_control_signals (self);
+
+  priv->camera_state = CAMERA_STATE_PREVIEW;
 }
 
 static void
@@ -824,7 +831,6 @@ enable_camera (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  priv->camera_state = CAMERA_STATE_ON;
   empathy_call_window_set_send_video (self, TRUE);
 
   block_camera_control_signals (self);
@@ -833,6 +839,8 @@ enable_camera (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_preview), FALSE);
   unblock_camera_control_signals (self);
+
+  priv->camera_state = CAMERA_STATE_ON;
 }
 
 static void
