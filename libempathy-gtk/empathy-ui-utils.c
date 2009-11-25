@@ -50,13 +50,15 @@
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-ft-factory.h>
 
-#define SCHEMES   "([a-zA-Z\\+]+)"
-#define BODY_CHAR "[^\\ \\n\"\']"
-#define BODY      "("BODY_CHAR"+)"
-#define END_BODY  "("BODY_CHAR"*[^,;\\:\?><(){}\\[\\]\\ \"\'\\.\\n])"
-#define URI_REGEX "("SCHEMES"://"END_BODY")" \
-		  "|((mailto:)?"BODY"@"BODY"\\."END_BODY")"\
-		  "|((www|ftp)\\."END_BODY")"
+#define SCHEMES           "([a-zA-Z\\+]+)"
+#define INVALID_CHARS     " \n\"'"
+#define INVALID_CHARS_EXT INVALID_CHARS "\\[\\]<>(){},;:?"
+#define BODY              "([^"INVALID_CHARS"]+)"
+#define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_EXT".]"
+#define BODY_STRICT       "([^"INVALID_CHARS_EXT"]+)"
+#define URI_REGEX         "("SCHEMES"://"BODY_END")" \
+		          "|((www|ftp)\\."BODY_END")" \
+		          "|((mailto:)?"BODY_STRICT"@"BODY"\\."BODY_END")"
 
 void
 empathy_gtk_init (void)
