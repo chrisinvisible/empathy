@@ -84,6 +84,9 @@ void               empathy_chat_correct_word         (EmpathyChat   *chat,
 gboolean           empathy_chat_is_room              (EmpathyChat   *chat);
 void               empathy_chat_set_show_contacts    (EmpathyChat *chat,
                                                       gboolean     show);
+guint              empathy_chat_get_nb_unread_messages (EmpathyChat   *chat);
+
+void               empathy_chat_messages_read        (EmpathyChat *self);
 G_END_DECLS
 
 #endif /* __EMPATHY_CHAT_H__ */

@@ -93,6 +93,8 @@ typedef struct {
 	GtkWidget         *label_topic;
 	GtkWidget         *contact_list_view;
 	GtkWidget         *info_bar_vbox;
+
+	guint              unread_messages;
 } EmpathyChatPriv;
 
 typedef struct {
@@ -1074,6 +1076,7 @@ chat_message_received (EmpathyChat *chat, EmpathyMessage *message)
 			       TP_CHANNEL_CHAT_STATE_ACTIVE,
 			       chat);
 
+	priv->unread_messages++;
 	g_signal_emit (chat, signals[NEW_MESSAGE], 0, message);
 }
 
@@ -2801,3 +2804,23 @@ empathy_chat_is_room (EmpathyChat *chat)
 	return (priv->handle_type == TP_HANDLE_TYPE_ROOM);
 }
 
+guint
+empathy_chat_get_nb_unread_messages (EmpathyChat *self)
+{
+	EmpathyChatPriv *priv = GET_PRIV (self);
+
+	g_return_val_if_fail (EMPATHY_IS_CHAT (self), FALSE);
+
+	return priv->unread_messages;
+}
+
+/* called when the messages have been read by user */
+void
+empathy_chat_messages_read (EmpathyChat *self)
+{
+	EmpathyChatPriv *priv = GET_PRIV (self);
+
+	g_return_if_fail (EMPATHY_IS_CHAT (self));
+
+	priv->unread_messages = 0;
+}
