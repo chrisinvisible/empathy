@@ -1514,8 +1514,6 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
 
   if (could_reset_pipeline)
     {
-      gboolean initial_video = empathy_call_handler_has_initial_video (
-          priv->handler);
       g_mutex_lock (priv->lock);
 
       g_timer_stop (priv->timer);
@@ -1536,7 +1534,7 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       gtk_widget_set_sensitive (priv->tool_button_camera_on, FALSE);
       gtk_widget_set_sensitive (priv->mic_button, FALSE);
       gtk_toggle_tool_button_set_active (
-          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), initial_video);
+          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_off), TRUE);
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->mic_button), TRUE);
 
