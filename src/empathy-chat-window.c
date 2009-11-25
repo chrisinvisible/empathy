@@ -356,16 +356,22 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 	}
 }
 
+static gchar *
+get_window_title_name (EmpathyChatWindowPriv *priv)
+{
+	return g_strdup (empathy_chat_get_name (priv->current_chat));
+}
+
 static void
 chat_window_title_update (EmpathyChatWindowPriv *priv)
 {
-	const gchar *name;
-
-	name = empathy_chat_get_name (priv->current_chat);
+	gchar *name;
 
 	DEBUG ("Update window : Title");
 
+	name = get_window_title_name (priv);
 	gtk_window_set_title (GTK_WINDOW (priv->dialog), name);
+	g_free (name);
 }
 
 static void
