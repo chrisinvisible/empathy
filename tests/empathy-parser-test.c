@@ -4,6 +4,8 @@
 
 #include "test-helper.h"
 
+#include <telepathy-glib/util.h>
+
 #define DEBUG_FLAG EMPATHY_DEBUG_TESTS
 #include <libempathy/empathy-debug.h>
 
@@ -36,17 +38,19 @@ test_replace_verbatim (const gchar *text,
 static void
 test_parsers (void)
 {
-  guint i;
   gchar *tests[] =
     {
       /* Basic link matches */
       "http://foo.com", "[http://foo.com]",
+      "http://foo.com\nhttp://bar.com", "[http://foo.com]\n[http://bar.com]",
+      "http://foo.com/test?id=bar?", "[http://foo.com/test?id=bar]?",
       "git://foo.com", "[git://foo.com]",
       "git+ssh://foo.com", "[git+ssh://foo.com]",
       "mailto:user@server.com", "[mailto:user@server.com]",
       "www.foo.com", "[www.foo.com]",
       "ftp.foo.com", "[ftp.foo.com]",
       "user@server.com", "[user@server.com]",
+      "first.last@server.com", "[first.last@server.com]",
       "http://foo.com. bar", "[http://foo.com]. bar",
       "http://foo.com; bar", "[http://foo.com]; bar",
       "http://foo.com: bar", "[http://foo.com]: bar",
@@ -70,11 +74,10 @@ test_parsers (void)
       "Foo \"www.foo.com\"", "Foo \"[www.foo.com]\"",
       "Foo (www.foo.com/bar(123)baz)", "Foo ([www.foo.com/bar(123)baz])",
       "<a href=\"http://foo.com\">bar</a>", "<a href=\"[http://foo.com]\">bar</a>",
-      /* FIXME; Known issue: With email addresses, any leading character is matched */
-      //"Foo (user@server.com)", "Foo ([user@server.com])",
-      //"Foo {user@server.com}", "Foo {[user@server.com]}",
-      //"Foo [user@server.com]", "Foo [[user@server.com]]",
-      //"Foo <user@server.com>", "Foo <[user@server.com]>",
+      "Foo (user@server.com)", "Foo ([user@server.com])",
+      "Foo {user@server.com}", "Foo {[user@server.com]}",
+      "Foo [user@server.com]", "Foo [[user@server.com]]",
+      "Foo <user@server.com>", "Foo <[user@server.com]>",
       "Foo \"user@server.com\"", "Foo \"[user@server.com]\"",
 
       /* Basic smileys */
@@ -102,20 +105,27 @@ test_parsers (void)
       {empathy_string_match_all, test_replace_verbatim},
       {NULL, NULL}
     };
+  guint i;
+  gboolean failed = FALSE;
 
   DEBUG ("Started");
   for (i = 0; tests[i] != NULL; i += 2)
     {
       GString *string;
+      gboolean ok;
 
       string = g_string_new (NULL);
       empathy_string_parser_substr (tests[i], -1, parsers, string);
 
-      DEBUG ("'%s' => '%s'", tests[i], string->str);
-      g_assert_cmpstr (tests[i + 1], ==, string->str);
+      ok = !tp_strdiff (tests[i + 1], string->str);
+      DEBUG ("'%s' => '%s': %s", tests[i], string->str, ok ? "OK" : "FAILED");
+      if (!ok)
+        failed = TRUE;
 
       g_string_free (string, TRUE);
     }
+
+  g_assert (!failed);
 }
 
 int
