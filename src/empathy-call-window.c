@@ -737,6 +737,11 @@ disable_camera (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
+  if (priv->camera_state == CAMERA_STATE_OFF)
+    return;
+
+  DEBUG ("disable camera");
+
   display_video_preview (self, FALSE);
   empathy_call_window_set_send_video (self, FALSE);
 
@@ -772,10 +777,6 @@ tool_button_camera_off_toggled_cb (GtkToggleToolButton *toggle,
       return;
     }
 
-  if (priv->camera_state == CAMERA_STATE_OFF)
-    return;
-
-  DEBUG ("disable camera");
   disable_camera (self);
 }
 
@@ -783,6 +784,11 @@ static void
 enable_preview (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  if (priv->camera_state == CAMERA_STATE_PREVIEW)
+    return;
+
+  DEBUG ("enable preview");
 
   if (priv->camera_state == CAMERA_STATE_ON)
     /* preview is already displayed so we just have to stop sending */
@@ -822,10 +828,6 @@ tool_button_camera_preview_toggled_cb (GtkToggleToolButton *toggle,
       return;
     }
 
-  if (priv->camera_state == CAMERA_STATE_PREVIEW)
-    return;
-
-  DEBUG ("enable preview");
   enable_preview (self);
 }
 
@@ -833,6 +835,11 @@ static void
 enable_camera (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  if (priv->camera_state == CAMERA_STATE_ON)
+    return;
+
+  DEBUG ("enable camera");
 
   empathy_call_window_set_send_video (self, TRUE);
 
@@ -868,10 +875,6 @@ tool_button_camera_on_toggled_cb (GtkToggleToolButton *toggle,
       return;
     }
 
-  if (priv->camera_state == CAMERA_STATE_ON)
-    return;
-
-  DEBUG ("enable camera");
   enable_camera (self);
 }
 
