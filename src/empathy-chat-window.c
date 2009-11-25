@@ -1138,6 +1138,9 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 	}
 
 	if (has_focus && priv->current_chat == chat) {
+		/* window and tab are focused so consider than the message is
+		 * read */
+		empathy_chat_messages_read (chat);
 		return;
 	}
 
@@ -1224,6 +1227,7 @@ chat_window_page_switched_cb (GtkNotebook      *notebook,
 
 	priv->current_chat = chat;
 	priv->chats_new_msg = g_list_remove (priv->chats_new_msg, chat);
+	empathy_chat_messages_read (chat);
 
 	chat_window_update_chat_tab (chat);
 }
@@ -1315,6 +1319,7 @@ chat_window_page_removed_cb (GtkNotebook      *notebook,
 	/* Keep list of chats up to date */
 	priv->chats = g_list_remove (priv->chats, chat);
 	priv->chats_new_msg = g_list_remove (priv->chats_new_msg, chat);
+	empathy_chat_messages_read (chat);
 	priv->chats_composing = g_list_remove (priv->chats_composing, chat);
 
 	if (priv->chats == NULL) {
@@ -1336,6 +1341,7 @@ chat_window_focus_in_event_cb (GtkWidget        *widget,
 	priv = GET_PRIV (window);
 
 	priv->chats_new_msg = g_list_remove (priv->chats_new_msg, priv->current_chat);
+	empathy_chat_messages_read (priv->current_chat);
 
 	chat_window_set_urgency_hint (window, FALSE);
 
