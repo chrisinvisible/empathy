@@ -1234,6 +1234,11 @@ empathy_call_window_constructed (GObject *object)
 
       display_video_preview (self, TRUE);
     }
+  else
+    {
+      gtk_toggle_tool_button_set_active (
+          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_off), TRUE);
+    }
 }
 
 static void empathy_call_window_dispose (GObject *object);
