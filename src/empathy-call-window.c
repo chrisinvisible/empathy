@@ -96,7 +96,7 @@ typedef enum {
 } CallState;
 
 typedef enum {
-  CAMERA_STATE_OFF,
+  CAMERA_STATE_OFF = 0,
   CAMERA_STATE_PREVIEW,
   CAMERA_STATE_ON,
 } CameraState;
@@ -879,6 +879,34 @@ tool_button_camera_on_toggled_cb (GtkToggleToolButton *toggle,
 }
 
 static void
+action_camera_change_cb (GtkRadioAction *action,
+    GtkRadioAction *current,
+    EmpathyCallWindow *self)
+{
+  CameraState state;
+
+  state = gtk_radio_action_get_current_value (current);
+
+  switch (state)
+    {
+      case CAMERA_STATE_OFF:
+        disable_camera (self);
+        break;
+
+      case CAMERA_STATE_PREVIEW:
+        enable_preview (self);
+        break;
+
+      case CAMERA_STATE_ON:
+        enable_camera (self);
+        break;
+
+      default:
+        g_assert_not_reached ();
+    }
+}
+
+static void
 empathy_call_window_init (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
@@ -921,6 +949,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "camera_off", "toggled", tool_button_camera_off_toggled_cb,
     "camera_preview", "toggled", tool_button_camera_preview_toggled_cb,
     "camera_on", "toggled", tool_button_camera_on_toggled_cb,
+    "action_camera_off", "changed", action_camera_change_cb,
     NULL);
 
   priv->lock = g_mutex_new ();
@@ -2563,6 +2592,8 @@ block_camera_control_signals (EmpathyCallWindow *self)
       tool_button_camera_preview_toggled_cb, self);
   g_signal_handlers_block_by_func (priv->tool_button_camera_on,
       tool_button_camera_on_toggled_cb, self);
+  g_signal_handlers_block_by_func (priv->action_camera,
+      tool_button_camera_on_toggled_cb, self);
 }
 
 static void
@@ -2575,5 +2606,7 @@ unblock_camera_control_signals (EmpathyCallWindow *self)
   g_signal_handlers_unblock_by_func (priv->tool_button_camera_preview,
       tool_button_camera_preview_toggled_cb, self);
   g_signal_handlers_unblock_by_func (priv->tool_button_camera_on,
+      tool_button_camera_on_toggled_cb, self);
+  g_signal_handlers_unblock_by_func (priv->action_camera,
       tool_button_camera_on_toggled_cb, self);
 }
