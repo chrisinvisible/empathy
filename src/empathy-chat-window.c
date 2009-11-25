@@ -356,27 +356,84 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 	}
 }
 
+static guint
+get_all_unread_messages (EmpathyChatWindowPriv *priv)
+{
+	GList *l;
+	guint nb = 0;
+
+	for (l = priv->chats_new_msg; l != NULL; l = g_list_next (l)) {
+		EmpathyChat *chat = l->data;
+
+		nb += empathy_chat_get_nb_unread_messages (chat);
+	}
+
+	return nb;
+}
+
 static gchar *
 get_window_title_name (EmpathyChatWindowPriv *priv)
 {
 	const gchar *active_name;
 	guint nb_chats;
+	guint current_unread_msgs;
 
 	nb_chats = g_list_length (priv->chats);
 	g_assert (nb_chats > 0);
 
 	active_name = empathy_chat_get_name (priv->current_chat);
 
+	current_unread_msgs = empathy_chat_get_nb_unread_messages (
+			priv->current_chat);
+
 	if (nb_chats == 1) {
 		/* only one tab */
-		return g_strdup (active_name);
+		if (current_unread_msgs == 0)
+			return g_strdup (active_name);
+		else
+			return g_strdup_printf (ngettext (
+				"%s (%d unread)",
+				"%s (%d unread)", current_unread_msgs),
+				active_name, current_unread_msgs);
 	} else {
 		guint nb_others = nb_chats - 1;
+		guint all_unread_msgs;
 
-		return g_strdup_printf (ngettext (
-			"%s (and %u other)",
-			"%s (and %u others)", nb_others),
-			active_name, nb_others);
+		all_unread_msgs = get_all_unread_messages (priv);
+
+		if (all_unread_msgs == 0) {
+			/* no unread message */
+			return g_strdup_printf (ngettext (
+				"%s (and %u other)",
+				"%s (and %u others)", nb_others),
+				active_name, nb_others);
+		}
+
+		else if (all_unread_msgs == current_unread_msgs) {
+			/* unread messages are in the current tab */
+			return g_strdup_printf (ngettext (
+				"%s (%d unread)",
+				"%s (%d unread)", current_unread_msgs),
+				active_name, current_unread_msgs);
+		}
+
+		else if (current_unread_msgs == 0) {
+			/* unread messages are in others tab */
+			return g_strdup_printf (ngettext (
+				"%s (%d unread from others)",
+				"%s (%d unread from others)",
+				all_unread_msgs),
+				active_name, all_unread_msgs);
+		}
+
+		else {
+			/* unread messages are in all the tabs */
+			return g_strdup_printf (ngettext (
+				"%s (%d unread from everyone)",
+				"%s (%d unread from everyone)",
+				all_unread_msgs),
+				active_name, all_unread_msgs);
+		}
 	}
 }
 
