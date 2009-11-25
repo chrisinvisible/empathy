@@ -1228,6 +1228,9 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 		    EMPATHY_SOUND_MESSAGE_INCOMING);
 		chat_window_show_or_update_notification (window, message, chat);
 	}
+
+	/* update the number of unread messages */
+	chat_window_title_update (priv);
 }
 
 static GtkNotebook *
