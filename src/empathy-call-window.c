@@ -751,6 +751,8 @@ disable_camera (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
       priv->tool_button_camera_preview), FALSE);
 
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+      priv->tool_button_camera_off), TRUE);
   gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
       CAMERA_STATE_OFF);
   unblock_camera_control_signals (self);
@@ -802,6 +804,8 @@ enable_preview (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_on), FALSE);
 
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+        priv->tool_button_camera_preview), TRUE);
   gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
       CAMERA_STATE_PREVIEW);
   unblock_camera_control_signals (self);
@@ -849,6 +853,8 @@ enable_camera (EmpathyCallWindow *self)
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
         priv->tool_button_camera_preview), FALSE);
 
+  gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
+      priv->tool_button_camera_on), TRUE);
   gtk_radio_action_set_current_value (GTK_RADIO_ACTION (priv->action_camera),
       CAMERA_STATE_ON);
   unblock_camera_control_signals (self);
