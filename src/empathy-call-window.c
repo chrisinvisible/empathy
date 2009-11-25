@@ -743,7 +743,9 @@ disable_camera (EmpathyCallWindow *self)
   DEBUG ("disable camera");
 
   display_video_preview (self, FALSE);
-  empathy_call_window_set_send_video (self, FALSE);
+
+  if (priv->camera_state == CAMERA_STATE_ON)
+    empathy_call_window_set_send_video (self, FALSE);
 
   block_camera_control_signals (self);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
