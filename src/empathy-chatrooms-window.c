@@ -52,8 +52,6 @@ typedef struct {
 	GtkWidget             *button_remove;
 	GtkWidget             *button_edit;
 	GtkWidget             *button_close;
-
-	gint                   room_column;
 } EmpathyChatroomsWindow;
 
 static void             chatrooms_window_destroy_cb                      (GtkWidget             *widget,
@@ -278,7 +276,6 @@ chatrooms_window_model_add_columns (EmpathyChatroomsWindow *window)
 							   NULL);
 	count = gtk_tree_view_append_column (view, column);
 	gtk_tree_view_column_set_sort_column_id (column, count - 1);
-	window->room_column = count - 1;
 
 	/* Chatroom auto connect */
 	cell = gtk_cell_renderer_toggle_new ();
@@ -306,7 +303,6 @@ chatrooms_window_model_refresh_data (EmpathyChatroomsWindow *window,
 	GtkTreeModel          *model;
 	GtkListStore          *store;
 	GtkTreeIter            iter;
-	GtkTreeViewColumn     *column;
 	EmpathyAccountChooser  *account_chooser;
 	TpAccount             *account;
 	GList                 *chatrooms, *l;
@@ -321,17 +317,6 @@ chatrooms_window_model_refresh_data (EmpathyChatroomsWindow *window,
 	account = empathy_account_chooser_dup_account (account_chooser);
 
 	chatrooms = empathy_chatroom_manager_get_chatrooms (window->manager, account);
-
-	/* Sort out columns, we only show the server column for
-	 * selected protocol types, such as Jabber.
-	 */
-	if (account) {
-		column = gtk_tree_view_get_column (view, window->room_column);
-		gtk_tree_view_column_set_visible (column, TRUE);
-	} else {
-		column = gtk_tree_view_get_column (view, window->room_column);
-		gtk_tree_view_column_set_visible (column, FALSE);
-	}
 
 	/* Clean out the store */
 	gtk_list_store_clear (store);
