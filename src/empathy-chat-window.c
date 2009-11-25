@@ -359,7 +359,25 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 static gchar *
 get_window_title_name (EmpathyChatWindowPriv *priv)
 {
-	return g_strdup (empathy_chat_get_name (priv->current_chat));
+	const gchar *active_name;
+	guint nb_chats;
+
+	nb_chats = g_list_length (priv->chats);
+	g_assert (nb_chats > 0);
+
+	active_name = empathy_chat_get_name (priv->current_chat);
+
+	if (nb_chats == 1) {
+		/* only one tab */
+		return g_strdup (active_name);
+	} else {
+		guint nb_others = nb_chats - 1;
+
+		return g_strdup_printf (ngettext (
+			"%s (and %u other)",
+			"%s (and %u others)", nb_others),
+			active_name, nb_others);
+	}
 }
 
 static void
