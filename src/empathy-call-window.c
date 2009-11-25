@@ -2356,6 +2356,9 @@ empathy_call_window_set_send_video (EmpathyCallWindow *window,
      default. */
   display_video_preview (window, send);
 
+  if (priv->call_state != CONNECTED)
+    return;
+
   g_object_get (priv->handler, "tp-call", &call, NULL);
   DEBUG ("%s sending video", send ? "start": "stop");
   empathy_tp_call_request_video_stream_direction (call, send);
