@@ -73,6 +73,8 @@ typedef struct {
 
 static void chat_text_view_iface_init (EmpathyChatViewIface *iface);
 
+static void chat_text_view_copy_clipboard (EmpathyChatView *view);
+
 G_DEFINE_TYPE_WITH_CODE (EmpathyChatTextView, empathy_chat_text_view,
 			 GTK_TYPE_TEXT_VIEW,
 			 G_IMPLEMENT_INTERFACE (EMPATHY_TYPE_CHAT_VIEW,
@@ -580,10 +582,17 @@ chat_text_view_finalize (GObject *object)
 }
 
 static void
+text_view_copy_clipboard (GtkTextView *text_view)
+{
+	chat_text_view_copy_clipboard (EMPATHY_CHAT_VIEW (text_view));
+}
+
+static void
 empathy_chat_text_view_class_init (EmpathyChatTextViewClass *klass)
 {
 	GObjectClass   *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+	GtkTextViewClass *text_view_class = GTK_TEXT_VIEW_CLASS (klass);
 
 	object_class->finalize = chat_text_view_finalize;
 	object_class->get_property = chat_text_view_get_property;
@@ -591,6 +600,8 @@ empathy_chat_text_view_class_init (EmpathyChatTextViewClass *klass)
 
 	widget_class->size_allocate = chat_text_view_size_allocate;
 	widget_class->drag_motion = chat_text_view_drag_motion;
+
+	text_view_class->copy_clipboard = text_view_copy_clipboard;
 
 	g_object_class_install_property (object_class,
 					 PROP_LAST_CONTACT,
