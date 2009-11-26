@@ -256,7 +256,7 @@ theme_adium_replace_smiley (const gchar *text,
 	/* Replace smiley by a <img/> tag */
 	g_string_append_printf (string,
 				"<img src=\"%s\" alt=\"%.*s\" title=\"%.*s\"/>",
-				hit->path, len, text, len, text);
+				hit->path, (int)len, text, (int)len, text);
 }
 
 static void
