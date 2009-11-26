@@ -228,22 +228,20 @@ theme_adium_replace_link (const gchar *text,
 {
 	GString *string = user_data;
 	gchar *real_url;
-	gchar *str;
+	gchar *escaped;
 
-	/* Append the link inside <a href=""></a> tag */
 	real_url = empathy_make_absolute_url_len (text, len);
-
-	g_string_append_printf (string, "<a href=\"%s\">", real_url);
 
 	/* The thing we are making a link of may contain
 	 * characters which need escaping */
-	str = g_markup_escape_text (text, len);
-	g_string_append (string, str);
-	g_free (str);
+	escaped = g_markup_escape_text (text, len);
 
-	g_string_append (string, "</a>");
+	/* Append the link inside <a href=""></a> tag */
+	g_string_append_printf (string, "<a href=\"%s\">%s</a>",
+				real_url, escaped);
 
 	g_free (real_url);
+	g_free (escaped);
 }
 
 static gboolean use_smileys = FALSE;
