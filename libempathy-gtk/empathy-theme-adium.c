@@ -244,8 +244,6 @@ theme_adium_replace_link (const gchar *text,
 	g_free (escaped);
 }
 
-static gboolean use_smileys = FALSE;
-
 static void
 theme_adium_replace_smiley (const gchar *text,
 			    gssize len,
@@ -255,17 +253,10 @@ theme_adium_replace_smiley (const gchar *text,
 	EmpathySmileyHit *hit = match_data;
 	GString *string = user_data;
 
-	if (use_smileys) {
-		/* Replace smileys by a <img/> tag */
-		g_string_append (string, "<abbr title=\"");
-		g_string_append_len (string, text, len);
-		g_string_append_printf (string, "\"><img src=\"%s\" alt=\"",
-					hit->path);
-		g_string_append_len (string, text, len);
-		g_string_append (string, "\"/></abbr>");
-	} else {
-		g_string_append_len (string, text, len);
-	}
+	/* Replace smiley by a <img/> tag */
+	g_string_append_printf (string,
+				"<img src=\"%s\" alt=\"%.*s\" title=\"%.*s\"/>",
+				hit->path, len, text, len, text);
 }
 
 static void
@@ -302,6 +293,7 @@ theme_adium_parse_body (const gchar *text)
 {
 	EmpathyStringParser *parsers;
 	GString *string;
+	gboolean use_smileys;
 
 	/* Check if we have to parse smileys */
 	empathy_conf_get_bool (empathy_conf_get (),
