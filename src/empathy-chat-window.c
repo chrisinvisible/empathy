@@ -418,7 +418,7 @@ get_window_title_name (EmpathyChatWindowPriv *priv)
 		}
 
 		else if (current_unread_msgs == 0) {
-			/* unread messages are in others tab */
+			/* unread messages are in other tabs */
 			return g_strdup_printf (ngettext (
 				"%s (%d unread from others)",
 				"%s (%d unread from others)",
@@ -1195,8 +1195,7 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 	}
 
 	if (has_focus && priv->current_chat == chat) {
-		/* window and tab are focused so consider than the message is
-		 * read */
+		/* window and tab are focused so consider the message to be read */
 		empathy_chat_messages_read (chat);
 		return;
 	}
