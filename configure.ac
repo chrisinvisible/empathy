@@ -233,6 +233,16 @@ else
    if test "x$have_nm" = "xyes"; then
       AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
       have_connman=no
+   else
+      PKG_CHECK_MODULES(NETWORK_MANAGER,
+      [
+          libnm-glib >= $NETWORK_MANAGER_REQUIRED
+      ], have_nm="yes", have_nm="no")
+
+      if test "x$have_nm" = "xyes"; then
+      AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
+      have_connman=no
+      fi
    fi
 fi
 
