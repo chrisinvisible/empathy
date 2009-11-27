@@ -741,7 +741,7 @@ disable_camera (EmpathyCallWindow *self)
   if (priv->camera_state == CAMERA_STATE_OFF)
     return;
 
-  DEBUG ("disable camera");
+  DEBUG ("Disable camera");
 
   display_video_preview (self, FALSE);
 
@@ -793,7 +793,7 @@ enable_preview (EmpathyCallWindow *self)
   if (priv->camera_state == CAMERA_STATE_PREVIEW)
     return;
 
-  DEBUG ("enable preview");
+  DEBUG ("Enable preview");
 
   if (priv->camera_state == CAMERA_STATE_ON)
     /* preview is already displayed so we just have to stop sending */
@@ -846,7 +846,7 @@ enable_camera (EmpathyCallWindow *self)
   if (priv->camera_state == CAMERA_STATE_ON)
     return;
 
-  DEBUG ("enable camera");
+  DEBUG ("Enable camera");
 
   empathy_call_window_set_send_video (self, TRUE);
 
