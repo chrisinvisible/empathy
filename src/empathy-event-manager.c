@@ -944,7 +944,7 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
             empathy_contact_get_name (contact));
 
           event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              GTK_STOCK_DIALOG_INFO, header, NULL, NULL, NULL, NULL);
+              "stock_person", header, NULL, NULL, NULL, NULL);
         }
     }
   else
@@ -960,7 +960,7 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
             empathy_contact_get_name (contact));
 
           event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              GTK_STOCK_DIALOG_INFO, header, NULL, NULL, NULL, NULL);
+              "stock_person", header, NULL, NULL, NULL, NULL);
         }
     }
   g_free (header);
