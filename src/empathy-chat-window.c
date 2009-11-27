@@ -429,8 +429,8 @@ get_window_title_name (EmpathyChatWindowPriv *priv)
 		else {
 			/* unread messages are in all the tabs */
 			return g_strdup_printf (ngettext (
-				"%s (%d unread from everyone)",
-				"%s (%d unread from everyone)",
+				"%s (%d unread from all)",
+				"%s (%d unread from all)",
 				all_unread_msgs),
 				active_name, all_unread_msgs);
 		}
