@@ -1224,7 +1224,7 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
   accounts_dialog_connection_changed_cb (account,
       0,
       status,
-      TP_CONNECTION_STATUS_DISCONNECTED,
+      TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED,
       NULL,
       NULL,
       dialog);
