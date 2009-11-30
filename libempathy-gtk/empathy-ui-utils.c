@@ -1454,30 +1454,70 @@ empathy_toggle_button_set_state_quietly (GtkWidget *widget,
 	g_signal_handlers_unblock_by_func (widget, callback, user_data);
 }
 
+void
+empathy_send_file (EmpathyContact *contact, GFile *file)
+{
+	EmpathyFTFactory *factory;
+	GtkRecentManager *manager;
+	gchar *uri;
+
+	g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+	g_return_if_fail (G_IS_FILE (file));
+
+	factory = empathy_ft_factory_dup_singleton ();
+
+	empathy_ft_factory_new_transfer_outgoing (factory, contact, file);
+
+	uri = g_file_get_uri (file);
+	manager = gtk_recent_manager_get_default ();
+	gtk_recent_manager_add_item (manager, uri);
+	g_free (uri);
+
+	g_object_unref (factory);
+}
+
+void
+empathy_send_file_from_uri_list (EmpathyContact *contact, const gchar *uri_list)
+{
+	const gchar *nl;
+	GFile *file;
+
+	/* Only handle a single file for now.  It would be wicked cool to be
+	   able to do multiple files, offering to zip them or whatever like
+	   nautilus-sendto does.  Note that text/uri-list is defined to have
+	   each line terminated by \r\n, but we can be tolerant of applications
+	   that only use \n or don't terminate single-line entries.
+	*/
+	nl = strstr (uri_list, "\r\n");
+	if (!nl) {
+		nl = strchr (uri_list, '\n');
+	}
+	if (nl) {
+		gchar *uri = g_strndup (uri_list, nl - uri_list);
+		file = g_file_new_for_uri (uri);
+		g_free (uri);
+	}
+	else {
+		file = g_file_new_for_uri (uri_list);
+	}
+
+	empathy_send_file (contact, file);
+
+	g_object_unref (file);
+}
+
 static void
 file_manager_send_file_response_cb (GtkDialog      *widget,
 				    gint            response_id,
 				    EmpathyContact *contact)
 {
-	EmpathyFTFactory *factory;
 	GFile *file;
-	gchar *uri;
-	GtkRecentManager *manager;
 
 	if (response_id == GTK_RESPONSE_OK) {
 		file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (widget));
-		uri = g_file_get_uri (file);
 
-		factory = empathy_ft_factory_dup_singleton ();
+		empathy_send_file (contact, file);
 
-		empathy_ft_factory_new_transfer_outgoing (factory, contact,
-		                                          file);
-
-		manager = gtk_recent_manager_get_default ();
-		gtk_recent_manager_add_item (manager, uri);
-
-		g_free (uri);
-		g_object_unref (factory);
 		g_object_unref (file);
 	}
 

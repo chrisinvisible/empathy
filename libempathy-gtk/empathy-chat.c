@@ -2010,6 +2010,12 @@ chat_create_ui (EmpathyChat *chat)
 
 	/* Add message view. */
 	chat->view = empathy_theme_manager_create_view (empathy_theme_manager_get ());
+	/* If this is a GtkTextView, it's set as a drag destination for text/plain
+	   and other types, even though it's non-editable and doesn't accept any
+	   drags.  This steals drag motion for anything inside the scrollbars,
+	   making drag destinations on chat windows far less useful.
+	 */
+	gtk_drag_dest_unset (GTK_WIDGET (chat->view));
 	g_signal_connect (chat->view, "focus_in_event",
 			  G_CALLBACK (chat_text_view_focus_in_event_cb),
 			  chat);

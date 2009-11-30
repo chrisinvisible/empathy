@@ -65,6 +65,7 @@ typedef struct {
 	EmpathyContactListFeatureFlags  list_features;
 	EmpathyContactFeatureFlags      contact_features;
 	GtkWidget                      *tooltip_widget;
+	GtkTargetList                  *file_targets;
 } EmpathyContactListViewPriv;
 
 typedef struct {
@@ -88,15 +89,19 @@ enum {
 
 enum DndDragType {
 	DND_DRAG_TYPE_CONTACT_ID,
-	DND_DRAG_TYPE_URL,
+	DND_DRAG_TYPE_URI_LIST,
 	DND_DRAG_TYPE_STRING,
 };
 
 static const GtkTargetEntry drag_types_dest[] = {
+	{ "text/uri-list",   0, DND_DRAG_TYPE_URI_LIST },
 	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
-	{ "text/uri-list",   0, DND_DRAG_TYPE_URL },
 	{ "text/plain",      0, DND_DRAG_TYPE_STRING },
 	{ "STRING",          0, DND_DRAG_TYPE_STRING },
+};
+
+static const GtkTargetEntry drag_types_dest_file[] = {
+	{ "text/uri-list",   0, DND_DRAG_TYPE_URI_LIST },
 };
 
 static const GtkTargetEntry drag_types_source[] = {
@@ -234,74 +239,51 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 	}
 }
 
-static void
-contact_list_view_drag_data_received (GtkWidget         *view,
-				      GdkDragContext    *context,
-				      gint               x,
-				      gint               y,
-				      GtkSelectionData  *selection,
-				      guint              info,
-				      guint              time_)
+static gboolean
+contact_list_view_contact_drag_received (GtkWidget         *view,
+					 GdkDragContext    *context,
+					 GtkTreeModel      *model,
+					 GtkTreePath       *path,
+					 GtkSelectionData  *selection)
 {
 	EmpathyContactListViewPriv *priv;
 	TpAccountManager           *account_manager;
 	EmpathyTpContactFactory    *factory = NULL;
-	TpAccount                  *account = NULL;
-	GtkTreeModel               *model;
-	GtkTreeViewDropPosition     position;
-	GtkTreePath                *path;
-	const gchar                *id;
-	gchar                     **strv = NULL;
-	const gchar                *account_id = NULL;
-	const gchar                *contact_id = NULL;
-	gchar                      *new_group = NULL;
-	gchar                      *old_group = NULL;
+	TpAccount                  *account;
 	DndGetContactData          *data;
-	gboolean                    is_row;
-	gboolean                    success = TRUE;
+	GtkTreePath                *source_path;
+	const gchar   *sel_data;
+	gchar        **strv = NULL;
+	const gchar   *account_id = NULL;
+	const gchar   *contact_id = NULL;
+	gchar         *new_group = NULL;
+	gchar         *old_group = NULL;
+	gboolean       success = TRUE;
 
 	priv = GET_PRIV (view);
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
 
-	/* Get destination group information. */
-	is_row = gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (view),
-						    x,
-						    y,
-						    &path,
-						    &position);
-
-	if (is_row) {
-		new_group = empathy_contact_list_store_get_parent_group (model,
-			path, NULL);
-		gtk_tree_path_free (path);
-	}
+	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
+	new_group = empathy_contact_list_store_get_parent_group (model,
+								 path, NULL);
 
 	/* Get source group information. */
 	if (priv->drag_row) {
-		path = gtk_tree_row_reference_get_path (priv->drag_row);
-		if (path) {
+		source_path = gtk_tree_row_reference_get_path (priv->drag_row);
+		if (source_path) {
 			old_group = empathy_contact_list_store_get_parent_group (
-				model, path, NULL);
-			gtk_tree_path_free (path);
+										 model, source_path, NULL);
+			gtk_tree_path_free (source_path);
 		}
 	}
 
 	if (!tp_strdiff (old_group, new_group)) {
 		g_free (new_group);
 		g_free (old_group);
-		goto OUT;
+		return FALSE;
 	}
 
-	id = (const gchar*) gtk_selection_data_get_data (selection);
-	DEBUG ("Received %s%s drag & drop contact from roster with id:'%s'",
-		context->action == GDK_ACTION_MOVE ? "move" : "",
-		context->action == GDK_ACTION_COPY ? "copy" : "",
-		id);
-
-	/* FIXME: should probably make sure the account manager is prepared
-	 * before calling _ensure_account on it. See bug 600115. */
 	account_manager = tp_account_manager_dup ();
-	strv = g_strsplit (id, ":", 2);
+	strv = g_strsplit (sel_data, ":", 2);
 	if (g_strv_length (strv) == 2) {
 		account_id = strv[0];
 		contact_id = strv[1];
@@ -322,7 +304,7 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 		success = FALSE;
 		g_free (new_group);
 		g_free (old_group);
-		goto OUT;
+		return FALSE;
 	}
 
 	data = g_slice_new0 (DndGetContactData);
@@ -333,14 +315,85 @@ contact_list_view_drag_data_received (GtkWidget         *view,
 	/* FIXME: We should probably wait for the cb before calling
 	 * gtk_drag_finish */
 	empathy_tp_contact_factory_get_from_id (factory, contact_id,
-		contact_list_view_drag_got_contact,
-		data, (GDestroyNotify) contact_list_view_dnd_get_contact_free,
-		G_OBJECT (view));
-
+						contact_list_view_drag_got_contact,
+						data, (GDestroyNotify) contact_list_view_dnd_get_contact_free,
+						G_OBJECT (view));
+	g_strfreev (strv);
 	g_object_unref (factory);
 
-OUT:
-	g_strfreev (strv);
+	return TRUE;
+}
+
+static gboolean
+contact_list_view_file_drag_received (GtkWidget         *view,
+				      GdkDragContext    *context,
+				      GtkTreeModel      *model,
+				      GtkTreePath       *path,
+				      GtkSelectionData  *selection)
+{
+	GtkTreeIter     iter;
+	const gchar    *sel_data;
+	EmpathyContact *contact;
+
+	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
+
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_model_get (model, &iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    -1);
+	if (!contact) {
+		return FALSE;
+	}
+
+	empathy_send_file_from_uri_list (contact, sel_data);
+
+	g_object_unref (contact);
+
+	return TRUE;
+}
+
+static void
+contact_list_view_drag_data_received (GtkWidget         *view,
+				      GdkDragContext    *context,
+				      gint               x,
+				      gint               y,
+				      GtkSelectionData  *selection,
+				      guint              info,
+				      guint              time_)
+{
+	GtkTreeModel               *model;
+	gboolean                    is_row;
+	GtkTreeViewDropPosition     position;
+	GtkTreePath                *path;
+	gboolean                    success = TRUE;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+
+	/* Get destination group information. */
+	is_row = gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (view),
+						    x,
+						    y,
+						    &path,
+						    &position);
+	if (!is_row) {
+		success = FALSE;
+	}
+	else if (info == DND_DRAG_TYPE_CONTACT_ID || info == DND_DRAG_TYPE_STRING) {
+		success = contact_list_view_contact_drag_received (view,
+								   context,
+								   model,
+								   path,
+								   selection);
+	}
+	else if (info == DND_DRAG_TYPE_URI_LIST) {
+		success = contact_list_view_file_drag_received (view,
+								context,
+								model,
+								path,
+								selection);
+	}
+
+	gtk_tree_path_free (path);
 	gtk_drag_finish (context, success, FALSE, GDK_CURRENT_TIME);
 }
 
@@ -363,12 +416,19 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 			       gint            y,
 			       guint           time_)
 {
+	EmpathyContactListViewPriv *priv;
+	GtkTreeModel               *model;
+	GdkAtom                target;
+	GtkTreeIter            iter;
 	static DragMotionData *dm = NULL;
 	GtkTreePath           *path;
 	gboolean               is_row;
 	gboolean               is_different = FALSE;
 	gboolean               cleanup = TRUE;
-	int                    action = 0;
+	gboolean               retval = TRUE;
+
+	priv = GET_PRIV (EMPATHY_CONTACT_LIST_VIEW (widget));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
 
 	is_row = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
 						x,
@@ -387,15 +447,82 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 		cleanup &= FALSE;
 	}
 
-	if (context->actions == GDK_ACTION_COPY) {
-		action = context->suggested_action;
-	} else if (context->actions & GDK_ACTION_MOVE) {
-		action = GDK_ACTION_MOVE;
+	if (path == NULL) {
+		/* Coordinates don't point to an actual row, so make sure the pointer
+		   and highlighting don't indicate that a drag is possible.
+		 */
+		gdk_drag_status (context, GDK_ACTION_DEFAULT, time_);
+		gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
+		return FALSE;
 	}
-	gdk_drag_status (context, action, time_);
+	target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
+	gtk_tree_model_get_iter (model, &iter, path);
+
+	if (target == GDK_NONE) {
+		/* If target == GDK_NONE, then we don't have a target that can be
+		   dropped on a contact.  This means a contact drag.  If we're
+		   pointing to a group, highlight it.  Otherwise, if the contact
+		   we're pointing to is in a group, highlight that.  Otherwise,
+		   set the drag position to before the first row for a drag into
+		   the "non-group" at the top.
+		 */
+		GtkTreeIter  group_iter;
+		gboolean     is_group;
+		GtkTreePath *group_path;
+		gtk_tree_model_get (model, &iter,
+				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+				    -1);
+		if (is_group) {
+			group_iter = iter;
+		}
+		else {
+			if (gtk_tree_model_iter_parent (model, &group_iter, &iter))
+				gtk_tree_model_get (model, &group_iter,
+						    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+						    -1);
+		}
+		if (is_group) {
+			gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+			group_path = gtk_tree_model_get_path (model, &group_iter);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+							 group_path,
+							 GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+			gtk_tree_path_free (group_path);
+		}
+		else {
+			group_path = gtk_tree_path_new_first ();
+			gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+							 group_path,
+							 GTK_TREE_VIEW_DROP_BEFORE);
+		}
+	}
+	else {
+		/* This is a file drag, and it can only be dropped on contacts,
+		   not groups.
+		 */
+		EmpathyContact *contact;
+		gtk_tree_model_get (model, &iter,
+				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+				    -1);
+		if (contact != NULL &&
+		    empathy_contact_is_online (contact) &&
+		    (empathy_contact_get_capabilities (contact) & EMPATHY_CAPABILITIES_FT)) {
+			gdk_drag_status (context, GDK_ACTION_COPY, time_);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+							 path,
+							 GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+			g_object_unref (contact);
+		}
+		else {
+			gdk_drag_status (context, 0, time_);
+			gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
+			retval = FALSE;
+		}
+	}
 
 	if (!is_different && !cleanup) {
-		return TRUE;
+		return retval;
 	}
 
 	if (dm) {
@@ -420,7 +547,7 @@ contact_list_view_drag_motion (GtkWidget      *widget,
 			dm);
 	}
 
-	return TRUE;
+	return retval;
 }
 
 static void
@@ -971,6 +1098,11 @@ contact_list_view_setup (EmpathyContactListView *view)
 				 GTK_TREE_MODEL (priv->store));
 
 	/* Setup view */
+	/* Setting reorderable is a hack that gets us row previews as drag icons
+	   for free.  We override all the drag handlers.  It's tricky to get the
+	   position of the drag icon right in drag_begin.  GtkTreeView has special
+	   voodoo for it, so we let it do the voodoo that he do.
+	 */
 	g_object_set (view,
 		      "headers-visible", FALSE,
 		      "reorderable", TRUE,
@@ -1131,6 +1263,9 @@ contact_list_view_finalize (GObject *object)
 	if (priv->tooltip_widget) {
 		gtk_widget_destroy (priv->tooltip_widget);
 	}
+	if (priv->file_targets) {
+		gtk_target_list_unref (priv->file_targets);
+	}
 
 	G_OBJECT_CLASS (empathy_contact_list_view_parent_class)->finalize (object);
 }
@@ -1260,6 +1395,10 @@ empathy_contact_list_view_init (EmpathyContactListView *view)
 	gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (view),
 					      empathy_contact_list_store_row_separator_func,
 					      NULL, NULL);
+
+	/* Set up drag target lists. */
+	priv->file_targets = gtk_target_list_new (drag_types_dest_file,
+						  G_N_ELEMENTS (drag_types_dest_file));
 
 	/* Connect to tree view signals rather than override. */
 	g_signal_connect (view, "button-press-event",
