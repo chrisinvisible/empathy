@@ -98,6 +98,7 @@ typedef struct
   TpProxy *proxy;
   TpProxySignalConnection *new_debug_message_signal;
   TpProxySignalConnection *name_owner_changed_signal;
+  gulong invalid_signal_id;
 
   /* Whether NewDebugMessage will be fired */
   gboolean paused;
@@ -402,6 +403,19 @@ debug_window_add_log_messages_from_cache (EmpathyDebugWindow *debug_window,
 }
 
 static void
+proxy_invalidated_cb (TpProxy *proxy,
+    guint domain,
+    gint code,
+    gchar *msg,
+    EmpathyDebugWindowPriv *self)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (self);
+
+  /* Proxy has been invalidated so we can't disconnect the signal any more */
+  priv->new_debug_message_signal = NULL;
+}
+
+static void
 debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
     EmpathyDebugWindow *debug_window)
 {
@@ -466,7 +480,10 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
     }
 
   if (priv->proxy != NULL)
-    g_object_unref (priv->proxy);
+    {
+      g_signal_handler_disconnect (priv->proxy, priv->invalid_signal_id);
+      g_object_unref (priv->proxy);
+    }
 
   priv->proxy = proxy;
 
@@ -474,6 +491,9 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
 
   emp_cli_debug_call_get_messages (priv->proxy, -1,
       debug_window_get_messages_cb, debug_window, NULL, NULL);
+
+  priv->invalid_signal_id = g_signal_connect (proxy, "invalidated",
+      G_CALLBACK (proxy_invalidated_cb), debug_window);
 
   g_object_unref (dbus);
 }
@@ -1460,6 +1480,7 @@ debug_window_dispose (GObject *object)
   if (priv->proxy != NULL)
     {
       debug_window_set_enabled (EMPATHY_DEBUG_WINDOW (object), FALSE);
+      g_signal_handler_disconnect (priv->proxy, priv->invalid_signal_id);
       g_object_unref (priv->proxy);
     }
 
