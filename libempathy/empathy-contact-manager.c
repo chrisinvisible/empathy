@@ -144,6 +144,10 @@ contact_manager_status_changed_cb (TpAccount *account,
 	EmpathyTpContactList      *list;
 	TpConnection              *connection;
 
+	if (new_status == TP_CONNECTION_STATUS_DISCONNECTED)
+		/* No point to start tracking a connection which is about to die */
+		return;
+
 	connection = tp_account_get_connection (account);
 
 	if (connection == NULL || g_hash_table_lookup (priv->lists, connection)) {
