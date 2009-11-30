@@ -1,3 +1,47 @@
+NEW in 2.29.3
+==============
+
+The « Guillaume, 25 affonds ! » release.
+
+This release fixes a lot of regressions that have been introduced in 2.29.2 by
+the port to TpAccount.
+It also introduces a new widget to configure SIP accounts and adds the ability
+to send files using Drag and Drop.
+
+Bugs fixed:
+ - Fixed #601235, calls to empathy_idle_get_status() before AM object is ready (Guillaume Desmottes)
+ - Fixed #548701, improve chat window title with multi tabs (Guillaume Desmottes)
+ - Fixed #571642, when an irc user changes nick, empathy doesn't indicate that the name changed (Jonathon Jongsma)
+ - Fixed #581626, Semantics of empathy -a (Guillaume Desmottes)
+ - Fixed #585582, Can't connect to google account "Network Error"
+ - Fixed #586678, "Manage favorites" dialog don't display the Room column if showing all account (Guillaume Desmottes)
+ - Fixed #590700, Wrong icon is used in notification for contacts without avatars (Guillaume Desmottes)
+ - Fixed #598381, WebKit automatically converts <a> tags in links (Gustavo Noronha Silva)
+ - Fixed #599315, confusing dependencies of NetworkManager ... libnm-glib v. libnm_glib (Brian Pepple)
+ - Fixed #599640, Messages are not correctly escaped for adium themes
+ - Fixed #600800, Crash when searching through logs (Guillaume Desmottes)
+ - Fixed #601697, SIP account widget is incomplete (Guillaume Desmottes)
+ - Fixed #601807, Previous conversations doesn't work any more
+ - Fixed #602013, Maximized state of main window is not preserved, and size/position is sometimes forgotten after deiconify
+ - Fixed #602066, Support /nick command
+ - Fixed #602324, Fix nautilus-sendto plugin's linking
+ - Fixed #602572, copy and paste not useful
+ - Fixed #602649, Raising from the notification area doesn't bring it to the current workspace (Xavier Claessens)
+ - Fixed #602852, Smileys are not displayed in /me messages
+ - Fixed #603163, Render emails in format <email@example.com> to links
+ - Fixed #603361, No contact appears when reconnecting (Guillaume Desmottes)
+ - Fixed #603384, Crash in debug dialog (Guillaume Desmottes)
+ - Fixed #595226, Send files using drag and drop (Shaun McCance)
+ - Fixed #600946, Add more friendly strings for TpMediaStreamError
+ - Fixed #601288, Video preview should always be displayed when we are sending video (Guillaume Desmottes)
+
+Translations:
+ - Updated es Translation (Jorge González)
+ - Updated gl Translation (Antón Méixome)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated ro Translation (Adi Roiban)
+ - Updated sl Translation (Matej Urbančič)
+
 NEW in 2.29.2
 =============
 
