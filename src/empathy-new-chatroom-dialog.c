@@ -48,6 +48,8 @@
 
 typedef struct {
 	EmpathyTpRoomlist *room_list;
+	/* Currently selected account */
+	TpAccount         *account;
 
 	GtkWidget         *window;
 	GtkWidget         *vbox_widgets;
@@ -239,6 +241,10 @@ new_chatroom_dialog_destroy_cb (GtkWidget               *widget,
 	}
   	g_object_unref (dialog->model);
 
+	if (dialog->account != NULL) {
+		g_object_unref (dialog->account);
+	}
+
 	g_free (dialog);
 }
 
@@ -354,17 +360,15 @@ static void
 new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 {
 	EmpathyAccountChooser *account_chooser;
-	TpAccount             *account;
 	const gchar           *protocol;
 	const gchar           *room;
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser);
-	account = empathy_account_chooser_dup_account (account_chooser);
 
-	if (account == NULL)
+	if (dialog->account == NULL)
 		return;
 
-	protocol = tp_account_get_protocol (account);
+	protocol = tp_account_get_protocol (dialog->account);
 
 	gtk_entry_set_text (GTK_ENTRY (dialog->entry_server), "");
 
@@ -387,8 +391,6 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 
 	/* Final set up of the dialog */
 	gtk_widget_grab_focus (dialog->entry_room);
-
-	g_object_unref (account);
 }
 
 static void
@@ -396,7 +398,6 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 					EmpathyNewChatroomDialog *dialog)
 {
 	EmpathyAccountChooser *account_chooser;
-	TpAccount             *account;
 	gboolean               listing = FALSE;
 	gboolean               expanded = FALSE;
 
@@ -408,12 +409,16 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 	ephy_spinner_stop (EPHY_SPINNER (dialog->throbber));
 	new_chatroom_dialog_model_clear (dialog);
 
+	if (dialog->account != NULL) {
+		g_object_unref (dialog->account);
+	}
+
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser);
-	account = empathy_account_chooser_dup_account (account_chooser);
-	if (account == NULL)
+	dialog->account = empathy_account_chooser_dup_account (account_chooser);
+	if (dialog->account == NULL)
 		goto out;
 
-	dialog->room_list = empathy_tp_roomlist_new (account);
+	dialog->room_list = empathy_tp_roomlist_new (dialog->account);
 
 	if (dialog->room_list) {
 		g_signal_connect (dialog->room_list, "destroy",
@@ -444,8 +449,6 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 			ephy_spinner_start (EPHY_SPINNER (dialog->throbber));
 		}
 	}
-
-	g_object_unref (account);
 
 out:
 	new_chatroom_dialog_update_widgets (dialog);
