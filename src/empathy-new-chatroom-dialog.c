@@ -50,6 +50,9 @@ typedef struct {
 	EmpathyTpRoomlist *room_list;
 	/* Currently selected account */
 	TpAccount         *account;
+	/* Signal id of the "status-changed" signal connected on the currently
+	 * selected account */
+	gulong             status_changed_id;
 
 	GtkWidget         *window;
 	GtkWidget         *vbox_widgets;
@@ -242,6 +245,7 @@ new_chatroom_dialog_destroy_cb (GtkWidget               *widget,
   	g_object_unref (dialog->model);
 
 	if (dialog->account != NULL) {
+		g_signal_handler_disconnect (dialog->account, dialog->status_changed_id);
 		g_object_unref (dialog->account);
 	}
 
@@ -360,9 +364,24 @@ static void
 update_join_button_sensitivy (EmpathyNewChatroomDialog *dialog)
 {
 	const gchar           *room;
+	gboolean               sensitive = FALSE;
+
 
 	room = gtk_entry_get_text (GTK_ENTRY (dialog->entry_room));
-	gtk_widget_set_sensitive (dialog->button_join, !EMP_STR_EMPTY (room));
+	if (EMP_STR_EMPTY (room))
+		goto out;
+
+	if (dialog->account == NULL)
+		goto out;
+
+	if (tp_account_get_connection_status (dialog->account, NULL) !=
+		      TP_CONNECTION_STATUS_CONNECTED)
+		goto out;
+
+	sensitive = TRUE;
+
+out:
+	gtk_widget_set_sensitive (dialog->button_join, sensitive);
 }
 
 static void
@@ -401,6 +420,18 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 }
 
 static void
+account_status_changed_cb (TpAccount *account,
+			    guint old_status,
+			    guint new_status,
+			    guint reason,
+			    gchar *dbus_error_name,
+			    GHashTable *details,
+			    EmpathyNewChatroomDialog *self)
+{
+	update_join_button_sensitivy (self);
+}
+
+static void
 new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 					EmpathyNewChatroomDialog *dialog)
 {
@@ -417,6 +448,7 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 	new_chatroom_dialog_model_clear (dialog);
 
 	if (dialog->account != NULL) {
+		g_signal_handler_disconnect (dialog->account, dialog->status_changed_id);
 		g_object_unref (dialog->account);
 	}
 
@@ -424,6 +456,9 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 	dialog->account = empathy_account_chooser_dup_account (account_chooser);
 	if (dialog->account == NULL)
 		goto out;
+
+	dialog->status_changed_id = g_signal_connect (dialog->account,
+		      "status-changed", G_CALLBACK (account_status_changed_cb), dialog);
 
 	dialog->room_list = empathy_tp_roomlist_new (dialog->account);
 
