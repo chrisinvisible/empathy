@@ -685,6 +685,7 @@ account_widget_account_enabled_cb (GObject *source_object,
         }
     }
 
+  g_object_unref (widget);
   g_free (message);
   g_free (status);
 }
@@ -716,6 +717,7 @@ account_widget_applied_cb (GObject *source_object,
       if (priv->creating_account)
         {
           /* By default, when an account is created, we enable it. */
+          g_object_ref (widget);
           tp_account_set_enabled_async (account, TRUE,
               account_widget_account_enabled_cb, widget);
           priv->account_created = TRUE;
@@ -745,6 +747,7 @@ account_widget_applied_cb (GObject *source_object,
     }
 
   account_widget_set_control_buttons_sensitivity (widget, FALSE);
+  g_object_unref (widget);
 }
 
 static void
@@ -753,6 +756,7 @@ account_widget_apply_clicked_cb (GtkWidget *button,
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
+  g_object_ref (self);
   empathy_account_settings_apply_async (priv->settings,
       account_widget_applied_cb, self);
 }
@@ -1194,6 +1198,7 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
   account = empathy_account_settings_get_account (priv->settings);
 
   /* Enable the account according to the value of the "Enabled" checkbox */
+  g_object_ref (user_data);
   tp_account_set_enabled_async (account, state,
       account_widget_account_enabled_cb, user_data);
 }
