@@ -115,6 +115,7 @@
                 <property name="is_important">True</property>
                 <property name="label" translatable="yes">Hang up</property>
                 <property name="icon_name">call-stop</property>
+                <property name="tooltip_text" translatable="yes">Hang up current call</property>
               </object>
               <packing>
                 <property name="homogeneous">True</property>
@@ -127,6 +128,7 @@
                 <property name="label" translatable="yes">Redial</property>
                 <property name="stock_id">gtk-refresh</property>
                 <property name="sensitive">False</property>
+                <property name="tooltip_text" translatable="yes">Recall contact</property>
               </object>
               <packing>
                 <property name="homogeneous">True</property>
@@ -146,6 +148,7 @@
                 <property name="active">True</property>
                 <property name="label" translatable="yes">Send Audio</property>
                 <property name="icon_name">gnome-stock-mic</property>
+                <property name="tooltip_text" translatable="yes">Toggle audio transmission</property>
               </object>
               <packing>
                 <property name="homogeneous">True</property>
