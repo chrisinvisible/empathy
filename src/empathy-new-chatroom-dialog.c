@@ -361,7 +361,7 @@ new_chatroom_dialog_model_add_columns (EmpathyNewChatroomDialog *dialog)
 }
 
 static void
-update_join_button_sensitivy (EmpathyNewChatroomDialog *dialog)
+update_join_button_sensitivity (EmpathyNewChatroomDialog *dialog)
 {
 	const gchar           *room;
 	gboolean               sensitive = FALSE;
@@ -413,7 +413,7 @@ new_chatroom_dialog_update_widgets (EmpathyNewChatroomDialog *dialog)
 		gtk_widget_set_sensitive (dialog->entry_server, TRUE);
 	}
 
-	update_join_button_sensitivy (dialog);
+	update_join_button_sensitivity (dialog);
 
 	/* Final set up of the dialog */
 	gtk_widget_grab_focus (dialog->entry_room);
@@ -428,7 +428,7 @@ account_status_changed_cb (TpAccount *account,
 			    GHashTable *details,
 			    EmpathyNewChatroomDialog *self)
 {
-	update_join_button_sensitivy (self);
+	update_join_button_sensitivity (self);
 }
 
 static void
@@ -674,7 +674,7 @@ new_chatroom_dialog_entry_changed_cb (GtkWidget                *entry,
 				      EmpathyNewChatroomDialog *dialog)
 {
 	if (entry == dialog->entry_room) {
-		update_join_button_sensitivy (dialog);
+		update_join_button_sensitivity (dialog);
 
 		/* FIXME: Select the room in the list */
 	}
