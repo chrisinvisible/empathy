@@ -36,6 +36,7 @@ private_icons = \
 	hicolor_apps_16x16_im-qq.png \
 	hicolor_apps_16x16_im-meanwhile.png \
 	hicolor_apps_16x16_im-myspace.png \
+	hicolor_apps_16x16_im-sametime.png \
 	hicolor_apps_16x16_empathy-starred.png \
 	hicolor_apps_16x16_empathy-unstarred.png \
 	hicolor_apps_22x22_im-ekiga.png \
@@ -51,6 +52,7 @@ private_icons = \
 	hicolor_apps_22x22_im-qq.png \
 	hicolor_apps_22x22_im-meanwhile.png \
 	hicolor_apps_22x22_im-myspace.png \
+	hicolor_apps_22x22_im-sametime.png \
 	hicolor_apps_22x22_empathy-starred.png \
 	hicolor_apps_22x22_empathy-unstarred.png \
 	hicolor_apps_24x24_im-ekiga.png \
@@ -65,6 +67,7 @@ private_icons = \
 	hicolor_apps_24x24_im-qq.png \
 	hicolor_apps_24x24_im-meanwhile.png \
 	hicolor_apps_24x24_im-myspace.png \
+	hicolor_apps_24x24_im-sametime.png \
 	hicolor_apps_24x24_empathy-starred.png \
 	hicolor_apps_24x24_empathy-unstarred.png \
 	hicolor_apps_32x32_im-ekiga.png \
@@ -79,6 +82,7 @@ private_icons = \
 	hicolor_apps_32x32_im-qq.png \
 	hicolor_apps_32x32_im-meanwhile.png \
 	hicolor_apps_32x32_im-myspace.png \
+	hicolor_apps_32x32_im-sametime.png \
 	hicolor_apps_32x32_empathy-starred.png \
 	hicolor_apps_32x32_empathy-unstarred.png \
 	hicolor_apps_48x48_im-ekiga.png \
@@ -94,6 +98,7 @@ private_icons = \
 	hicolor_apps_48x48_im-qq.png \
 	hicolor_apps_48x48_im-meanwhile.png \
 	hicolor_apps_48x48_im-myspace.png \
+	hicolor_apps_48x48_im-sametime.png \
 	hicolor_apps_48x48_empathy-starred.png \
 	hicolor_apps_48x48_empathy-unstarred.png \
 	hicolor_apps_scalable_im-ekiga.svg \
@@ -108,6 +113,7 @@ private_icons = \
 	hicolor_apps_scalable_im-qq.svg \
 	hicolor_apps_scalable_im-meanwhile.svg \
 	hicolor_apps_scalable_im-myspace.svg \
+	hicolor_apps_scalable_im-sametime.svg \
 	hicolor_status_16x16_empathy-available.png \
 	hicolor_status_16x16_empathy-away.png \
 	hicolor_status_16x16_empathy-busy.png \
