@@ -231,7 +231,8 @@ tp_chat_build_message (EmpathyTpChat *chat,
 		       guint          type,
 		       guint          timestamp,
 		       guint          from_handle,
-		       const gchar   *message_body)
+		       const gchar   *message_body,
+		       TpChannelTextMessageFlags flags)
 {
 	EmpathyTpChatPriv *priv;
 	EmpathyMessage    *message;
@@ -244,6 +245,7 @@ tp_chat_build_message (EmpathyTpChat *chat,
 	empathy_message_set_timestamp (message, timestamp);
 	empathy_message_set_id (message, id);
 	empathy_message_set_incoming (message, incoming);
+	empathy_message_set_flags (message, flags);
 
 	g_queue_push_tail (priv->messages_queue, message);
 
@@ -301,7 +303,8 @@ tp_chat_received_cb (TpChannel   *channel,
 			       message_type,
 			       timestamp,
 			       from_handle,
-			       message_body);
+			       message_body,
+			       message_flags);
 }
 
 static void
@@ -326,7 +329,8 @@ tp_chat_sent_cb (TpChannel   *channel,
 			       message_type,
 			       timestamp,
 			       0,
-			       message_body);
+			       message_body,
+			       0);
 }
 
 static void
@@ -465,7 +469,8 @@ tp_chat_list_pending_messages_cb (TpChannel       *channel,
 				       message_type,
 				       timestamp,
 				       from_handle,
-				       message_body);
+				       message_body,
+				       message_flags);
 	}
 
 	if (empty_non_text_content_ids != NULL) {
