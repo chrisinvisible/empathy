@@ -51,7 +51,7 @@
 #include <libempathy/empathy-ft-factory.h>
 
 #define SCHEMES           "([a-zA-Z\\+]+)"
-#define INVALID_CHARS     " \n\"'"
+#define INVALID_CHARS     "\\s\"'"
 #define INVALID_CHARS_EXT INVALID_CHARS "\\[\\]<>(){},;:?"
 #define BODY              "([^"INVALID_CHARS"]+)"
 #define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_EXT".]"
