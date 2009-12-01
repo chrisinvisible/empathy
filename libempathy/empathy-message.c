@@ -42,6 +42,7 @@ typedef struct {
 	gboolean                  is_backlog;
 	guint                     id;
 	gboolean                  incoming;
+	TpChannelTextMessageFlags flags;
 } EmpathyMessagePriv;
 
 static void empathy_message_finalize   (GObject            *object);
@@ -65,6 +66,7 @@ enum {
 	PROP_TIMESTAMP,
 	PROP_IS_BACKLOG,
 	PROP_INCOMING,
+	PROP_FLAGS,
 };
 
 static void
@@ -131,6 +133,14 @@ empathy_message_class_init (EmpathyMessageClass *class)
 							       "Incoming",
 							       "If this is an incoming (as opposed to sent) message",
 							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
+	g_object_class_install_property (object_class,
+					 PROP_FLAGS,
+					 g_param_spec_uint ("flags",
+							       "Flags",
+							       "The TpChannelTextMessageFlags of this message",
+							       0, G_MAXUINT, 0,
 							       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
 	g_type_class_add_private (object_class, sizeof (EmpathyMessagePriv));
@@ -580,4 +590,29 @@ empathy_message_equal (EmpathyMessage *message1, EmpathyMessage *message2)
 	}
 
 	return FALSE;
+}
+
+TpChannelTextMessageFlags
+empathy_message_get_flags (EmpathyMessage *self)
+{
+	EmpathyMessagePriv *priv = GET_PRIV (self);
+
+	g_return_val_if_fail (EMPATHY_IS_MESSAGE (self), 0);
+
+	return priv->flags;
+}
+
+void
+empathy_message_set_flags        (EmpathyMessage           *self,
+				TpChannelTextMessageFlags flags)
+{
+	EmpathyMessagePriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_MESSAGE (self));
+
+	priv = GET_PRIV (self);
+
+	priv->flags = flags;
+
+	g_object_notify (G_OBJECT (self), "flags");
 }

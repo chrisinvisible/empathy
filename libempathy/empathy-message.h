@@ -84,6 +84,10 @@ void                     empathy_message_set_id (EmpathyMessage *message, guint 
 
 gboolean                 empathy_message_equal (EmpathyMessage *message1, EmpathyMessage *message2);
 
+TpChannelTextMessageFlags empathy_message_get_flags        (EmpathyMessage           *message);
+void                      empathy_message_set_flags        (EmpathyMessage           *message,
+							    TpChannelTextMessageFlags flags);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_MESSAGE_H__ */
