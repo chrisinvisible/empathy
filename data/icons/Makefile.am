@@ -63,6 +63,7 @@ private_icons = \
 	hicolor_apps_24x24_im-local-xmpp.png \
 	hicolor_apps_24x24_im-gadugadu.png \
 	hicolor_apps_24x24_im-qq.png \
+	hicolor_apps_24x24_im-meanwhile.png \
 	hicolor_apps_24x24_im-myspace.png \
 	hicolor_apps_24x24_empathy-starred.png \
 	hicolor_apps_24x24_empathy-unstarred.png \
@@ -76,6 +77,7 @@ private_icons = \
 	hicolor_apps_32x32_im-local-xmpp.png \
 	hicolor_apps_32x32_im-gadugadu.png \
 	hicolor_apps_32x32_im-qq.png \
+	hicolor_apps_32x32_im-meanwhile.png \
 	hicolor_apps_32x32_im-myspace.png \
 	hicolor_apps_32x32_empathy-starred.png \
 	hicolor_apps_32x32_empathy-unstarred.png \
