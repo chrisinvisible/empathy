@@ -2187,8 +2187,10 @@ static void
 chat_constructed (GObject *object)
 {
 	EmpathyChat *chat = EMPATHY_CHAT (object);
+	EmpathyChatPriv *priv = GET_PRIV (chat);
 
-	chat_add_logs (chat);
+	if (priv->handle_type != TP_HANDLE_TYPE_ROOM)
+		chat_add_logs (chat);
 	show_pending_messages (chat);
 }
 
