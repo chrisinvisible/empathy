@@ -96,6 +96,7 @@ struct _EventPriv {
   EventFunc func;
   gboolean inhibit;
   gpointer user_data;
+  guint autoremove_timeout_id;
 };
 
 enum {
@@ -160,6 +161,9 @@ event_free (EventPriv *event)
   g_free (event->public.header);
   g_free (event->public.message);
 
+  if (event->autoremove_timeout_id != 0)
+    g_source_remove (event->autoremove_timeout_id);
+
   if (event->public.contact)
     {
       g_object_unref (event->public.contact);
@@ -174,6 +178,7 @@ event_remove (EventPriv *event)
   EmpathyEventManagerPriv *priv = GET_PRIV (event->manager);
 
   DEBUG ("Removing event %p", event);
+
   priv->events = g_slist_remove (priv->events, event);
   g_signal_emit (event->manager, signals[EVENT_REMOVED], 0, event);
   event_free (event);
@@ -182,6 +187,7 @@ event_remove (EventPriv *event)
 static gboolean
 autoremove_event_timeout_cb (EventPriv *event)
 {
+  event->autoremove_timeout_id = 0;
   event_remove (event);
   return FALSE;
 }
@@ -219,8 +225,9 @@ event_manager_add (EmpathyEventManager *manager,
 
   if (!event->public.must_ack)
     {
-      g_timeout_add_seconds (NOTIFICATION_TIMEOUT,
-        (GSourceFunc) autoremove_event_timeout_cb, event);
+      event->autoremove_timeout_id = g_timeout_add_seconds (
+          NOTIFICATION_TIMEOUT, (GSourceFunc) autoremove_event_timeout_cb,
+          event);
     }
 }
 
