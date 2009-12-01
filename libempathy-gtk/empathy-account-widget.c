@@ -75,6 +75,12 @@ typedef struct {
    * account has been created */
   gboolean account_created;
 
+  /* if TRUE, the GTK+ destroy signal has been fired and so the widgets
+   * embedded in this account widget can't be used any more
+   * workaround because some async callbacks can be called after the
+   * widget has been destroyed */
+  gboolean destroyed;
+
   TpAccountManager *account_manager;
 
   gboolean dispose_run;
@@ -685,6 +691,7 @@ account_widget_account_enabled_cb (GObject *source_object,
         }
     }
 
+  /* unref widget - part of the workaround */
   g_object_unref (widget);
   g_free (message);
   g_free (status);
@@ -717,7 +724,10 @@ account_widget_applied_cb (GObject *source_object,
       if (priv->creating_account)
         {
           /* By default, when an account is created, we enable it. */
+
+          /* workaround to keep widget alive during async call */
           g_object_ref (widget);
+
           tp_account_set_enabled_async (account, TRUE,
               account_widget_account_enabled_cb, widget);
           priv->account_created = TRUE;
@@ -746,7 +756,10 @@ account_widget_applied_cb (GObject *source_object,
         }
     }
 
-  account_widget_set_control_buttons_sensitivity (widget, FALSE);
+  if (!priv->destroyed)
+    account_widget_set_control_buttons_sensitivity (widget, FALSE);
+
+  /* unref the widget - part of the workaround */
   g_object_unref (widget);
 }
 
@@ -756,6 +769,7 @@ account_widget_apply_clicked_cb (GtkWidget *button,
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
+  /* workaround to keep widget alive during async call */
   g_object_ref (self);
   empathy_account_settings_apply_async (priv->settings,
       account_widget_applied_cb, self);
@@ -1152,6 +1166,10 @@ static void
 account_widget_destroy_cb (GtkWidget *widget,
     EmpathyAccountWidget *self)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  /* set the destroyed flag - workaround */
+  priv->destroyed = TRUE;
+
   g_object_unref (self);
 }
 
@@ -1198,6 +1216,7 @@ account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
   account = empathy_account_settings_get_account (priv->settings);
 
   /* Enable the account according to the value of the "Enabled" checkbox */
+  /* workaround to keep widget alive during async call */
   g_object_ref (user_data);
   tp_account_set_enabled_async (account, state,
       account_widget_account_enabled_cb, user_data);
