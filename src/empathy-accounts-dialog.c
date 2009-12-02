@@ -170,6 +170,38 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 }
 
 static void
+accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
+    guint status)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  /* don't show the infobar if account is connected */
+  if (status == TP_CONNECTION_STATUS_CONNECTED)
+    {
+      gtk_widget_hide (priv->infobar);
+      return;
+    }
+
+  switch (status)
+    {
+      case TP_CONNECTION_STATUS_CONNECTING:
+        gtk_label_set_text (GTK_LABEL (priv->label_status),
+            _("Connecting..."));
+        break;
+      case TP_CONNECTION_STATUS_DISCONNECTED:
+        gtk_label_set_text (GTK_LABEL (priv->label_status),
+            _("Disconnected - REASON"));
+        break;
+      default:
+        gtk_label_set_text (GTK_LABEL (priv->label_status),
+            _("Unknown Status"));
+    }
+
+  gtk_widget_show (priv->label_status);
+  gtk_widget_show (priv->infobar);
+}
+
+static void
 empathy_account_dialog_widget_cancelled_cb (
     EmpathyAccountWidget *widget_object,
     EmpathyAccountsDialog *dialog)
@@ -275,6 +307,10 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 
   accounts_dialog_update_name_label (dialog,
       empathy_account_settings_get_display_name (settings));
+
+  accounts_dialog_update_status_infobar (dialog,
+      tp_account_get_connection_status (
+      empathy_account_settings_get_account (settings), NULL));
 }
 
 static void
@@ -1130,6 +1166,9 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
   GtkTreeIter   iter;
   gboolean      found;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  /* Update the status-infobar in the details view*/
+  accounts_dialog_update_status_infobar (dialog, current);
 
   /* Update the status in the model */
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
