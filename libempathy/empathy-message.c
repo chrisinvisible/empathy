@@ -445,6 +445,7 @@ empathy_message_should_highlight (EmpathyMessage *message)
 	gchar         *cf_msg, *cf_to;
 	gchar         *ch;
 	gboolean       ret_val;
+	TpChannelTextMessageFlags flags;
 
 	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
 
@@ -462,6 +463,13 @@ empathy_message_should_highlight (EmpathyMessage *message)
 
 	to = empathy_contact_get_name (contact);
 	if (!to) {
+		return FALSE;
+	}
+
+	flags = empathy_message_get_flags (message);
+	if (flags & TP_CHANNEL_TEXT_MESSAGE_FLAG_SCROLLBACK) {
+		/* FIXME: Ideally we shouldn't highlight scrollback messages only if they
+		 * have already been received by the user before (and so are in the logs) */
 		return FALSE;
 	}
 
