@@ -1516,6 +1516,8 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
       priv->liveadder = NULL;
       priv->funnel = NULL;
 
+      create_pipeline (self);
+
       return TRUE;
     }
   else
@@ -2703,7 +2705,6 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  create_pipeline (window);
   create_video_output_widget (window);
 
   g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
