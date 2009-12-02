@@ -903,6 +903,7 @@ contact_widget_presence_notify_cb (EmpathyContactWidget *information)
   gtk_image_set_from_icon_name (GTK_IMAGE (information->image_state),
       empathy_icon_name_for_contact (information->contact),
       GTK_ICON_SIZE_BUTTON);
+  gtk_widget_show (information->image_state);
 }
 
 static void
