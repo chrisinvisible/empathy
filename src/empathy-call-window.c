@@ -608,7 +608,14 @@ initialize_output_elements (GstBus *bus, EmpathyCallWindow *self)
       GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
   g_signal_connect (G_OBJECT (priv->video_output), "button-press-event",
       G_CALLBACK (empathy_call_window_video_button_press_cb), self);
+}
 
+static void
+create_audio_output (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  g_assert (priv->audio_output == NULL);
   priv->audio_output = empathy_audio_sink_new ();
   gst_object_ref (priv->audio_output);
   gst_object_sink (priv->audio_output);
@@ -1008,6 +1015,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
       priv->self_user_output_hbox);
 
   create_pipeline (self);
+  create_audio_output (self);
 
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
@@ -1496,10 +1504,6 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
 
       g_signal_handlers_disconnect_by_func (priv->audio_input_adj,
           empathy_call_window_mic_volume_changed_cb, self);
-
-      if (priv->audio_output != NULL)
-        g_object_unref (priv->audio_output);
-      priv->audio_output = NULL;
 
       if (priv->video_tee != NULL)
         g_object_unref (priv->video_tee);
