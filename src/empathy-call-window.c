@@ -520,9 +520,6 @@ empathy_call_window_mic_volume_changed_cb (GtkAdjustment *adj,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   gdouble volume;
 
-  if (priv->audio_input == NULL)
-    return;
-
   volume = gtk_adjustment_get_value (adj)/100.0;
 
   /* Don't store the volume because of muting */
@@ -633,16 +630,14 @@ create_video_input (EmpathyCallWindow *self)
 }
 
 static void
-initialize_input_elements (GstBus *bus, EmpathyCallWindow *self)
+create_audio_input (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
+  g_assert (priv->audio_input == NULL);
   priv->audio_input = empathy_audio_src_new ();
   gst_object_ref (priv->audio_input);
   gst_object_sink (priv->audio_input);
-
-  /* The preview widget is initialized when the "video preview" button
-   * is activated */
 
   empathy_signal_connect_weak (priv->audio_input, "peak-level-changed",
     G_CALLBACK (empathy_call_window_audio_input_level_changed_cb),
@@ -928,7 +923,6 @@ create_pipeline (EmpathyCallWindow *self)
       empathy_call_window_bus_message, self);
 
   create_video_output_widget (bus, self);
-  initialize_input_elements (bus, self);
 
   g_object_unref (bus);
 }
@@ -1022,6 +1016,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
       priv->self_user_output_hbox);
 
   create_pipeline (self);
+  create_audio_input (self);
   create_audio_output (self);
   create_video_input (self);
 
@@ -1501,10 +1496,6 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
       if (priv->pipeline != NULL)
         g_object_unref (priv->pipeline);
       priv->pipeline = NULL;
-
-      if (priv->audio_input != NULL)
-        g_object_unref (priv->audio_input);
-      priv->audio_input = NULL;
 
       g_signal_handlers_disconnect_by_func (priv->audio_input_adj,
           empathy_call_window_mic_volume_changed_cb, self);
@@ -2648,9 +2639,6 @@ empathy_call_window_mic_toggled_cb (GtkToggleToolButton *toggle,
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
   gboolean active;
-
-  if (priv->audio_input == NULL)
-    return;
 
   active = (gtk_toggle_tool_button_get_active (toggle));
 
