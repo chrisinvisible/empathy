@@ -116,6 +116,8 @@ struct _EmpathyCallWindowPriv
 
   GtkUIManager *ui_manager;
   GtkWidget *errors_vbox;
+  /* widget displays the video received from the remote user. This widget is
+   * alive only during call. */
   GtkWidget *video_output;
   GtkWidget *video_preview;
   GtkWidget *remote_user_avatar_widget;
@@ -596,6 +598,7 @@ initialize_output_elements (GstBus *bus, EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
+  g_assert (priv->video_output == NULL);
   priv->video_output = empathy_video_widget_new (bus);
 
   gtk_box_pack_start (GTK_BOX (priv->remote_user_output_hbox),
@@ -1571,7 +1574,10 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       gtk_progress_bar_set_fraction (
           GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
 
-      gtk_widget_hide (priv->video_output);
+      /* destroy the video output; it will be recreated when we'll redial */
+      gtk_widget_destroy (priv->video_output);
+      priv->video_output = NULL;
+
       gtk_widget_show (priv->remote_user_avatar_widget);
 
       priv->sending_video = FALSE;
@@ -2695,8 +2701,6 @@ static void
 empathy_call_window_restart_call (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
-
-  gtk_widget_destroy (priv->video_output);
 
   create_pipeline (window);
 
