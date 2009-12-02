@@ -187,14 +187,20 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       case TP_CONNECTION_STATUS_CONNECTING:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
             _("Connecting..."));
+        gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+            GTK_MESSAGE_INFO);
         break;
       case TP_CONNECTION_STATUS_DISCONNECTED:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
             _("Disconnected - REASON"));
+        gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+            GTK_MESSAGE_WARNING);
         break;
       default:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
             _("Unknown Status"));
+        gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+            GTK_MESSAGE_WARNING);
     }
 
   gtk_widget_show (priv->label_status);
