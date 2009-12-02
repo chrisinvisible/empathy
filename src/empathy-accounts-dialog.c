@@ -77,6 +77,7 @@ typedef struct {
   GtkWidget *alignment_settings;
 
   GtkWidget *vbox_details;
+  GtkWidget *vbox_name;
   GtkWidget *frame_no_protocol;
 
   GtkWidget *treeview;
@@ -1559,6 +1560,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gui = empathy_builder_get_file (filename,
       "accounts_dialog", &priv->window,
       "vbox_details", &priv->vbox_details,
+      "vbox_name", &priv->vbox_name,
       "frame_no_protocol", &priv->frame_no_protocol,
       "alignment_settings", &priv->alignment_settings,
       "treeview", &priv->treeview,
