@@ -917,6 +917,26 @@ action_camera_change_cb (GtkRadioAction *action,
 }
 
 static void
+create_pipeline (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GstBus *bus;
+
+  g_assert (priv->pipeline == NULL);
+
+  priv->pipeline = gst_pipeline_new (NULL);
+  bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
+  priv->bus_message_source_id = gst_bus_add_watch (bus,
+      empathy_call_window_bus_message, self);
+
+  empathy_call_window_setup_remote_frame (bus, self);
+  empathy_call_window_setup_self_frame (bus, self);
+
+  g_object_unref (bus);
+}
+
+
+static void
 empathy_call_window_init (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
@@ -925,7 +945,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
   GtkWidget *h;
   GtkWidget *arrow;
   GtkWidget *page;
-  GstBus *bus;
   gchar *filename;
   GKeyFile *keyfile;
   GError *error = NULL;
@@ -972,10 +991,18 @@ empathy_call_window_init (EmpathyCallWindow *self)
                                   CONTENT_HBOX_BORDER_WIDTH);
   gtk_paned_pack1 (GTK_PANED (priv->pane), priv->content_hbox, TRUE, FALSE);
 
-  priv->pipeline = gst_pipeline_new (NULL);
-  bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-  priv->bus_message_source_id = gst_bus_add_watch (bus,
-      empathy_call_window_bus_message, self);
+  priv->remote_user_output_frame = gtk_frame_new (NULL);
+  gtk_widget_set_size_request (priv->remote_user_output_frame,
+      EMPATHY_VIDEO_WIDGET_DEFAULT_WIDTH, EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT);
+  gtk_box_pack_start (GTK_BOX (priv->content_hbox),
+      priv->remote_user_output_frame, TRUE, TRUE,
+      CONTENT_HBOX_CHILDREN_PACKING_PADDING);
+
+  priv->self_user_output_frame = gtk_frame_new (NULL);
+  gtk_widget_set_size_request (priv->self_user_output_frame,
+      SELF_VIDEO_SECTION_WIDTH, SELF_VIDEO_SECTION_HEIGTH);
+
+  create_pipeline (self);
 
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
@@ -995,29 +1022,13 @@ empathy_call_window_init (EmpathyCallWindow *self)
     }
   g_free (filename);
 
-
-  priv->remote_user_output_frame = gtk_frame_new (NULL);
-  gtk_widget_set_size_request (priv->remote_user_output_frame,
-      EMPATHY_VIDEO_WIDGET_DEFAULT_WIDTH, EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT);
-  gtk_box_pack_start (GTK_BOX (priv->content_hbox),
-      priv->remote_user_output_frame, TRUE, TRUE,
-      CONTENT_HBOX_CHILDREN_PACKING_PADDING);
-  empathy_call_window_setup_remote_frame (bus, self);
-
-  priv->self_user_output_frame = gtk_frame_new (NULL);
-  gtk_widget_set_size_request (priv->self_user_output_frame,
-      SELF_VIDEO_SECTION_WIDTH, SELF_VIDEO_SECTION_HEIGTH);
-
   priv->vbox = gtk_vbox_new (FALSE, 3);
   gtk_box_pack_start (GTK_BOX (priv->content_hbox), priv->vbox,
       FALSE, FALSE, CONTENT_HBOX_CHILDREN_PACKING_PADDING);
   gtk_box_pack_start (GTK_BOX (priv->vbox), priv->self_user_output_frame,
       FALSE, FALSE, 0);
-  empathy_call_window_setup_self_frame (bus, self);
 
   empathy_call_window_setup_toolbar (self);
-
-  g_object_unref (bus);
 
   priv->sidebar_button = gtk_toggle_button_new_with_mnemonic (_("_Sidebar"));
   arrow = gtk_arrow_new (GTK_ARROW_RIGHT, GTK_SHADOW_NONE);
@@ -2681,19 +2692,12 @@ empathy_call_window_hangup_cb (gpointer object,
 static void
 empathy_call_window_restart_call (EmpathyCallWindow *window)
 {
-  GstBus *bus;
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
   gtk_widget_destroy (priv->remote_user_output_hbox);
   gtk_widget_destroy (priv->self_user_output_hbox);
 
-  priv->pipeline = gst_pipeline_new (NULL);
-  bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
-  priv->bus_message_source_id = gst_bus_add_watch (bus,
-      empathy_call_window_bus_message, window);
-
-  empathy_call_window_setup_remote_frame (bus, window);
-  empathy_call_window_setup_self_frame (bus, window);
+  create_pipeline (window);
 
   g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
       G_CALLBACK (empathy_call_window_mic_volume_changed_cb), window);
@@ -2702,8 +2706,6 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
    * However, since the audio_input source was destroyed, its volume has not
    * been updated during that time. That's why we manually update it here */
   empathy_call_window_mic_volume_changed_cb (priv->audio_input_adj, window);
-
-  g_object_unref (bus);
 
   gtk_widget_show_all (priv->content_hbox);
 
