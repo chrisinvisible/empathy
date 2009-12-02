@@ -78,6 +78,8 @@ typedef struct {
 
   GtkWidget *vbox_details;
   GtkWidget *vbox_name;
+  GtkWidget *infobar;
+  GtkWidget *label_status;
   GtkWidget *frame_no_protocol;
 
   GtkWidget *treeview;
@@ -1551,6 +1553,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   GtkBuilder                   *gui;
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
+  GtkWidget                    *content_area;
 #ifdef HAVE_MOBLIN
   GtkWidget                    *action_area;
 #endif
@@ -1611,6 +1614,13 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   if (priv->parent_window)
     gtk_window_set_transient_for (GTK_WINDOW (priv->window),
         priv->parent_window);
+
+  priv->infobar = gtk_info_bar_new ();
+  gtk_box_pack_end_defaults (GTK_BOX (priv->vbox_name), priv->infobar);
+
+  priv->label_status = gtk_label_new (NULL);
+  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
+  gtk_container_add (GTK_CONTAINER (content_area), priv->label_status);
 }
 
 static void
