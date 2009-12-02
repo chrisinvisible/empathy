@@ -591,11 +591,15 @@ empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 }
 
 static void
-create_video_output_widget (GstBus *bus, EmpathyCallWindow *self)
+create_video_output_widget (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GstBus *bus;
 
   g_assert (priv->video_output == NULL);
+  g_assert (priv->pipeline != NULL);
+
+  bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
   priv->video_output = empathy_video_widget_new (bus);
 
   gtk_box_pack_start (GTK_BOX (priv->remote_user_output_hbox),
@@ -605,6 +609,8 @@ create_video_output_widget (GstBus *bus, EmpathyCallWindow *self)
       GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
   g_signal_connect (G_OBJECT (priv->video_output), "button-press-event",
       G_CALLBACK (empathy_call_window_video_button_press_cb), self);
+
+  g_object_unref (bus);
 }
 
 static void
@@ -922,8 +928,6 @@ create_pipeline (EmpathyCallWindow *self)
   priv->bus_message_source_id = gst_bus_add_watch (bus,
       empathy_call_window_bus_message, self);
 
-  create_video_output_widget (bus, self);
-
   g_object_unref (bus);
 }
 
@@ -1016,6 +1020,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
       priv->self_user_output_hbox);
 
   create_pipeline (self);
+  create_video_output_widget (self);
   create_audio_input (self);
   create_audio_output (self);
   create_video_input (self);
@@ -2699,6 +2704,7 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
   create_pipeline (window);
+  create_video_output_widget (window);
 
   g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
       G_CALLBACK (empathy_call_window_mic_volume_changed_cb), window);
