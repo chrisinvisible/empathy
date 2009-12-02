@@ -622,13 +622,20 @@ create_audio_output (EmpathyCallWindow *self)
 }
 
 static void
-initialize_input_elements (GstBus *bus, EmpathyCallWindow *self)
+create_video_input (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
+  g_assert (priv->video_input == NULL);
   priv->video_input = empathy_video_src_new ();
   gst_object_ref (priv->video_input);
   gst_object_sink (priv->video_input);
+}
+
+static void
+initialize_input_elements (GstBus *bus, EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
   priv->audio_input = empathy_audio_src_new ();
   gst_object_ref (priv->audio_input);
@@ -1016,6 +1023,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   create_pipeline (self);
   create_audio_output (self);
+  create_video_input (self);
 
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
@@ -1493,10 +1501,6 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
       if (priv->pipeline != NULL)
         g_object_unref (priv->pipeline);
       priv->pipeline = NULL;
-
-      if (priv->video_input != NULL)
-        g_object_unref (priv->video_input);
-      priv->video_input = NULL;
 
       if (priv->audio_input != NULL)
         g_object_unref (priv->audio_input);
