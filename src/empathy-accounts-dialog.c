@@ -75,9 +75,9 @@ typedef struct {
   GtkWidget *window;
 
   GtkWidget *alignment_settings;
+  GtkWidget *alignment_infobar;
 
   GtkWidget *vbox_details;
-  GtkWidget *vbox_name;
   GtkWidget *infobar;
   GtkWidget *label_status;
   GtkWidget *frame_no_protocol;
@@ -1608,9 +1608,9 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gui = empathy_builder_get_file (filename,
       "accounts_dialog", &priv->window,
       "vbox_details", &priv->vbox_details,
-      "vbox_name", &priv->vbox_name,
       "frame_no_protocol", &priv->frame_no_protocol,
       "alignment_settings", &priv->alignment_settings,
+      "alignment_infobar", &priv->alignment_infobar,
       "treeview", &priv->treeview,
       "frame_new_account", &priv->frame_new_account,
       "hbox_type", &priv->hbox_type,
@@ -1661,7 +1661,8 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
         priv->parent_window);
 
   priv->infobar = gtk_info_bar_new ();
-  gtk_box_pack_end_defaults (GTK_BOX (priv->vbox_name), priv->infobar);
+  gtk_container_add (GTK_CONTAINER (priv->alignment_infobar),
+      priv->infobar);
 
   priv->label_status = gtk_label_new (NULL);
   content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
