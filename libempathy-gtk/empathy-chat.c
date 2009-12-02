@@ -217,6 +217,9 @@ chat_new_connection_cb (TpAccount   *account,
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	TpConnection *connection;
 
+	if (new_status != TP_CONNECTION_STATUS_CONNECTED)
+		return;
+
 	connection = tp_account_get_connection (account);
 
 	if (!priv->tp_chat && account == priv->account &&
