@@ -592,19 +592,12 @@ empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 }
 
 static void
-empathy_call_window_setup_remote_frame (GstBus *bus, EmpathyCallWindow *self)
+initialize_output_elements (GstBus *bus, EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  /* Initializing all the content (UI and output gst elements) related to the
-     remote contact */
-  priv->remote_user_output_hbox = gtk_hbox_new (FALSE, 0);
-
-  priv->remote_user_avatar_widget = gtk_image_new ();
-  gtk_box_pack_start (GTK_BOX (priv->remote_user_output_hbox),
-      priv->remote_user_avatar_widget, TRUE, TRUE, 0);
-
   priv->video_output = empathy_video_widget_new (bus);
+
   gtk_box_pack_start (GTK_BOX (priv->remote_user_output_hbox),
       priv->video_output, TRUE, TRUE, 0);
 
@@ -613,30 +606,15 @@ empathy_call_window_setup_remote_frame (GstBus *bus, EmpathyCallWindow *self)
   g_signal_connect (G_OBJECT (priv->video_output), "button-press-event",
       G_CALLBACK (empathy_call_window_video_button_press_cb), self);
 
-  gtk_container_add (GTK_CONTAINER (priv->remote_user_output_frame),
-      priv->remote_user_output_hbox);
-
   priv->audio_output = empathy_audio_sink_new ();
   gst_object_ref (priv->audio_output);
   gst_object_sink (priv->audio_output);
 }
 
 static void
-empathy_call_window_setup_self_frame (GstBus *bus, EmpathyCallWindow *self)
+initialize_input_elements (GstBus *bus, EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
-
-  /* Initializing all the content (UI and input gst elements) related to the
-     self contact, except for the video preview widget. This widget is only
-     initialized when the "show video preview" option is activated */
-  priv->self_user_output_hbox = gtk_hbox_new (FALSE, 0);
-
-  priv->self_user_avatar_widget = gtk_image_new ();
-  gtk_box_pack_start (GTK_BOX (priv->self_user_output_hbox),
-      priv->self_user_avatar_widget, TRUE, TRUE, 0);
-
-  gtk_container_add (GTK_CONTAINER (priv->self_user_output_frame),
-      priv->self_user_output_hbox);
 
   priv->video_input = empathy_video_src_new ();
   gst_object_ref (priv->video_input);
@@ -645,6 +623,9 @@ empathy_call_window_setup_self_frame (GstBus *bus, EmpathyCallWindow *self)
   priv->audio_input = empathy_audio_src_new ();
   gst_object_ref (priv->audio_input);
   gst_object_sink (priv->audio_input);
+
+  /* The preview widget is initialized when the "video preview" button
+   * is activated */
 
   empathy_signal_connect_weak (priv->audio_input, "peak-level-changed",
     G_CALLBACK (empathy_call_window_audio_input_level_changed_cb),
@@ -929,8 +910,8 @@ create_pipeline (EmpathyCallWindow *self)
   priv->bus_message_source_id = gst_bus_add_watch (bus,
       empathy_call_window_bus_message, self);
 
-  empathy_call_window_setup_remote_frame (bus, self);
-  empathy_call_window_setup_self_frame (bus, self);
+  initialize_output_elements (bus, self);
+  initialize_input_elements (bus, self);
 
   g_object_unref (bus);
 }
@@ -991,6 +972,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
                                   CONTENT_HBOX_BORDER_WIDTH);
   gtk_paned_pack1 (GTK_PANED (priv->pane), priv->content_hbox, TRUE, FALSE);
 
+  /* remote user output frame */
   priv->remote_user_output_frame = gtk_frame_new (NULL);
   gtk_widget_set_size_request (priv->remote_user_output_frame,
       EMPATHY_VIDEO_WIDGET_DEFAULT_WIDTH, EMPATHY_VIDEO_WIDGET_DEFAULT_HEIGHT);
@@ -998,9 +980,29 @@ empathy_call_window_init (EmpathyCallWindow *self)
       priv->remote_user_output_frame, TRUE, TRUE,
       CONTENT_HBOX_CHILDREN_PACKING_PADDING);
 
+  priv->remote_user_output_hbox = gtk_hbox_new (FALSE, 0);
+
+  priv->remote_user_avatar_widget = gtk_image_new ();
+
+  gtk_box_pack_start (GTK_BOX (priv->remote_user_output_hbox),
+      priv->remote_user_avatar_widget, TRUE, TRUE, 0);
+
+  gtk_container_add (GTK_CONTAINER (priv->remote_user_output_frame),
+      priv->remote_user_output_hbox);
+
+  /* self user output frame */
   priv->self_user_output_frame = gtk_frame_new (NULL);
   gtk_widget_set_size_request (priv->self_user_output_frame,
       SELF_VIDEO_SECTION_WIDTH, SELF_VIDEO_SECTION_HEIGTH);
+
+  priv->self_user_output_hbox = gtk_hbox_new (FALSE, 0);
+
+  priv->self_user_avatar_widget = gtk_image_new ();
+  gtk_box_pack_start (GTK_BOX (priv->self_user_output_hbox),
+      priv->self_user_avatar_widget, TRUE, TRUE, 0);
+
+  gtk_container_add (GTK_CONTAINER (priv->self_user_output_frame),
+      priv->self_user_output_hbox);
 
   create_pipeline (self);
 
@@ -2694,8 +2696,7 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  gtk_widget_destroy (priv->remote_user_output_hbox);
-  gtk_widget_destroy (priv->self_user_output_hbox);
+  gtk_widget_destroy (priv->video_output);
 
   create_pipeline (window);
 
