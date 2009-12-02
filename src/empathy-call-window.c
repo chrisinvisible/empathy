@@ -594,7 +594,7 @@ empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 }
 
 static void
-initialize_output_elements (GstBus *bus, EmpathyCallWindow *self)
+create_video_output_widget (GstBus *bus, EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
@@ -920,7 +920,7 @@ create_pipeline (EmpathyCallWindow *self)
   priv->bus_message_source_id = gst_bus_add_watch (bus,
       empathy_call_window_bus_message, self);
 
-  initialize_output_elements (bus, self);
+  create_video_output_widget (bus, self);
   initialize_input_elements (bus, self);
 
   g_object_unref (bus);
