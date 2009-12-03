@@ -2624,7 +2624,7 @@ block_camera_control_signals (EmpathyCallWindow *self)
   g_signal_handlers_block_by_func (priv->tool_button_camera_on,
       tool_button_camera_on_toggled_cb, self);
   g_signal_handlers_block_by_func (priv->action_camera,
-      tool_button_camera_on_toggled_cb, self);
+      action_camera_change_cb, self);
 }
 
 static void
@@ -2639,5 +2639,5 @@ unblock_camera_control_signals (EmpathyCallWindow *self)
   g_signal_handlers_unblock_by_func (priv->tool_button_camera_on,
       tool_button_camera_on_toggled_cb, self);
   g_signal_handlers_unblock_by_func (priv->action_camera,
-      tool_button_camera_on_toggled_cb, self);
+      action_camera_change_cb, self);
 }
