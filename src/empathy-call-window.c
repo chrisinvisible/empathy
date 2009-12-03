@@ -1570,13 +1570,6 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->mic_button), TRUE);
 
-      /* FIXME: This is to workaround the fact that the pipeline has been
-       * destroyed and so we can't display preview until a new call (and so a
-       * new pipeline) is created. We should fix this properly by refactoring
-       * the code managing the pipeline. This is bug #602937 */
-      gtk_widget_set_sensitive (priv->tool_button_camera_preview, FALSE);
-      gtk_action_set_sensitive (priv->action_camera_preview, FALSE);
-
       gtk_progress_bar_set_fraction (
           GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
 
@@ -2093,11 +2086,6 @@ empathy_call_window_connected (gpointer user_data)
   gtk_widget_set_sensitive (priv->redial_button, FALSE);
 
   gtk_widget_set_sensitive (priv->mic_button, TRUE);
-
-  /* FIXME: this should won't be needed once bug #602937 is fixed
-   * (see empathy_call_window_disconnected for details) */
-  gtk_widget_set_sensitive (priv->tool_button_camera_preview, TRUE);
-  gtk_action_set_sensitive (priv->action_camera_preview, TRUE);
 
   empathy_call_window_update_avatars_visibility (call, self);
 
