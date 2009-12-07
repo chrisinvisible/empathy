@@ -1850,16 +1850,18 @@ chat_reset_size_request (gpointer widget)
 }
 
 static void
-chat_update_contacts_visibility (EmpathyChat *chat)
+chat_update_contacts_visibility (EmpathyChat *chat,
+			 gboolean show)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
-	gboolean show;
 	GtkAllocation allocation;
-
-	show = priv->remote_contact == NULL && priv->show_contacts;
 
 	if (!priv->scrolled_window_contacts) {
 		return;
+	}
+
+	if (priv->remote_contact != NULL) {
+		show = FALSE;
 	}
 
 	if (show && priv->contact_list_view == NULL) {
@@ -1912,7 +1914,7 @@ empathy_chat_set_show_contacts (EmpathyChat *chat,
 
 	priv->show_contacts = show;
 
-	chat_update_contacts_visibility (chat);
+	chat_update_contacts_visibility (chat, show);
 
 	g_object_notify (G_OBJECT (chat), "show-contacts");
 }
@@ -1942,7 +1944,7 @@ chat_remote_contact_changed_cb (EmpathyChat *chat)
 		g_object_get (channel, "handle-type", &priv->handle_type, NULL);
 	}
 
-	chat_update_contacts_visibility (chat);
+	chat_update_contacts_visibility (chat, priv->show_contacts);
 
 	g_object_notify (G_OBJECT (chat), "remote-contact");
 	g_object_notify (G_OBJECT (chat), "id");
