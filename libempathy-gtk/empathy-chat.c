@@ -1969,7 +1969,8 @@ chat_destroy_cb (EmpathyTpChat *tp_chat,
 
 	empathy_chat_view_append_event (chat->view, _("Disconnected"));
 	gtk_widget_set_sensitive (chat->input_text_view, FALSE);
-	empathy_chat_set_show_contacts (chat, FALSE);
+
+	chat_update_contacts_visibility (chat, FALSE);
 }
 
 static void
