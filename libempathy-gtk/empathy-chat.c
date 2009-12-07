@@ -206,6 +206,43 @@ chat_connect_channel_reconnected (EmpathyDispatchOperation *dispatch,
 }
 
 static void
+reconnected_connection_ready_cb (TpConnection *connection,
+			const GError *error,
+			gpointer user_data)
+{
+	EmpathyChat *chat = EMPATHY_CHAT (user_data);
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	if (error != NULL) {
+		DEBUG ("connection is not ready: %s", error->message);
+		goto out;
+	}
+
+	DEBUG ("Account reconnected, request a new Text channel");
+
+	switch (priv->handle_type) {
+		case TP_HANDLE_TYPE_CONTACT:
+			empathy_dispatcher_chat_with_contact_id (
+				connection, priv->id,
+				chat_connect_channel_reconnected,
+				chat);
+			break;
+		case TP_HANDLE_TYPE_ROOM:
+			empathy_dispatcher_join_muc (connection,
+				priv->id,
+				chat_connect_channel_reconnected,
+				chat);
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+	}
+
+out:
+	g_object_unref (chat);
+}
+
+static void
 chat_new_connection_cb (TpAccount   *account,
 			guint        old_status,
 			guint        new_status,
@@ -222,30 +259,14 @@ chat_new_connection_cb (TpAccount   *account,
 
 	connection = tp_account_get_connection (account);
 
-	if (!priv->tp_chat && account == priv->account &&
-	    priv->handle_type != TP_HANDLE_TYPE_NONE &&
-	    !EMP_STR_EMPTY (priv->id)) {
+	if (priv->tp_chat != NULL || account != priv->account ||
+	    priv->handle_type == TP_HANDLE_TYPE_NONE ||
+	    EMP_STR_EMPTY (priv->id))
+		return;
 
-		DEBUG ("Account reconnected, request a new Text channel");
-
-		switch (priv->handle_type) {
-			case TP_HANDLE_TYPE_CONTACT:
-				empathy_dispatcher_chat_with_contact_id (
-					connection, priv->id,
-					chat_connect_channel_reconnected,
-					chat);
-				break;
-			case TP_HANDLE_TYPE_ROOM:
-				empathy_dispatcher_join_muc (connection,
-					priv->id,
-					chat_connect_channel_reconnected,
-					chat);
-				break;
-			default:
-				g_assert_not_reached ();
-				break;
-		}
-	}
+	g_object_ref (chat);
+	tp_connection_call_when_ready (connection, reconnected_connection_ready_cb,
+				   chat);
 }
 
 static void
