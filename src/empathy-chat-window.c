@@ -1932,6 +1932,9 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 		if (separate_windows) {
 			name = empathy_chat_get_id (chat);
 		}
+		else if (empathy_chat_is_room (chat)) {
+			name = "room-window";
+		}
 
 		empathy_geometry_bind (GTK_WINDOW (priv->dialog), name);
 	}
