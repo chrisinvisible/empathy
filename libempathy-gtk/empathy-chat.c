@@ -210,7 +210,7 @@ reconnected_connection_ready_cb (TpConnection *connection,
 			const GError *error,
 			gpointer user_data)
 {
-	EmpathyChat *chat = EMPATHY_CHAT (user_data);
+	EmpathyChat *chat = user_data;
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 
 	if (error != NULL) {
