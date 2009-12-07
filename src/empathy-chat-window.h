@@ -74,6 +74,7 @@ EmpathyChat *      empathy_chat_window_find_chat      (TpAccount        *account
 						       const gchar      *id);
 void               empathy_chat_window_present_chat   (EmpathyChat      *chat);
 
+guint              empathy_chat_window_get_nb_rooms (EmpathyChatWindow *window);
 
 G_END_DECLS
 

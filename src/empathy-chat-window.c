@@ -2104,3 +2104,17 @@ empathy_chat_window_present_chat (EmpathyChat *chat)
  	gtk_widget_grab_focus (chat->input_text_view);
 }
 
+guint
+empathy_chat_window_get_nb_rooms (EmpathyChatWindow *self)
+{
+	EmpathyChatWindowPriv *priv = GET_PRIV (self);
+	GList *l;
+	guint nb = 0;
+
+	for (l = priv->chats; l != NULL; l = g_list_next (l)) {
+		if (empathy_chat_is_room (EMPATHY_CHAT (l->data)))
+			nb++;
+	}
+
+	return nb;
+}
