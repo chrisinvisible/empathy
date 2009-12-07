@@ -1852,6 +1852,7 @@ empathy_chat_window_get_default (gboolean room_filter)
 {
 	GList    *l;
 	gboolean  separate_windows = TRUE;
+	guint nb_rooms;
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			      EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
@@ -1871,8 +1872,17 @@ empathy_chat_window_get_default (gboolean room_filter)
 		priv = GET_PRIV (chat_window);
 
 		dialog = empathy_chat_window_get_dialog (chat_window);
-		if (empathy_window_get_is_visible (GTK_WINDOW (dialog)) &&
-				empathy_chat_is_room (priv->current_chat) == room_filter) {
+		if (empathy_window_get_is_visible (GTK_WINDOW (dialog))) {
+			nb_rooms = empathy_chat_window_get_nb_rooms (chat_window);
+
+			/* We add a new room only if the window has at least one room */
+			if (room_filter && nb_rooms == 0)
+				continue;
+
+			/* We add a new 1-1 chat only if the window has at least one 1-1 chat */
+			if (!room_filter && nb_rooms > 0)
+				continue;
+
 			/* Found a visible window on this desktop */
 			return chat_window;
 		}
