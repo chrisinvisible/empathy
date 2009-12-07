@@ -1852,7 +1852,6 @@ empathy_chat_window_get_default (gboolean room)
 {
 	GList    *l;
 	gboolean  separate_windows = TRUE;
-	guint nb_rooms;
 
 	empathy_conf_get_bool (empathy_conf_get (),
 			      EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
@@ -1873,14 +1872,15 @@ empathy_chat_window_get_default (gboolean room)
 
 		dialog = empathy_chat_window_get_dialog (chat_window);
 		if (empathy_window_get_is_visible (GTK_WINDOW (dialog))) {
-			nb_rooms = empathy_chat_window_get_nb_rooms (chat_window);
+			guint nb_rooms, nb_private;
+			empathy_chat_window_get_nb_chats (chat_window, &nb_rooms, &nb_private);
 
 			/* Skip the window if there aren't any rooms in it */
 			if (room && nb_rooms == 0)
 				continue;
 
 			/* Skip the window if there aren't any 1-1 chats in it */
-			if (!room && nb_rooms > 0)
+			if (!room && nb_private == 0)
 				continue;
 
 			/* Found a visible window on this desktop */
@@ -2114,17 +2114,24 @@ empathy_chat_window_present_chat (EmpathyChat *chat)
  	gtk_widget_grab_focus (chat->input_text_view);
 }
 
-guint
-empathy_chat_window_get_nb_rooms (EmpathyChatWindow *self)
+void
+empathy_chat_window_get_nb_chats (EmpathyChatWindow *self,
+			       guint *nb_rooms,
+			       guint *nb_private)
 {
 	EmpathyChatWindowPriv *priv = GET_PRIV (self);
 	GList *l;
-	guint nb = 0;
+	guint _nb_rooms = 0, _nb_private = 0;
 
 	for (l = priv->chats; l != NULL; l = g_list_next (l)) {
 		if (empathy_chat_is_room (EMPATHY_CHAT (l->data)))
-			nb++;
+			_nb_rooms++;
+		else
+			_nb_private++;
 	}
 
-	return nb;
+	if (nb_rooms != NULL)
+		*nb_rooms = _nb_rooms;
+	if (nb_private != NULL)
+		*nb_private = _nb_private;
 }
