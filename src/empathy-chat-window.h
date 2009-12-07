@@ -57,7 +57,7 @@ struct _EmpathyChatWindowClass {
 };
 
 GType              empathy_chat_window_get_type       (void);
-EmpathyChatWindow *empathy_chat_window_get_default    (gboolean room_filter);
+EmpathyChatWindow *empathy_chat_window_get_default    (gboolean room);
 EmpathyChatWindow *empathy_chat_window_new            (void);
 GtkWidget *        empathy_chat_window_get_dialog     (EmpathyChatWindow *window);
 void               empathy_chat_window_add_chat       (EmpathyChatWindow *window,

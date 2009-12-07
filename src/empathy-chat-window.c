@@ -1848,7 +1848,7 @@ empathy_chat_window_new (void)
  * be added.
  */
 EmpathyChatWindow *
-empathy_chat_window_get_default (gboolean room_filter)
+empathy_chat_window_get_default (gboolean room)
 {
 	GList    *l;
 	gboolean  separate_windows = TRUE;
@@ -1876,11 +1876,11 @@ empathy_chat_window_get_default (gboolean room_filter)
 			nb_rooms = empathy_chat_window_get_nb_rooms (chat_window);
 
 			/* We add a new room only if the window has at least one room */
-			if (room_filter && nb_rooms == 0)
+			if (room && nb_rooms == 0)
 				continue;
 
 			/* We add a new 1-1 chat only if the window has at least one 1-1 chat */
-			if (!room_filter && nb_rooms > 0)
+			if (!room && nb_rooms > 0)
 				continue;
 
 			/* Found a visible window on this desktop */
