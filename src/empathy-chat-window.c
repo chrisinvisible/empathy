@@ -697,8 +697,8 @@ chat_window_chat_notify_cb (EmpathyChat *chat)
 							      chat);
 		}
 
-		g_object_set_data (G_OBJECT (chat), "chat-window-remote-contact",
-				   remote_contact);
+		g_object_set_data_full (G_OBJECT (chat), "chat-window-remote-contact",
+				   g_object_ref (remote_contact), (GDestroyNotify) g_object_unref);
 	}
 
 	chat_window_update_chat_tab (chat);
