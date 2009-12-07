@@ -1875,11 +1875,11 @@ empathy_chat_window_get_default (gboolean room)
 		if (empathy_window_get_is_visible (GTK_WINDOW (dialog))) {
 			nb_rooms = empathy_chat_window_get_nb_rooms (chat_window);
 
-			/* We add a new room only if the window has at least one room */
+			/* Skip the window if there aren't any rooms in it */
 			if (room && nb_rooms == 0)
 				continue;
 
-			/* We add a new 1-1 chat only if the window has at least one 1-1 chat */
+			/* Skip the window if there aren't any 1-1 chats in it */
 			if (!room && nb_rooms > 0)
 				continue;
 
