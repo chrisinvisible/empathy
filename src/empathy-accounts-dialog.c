@@ -212,57 +212,19 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_widget_hide (priv->throbber);
             break;
           case TP_CONNECTION_STATUS_DISCONNECTED:
-            switch (reason)
-              {
-                case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
-                  message = _("Disconnected - No error specified");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_REQUESTED:
-                  message = _("Disconnected - Requested");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
-                  message = _("Disconnected - Network error");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED:
-                  message = _("Disconnected - Authentication failed");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_ENCRYPTION_ERROR:
-                  message = _("Disconnected - Encryption error");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_NAME_IN_USE:
-                  message = _("Disconnected - Name in use");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_NOT_PROVIDED:
-                  message = _("Disconnected - Certificate not provided");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_UNTRUSTED:
-                  message = _("Disconnected - Certificate untrusted");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_EXPIRED:
-                  message = _("Disconnected - Certificate expired");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_NOT_ACTIVATED:
-                  message = _("Disconnected - Certificate not activated");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_HOSTNAME_MISMATCH:
-                  message = _("Disconnected - Certificate hostname mismatch");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_FINGERPRINT_MISMATCH:
-                  message = _("Disconnected - Certificate fingerprint mismatch");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_SELF_SIGNED:
-                  message = _("Disconnected - Certificate self-signed");
-                  break;
-                case TP_CONNECTION_STATUS_REASON_CERT_OTHER_ERROR:
-                  message = _("Disconnected - Certificate error");
-                  break;
-                default:
-                  message = _("Disconnected - Unknown reason");
-                  break;
-              }
+            message = g_strdup_printf (_("Offline - %s"),
+                empathy_status_reason_get_default_message (reason));
 
-            gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
-                GTK_MESSAGE_ERROR);
+            if (reason == TP_CONNECTION_STATUS_REASON_REQUESTED)
+              {
+                gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+                    GTK_MESSAGE_WARNING);
+              }
+            else
+              {
+                gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+                    GTK_MESSAGE_ERROR);
+              }
 
             ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
@@ -280,7 +242,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     }
   else
     {
-      message = _("Disconnected - Account disabled");
+      message = _("Offline - Account disabled");
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);
       ephy_spinner_stop (EPHY_SPINNER (priv->throbber));

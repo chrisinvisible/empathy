@@ -519,50 +519,7 @@ main_window_connection_changed_cb (TpAccount  *account,
 	    reason != TP_CONNECTION_STATUS_REASON_REQUESTED) {
 		const gchar *message;
 
-		switch (reason) {
-		case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
-			message = _("No error specified");
-			break;
-		case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
-			message = _("Network error");
-			break;
-		case TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED:
-			message = _("Authentication failed");
-			break;
-		case TP_CONNECTION_STATUS_REASON_ENCRYPTION_ERROR:
-			message = _("Encryption error");
-			break;
-		case TP_CONNECTION_STATUS_REASON_NAME_IN_USE:
-			message = _("Name in use");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_NOT_PROVIDED:
-			message = _("Certificate not provided");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_UNTRUSTED:
-			message = _("Certificate untrusted");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_EXPIRED:
-			message = _("Certificate expired");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_NOT_ACTIVATED:
-			message = _("Certificate not activated");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_HOSTNAME_MISMATCH:
-			message = _("Certificate hostname mismatch");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_FINGERPRINT_MISMATCH:
-			message = _("Certificate fingerprint mismatch");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_SELF_SIGNED:
-			message = _("Certificate self-signed");
-			break;
-		case TP_CONNECTION_STATUS_REASON_CERT_OTHER_ERROR:
-			message = _("Certificate error");
-			break;
-		default:
-			message = _("Unknown error");
-			break;
-		}
+		message = empathy_status_reason_get_default_message (reason);
 
 		main_window_error_display (window, account, message);
 	}

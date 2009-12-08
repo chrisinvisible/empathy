@@ -278,6 +278,43 @@ empathy_presence_from_str (const gchar *str)
 	return TP_CONNECTION_PRESENCE_TYPE_UNSET;
 }
 
+const gchar *
+empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
+{
+	switch (reason) {
+	case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
+		return _("No reason specified");
+	case TP_CONNECTION_STATUS_REASON_REQUESTED:
+		return _("User requested disconnect");
+	case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
+		return _("Network error");
+	case TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED:
+		return _("Authentication failed");
+	case TP_CONNECTION_STATUS_REASON_ENCRYPTION_ERROR:
+		return _("Encryption error");
+	case TP_CONNECTION_STATUS_REASON_NAME_IN_USE:
+		return _("Name in use");
+	case TP_CONNECTION_STATUS_REASON_CERT_NOT_PROVIDED:
+		return _("Certificate not provided");
+	case TP_CONNECTION_STATUS_REASON_CERT_UNTRUSTED:
+		return _("Certificate untrusted");
+	case TP_CONNECTION_STATUS_REASON_CERT_EXPIRED:
+		return _("Certificate expired");
+	case TP_CONNECTION_STATUS_REASON_CERT_NOT_ACTIVATED:
+		return _("Certificate not activated");
+	case TP_CONNECTION_STATUS_REASON_CERT_HOSTNAME_MISMATCH:
+		return _("Certificate hostname mismatch");
+	case TP_CONNECTION_STATUS_REASON_CERT_FINGERPRINT_MISMATCH:
+		return _("Certificate fingerprint mismatch");
+	case TP_CONNECTION_STATUS_REASON_CERT_SELF_SIGNED:
+		return _("Certificate self-signed");
+	case TP_CONNECTION_STATUS_REASON_CERT_OTHER_ERROR:
+		return _("Certificate error");
+	default:
+		return _("Unknown reason");
+	}
+}
+
 gchar *
 empathy_file_lookup (const gchar *filename, const gchar *subdir)
 {
