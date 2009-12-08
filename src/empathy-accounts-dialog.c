@@ -80,6 +80,7 @@ typedef struct {
   GtkWidget *vbox_details;
   GtkWidget *infobar;
   GtkWidget *label_status;
+  GtkWidget *image_status;
   GtkWidget *frame_no_protocol;
 
   GtkWidget *treeview;
@@ -195,6 +196,11 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             _("Disconnected - REASON"));
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_WARNING);
+
+        gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
+            empathy_icon_name_for_presence (
+            TP_CONNECTION_PRESENCE_TYPE_OFFLINE), GTK_ICON_SIZE_SMALL_TOOLBAR);
+        gtk_widget_show (priv->image_status);
         break;
       default:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
@@ -1664,8 +1670,16 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_container_add (GTK_CONTAINER (priv->alignment_infobar),
       priv->infobar);
 
-  priv->label_status = gtk_label_new (NULL);
+
   content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
+
+  priv->image_status = gtk_image_new_from_stock (
+      GTK_STOCK_INFO, GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_show (priv->image_status);
+  gtk_box_pack_start (GTK_BOX (content_area), priv->image_status,
+      FALSE, FALSE, 0);
+
+  priv->label_status = gtk_label_new (NULL);
   gtk_container_add (GTK_CONTAINER (content_area), priv->label_status);
 }
 
