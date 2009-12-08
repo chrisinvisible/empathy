@@ -217,6 +217,9 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                 case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
                   message = _("Disconnected - No error specified");
                   break;
+                case TP_CONNECTION_STATUS_REASON_REQUESTED:
+                  message = _("Disconnected - Requested");
+                  break;
                 case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
                   message = _("Disconnected - Network error");
                   break;
