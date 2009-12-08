@@ -178,13 +178,12 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   const gchar               *message;
+  guint                     presence;
 
-  /* don't show the infobar if account is connected */
-  if (status == TP_CONNECTION_STATUS_CONNECTED)
-    {
-      gtk_widget_hide (priv->infobar);
-      return;
-    }
+  presence = tp_account_get_current_presence (account, NULL, NULL);
+
+  gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
+      empathy_icon_name_for_presence (presence), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
   if (tp_account_is_enabled (account))
     {
@@ -198,6 +197,16 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             ephy_spinner_start (EPHY_SPINNER (priv->throbber));
             gtk_widget_show (priv->throbber);
             gtk_widget_hide (priv->image_status);
+            break;
+          case TP_CONNECTION_STATUS_CONNECTED:
+            message = g_strdup_printf (_("Connected with status %s"),
+                empathy_presence_get_default_message (presence));
+
+            gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
+                GTK_MESSAGE_INFO);
+
+            gtk_widget_show (priv->image_status);
+            gtk_widget_hide (priv->throbber);
             break;
           case TP_CONNECTION_STATUS_DISCONNECTED:
             switch (reason)
@@ -247,7 +256,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
               }
 
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
-                GTK_MESSAGE_WARNING);
+                GTK_MESSAGE_ERROR);
 
             ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
@@ -1748,6 +1757,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   priv->infobar = gtk_info_bar_new ();
   gtk_container_add (GTK_CONTAINER (priv->alignment_infobar),
       priv->infobar);
+  gtk_widget_show (priv->infobar);
 
   priv->image_status = gtk_image_new_from_icon_name (
             empathy_icon_name_for_presence (
