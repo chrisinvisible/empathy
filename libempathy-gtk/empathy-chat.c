@@ -95,6 +95,9 @@ typedef struct {
 	GtkWidget         *info_bar_vbox;
 
 	guint              unread_messages;
+	/* TRUE if the pending messages can be displayed. This is to avoid to show
+	 * pending messages *before* messages from logs. (#603980) */
+	gboolean           can_show_pending;
 } EmpathyChatPriv;
 
 typedef struct {
@@ -2014,6 +2017,9 @@ show_pending_messages (EmpathyChat *chat) {
 	if (chat->view == NULL || priv->tp_chat == NULL)
 		return;
 
+	if (!priv->can_show_pending)
+		return;
+
 	messages = empathy_tp_chat_get_pending_messages (priv->tp_chat);
 
 	for (l = messages; l != NULL ; l = g_list_next (l)) {
@@ -2242,6 +2248,7 @@ chat_constructed (GObject *object)
 
 	if (priv->handle_type != TP_HANDLE_TYPE_ROOM)
 		chat_add_logs (chat);
+	priv->can_show_pending = TRUE;
 	show_pending_messages (chat);
 }
 
