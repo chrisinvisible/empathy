@@ -37,6 +37,7 @@
 
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-connection-managers.h>
+#include <libempathy/empathy-connectivity.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include <libempathy-gtk/empathy-protocol-chooser.h>
@@ -181,9 +182,12 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   guint                     status;
   guint                     reason;
   guint                     presence;
+  EmpathyConnectivity       *connectivity;
 
   status = tp_account_get_connection_status (account, &reason);
   presence = tp_account_get_current_presence (account, NULL, NULL);
+
+  connectivity = empathy_connectivity_dup_singleton ();
 
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
       empathy_icon_name_for_presence (presence), GTK_ICON_SIZE_SMALL_TOOLBAR);
@@ -226,6 +230,9 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                     GTK_MESSAGE_ERROR);
               }
 
+            if (!empathy_connectivity_is_online (connectivity))
+               message = _("Offline - No Network Connection");
+
             ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
             gtk_widget_hide (priv->throbber);
@@ -253,6 +260,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   gtk_label_set_text (GTK_LABEL (priv->label_status), message);
   gtk_widget_show (priv->label_status);
   gtk_widget_show (priv->infobar);
+
+  g_object_unref (connectivity);
 }
 
 static void
