@@ -174,9 +174,10 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 
 static void
 accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
-    guint status)
+    guint status, guint reason)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  const gchar               *message;
 
   /* don't show the infobar if account is connected */
   if (status == TP_CONNECTION_STATUS_CONNECTED)
@@ -188,8 +189,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   switch (status)
     {
       case TP_CONNECTION_STATUS_CONNECTING:
-        gtk_label_set_text (GTK_LABEL (priv->label_status),
-            _("Connecting..."));
+        message = _("Connecting...");
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_INFO);
 
@@ -198,8 +198,52 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
         gtk_widget_hide (priv->image_status);
         break;
       case TP_CONNECTION_STATUS_DISCONNECTED:
-        gtk_label_set_text (GTK_LABEL (priv->label_status),
-            _("Disconnected - REASON"));
+        switch (reason)
+          {
+            case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
+              message = _("Disconnected - No error specified");
+              break;
+            case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
+              message = _("Disconnected - Network error");
+              break;
+            case TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED:
+              message = _("Disconnected - Authentication failed");
+              break;
+            case TP_CONNECTION_STATUS_REASON_ENCRYPTION_ERROR:
+              message = _("Disconnected - Encryption error");
+              break;
+            case TP_CONNECTION_STATUS_REASON_NAME_IN_USE:
+              message = _("Disconnected - Name in use");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_NOT_PROVIDED:
+              message = _("Disconnected - Certificate not provided");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_UNTRUSTED:
+              message = _("Disconnected - Certificate untrusted");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_EXPIRED:
+              message = _("Disconnected - Certificate expired");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_NOT_ACTIVATED:
+              message = _("Disconnected - Certificate not activated");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_HOSTNAME_MISMATCH:
+              message = _("Disconnected - Certificate hostname mismatch");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_FINGERPRINT_MISMATCH:
+              message = _("Disconnected - Certificate fingerprint mismatch");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_SELF_SIGNED:
+              message = _("Disconnected - Certificate self-signed");
+              break;
+            case TP_CONNECTION_STATUS_REASON_CERT_OTHER_ERROR:
+              message = _("Disconnected - Certificate error");
+              break;
+            default:
+              message = _("Disconnected - Unknown reason");
+              break;
+          }
+
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_WARNING);
 
@@ -208,8 +252,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
         gtk_widget_hide (priv->throbber);
         break;
       default:
-        gtk_label_set_text (GTK_LABEL (priv->label_status),
-            _("Unknown Status"));
+        message = _("Unknown Status");
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_WARNING);
 
@@ -218,6 +261,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
         gtk_widget_hide (priv->throbber);
     }
 
+  gtk_label_set_text (GTK_LABEL (priv->label_status), message);
   gtk_widget_show (priv->label_status);
   gtk_widget_show (priv->infobar);
 }
@@ -292,6 +336,8 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gchar *icon_name;
+  guint status;
+  guint reason;
 
   priv->setting_widget_object =
       empathy_account_widget_new_for_protocol (settings, FALSE);
@@ -329,9 +375,9 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
   accounts_dialog_update_name_label (dialog,
       empathy_account_settings_get_display_name (settings));
 
-  accounts_dialog_update_status_infobar (dialog,
-      tp_account_get_connection_status (
-      empathy_account_settings_get_account (settings), NULL));
+  status = tp_account_get_connection_status (
+      empathy_account_settings_get_account (settings), &reason);
+  accounts_dialog_update_status_infobar (dialog, status, reason);
 }
 
 static void
@@ -1189,7 +1235,7 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   /* Update the status-infobar in the details view*/
-  accounts_dialog_update_status_infobar (dialog, current);
+  accounts_dialog_update_status_infobar (dialog, current, reason);
 
   /* Update the status in the model */
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
