@@ -304,8 +304,29 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 }
 
 static void
+main_window_remove_error (EmpathyMainWindow *window,
+			  TpAccount *account)
+{
+	GtkWidget *error_widget;
+
+	error_widget = g_hash_table_lookup (window->errors, account);
+	if (error_widget != NULL) {
+		gtk_widget_destroy (error_widget);
+		g_hash_table_remove (window->errors, account);
+	}
+}
+
+static void
+main_window_account_disabled_cb (TpAccountManager *manager,
+				 TpAccount *account,
+				 EmpathyMainWindow *window)
+{
+	main_window_remove_error (window, account);
+}
+
+static void
 main_window_error_retry_clicked_cb (GtkButton *button,
-				   EmpathyMainWindow *window)
+				    EmpathyMainWindow *window)
 {
 	TpAccount *account;
 	GtkWidget *error_widget;
@@ -338,12 +359,9 @@ main_window_error_close_clicked_cb (GtkButton *button,
 				    EmpathyMainWindow *window)
 {
 	TpAccount *account;
-	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
-	error_widget = g_hash_table_lookup (window->errors, account);
-	gtk_widget_destroy (error_widget);
-	g_hash_table_remove (window->errors, account);
+	main_window_remove_error (window, account);
 }
 
 static void
@@ -1109,6 +1127,9 @@ main_window_account_removed_cb (TpAccountManager  *manager,
 		g_list_length (a) > 0);
 
 	g_list_free (a);
+
+	/* remove errors if any */
+	main_window_remove_error (window, account);
 }
 
 static void
@@ -1363,6 +1384,9 @@ empathy_main_window_show (void)
 			  window);
 	g_signal_connect (window->account_manager, "account-removed",
 			  G_CALLBACK (main_window_account_removed_cb),
+			  window);
+	g_signal_connect (window->account_manager, "account-disabled",
+			  G_CALLBACK (main_window_account_disabled_cb),
 			  window);
 
 	l = empathy_event_manager_get_events (window->event_manager);
