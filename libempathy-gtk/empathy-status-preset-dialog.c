@@ -292,6 +292,8 @@ status_preset_dialog_setup_presets_treeview (EmpathyStatusPresetDialog *self)
 	g_object_set (renderer,
 			"editable", TRUE,
 			NULL);
+	g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+
 	g_signal_connect (renderer, "edited",
 			G_CALLBACK (status_preset_dialog_status_edited), self);
 }

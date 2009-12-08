@@ -857,6 +857,7 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (chooser), renderer,
 					"markup", COL_DISPLAY_MARKUP,
 					NULL);
+	g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 
 	g_signal_connect (chooser, "notify::popup-shown",
 			G_CALLBACK (presence_chooser_popup_shown_cb), NULL);
