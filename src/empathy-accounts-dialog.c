@@ -174,12 +174,15 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 
 static void
 accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
-    TpAccount *account, guint status, guint reason)
+    TpAccount *account)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   const gchar               *message;
+  guint                     status;
+  guint                     reason;
   guint                     presence;
 
+  status = tp_account_get_connection_status (account, &reason);
   presence = tp_account_get_current_presence (account, NULL, NULL);
 
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
@@ -357,8 +360,6 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gchar                     *icon_name;
-  guint                     status;
-  guint                     reason;
   TpAccount                 *account;
 
   priv->setting_widget_object =
@@ -398,9 +399,7 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
       empathy_account_settings_get_display_name (settings));
 
   account = empathy_account_settings_get_account (settings);
-
-  status = tp_account_get_connection_status (account, &reason);
-  accounts_dialog_update_status_infobar (dialog, account, status, reason);
+  accounts_dialog_update_status_infobar (dialog, account);
 }
 
 static void
@@ -1258,7 +1257,7 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   /* Update the status-infobar in the details view*/
-  accounts_dialog_update_status_infobar (dialog, account, current, reason);
+  accounts_dialog_update_status_infobar (dialog, account);
 
   /* Update the status in the model */
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
@@ -1288,6 +1287,17 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
     priv->connecting_id = g_timeout_add (FLASH_TIMEOUT,
         (GSourceFunc) accounts_dialog_flash_connecting_cb,
         dialog);
+}
+
+static void
+accounts_dialog_presence_changed_cb (TpAccount *account,
+    guint presence,
+    gchar *status,
+    gchar *status_message,
+    EmpathyAccountsDialog *dialog)
+{
+  /* Update the status-infobar in the details view*/
+  accounts_dialog_update_status_infobar (dialog, account);
 }
 
 static void
@@ -1424,9 +1434,7 @@ enable_or_disable_account (EmpathyAccountsDialog *dialog,
 
   /* Update the status-infobar in the details view when disabling*/
   if (!enabled)
-    accounts_dialog_update_status_infobar (dialog, account,
-        TP_CONNECTION_STATUS_DISCONNECTED,
-        TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED);
+    accounts_dialog_update_status_infobar (dialog, account);
 
   DEBUG ("Account %s is now %s",
       tp_account_get_display_name (account),
@@ -1653,6 +1661,8 @@ accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
 
       empathy_signal_connect_weak (l->data, "status-changed",
           G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
+      empathy_signal_connect_weak (l->data, "presence-changed",
+          G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
     }
   g_list_free (accounts);
 
