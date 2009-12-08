@@ -50,6 +50,7 @@
 #include "empathy-accounts-dialog.h"
 #include "empathy-import-dialog.h"
 #include "empathy-import-utils.h"
+#include "ephy-spinner.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -81,6 +82,7 @@ typedef struct {
   GtkWidget *infobar;
   GtkWidget *label_status;
   GtkWidget *image_status;
+  GtkWidget *throbber;
   GtkWidget *frame_no_protocol;
 
   GtkWidget *treeview;
@@ -190,6 +192,10 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             _("Connecting..."));
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_INFO);
+
+        ephy_spinner_start (EPHY_SPINNER (priv->throbber));
+        gtk_widget_show (priv->throbber);
+        gtk_widget_hide (priv->image_status);
         break;
       case TP_CONNECTION_STATUS_DISCONNECTED:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
@@ -197,16 +203,19 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_WARNING);
 
-        gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
-            empathy_icon_name_for_presence (
-            TP_CONNECTION_PRESENCE_TYPE_OFFLINE), GTK_ICON_SIZE_SMALL_TOOLBAR);
+        ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
         gtk_widget_show (priv->image_status);
+        gtk_widget_hide (priv->throbber);
         break;
       default:
         gtk_label_set_text (GTK_LABEL (priv->label_status),
             _("Unknown Status"));
         gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
             GTK_MESSAGE_WARNING);
+
+        ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
+        gtk_widget_hide (priv->image_status);
+        gtk_widget_hide (priv->throbber);
     }
 
   gtk_widget_show (priv->label_status);
@@ -1666,20 +1675,25 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
     gtk_window_set_transient_for (GTK_WINDOW (priv->window),
         priv->parent_window);
 
+  /* set up spinner */
+  priv->throbber = ephy_spinner_new ();
+  ephy_spinner_set_size (EPHY_SPINNER (priv->throbber), GTK_ICON_SIZE_SMALL_TOOLBAR);
+
   priv->infobar = gtk_info_bar_new ();
   gtk_container_add (GTK_CONTAINER (priv->alignment_infobar),
       priv->infobar);
 
-
-  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
-
-  priv->image_status = gtk_image_new_from_stock (
-      GTK_STOCK_INFO, GTK_ICON_SIZE_SMALL_TOOLBAR);
-  gtk_widget_show (priv->image_status);
-  gtk_box_pack_start (GTK_BOX (content_area), priv->image_status,
-      FALSE, FALSE, 0);
+  priv->image_status = gtk_image_new_from_icon_name (
+            empathy_icon_name_for_presence (
+            TP_CONNECTION_PRESENCE_TYPE_OFFLINE), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
   priv->label_status = gtk_label_new (NULL);
+
+  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
+  gtk_box_pack_start (GTK_BOX (content_area), priv->throbber,
+      FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (content_area), priv->image_status,
+      FALSE, FALSE, 0);
   gtk_container_add (GTK_CONTAINER (content_area), priv->label_status);
 }
 
