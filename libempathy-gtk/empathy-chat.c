@@ -1994,6 +1994,18 @@ chat_destroy_cb (EmpathyTpChat *tp_chat,
 	chat_update_contacts_visibility (chat, FALSE);
 }
 
+static gboolean
+chat_hpaned_pos_changed_cb (GtkWidget* hpaned, gpointer user_data)
+{
+	gint hpaned_pos;
+	hpaned_pos = gtk_paned_get_position (GTK_PANED(hpaned));
+	empathy_conf_set_int (empathy_conf_get (),
+			      EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
+			      hpaned_pos);
+	return TRUE;
+}
+
+
 static void
 show_pending_messages (EmpathyChat *chat) {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
@@ -2019,6 +2031,7 @@ chat_create_ui (EmpathyChat *chat)
  	GList           *list = NULL;
 	gchar           *filename;
 	GtkTextBuffer   *buffer;
+	gint              paned_pos;
 
 	filename = empathy_file_lookup ("empathy-chat.ui",
 					"libempathy-gtk");
@@ -2084,6 +2097,17 @@ chat_create_ui (EmpathyChat *chat)
 
 	/* Initialy hide the topic, will be shown if not empty */
 	gtk_widget_hide (priv->hbox_topic);
+
+	g_signal_connect (priv->hpaned, "notify::position",
+			  G_CALLBACK (chat_hpaned_pos_changed_cb),
+			  NULL);
+
+        /* Load the paned position */
+	if (empathy_conf_get_int (empathy_conf_get (),
+				 EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
+				 &paned_pos)
+		&& paned_pos)
+		gtk_paned_set_position (GTK_PANED(priv->hpaned), paned_pos);
 
 	/* Set widget focus order */
 	list = g_list_append (NULL, priv->scrolled_window_input);
