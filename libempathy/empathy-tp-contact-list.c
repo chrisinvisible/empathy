@@ -1059,6 +1059,14 @@ tp_contact_list_remove (EmpathyContactList *list,
 	GArray handles = {(gchar *) &handle, 1};
 
 	handle = empathy_contact_get_handle (contact);
+
+	if (priv->stored != NULL) {
+		tp_cli_channel_interface_group_call_remove_members (priv->stored,
+			-1, &handles, message, NULL, NULL, NULL, NULL);
+		/* Contact will be removed from 'publish' and 'subscribe' too */
+		return;
+	}
+
 	if (priv->subscribe) {
 		tp_cli_channel_interface_group_call_remove_members (priv->subscribe,
 			-1, &handles, message, NULL, NULL, NULL, NULL);
