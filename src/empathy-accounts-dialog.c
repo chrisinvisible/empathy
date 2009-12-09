@@ -179,13 +179,14 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   const gchar               *message;
+  gchar                     *status_message;
   guint                     status;
   guint                     reason;
   guint                     presence;
   EmpathyConnectivity       *connectivity;
 
   status = tp_account_get_connection_status (account, &reason);
-  presence = tp_account_get_current_presence (account, NULL, NULL);
+  presence = tp_account_get_current_presence (account, NULL, &status_message);
 
   connectivity = empathy_connectivity_dup_singleton ();
 
@@ -206,9 +207,17 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_widget_hide (priv->image_status);
             break;
           case TP_CONNECTION_STATUS_CONNECTED:
-            message = g_strdup_printf (_("Connected with status %s"),
-                empathy_presence_get_default_message (presence));
-
+            if (g_strcmp0 (status_message, "") == 0)
+              {
+                message = g_strdup_printf ("%s",
+                    empathy_presence_get_default_message (presence));
+              }
+            else
+              {
+                message = g_strdup_printf ("%s - %s",
+                    empathy_presence_get_default_message (presence),
+                    status_message);
+              }
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_INFO);
 
@@ -216,11 +225,13 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_widget_hide (priv->throbber);
             break;
           case TP_CONNECTION_STATUS_DISCONNECTED:
-            message = g_strdup_printf (_("Offline - %s"),
+            message = g_strdup_printf (_("Disconnected - %s"),
                 empathy_status_reason_get_default_message (reason));
 
             if (reason == TP_CONNECTION_STATUS_REASON_REQUESTED)
               {
+                message = g_strdup_printf (_("Offline - %s"),
+                    empathy_status_reason_get_default_message (reason));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_WARNING);
               }
@@ -262,6 +273,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   gtk_widget_show (priv->infobar);
 
   g_object_unref (connectivity);
+  g_free (status_message);
 }
 
 static void
@@ -1230,7 +1242,7 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
   gboolean      found;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  /* Update the status-infobar in the details view*/
+  /* Update the status-infobar in the details view */
   accounts_dialog_update_status_infobar (dialog, account);
 
   /* Update the status in the model */
