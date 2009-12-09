@@ -503,6 +503,41 @@ account_manager_prepared_cb (GObject *source_object,
 	g_signal_emit (chooser, signals[READY], 0);
 }
 
+static gint
+account_cmp (GtkTreeModel *model,
+	     GtkTreeIter *a,
+	     GtkTreeIter *b,
+	     gpointer user_data)
+{
+	gboolean a_enabled, b_enabled;
+	gchar *a_text, *b_text;
+	gint result;
+
+	gtk_tree_model_get (model, a, COL_ACCOUNT_ENABLED, &a_enabled, -1);
+	gtk_tree_model_get (model, b, COL_ACCOUNT_ENABLED, &b_enabled, -1);
+
+	/* Enabled accounts are displayed first */
+	if (a_enabled != b_enabled)
+		return a_enabled ? -1: 1;
+
+	gtk_tree_model_get (model, a, COL_ACCOUNT_TEXT, &a_text, -1);
+	gtk_tree_model_get (model, b, COL_ACCOUNT_TEXT, &b_text, -1);
+
+	if (a_text == b_text)
+		result = 0;
+	else if (a_text == NULL)
+		result = 1;
+	else if (b_text == NULL)
+		result = -1;
+	else
+		result = g_ascii_strcasecmp (a_text, b_text);
+
+	g_free (a_text);
+	g_free (b_text);
+
+	return result;
+}
+
 static void
 account_chooser_setup (EmpathyAccountChooser *chooser)
 {
@@ -523,6 +558,11 @@ account_chooser_setup (EmpathyAccountChooser *chooser)
 				    G_TYPE_STRING,    /* Name */
 				    G_TYPE_BOOLEAN,   /* Enabled */
 				    TP_TYPE_ACCOUNT);
+
+	gtk_tree_sortable_set_default_sort_func (GTK_TREE_SORTABLE (store),
+		account_cmp, chooser, NULL);
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (store),
+		GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID, GTK_SORT_ASCENDING);
 
 	gtk_combo_box_set_model (combobox, GTK_TREE_MODEL (store));
 
