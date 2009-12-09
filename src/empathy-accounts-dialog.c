@@ -184,6 +184,26 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   guint                     reason;
   guint                     presence;
   EmpathyConnectivity       *connectivity;
+  GtkTreeView               *view;
+  GtkTreeModel              *model;
+  GtkTreeSelection          *selection;
+  GtkTreeIter               iter;
+  TpAccount                 *selected_account;
+
+  view = GTK_TREE_VIEW (priv->treeview);
+  selection = gtk_tree_view_get_selection (view);
+
+  if (!gtk_tree_selection_get_selected (selection, &model, &iter))
+    return;
+
+  gtk_tree_model_get (model, &iter,
+      COL_ACCOUNT_POINTER, &selected_account, -1);
+
+  /* do not update the infobar when the account is not selected */
+  if (account != selected_account)
+    {
+      return;
+    }
 
   status = tp_account_get_connection_status (account, &reason);
   presence = tp_account_get_current_presence (account, NULL, &status_message);
