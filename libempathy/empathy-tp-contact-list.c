@@ -47,6 +47,7 @@ typedef struct {
 
 	TpChannel      *publish;
 	TpChannel      *subscribe;
+	TpChannel      *stored;
 	GHashTable     *members; /* handle -> EmpathyContact */
 	GHashTable     *pendings; /* handle -> EmpathyContact */
 	GHashTable     *groups; /* group name -> TpChannel */
@@ -750,6 +751,9 @@ tp_contact_list_finalize (GObject *object)
 	if (priv->publish) {
 		g_object_unref (priv->publish);
 	}
+	if (priv->stored) {
+		g_object_unref (priv->stored);
+	}
 
 	if (priv->connection) {
 		g_object_unref (priv->connection);
@@ -774,9 +778,67 @@ tp_contact_list_finalize (GObject *object)
 }
 
 static void
+store_create_channel_cb (TpConnection *conn,
+			 const gchar *path,
+			 GHashTable *properties,
+			 const GError *error,
+			 gpointer user_data,
+			 GObject *weak_object)
+{
+	EmpathyTpContactList *list = user_data;
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+
+	if (error != NULL) {
+		DEBUG ("failed: %s\n", error->message);
+		return;
+	}
+
+	priv->stored = tp_channel_new_from_properties (conn, path, properties, NULL);
+}
+
+static void
+conn_ready_cb (TpConnection *connection,
+	       const GError *error,
+	       gpointer data)
+{
+	EmpathyTpContactList *list = data;
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	GHashTable *request;
+	GValue *value;
+
+	if (error != NULL) {
+		DEBUG ("failed: %s", error->message);
+		goto out;
+	}
+
+	/* Try to request the 'stored' list. */
+	request = g_hash_table_new_full (g_str_hash, g_str_equal,
+		NULL, (GDestroyNotify) tp_g_value_slice_free);
+
+	/* org.freedesktop.Telepathy.Channel.ChannelType */
+	value = tp_g_value_slice_new_string (TP_IFACE_CHANNEL_TYPE_CONTACT_LIST);
+	g_hash_table_insert (request, TP_IFACE_CHANNEL ".ChannelType", value);
+
+	/* org.freedesktop.Telepathy.Channel.TargetHandleType */
+	value = tp_g_value_slice_new_uint (TP_HANDLE_TYPE_LIST);
+	g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandleType", value);
+
+	/* org.freedesktop.Telepathy.Channel.TargetID */
+	value = tp_g_value_slice_new_string ("stored");
+	g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetID", value);
+
+	tp_cli_connection_interface_requests_call_create_channel (priv->connection,
+		-1, request, store_create_channel_cb, list, NULL, G_OBJECT (list));
+
+	g_hash_table_unref (request);
+
+out:
+	g_object_unref (list);
+}
+
+static void
 tp_contact_list_constructed (GObject *list)
 {
-
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	gchar                    *protocol_name = NULL;
 	const gchar              *names[] = {NULL, NULL};
@@ -825,6 +887,9 @@ tp_contact_list_constructed (GObject *list)
 						tp_contact_list_subscribe_request_handle_cb,
 						NULL, NULL,
 						G_OBJECT (list));
+
+	g_object_ref (list);
+	tp_connection_call_when_ready (priv->connection, conn_ready_cb, list);
 
 	tp_cli_connection_call_list_channels (priv->connection, -1,
 					      tp_contact_list_list_channels_cb,
