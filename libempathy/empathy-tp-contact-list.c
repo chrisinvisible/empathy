@@ -804,7 +804,6 @@ conn_ready_cb (TpConnection *connection,
 	EmpathyTpContactList *list = data;
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	GHashTable *request;
-	GValue *value;
 
 	if (error != NULL) {
 		DEBUG ("failed: %s", error->message);
@@ -812,20 +811,11 @@ conn_ready_cb (TpConnection *connection,
 	}
 
 	/* Try to request the 'stored' list. */
-	request = g_hash_table_new_full (g_str_hash, g_str_equal,
-		NULL, (GDestroyNotify) tp_g_value_slice_free);
-
-	/* org.freedesktop.Telepathy.Channel.ChannelType */
-	value = tp_g_value_slice_new_string (TP_IFACE_CHANNEL_TYPE_CONTACT_LIST);
-	g_hash_table_insert (request, TP_IFACE_CHANNEL ".ChannelType", value);
-
-	/* org.freedesktop.Telepathy.Channel.TargetHandleType */
-	value = tp_g_value_slice_new_uint (TP_HANDLE_TYPE_LIST);
-	g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandleType", value);
-
-	/* org.freedesktop.Telepathy.Channel.TargetID */
-	value = tp_g_value_slice_new_string ("stored");
-	g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetID", value);
+	request = tp_asv_new (
+		TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
+		TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT, TP_HANDLE_TYPE_LIST,
+		TP_IFACE_CHANNEL ".TargetID", G_TYPE_STRING, "stored",
+		NULL);
 
 	tp_cli_connection_interface_requests_call_create_channel (priv->connection,
 		-1, request, store_create_channel_cb, list, NULL, G_OBJECT (list));
