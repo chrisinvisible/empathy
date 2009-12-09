@@ -1060,6 +1060,8 @@ tp_contact_list_remove (EmpathyContactList *list,
 
 	handle = empathy_contact_get_handle (contact);
 
+	/* FIXME: this is racy if tp_contact_list_remove is called before the
+	 * 'stored' list has been retrieved. */
 	if (priv->stored != NULL) {
 		tp_cli_channel_interface_group_call_remove_members (priv->stored,
 			-1, &handles, message, NULL, NULL, NULL, NULL);
