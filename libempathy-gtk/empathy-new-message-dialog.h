@@ -22,11 +22,42 @@
 #ifndef __EMPATHY_NEW_MESSAGE_DIALOG_H__
 #define __EMPATHY_NEW_MESSAGE_DIALOG_H__
 
+#include <glib-object.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-GtkWidget *empathy_new_message_dialog_show (GtkWindow *parent);
+typedef struct _EmpathyNewMessageDialog EmpathyNewMessageDialog;
+typedef struct _EmpathyNewMessageDialogClass EmpathyNewMessageDialogClass;
+
+struct _EmpathyNewMessageDialogClass {
+    GtkDialogClass parent_class;
+};
+
+struct _EmpathyNewMessageDialog {
+    GtkDialog parent;
+};
+
+GType empathy_new_message_dialog_get_type (void);
+
+/* TYPE MACROS */
+#define EMPATHY_TYPE_NEW_MESSAGE_DIALOG \
+  (empathy_new_message_dialog_get_type ())
+#define EMPATHY_NEW_MESSAGE_DIALOG(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj), EMPATHY_TYPE_NEW_MESSAGE_DIALOG, \
+    EmpathyNewMessageDialog))
+#define EMPATHY_NEW_MESSAGE_DIALOG_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_CAST((klass), EMPATHY_TYPE_NEW_MESSAGE_DIALOG, \
+    EmpathyNewMessageDialogClass))
+#define EMPATHY_IS_NEW_MESSAGE_DIALOG(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj), EMPATHY_TYPE_NEW_MESSAGE_DIALOG))
+#define EMPATHY_IS_NEW_MESSAGE_DIALOG_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass), EMPATHY_TYPE_NEW_MESSAGE_DIALOG))
+#define EMPATHY_NEW_MESSAGE_DIALOG_GET_CLASS(obj) \
+  (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_NEW_MESSAGE_DIALOG, \
+    EmpathyNewMessageDialogClass))
+
+GtkWidget * empathy_new_message_dialog_show (GtkWindow *parent);
 
 G_END_DECLS
 
