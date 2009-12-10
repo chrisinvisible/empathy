@@ -47,10 +47,23 @@ typedef struct {
 	TpChannel      *publish;
 	TpChannel      *subscribe;
 	TpChannel      *stored;
-	GHashTable     *members; /* handle -> EmpathyContact */
-	GHashTable     *pendings; /* handle -> EmpathyContact */
-	GHashTable     *groups; /* group name -> TpChannel */
-	GHashTable     *add_to_group; /* group name -> GArray of handles */
+	/* contact handle (TpHandle) => reffed (EmpathyContact *)
+	 *
+	 * Contacts which are members or remote-pending in the subscribe channel:
+	 * we are receiving their presence or we asked to receive it. */
+	GHashTable     *members;
+	/* contact handle (TpHandle) => reffed (EmpathyContact *)
+	 *
+	 * Contacts which are local-pending in the publish channel but are NOT in
+	 * the members hash table: they asked to receive our presence and we don't
+	 * receive theirs or asked to.
+	 * That's basically the contacts which asked to add us to their contact
+	 * list and we didn't answer it. */
+	GHashTable     *pendings;
+	/* group name: borrowed (const gchar *)  => reffed (TpChannel *) */
+	GHashTable     *groups;
+	/* group name: owned (gchar *) => owned GArray of TpHandle */
+	GHashTable     *add_to_group;
 
 	EmpathyContactListFlags flags;
 

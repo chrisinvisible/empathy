@@ -40,6 +40,8 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyContactManager)
 typedef struct {
+	/* Owned (TpConnection *) => Owned (TpContactList *)
+	   The contact list associated with each connected connection */
 	GHashTable     *lists;
 	TpAccountManager *account_manager;
 	EmpathyContactMonitor *contact_monitor;
