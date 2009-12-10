@@ -487,32 +487,6 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 }
 
 static void
-tp_contact_list_publish_request_channel_cb (TpConnection *connection,
-					    const gchar  *object_path,
-					    const GError *error,
-					    gpointer      user_data,
-					    GObject      *list)
-{
-	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	priv->publish = tp_channel_new (connection, object_path,
-					TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-					TP_HANDLE_TYPE_LIST,
-					GPOINTER_TO_UINT (user_data),
-					NULL);
-
-	/* TpChannel emits initial set of members just before being ready */
-	g_signal_connect (priv->publish, "group-members-changed",
-			  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
-			  list);
-}
-
-static void
 tp_contact_list_get_alias_flags_cb (TpConnection *connection,
 				    guint         flags,
 				    const GError *error,
@@ -571,31 +545,6 @@ tp_contact_list_get_requestablechannelclasses_cb (TpProxy      *connection,
 }
 
 static void
-tp_contact_list_publish_request_handle_cb (TpConnection *connection,
-					   const GArray *handles,
-					   const GError *error,
-					   gpointer      user_data,
-					   GObject      *list)
-{
-	TpHandle handle;
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	handle = g_array_index (handles, TpHandle, 0);
-	tp_cli_connection_call_request_channel (connection, -1,
-						TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-						TP_HANDLE_TYPE_LIST,
-						handle,
-						TRUE,
-						tp_contact_list_publish_request_channel_cb,
-						GUINT_TO_POINTER (handle), NULL,
-						list);
-}
-
-static void
 tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 						    gchar         *message,
 						    GArray        *added,
@@ -631,57 +580,6 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 			tp_contact_list_got_added_members_cb, NULL, NULL,
 			G_OBJECT (list));
 	}
-}
-
-static void
-tp_contact_list_subscribe_request_channel_cb (TpConnection *connection,
-					      const gchar  *object_path,
-					      const GError *error,
-					      gpointer      user_data,
-					      GObject      *list)
-{
-	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	priv->subscribe = tp_channel_new (connection, object_path,
-					  TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-					  TP_HANDLE_TYPE_LIST,
-					  GPOINTER_TO_UINT (user_data),
-					  NULL);
-
-	/* TpChannel emits initial set of members just before being ready */
-	g_signal_connect (priv->subscribe, "group-members-changed",
-			  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
-			  list);
-}
-
-static void
-tp_contact_list_subscribe_request_handle_cb (TpConnection *connection,
-					     const GArray *handles,
-					     const GError *error,
-					     gpointer      user_data,
-					     GObject      *list)
-{
-	TpHandle handle;
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	handle = g_array_index (handles, TpHandle, 0);
-	tp_cli_connection_call_request_channel (connection, -1,
-						TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-						TP_HANDLE_TYPE_LIST,
-						handle,
-						TRUE,
-						tp_contact_list_subscribe_request_channel_cb,
-						GUINT_TO_POINTER (handle), NULL,
-						list);
 }
 
 static void
@@ -778,22 +676,46 @@ tp_contact_list_finalize (GObject *object)
 }
 
 static void
-store_create_channel_cb (TpConnection *conn,
-			 const gchar *path,
-			 GHashTable *properties,
-			 const GError *error,
-			 gpointer user_data,
-			 GObject *weak_object)
+list_ensure_channel_cb (TpConnection *conn,
+			gboolean yours,
+			const gchar *path,
+			GHashTable *properties,
+			const GError *error,
+			gpointer user_data,
+			GObject *weak_object)
 {
 	EmpathyTpContactList *list = user_data;
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	const gchar *id;
+	TpChannel *channel;
 
 	if (error != NULL) {
 		DEBUG ("failed: %s\n", error->message);
 		return;
 	}
 
-	priv->stored = tp_channel_new_from_properties (conn, path, properties, NULL);
+	/* We requested that channel by providing TargetID property, so it's
+	 * guaranteed that tp_channel_get_identifier will return it. */
+	channel = tp_channel_new_from_properties (conn, path, properties, NULL);
+	id = tp_channel_get_identifier (channel);
+
+	/* TpChannel emits initial set of members just before being ready */
+	if (!tp_strdiff (id, "stored")) {
+		priv->stored = channel;
+	} else if (!tp_strdiff (id, "publish")) {
+		priv->publish = channel;
+		g_signal_connect (priv->publish, "group-members-changed",
+				  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
+				  list);
+	} else if (!tp_strdiff (id, "subscribe")) {
+		priv->subscribe = channel;
+		g_signal_connect (priv->subscribe, "group-members-changed",
+				  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
+				  list);
+	} else {
+		g_warn_if_reached ();
+		g_object_unref (channel);
+	}
 }
 
 static void
@@ -810,18 +732,27 @@ conn_ready_cb (TpConnection *connection,
 		goto out;
 	}
 
-	/* Try to request the 'stored' list. */
 	request = tp_asv_new (
 		TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
 		TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT, TP_HANDLE_TYPE_LIST,
-		TP_IFACE_CHANNEL ".TargetID", G_TYPE_STRING, "stored",
 		NULL);
 
-	tp_cli_connection_interface_requests_call_create_channel (priv->connection,
-		-1, request, store_create_channel_cb, list, NULL, G_OBJECT (list));
+	/* Request the 'stored' list. */
+	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "stored");
+	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
+		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
+
+	/* Request the 'publish' list. */
+	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "publish");
+	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
+		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
+
+	/* Request the 'subscribe' list. */
+	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "subscribe");
+	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
+		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
 
 	g_hash_table_unref (request);
-
 out:
 	g_object_unref (list);
 }
@@ -831,7 +762,6 @@ tp_contact_list_constructed (GObject *list)
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	gchar                    *protocol_name = NULL;
-	const gchar              *names[] = {NULL, NULL};
 
 	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
 
@@ -861,25 +791,8 @@ tp_contact_list_constructed (GObject *list)
 		priv->flags |= EMPATHY_CONTACT_LIST_CAN_GROUP;
 	}
 
-	names[0] = "publish";
-	tp_cli_connection_call_request_handles (priv->connection,
-						-1,
-						TP_HANDLE_TYPE_LIST,
-						names,
-						tp_contact_list_publish_request_handle_cb,
-						NULL, NULL,
-						G_OBJECT (list));
-	names[0] = "subscribe";
-	tp_cli_connection_call_request_handles (priv->connection,
-						-1,
-						TP_HANDLE_TYPE_LIST,
-						names,
-						tp_contact_list_subscribe_request_handle_cb,
-						NULL, NULL,
-						G_OBJECT (list));
-
-	g_object_ref (list);
-	tp_connection_call_when_ready (priv->connection, conn_ready_cb, list);
+	tp_connection_call_when_ready (priv->connection, conn_ready_cb,
+		g_object_ref (list));
 
 	tp_cli_connection_call_list_channels (priv->connection, -1,
 					      tp_contact_list_list_channels_cb,
