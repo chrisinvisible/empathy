@@ -314,7 +314,6 @@ empathy_spell_check (const gchar *word)
 	spell_setup_languages ();
 
 	if (!languages) {
-		DEBUG ("No languages to check against");
 		return TRUE;
 	}
 
