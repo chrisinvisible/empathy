@@ -373,6 +373,24 @@ tp_contact_list_group_add (EmpathyTpContactList *list,
 }
 
 static void
+add_to_members (EmpathyTpContactList *list,
+		EmpathyContact *contact)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	TpHandle handle;
+
+	handle = empathy_contact_get_handle (contact);
+	if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
+		return;
+
+	/* Add to the list and emit signal */
+	g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
+			     g_object_ref (contact));
+	g_signal_emit_by_name (list, "members-changed", contact,
+				       0, 0, NULL, TRUE);
+}
+
+static void
 tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
 				      guint                    n_contacts,
 				      EmpathyContact * const * contacts,
@@ -394,16 +412,9 @@ tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
 		EmpathyContact *contact = contacts[i];
 		TpHandle handle;
 
+		add_to_members (EMPATHY_TP_CONTACT_LIST (list), contact);
+
 		handle = empathy_contact_get_handle (contact);
-		if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
-			continue;
-
-		/* Add to the list and emit signal */
-		g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
-				     g_object_ref (contact));
-		g_signal_emit_by_name (list, "members-changed", contact,
-				       0, 0, NULL, TRUE);
-
 		/* This contact is now member, implicitly accept pending. */
 		if (g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle))) {
 			GArray handles = {(gchar *) &handle, 1};
