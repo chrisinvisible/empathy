@@ -887,6 +887,7 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	    G_OBJECT (window));
 
 	g_hash_table_destroy (props);
+	g_ptr_array_free (channels, TRUE);
 }
 
 static void
