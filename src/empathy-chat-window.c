@@ -35,8 +35,7 @@
 #include <glib/gi18n.h>
 #include <libnotify/notification.h>
 
-#include <telepathy-glib/account-manager.h>
-#include <telepathy-glib/util.h>
+#include <telepathy-glib/telepathy-glib.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>
@@ -53,6 +52,8 @@
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-notify-manager.h>
+
+#include <extensions/extensions.h>
 
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
@@ -816,6 +817,76 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 	active = gtk_toggle_action_get_active (toggle_action);
 
 	empathy_chat_set_show_contacts (priv->current_chat, active);
+}
+
+static void
+upgrade_to_muc_cb (TpConnection *connection,
+		   gboolean      yours,
+		   const char   *object_path,
+		   GHashTable   *properties,
+		   const GError *error,
+		   gpointer      user_data,
+		   GObject      *window)
+{
+	if (error)
+	{
+		g_critical ("%s", error->message);
+		return;
+	}
+
+	g_print ("GOT CHANNEL! %s\n", object_path);
+}
+
+static void
+chat_window_invite_participant_activate_cb (GtkAction         *action,
+					    EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	EmpathyTpChat         *tp_chat;
+	TpConnection          *connection;
+	TpChannel             *channel;
+	GHashTable            *props;
+	GPtrArray             *channels;
+	char                  *invitees[3] = { NULL, };
+
+	g_print ("INVITE PARTICIPANT\n");
+
+	priv = GET_PRIV (window);
+
+	g_return_if_fail (priv->current_chat != NULL);
+
+	/* FIXME: this is for upgrading a 1-to-1 channel to a MUC, inviting
+	 * a user to a MUC is much easier, and needs to be written */
+
+	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+	connection = empathy_tp_chat_get_connection (tp_chat);
+	channel = empathy_tp_chat_get_channel (tp_chat);
+
+	/* Ensure a MUC channel */
+	channels = g_ptr_array_sized_new (1);
+	g_ptr_array_add (channels, (char *) tp_proxy_get_object_path (channel));
+
+	invitees[0] = (char *) tp_channel_get_identifier (channel);
+	// invitees[1] = /* FIXME: ask for this */
+
+	props = tp_asv_new (
+	    TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
+	        TP_IFACE_CHANNEL_TYPE_TEXT,
+	    TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT,
+	        TP_HANDLE_TYPE_NONE,
+	    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
+	        TP_ARRAY_TYPE_OBJECT_PATH_LIST, channels,
+	    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
+	        G_TYPE_STRV, invitees,
+	    /* FIXME: InvitationMessage ? */
+	    NULL);
+
+	/* FIXME: this probably needs to go through EmpathyDispatcher */
+	tp_cli_connection_interface_requests_call_ensure_channel (
+	    connection, -1, props, upgrade_to_muc_cb, NULL, NULL,
+	    G_OBJECT (window));
+
+	g_hash_table_destroy (props);
 }
 
 static void
@@ -1725,6 +1796,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_conv_clear", "activate", chat_window_clear_activate_cb,
 			      "menu_conv_favorite", "toggled", chat_window_favorite_toggled_cb,
 			      "menu_conv_toggle_contacts", "toggled", chat_window_contacts_toggled_cb,
+			      "menu_conv_invite_participant", "activate", chat_window_invite_participant_activate_cb,
 			      "menu_conv_close", "activate", chat_window_close_activate_cb,
 			      "menu_edit", "activate", chat_window_edit_activate_cb,
 			      "menu_edit_cut", "activate", chat_window_cut_activate_cb,
