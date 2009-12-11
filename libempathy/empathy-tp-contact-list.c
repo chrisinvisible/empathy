@@ -124,6 +124,75 @@ tp_contact_list_group_invalidated_cb (TpChannel *channel,
 }
 
 static void
+contacts_added_to_group (EmpathyTpContactList *list,
+			 TpChannel *channel,
+			 GArray *added)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	const gchar *group_name;
+	guint i;
+
+	group_name = tp_channel_get_identifier (channel);
+
+	for (i = 0; i < added->len; i++) {
+		EmpathyContact *contact;
+		TpHandle handle;
+
+		handle = g_array_index (added, TpHandle, i);
+		contact = g_hash_table_lookup (priv->members,
+					       GUINT_TO_POINTER (handle));
+		if (contact == NULL) {
+			continue;
+		}
+
+		DEBUG ("Contact %s (%d) added to group %s",
+			empathy_contact_get_id (contact), handle, group_name);
+		g_signal_emit_by_name (list, "groups-changed", contact,
+				       group_name,
+				       TRUE);
+	}
+}
+
+static void
+tp_contact_list_group_members_changed_cb (TpChannel     *channel,
+					  gchar         *message,
+					  GArray        *added,
+					  GArray        *removed,
+					  GArray        *local_pending,
+					  GArray        *remote_pending,
+					  guint          actor,
+					  guint          reason,
+					  EmpathyTpContactList *list)
+{
+	EmpathyTpContactListPriv  *priv = GET_PRIV (list);
+	const gchar *group_name;
+	guint i;
+
+	contacts_added_to_group (list, channel, added);
+
+	group_name = tp_channel_get_identifier (channel);
+
+	for (i = 0; i < removed->len; i++) {
+		EmpathyContact *contact;
+		TpHandle handle;
+
+		handle = g_array_index (removed, TpHandle, i);
+		contact = g_hash_table_lookup (priv->members,
+					       GUINT_TO_POINTER (handle));
+		if (contact == NULL) {
+			continue;
+		}
+
+		DEBUG ("Contact %s (%d) removed from group %s",
+			empathy_contact_get_id (contact), handle, group_name);
+
+		g_signal_emit_by_name (list, "groups-changed", contact,
+				       group_name,
+				       FALSE);
+	}
+}
+
+static void
 tp_contact_list_group_ready_cb (TpChannel *channel,
 				const GError *error,
 				gpointer list)
@@ -131,6 +200,8 @@ tp_contact_list_group_ready_cb (TpChannel *channel,
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	TpChannel *old_group;
 	const gchar *group_name;
+	const TpIntSet *members;
+	GArray *arr;
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
@@ -159,6 +230,10 @@ tp_contact_list_group_ready_cb (TpChannel *channel,
 	g_hash_table_insert (priv->groups, (gpointer) group_name, channel);
 	DEBUG ("Group %s added", group_name);
 
+	g_signal_connect (channel, "group-members-changed",
+			  G_CALLBACK (tp_contact_list_group_members_changed_cb),
+			  list);
+
 	g_signal_connect (channel, "invalidated",
 			  G_CALLBACK (tp_contact_list_group_invalidated_cb),
 			  list);
@@ -174,61 +249,13 @@ tp_contact_list_group_ready_cb (TpChannel *channel,
 			g_hash_table_remove (priv->add_to_group, group_name);
 		}
 	}
-}
 
-static void
-tp_contact_list_group_members_changed_cb (TpChannel     *channel,
-					  gchar         *message,
-					  GArray        *added,
-					  GArray        *removed,
-					  GArray        *local_pending,
-					  GArray        *remote_pending,
-					  guint          actor,
-					  guint          reason,
-					  EmpathyTpContactList *list)
-{
-	EmpathyTpContactListPriv  *priv = GET_PRIV (list);
-	const gchar *group_name;
-	guint i;
-
-	group_name = tp_channel_get_identifier (channel);
-
-	for (i = 0; i < added->len; i++) {
-		EmpathyContact *contact;
-		TpHandle handle;
-
-		handle = g_array_index (added, TpHandle, i);
-		contact = g_hash_table_lookup (priv->members,
-					       GUINT_TO_POINTER (handle));
-		if (contact == NULL) {
-			continue;
-		}
-
-		DEBUG ("Contact %s (%d) added to group %s",
-			empathy_contact_get_id (contact), handle, group_name);
-		g_signal_emit_by_name (list, "groups-changed", contact,
-				       group_name,
-				       TRUE);
-	}
-
-	for (i = 0; i < removed->len; i++) {
-		EmpathyContact *contact;
-		TpHandle handle;
-
-		handle = g_array_index (removed, TpHandle, i);
-		contact = g_hash_table_lookup (priv->members,
-					       GUINT_TO_POINTER (handle));
-		if (contact == NULL) {
-			continue;
-		}
-
-		DEBUG ("Contact %s (%d) removed from group %s",
-			empathy_contact_get_id (contact), handle, group_name);
-
-		g_signal_emit_by_name (list, "groups-changed", contact,
-				       group_name,
-				       FALSE);
-	}
+	/* Get initial members of the group */
+	members = tp_channel_group_get_members (channel);
+	g_assert (members != NULL);
+	arr = tp_intset_to_array (members);
+	contacts_added_to_group (list, channel, arr);
+	g_array_free (arr, TRUE);
 }
 
 static void
@@ -250,11 +277,6 @@ tp_contact_list_group_add_channel (EmpathyTpContactList *list,
 	channel = tp_channel_new (priv->connection,
 				  object_path, channel_type,
 				  handle_type, handle, NULL);
-
-	/* TpChannel emits initial set of members just before being ready */
-	g_signal_connect (channel, "group-members-changed",
-			  G_CALLBACK (tp_contact_list_group_members_changed_cb),
-			  list);
 
 	/* Give the ref to the callback */
 	tp_channel_call_when_ready (channel,
