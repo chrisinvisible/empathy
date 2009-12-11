@@ -400,7 +400,6 @@ tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
 				      gpointer                 user_data,
 				      GObject                 *list)
 {
-	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	guint i;
 
 	if (error) {
@@ -410,18 +409,8 @@ tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
 
 	for (i = 0; i < n_contacts; i++) {
 		EmpathyContact *contact = contacts[i];
-		TpHandle handle;
 
 		add_to_members (EMPATHY_TP_CONTACT_LIST (list), contact);
-
-		handle = empathy_contact_get_handle (contact);
-		/* This contact is now member, implicitly accept pending. */
-		if (g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle))) {
-			GArray handles = {(gchar *) &handle, 1};
-
-			tp_cli_channel_interface_group_call_add_members (priv->publish,
-				-1, &handles, NULL, NULL, NULL, NULL, NULL);
-		}
 	}
 }
 
@@ -613,6 +602,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	guint i;
+	GArray *accept;
 
 	/* We now get the presence of those contacts, add them to members */
 	if (added->len > 0) {
@@ -635,6 +625,27 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 			tp_contact_list_got_added_members_cb, NULL, NULL,
 			G_OBJECT (list));
 	}
+
+	/* Implicitly accept pending request of contacts which are now members. */
+	accept = g_array_new (FALSE, FALSE, sizeof (TpHandle));
+	for (i = 0; i < added->len; i++) {
+		TpHandle handle = g_array_index (added, TpHandle, i);
+
+		if (g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle)) != NULL)
+			g_array_append_val (accept, handle);
+	}
+
+	for (i = 0; i < remote_pending->len; i++) {
+		TpHandle handle = g_array_index (added, TpHandle, i);
+
+		if (g_hash_table_lookup (priv->pendings, GUINT_TO_POINTER (handle)) != NULL)
+			g_array_append_val (accept, handle);
+	}
+
+	tp_cli_channel_interface_group_call_add_members (priv->publish,
+		-1, accept, NULL, NULL, NULL, NULL, NULL);
+
+	g_array_free (accept, TRUE);
 }
 
 static void
