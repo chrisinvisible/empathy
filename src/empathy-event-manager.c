@@ -319,6 +319,8 @@ event_channel_process_voip_func (EventPriv *event)
   GtkWidget *dialog;
   GtkWidget *button;
   GtkWidget *image;
+  EmpathyTpCall *call;
+  gboolean video;
 
   if (event->approval->dialog != NULL)
     {
@@ -326,10 +328,17 @@ event_channel_process_voip_func (EventPriv *event)
       return;
     }
 
+  call = EMPATHY_TP_CALL (empathy_dispatch_operation_get_channel_wrapper (
+        event->approval->operation));
+
+  video = empathy_tp_call_has_initial_video (call);
+
   dialog = gtk_message_dialog_new (NULL, 0,
-      GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE, _("Incoming call"));
+      GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
+      video ? _("Incoming video call"): _("Incoming call"));
   gtk_message_dialog_format_secondary_text (
-    GTK_MESSAGE_DIALOG (dialog),
+    GTK_MESSAGE_DIALOG (dialog), video ?
+      _("%s is video calling you, do you want to answer?"):
       _("%s is calling you, do you want to answer?"),
       empathy_contact_get_name (event->approval->contact));
 
@@ -451,12 +460,22 @@ event_manager_media_channel_got_contact (EventManagerApproval *approval)
 {
   EmpathyEventManagerPriv *priv = GET_PRIV (approval->manager);
   gchar *header;
+  EmpathyTpCall *call;
+  gboolean video;
 
-  header = g_strdup_printf (_("Incoming call from %s"),
+  call = EMPATHY_TP_CALL (empathy_dispatch_operation_get_channel_wrapper (
+        approval->operation));
+
+  video = empathy_tp_call_has_initial_video (call);
+
+  header = g_strdup_printf (
+    video ? _("Incoming video call from %s") :_("Incoming call from %s"),
     empathy_contact_get_name (approval->contact));
 
   event_manager_add (approval->manager, approval->contact,
-      EMPATHY_EVENT_TYPE_VOIP, EMPATHY_IMAGE_VOIP, header, NULL, approval,
+      EMPATHY_EVENT_TYPE_VOIP,
+      video ? EMPATHY_IMAGE_VIDEO_CALL : EMPATHY_IMAGE_VOIP,
+      header, NULL, approval,
       event_channel_process_voip_func, NULL);
 
   g_free (header);
