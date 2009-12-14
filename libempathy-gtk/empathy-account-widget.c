@@ -71,9 +71,6 @@ typedef struct {
   /* An EmpathyAccountWidget can be used to either create an account or
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
-  /* If we are creating a new account, this member is set to TRUE once the
-   * account has been created */
-  gboolean account_created;
 
   /* if TRUE, the GTK+ destroy signal has been fired and so the widgets
    * embedded in this account widget can't be used any more
@@ -116,8 +113,6 @@ account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
       gtk_widget_set_sensitive (priv->apply_button, sensitive);
       gtk_widget_set_sensitive (
           priv->cancel_button, sensitive || priv->creating_account);
-
-      priv->contains_pending_changes = sensitive;
     }
 }
 
@@ -172,8 +167,12 @@ static void
 account_widget_entry_changed_cb (GtkEditable *entry,
     EmpathyAccountWidget *self)
 {
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
   account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
   account_widget_handle_control_buttons_sensitivity (self);
+
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -215,6 +214,7 @@ account_widget_int_changed_cb (GtkWidget *widget,
     }
 
   account_widget_handle_control_buttons_sensitivity (self);
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -247,6 +247,7 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
     }
 
   account_widget_handle_control_buttons_sensitivity (self);
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -264,6 +265,7 @@ account_widget_forget_clicked_cb (GtkWidget *button,
   gtk_entry_set_text (GTK_ENTRY (priv->entry_password), "");
 
   account_widget_handle_control_buttons_sensitivity (self);
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -275,6 +277,8 @@ account_widget_password_changed_cb (GtkWidget *entry,
 
   str = gtk_entry_get_text (GTK_ENTRY (entry));
   gtk_widget_set_sensitive (priv->button_forget, !EMP_STR_EMPTY (str));
+
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -300,6 +304,8 @@ account_widget_jabber_ssl_toggled_cb (GtkWidget *checkbutton_ssl,
     }
 
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->spinbutton_port), port);
+
+  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -339,6 +345,7 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
     }
 
   account_widget_handle_control_buttons_sensitivity (self);
+  priv->contains_pending_changes = TRUE;
 }
 
 void
@@ -730,7 +737,6 @@ account_widget_applied_cb (GObject *source_object,
 
           tp_account_set_enabled_async (account, TRUE,
               account_widget_account_enabled_cb, widget);
-          priv->account_created = TRUE;
           g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
         }
       else if (priv->enabled_checkbox != NULL)
@@ -758,6 +764,8 @@ account_widget_applied_cb (GObject *source_object,
 
   if (!priv->destroyed)
     account_widget_set_control_buttons_sensitivity (widget, FALSE);
+
+  priv->contains_pending_changes = FALSE;
 
   /* unref the widget - part of the workaround */
   g_object_unref (widget);
@@ -1697,11 +1705,6 @@ gboolean
 empathy_account_widget_contains_pending_changes (EmpathyAccountWidget *widget)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
-
-  if (priv->creating_account && !priv->account_created)
-    /* We always want to warn the user if he's in the process of creating a
-     * new account which hasn't been actually created yet. */
-    return TRUE;
 
   return priv->contains_pending_changes;
 }
