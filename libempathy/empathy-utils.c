@@ -245,8 +245,9 @@ empathy_presence_get_default_message (TpConnectionPresenceType presence)
 		return _("Invisible");
 	case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
 		return _("Offline");
-	case TP_CONNECTION_PRESENCE_TYPE_UNSET:
 	case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:
+		return _("Unknown");
+	case TP_CONNECTION_PRESENCE_TYPE_UNSET:
 	case TP_CONNECTION_PRESENCE_TYPE_ERROR:
 		return NULL;
 	}
