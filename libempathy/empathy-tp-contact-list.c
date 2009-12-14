@@ -49,8 +49,11 @@ typedef struct {
 	TpChannel      *stored;
 	/* contact handle (TpHandle) => reffed (EmpathyContact *)
 	 *
-	 * Contacts which are members or remote-pending in the subscribe channel:
-	 * we are receiving their presence or we asked to receive it. */
+	 * Union of:
+	 *  - members of 'subscribe': we receive their presence
+	 *  - RP of 'subscribe': we asked to receive their presence
+	 *  - members of 'publish': we send them our presence
+	 */
 	GHashTable     *members;
 	/* contact handle (TpHandle) => reffed (EmpathyContact *)
 	 *
@@ -509,7 +512,21 @@ static void
 remove_from_member_if_needed (EmpathyTpContactList *list,
 			      TpHandle handle)
 {
+	/* remove contact from members if it's not in publish and subscribe */
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	const TpIntSet *members;
+
+	members = tp_channel_group_get_members (priv->subscribe);
+	if (tp_intset_is_member (members, handle))
+		return;
+
+	members = tp_channel_group_get_remote_pending (priv->subscribe);
+	if (tp_intset_is_member (members, handle))
+		return;
+
+	members = tp_channel_group_get_members (priv->publish);
+	if (tp_intset_is_member (members, handle))
+		return;
 
 	tp_contact_list_remove_handle (list, priv->members, handle);
 }
@@ -529,6 +546,7 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 	guint i;
 
 	/* We now send our presence to those contacts, remove them from pendings */
+	add_to_members (list, added);
 	for (i = 0; i < added->len; i++) {
 		tp_contact_list_remove_handle (list, priv->pendings,
 			g_array_index (added, TpHandle, i));
@@ -536,8 +554,10 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 
 	/* We refuse to send our presence to those contacts, remove from pendings */
 	for (i = 0; i < removed->len; i++) {
-		tp_contact_list_remove_handle (list, priv->pendings,
-			g_array_index (removed, TpHandle, i));
+		TpHandle handle = g_array_index (removed, TpHandle, i);
+
+		tp_contact_list_remove_handle (list, priv->pendings, handle);
+		remove_from_member_if_needed (list, handle);
 	}
 
 	/* Those contacts want our presence, auto accept those that are already
