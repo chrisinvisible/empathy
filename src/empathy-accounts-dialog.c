@@ -189,6 +189,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   GtkTreeSelection          *selection;
   GtkTreeIter               iter;
   TpAccount                 *selected_account;
+  gboolean                  account_enabled;
+  gboolean                  creating_account;
 
   view = GTK_TREE_VIEW (priv->treeview);
   selection = gtk_tree_view_get_selection (view);
@@ -205,15 +207,27 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       return;
     }
 
-  status = tp_account_get_connection_status (account, &reason);
-  presence = tp_account_get_current_presence (account, NULL, &status_message);
+  if (account != NULL)
+    {
+      status = tp_account_get_connection_status (account, &reason);
+      presence = tp_account_get_current_presence (account, NULL, &status_message);
+      account_enabled = tp_account_is_enabled (account);
+      creating_account = FALSE;
+    }
+  else
+    {
+      status = TP_CONNECTION_STATUS_DISCONNECTED;
+      presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+      account_enabled = FALSE;
+      creating_account = TRUE;
+    }
 
   connectivity = empathy_connectivity_dup_singleton ();
 
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
       empathy_icon_name_for_presence (presence), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
-  if (tp_account_is_enabled (account))
+  if (account_enabled)
     {
       switch (status)
         {
@@ -280,7 +294,15 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     }
   else
     {
-      message = _("Offline - Account disabled");
+      if (creating_account)
+        {
+          message = _("Offline - Account not created yet");
+        }
+      else
+        {
+          message = _("Offline - Account disabled");
+        }
+
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);
       ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
@@ -293,7 +315,9 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   gtk_widget_show (priv->infobar);
 
   g_object_unref (connectivity);
-  g_free (status_message);
+
+  if (!creating_account)
+    g_free (status_message);
 }
 
 static void
@@ -355,6 +379,8 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   g_free (display_name);
 
   accounts_dialog_update_settings (dialog, settings);
+  accounts_dialog_update_status_infobar (dialog,
+      empathy_account_settings_get_account (settings));
 
   if (settings)
     g_object_unref (settings);
@@ -1302,7 +1328,7 @@ accounts_dialog_presence_changed_cb (TpAccount *account,
     gchar *status_message,
     EmpathyAccountsDialog *dialog)
 {
-  /* Update the status-infobar in the details view*/
+  /* Update the status-infobar in the details view */
   accounts_dialog_update_status_infobar (dialog, account);
 }
 
@@ -1438,7 +1464,7 @@ enable_or_disable_account (EmpathyAccountsDialog *dialog,
   /* Update the status in the model */
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 
-  /* Update the status-infobar in the details view when disabling*/
+  /* Update the status-infobar in the details view when disabling */
   if (!enabled)
     accounts_dialog_update_status_infobar (dialog, account);
 
