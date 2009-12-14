@@ -373,33 +373,16 @@ tp_contact_list_group_add (EmpathyTpContactList *list,
 }
 
 static void
-add_to_members (EmpathyTpContactList *list,
-		EmpathyContact *contact)
+got_added_members_cb (EmpathyTpContactFactory *factory,
+		      guint                    n_contacts,
+		      EmpathyContact * const * contacts,
+		      guint                    n_failed,
+		      const TpHandle          *failed,
+		      const GError            *error,
+		      gpointer                 user_data,
+		      GObject                 *list)
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-	TpHandle handle;
-
-	handle = empathy_contact_get_handle (contact);
-	if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
-		return;
-
-	/* Add to the list and emit signal */
-	g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
-			     g_object_ref (contact));
-	g_signal_emit_by_name (list, "members-changed", contact,
-				       0, 0, NULL, TRUE);
-}
-
-static void
-tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
-				      guint                    n_contacts,
-				      EmpathyContact * const * contacts,
-				      guint                    n_failed,
-				      const TpHandle          *failed,
-				      const GError            *error,
-				      gpointer                 user_data,
-				      GObject                 *list)
-{
 	guint i;
 
 	if (error) {
@@ -409,9 +392,45 @@ tp_contact_list_got_added_members_cb (EmpathyTpContactFactory *factory,
 
 	for (i = 0; i < n_contacts; i++) {
 		EmpathyContact *contact = contacts[i];
+		TpHandle handle = empathy_contact_get_handle (contact);
 
-		add_to_members (EMPATHY_TP_CONTACT_LIST (list), contact);
+	/* Add to the list and emit signal */
+		g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
+			     g_object_ref (contact));
+		g_signal_emit_by_name (list, "members-changed", contact,
+				       0, 0, NULL, TRUE);
 	}
+}
+
+static void
+add_to_members (EmpathyTpContactList *list,
+		GArray *handles)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	GArray *request;
+	guint i;
+
+	if (handles->len == 0)
+		return;
+
+	request = g_array_new (FALSE, FALSE, sizeof (TpHandle));
+
+	for (i = 0; i < handles->len; i++) {
+		TpHandle handle = g_array_index (handles, TpHandle, i);
+
+		if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
+			continue;
+
+		g_array_append_val (request, handle);
+	}
+
+	if (request->len > 0) {
+			empathy_tp_contact_factory_get_from_handles (priv->factory,
+				request->len, (TpHandle *) request->data,
+				got_added_members_cb, NULL, NULL, G_OBJECT (list));
+	}
+
+	g_array_free (request, TRUE);
 }
 
 static void
@@ -605,12 +624,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 	GArray *accept;
 
 	/* We now get the presence of those contacts, add them to members */
-	if (added->len > 0) {
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
-			added->len, (TpHandle *) added->data,
-			tp_contact_list_got_added_members_cb, NULL, NULL,
-			G_OBJECT (list));
-	}
+	add_to_members (list, added);
 
 	/* Those contacts refuse to send us their presence, remove from members. */
 	for (i = 0; i < removed->len; i++) {
@@ -619,12 +633,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 
 	/* We want those contacts in our contact list but we don't get their
 	 * presence yet. Add to members anyway. */
-	if (remote_pending->len > 0) {
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
-			remote_pending->len, (TpHandle *) remote_pending->data,
-			tp_contact_list_got_added_members_cb, NULL, NULL,
-			G_OBJECT (list));
-	}
+	add_to_members (list, remote_pending);
 
 	/* Implicitly accept pending request of contacts which are now members. */
 	accept = g_array_new (FALSE, FALSE, sizeof (TpHandle));
