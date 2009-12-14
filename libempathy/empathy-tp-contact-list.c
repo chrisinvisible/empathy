@@ -397,6 +397,9 @@ got_added_members_cb (EmpathyTpContactFactory *factory,
 		EmpathyContact *contact = contacts[i];
 		TpHandle handle = empathy_contact_get_handle (contact);
 
+		if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
+			continue;
+
 	/* Add to the list and emit signal */
 		g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
 			     g_object_ref (contact));
