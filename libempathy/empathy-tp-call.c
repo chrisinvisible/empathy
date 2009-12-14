@@ -794,3 +794,25 @@ empathy_tp_call_get_connection_manager (EmpathyTpCall *self)
 
   return tp_account_get_connection_manager (account);
 }
+
+gboolean
+empathy_tp_call_has_initial_video (EmpathyTpCall *self)
+{
+  EmpathyTpCallPriv *priv = GET_PRIV (self);
+  GHashTable *props;
+  gboolean initial_video;
+  gboolean valid;
+
+  if (priv->channel == NULL)
+    return FALSE;
+
+  g_object_get (priv->channel, "channel-properties", &props, NULL);
+
+  initial_video = tp_asv_get_boolean (props,
+    TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo", &valid);
+  if (!valid)
+    initial_video = FALSE;
+
+  g_hash_table_unref (props);
+  return initial_video;
+}
