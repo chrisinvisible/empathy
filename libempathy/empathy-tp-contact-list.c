@@ -401,9 +401,9 @@ got_added_members_cb (EmpathyTpContactFactory *factory,
 		if (g_hash_table_lookup (priv->members, GUINT_TO_POINTER (handle)))
 			continue;
 
-	/* Add to the list and emit signal */
+		/* Add to the list and emit signal */
 		g_hash_table_insert (priv->members, GUINT_TO_POINTER (handle),
-			     g_object_ref (contact));
+				     g_object_ref (contact));
 		g_signal_emit_by_name (list, "members-changed", contact,
 				       0, 0, NULL, TRUE);
 	}
