@@ -498,6 +498,15 @@ tp_contact_list_remove_handle (EmpathyTpContactList *list,
 }
 
 static void
+remove_from_member_if_needed (EmpathyTpContactList *list,
+			      TpHandle handle)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+
+	tp_contact_list_remove_handle (list, priv->members, handle);
+}
+
+static void
 tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 						  gchar         *message,
 						  GArray        *added,
@@ -615,8 +624,7 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 
 	/* Those contacts refuse to send us their presence, remove from members. */
 	for (i = 0; i < removed->len; i++) {
-		tp_contact_list_remove_handle (list, priv->members,
-			g_array_index (removed, TpHandle, i));
+		remove_from_member_if_needed (list, g_array_index (removed, TpHandle, i));
 	}
 
 	/* We want those contacts in our contact list but we don't get their
