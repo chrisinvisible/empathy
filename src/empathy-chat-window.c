@@ -820,36 +820,17 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 }
 
 static void
-upgrade_to_muc_cb (TpConnection *connection,
-		   gboolean      yours,
-		   const char   *object_path,
-		   GHashTable   *properties,
-		   const GError *error,
-		   gpointer      user_data,
-		   GObject      *window)
-{
-	if (error)
-	{
-		g_critical ("%s", error->message);
-		return;
-	}
-
-	g_print ("GOT CHANNEL! %s\n", object_path);
-}
-
-static void
 chat_window_invite_participant_activate_cb (GtkAction         *action,
 					    EmpathyChatWindow *window)
 {
 	EmpathyChatWindowPriv *priv;
+	EmpathyDispatcher     *dispatcher = empathy_dispatcher_dup_singleton ();
 	EmpathyTpChat         *tp_chat;
 	TpConnection          *connection;
 	TpChannel             *channel;
 	GHashTable            *props;
 	GPtrArray             *channels;
 	char                  *invitees[3] = { NULL, };
-
-	g_print ("INVITE PARTICIPANT\n");
 
 	priv = GET_PRIV (window);
 
@@ -881,13 +862,14 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	    /* FIXME: InvitationMessage ? */
 	    NULL);
 
-	/* FIXME: this probably needs to go through EmpathyDispatcher */
-	tp_cli_connection_interface_requests_call_ensure_channel (
-	    connection, -1, props, upgrade_to_muc_cb, NULL, NULL,
-	    G_OBJECT (window));
+	/* Although this is a MUC, it's anonymous, so CreateChannel is valid */
+	empathy_dispatcher_create_channel (dispatcher, connection,
+			props, NULL, NULL);
 
 	g_hash_table_destroy (props);
 	g_ptr_array_free (channels, TRUE);
+
+	g_object_unref (dispatcher);
 }
 
 static void
