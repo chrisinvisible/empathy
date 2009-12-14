@@ -222,8 +222,6 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       creating_account = TRUE;
     }
 
-  connectivity = empathy_connectivity_dup_singleton ();
-
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_status),
       empathy_icon_name_for_presence (presence), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
@@ -275,9 +273,11 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                     GTK_MESSAGE_ERROR);
               }
 
+            connectivity = empathy_connectivity_dup_singleton ();
             if (!empathy_connectivity_is_online (connectivity))
                message = _("Offline - No Network Connection");
 
+            g_object_unref (connectivity);
             ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
             gtk_widget_hide (priv->throbber);
@@ -313,8 +313,6 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   gtk_label_set_text (GTK_LABEL (priv->label_status), message);
   gtk_widget_show (priv->label_status);
   gtk_widget_show (priv->infobar);
-
-  g_object_unref (connectivity);
 
   if (!creating_account)
     g_free (status_message);
