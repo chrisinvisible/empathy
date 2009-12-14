@@ -329,14 +329,11 @@ main_window_error_retry_clicked_cb (GtkButton *button,
 				    EmpathyMainWindow *window)
 {
 	TpAccount *account;
-	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
 	tp_account_reconnect_async (account, NULL, NULL);
 
-	error_widget = g_hash_table_lookup (window->errors, account);
-	gtk_widget_destroy (error_widget);
-	g_hash_table_remove (window->errors, account);
+	main_window_remove_error (window, account);
 }
 
 static void
@@ -344,14 +341,11 @@ main_window_error_edit_clicked_cb (GtkButton *button,
 				   EmpathyMainWindow *window)
 {
 	TpAccount *account;
-	GtkWidget *error_widget;
 
 	account = g_object_get_data (G_OBJECT (button), "account");
 	empathy_accounts_dialog_show (GTK_WINDOW (window->window), account);
 
-	error_widget = g_hash_table_lookup (window->errors, account);
-	gtk_widget_destroy (error_widget);
-	g_hash_table_remove (window->errors, account);
+	main_window_remove_error (window, account);
 }
 
 static void
@@ -579,17 +573,11 @@ main_window_connection_changed_cb (TpAccount  *account,
 	}
 
 	if (current == TP_CONNECTION_STATUS_CONNECTED) {
-		GtkWidget *error_widget;
-
 		empathy_sound_play (GTK_WIDGET (window->window),
 				    EMPATHY_SOUND_ACCOUNT_CONNECTED);
 
 		/* Account connected without error, remove error message if any */
-		error_widget = g_hash_table_lookup (window->errors, account);
-		if (error_widget) {
-			gtk_widget_destroy (error_widget);
-			g_hash_table_remove (window->errors, account);
-		}
+		main_window_remove_error (window, account);
 	}
 }
 
