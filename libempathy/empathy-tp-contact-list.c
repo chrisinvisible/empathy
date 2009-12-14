@@ -53,6 +53,7 @@ typedef struct {
 	 *  - members of 'subscribe': we receive their presence
 	 *  - RP of 'subscribe': we asked to receive their presence
 	 *  - members of 'publish': we send them our presence
+	 *  - members of 'stored': they are in our roster
 	 */
 	GHashTable     *members;
 	/* contact handle (TpHandle) => reffed (EmpathyContact *)
@@ -681,6 +682,26 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 }
 
 static void
+tp_contact_list_store_group_members_changed_cb (TpChannel     *channel,
+						gchar         *message,
+						GArray        *added,
+						GArray        *removed,
+						GArray        *local_pending,
+						GArray        *remote_pending,
+						guint          actor,
+						guint          reason,
+						EmpathyTpContactList *list)
+{
+	guint i;
+
+	add_to_members (list, added);
+
+	for (i = 0; i < removed->len; i++) {
+		remove_from_member_if_needed (list, g_array_index (removed, TpHandle, i));
+	}
+}
+
+static void
 tp_contact_list_new_channel_cb (TpConnection *proxy,
 				const gchar  *object_path,
 				const gchar  *channel_type,
@@ -798,6 +819,9 @@ got_list_channel (EmpathyTpContactList *list,
 		if (priv->stored != NULL)
 			return;
 		priv->stored = g_object_ref (channel);
+		g_signal_connect (priv->stored, "group-members-changed",
+				  G_CALLBACK (tp_contact_list_store_group_members_changed_cb),
+				  list);
 	} else if (!tp_strdiff (id, "publish")) {
 		if (priv->publish != NULL)
 			return;
