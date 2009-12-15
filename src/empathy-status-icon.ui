@@ -18,6 +18,13 @@
           </object>
         </child>
         <child>
+          <object class="GtkAction" id="new_call">
+            <property name="icon-name">audio-input-microphone</property>
+            <property name="name">new_call</property>
+            <property name="label" translatable="yes">New _Call...</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="status">
             <property name="name">status</property>
             <property name="label" translatable="yes">Status</property>
@@ -37,6 +44,7 @@
         <menuitem action="show_list"/>
         <separator/>
         <menuitem action="new_message"/>
+        <menuitem action="new_call"/>
         <menuitem action="status"/>
         <separator/>
         <menuitem action="quit"/>

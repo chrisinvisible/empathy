@@ -42,6 +42,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
+#include <libempathy-gtk/empathy-new-call-dialog.h>
 #include <libempathy-gtk/empathy-notify-manager.h>
 
 #include "empathy-accounts-dialog.h"
@@ -452,6 +453,13 @@ status_icon_new_message_cb (GtkAction         *action,
 }
 
 static void
+status_icon_new_call_cb (GtkAction         *action,
+			    EmpathyStatusIcon *icon)
+{
+	empathy_new_call_dialog_show (NULL);
+}
+
+static void
 status_icon_quit_cb (GtkAction         *action,
 		     EmpathyStatusIcon *icon)
 {
@@ -512,6 +520,7 @@ status_icon_create_menu (EmpathyStatusIcon *icon)
 	empathy_builder_connect (gui, icon,
 			      "show_list", "toggled", status_icon_show_hide_window_cb,
 			      "new_message", "activate", status_icon_new_message_cb,
+			      "new_call", "activate", status_icon_new_call_cb,
 			      "quit", "activate", status_icon_quit_cb,
 			      NULL);
 
