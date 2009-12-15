@@ -46,6 +46,7 @@
 #include <libempathy-gtk/empathy-geometry.h>
 #include <libempathy-gtk/empathy-gtk-enum-types.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
+#include <libempathy-gtk/empathy-new-call-dialog.h>
 #include <libempathy-gtk/empathy-log-window.h>
 #include <libempathy-gtk/empathy-presence-chooser.h>
 #include <libempathy-gtk/empathy-sound.h>
@@ -669,6 +670,13 @@ main_window_chat_new_message_cb (GtkAction         *action,
 }
 
 static void
+main_window_chat_new_call_cb (GtkAction         *action,
+				 EmpathyMainWindow *window)
+{
+	empathy_new_call_dialog_show (GTK_WINDOW (window->window));
+}
+
+static void
 main_window_chat_add_contact_cb (GtkAction         *action,
 				 EmpathyMainWindow *window)
 {
@@ -1151,6 +1159,7 @@ main_window_connection_items_setup (EmpathyMainWindow *window,
 	const gchar *actions_connected[] = {
 		"room",
 		"chat_new_message",
+		"chat_new_call",
 		"chat_add_contact",
 		"edit_personal_information"
 	};
@@ -1254,6 +1263,7 @@ empathy_main_window_show (void)
 			      "main_window", "destroy", main_window_destroy_cb,
 			      "chat_quit", "activate", main_window_chat_quit_cb,
 			      "chat_new_message", "activate", main_window_chat_new_message_cb,
+			      "chat_new_call", "activate", main_window_chat_new_call_cb,
 			      "view_history", "activate", main_window_view_history_cb,
 			      "room_join_new", "activate", main_window_room_join_new_cb,
 			      "room_join_favorites", "activate", main_window_room_join_favorites_cb,
