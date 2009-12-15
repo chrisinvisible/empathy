@@ -27,7 +27,6 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -65,7 +64,6 @@ struct _EmpathyNewMessageDialogPriv {
 	GtkWidget *account_chooser;
 	GtkWidget *entry_id;
 	GtkWidget *button_chat;
-	GtkWidget *button_call;
 	EmpathyContactManager *contact_manager;
 };
 
@@ -191,24 +189,6 @@ new_message_dialog_match_func (GtkEntryCompletion *completion,
 }
 
 static void
-new_message_dialog_call_got_contact_cb (EmpathyTpContactFactory *factory,
-					EmpathyContact          *contact,
-					const GError            *error,
-					gpointer                 user_data,
-					GObject                 *weak_object)
-{
-	EmpathyCallFactory *call_factory;
-
-	if (error != NULL) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	call_factory = empathy_call_factory_get ();
-	empathy_call_factory_new_call (call_factory, contact);
-}
-
-static void
 new_message_dialog_response_cb (GtkWidget               *widget,
 				gint                    response,
 				EmpathyNewMessageDialog *dialog)
@@ -225,15 +205,7 @@ new_message_dialog_response_cb (GtkWidget               *widget,
 		return;
 	}
 
-	if (response == 1) {
-		EmpathyTpContactFactory *factory;
-
-		factory = empathy_tp_contact_factory_dup_singleton (connection);
-		empathy_tp_contact_factory_get_from_id (factory, id,
-			new_message_dialog_call_got_contact_cb,
-			NULL, NULL, NULL);
-		g_object_unref (factory);
-	} else if (response == 2) {
+	if (response == GTK_RESPONSE_ACCEPT) {
 		empathy_dispatcher_chat_with_contact_id (connection, id, NULL, NULL);
 	}
 
@@ -252,7 +224,6 @@ new_message_change_state_button_cb  (GtkEditable             *editable,
 	sensitive = !EMP_STR_EMPTY (id);
 
 	gtk_widget_set_sensitive (priv->button_chat, sensitive);
-	gtk_widget_set_sensitive (priv->button_call, sensitive);
 }
 
 static GObject *
@@ -307,20 +278,13 @@ empathy_new_message_dialog_init (EmpathyNewMessageDialog *dialog)
 	gtk_dialog_add_button (GTK_DIALOG (dialog),
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 
-	priv->button_call = gtk_button_new_with_mnemonic (_("C_all"));
-	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP,
-		GTK_ICON_SIZE_BUTTON);
-	gtk_button_set_image (GTK_BUTTON (priv->button_call), image);
-
-	gtk_dialog_add_action_widget (GTK_DIALOG (dialog), priv->button_call, 1);
-	gtk_widget_show (priv->button_call);
-
 	priv->button_chat = gtk_button_new_with_mnemonic (_("C_hat"));
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_NEW_MESSAGE,
 		GTK_ICON_SIZE_BUTTON);
 	gtk_button_set_image (GTK_BUTTON (priv->button_chat), image);
 
-	gtk_dialog_add_action_widget (GTK_DIALOG (dialog), priv->button_chat, 2);
+	gtk_dialog_add_action_widget (GTK_DIALOG (dialog), priv->button_chat,
+		GTK_RESPONSE_ACCEPT);
 	gtk_widget_show (priv->button_chat);
 
 	/* Tweak the dialog */
@@ -372,7 +336,6 @@ empathy_new_message_dialog_init (EmpathyNewMessageDialog *dialog)
 			  dialog);
 
 	gtk_widget_set_sensitive (priv->button_chat, FALSE);
-	gtk_widget_set_sensitive (priv->button_call, FALSE);
 }
 
 static void
