@@ -219,6 +219,19 @@ contact_selector_change_state_button_cb  (GtkEditable *editable,
 }
 
 static void
+entry_activate_cb (GtkEntry *entry,
+    gpointer self)
+{
+  const gchar *id;
+
+  id = gtk_entry_get_text (entry);
+  if (EMP_STR_EMPTY (id))
+    return;
+
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
+}
+
+static void
 empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
 {
   EmpathyContactSelectorDialogPriv *priv = GET_PRIV (dialog);
@@ -238,6 +251,10 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
                 "entry_id", &priv->entry_id,
                 NULL);
   g_free (filename);
+
+  empathy_builder_connect (gui, dialog,
+      "entry_id", "activate", entry_activate_cb,
+      NULL);
 
   content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
   gtk_container_add (GTK_CONTAINER (content_area), priv->table_contact);
