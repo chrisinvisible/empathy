@@ -46,6 +46,16 @@ static EmpathyNewCallDialog *dialog_singleton = NULL;
 G_DEFINE_TYPE(EmpathyNewCallDialog, empathy_new_call_dialog,
                EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG)
 
+typedef struct _EmpathyNewCallDialogPriv EmpathyNewCallDialogPriv;
+
+struct _EmpathyNewCallDialogPriv {
+  GtkWidget *check_video;
+};
+
+#define GET_PRIV(o) \
+  (G_TYPE_INSTANCE_GET_PRIVATE ((o), EMPATHY_TYPE_NEW_CALL_DIALOG, \
+    EmpathyNewCallDialogPriv))
+
 /**
  * SECTION:empathy-new-call-dialog
  * @title: EmpathyNewCallDialog
@@ -64,6 +74,7 @@ got_contact_cb (EmpathyTpContactFactory *factory,
     GObject *object)
 {
   EmpathyCallFactory *call_factory;
+  gboolean video = GPOINTER_TO_UINT (user_data);
 
   if (error != NULL)
     {
@@ -72,7 +83,8 @@ got_contact_cb (EmpathyTpContactFactory *factory,
     }
 
   call_factory = empathy_call_factory_get ();
-  empathy_call_factory_new_call (call_factory, contact);
+  empathy_call_factory_new_call_with_streams (call_factory, contact, TRUE,
+      video);
 }
 
 static void
@@ -80,11 +92,17 @@ empathy_new_call_dialog_got_response (EmpathyContactSelectorDialog *dialog,
     TpConnection *connection,
     const gchar *contact_id)
 {
+  EmpathyNewCallDialogPriv *priv = GET_PRIV (dialog);
   EmpathyTpContactFactory *factory;
+  gboolean video;
+
+  /* check if video is enabled now because the dialog will be destroyed once
+   * we return from this function. */
+  video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
   factory = empathy_tp_contact_factory_dup_singleton (connection);
   empathy_tp_contact_factory_get_from_id (factory, contact_id,
-      got_contact_cb, NULL, NULL, NULL);
+      got_contact_cb, GUINT_TO_POINTER (video), NULL, NULL);
 
   g_object_unref (factory);
 }
@@ -119,7 +137,16 @@ empathy_new_call_dialog_init (EmpathyNewCallDialog *dialog)
 {
   EmpathyContactSelectorDialog *parent = EMPATHY_CONTACT_SELECTOR_DIALOG (
         dialog);
+  EmpathyNewCallDialogPriv *priv = GET_PRIV (dialog);
   GtkWidget *image;
+
+  /* add video toggle */
+  priv->check_video = gtk_check_button_new_with_mnemonic (_("Send _Video"));
+
+  gtk_table_attach_defaults (GTK_TABLE (parent->table_contact),
+      priv->check_video, 1, 2, 2, 3);
+
+  gtk_widget_show (priv->check_video);
 
   /* add chat button */
   parent->button_action = gtk_button_new_with_mnemonic (_("_Call"));
@@ -145,6 +172,8 @@ empathy_new_call_dialog_class_init (
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   EmpathyContactSelectorDialogClass *dialog_class = \
     EMPATHY_CONTACT_SELECTOR_DIALOG_CLASS (class);
+
+  g_type_class_add_private (class, sizeof (EmpathyNewCallDialogPriv));
 
   object_class->constructor = empathy_new_call_dialog_constructor;
 
