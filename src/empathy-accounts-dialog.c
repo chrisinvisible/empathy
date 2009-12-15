@@ -179,7 +179,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   const gchar               *message;
-  gchar                     *status_message;
+  gchar                     *status_message = NULL;
   guint                     status;
   guint                     reason;
   guint                     presence;
@@ -203,9 +203,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 
   /* do not update the infobar when the account is not selected */
   if (account != selected_account)
-    {
-      return;
-    }
+    return;
 
   if (account != NULL)
     {
@@ -294,14 +292,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     }
   else
     {
-      if (creating_account)
-        {
-          message = _("Offline - Account not created yet");
-        }
-      else
-        {
-          message = _("Offline - Account disabled");
-        }
+      message = _("Offline - Account disabled");
 
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);
@@ -312,10 +303,13 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 
   gtk_label_set_text (GTK_LABEL (priv->label_status), message);
   gtk_widget_show (priv->label_status);
-  gtk_widget_show (priv->infobar);
 
   if (!creating_account)
-    g_free (status_message);
+    gtk_widget_show (priv->infobar);
+  else
+    gtk_widget_hide (priv->infobar);
+
+  g_free (status_message);
 }
 
 static void
