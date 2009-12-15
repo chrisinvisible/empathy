@@ -48,6 +48,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-list-view.c		\
 	empathy-contact-menu.c			\
 	empathy-contact-selector.c		\
+	empathy-contact-selector-dialog.c \
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
 	empathy-irc-network-dialog.c		\
@@ -90,6 +91,7 @@ libempathy_gtk_headers =			\
 	empathy-contact-list-view.h		\
 	empathy-contact-menu.h			\
 	empathy-contact-selector.h		\
+	empathy-contact-selector-dialog.h \
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
 	empathy-images.h			\
