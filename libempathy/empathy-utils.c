@@ -391,6 +391,10 @@ empathy_uint_compare (gconstpointer a,
 gchar *
 empathy_protocol_icon_name (const gchar *protocol)
 {
+  if (!tp_strdiff (protocol, "yahoojp"))
+    /* Yahoo Japan use the same icon as Yahoo */
+    protocol = "yahoo";
+
   return g_strdup_printf ("im-%s", protocol);
 }
 
