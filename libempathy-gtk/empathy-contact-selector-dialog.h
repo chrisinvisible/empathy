@@ -46,6 +46,7 @@ struct _EmpathyContactSelectorDialog {
 
   /* protected fields */
   GtkWidget *button_action;
+  GtkWidget *table_contact;
 };
 
 GType empathy_contact_selector_dialog_get_type (void);

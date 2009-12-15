@@ -48,7 +48,6 @@ typedef struct _EmpathyContactSelectorDialogPriv \
           EmpathyContactSelectorDialogPriv;
 
 struct _EmpathyContactSelectorDialogPriv {
-  GtkWidget *table_contact;
   GtkWidget *account_chooser;
   GtkWidget *entry_id;
   EmpathyContactManager *contact_manager;
@@ -247,7 +246,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   filename = empathy_file_lookup ("empathy-contact-selector-dialog.ui",
           "libempathy-gtk");
   gui = empathy_builder_get_file (filename,
-                "table_contact", &priv->table_contact,
+                "table_contact", &dialog->table_contact,
                 "entry_id", &priv->entry_id,
                 NULL);
   g_free (filename);
@@ -257,7 +256,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
       NULL);
 
   content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  gtk_container_add (GTK_CONTAINER (content_area), priv->table_contact);
+  gtk_container_add (GTK_CONTAINER (content_area), dialog->table_contact);
 
   gtk_dialog_add_button (GTK_DIALOG (dialog),
     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
@@ -295,7 +294,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
 
   /* Create account chooser */
   priv->account_chooser = empathy_account_chooser_new ();
-  gtk_table_attach_defaults (GTK_TABLE (priv->table_contact),
+  gtk_table_attach_defaults (GTK_TABLE (dialog->table_contact),
            priv->account_chooser,
            1, 2, 0, 1);
   empathy_account_chooser_set_filter (
