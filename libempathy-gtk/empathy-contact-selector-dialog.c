@@ -231,7 +231,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   /* create a contact manager */
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
 
-  filename = empathy_file_lookup ("empathy-new-message-dialog.ui",
+  filename = empathy_file_lookup ("empathy-contact-selector-dialog.ui",
           "libempathy-gtk");
   gui = empathy_builder_get_file (filename,
                 "table_contact", &priv->table_contact,

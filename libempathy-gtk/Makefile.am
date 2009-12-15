@@ -156,7 +156,7 @@ ui_DATA = 					\
 	empathy-status-preset-dialog.ui		\
 	empathy-log-window.ui			\
 	empathy-chat.ui				\
-	empathy-new-message-dialog.ui
+	empathy-contact-selector-dialog.ui
 
 empathy-gtk-marshal.list: $(libempathy_gtk_la_SOURCES) Makefile.am
 	$(QUIET_GEN)( cd $(srcdir) && \
