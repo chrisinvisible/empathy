@@ -55,6 +55,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-kludge-label.c			\
 	empathy-log-window.c			\
 	empathy-new-message-dialog.c		\
+	empathy-new-call-dialog.c		\
 	empathy-notify-manager.c		\
 	empathy-presence-chooser.c		\
 	empathy-protocol-chooser.c		\
@@ -99,6 +100,7 @@ libempathy_gtk_headers =			\
 	empathy-kludge-label.h			\
 	empathy-log-window.h			\
 	empathy-new-message-dialog.h		\
+	empathy-new-call-dialog.h		\
 	empathy-notify-manager.h		\
 	empathy-presence-chooser.h		\
 	empathy-protocol-chooser.h		\
