@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/interfaces.h>
+
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-call-factory.h>
@@ -107,6 +109,38 @@ empathy_new_call_dialog_got_response (EmpathyContactSelectorDialog *dialog,
   g_object_unref (factory);
 }
 
+static gboolean
+empathy_new_call_dialog_account_filter (EmpathyContactSelectorDialog *dialog,
+    TpAccount *account)
+{
+  TpConnection *connection;
+  EmpathyDispatcher *dispatcher;
+  GList *classes;
+
+  if (tp_account_get_connection_status (account, NULL) !=
+      TP_CONNECTION_STATUS_CONNECTED)
+    return FALSE;
+
+  /* check if CM supports calls */
+  connection = tp_account_get_connection (account);
+  if (connection == NULL)
+    return FALSE;
+
+  dispatcher = empathy_dispatcher_dup_singleton ();
+
+  classes = empathy_dispatcher_find_requestable_channel_classes
+    (dispatcher, connection, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+     TP_HANDLE_TYPE_CONTACT, NULL);
+
+  g_object_unref (dispatcher);
+
+  if (classes == NULL)
+    return FALSE;
+
+  g_list_free (classes);
+  return TRUE;
+}
+
 static GObject *
 empathy_new_call_dialog_constructor (GType type,
     guint n_props,
@@ -178,6 +212,7 @@ empathy_new_call_dialog_class_init (
   object_class->constructor = empathy_new_call_dialog_constructor;
 
   dialog_class->got_response = empathy_new_call_dialog_got_response;
+  dialog_class->account_filter = empathy_new_call_dialog_account_filter;
 }
 
 /**
