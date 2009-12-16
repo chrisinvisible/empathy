@@ -39,6 +39,9 @@ struct _EmpathyContactSelectorDialogClass {
   void (*got_response) (EmpathyContactSelectorDialog *self,
       TpConnection *connection,
       const gchar *contact_id);
+
+  gboolean (*account_filter) (EmpathyContactSelectorDialog *self,
+      TpAccount *account);
 };
 
 struct _EmpathyContactSelectorDialog {

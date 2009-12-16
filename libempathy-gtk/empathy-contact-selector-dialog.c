@@ -230,6 +230,20 @@ entry_activate_cb (GtkEntry *entry,
   gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 }
 
+static gboolean
+account_chooser_filter (TpAccount *account,
+    gpointer user_data)
+{
+  EmpathyContactSelectorDialog *self = user_data;
+  EmpathyContactSelectorDialogClass *class = \
+      EMPATHY_CONTACT_SELECTOR_DIALOG_GET_CLASS (self);
+
+  if (class->account_filter == NULL)
+    return empathy_account_chooser_filter_is_connected (account, user_data);
+
+  return class->account_filter (self, account);
+}
+
 static void
 empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
 {
@@ -299,8 +313,8 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
            1, 2, 0, 1);
   empathy_account_chooser_set_filter (
       EMPATHY_ACCOUNT_CHOOSER (priv->account_chooser),
-      empathy_account_chooser_filter_is_connected,
-      NULL);
+      account_chooser_filter,
+      dialog);
   gtk_widget_show (priv->account_chooser);
 
   contact_selector_dialog_account_changed_cb (priv->account_chooser, dialog);
