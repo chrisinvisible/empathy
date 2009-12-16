@@ -392,8 +392,6 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
   priv->settings_widget =
       empathy_account_widget_get_widget (priv->setting_widget_object);
 
-  priv->settings_widget =
-      empathy_account_widget_get_widget (priv->setting_widget_object);
   g_signal_connect (priv->setting_widget_object, "account-created",
         G_CALLBACK (empathy_account_dialog_account_created_cb), dialog);
   g_signal_connect (priv->setting_widget_object, "cancelled",
