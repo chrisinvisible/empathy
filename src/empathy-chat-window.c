@@ -57,6 +57,7 @@
 
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
+#include "empathy-invite-participant-dialog.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
@@ -820,10 +821,9 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 }
 
 static void
-chat_window_invite_participant_activate_cb (GtkAction         *action,
-					    EmpathyChatWindow *window)
+chat_window_upgrade_to_muc (EmpathyChat    *chat,
+                            EmpathyContact *invitee)
 {
-	EmpathyChatWindowPriv *priv;
 	EmpathyDispatcher     *dispatcher = empathy_dispatcher_dup_singleton ();
 	EmpathyTpChat         *tp_chat;
 	TpConnection          *connection;
@@ -832,14 +832,7 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	GPtrArray             *channels;
 	char                  *invitees[3] = { NULL, };
 
-	priv = GET_PRIV (window);
-
-	g_return_if_fail (priv->current_chat != NULL);
-
-	/* FIXME: this is for upgrading a 1-to-1 channel to a MUC, inviting
-	 * a user to a MUC is much easier, and needs to be written */
-
-	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+	tp_chat = empathy_chat_get_tp_chat (chat);
 	connection = empathy_tp_chat_get_connection (tp_chat);
 	channel = empathy_tp_chat_get_channel (tp_chat);
 
@@ -848,7 +841,7 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	g_ptr_array_add (channels, (char *) tp_proxy_get_object_path (channel));
 
 	invitees[0] = (char *) tp_channel_get_identifier (channel);
-	// invitees[1] = /* FIXME: ask for this */
+	invitees[1] = (char *) empathy_contact_get_id (invitee);
 
 	props = tp_asv_new (
 	    TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
@@ -870,6 +863,56 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	g_ptr_array_free (channels, TRUE);
 
 	g_object_unref (dispatcher);
+}
+
+static void
+chat_window_invite_participant_activate_cb (GtkAction         *action,
+					    EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	GtkWidget             *dialog;
+	EmpathyTpChat         *tp_chat;
+	TpChannel             *channel;
+	int                    response;
+
+	priv = GET_PRIV (window);
+
+	g_return_if_fail (priv->current_chat != NULL);
+
+	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+	channel = empathy_tp_chat_get_channel (tp_chat);
+
+	/* FIXME: should filter out the existing participants from the
+	 * list */
+	dialog = empathy_invite_participant_dialog_new (
+			GTK_WINDOW (priv->dialog));
+	gtk_widget_show (dialog);
+
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+	if (response == GTK_RESPONSE_OK)
+	{
+		EmpathyContact *contact;
+		TpHandleType handle_type;
+
+		contact = empathy_invite_participant_dialog_dup_selected_contact (EMPATHY_INVITE_PARTICIPANT_DIALOG (dialog));
+		tp_channel_get_handle (channel, &handle_type);
+
+		if (handle_type == TP_HANDLE_TYPE_CONTACT)
+		{
+			chat_window_upgrade_to_muc (priv->current_chat,
+					contact);
+		}
+		else
+		{
+			/* FIXME: do something with MUC */
+			g_warning ("Not implemented yet");
+		}
+
+		g_object_unref (contact);
+	}
+
+	gtk_widget_destroy (dialog);
 }
 
 static void

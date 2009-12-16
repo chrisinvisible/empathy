@@ -44,6 +44,7 @@ empathy_handwritten_source = \
 	empathy-import-pidgin.c empathy-import-pidgin.h			\
 	empathy-import-utils.c empathy-import-utils.h			\
 	empathy-import-widget.c empathy-import-widget.h			\
+	empathy-invite-participant-dialog.c empathy-invite-participant-dialog.h \
 	empathy-main-window.c empathy-main-window.h			\
 	empathy-new-chatroom-dialog.c empathy-new-chatroom-dialog.h	\
 	empathy-preferences.c empathy-preferences.h			\
