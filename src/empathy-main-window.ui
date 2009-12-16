@@ -48,6 +48,12 @@
           <accelerator key="H" modifiers="GDK_CONTROL_MASK"/>
         </child>
         <child>
+          <object class="GtkToggleAction" id="view_show_protocols">
+            <property name="name">view_show_protocols</property>
+            <property name="label" translatable="yes">Show P_rotocols</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="view_show_map">
             <property name="name">view_show_map</property>
             <property name="label" translatable="yes">Contacts on a _Map</property>
@@ -221,6 +227,7 @@
         </menu>
         <menu action="view">
           <menuitem action="view_show_offline"/>
+          <menuitem action="view_show_protocols"/>
           <separator/>
           <menuitem action="view_sort_by_name"/>
           <menuitem action="view_sort_by_status"/>

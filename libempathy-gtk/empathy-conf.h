@@ -73,6 +73,7 @@ struct _EmpathyConfClass {
 #define EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN        EMPATHY_PREFS_PATH "/ui/main_window_hidden"
 #define EMPATHY_PREFS_UI_AVATAR_DIRECTORY          EMPATHY_PREFS_PATH "/ui/avatar_directory"
 #define EMPATHY_PREFS_UI_SHOW_AVATARS              EMPATHY_PREFS_PATH "/ui/show_avatars"
+#define EMPATHY_PREFS_UI_SHOW_PROTOCOLS            EMPATHY_PREFS_PATH "/ui/show_protocols"
 #define EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST      EMPATHY_PREFS_PATH "/ui/compact_contact_list"
 #define EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS     EMPATHY_PREFS_PATH "/ui/chat_window_paned_pos"
 #define EMPATHY_PREFS_CONTACTS_SHOW_OFFLINE        EMPATHY_PREFS_PATH "/contacts/show_offline"

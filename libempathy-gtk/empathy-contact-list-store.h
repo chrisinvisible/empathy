@@ -90,6 +90,9 @@ void                       empathy_contact_list_store_set_show_groups   (Empathy
 gboolean                   empathy_contact_list_store_get_is_compact     (EmpathyContactListStore     *store);
 void                       empathy_contact_list_store_set_is_compact     (EmpathyContactListStore     *store,
 									 gboolean                    is_compact);
+gboolean                   empathy_contact_list_store_get_show_protocols   (EmpathyContactListStore     *store);
+void                       empathy_contact_list_store_set_show_protocols   (EmpathyContactListStore     *store,
+									 gboolean                    show_protocols);
 EmpathyContactListStoreSort empathy_contact_list_store_get_sort_criterium (EmpathyContactListStore     *store);
 void                       empathy_contact_list_store_set_sort_criterium (EmpathyContactListStore     *store,
 									 EmpathyContactListStoreSort  sort_criterium);
@@ -104,6 +107,11 @@ gboolean                   empathy_contact_list_store_search_equal_func  (GtkTre
 									 const gchar                *key,
 									 GtkTreeIter                *iter,
 									 gpointer                    search_data);
+GdkPixbuf *                contact_list_store_get_contact_status_icon ( EmpathyContactListStore *store,
+									 EmpathyContact             *contact);
+GdkPixbuf *                contact_list_store_get_contact_status_icon_with_icon_name (EmpathyContactListStore *store,
+									 EmpathyContact             *contact,
+									 const gchar                *status_icon_name);
 
 G_END_DECLS
 

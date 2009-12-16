@@ -63,6 +63,7 @@ GtkWidget     *empathy_builder_unref_and_keep_widget    (GtkBuilder       *gui,
 /* Pixbufs */
 const gchar * empathy_icon_name_for_presence            (TpConnectionPresenceType  presence);
 const gchar * empathy_icon_name_for_contact             (EmpathyContact   *contact);
+const gchar * empathy_protocol_name_for_contact         (EmpathyContact   *contact);
 GdkPixbuf *   empathy_pixbuf_from_data                  (gchar            *data,
 							 gsize             data_size);
 GdkPixbuf *   empathy_pixbuf_from_data_and_mime         (gchar            *data,
@@ -74,6 +75,14 @@ GdkPixbuf *   empathy_pixbuf_from_avatar_scaled         (EmpathyAvatar    *avata
 GdkPixbuf *   empathy_pixbuf_avatar_from_contact_scaled (EmpathyContact   *contact,
 							 gint              width,
 							 gint              height);
+GdkPixbuf *   empathy_pixbuf_protocol_from_contact_scaled (EmpathyContact   *contact,
+							 gint              width,
+							 gint              height);
+GdkPixbuf *   empathy_pixbuf_contact_status_icon (EmpathyContact   *contact,
+							 gboolean          show_protocol);
+GdkPixbuf *   empathy_pixbuf_contact_status_icon_with_icon_name (EmpathyContact   *contact,
+							 const gchar       *icon_name,
+							 gboolean          show_protocol);
 GdkPixbuf *   empathy_pixbuf_scale_down_if_necessary    (GdkPixbuf        *pixbuf,
 							 gint              max_size);
 GdkPixbuf *   empathy_pixbuf_from_icon_name             (const gchar      *icon_name,

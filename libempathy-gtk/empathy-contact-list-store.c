@@ -60,11 +60,13 @@ typedef struct {
 	gboolean                    show_avatars;
 	gboolean                    show_groups;
 	gboolean                    is_compact;
+	gboolean                    show_protocols;
 	gboolean                    show_active;
 	EmpathyContactListStoreSort sort_criterium;
 	guint                       inhibit_active;
 	guint                       setup_idle_id;
 	gboolean                    dispose_has_run;
+	GHashTable                  *status_icons;
 } EmpathyContactListStorePriv;
 
 typedef struct {
@@ -165,6 +167,7 @@ enum {
 	PROP_CONTACT_LIST,
 	PROP_SHOW_OFFLINE,
 	PROP_SHOW_AVATARS,
+	PROP_SHOW_PROTOCOLS,
 	PROP_SHOW_GROUPS,
 	PROP_IS_COMPACT,
 	PROP_SORT_CRITERIUM
@@ -256,6 +259,14 @@ empathy_contact_list_store_class_init (EmpathyContactListStoreClass *klass)
 								TRUE,
 								G_PARAM_READWRITE));
 	 g_object_class_install_property (object_class,
+					  PROP_SHOW_PROTOCOLS,
+					  g_param_spec_boolean ("show-protocols",
+								"Show Protocols",
+								"Whether contact list should display "
+								"protocols for contacts",
+								FALSE,
+								G_PARAM_READWRITE));
+	 g_object_class_install_property (object_class,
 					  PROP_SHOW_GROUPS,
 					  g_param_spec_boolean ("show-groups",
 								"Show Groups",
@@ -292,9 +303,11 @@ empathy_contact_list_store_init (EmpathyContactListStore *store)
 	store->priv = priv;
 	priv->show_avatars = TRUE;
 	priv->show_groups = TRUE;
+	priv->show_protocols = FALSE;
 	priv->inhibit_active = g_timeout_add_seconds (ACTIVE_USER_WAIT_TO_ENABLE_TIME,
 						      (GSourceFunc) contact_list_store_inibit_active_cb,
 						      store);
+	priv->status_icons = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
 	contact_list_store_setup (store);
 }
 
@@ -337,6 +350,7 @@ contact_list_store_dispose (GObject *object)
 		g_source_remove (priv->setup_idle_id);
 	}
 
+	g_hash_table_destroy (priv->status_icons);
 	G_OBJECT_CLASS (empathy_contact_list_store_parent_class)->dispose (object);
 }
 
@@ -359,6 +373,9 @@ contact_list_store_get_property (GObject    *object,
 		break;
 	case PROP_SHOW_AVATARS:
 		g_value_set_boolean (value, priv->show_avatars);
+		break;
+	case PROP_SHOW_PROTOCOLS:
+		g_value_set_boolean (value, priv->show_protocols);
 		break;
 	case PROP_SHOW_GROUPS:
 		g_value_set_boolean (value, priv->show_groups);
@@ -396,6 +413,10 @@ contact_list_store_set_property (GObject      *object,
 		break;
 	case PROP_SHOW_AVATARS:
 		empathy_contact_list_store_set_show_avatars (EMPATHY_CONTACT_LIST_STORE (object),
+							    g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_PROTOCOLS:
+		empathy_contact_list_store_set_show_protocols (EMPATHY_CONTACT_LIST_STORE (object),
 							    g_value_get_boolean (value));
 		break;
 	case PROP_SHOW_GROUPS:
@@ -515,6 +536,42 @@ empathy_contact_list_store_set_show_avatars (EmpathyContactListStore *store,
 				store);
 
 	g_object_notify (G_OBJECT (store), "show-avatars");
+}
+
+
+gboolean
+empathy_contact_list_store_get_show_protocols (EmpathyContactListStore *store)
+{
+	EmpathyContactListStorePriv *priv;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT_LIST_STORE (store), TRUE);
+
+	priv = GET_PRIV (store);
+
+	return priv->show_protocols;
+}
+
+void
+empathy_contact_list_store_set_show_protocols (EmpathyContactListStore *store,
+					    gboolean                show_protocols)
+{
+	EmpathyContactListStorePriv *priv;
+	GtkTreeModel               *model;
+
+	g_return_if_fail (EMPATHY_IS_CONTACT_LIST_STORE (store));
+
+	priv = GET_PRIV (store);
+
+	priv->show_protocols = show_protocols;
+
+	model = GTK_TREE_MODEL (store);
+
+	gtk_tree_model_foreach (model,
+				(GtkTreeModelForeachFunc)
+				contact_list_store_update_list_mode_foreach,
+				store);
+
+	g_object_notify (G_OBJECT (store), "show-protocols");
 }
 
 gboolean
@@ -753,7 +810,7 @@ contact_list_store_setup (EmpathyContactListStore *store)
 {
 	EmpathyContactListStorePriv *priv;
 	GType types[] = {
-		G_TYPE_STRING,        /* Status icon-name */
+		GDK_TYPE_PIXBUF,      /* Status pixbuf */
 		GDK_TYPE_PIXBUF,      /* Avatar pixbuf */
 		G_TYPE_BOOLEAN,       /* Avatar pixbuf visible */
 		G_TYPE_STRING,        /* Name */
@@ -1055,7 +1112,9 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	gboolean                    do_set_active = FALSE;
 	gboolean                    do_set_refresh = FALSE;
 	gboolean                    show_avatar = FALSE;
+	gboolean                    show_protocol = FALSE;
 	GdkPixbuf                  *pixbuf_avatar;
+	GdkPixbuf                  *pixbuf_status;
 
 	priv = GET_PRIV (store);
 
@@ -1148,10 +1207,14 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	if (priv->show_avatars && !priv->is_compact) {
 		show_avatar = TRUE;
 	}
+	if (priv->show_protocols && !priv->is_compact) {
+		show_protocol = TRUE;
+	}
 	pixbuf_avatar = empathy_pixbuf_avatar_from_contact_scaled (contact, 32, 32);
+	pixbuf_status = contact_list_store_get_contact_status_icon (store, contact);
 	for (l = iters; l && set_model; l = l->next) {
 		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
-				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, empathy_icon_name_for_contact (contact),
+				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
@@ -1581,19 +1644,93 @@ contact_list_store_update_list_mode_foreach (GtkTreeModel           *model,
 					     EmpathyContactListStore *store)
 {
 	EmpathyContactListStorePriv *priv;
-	gboolean                    show_avatar = FALSE;
+	gboolean                     show_avatar = FALSE;
+	gboolean                     show_protocol = FALSE;
+	EmpathyContact              *contact;
+	GdkPixbuf                   *pixbuf_status;
 
 	priv = GET_PRIV (store);
 
 	if (priv->show_avatars && !priv->is_compact) {
 		show_avatar = TRUE;
 	}
+	if (priv->show_protocols && !priv->is_compact) {
+		show_protocol = TRUE;
+	}
+
+	gtk_tree_model_get (model, iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    -1);
+
+	if (contact == NULL){
+		return FALSE;
+	}
+	/* get icon from hash_table */
+	pixbuf_status = contact_list_store_get_contact_status_icon (store, contact);
 
 	gtk_tree_store_set (GTK_TREE_STORE (store), iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 			    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
 			    EMPATHY_CONTACT_LIST_STORE_COL_STATUS_VISIBLE, !priv->is_compact,
 			    -1);
 
 	return FALSE;
+}
+
+GdkPixbuf *
+contact_list_store_get_contact_status_icon (EmpathyContactListStore *store,
+					    EmpathyContact *contact)
+{
+	GdkPixbuf                   *pixbuf_status = NULL;
+	const gchar                 *status_icon_name = NULL;
+
+	status_icon_name = empathy_icon_name_for_contact (contact);
+	pixbuf_status = contact_list_store_get_contact_status_icon_with_icon_name (
+			    store,
+			    contact,
+			    status_icon_name);
+
+	return pixbuf_status;
+}
+
+GdkPixbuf *
+contact_list_store_get_contact_status_icon_with_icon_name (
+					EmpathyContactListStore *store,
+					EmpathyContact *contact,
+					const gchar *status_icon_name)
+{
+	GdkPixbuf                   *pixbuf_status = NULL;
+	EmpathyContactListStorePriv *priv;
+	const gchar                 *protocol_name = NULL;
+	gchar                       *icon_name = NULL;
+	gboolean                     show_protocol = FALSE;
+
+	priv = GET_PRIV (store);
+
+	if (priv->show_protocols && !priv->is_compact) {
+		show_protocol = TRUE;
+	}
+	if (show_protocol) {
+		protocol_name = empathy_protocol_name_for_contact (contact);
+		icon_name = g_strdup_printf ("%s-%s", status_icon_name, protocol_name);
+	} else {
+		icon_name = g_strdup_printf ("%s", status_icon_name);
+	}
+	pixbuf_status = g_hash_table_lookup (priv->status_icons, icon_name);
+	if (pixbuf_status == NULL) {
+		pixbuf_status = empathy_pixbuf_contact_status_icon_with_icon_name (contact,
+				    status_icon_name,
+				    show_protocol);
+		if (pixbuf_status != NULL) {
+			g_hash_table_insert (priv->status_icons,
+			    g_strdup (icon_name),
+			    pixbuf_status);
+			DEBUG( "Created status icon %s\n", icon_name);
+		}
+	} else {
+		DEBUG( "retrieved from cache status icon %s\n", icon_name);
+	}
+	g_free (icon_name);
+	return pixbuf_status;
 }
 

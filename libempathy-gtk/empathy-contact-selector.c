@@ -211,7 +211,7 @@ contact_selector_constructor (GType type,
   priv->store = empathy_contact_list_store_new (priv->contact_list);
 
   g_object_set (priv->store, "is-compact", TRUE, "show-avatars", FALSE,
-      "show-offline", FALSE, "show-groups", FALSE,
+      "show-offline", FALSE, "show-groups", FALSE, "show-protocols", FALSE,
       "sort-criterium", EMPATHY_CONTACT_LIST_STORE_SORT_NAME, NULL);
 
   g_signal_connect_swapped (priv->store, "row-changed",

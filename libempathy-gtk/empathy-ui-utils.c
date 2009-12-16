@@ -230,6 +230,21 @@ empathy_icon_name_for_contact (EmpathyContact *contact)
 	return empathy_icon_name_for_presence (presence);
 }
 
+const gchar *
+empathy_protocol_name_for_contact (EmpathyContact   *contact)
+{
+	TpAccount     *account;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	account = empathy_contact_get_account (contact);
+	if (account == NULL) {
+		return NULL;
+	}
+
+	return tp_account_get_icon_name (account);
+}
+
 GdkPixbuf *
 empathy_pixbuf_from_data (gchar *data,
 			  gsize  data_size)
@@ -488,6 +503,103 @@ empathy_pixbuf_avatar_from_contact_scaled (EmpathyContact *contact,
 	avatar = empathy_contact_get_avatar (contact);
 
 	return empathy_pixbuf_from_avatar_scaled (avatar, width, height);
+}
+
+GdkPixbuf *
+empathy_pixbuf_contact_status_icon (EmpathyContact *contact,
+				   gboolean       show_protocol)
+{
+	const gchar *icon_name;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	icon_name = empathy_icon_name_for_contact (contact);
+
+	if (icon_name == NULL) {
+		return NULL;
+	}
+	return empathy_pixbuf_contact_status_icon_with_icon_name (contact,
+	    icon_name,
+	    show_protocol);
+}
+
+GdkPixbuf *
+empathy_pixbuf_contact_status_icon_with_icon_name (EmpathyContact *contact,
+					  const gchar    *icon_name,
+					  gboolean       show_protocol)
+{
+	GdkPixbuf *pix_status;
+	GdkPixbuf *pix_protocol;
+	gchar     *icon_filename;
+	gint       height, width;
+	gint       numerator, denominator;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	numerator = 3;
+	denominator = 4;
+
+	icon_filename = empathy_filename_from_icon_name (icon_name,
+							 GTK_ICON_SIZE_MENU);
+	if (icon_filename == NULL) {
+		DEBUG ("icon name: %s could not be found\n", icon_name);
+		return NULL;
+	}
+
+	pix_status = gdk_pixbuf_new_from_file (icon_filename, NULL);
+
+	g_free (icon_filename);
+
+	if (pix_status == NULL) {
+		DEBUG ("Could not open icon %s\n", icon_filename);
+		return NULL;
+	}
+
+	if (!show_protocol)
+		return pix_status;
+
+	height = gdk_pixbuf_get_height (pix_status);
+	width = gdk_pixbuf_get_width (pix_status);
+
+	pix_protocol = empathy_pixbuf_protocol_from_contact_scaled (contact,
+								    width * numerator / denominator,
+								    height * numerator / denominator);
+
+	if (pix_protocol == NULL) {
+		return pix_status;
+	}
+	gdk_pixbuf_composite (pix_protocol, pix_status,
+	    0, height - height * numerator / denominator,
+	    width * numerator / denominator, height * numerator / denominator,
+	    0, height - height * numerator / denominator,
+	    1, 1,
+	    GDK_INTERP_BILINEAR, 255);
+
+	g_object_unref (pix_protocol);
+
+	return pix_status;
+}
+
+GdkPixbuf *
+empathy_pixbuf_protocol_from_contact_scaled (EmpathyContact *contact,
+					  gint           width,
+					  gint           height)
+{
+	TpAccount *account;
+	gchar     *filename;
+	GdkPixbuf *pixbuf = NULL;
+
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+	account = empathy_contact_get_account (contact);
+	filename = empathy_filename_from_icon_name (tp_account_get_icon_name (account),
+						    GTK_ICON_SIZE_MENU);
+	if (filename != NULL) {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (filename, width, height, NULL);
+		g_free (filename);
+	}
+
+	return pixbuf;
 }
 
 GdkPixbuf *

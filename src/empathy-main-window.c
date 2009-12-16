@@ -94,6 +94,7 @@ typedef struct {
 	GtkWidget              *presence_chooser;
 	GtkWidget              *errors_vbox;
 
+	GtkToggleAction        *show_protocols;
 	GtkRadioAction         *sort_by_name;
 	GtkRadioAction         *sort_by_status;
 	GtkRadioAction         *normal_with_avatars;
@@ -131,8 +132,9 @@ main_window_flash_stop (EmpathyMainWindow *window)
 }
 
 typedef struct {
-	EmpathyEvent *event;
-	gboolean      on;
+	EmpathyEvent       *event;
+	gboolean            on;
+	EmpathyMainWindow  *window;
 } FlashForeachData;
 
 static gboolean
@@ -146,6 +148,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 	const gchar      *icon_name;
 	GtkTreePath      *parent_path = NULL;
 	GtkTreeIter       parent_iter;
+	GdkPixbuf        *pixbuf = NULL;
 
 	/* To be used with gtk_tree_model_foreach, update the status icon
 	 * of the contact to show the event icon (on=TRUE) or the presence
@@ -163,12 +166,17 @@ main_window_flash_foreach (GtkTreeModel *model,
 
 	if (data->on) {
 		icon_name = data->event->icon_name;
+		pixbuf = contact_list_store_get_contact_status_icon_with_icon_name (
+						data->window->list_store,
+						contact, icon_name);
 	} else {
-		icon_name = empathy_icon_name_for_contact (contact);
+		pixbuf = contact_list_store_get_contact_status_icon (
+						data->window->list_store,
+						contact);
 	}
 
 	gtk_tree_store_set (GTK_TREE_STORE (model), iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, icon_name,
+			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf,
 			    -1);
 
 	/* To make sure the parent is shown correctly, we emit
@@ -203,6 +211,7 @@ main_window_flash_cb (EmpathyMainWindow *window)
 	events = empathy_event_manager_get_events (window->event_manager);
 	for (l = events; l; l = l->next) {
 		data.event = l->data;
+		data.window = window;
 		if (!data.event->contact || !data.event->must_ack) {
 			continue;
 		}
@@ -257,6 +266,7 @@ main_window_event_removed_cb (EmpathyEventManager *manager,
 
 	data.on = FALSE;
 	data.event = event;
+	data.window = window;
 	gtk_tree_model_foreach (GTK_TREE_MODEL (window->list_store),
 				main_window_flash_foreach,
 				&data);
@@ -747,6 +757,21 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
 }
 
+static void
+main_window_view_show_protocols_cb (GtkToggleAction *action,
+					EmpathyMainWindow *window)
+{
+	gboolean value;
+
+	value = gtk_toggle_action_get_active (action);
+
+	empathy_conf_set_bool (empathy_conf_get (),
+					 EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+					 value == TRUE);
+	empathy_contact_list_store_set_show_protocols (window->list_store,
+					 value == TRUE);
+}
+
 /* Matches GtkRadioAction values set in empathy-main-window.ui */
 #define CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS		0
 #define CONTACT_LIST_NORMAL_SIZE			1
@@ -772,7 +797,25 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_contact_list_store_set_is_compact (window->list_store,
 						   value == CONTACT_LIST_COMPACT_SIZE);
+
+	gtk_action_set_sensitive (GTK_ACTION (window->show_protocols),
+						value != CONTACT_LIST_COMPACT_SIZE );
 }
+
+static void main_window_notify_show_protocols_cb (EmpathyConf       *conf,
+					const gchar       *key,
+					EmpathyMainWindow *window)
+{
+	gboolean show_protocols;
+
+	if (empathy_conf_get_bool (conf,
+				   EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+				   &show_protocols)) {
+		gtk_toggle_action_set_active (window->show_protocols,
+					      show_protocols);
+	}
+}
+
 
 static void
 main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
@@ -1193,6 +1236,7 @@ empathy_main_window_show (void)
 				       "errors_vbox", &window->errors_vbox,
 				       "ui_manager", &window->ui_manager,
 				       "view_show_offline", &show_offline_widget,
+				       "view_show_protocols", &window->show_protocols,
 				       "view_sort_by_name", &window->sort_by_name,
 				       "view_sort_by_status", &window->sort_by_status,
 				       "view_normal_size_with_avatars", &window->normal_with_avatars,
@@ -1217,6 +1261,7 @@ empathy_main_window_show (void)
 			      "chat_add_contact", "activate", main_window_chat_add_contact_cb,
 			      "view_show_ft_manager", "activate", main_window_view_show_ft_manager,
 			      "view_show_offline", "toggled", main_window_view_show_offline_cb,
+			      "view_show_protocols", "toggled", main_window_view_show_protocols_cb,
 			      "view_sort_by_name", "changed", main_window_view_sort_contacts_cb,
 			      "view_normal_size_with_avatars", "changed", main_window_view_contacts_list_size_cb,
 			      "view_show_map", "activate", main_window_view_show_map_cb,
@@ -1353,6 +1398,16 @@ empathy_main_window_show (void)
 				show_offline_widget);
 
 	gtk_toggle_action_set_active (show_offline_widget, show_offline);
+
+	/* Show protocol ? */
+	empathy_conf_notify_add (conf,
+				 EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+				 (EmpathyConfNotifyFunc) main_window_notify_show_protocols_cb,
+				 window);
+
+	main_window_notify_show_protocols_cb (conf,
+					    EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+					    window);
 
 	/* Sort by name / by status ? */
 	empathy_conf_notify_add (conf,

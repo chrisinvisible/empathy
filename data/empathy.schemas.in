@@ -47,6 +47,21 @@
     </schema>
 
     <schema>
+      <key>/schemas/apps/empathy/ui/show_protocols</key>
+      <applyto>/apps/empathy/ui/show_protocols</applyto>
+      <owner>empathy</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Show protocols</short>
+        <long>
+        Whether or not to show protocols for contacts in the contact
+        list.
+        </long>
+      </locale>
+    </schema>
+
+    <schema>
       <key>/schemas/apps/empathy/ui/compact_contact_list</key>
       <applyto>/apps/empathy/ui/compact_contact_list</applyto>
       <owner>empathy</owner>

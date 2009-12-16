@@ -842,22 +842,24 @@ contact_list_view_pixbuf_cell_data_func (GtkTreeViewColumn     *tree_column,
 					 GtkTreeIter           *iter,
 					 EmpathyContactListView *view)
 {
-	gchar    *icon_name;
-	gboolean  is_group;
-	gboolean  is_active;
+	GdkPixbuf *pixbuf;
+	gboolean   is_group;
+	gboolean   is_active;
 
 	gtk_tree_model_get (model, iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_ACTIVE, &is_active,
-			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, &icon_name,
+			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, &pixbuf,
 			    -1);
 
 	g_object_set (cell,
 		      "visible", !is_group,
-		      "icon-name", icon_name,
+		      "pixbuf", pixbuf,
 		      NULL);
 
-	g_free (icon_name);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 
 	contact_list_view_cell_set_background (view, cell, is_group, is_active);
 }
