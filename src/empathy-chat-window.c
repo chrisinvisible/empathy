@@ -905,8 +905,13 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 		}
 		else
 		{
-			/* FIXME: do something with MUC */
-			g_warning ("Not implemented yet");
+			TpHandle handle = empathy_contact_get_handle (contact);
+			GArray handles = {(gchar *) &handle, 1};
+
+			tp_cli_channel_interface_group_call_add_members (
+					channel, -1, &handles,
+					_("Inviting to this room"),
+					NULL, NULL, NULL, NULL);
 		}
 
 		g_object_unref (contact);
