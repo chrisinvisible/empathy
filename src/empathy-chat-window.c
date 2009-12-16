@@ -856,10 +856,10 @@ chat_window_upgrade_to_muc (EmpathyChat    *chat,
 	    NULL);
 
 	/* Although this is a MUC, it's anonymous, so CreateChannel is valid */
+	/* props now belongs to EmpathyDispatcher, don't free it */
 	empathy_dispatcher_create_channel (dispatcher, connection,
 			props, NULL, NULL);
 
-	g_hash_table_destroy (props);
 	g_ptr_array_free (channels, TRUE);
 
 	g_object_unref (dispatcher);

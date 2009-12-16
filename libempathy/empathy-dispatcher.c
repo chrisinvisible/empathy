@@ -1610,6 +1610,19 @@ empathy_dispatcher_call_create_or_ensure_channel (
     }
 }
 
+/**
+ * empathy_dispatcher_create_channel:
+ * @self: the EmpathyDispatcher
+ * @connection: the Connection to dispatch on
+ * @request: an a{sv} map of properties for the request, i.e. using tp_asv_new()
+ * @callback: a callback for when the channel arrives (or NULL)
+ * @user_data: optional user data (or NULL)
+ *
+ * When calling this function, #EmpathyDispatcher takes ownership of your
+ * reference to @request. DO NOT unref or destroy @request. When the request is
+ * done, @request will be unreferenced. Take another reference if you want to
+ * keep it around.
+ */
 void
 empathy_dispatcher_create_channel (EmpathyDispatcher *self,
                                    TpConnection *connection,
