@@ -336,11 +336,27 @@ event_channel_process_voip_func (EventPriv *event)
   dialog = gtk_message_dialog_new (NULL, 0,
       GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
       video ? _("Incoming video call"): _("Incoming call"));
+
   gtk_message_dialog_format_secondary_text (
     GTK_MESSAGE_DIALOG (dialog), video ?
       _("%s is video calling you, do you want to answer?"):
       _("%s is calling you, do you want to answer?"),
       empathy_contact_get_name (event->approval->contact));
+
+  /* Set image of the dialog */
+  if (video)
+    {
+      image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VIDEO_CALL,
+          GTK_ICON_SIZE_DIALOG);
+    }
+  else
+    {
+      image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP,
+          GTK_ICON_SIZE_DIALOG);
+    }
+
+  gtk_message_dialog_set_image (GTK_MESSAGE_DIALOG (dialog), image);
+  gtk_widget_show (image);
 
   gtk_dialog_set_default_response (GTK_DIALOG (dialog),
       GTK_RESPONSE_OK);
