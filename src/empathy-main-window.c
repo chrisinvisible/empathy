@@ -167,9 +167,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 
 	if (data->on) {
 		icon_name = data->event->icon_name;
-		pixbuf = contact_list_store_get_contact_status_icon_with_icon_name (
-						data->window->list_store,
-						contact, icon_name);
+		pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_MENU);
 	} else {
 		pixbuf = contact_list_store_get_contact_status_icon (
 						data->window->list_store,
