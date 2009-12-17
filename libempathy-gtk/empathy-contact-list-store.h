@@ -109,9 +109,6 @@ gboolean                   empathy_contact_list_store_search_equal_func  (GtkTre
 									 gpointer                    search_data);
 GdkPixbuf *                contact_list_store_get_contact_status_icon ( EmpathyContactListStore *store,
 									 EmpathyContact             *contact);
-GdkPixbuf *                contact_list_store_get_contact_status_icon_with_icon_name (EmpathyContactListStore *store,
-									 EmpathyContact             *contact,
-									 const gchar                *status_icon_name);
 
 G_END_DECLS
 

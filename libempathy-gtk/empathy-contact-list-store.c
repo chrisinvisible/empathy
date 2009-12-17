@@ -1677,23 +1677,7 @@ contact_list_store_update_list_mode_foreach (GtkTreeModel           *model,
 	return FALSE;
 }
 
-GdkPixbuf *
-contact_list_store_get_contact_status_icon (EmpathyContactListStore *store,
-					    EmpathyContact *contact)
-{
-	GdkPixbuf                   *pixbuf_status = NULL;
-	const gchar                 *status_icon_name = NULL;
-
-	status_icon_name = empathy_icon_name_for_contact (contact);
-	pixbuf_status = contact_list_store_get_contact_status_icon_with_icon_name (
-			    store,
-			    contact,
-			    status_icon_name);
-
-	return pixbuf_status;
-}
-
-GdkPixbuf *
+static GdkPixbuf *
 contact_list_store_get_contact_status_icon_with_icon_name (
 					EmpathyContactListStore *store,
 					EmpathyContact *contact,
@@ -1734,3 +1718,18 @@ contact_list_store_get_contact_status_icon_with_icon_name (
 	return pixbuf_status;
 }
 
+GdkPixbuf *
+contact_list_store_get_contact_status_icon (EmpathyContactListStore *store,
+					    EmpathyContact *contact)
+{
+	GdkPixbuf                   *pixbuf_status = NULL;
+	const gchar                 *status_icon_name = NULL;
+
+	status_icon_name = empathy_icon_name_for_contact (contact);
+	pixbuf_status = contact_list_store_get_contact_status_icon_with_icon_name (
+			    store,
+			    contact,
+			    status_icon_name);
+
+	return pixbuf_status;
+}
