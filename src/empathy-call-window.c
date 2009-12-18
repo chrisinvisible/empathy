@@ -43,6 +43,7 @@
 #include <libempathy-gtk/empathy-video-src.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-sound.h>
+#include <libempathy-gtk/empathy-geometry.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_VOIP
 #include <libempathy/empathy-debug.h>
@@ -1076,6 +1077,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   g_object_ref (priv->ui_manager);
   g_object_unref (gui);
+
+  empathy_geometry_bind (GTK_WINDOW (self), "call-window");
 }
 
 /* Instead of specifying a width and a height, we specify only one size. That's
