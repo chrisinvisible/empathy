@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include <telepathy-glib/connection.h>
+#include <telepathy-glib/account.h>
 
 G_BEGIN_DECLS
 
