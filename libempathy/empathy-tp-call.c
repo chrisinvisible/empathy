@@ -31,7 +31,7 @@
 #include "empathy-utils.h"
 #include "empathy-marshal.h"
 
-#define DEBUG_FLAG EMPATHY_DEBUG_TP
+#define DEBUG_FLAG EMPATHY_DEBUG_VOIP
 #include "empathy-debug.h"
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyTpCall)
