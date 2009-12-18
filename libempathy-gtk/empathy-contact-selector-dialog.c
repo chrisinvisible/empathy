@@ -41,7 +41,8 @@
 #include "empathy-contact-selector-dialog.h"
 #include "empathy-account-chooser.h"
 
-G_DEFINE_TYPE(EmpathyContactSelectorDialog, empathy_contact_selector_dialog,
+G_DEFINE_ABSTRACT_TYPE (EmpathyContactSelectorDialog,
+    empathy_contact_selector_dialog,
     GTK_TYPE_DIALOG)
 
 typedef struct _EmpathyContactSelectorDialogPriv \
