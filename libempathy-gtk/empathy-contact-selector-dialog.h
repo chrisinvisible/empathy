@@ -17,6 +17,7 @@
  *
  * Authors: Xavier Claessens <xclaesse@gmail.com>
  * Authors: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+ * Authors: Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #ifndef __EMPATHY_CONTACT_SELECTOR_DIALOG_H__
@@ -54,6 +55,11 @@ struct _EmpathyContactSelectorDialog {
 };
 
 GType empathy_contact_selector_dialog_get_type (void);
+void empathy_contact_selector_dialog_set_show_account_chooser (
+    EmpathyContactSelectorDialog *self,
+    gboolean show_account_chooser);
+gboolean empathy_contact_selector_dialog_get_show_account_chooser (
+    EmpathyContactSelectorDialog *self);
 
 /* TYPE MACROS */
 #define EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG \

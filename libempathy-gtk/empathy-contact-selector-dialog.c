@@ -17,6 +17,7 @@
  *
  * Authors: Xavier Claessens <xclaesse@gmail.com>
  * Authors: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+ * Authors: Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #include <config.h>
@@ -49,14 +50,22 @@ typedef struct _EmpathyContactSelectorDialogPriv \
           EmpathyContactSelectorDialogPriv;
 
 struct _EmpathyContactSelectorDialogPriv {
+  GtkWidget *account_chooser_label;
   GtkWidget *account_chooser;
   GtkWidget *entry_id;
   EmpathyContactManager *contact_manager;
+
+  gboolean show_account_chooser;
 };
 
 #define GET_PRIV(o) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG, \
     EmpathyContactSelectorDialogPriv))
+
+enum {
+  PROP_0,
+  PROP_SHOW_ACCOUNT_CHOOSER
+};
 
 enum {
   COMPLETION_COL_TEXT,
@@ -71,12 +80,9 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
   EmpathyContactSelectorDialogPriv *priv = GET_PRIV (dialog);
   EmpathyAccountChooser *chooser;
   TpConnection *connection;
-  EmpathyTpContactList *contact_list;
   GList *members;
   GtkListStore *store;
   GtkEntryCompletion *completion;
-  GtkTreeIter iter;
-  gchar *tmpstr;
 
   /* Remove completions */
   completion = gtk_entry_get_completion (GTK_ENTRY (priv->entry_id));
@@ -89,15 +95,27 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
   if (!connection)
     return;
 
-  contact_list = empathy_contact_manager_get_list (priv->contact_manager,
-               connection);
-  members = empathy_contact_list_get_members (
-      EMPATHY_CONTACT_LIST (contact_list));
+  if (priv->show_account_chooser)
+    {
+      EmpathyTpContactList *contact_list;
+
+      contact_list = empathy_contact_manager_get_list (priv->contact_manager,
+                   connection);
+      members = empathy_contact_list_get_members (
+          EMPATHY_CONTACT_LIST (contact_list));
+    }
+  else
+    {
+      members = empathy_contact_list_get_members (
+          EMPATHY_CONTACT_LIST (priv->contact_manager));
+    }
 
   /* Add members to the completion */
   while (members)
     {
       EmpathyContact *contact = members->data;
+      GtkTreeIter iter;
+      gchar *tmpstr;
 
       DEBUG ("Adding contact ID %s, Name %s",
              empathy_contact_get_id (contact),
@@ -262,6 +280,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
           "libempathy-gtk");
   gui = empathy_builder_get_file (filename,
                 "table_contact", &dialog->table_contact,
+                "account_chooser_label", &priv->account_chooser_label,
                 "entry_id", &priv->entry_id,
                 NULL);
   g_free (filename);
@@ -327,6 +346,48 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
 }
 
 static void
+empathy_contact_selector_dialog_get_property (GObject *self,
+    guint prop_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyContactSelectorDialog *dialog = EMPATHY_CONTACT_SELECTOR_DIALOG (self);
+
+  switch (prop_id)
+    {
+      case PROP_SHOW_ACCOUNT_CHOOSER:
+        g_value_set_boolean (value,
+          empathy_contact_selector_dialog_get_show_account_chooser (dialog));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+empathy_contact_selector_dialog_set_property (GObject *self,
+    guint prop_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyContactSelectorDialog *dialog = EMPATHY_CONTACT_SELECTOR_DIALOG (self);
+
+  switch (prop_id)
+    {
+      case PROP_SHOW_ACCOUNT_CHOOSER:
+        empathy_contact_selector_dialog_set_show_account_chooser (dialog,
+            g_value_get_boolean (value));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
+        break;
+    }
+}
+
+static void
 empathy_contact_selector_dialog_dispose (GObject *object)
 {
   EmpathyContactSelectorDialogPriv *priv = GET_PRIV (object);
@@ -350,4 +411,44 @@ empathy_contact_selector_dialog_class_init (
   g_type_class_add_private (class, sizeof (EmpathyContactSelectorDialogPriv));
 
   object_class->dispose = empathy_contact_selector_dialog_dispose;
+  object_class->get_property = empathy_contact_selector_dialog_get_property;
+  object_class->set_property = empathy_contact_selector_dialog_set_property;
+
+  g_object_class_install_property (object_class, PROP_SHOW_ACCOUNT_CHOOSER,
+      g_param_spec_boolean ("show-account-chooser",
+        "Show Account Chooser",
+        "Whether or not this dialog should show an account chooser",
+        TRUE,
+        G_PARAM_READWRITE));
+}
+
+void
+empathy_contact_selector_dialog_set_show_account_chooser (
+    EmpathyContactSelectorDialog *self,
+    gboolean show_account_chooser)
+{
+  EmpathyContactSelectorDialogPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self));
+
+  priv = GET_PRIV (self);
+  priv->show_account_chooser = show_account_chooser;
+
+  gtk_widget_set_visible (priv->account_chooser_label, show_account_chooser);
+  gtk_widget_set_visible (priv->account_chooser, show_account_chooser);
+  contact_selector_dialog_account_changed_cb (priv->account_chooser, self);
+
+  g_object_notify (G_OBJECT (self), "show-account-chooser");
+}
+
+gboolean
+empathy_contact_selector_dialog_get_show_account_chooser (
+    EmpathyContactSelectorDialog *self)
+{
+  EmpathyContactSelectorDialogPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self), FALSE);
+
+  priv = GET_PRIV (self);
+  return priv->show_account_chooser;
 }
