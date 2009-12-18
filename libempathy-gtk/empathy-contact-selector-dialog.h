@@ -50,8 +50,8 @@ struct _EmpathyContactSelectorDialog {
   GtkDialog parent;
 
   /* protected fields */
+  GtkWidget *vbox;
   GtkWidget *button_action;
-  GtkWidget *table_contact;
 };
 
 GType empathy_contact_selector_dialog_get_type (void);

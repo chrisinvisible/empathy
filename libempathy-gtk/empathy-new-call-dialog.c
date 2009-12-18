@@ -177,8 +177,8 @@ empathy_new_call_dialog_init (EmpathyNewCallDialog *dialog)
   /* add video toggle */
   priv->check_video = gtk_check_button_new_with_mnemonic (_("Send _Video"));
 
-  gtk_table_attach_defaults (GTK_TABLE (parent->table_contact),
-      priv->check_video, 1, 2, 2, 3);
+  gtk_box_pack_end (GTK_BOX (parent->vbox), priv->check_video,
+      FALSE, TRUE, 0);
 
   gtk_widget_show (priv->check_video);
 
