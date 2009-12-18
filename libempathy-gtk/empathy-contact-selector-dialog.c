@@ -167,32 +167,38 @@ contact_selector_dialog_match_func (GtkEntryCompletion *completion,
     gpointer user_data)
 {
   GtkTreeModel *model;
-  gchar *id;
-  gchar *name;
+  gchar *str, *lower;
+  gboolean v = FALSE;
 
   model = gtk_entry_completion_get_model (completion);
   if (!model || !iter)
     return FALSE;
 
-  gtk_tree_model_get (model, iter, COMPLETION_COL_NAME, &name, -1);
-  if (strstr (name, key))
+  gtk_tree_model_get (model, iter, COMPLETION_COL_NAME, &str, -1);
+  lower = g_utf8_strdown (str, -1);
+  if (strstr (lower, key))
     {
-      DEBUG ("Key %s is matching name **%s**", key, name);
-      g_free (name);
-      return TRUE;
+      DEBUG ("Key %s is matching name **%s**", key, str);
+      v = TRUE;
+      goto out;
     }
-  g_free (name);
+  g_free (str);
+  g_free (lower);
 
-  gtk_tree_model_get (model, iter, COMPLETION_COL_ID, &id, -1);
-  if (strstr (id, key))
+  gtk_tree_model_get (model, iter, COMPLETION_COL_ID, &str, -1);
+  lower = g_utf8_strdown (str, -1);
+  if (strstr (lower, key))
     {
-      DEBUG ("Key %s is matching ID **%s**", key, id);
-      g_free (id);
-      return TRUE;
+      DEBUG ("Key %s is matching ID **%s**", key, str);
+      v = TRUE;
+      goto out;
     }
-  g_free (id);
 
-  return FALSE;
+out:
+  g_free (str);
+  g_free (lower);
+
+  return v;
 }
 
 static void
