@@ -14,6 +14,8 @@
 
 #include <gtk/gtk.h>
 
+#include <libempathy-gtk/empathy-contact-selector-dialog.h>
+
 G_BEGIN_DECLS
 
 #define EMPATHY_TYPE_INVITE_PARTICIPANT_DIALOG	(empathy_invite_participant_dialog_get_type ())
@@ -28,18 +30,16 @@ typedef struct _EmpathyInviteParticipantDialogClass EmpathyInviteParticipantDial
 
 struct _EmpathyInviteParticipantDialog
 {
-  GtkDialog parent;
+  EmpathyContactSelectorDialog parent;
 };
 
 struct _EmpathyInviteParticipantDialogClass
 {
-  GtkDialogClass parent_class;
+  EmpathyContactSelectorDialogClass parent_class;
 };
 
 GType empathy_invite_participant_dialog_get_type (void);
 GtkWidget *empathy_invite_participant_dialog_new (GtkWindow *parent);
-EmpathyContact *empathy_invite_participant_dialog_dup_selected_contact (EmpathyInviteParticipantDialog *self);
-
 
 G_END_DECLS
 

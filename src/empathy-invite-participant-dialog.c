@@ -11,28 +11,18 @@
 
 #include <glib/gi18n.h>
 
-#include <libempathy/empathy-contact-manager.h>
-
-#include <libempathy-gtk/empathy-contact-selector.h>
-
 #include "empathy-invite-participant-dialog.h"
 
 #define GET_PRIVATE(obj)    (G_TYPE_INSTANCE_GET_PRIVATE ((obj), EMPATHY_TYPE_INVITE_PARTICIPANT_DIALOG, EmpathyInviteParticipantDialogPrivate))
 
-G_DEFINE_TYPE (EmpathyInviteParticipantDialog, empathy_invite_participant_dialog, GTK_TYPE_DIALOG);
+G_DEFINE_TYPE (EmpathyInviteParticipantDialog,
+    empathy_invite_participant_dialog, EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG);
 
 typedef struct _EmpathyInviteParticipantDialogPrivate EmpathyInviteParticipantDialogPrivate;
 struct _EmpathyInviteParticipantDialogPrivate
 {
-  GtkWidget *selector;
+  int dum;
 };
-
-static void
-invite_participant_enable_join (GtkComboBox *selector,
-                                GtkWidget   *button)
-{
-  gtk_widget_set_sensitive (button, TRUE);
-}
 
 static void
 empathy_invite_participant_dialog_class_init (EmpathyInviteParticipantDialogClass *klass)
@@ -45,13 +35,12 @@ empathy_invite_participant_dialog_class_init (EmpathyInviteParticipantDialogClas
 static void
 empathy_invite_participant_dialog_init (EmpathyInviteParticipantDialog *self)
 {
-  EmpathyInviteParticipantDialogPrivate *priv = GET_PRIVATE (self);
-  EmpathyContactManager *manager = empathy_contact_manager_dup_singleton ();
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 6);
-  GtkWidget *label = gtk_label_new (NULL);
-  GtkWidget *join_button;
+  EmpathyContactSelectorDialog *parent = EMPATHY_CONTACT_SELECTOR_DIALOG (self);
+  // EmpathyInviteParticipantDialogPrivate *priv = GET_PRIVATE (self);
+  GtkWidget *label;
   char *str;
 
+  label = gtk_label_new (NULL);
   str = g_strdup_printf (
       "<span size=\"x-large\" weight=\"bold\">%s</span>\n\n%s",
       _("Invite Participant"),
@@ -59,42 +48,19 @@ empathy_invite_participant_dialog_init (EmpathyInviteParticipantDialog *self)
   gtk_label_set_markup (GTK_LABEL (label), str);
   g_free (str);
 
-  priv->selector = empathy_contact_selector_new (
-      EMPATHY_CONTACT_LIST (manager));
+  gtk_box_pack_start (GTK_BOX (parent->vbox), label, FALSE, TRUE, 0);
+  /* move to the top -- wish there was a better way to do this */
+  gtk_box_reorder_child (GTK_BOX (parent->vbox), label, 0);
+  gtk_widget_show (label);
 
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), priv->selector, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self))),
-        vbox, TRUE, TRUE, 6);
+  parent->button_action = gtk_dialog_add_button (GTK_DIALOG (self),
+      "Invite", GTK_RESPONSE_ACCEPT);
+  gtk_widget_set_sensitive (parent->button_action, FALSE);
 
-  gtk_widget_show_all (vbox);
-
-  gtk_dialog_add_button (GTK_DIALOG (self),
-      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-  join_button = gtk_dialog_add_button (GTK_DIALOG (self),
-      "Invite", GTK_RESPONSE_OK);
-
-  gtk_dialog_set_has_separator (GTK_DIALOG (self), FALSE);
-
-  gtk_widget_set_sensitive (join_button, FALSE);
-  g_signal_connect (priv->selector, "changed",
-      G_CALLBACK (invite_participant_enable_join), join_button);
-
-  g_object_unref (manager);
-}
-
-EmpathyContact *
-empathy_invite_participant_dialog_dup_selected_contact (
-    EmpathyInviteParticipantDialog *self)
-{
-  EmpathyInviteParticipantDialogPrivate *priv;
-
-  g_return_val_if_fail (EMPATHY_IS_INVITE_PARTICIPANT_DIALOG (self), NULL);
-
-  priv = GET_PRIVATE (self);
-
-  return empathy_contact_selector_dup_selected (
-      EMPATHY_CONTACT_SELECTOR (priv->selector));
+  gtk_window_set_title (GTK_WINDOW (self), _("Invite Participant"));
+  gtk_window_set_role (GTK_WINDOW (self), "invite_participant");
+  empathy_contact_selector_dialog_set_show_account_chooser (
+      EMPATHY_CONTACT_SELECTOR_DIALOG (self), FALSE);
 }
 
 GtkWidget *
