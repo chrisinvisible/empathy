@@ -341,6 +341,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   g_object_unref (gui);
 
   /* Create account chooser */
+  priv->show_account_chooser = TRUE;
   priv->account_chooser = empathy_account_chooser_new ();
   gtk_table_attach_defaults (GTK_TABLE (table_contact),
            priv->account_chooser,
