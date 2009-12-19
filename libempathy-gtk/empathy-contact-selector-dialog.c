@@ -202,34 +202,6 @@ out:
 }
 
 static void
-contact_selector_dialog_response_cb (GtkWidget *widget,
-    gint response,
-    EmpathyContactSelectorDialog *dialog)
-{
-  EmpathyContactSelectorDialogPriv *priv = GET_PRIV (dialog);
-  TpConnection *connection;
-  const gchar *id;
-  EmpathyContactSelectorDialogClass *class = \
-    EMPATHY_CONTACT_SELECTOR_DIALOG_GET_CLASS (dialog);
-
-  connection = empathy_account_chooser_get_connection (
-    EMPATHY_ACCOUNT_CHOOSER (priv->account_chooser));
-  id = gtk_entry_get_text (GTK_ENTRY (priv->entry_id));
-  if (!connection || EMP_STR_EMPTY (id))
-    {
-      gtk_widget_destroy (widget);
-      return;
-    }
-
-  if (response == GTK_RESPONSE_ACCEPT)
-    {
-      class->got_response (dialog, connection, id);
-    }
-
-  gtk_widget_destroy (widget);
-}
-
-static void
 contact_selector_change_state_button_cb  (GtkEditable *editable,
     EmpathyContactSelectorDialog *dialog)
 {
@@ -331,9 +303,6 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   g_object_unref (completion);
   g_object_unref (model);
 
-  g_signal_connect (dialog, "response",
-        G_CALLBACK (contact_selector_dialog_response_cb), dialog);
-
   empathy_builder_connect (gui, dialog,
              "entry_id", "changed", contact_selector_change_state_button_cb,
              NULL);
@@ -433,6 +402,31 @@ empathy_contact_selector_dialog_class_init (
         "Whether or not this dialog should show an account chooser",
         TRUE,
         G_PARAM_READWRITE));
+}
+
+const gchar *
+empathy_contact_selector_dialog_get_selected (
+    EmpathyContactSelectorDialog *self,
+    TpConnection **connection)
+{
+  EmpathyContactSelectorDialogPriv *priv;
+  const char *id;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self), NULL);
+
+  priv = GET_PRIV (self);
+
+  if (connection)
+    {
+      if (priv->show_account_chooser)
+        *connection = empathy_account_chooser_get_connection (
+            EMPATHY_ACCOUNT_CHOOSER (priv->account_chooser));
+      else
+        *connection = NULL;
+    }
+
+  id = gtk_entry_get_text (GTK_ENTRY (priv->entry_id));
+  return id;
 }
 
 void

@@ -58,11 +58,22 @@ G_DEFINE_TYPE(EmpathyNewMessageDialog, empathy_new_message_dialog,
  */
 
 static void
-empathy_new_message_dialog_got_response (EmpathyContactSelectorDialog *dialog,
-    TpConnection *connection,
-    const gchar *contact_id)
+empathy_new_message_dialog_response (GtkDialog *dialog, int response_id)
 {
+  TpConnection *connection;
+  const gchar *contact_id;
+
+  if (response_id != GTK_RESPONSE_ACCEPT) goto out;
+
+  contact_id = empathy_contact_selector_dialog_get_selected (
+      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), &connection);
+
+  if (EMP_STR_EMPTY (contact_id) || connection == NULL) goto out;
+
   empathy_dispatcher_chat_with_contact_id (connection, contact_id, NULL, NULL);
+
+out:
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static gboolean
@@ -151,13 +162,15 @@ empathy_new_message_dialog_class_init (
   EmpathyNewMessageDialogClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-  EmpathyContactSelectorDialogClass *dialog_class = \
+  GtkDialogClass *dialog_class = GTK_DIALOG_CLASS (class);
+  EmpathyContactSelectorDialogClass *selector_dialog_class = \
     EMPATHY_CONTACT_SELECTOR_DIALOG_CLASS (class);
 
   object_class->constructor = empathy_new_message_dialog_constructor;
 
-  dialog_class->got_response = empathy_new_message_dialog_got_response;
-  dialog_class->account_filter = empathy_new_message_account_filter;
+  dialog_class->response = empathy_new_message_dialog_response;
+
+  selector_dialog_class->account_filter = empathy_new_message_account_filter;
 }
 
 /**

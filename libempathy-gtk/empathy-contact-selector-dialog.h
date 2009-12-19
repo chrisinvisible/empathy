@@ -38,10 +38,6 @@ typedef struct _EmpathyContactSelectorDialogClass \
 struct _EmpathyContactSelectorDialogClass {
   GtkDialogClass parent_class;
 
-  void (*got_response) (EmpathyContactSelectorDialog *self,
-      TpConnection *connection,
-      const gchar *contact_id);
-
   gboolean (*account_filter) (EmpathyContactSelectorDialog *self,
       TpAccount *account);
 };
@@ -55,6 +51,9 @@ struct _EmpathyContactSelectorDialog {
 };
 
 GType empathy_contact_selector_dialog_get_type (void);
+const gchar *empathy_contact_selector_dialog_get_selected (
+    EmpathyContactSelectorDialog *self,
+    TpConnection **connection);
 void empathy_contact_selector_dialog_set_show_account_chooser (
     EmpathyContactSelectorDialog *self,
     gboolean show_account_chooser);
