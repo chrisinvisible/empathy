@@ -43,6 +43,7 @@
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-tp-contact-factory.h>
+#include <libempathy/empathy-contact-list.h>
 
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-conf.h>
@@ -873,7 +874,7 @@ got_contact_cb (EmpathyTpContactFactory *factory,
                 gpointer                 user_data,
                 GObject                 *object)
 {
-	TpChannel *channel = TP_CHANNEL (user_data);
+	EmpathyTpChat *tp_chat = EMPATHY_TP_CHAT (user_data);
 
 	if (error != NULL)
 	{
@@ -882,13 +883,8 @@ got_contact_cb (EmpathyTpContactFactory *factory,
 	}
 	else
 	{
-		TpHandle handle = empathy_contact_get_handle (contact);
-		GArray handles = {(gchar *) &handle, 1};
-
-		tp_cli_channel_interface_group_call_add_members (
-				channel, -1, &handles,
-				_("Inviting to this room"),
-				NULL, NULL, NULL, NULL);
+		empathy_contact_list_add (EMPATHY_CONTACT_LIST (tp_chat),
+				contact, _("Inviting you to this room"));
 	}
 }
 
@@ -941,7 +937,7 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 			factory = empathy_tp_contact_factory_dup_singleton (connection);
 
 			empathy_tp_contact_factory_get_from_id (factory, id,
-					got_contact_cb, channel,  NULL, NULL);
+					got_contact_cb, tp_chat,  NULL, NULL);
 
 
 			g_object_unref (factory);
