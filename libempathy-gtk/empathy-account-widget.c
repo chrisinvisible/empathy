@@ -1348,6 +1348,8 @@ add_enable_checkbox (EmpathyAccountWidget *self,
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 #ifdef HAVE_MOBLIN
   GtkWidget *w;
+#else
+  GtkWidget *vbox = self->ui_details->widget;
 #endif
   guint nb_rows, nb_columns;
   gboolean is_enabled;
@@ -1383,10 +1385,8 @@ add_enable_checkbox (EmpathyAccountWidget *self,
       nb_columns);
 
 #ifndef HAVE_MOBLIN
-  gtk_table_attach (GTK_TABLE (priv->table_common_settings),
-      priv->enabled_checkbox,
-      0, nb_columns, nb_rows - 1, nb_rows,
-      GTK_EXPAND | GTK_FILL, 0, 0, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), priv->enabled_checkbox, FALSE, FALSE, 0);
+  gtk_box_reorder_child (GTK_BOX (vbox), priv->enabled_checkbox, 0);
 #else
   gtk_table_attach (GTK_TABLE (priv->table_common_settings),
       w,
