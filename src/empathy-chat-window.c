@@ -252,9 +252,9 @@ chat_window_create_label (EmpathyChatWindow *window,
 
 	gtk_misc_set_padding (GTK_MISC (name_label), 2, 0);
 	gtk_misc_set_alignment (GTK_MISC (name_label), 0.0, 0.5);
-	g_object_set_data (G_OBJECT (chat),
+	g_object_set_data_full (G_OBJECT (chat),
 		is_tab_label ? "chat-window-tab-label" : "chat-window-menu-label",
-		name_label);
+		g_object_ref (name_label), g_object_unref);
 
 	status_image = gtk_image_new ();
 
@@ -264,12 +264,12 @@ chat_window_create_label (EmpathyChatWindow *window,
 	gtk_box_pack_start (GTK_BOX (event_box_hbox), status_image, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (event_box_hbox), name_label, TRUE, TRUE, 0);
 
-	g_object_set_data (G_OBJECT (chat),
+	g_object_set_data_full (G_OBJECT (chat),
 		is_tab_label ? "chat-window-tab-image" : "chat-window-menu-image",
-		status_image);
-	g_object_set_data (G_OBJECT (chat),
+		g_object_ref (status_image), g_object_unref);
+	g_object_set_data_full (G_OBJECT (chat),
 		is_tab_label ? "chat-window-tab-tooltip-widget" : "chat-window-menu-tooltip-widget",
-		event_box);
+		g_object_ref (event_box), g_object_unref);
 
 	gtk_container_add (GTK_CONTAINER (event_box), event_box_hbox);
 	gtk_box_pack_start (GTK_BOX (hbox), event_box, TRUE, TRUE, 0);
@@ -277,7 +277,8 @@ chat_window_create_label (EmpathyChatWindow *window,
 	if (is_tab_label) {
 		close_button = gtk_button_new ();
 		gtk_button_set_relief (GTK_BUTTON (close_button), GTK_RELIEF_NONE);
-		g_object_set_data (G_OBJECT (chat), "chat-window-tab-close-button", close_button);
+		g_object_set_data_full (G_OBJECT (chat), "chat-window-tab-close-button",
+			g_object_ref (close_button), g_object_unref);
 
 		/* We don't want focus/keynav for the button to avoid clutter, and
 		 * Ctrl-W works anyway.
