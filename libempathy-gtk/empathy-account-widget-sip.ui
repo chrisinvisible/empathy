@@ -258,12 +258,13 @@ username.</property>
                     <property name="left_padding">12</property>
                     <child>
                       <object class="GtkCheckButton" id="checkbutton_discover-stun">
-                        <property name="label" translatable="yes" comments="look up the DNS SRV record at the service's domain for the host name of a STUN server.">Discover the STUN server automatically</property>
+                        <property name="label" translatable="yes">Discover the STUN server automatically</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
+                        <property name="tooltip_text" translatable="yes">Look up the DNS SRV record at the service's domain for the host name of a STUN server.</property>
                       </object>
                     </child>
                   </object>
@@ -286,6 +287,7 @@ username.</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
+                        <property name="tooltip_text" translatable="yes">Update the registration binding if the external address for the client is discovered to be different from the local binding.</property>
                       </object>
                     </child>
                   </object>
@@ -404,6 +406,7 @@ username.</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
+                        <property name="tooltip_text" translatable="yes">Use the loose routing behavior and the Route header as recommended in RFC 3261.</property>
                       </object>
                     </child>
                   </object>
@@ -462,6 +465,7 @@ username.</property>
                     <property name="invisible_char">&#x2022;</property>
                     <property name="adjustment">adjustment2</property>
                     <property name="climb_rate">1</property>
+                    <property name="tooltip_text" translatable="yes">Port of the proxy for outbound requests.</property>
                   </object>
                   <packing>
                     <property name="left_attach">3</property>
