@@ -63,6 +63,7 @@ typedef struct {
   GtkWidget *button_forget;
   GtkWidget *spinbutton_port;
   GtkWidget *enabled_checkbox;
+  GtkWidget *radiobutton_reuse;
 
   gboolean simple;
 
@@ -777,6 +778,15 @@ account_widget_apply_clicked_cb (GtkWidget *button,
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
+  if (priv->radiobutton_reuse != NULL)
+    {
+      gboolean reuse = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (
+            priv->radiobutton_reuse));
+
+      DEBUG ("Set register param: %d", !reuse);
+      empathy_account_settings_set_boolean (priv->settings, "register", !reuse);
+    }
+
   /* workaround to keep widget alive during async call */
   g_object_ref (self);
   empathy_account_settings_apply_async (priv->settings,
@@ -1416,6 +1426,45 @@ add_enable_checkbox (EmpathyAccountWidget *self,
 #endif /* HAVE_MOBLIN */
 }
 
+#ifndef HAVE_MOBLIN
+/* Moblin doesn't support registration */
+static void
+add_register_buttons (EmpathyAccountWidget *self,
+    TpAccount *account)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const TpConnectionManagerProtocol *protocol;
+  GtkWidget *radiobutton_register;
+  GtkWidget *vbox = self->ui_details->widget;
+
+  if (!priv->creating_account)
+    return;
+
+  protocol = empathy_account_settings_get_tp_protocol (priv->settings);
+  if (protocol == NULL)
+    return;
+
+  if (!tp_connection_manager_protocol_can_register (protocol))
+    return;
+
+  if (account_widget_is_gtalk (self))
+    return;
+
+  priv->radiobutton_reuse = gtk_radio_button_new_with_label (NULL,
+      _("This account already exists on the server"));
+  radiobutton_register = gtk_radio_button_new_with_label (
+      gtk_radio_button_get_group (GTK_RADIO_BUTTON (priv->radiobutton_reuse)),
+      _("Create a new account on the server"));
+
+  gtk_box_pack_start (GTK_BOX (vbox), priv->radiobutton_reuse, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), radiobutton_register, FALSE, FALSE, 0);
+  gtk_box_reorder_child (GTK_BOX (vbox), priv->radiobutton_reuse, 0);
+  gtk_box_reorder_child (GTK_BOX (vbox), radiobutton_register, 1);
+  gtk_widget_show (priv->radiobutton_reuse);
+  gtk_widget_show (radiobutton_register);
+}
+#endif
+
 static void
 do_constructed (GObject *obj)
 {
@@ -1567,6 +1616,9 @@ do_constructed (GObject *obj)
           G_CALLBACK (empathy_account_widget_enabled_cb), self);
     }
 
+#ifndef HAVE_MOBLIN
+  add_register_buttons (self, account);
+#endif
   add_enable_checkbox (self, account);
 
   /* hook up to widget destruction to unref ourselves */
