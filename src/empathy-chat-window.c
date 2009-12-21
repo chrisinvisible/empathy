@@ -347,6 +347,32 @@ chat_window_menu_context_update (EmpathyChatWindowPriv *priv,
 }
 
 static void
+chat_window_conversation_menu_update (EmpathyChatWindowPriv *priv,
+                                      EmpathyChatWindow     *self)
+{
+	EmpathyTpChat *tp_chat;
+	TpConnection *connection;
+	GtkAction *action;
+	gboolean sensitive = FALSE;
+
+	g_return_if_fail (priv->current_chat != NULL);
+
+	action = gtk_ui_manager_get_action (priv->ui_manager,
+		"/chats_menubar/menu_conv/menu_conv_invite_participant");
+	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+
+	if (tp_chat != NULL) {
+		connection = empathy_tp_chat_get_connection (tp_chat);
+
+		sensitive = empathy_tp_chat_can_add_contact (tp_chat) &&
+			(tp_connection_get_status (connection, NULL) ==
+			 TP_CONNECTION_STATUS_CONNECTED);
+	}
+
+	gtk_action_set_sensitive (action, sensitive);
+}
+
+static void
 chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 				 EmpathyChatWindow     *window)
 {
@@ -536,6 +562,8 @@ chat_window_update (EmpathyChatWindow *window)
 	/* Update Tab menu */
 	chat_window_menu_context_update (priv,
 					 num_pages);
+
+	chat_window_conversation_menu_update (priv, window);
 
 	chat_window_contact_menu_update (priv,
 					 window);
