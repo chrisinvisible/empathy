@@ -96,6 +96,7 @@ void           empathy_tp_chat_provide_password_async (EmpathyTpChat *chat,
 gboolean       empathy_tp_chat_provide_password_finish (EmpathyTpChat *chat,
 							GAsyncResult *result,
 							GError **error);
+gboolean       empathy_tp_chat_can_add_contact (EmpathyTpChat *self);
 
 G_END_DECLS
 

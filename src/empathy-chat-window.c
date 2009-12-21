@@ -39,7 +39,6 @@
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>
-#include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-tp-contact-factory.h>
@@ -54,8 +53,6 @@
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-notify-manager.h>
-
-#include <extensions/extensions.h>
 
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
@@ -823,51 +820,6 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 }
 
 static void
-chat_window_upgrade_to_muc (EmpathyChat *chat,
-                            const char  *id)
-{
-	EmpathyDispatcher     *dispatcher = empathy_dispatcher_dup_singleton ();
-	EmpathyTpChat         *tp_chat;
-	TpConnection          *connection;
-	TpChannel             *channel;
-	GHashTable            *props;
-	GPtrArray             *channels;
-	char                  *invitees[3] = { NULL, };
-
-	tp_chat = empathy_chat_get_tp_chat (chat);
-	connection = empathy_tp_chat_get_connection (tp_chat);
-	channel = empathy_tp_chat_get_channel (tp_chat);
-
-	/* Ensure a MUC channel */
-	channels = g_ptr_array_sized_new (1);
-	g_ptr_array_add (channels, (char *) tp_proxy_get_object_path (channel));
-
-	invitees[0] = (char *) tp_channel_get_identifier (channel);
-	invitees[1] = (char *) id;
-
-	props = tp_asv_new (
-	    TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
-	        TP_IFACE_CHANNEL_TYPE_TEXT,
-	    TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT,
-	        TP_HANDLE_TYPE_NONE,
-	    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
-	        TP_ARRAY_TYPE_OBJECT_PATH_LIST, channels,
-	    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
-	        G_TYPE_STRV, invitees,
-	    /* FIXME: InvitationMessage ? */
-	    NULL);
-
-	/* Although this is a MUC, it's anonymous, so CreateChannel is valid */
-	/* props now belongs to EmpathyDispatcher, don't free it */
-	empathy_dispatcher_create_channel (dispatcher, connection,
-			props, NULL, NULL);
-
-	g_ptr_array_free (channels, TRUE);
-
-	g_object_unref (dispatcher);
-}
-
-static void
 got_contact_cb (EmpathyTpContactFactory *factory,
                 EmpathyContact          *contact,
                 const GError            *error,
@@ -876,13 +828,10 @@ got_contact_cb (EmpathyTpContactFactory *factory,
 {
 	EmpathyTpChat *tp_chat = EMPATHY_TP_CHAT (user_data);
 
-	if (error != NULL)
-	{
+	if (error != NULL) {
 		DEBUG ("Failed: %s", error->message);
 		return;
-	}
-	else
-	{
+	} else {
 		empathy_contact_list_add (EMPATHY_CONTACT_LIST (tp_chat),
 				contact, _("Inviting you to this room"));
 	}
@@ -913,35 +862,22 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 
-	if (response == GTK_RESPONSE_ACCEPT)
-	{
+	if (response == GTK_RESPONSE_ACCEPT) {
+		TpConnection *connection;
+		EmpathyTpContactFactory *factory;
 		const char *id;
-		TpHandleType handle_type;
 
 		id = empathy_contact_selector_dialog_get_selected (
 				EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL);
 		if (EMP_STR_EMPTY (id)) goto out;
 
-		tp_channel_get_handle (channel, &handle_type);
+		connection = tp_channel_borrow_connection (channel);
+		factory = empathy_tp_contact_factory_dup_singleton (connection);
 
-		if (handle_type == TP_HANDLE_TYPE_CONTACT)
-		{
-			chat_window_upgrade_to_muc (priv->current_chat, id);
-		}
-		else
-		{
-			TpConnection *connection;
-			EmpathyTpContactFactory *factory;
+		empathy_tp_contact_factory_get_from_id (factory, id,
+			got_contact_cb, tp_chat,  NULL, NULL);
 
-			connection = tp_channel_borrow_connection (channel);
-			factory = empathy_tp_contact_factory_dup_singleton (connection);
-
-			empathy_tp_contact_factory_get_from_id (factory, id,
-					got_contact_cb, tp_chat,  NULL, NULL);
-
-
-			g_object_unref (factory);
-		}
+		g_object_unref (factory);
 	}
 
 out:

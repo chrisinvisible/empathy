@@ -23,15 +23,15 @@
 
 #include <string.h>
 
-#include <telepathy-glib/channel.h>
-#include <telepathy-glib/dbus.h>
-#include <telepathy-glib/util.h>
-#include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/telepathy-glib.h>
+
+#include <extensions/extensions.h>
 
 #include "empathy-tp-chat.h"
 #include "empathy-tp-contact-factory.h"
 #include "empathy-contact-monitor.h"
 #include "empathy-contact-list.h"
+#include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
 #include "empathy-time.h"
 #include "empathy-utils.h"
@@ -60,6 +60,7 @@ typedef struct {
 	 * (channel doesn't implement the Password interface) */
 	gboolean               got_password_flags;
 	gboolean               ready;
+	gboolean               can_upgrade_to_muc;
 } EmpathyTpChatPriv;
 
 static void tp_chat_iface_init         (EmpathyContactListIface *iface);
@@ -117,17 +118,54 @@ tp_chat_add (EmpathyContactList *list,
 	     const gchar        *message)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (list);
-	TpHandle           handle;
-	GArray             handles = {(gchar *) &handle, 1};
 
-	g_return_if_fail (EMPATHY_IS_TP_CHAT (list));
-	g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+	if (tp_proxy_has_interface_by_id (priv->channel,
+		TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP)) {
+		TpHandle           handle;
+		GArray             handles = {(gchar *) &handle, 1};
 
-	handle = empathy_contact_get_handle (contact);
-	tp_cli_channel_interface_group_call_add_members (priv->channel, -1,
-							 &handles, NULL,
-							 NULL, NULL, NULL,
-							 NULL);
+		g_return_if_fail (EMPATHY_IS_TP_CHAT (list));
+		g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+		handle = empathy_contact_get_handle (contact);
+		tp_cli_channel_interface_group_call_add_members (priv->channel,
+			-1, &handles, NULL, NULL, NULL, NULL, NULL);
+	} else if (priv->can_upgrade_to_muc) {
+		EmpathyDispatcher *dispatcher;
+		TpConnection      *connection;
+		GHashTable        *props;
+		const char        *object_path;
+		GPtrArray          channels = { (gpointer *) &object_path, 1 };
+		const char        *invitees[2] = { NULL, };
+
+		dispatcher = empathy_dispatcher_dup_singleton ();
+		connection = tp_channel_borrow_connection (priv->channel);
+
+		invitees[0] = empathy_contact_get_id (contact);
+		object_path = tp_proxy_get_object_path (priv->channel);
+
+		props = tp_asv_new (
+		    TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
+		        TP_IFACE_CHANNEL_TYPE_TEXT,
+		    TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT,
+		        TP_HANDLE_TYPE_NONE,
+		    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
+		        TP_ARRAY_TYPE_OBJECT_PATH_LIST, &channels,
+		    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
+		        G_TYPE_STRV, invitees,
+		    /* FIXME: InvitationMessage ? */
+		    NULL);
+
+		/* Although this is a MUC, it's anonymous, so CreateChannel is
+		 * valid.
+		 * props now belongs to EmpathyDispatcher, don't free it */
+		empathy_dispatcher_create_channel (dispatcher, connection,
+				props, NULL, NULL);
+
+		g_object_unref (dispatcher);
+	} else {
+		g_warning ("Cannot add to this channel");
+	}
 }
 
 static void
@@ -1219,9 +1257,14 @@ tp_chat_constructor (GType                  type,
 			handles->len, (TpHandle *) handles->data,
 			tp_chat_got_added_contacts_cb, NULL, NULL, chat);
 
+		priv->can_upgrade_to_muc = FALSE;
+
 		g_signal_connect (priv->channel, "group-members-changed",
 			G_CALLBACK (tp_chat_group_members_changed_cb), chat);
 	} else {
+		EmpathyDispatcher *dispatcher = empathy_dispatcher_dup_singleton ();
+		GList *list, *ptr;
+
 		/* Get the self contact from the connection's self handle */
 		handle = tp_connection_get_self_handle (connection);
 		empathy_tp_contact_factory_get_from_handle (priv->factory,
@@ -1233,6 +1276,25 @@ tp_chat_constructor (GType                  type,
 		empathy_tp_contact_factory_get_from_handle (priv->factory,
 			handle, tp_chat_got_remote_contact_cb,
 			NULL, NULL, chat);
+
+		list = empathy_dispatcher_find_requestable_channel_classes (
+			dispatcher, connection,
+			tp_channel_get_channel_type (priv->channel),
+			TP_HANDLE_TYPE_ROOM, NULL);
+
+		for (ptr = list; ptr; ptr = ptr->next) {
+			GValueArray *array = ptr->data;
+			const char **oprops = g_value_get_boxed (
+				g_value_array_get_nth (array, 1));
+
+			if (tp_strv_contains (oprops, EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels")) {
+				priv->can_upgrade_to_muc = TRUE;
+				break;
+			}
+		}
+
+		g_list_free (list);
+		g_object_unref (dispatcher);
 	}
 
 	if (tp_proxy_has_interface_by_id (priv->channel,
@@ -1713,4 +1775,25 @@ empathy_tp_chat_provide_password_finish (EmpathyTpChat *self,
 							      G_OBJECT (self), empathy_tp_chat_provide_password_finish), FALSE);
 
 	return TRUE;
+}
+
+/**
+ * empathy_tp_chat_can_add_contact:
+ *
+ * Returns: %TRUE if empathy_contact_list_add() will work for this channel.
+ * That is if this chat is a 1-to-1 channel that can be upgraded to
+ * a MUC using the Conference interface or if the channel is a MUC.
+ */
+gboolean
+empathy_tp_chat_can_add_contact (EmpathyTpChat *self)
+{
+	EmpathyTpChatPriv *priv;
+
+	g_return_val_if_fail (EMPATHY_IS_TP_CHAT (self), FALSE);
+
+	priv = GET_PRIV (self);
+
+	return priv->can_upgrade_to_muc ||
+		tp_proxy_has_interface_by_id (priv->channel,
+			TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP);;
 }
