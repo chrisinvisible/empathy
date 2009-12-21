@@ -916,6 +916,15 @@ account_widget_build_msn (EmpathyAccountWidget *self,
     }
 }
 
+static gboolean
+account_widget_is_gtalk (EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  return !tp_strdiff (empathy_account_settings_get_icon_name (priv->settings),
+      "im-google-talk");
+}
+
 static void
 account_widget_build_jabber (EmpathyAccountWidget *self,
     const char *filename)
@@ -928,9 +937,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *label_example_gtalk, *label_example_jabber;
   gboolean is_gtalk;
 
-  is_gtalk = !tp_strdiff (
-      empathy_account_settings_get_icon_name (priv->settings),
-      "im-google-talk");
+  is_gtalk = account_widget_is_gtalk (self);
 
   if (priv->simple && !is_gtalk)
     {
