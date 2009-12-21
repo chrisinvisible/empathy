@@ -1342,6 +1342,74 @@ account_manager_ready_cb (GObject *source_object,
     account_widget_build_##proto }
 
 static void
+add_enable_checkbox (EmpathyAccountWidget *self,
+    TpAccount *account)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+#ifdef HAVE_MOBLIN
+  GtkWidget *w;
+#endif
+  guint nb_rows, nb_columns;
+  gboolean is_enabled;
+
+  /* handle the "Enabled" checkbox. We only add it when modifying an account */
+  if (priv->creating_account || priv->table_common_settings == NULL)
+    return;
+
+  is_enabled = tp_account_is_enabled (account);
+
+#ifndef HAVE_MOBLIN
+  priv->enabled_checkbox =
+      gtk_check_button_new_with_label (_("Enabled"));
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
+      is_enabled);
+#else
+  w = gtk_label_new (_("Account:"));
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+
+  priv->enabled_checkbox = nbtk_gtk_light_switch_new ();
+
+  nbtk_gtk_light_switch_set_active (
+      NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
+
+  gtk_widget_show (w);
+#endif /* HAVE_MOBLIN */
+
+  g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
+      "n-columns", &nb_columns, NULL);
+
+  gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
+      nb_columns);
+
+#ifndef HAVE_MOBLIN
+  gtk_table_attach (GTK_TABLE (priv->table_common_settings),
+      priv->enabled_checkbox,
+      0, nb_columns, nb_rows - 1, nb_rows,
+      GTK_EXPAND | GTK_FILL, 0, 0, 0);
+#else
+  gtk_table_attach (GTK_TABLE (priv->table_common_settings),
+      w,
+      0, 1, nb_rows - 1, nb_rows,
+      GTK_FILL, 0, 0, 0);
+  gtk_table_attach (GTK_TABLE (priv->table_common_settings),
+      priv->enabled_checkbox,
+      1, nb_columns, nb_rows - 1, nb_rows,
+      GTK_EXPAND | GTK_FILL, 0, 0, 0);
+#endif /* HAVE_MOBLIN */
+
+  gtk_widget_show (priv->enabled_checkbox);
+
+#ifndef HAVE_MOBLIN
+  g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
+      G_CALLBACK (account_widget_enabled_released_cb), self);
+#else
+  g_signal_connect (G_OBJECT (priv->enabled_checkbox), "switch-flipped",
+      G_CALLBACK (account_widget_switch_flipped_cb), self);
+#endif /* HAVE_MOBLIN */
+}
+
+static void
 do_constructed (GObject *obj)
 {
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
@@ -1492,68 +1560,7 @@ do_constructed (GObject *obj)
           G_CALLBACK (empathy_account_widget_enabled_cb), self);
     }
 
-  /* handle the "Enabled" checkbox. We only add it when modifying an account */
-  if (!priv->creating_account && priv->table_common_settings != NULL)
-    {
-#ifdef HAVE_MOBLIN
-      GtkWidget *w;
-#endif
-      guint nb_rows, nb_columns;
-      gboolean is_enabled;
-
-      is_enabled = tp_account_is_enabled (account);
-
-#ifndef HAVE_MOBLIN
-      priv->enabled_checkbox =
-          gtk_check_button_new_with_label (_("Enabled"));
-
-      gtk_toggle_button_set_active (
-          GTK_TOGGLE_BUTTON (priv->enabled_checkbox), is_enabled);
-#else
-      /* Translators: this is used only when built on a moblin platform */
-      w = gtk_label_new (_("Account:"));
-      gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
-
-      priv->enabled_checkbox = nbtk_gtk_light_switch_new ();
-
-      nbtk_gtk_light_switch_set_active (
-          NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
-
-      gtk_widget_show (w);
-#endif /* HAVE_MOBLIN */
-
-      g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
-          "n-columns", &nb_columns, NULL);
-
-      gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
-          nb_columns);
-
-#ifndef HAVE_MOBLIN
-      gtk_table_attach (GTK_TABLE (priv->table_common_settings),
-          priv->enabled_checkbox,
-          0, nb_columns, nb_rows - 1, nb_rows,
-          GTK_EXPAND | GTK_FILL, 0, 0, 0);
-#else
-      gtk_table_attach (GTK_TABLE (priv->table_common_settings),
-          w,
-          0, 1, nb_rows - 1, nb_rows,
-          GTK_FILL, 0, 0, 0);
-      gtk_table_attach (GTK_TABLE (priv->table_common_settings),
-          priv->enabled_checkbox,
-          1, nb_columns, nb_rows - 1, nb_rows,
-          GTK_EXPAND | GTK_FILL, 0, 0, 0);
-#endif /* HAVE_MOBLIN */
-
-      gtk_widget_show (priv->enabled_checkbox);
-
-#ifndef HAVE_MOBLIN
-      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
-          G_CALLBACK (account_widget_enabled_released_cb), self);
-#else
-      g_signal_connect (G_OBJECT (priv->enabled_checkbox), "switch-flipped",
-          G_CALLBACK (account_widget_switch_flipped_cb), self);
-#endif /* HAVE_MOBLIN */
-    }
+  add_enable_checkbox (self, account);
 
   /* hook up to widget destruction to unref ourselves */
   g_signal_connect (self->ui_details->widget, "destroy",
