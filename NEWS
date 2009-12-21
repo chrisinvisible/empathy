@@ -1,3 +1,56 @@
+NEW in 2.29.4
+=============
+
+The "The Snow of the Apocalypse" release.
+
+Empathy is now able to start SIP video calls using the new "New Call" dialog.
+It also indicates whether an incoming call contains video or is audio only.
+The contact list can now display the protocol used by contacts, and the
+accounts dialog shows the accounts' status (enabled/disabled,
+available/busy/away/offline, etc.).
+Thanks to K. Vishnoo Charan Reddy, Empathy gained icons for 4 protocols.
+
+Bugs fixed:
+ - Fixed #602821, accounts do not reconnect after toggling enable/disable (Felix Kaser)
+ - Fixed #603490, SIGSEGV crash when cancelling accounts creation (Felix Kaser)
+ - Fixed #570399, Call button should be disabled in "new conversation dialog" if CM doesn't support audio/video
+ - Fixed #576434, ellipsize long status messages in the status combobox (Pascal Potvin)
+ - Fixed #576542, tooltips for toolbar buttons in call window (Guillaume Desmottes)
+ - Fixed #582596, Should tell if we are receiving an audio only or audio/video call (Guillaume Desmottes)
+ - Fixed #582599, chat -> new conversation is not an obvious way to start an audio/video call (Guillaume Desmottes)
+ - Fixed #586290, Remember contact pane's width (ranjiao)
+ - Fixed #588812, Group 1-to-1 chats in one window and MUC's in another one (Abner Silva)
+ - Fixed #598964, contact list disappears on reconnect for group chats (Guillaume Desmottes)
+ - Fixed #602288, Shouldn't notify about scrollback messages (Guillaume Desmottes)
+ - Fixed #603393, Crash when trying to join a rom while being offline (Guillaume Desmottes)
+ - Fixed #603485, Crash when clicking the status icon just after a contact goes online/offline (Guillaume Desmottes)
+ - Fixed #603502, Myspace missing icon in create account dropdown menu (Guillaume Desmottes)
+ - Fixed #603508, Sametime missing icon in create account dropdown menu (Guillaume Desmottes)
+ - Fixed #603545, [Patch] gtk-missing-icon shown in add contact dialog before status is queried (Brian Pepple)
+ - Fixed #603593, assertion error when rejoining a chatroom because of reconnection (Guillaume Desmottes)
+ - Fixed #603634, Groupwise icon missing in create account dropdown menu (Guillaume Desmottes)
+ - Fixed #603877, [patch] add protocol icon to contact list (chantra)
+ - Fixed #603976, Don't re-enable chat window once reconnected (Guillaume Desmottes)
+ - Fixed #603980, new messages mixed with old in new conversation windows (Guillaume Desmottes)
+ - Fixed #604003, Separate geometry of private and muc chat windows (Guillaume Desmottes)
+ - Fixed #604097, EmpathyNewMessageDialog should inherit from GtkDialog (Guillaume Desmottes)
+ - Fixed #604166, account-chooser: display connected accounts first (Guillaume Desmottes)
+ - Fixed #604181, Should remove contact from 'stored' list when possible (Guillaume Desmottes)
+ - Fixed #604254, Contact list channels should be requested via EnsureChannel
+ - Fixed #604554, SILC missing icon in create account dropdown menu (Guillaume Desmottes)
+ - Fixed #604567, Yahoo!Japan missing icon in create account dropdown menu (Guillaume Desmottes)
+ - Fixed #599153, Accounts dialog should display the status of accounts (Felix Kaser)
+
+Translations:
+ - Updated es Translation (Jorge González)
+ - Updated he Translation (Yaron Sharabani)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated zh_CN Translation (Aron Xu)
+
+Documentation translations:
+ - Updated de Documentation translation (Christian Kirbach)
+
 NEW in 2.29.3
 ==============
 
