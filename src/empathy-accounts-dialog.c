@@ -96,8 +96,6 @@ typedef struct {
   GtkWidget *hbox_type;
   GtkWidget *button_create;
   GtkWidget *button_back;
-  GtkWidget *radiobutton_reuse;
-  GtkWidget *radiobutton_register;
 
   GtkWidget *image_type;
   GtkWidget *label_name;
@@ -497,22 +495,6 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
       return;
     }
 
-#ifndef HAVE_MOBLIN
-  if (tp_connection_manager_protocol_can_register (proto) && !is_gtalk)
-    {
-      gtk_widget_show (priv->radiobutton_register);
-      gtk_widget_show (priv->radiobutton_reuse);
-    }
-  else
-    {
-      gtk_widget_hide (priv->radiobutton_register);
-      gtk_widget_hide (priv->radiobutton_reuse);
-    }
-#else
-  gtk_widget_hide (priv->radiobutton_register);
-  gtk_widget_hide (priv->radiobutton_reuse);
-#endif
-
   g_object_unref (cm);
 }
 
@@ -537,9 +519,6 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   else
     gtk_widget_hide (priv->button_back);
 
-  accounts_dialog_protocol_changed_cb (priv->radiobutton_register, dialog);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->radiobutton_reuse),
-      TRUE);
   gtk_combo_box_set_active (GTK_COMBO_BOX (priv->combobox_protocol), 0);
   gtk_widget_grab_focus (priv->combobox_protocol);
 }
@@ -1509,18 +1488,6 @@ accounts_dialog_button_create_clicked_cb (GtkWidget *button,
 
   g_free (str);
 
-#ifndef HAVE_MOBLIN
-  if (tp_connection_manager_protocol_can_register (proto))
-    {
-      gboolean active;
-
-      active = gtk_toggle_button_get_active
-        (GTK_TOGGLE_BUTTON (priv->radiobutton_register));
-      if (active)
-        empathy_account_settings_set_boolean (settings, "register", TRUE);
-    }
-#endif
-
   if (is_gtalk)
     empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
         NULL, NULL);
@@ -1738,8 +1705,6 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "hbox_type", &priv->hbox_type,
       "button_create", &priv->button_create,
       "button_back", &priv->button_back,
-      "radiobutton_reuse", &priv->radiobutton_reuse,
-      "radiobutton_register", &priv->radiobutton_register,
       "image_type", &priv->image_type,
       "label_name", &priv->label_name,
       "button_add", &priv->button_add,
