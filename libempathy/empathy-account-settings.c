@@ -1283,3 +1283,11 @@ empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
 
   return !missed;
 }
+
+const TpConnectionManagerProtocol *
+empathy_account_settings_get_tp_protocol (EmpathyAccountSettings *self)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (self);
+
+  return tp_connection_manager_get_protocol (priv->manager, priv->protocol);
+}
