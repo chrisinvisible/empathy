@@ -1343,7 +1343,7 @@ account_manager_ready_cb (GObject *source_object,
     {
       DEBUG ("Failed to prepare account manager: %s", error->message);
       g_error_free (error);
-      return;
+      goto out;
     }
 
   state = tp_account_manager_get_most_available_presence (account_manager, NULL,
@@ -1352,6 +1352,9 @@ account_manager_ready_cb (GObject *source_object,
   /* simulate a presence change so the apply button will be changed
    * if needed */
   presence_changed_cb (account_manager, state, NULL, NULL, self);
+
+out:
+  g_object_unref (self);
 }
 
 #define WIDGET(cm, proto) \
@@ -1556,6 +1559,7 @@ do_constructed (GObject *obj)
   /* dup and init the account-manager */
   priv->account_manager = tp_account_manager_dup ();
 
+  g_object_ref (self);
   tp_account_manager_prepare_async (priv->account_manager, NULL,
       account_manager_ready_cb, self);
 
