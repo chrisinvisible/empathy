@@ -35,14 +35,14 @@
 #include <glib/gi18n.h>
 #include <libnotify/notification.h>
 
-#include <telepathy-glib/account-manager.h>
-#include <telepathy-glib/util.h>
+#include <telepathy-glib/telepathy-glib.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>
-#include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-utils.h>
+#include <libempathy/empathy-tp-contact-factory.h>
+#include <libempathy/empathy-contact-list.h>
 
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-conf.h>
@@ -56,6 +56,7 @@
 
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
+#include "empathy-invite-participant-dialog.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
@@ -346,6 +347,32 @@ chat_window_menu_context_update (EmpathyChatWindowPriv *priv,
 }
 
 static void
+chat_window_conversation_menu_update (EmpathyChatWindowPriv *priv,
+                                      EmpathyChatWindow     *self)
+{
+	EmpathyTpChat *tp_chat;
+	TpConnection *connection;
+	GtkAction *action;
+	gboolean sensitive = FALSE;
+
+	g_return_if_fail (priv->current_chat != NULL);
+
+	action = gtk_ui_manager_get_action (priv->ui_manager,
+		"/chats_menubar/menu_conv/menu_conv_invite_participant");
+	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+
+	if (tp_chat != NULL) {
+		connection = empathy_tp_chat_get_connection (tp_chat);
+
+		sensitive = empathy_tp_chat_can_add_contact (tp_chat) &&
+			(tp_connection_get_status (connection, NULL) ==
+			 TP_CONNECTION_STATUS_CONNECTED);
+	}
+
+	gtk_action_set_sensitive (action, sensitive);
+}
+
+static void
 chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 				 EmpathyChatWindow     *window)
 {
@@ -535,6 +562,8 @@ chat_window_update (EmpathyChatWindow *window)
 	/* Update Tab menu */
 	chat_window_menu_context_update (priv,
 					 num_pages);
+
+	chat_window_conversation_menu_update (priv, window);
 
 	chat_window_contact_menu_update (priv,
 					 window);
@@ -816,6 +845,69 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 	active = gtk_toggle_action_get_active (toggle_action);
 
 	empathy_chat_set_show_contacts (priv->current_chat, active);
+}
+
+static void
+got_contact_cb (EmpathyTpContactFactory *factory,
+                EmpathyContact          *contact,
+                const GError            *error,
+                gpointer                 user_data,
+                GObject                 *object)
+{
+	EmpathyTpChat *tp_chat = EMPATHY_TP_CHAT (user_data);
+
+	if (error != NULL) {
+		DEBUG ("Failed: %s", error->message);
+		return;
+	} else {
+		empathy_contact_list_add (EMPATHY_CONTACT_LIST (tp_chat),
+				contact, _("Inviting you to this room"));
+	}
+}
+
+static void
+chat_window_invite_participant_activate_cb (GtkAction         *action,
+					    EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	GtkWidget             *dialog;
+	EmpathyTpChat         *tp_chat;
+	TpChannel             *channel;
+	int                    response;
+
+	priv = GET_PRIV (window);
+
+	g_return_if_fail (priv->current_chat != NULL);
+
+	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
+	channel = empathy_tp_chat_get_channel (tp_chat);
+
+	dialog = empathy_invite_participant_dialog_new (
+			GTK_WINDOW (priv->dialog));
+	gtk_widget_show (dialog);
+
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+	if (response == GTK_RESPONSE_ACCEPT) {
+		TpConnection *connection;
+		EmpathyTpContactFactory *factory;
+		const char *id;
+
+		id = empathy_contact_selector_dialog_get_selected (
+				EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL);
+		if (EMP_STR_EMPTY (id)) goto out;
+
+		connection = tp_channel_borrow_connection (channel);
+		factory = empathy_tp_contact_factory_dup_singleton (connection);
+
+		empathy_tp_contact_factory_get_from_id (factory, id,
+			got_contact_cb, tp_chat,  NULL, NULL);
+
+		g_object_unref (factory);
+	}
+
+out:
+	gtk_widget_destroy (dialog);
 }
 
 static void
@@ -1725,6 +1817,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_conv_clear", "activate", chat_window_clear_activate_cb,
 			      "menu_conv_favorite", "toggled", chat_window_favorite_toggled_cb,
 			      "menu_conv_toggle_contacts", "toggled", chat_window_contacts_toggled_cb,
+			      "menu_conv_invite_participant", "activate", chat_window_invite_participant_activate_cb,
 			      "menu_conv_close", "activate", chat_window_close_activate_cb,
 			      "menu_edit", "activate", chat_window_edit_activate_cb,
 			      "menu_edit_cut", "activate", chat_window_cut_activate_cb,
