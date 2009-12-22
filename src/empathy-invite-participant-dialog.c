@@ -13,30 +13,18 @@
 
 #include "empathy-invite-participant-dialog.h"
 
-#define GET_PRIVATE(obj)    (G_TYPE_INSTANCE_GET_PRIVATE ((obj), EMPATHY_TYPE_INVITE_PARTICIPANT_DIALOG, EmpathyInviteParticipantDialogPrivate))
-
 G_DEFINE_TYPE (EmpathyInviteParticipantDialog,
     empathy_invite_participant_dialog, EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG);
-
-typedef struct _EmpathyInviteParticipantDialogPrivate EmpathyInviteParticipantDialogPrivate;
-struct _EmpathyInviteParticipantDialogPrivate
-{
-  int dum;
-};
 
 static void
 empathy_invite_participant_dialog_class_init (EmpathyInviteParticipantDialogClass *klass)
 {
-  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-  g_type_class_add_private (gobject_class, sizeof (EmpathyInviteParticipantDialogPrivate));
 }
 
 static void
 empathy_invite_participant_dialog_init (EmpathyInviteParticipantDialog *self)
 {
   EmpathyContactSelectorDialog *parent = EMPATHY_CONTACT_SELECTOR_DIALOG (self);
-  // EmpathyInviteParticipantDialogPrivate *priv = GET_PRIVATE (self);
   GtkWidget *label;
   char *str;
 
