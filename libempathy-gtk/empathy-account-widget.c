@@ -1308,6 +1308,9 @@ presence_changed_cb (TpAccountManager *manager,
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
+  if (priv->destroyed)
+    return;
+
   if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
     {
       /* We are online, display a Login button */
