@@ -323,7 +323,7 @@ empathy_irc_network_manager_add (EmpathyIrcNetworkManager *self,
 
   if (priv->last_id == G_MAXUINT)
     {
-      DEBUG ("Can't add network: too many networks using a similiar ID");
+      DEBUG ("Can't add network: too many networks using a similar ID");
       return;
     }
 
