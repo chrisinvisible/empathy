@@ -882,8 +882,6 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 	tp_chat = empathy_chat_get_tp_chat (priv->current_chat);
 	channel = empathy_tp_chat_get_channel (tp_chat);
 
-	/* FIXME: should filter out the existing participants from the
-	 * list */
 	dialog = empathy_invite_participant_dialog_new (
 			GTK_WINDOW (priv->dialog));
 	gtk_widget_show (dialog);
