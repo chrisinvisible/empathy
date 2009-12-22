@@ -50,6 +50,7 @@ typedef struct _EmpathyContactSelectorDialogPriv \
           EmpathyContactSelectorDialogPriv;
 
 struct _EmpathyContactSelectorDialogPriv {
+  GtkListStore *store;
   GtkWidget *account_chooser_label;
   GtkWidget *account_chooser;
   GtkWidget *entry_id;
@@ -81,13 +82,9 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
   EmpathyAccountChooser *chooser;
   TpConnection *connection;
   GList *members;
-  GtkListStore *store;
-  GtkEntryCompletion *completion;
 
   /* Remove completions */
-  completion = gtk_entry_get_completion (GTK_ENTRY (priv->entry_id));
-  store = GTK_LIST_STORE (gtk_entry_completion_get_model (completion));
-  gtk_list_store_clear (store);
+  gtk_list_store_clear (priv->store);
 
   /* Get members of the new account */
   chooser = EMPATHY_ACCOUNT_CHOOSER (priv->account_chooser);
@@ -125,7 +122,7 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
         empathy_contact_get_name (contact),
         empathy_contact_get_id (contact));
 
-      gtk_list_store_insert_with_values (store, &iter, -1,
+      gtk_list_store_insert_with_values (priv->store, &iter, -1,
         COMPLETION_COL_TEXT, tmpstr,
         COMPLETION_COL_ID, empathy_contact_get_id (contact),
         COMPLETION_COL_NAME, empathy_contact_get_name (contact),
@@ -241,6 +238,28 @@ account_chooser_filter (TpAccount *account,
   return class->account_filter (self, account);
 }
 
+static gboolean
+contact_selector_dialog_filter_visible (GtkTreeModel *model,
+                                        GtkTreeIter  *iter,
+                                        gpointer      data)
+{
+  EmpathyContactSelectorDialog *self = EMPATHY_CONTACT_SELECTOR_DIALOG (data);
+  gboolean r;
+  char *id;
+
+  gtk_tree_model_get (model, iter,
+      COMPLETION_COL_ID, &id,
+      -1);
+
+  /* this must be non-NULL for this function to get called */
+  r = EMPATHY_CONTACT_SELECTOR_DIALOG_GET_CLASS (self)->contact_filter (
+      self, id);
+
+  g_free (id);
+
+  return r;
+}
+
 static void
 empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
 {
@@ -248,7 +267,6 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   GtkBuilder *gui;
   gchar *filename;
   GtkEntryCompletion *completion;
-  GtkListStore *model;
   GtkWidget *content_area;
   GtkWidget *table_contact;
 
@@ -289,19 +307,20 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
   gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 
   /* text completion */
+  priv->store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
   completion = gtk_entry_completion_new ();
-  model = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
   gtk_entry_completion_set_text_column (completion, COMPLETION_COL_TEXT);
   gtk_entry_completion_set_match_func (completion,
                contact_selector_dialog_match_func,
                NULL, NULL);
-  gtk_entry_completion_set_model (completion, GTK_TREE_MODEL (model));
+  gtk_entry_completion_set_model (completion, GTK_TREE_MODEL (priv->store));
   gtk_entry_set_completion (GTK_ENTRY (priv->entry_id), completion);
   g_signal_connect (completion, "match-selected",
         G_CALLBACK (contact_selector_dialog_match_selected_cb),
         dialog);
   g_object_unref (completion);
-  g_object_unref (model);
+  g_object_unref (priv->store);
 
   empathy_builder_connect (gui, dialog,
              "entry_id", "changed", contact_selector_change_state_button_cb,
@@ -370,6 +389,27 @@ empathy_contact_selector_dialog_set_property (GObject *self,
 }
 
 static void
+empathy_contact_selector_dialog_constructed (GObject *dialog)
+{
+  EmpathyContactSelectorDialogPriv *priv = GET_PRIV (dialog);
+
+  if (EMPATHY_CONTACT_SELECTOR_DIALOG_GET_CLASS (dialog)->contact_filter)
+    {
+      GtkEntryCompletion *completion;
+      GtkTreeModel *filter;
+
+      completion = gtk_entry_get_completion (GTK_ENTRY (priv->entry_id));
+      filter = gtk_tree_model_filter_new (GTK_TREE_MODEL (priv->store), NULL);
+
+      gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (filter),
+          contact_selector_dialog_filter_visible, dialog, NULL);
+
+      gtk_entry_completion_set_model (completion, filter);
+      g_object_unref (filter);
+    }
+}
+
+static void
 empathy_contact_selector_dialog_dispose (GObject *object)
 {
   EmpathyContactSelectorDialogPriv *priv = GET_PRIV (object);
@@ -392,6 +432,9 @@ empathy_contact_selector_dialog_class_init (
 
   g_type_class_add_private (class, sizeof (EmpathyContactSelectorDialogPriv));
 
+  class->contact_filter = NULL;
+
+  object_class->constructed = empathy_contact_selector_dialog_constructed;
   object_class->dispose = empathy_contact_selector_dialog_dispose;
   object_class->get_property = empathy_contact_selector_dialog_get_property;
   object_class->set_property = empathy_contact_selector_dialog_set_property;

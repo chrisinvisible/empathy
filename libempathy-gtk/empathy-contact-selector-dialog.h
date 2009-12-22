@@ -40,6 +40,8 @@ struct _EmpathyContactSelectorDialogClass {
 
   gboolean (*account_filter) (EmpathyContactSelectorDialog *self,
       TpAccount *account);
+  gboolean (*contact_filter) (EmpathyContactSelectorDialog *self,
+      const char *id);
 };
 
 struct _EmpathyContactSelectorDialog {
