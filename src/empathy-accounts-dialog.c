@@ -91,11 +91,8 @@ typedef struct {
   GtkWidget *button_add;
   GtkWidget *button_import;
 
-  GtkWidget *frame_new_account;
   GtkWidget *combobox_protocol;
-  GtkWidget *hbox_type;
-  GtkWidget *button_create;
-  GtkWidget *button_back;
+  GtkWidget *hbox_protocol;
 
   GtkWidget *image_type;
   GtkWidget *label_name;
@@ -156,6 +153,12 @@ static gboolean accounts_dialog_get_settings_iter (
 static void accounts_dialog_model_select_first (EmpathyAccountsDialog *dialog);
 
 static void accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
+    EmpathyAccountSettings *settings);
+
+static void accounts_dialog_add (EmpathyAccountsDialog *dialog,
+    EmpathyAccountSettings *settings);
+
+static void accounts_dialog_model_set_selected (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings);
 
 static void
@@ -475,52 +478,81 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
 }
 
 static void
-accounts_dialog_protocol_changed_cb (GtkWidget *widget,
-    EmpathyAccountsDialog *dialog)
+accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 {
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  EmpathyAccountSettings *settings;
+  gchar *str;
+  const gchar *display_name;
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
   gboolean is_gtalk;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   cm = empathy_protocol_chooser_dup_selected (
       EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk);
-
   if (cm == NULL)
     return;
 
-  if (proto == NULL)
-    {
-      g_object_unref (cm);
-      return;
-    }
+  display_name = empathy_protocol_name_to_display_name (
+      is_gtalk ? "gtalk" : proto->name);
 
+  if (display_name == NULL)
+    display_name = proto->name;
+
+  /* Create account */
+  /* To translator: %s is the name of the protocol, such as "Google Talk" or
+   * "Yahoo!"
+   */
+  str = g_strdup_printf (_("New %s account"), display_name);
+  settings = empathy_account_settings_new (cm->name, proto->name, str);
+
+  g_free (str);
+
+  if (is_gtalk)
+    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+        NULL, NULL);
+
+  accounts_dialog_add (dialog, settings);
+  accounts_dialog_model_set_selected (dialog, settings);
+
+  gtk_widget_show_all (priv->hbox_protocol);
+
+  g_object_unref (settings);
   g_object_unref (cm);
 }
 
 static void
-accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
+accounts_dialog_protocol_changed_cb (GtkWidget *widget,
+    EmpathyAccountsDialog *dialog)
 {
-  GtkTreeView *view;
-  GtkTreeModel *model;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeSelection *selection;
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean creating;
 
-  view = GTK_TREE_VIEW (priv->treeview);
-  model = gtk_tree_view_get_model (view);
+  /* The "changed" signal is fired during the initiation of the
+   * EmpathyProtocolChooser while populating the widget. Such signals should
+   * be ignored so we check if we are actually creating a new account. */
+  if (priv->setting_widget_object == NULL)
+    return;
 
-  gtk_widget_set_sensitive (priv->button_add, FALSE);
-  gtk_widget_hide (priv->vbox_details);
-  gtk_widget_hide (priv->frame_no_protocol);
-  gtk_widget_show (priv->frame_new_account);
+  g_object_get (priv->setting_widget_object,
+      "creating-account", &creating, NULL);
+  if (!creating)
+    return;
 
-  /* If we have no account, no need of a back button */
-  if (gtk_tree_model_iter_n_children (model, NULL) > 0)
-    gtk_widget_show (priv->button_back);
-  else
-    gtk_widget_hide (priv->button_back);
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
 
-  gtk_combo_box_set_active (GTK_COMBO_BOX (priv->combobox_protocol), 0);
-  gtk_widget_grab_focus (priv->combobox_protocol);
+  if (!gtk_tree_selection_get_selected (selection, &model, &iter))
+    return;
+
+  /* We are creating a new widget to replace the current one, don't ask
+   * confirmation to the user. */
+  priv->force_change_row = TRUE;
+  gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+
+  accounts_dialog_setup_ui_to_add_account (dialog);
 }
 
 static void
@@ -670,7 +702,6 @@ accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
 
       /* No account and no profile, warn the user */
       gtk_widget_hide (priv->vbox_details);
-      gtk_widget_hide (priv->frame_new_account);
       gtk_widget_show (priv->frame_no_protocol);
       gtk_widget_set_sensitive (priv->button_add, FALSE);
       return;
@@ -678,10 +709,10 @@ accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
 
   /* We have an account selected, destroy old settings and create a new
    * one for the account selected */
-  gtk_widget_hide (priv->frame_new_account);
   gtk_widget_hide (priv->frame_no_protocol);
   gtk_widget_show (priv->vbox_details);
   gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_hide (priv->hbox_protocol);
 
   if (priv->settings_widget)
     {
@@ -1459,60 +1490,6 @@ accounts_dialog_account_enabled_cb (TpAccountManager *manager,
 }
 
 static void
-accounts_dialog_button_create_clicked_cb (GtkWidget *button,
-    EmpathyAccountsDialog *dialog)
-{
-  EmpathyAccountSettings *settings;
-  gchar *str;
-  const gchar *display_name;
-  TpConnectionManager *cm;
-  TpConnectionManagerProtocol *proto;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  gboolean is_gtalk;
-
-  cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk);
-
-  display_name = empathy_protocol_name_to_display_name (
-      is_gtalk ? "gtalk" : proto->name);
-
-  if (display_name == NULL)
-    display_name = proto->name;
-
-  /* Create account */
-  /* To translator: %s is the name of the protocol, such as "Google Talk" or
-   * "Yahoo!"
-   */
-  str = g_strdup_printf (_("New %s account"), display_name);
-  settings = empathy_account_settings_new (cm->name, proto->name, str);
-
-  g_free (str);
-
-  if (is_gtalk)
-    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
-        NULL, NULL);
-
-  accounts_dialog_add (dialog, settings);
-  accounts_dialog_model_set_selected (dialog, settings);
-
-  g_object_unref (settings);
-  g_object_unref (cm);
-}
-
-static void
-accounts_dialog_button_back_clicked_cb (GtkWidget *button,
-    EmpathyAccountsDialog *dialog)
-{
-  EmpathyAccountSettings *settings;
-
-  settings = accounts_dialog_model_get_selected_settings (dialog);
-  accounts_dialog_update_settings (dialog, settings);
-
-  if (settings)
-    g_object_unref (settings);
-}
-
-static void
 accounts_dialog_button_help_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
@@ -1701,14 +1678,11 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "alignment_settings", &priv->alignment_settings,
       "alignment_infobar", &priv->alignment_infobar,
       "treeview", &priv->treeview,
-      "frame_new_account", &priv->frame_new_account,
-      "hbox_type", &priv->hbox_type,
-      "button_create", &priv->button_create,
-      "button_back", &priv->button_back,
       "image_type", &priv->image_type,
       "label_name", &priv->label_name,
       "button_add", &priv->button_add,
       "button_import", &priv->button_import,
+      "hbox_protocol", &priv->hbox_protocol,
       NULL);
   g_free (filename);
 
@@ -1716,8 +1690,6 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "accounts_dialog", "response", accounts_dialog_response_cb,
       "accounts_dialog", "destroy", accounts_dialog_destroy_cb,
       "accounts_dialog", "delete-event", accounts_dialog_delete_event_cb,
-      "button_create", "clicked", accounts_dialog_button_create_clicked_cb,
-      "button_back", "clicked", accounts_dialog_button_back_clicked_cb,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
       "button_help", "clicked", accounts_dialog_button_help_clicked_cb,
       "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
@@ -1728,17 +1700,11 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 #ifdef HAVE_MOBLIN
   action_area = gtk_dialog_get_action_area (GTK_DIALOG (priv->window));
   gtk_widget_hide (action_area);
-
-  /* Translators: this is used only when built on a moblin platform */
-  gtk_button_set_label (GTK_BUTTON (priv->button_create), _("_Next"));
-  gtk_button_set_use_underline (GTK_BUTTON (priv->button_create), TRUE);
 #endif
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
-  gtk_box_pack_start (GTK_BOX (priv->hbox_type),
-      priv->combobox_protocol,
+  gtk_box_pack_start (GTK_BOX (priv->hbox_protocol), priv->combobox_protocol,
       TRUE, TRUE, 0);
-  gtk_widget_show (priv->combobox_protocol);
   g_signal_connect (priv->combobox_protocol, "changed",
       G_CALLBACK (accounts_dialog_protocol_changed_cb),
       dialog);
