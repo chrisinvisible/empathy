@@ -913,6 +913,9 @@ main (int argc, char *argv[])
   optcontext = g_option_context_new (N_("- Empathy IM Client"));
   g_option_context_add_group (optcontext, gst_init_get_option_group ());
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
+#if HAVE_LIBCHAMPLAIN
+  g_option_context_add_group (optcontext, clutter_get_option_group ());
+#endif
   g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
 
   if (!g_option_context_parse (optcontext, &argc, &argv, &error)) {
@@ -927,10 +930,6 @@ main (int argc, char *argv[])
   empathy_gtk_init ();
   g_set_application_name (_(PACKAGE_NAME));
   g_setenv ("PULSE_PROP_media.role", "phone", TRUE);
-
-#if HAVE_LIBCHAMPLAIN
-  gtk_clutter_init (&argc, &argv);
-#endif
 
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
