@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-12-21 14:04+0000\n"
-"PO-Revision-Date: 2009-12-23 10:55+0700\n"
+"POT-Creation-Date: 2009-12-23 06:05+0000\n"
+"PO-Revision-Date: 2009-12-23 17:53+0700\n"
 "Last-Translator: Theppitak Karoonboonyanan <thep@linux.thai.net>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -606,22 +606,17 @@ msgstr "ในอนาคต"
 msgid "All"
 msgstr "ทั้งหมด"
 
-#: ../libempathy-gtk/empathy-account-widget.c:526
-#: ../libempathy-gtk/empathy-account-widget.c:582
+#: ../libempathy-gtk/empathy-account-widget.c:527
+#: ../libempathy-gtk/empathy-account-widget.c:583
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1300
+#: ../libempathy-gtk/empathy-account-widget.c:1317
 msgid "L_og in"
 msgstr "เ_ข้าระบบ"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1508
-msgid "Enabled"
-msgstr "เปิดใช้"
-
-#.  Translators: this is used only when built on a moblin platform 
-#: ../libempathy-gtk/empathy-account-widget.c:1514
+#: ../libempathy-gtk/empathy-account-widget.c:1381
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -629,24 +624,36 @@ msgstr "เปิดใช้"
 msgid "Account:"
 msgstr "บัญชี:"
 
+#: ../libempathy-gtk/empathy-account-widget.c:1392
+msgid "Enabled"
+msgstr "เปิดใช้"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1454
+msgid "This account already exists on the server"
+msgstr "บัญชีนี้มีอยู่แล้วที่เซิร์ฟเวอร์"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1457
+msgid "Create a new account on the server"
+msgstr "สร้างบัญชีใหม่ที่เซิร์ฟเวอร์"
+
 #. To translators: The first parameter is the login id and the
 #. * second one is the server. The resulting string will be something
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:1773
+#: ../libempathy-gtk/empathy-account-widget.c:1839
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s ที่ %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:1791
+#: ../libempathy-gtk/empathy-account-widget.c:1857
 #, c-format
 msgid "%s Account"
 msgstr "บัญชี %s"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1795
+#: ../libempathy-gtk/empathy-account-widget.c:1861
 msgid "New account"
 msgstr "บัญชีใหม่"
 
@@ -1287,7 +1294,7 @@ msgstr "เชื่อมต่อแล้ว"
 msgid "Conversation"
 msgstr "การสนทนา"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:650
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:679
 msgid "Topic:"
 msgstr "หัวข้อ:"
 
@@ -1391,15 +1398,16 @@ msgid "Infor_mation"
 msgstr "_ข้อมูล"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
-#: ../src/empathy-chat-window.ui.h:10 ../src/empathy-main-window.ui.h:19
+#: ../src/empathy-chat-window.ui.h:11 ../src/empathy-main-window.ui.h:19
 msgid "_Edit"
 msgstr "แ_ก้ไข"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:501
-msgid "Inviting to this room"
-msgstr "เชิญเข้ามาห้องนี้"
+#: ../libempathy-gtk/empathy-contact-menu.c:496
+#: ../src/empathy-chat-window.c:864
+msgid "Inviting you to this room"
+msgstr "เชิญคุณเข้าห้องนี้"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:532
+#: ../libempathy-gtk/empathy-contact-menu.c:527
 msgid "_Invite to chatroom"
 msgstr "เ_ชิญเข้าห้องสนทนา"
 
@@ -2082,7 +2090,7 @@ msgstr "เกิดข้อผิดพลาด"
 #. * "Yahoo!"
 #.
 #: ../src/empathy-account-assistant.c:331
-#: ../src/empathy-accounts-dialog.c:1507
+#: ../src/empathy-accounts-dialog.c:1486
 #, c-format
 msgid "New %s account"
 msgstr "บัญชี %s ใหม่"
@@ -2177,33 +2185,33 @@ msgstr "มีข้อมูลเกี่ยวกับบัญชี %s �
 msgid "Your new account has not been saved yet."
 msgstr "บัญชีใหม่ของคุณยังไม่ได้บันทึก"
 
-#: ../src/empathy-accounts-dialog.c:231 ../src/empathy-call-window.c:729
+#: ../src/empathy-accounts-dialog.c:229 ../src/empathy-call-window.c:729
 msgid "Connecting..."
 msgstr "กำลังเชื่อมต่อ..."
 
-#: ../src/empathy-accounts-dialog.c:258
+#: ../src/empathy-accounts-dialog.c:256
 #, c-format
 msgid "Disconnected - %s"
 msgstr "ตัดการเชื่อมต่อแล้ว - %s"
 
-#: ../src/empathy-accounts-dialog.c:263
+#: ../src/empathy-accounts-dialog.c:261
 #, c-format
 msgid "Offline - %s"
 msgstr "ออฟไลน์ - %s"
 
-#: ../src/empathy-accounts-dialog.c:276
+#: ../src/empathy-accounts-dialog.c:274
 msgid "Offline - No Network Connection"
 msgstr "ออฟไลน์ - ไม่มีการเชื่อมต่อเครือข่าย"
 
-#: ../src/empathy-accounts-dialog.c:284
+#: ../src/empathy-accounts-dialog.c:282
 msgid "Unknown Status"
 msgstr "ไม่ทราบสถานะ"
 
-#: ../src/empathy-accounts-dialog.c:295
+#: ../src/empathy-accounts-dialog.c:293
 msgid "Offline - Account disabled"
 msgstr "ออฟไลน์ - บัญชีถูกระงับ"
 
-#: ../src/empathy-accounts-dialog.c:634
+#: ../src/empathy-accounts-dialog.c:613
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2211,16 +2219,16 @@ msgstr ""
 "คุณกำลังจะสร้างบัญชีใหม่ ซึ่งจะละทิ้งการเปลี่ยนแปลงต่างๆ ที่คุณทำมา\n"
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:924
+#: ../src/empathy-accounts-dialog.c:903
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "คุณต้องการลบ %s ออกจากเครื่องของคุณหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:928
+#: ../src/empathy-accounts-dialog.c:907
 msgid "This will not remove your account on the server."
 msgstr "การลบนี้จะไม่ลบบัญชีของคุณที่เซิร์ฟเวอร์"
 
-#: ../src/empathy-accounts-dialog.c:1110
+#: ../src/empathy-accounts-dialog.c:1089
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2228,7 +2236,7 @@ msgstr ""
 "คุณกำลังจะเลือกบัญชีใหม่ ซึ่งจะละทิ้งการเปลี่ยนแปลงต่างๆ ที่คุณทำมา\n"
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:1593
+#: ../src/empathy-accounts-dialog.c:1560
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2237,7 +2245,7 @@ msgstr ""
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
 #.  Translators: this is used only when built on a moblin platform 
-#: ../src/empathy-accounts-dialog.c:1768
+#: ../src/empathy-accounts-dialog.c:1733
 msgid "_Next"
 msgstr "_ถัดไป"
 
@@ -2269,19 +2277,11 @@ msgid "_Add..."
 msgstr "เ_พิ่ม..."
 
 #: ../src/empathy-accounts-dialog.ui.h:7
-msgid "_Create a new account"
-msgstr "_สร้างบัญชีใหม่"
-
-#: ../src/empathy-accounts-dialog.ui.h:8
 msgid "_Import..."
 msgstr "_นำเข้า..."
 
-#: ../src/empathy-accounts-dialog.ui.h:9
-msgid "_Reuse an existing account"
-msgstr "นำบัญชีที่มีอยู่กลับมาใ_ช้ใหม่"
-
 # This is part of "Add new <type> account" message
-#: ../src/empathy-accounts-dialog.ui.h:10
+#: ../src/empathy-accounts-dialog.ui.h:8
 msgid "account"
 msgstr "ใหม่"
 
@@ -2468,31 +2468,31 @@ msgstr "แสดงตัวอย่างวีดิทัศน์"
 msgid "_View"
 msgstr "มุ_มมอง"
 
-#: ../src/empathy-chat-window.c:408 ../src/empathy-chat-window.c:428
+#: ../src/empathy-chat-window.c:435 ../src/empathy-chat-window.c:455
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (ยังไม่อ่าน %d ข้อความ)"
 
-#: ../src/empathy-chat-window.c:420
+#: ../src/empathy-chat-window.c:447
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (และอีก %u คน)"
 
-#: ../src/empathy-chat-window.c:436
+#: ../src/empathy-chat-window.c:463
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (ยังไม่อ่าน %d ข้อความจากคนอื่น)"
 
-#: ../src/empathy-chat-window.c:445
+#: ../src/empathy-chat-window.c:472
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (ยังไม่อ่าน %d ข้อความจากทุกคน)"
 
-#: ../src/empathy-chat-window.c:654
+#: ../src/empathy-chat-window.c:683
 msgid "Typing a message."
 msgstr "กำลังพิมพ์ข้อความ"
 
@@ -2513,46 +2513,50 @@ msgid "Insert _Smiley"
 msgstr "แทรกรูป_สีหน้า"
 
 #: ../src/empathy-chat-window.ui.h:5
+msgid "Invite _Participant..."
+msgstr "เชิญผู้ร่วมสนทนา..."
+
+#: ../src/empathy-chat-window.ui.h:6
 msgid "Move Tab _Left"
 msgstr "ย้ายแท็บไปทาง_ซ้าย"
 
-#: ../src/empathy-chat-window.ui.h:6
+#: ../src/empathy-chat-window.ui.h:7
 msgid "Move Tab _Right"
 msgstr "ย้ายแท็บไปทาง_ขวา"
 
-#: ../src/empathy-chat-window.ui.h:7 ../src/empathy-main-window.ui.h:17
+#: ../src/empathy-chat-window.ui.h:8 ../src/empathy-main-window.ui.h:17
 msgid "_Contents"
 msgstr "_สารบัญ"
 
-#: ../src/empathy-chat-window.ui.h:8
+#: ../src/empathy-chat-window.ui.h:9
 msgid "_Conversation"
 msgstr "การ_สนทนา"
 
-#: ../src/empathy-chat-window.ui.h:9
+#: ../src/empathy-chat-window.ui.h:10
 msgid "_Detach Tab"
 msgstr "_ดึงแท็บออก"
 
-#: ../src/empathy-chat-window.ui.h:11
+#: ../src/empathy-chat-window.ui.h:12
 msgid "_Favorite Chatroom"
 msgstr "_ห้องสนทนาโปรด"
 
-#: ../src/empathy-chat-window.ui.h:12 ../src/empathy-main-window.ui.h:21
+#: ../src/empathy-chat-window.ui.h:13 ../src/empathy-main-window.ui.h:21
 msgid "_Help"
 msgstr "_วิธีใช้"
 
-#: ../src/empathy-chat-window.ui.h:13
+#: ../src/empathy-chat-window.ui.h:14
 msgid "_Next Tab"
 msgstr "แท็บ_ถัดไป"
 
-#: ../src/empathy-chat-window.ui.h:14
+#: ../src/empathy-chat-window.ui.h:15
 msgid "_Previous Tab"
 msgstr "แท็บ_ก่อนหน้า"
 
-#: ../src/empathy-chat-window.ui.h:15 ../src/empathy-status-icon.ui.h:5
+#: ../src/empathy-chat-window.ui.h:16 ../src/empathy-status-icon.ui.h:5
 msgid "_Show Contact List"
 msgstr "แ_สดงรายชื่อผู้ติดต่อ"
 
-#: ../src/empathy-chat-window.ui.h:16
+#: ../src/empathy-chat-window.ui.h:17
 msgid "_Tabs"
 msgstr "แ_ท็บ"
 
@@ -3234,6 +3238,9 @@ msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr "เครื่องมือจัดการการเชื่อมต่อที่เลือกไม่รองรับส่วนขยายสำหรับดีบั๊กระยะไกล"
+
+#~ msgid "_Reuse an existing account"
+#~ msgstr "นำบัญชีที่มีอยู่กลับมาใ_ช้ใหม่"
 
 #~ msgid "Can't set an empty display name"
 #~ msgstr "ไม่สามารถกำหนดชื่อแสดงผลเป็นชื่อว่างเปล่าได้"
