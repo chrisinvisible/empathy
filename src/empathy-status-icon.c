@@ -224,12 +224,20 @@ status_icon_update_tooltip (EmpathyStatusIcon *icon)
 		g_free (tooltip);
 	} else {
 		TpConnectionPresenceType type;
+		gchar *msg;
 
 		type = tp_account_manager_get_most_available_presence (
-			priv->account_manager, NULL, NULL);
+			priv->account_manager, NULL, &msg);
 
-		gtk_status_icon_set_tooltip_text (priv->icon,
-					empathy_presence_get_default_message (type));
+		if (!EMP_STR_EMPTY (msg)) {
+			gtk_status_icon_set_tooltip_text (priv->icon, msg);
+		}
+		else {
+			gtk_status_icon_set_tooltip_text (priv->icon,
+						empathy_presence_get_default_message (type));
+		}
+
+		g_free (msg);
 	}
 }
 
