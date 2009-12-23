@@ -209,9 +209,10 @@ static void
 status_icon_update_tooltip (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
-	gchar                 *tooltip = NULL;
 
 	if (priv->event) {
+		gchar *tooltip = NULL;
+
 		if (priv->event->message != NULL)
 				tooltip = g_markup_printf_escaped ("<i>%s</i>\n%s",
 								   priv->event->header,
@@ -220,13 +221,16 @@ status_icon_update_tooltip (EmpathyStatusIcon *icon)
 				tooltip = g_markup_printf_escaped ("<i>%s</i>",
 								   priv->event->header);
 		gtk_status_icon_set_tooltip_markup (priv->icon, tooltip);
+		g_free (tooltip);
 	} else {
-		tp_account_manager_get_most_available_presence (
-			priv->account_manager, &tooltip, NULL);
-		gtk_status_icon_set_tooltip_text (priv->icon, tooltip);
-	}
+		TpConnectionPresenceType type;
 
-	g_free (tooltip);
+		type = tp_account_manager_get_most_available_presence (
+			priv->account_manager, NULL, NULL);
+
+		gtk_status_icon_set_tooltip_text (priv->icon,
+					empathy_presence_get_default_message (type));
+	}
 }
 
 static void
