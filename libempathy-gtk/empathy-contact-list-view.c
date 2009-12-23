@@ -752,54 +752,49 @@ contact_list_view_row_activated (GtkTreeView       *view,
 }
 
 static void
-contact_list_start_voip_call (EmpathyCellRendererActivatable *cell,
-    const gchar                    *path_string,
-    EmpathyContactListView         *view,
-    gboolean with_video)
-{
-	EmpathyContactListViewPriv *priv = GET_PRIV (view);
-	GtkTreeModel               *model;
-	GtkTreeIter                 iter;
-	EmpathyContact             *contact;
-
-	if (!(priv->contact_features & EMPATHY_CONTACT_FEATURE_CALL)) {
-		return;
-	}
-
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
-	if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string)) {
-		return;
-	}
-
-	gtk_tree_model_get (model, &iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
-			    -1);
-
-	if (contact) {
-		EmpathyCallFactory *factory;
-		factory = empathy_call_factory_get ();
-		empathy_call_factory_new_call_with_streams (factory, contact,
-			TRUE, with_video);
-		g_object_unref (contact);
-	}
-}
-
-static void
-contact_list_view_video_call_activated_cb (
+contact_list_view_call_activated_cb (
     EmpathyCellRendererActivatable *cell,
     const gchar                    *path_string,
     EmpathyContactListView         *view)
 {
-  contact_list_start_voip_call (cell, path_string, view, TRUE);
-}
+	GtkWidget *menu;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	EmpathyContact *contact;
+	GdkEventButton *event;
+	GtkMenuShell *shell;
+	GtkWidget *item;
 
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+	if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
+		return;
 
-static void
-contact_list_view_audio_call_activated_cb (EmpathyCellRendererActivatable *cell,
-				     const gchar                    *path_string,
-				     EmpathyContactListView         *view)
-{
-  contact_list_start_voip_call (cell, path_string, view, FALSE);
+	gtk_tree_model_get (model, &iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    -1);
+	if (contact == NULL)
+		return;
+
+	event = (GdkEventButton *) gtk_get_current_event ();
+
+	menu = gtk_menu_new ();
+	shell = GTK_MENU_SHELL (menu);
+
+	/* audio */
+	item = empathy_contact_audio_call_menu_item_new (contact);
+	gtk_menu_shell_append (shell, item);
+	gtk_widget_show (item);
+
+	/* video */
+	item = empathy_contact_video_call_menu_item_new (contact);
+	gtk_menu_shell_append (shell, item);
+	gtk_widget_show (item);
+
+	gtk_widget_show (menu);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
+			event->button, event->time);
+
+	g_object_unref (contact);
 }
 
 static void
@@ -1155,7 +1150,7 @@ contact_list_view_setup (EmpathyContactListView *view)
 		      NULL);
 
 	g_signal_connect (cell, "path-activated",
-			  G_CALLBACK (contact_list_view_audio_call_activated_cb),
+			  G_CALLBACK (contact_list_view_call_activated_cb),
 			  view);
 
 	/* Video Call Icon */
@@ -1171,7 +1166,7 @@ contact_list_view_setup (EmpathyContactListView *view)
 		      NULL);
 
 	g_signal_connect (cell, "path-activated",
-			  G_CALLBACK (contact_list_view_video_call_activated_cb),
+			  G_CALLBACK (contact_list_view_call_activated_cb),
 			  view);
 
 	/* Avatar */
