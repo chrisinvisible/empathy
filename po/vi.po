@@ -1,14 +1,15 @@
 # Vietnamese translation for Empathy.
 # Copyright © 2009 GNOME i18n Project for Vietnamese.
 # Clytie Siddall <clytie@riverland.net.au>, 2008-2009.
+# Nguyễn Thái Ngọc Duy <pclouds@gmail.com>, 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy TRUNK\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-02-13 10:26+0000\n"
-"PO-Revision-Date: 2009-02-13 21:44+0930\n"
-"Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
+"POT-Creation-Date: 2009-12-22 11:36+0000\n"
+"PO-Revision-Date: 2009-12-24 12:37+0700\n"
+"Last-Translator: Nguyễn Thái Ngọc Duy <pclouds@gmail.com>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,985 +18,1894 @@ msgstr ""
 "X-Generator: LocFactoryEditor 1.8\n"
 
 #: ../data/empathy.desktop.in.in.h:1
-msgid "Empathy Instant Messenger"
-msgstr "Trình gửi tin nhắn Empathy"
+msgid "Empathy"
+msgstr "Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Send and receive instant messages"
-msgstr "Gửi và nhạn tin nhẳn tức khắc"
+msgid "Empathy IM Client"
+msgstr "Trình trò chuyện Empathy"
+
+#: ../data/empathy.desktop.in.in.h:3
+#| msgid "Client:"
+msgid "IM Client"
+msgstr "Trình trò chuyện"
+
+#: ../data/empathy.desktop.in.in.h:4
+#| msgid "Send and receive instant messages"
+msgid "Send and receive messages"
+msgstr "Gửi và nhận tin nhắn nhanh"
 
 #: ../data/empathy.schemas.in.h:1
 msgid "Always open a separate chat window for new chats."
 msgstr "Luôn mở một cửa sổ riêng cho mỗi cuộc trò chuyện mới."
 
 #: ../data/empathy.schemas.in.h:2
-msgid "Character to add after nickname when using nick completion (tab) in group chat."
-msgstr "Ký tự cần thêm vào đẳng sau tên hiệu khi sử dụng chức năng (thẻ) điền nốt tên hiệu trong nhóm trò chuyện."
+msgid ""
+"Character to add after nickname when using nick completion (tab) in group "
+"chat."
+msgstr ""
+"Ký tự cần thêm vào đẳng sau tên hiệu khi sử dụng chức năng (thẻ) điền nốt "
+"tên hiệu trong nhóm trò chuyện."
 
 #: ../data/empathy.schemas.in.h:3
 msgid "Chat window theme"
 msgstr "Sắc thái cửa sổ trò chuyện"
 
 #: ../data/empathy.schemas.in.h:4
-msgid "Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
-msgstr "Danh sách định giới bằng dấu phẩy các ngôn ngữ kiểm tra chính tả cần dùng (v.d. en, fr, ja, vi)."
+msgid ""
+"Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
+msgstr ""
+"Danh sách định giới bằng dấu phẩy các ngôn ngữ kiểm tra chính tả cần dùng (v."
+"d. en, fr, ja, vi)."
 
 #: ../data/empathy.schemas.in.h:5
 msgid "Compact contact list"
 msgstr "Co lại danh sách liên hệ"
 
 #: ../data/empathy.schemas.in.h:6
-msgid "Contact list sort criterium"
-msgstr "Tiêu chuẩn sắp xếp danh sách liên hệ"
+#| msgid "NetworkManager should be used"
+msgid "Connection managers should be used"
+msgstr "Nên dùng trình quản lý mạng"
 
 #: ../data/empathy.schemas.in.h:7
+#| msgid "Contact list sort criterium"
+msgid "Contact list sort criterion"
+msgstr "Tiêu chuẩn sắp xếp danh sách liên hệ"
+
+#: ../data/empathy.schemas.in.h:8
 msgid "Default directory to select an avatar image from"
 msgstr "Thư mục mặc định từ đó cần chọn một ảnh riêng"
 
-#: ../data/empathy.schemas.in.h:8
+#: ../data/empathy.schemas.in.h:9
 msgid "Disable popup notifications when away"
 msgstr "Không tự mở thông báo khi vắng mặt"
 
-#: ../data/empathy.schemas.in.h:9
+#: ../data/empathy.schemas.in.h:10
 msgid "Disable sounds when away"
 msgstr "Tắt âm thanh khi vắng mặt"
 
-#: ../data/empathy.schemas.in.h:10
+#: ../data/empathy.schemas.in.h:11
+msgid "Empathy can publish the user's location"
+msgstr "Empathy được phép công bố vị trí người dùng"
+
+#: ../data/empathy.schemas.in.h:12
+msgid "Empathy can use the GPS to guess the location"
+msgstr "Empathy được phép dùng GPS để đoán vị trí"
+
+#: ../data/empathy.schemas.in.h:13
+msgid "Empathy can use the cellular network to guess the location"
+msgstr "Empathy được phép dùng mạng di động để đoán vị trí"
+
+#: ../data/empathy.schemas.in.h:14
+msgid "Empathy can use the network to guess the location"
+msgstr "Empathy được phép dùng mạng để đoán vị trí"
+
+#: ../data/empathy.schemas.in.h:15
 msgid "Empathy default download folder"
 msgstr "Thư mục tải về mặc định Empathy"
 
-#: ../data/empathy.schemas.in.h:11
+#: ../data/empathy.schemas.in.h:16
 msgid "Empathy has asked about importing accounts"
 msgstr "Empathy đã hỏi về nhập tài khoản"
 
-#: ../data/empathy.schemas.in.h:12
+#: ../data/empathy.schemas.in.h:17
 msgid "Empathy should auto-connect on startup"
 msgstr "Trình Empathy nên tự động kết nối khi khởi chạy"
 
-#: ../data/empathy.schemas.in.h:13
+#: ../data/empathy.schemas.in.h:18
+#| msgid "Empathy should auto-connect on startup"
+msgid "Empathy should reduce the location's accuracy"
+msgstr "Empathy nên giảm độ chính xác vị trí địa lý"
+
+#: ../data/empathy.schemas.in.h:19
 msgid "Empathy should use the avatar of the contact as the chat window icon"
-msgstr "Empathy nên dùng ảnh riêng của liên lạc làm biểu tượng cửa sổ trò chuyện"
+msgstr ""
+"Empathy nên dùng ảnh riêng của liên lạc làm biểu tượng cửa sổ trò chuyện"
 
-#: ../data/empathy.schemas.in.h:14
+#: ../data/empathy.schemas.in.h:20
+msgid "Enable WebKit Developer Tools"
+msgstr "Bật bộ công cụ phát triển WebKit"
+
+#: ../data/empathy.schemas.in.h:21
 msgid "Enable popup notifications for new messages"
-msgstr "Tự mở thông báo về tin nhẳn mới"
+msgstr "Tự mở thông báo về tin nhắn mới"
 
-#: ../data/empathy.schemas.in.h:15
+#: ../data/empathy.schemas.in.h:22
 msgid "Enable spell checker"
 msgstr "Bật kiểm tra chính tả"
 
-#: ../data/empathy.schemas.in.h:16
+#: ../data/empathy.schemas.in.h:23
 msgid "Hide main window"
 msgstr "Ẩn cửa sổ chính"
 
-#: ../data/empathy.schemas.in.h:17
+#: ../data/empathy.schemas.in.h:24
 msgid "Hide the main window."
 msgstr "Ẩn cửa sổ chính."
 
-#: ../data/empathy.schemas.in.h:18
-msgid "NetworkManager should be used"
-msgstr "Nên dùng trình NetworkManager"
+#: ../data/empathy.schemas.in.h:25
+msgid "MC 4 accounts have been imported"
+msgstr "Đã nhập tài khoản MC 4"
 
-#: ../data/empathy.schemas.in.h:19
+#: ../data/empathy.schemas.in.h:26
+msgid "MC 4 accounts have been imported."
+msgstr "Đã nhập tài khoản MC 4."
+
+#: ../data/empathy.schemas.in.h:27
 msgid "Nick completed character"
 msgstr "Ký tự điền nốt tên hiệu"
 
-#: ../data/empathy.schemas.in.h:20
+#: ../data/empathy.schemas.in.h:28
 msgid "Open new chats in separate windows"
 msgstr "Mở mỗi cuộc trò chuyện mới trong cửa sổ riêng"
 
-#: ../data/empathy.schemas.in.h:21
-msgid "Play a sound for incoming messages"
-msgstr "Phát âm thanh khi mới nhận tin nhẳn"
+#: ../data/empathy.schemas.in.h:29
+msgid "Path of the adium theme to use"
+msgstr "Đường dẫn đến sắc thái Adium cần dùng"
 
-#: ../data/empathy.schemas.in.h:22
+#: ../data/empathy.schemas.in.h:30
+#| msgid "Whether to use the theme for chat rooms or not."
+msgid "Path of the adium theme to use if the theme used for chat is adium."
+msgstr "Đường dẫn đến sắc thái Adium cần dùng nếu dùng sắc thái Adium."
+
+#: ../data/empathy.schemas.in.h:31
+msgid "Play a sound for incoming messages"
+msgstr "Phát âm thanh khi mới nhận tin nhắn"
+
+#: ../data/empathy.schemas.in.h:32
 msgid "Play a sound for new conversations"
 msgstr "Phát âm khi cuộc trao đổi bắt đầu"
 
-#: ../data/empathy.schemas.in.h:23
+#: ../data/empathy.schemas.in.h:33
 msgid "Play a sound for outgoing messages"
-msgstr "Phát âm thanh khi mới gửi tin nhẳn"
+msgstr "Phát âm thanh khi mới gửi tin nhắn"
 
-#: ../data/empathy.schemas.in.h:24
+#: ../data/empathy.schemas.in.h:34
 msgid "Play a sound when a contact logs in"
 msgstr "Phát âm thanh khi một liên lạc đăng nhập"
 
-#: ../data/empathy.schemas.in.h:25
+#: ../data/empathy.schemas.in.h:35
 msgid "Play a sound when a contact logs out"
 msgstr "Phát âm khi liên lạc đăng xuất"
 
-#: ../data/empathy.schemas.in.h:26
+#: ../data/empathy.schemas.in.h:36
 msgid "Play a sound when we log in"
 msgstr "Phát âm thanh khi mình đăng nhập"
 
-#: ../data/empathy.schemas.in.h:27
+#: ../data/empathy.schemas.in.h:37
 msgid "Play a sound when we log out"
 msgstr "Phát âm thanh khi mình đăng xuất"
 
-#: ../data/empathy.schemas.in.h:28
+#: ../data/empathy.schemas.in.h:38
 msgid "Popup notifications if the chat isn't focused"
-msgstr "Tự mở thông báo nếu cửa sổ chát không có tiêu điểm"
+msgstr "Tự mở thông báo nếu cửa sổ trò chuyện không có tiêu điểm"
 
-#: ../data/empathy.schemas.in.h:29
+#: ../data/empathy.schemas.in.h:39
+#| msgid "Popup notifications if the chat isn't focused"
+msgid "Popup notifications when a contact sign in"
+msgstr "Thông báo khi bạn bè đăng nhập"
+
+#: ../data/empathy.schemas.in.h:40
+#| msgid "Popup notifications if the chat isn't focused"
+msgid "Popup notifications when a contact sign out"
+msgstr "Thông báo khi bạn bè đăng xuất"
+
+#: ../data/empathy.schemas.in.h:41
 msgid "Salut account is created"
 msgstr "Tài khoản Salut được tạo"
 
-#: ../data/empathy.schemas.in.h:30
+#: ../data/empathy.schemas.in.h:42
 msgid "Show avatars"
 msgstr "Hiện ảnh riêng"
 
-#: ../data/empathy.schemas.in.h:31
+#: ../data/empathy.schemas.in.h:43
+#| msgid "_Show Contact List"
+msgid "Show contact list in rooms"
+msgstr "Hiện danh sách liên lạc trong phòng"
+
+#: ../data/empathy.schemas.in.h:44
 msgid "Show hint about closing the main window"
 msgstr "Gợi ý về đóng cửa sổ chính"
 
-#: ../data/empathy.schemas.in.h:32
+#: ../data/empathy.schemas.in.h:45
 msgid "Show offline contacts"
 msgstr "Hiện liên lạc ngoại tuyến"
 
-#: ../data/empathy.schemas.in.h:33
+#: ../data/empathy.schemas.in.h:46
+#| msgid "Protocol"
+msgid "Show protocols"
+msgstr "Hiện giao thức"
+
+#: ../data/empathy.schemas.in.h:47
 msgid "Spell checking languages"
 msgstr "Ngôn ngữ kiểm tra chính tả"
 
-#: ../data/empathy.schemas.in.h:34
+#: ../data/empathy.schemas.in.h:48
 msgid "The default folder to save file transfers in."
 msgstr "Thư mục mặc định vào đó cần lưu tập tin được truyền đến."
 
-#: ../data/empathy.schemas.in.h:35
+#: ../data/empathy.schemas.in.h:49
 msgid "The last directory that an avatar image was chosen from."
 msgstr "Thư mục cuối cùng từ đó đã chọn một ảnh riêng."
 
-#: ../data/empathy.schemas.in.h:36
+#: ../data/empathy.schemas.in.h:50
 msgid "The theme that is used to display the conversation in chat windows."
 msgstr "Sắc thái được dùng để hiển thị cuộc đối thoại trong cửa sổ trò chuyện."
 
-#: ../data/empathy.schemas.in.h:37
+#: ../data/empathy.schemas.in.h:51
 msgid "Use graphical smileys"
 msgstr "Dùng biểu tượng xúc cảm"
 
-#: ../data/empathy.schemas.in.h:38
+#: ../data/empathy.schemas.in.h:52
 msgid "Use notification sounds"
 msgstr "Dùng âm thanh thông báo"
 
-#: ../data/empathy.schemas.in.h:39
+#: ../data/empathy.schemas.in.h:53
 msgid "Use theme for chat rooms"
 msgstr "Dùng sắc thái cho phòng trò chuyện"
 
-#: ../data/empathy.schemas.in.h:40
-msgid "Whether or not Empathy has asked about importing accounts from other programs."
+#: ../data/empathy.schemas.in.h:54
+msgid ""
+"Whether WebKit developer tools, such as the Web Inspector, should be enabled."
+msgstr "Bật/tắt bộ công cụ phát triển WebKit, như trình kiểm tra Web."
+
+#: ../data/empathy.schemas.in.h:55
+#| msgid ""
+#| "Whether or not to show contacts that are offline in the contact list."
+msgid "Whether or not Empathy can publish the user's location to his contacts."
+msgstr "Bật/tắt công bố vị trí người dùng với những liên lạc."
+
+#: ../data/empathy.schemas.in.h:56
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid "Whether or not Empathy can use the GPS to guess the location."
+msgstr "Bật/tắt cho phép Empathy dùng GPS để đoán vị trí."
+
+#: ../data/empathy.schemas.in.h:57
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid ""
+"Whether or not Empathy can use the cellular network to guess the location."
+msgstr "Bật/tắt cho phép Empathy dùng mạng di động để đoán vị trí."
+
+#: ../data/empathy.schemas.in.h:58
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid "Whether or not Empathy can use the network to guess the location."
+msgstr "Bật/tắt cho phép Empathy dùng mạng để đoán vị trí."
+
+#: ../data/empathy.schemas.in.h:59
+msgid ""
+"Whether or not Empathy has asked about importing accounts from other "
+"programs."
 msgstr "Empathy đã hỏi chưa về chức năng nhập tài khoản từ chương trình khác."
 
-#: ../data/empathy.schemas.in.h:41
-msgid "Whether or not Empathy should automatically log in to your accounts on startup."
-msgstr "Empathy có nên tự động đăng nhập vào các tài khoản của bạn vào lúc khởi chạy, hay không."
+#: ../data/empathy.schemas.in.h:60
+msgid ""
+"Whether or not Empathy should automatically log in to your accounts on "
+"startup."
+msgstr ""
+"Empathy có nên tự động đăng nhập vào các tài khoản của bạn vào lúc khởi "
+"chạy, hay không."
 
-#: ../data/empathy.schemas.in.h:42
-msgid "Whether or not Empathy should use the avatar of the contact as the chat window icon."
+#: ../data/empathy.schemas.in.h:61
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid ""
+"Whether or not Empathy should reduce the location's accuracy for privacy "
+"reasons."
+msgstr "Bật/tắt buộc Empathy giảm độ chính xác vị trí vì lý do riêng tư."
+
+#: ../data/empathy.schemas.in.h:62
+msgid ""
+"Whether or not Empathy should use the avatar of the contact as the chat "
+"window icon."
 msgstr "Dùng ảnh riêng cho liên lạc làm biểu tượng cửa sổ trò chuyện."
 
-#: ../data/empathy.schemas.in.h:43
-msgid "Whether or not the Salut account has been created on the first Empathy run."
+#: ../data/empathy.schemas.in.h:63
+#| msgid ""
+#| "Whether or not the network manager should be used to automatically "
+#| "disconnect/reconnect."
+msgid ""
+"Whether or not connectivity managers should be used to automatically "
+"disconnect/reconnect."
+msgstr "Bật/tắt sử dụng trình quản lý kết nối để tự động ngắt/tái kết nối."
+
+#: ../data/empathy.schemas.in.h:64
+msgid ""
+"Whether or not the Salut account has been created on the first Empathy run."
 msgstr "Tài khoản Salut được tạo lần đầu tiên chạy Empathy không."
 
-#: ../data/empathy.schemas.in.h:44
-msgid "Whether or not the network manager should be used to automatically disconnect/reconnect."
-msgstr "Bật/tắt sử dụng trình quản lý mạng NetworkManager để tự động ngắt/tái kết nối hay không."
-
-#: ../data/empathy.schemas.in.h:45
-msgid "Whether or not to check words typed against the languages you want to check with."
+#: ../data/empathy.schemas.in.h:65
+msgid ""
+"Whether or not to check words typed against the languages you want to check "
+"with."
 msgstr "Bật/tắt kiểm tra đoạn gõ so với những ngôn ngữ đã chọn hay không."
 
-#: ../data/empathy.schemas.in.h:46
-msgid "Whether or not to convert smileys into graphical images in conversations."
-msgstr "Bật/tắt chuyển đổi ký tự miêu tả mặt cười thành biểu tượng xúc cảm trong đối thoại."
+#: ../data/empathy.schemas.in.h:66
+msgid ""
+"Whether or not to convert smileys into graphical images in conversations."
+msgstr ""
+"Bật/tắt chuyển đổi ký tự miêu tả mặt cười thành biểu tượng xúc cảm trong đối "
+"thoại."
 
-#: ../data/empathy.schemas.in.h:47
-msgid "Whether or not to play a sound notifications when away or busy."
-msgstr "Có nên phát âm thanh báo khi vắng mặt hay bận, hay không."
-
-#: ../data/empathy.schemas.in.h:48
-msgid "Whether or not to play a sound to notify for contacts logging in the network."
+#: ../data/empathy.schemas.in.h:67
+msgid ""
+"Whether or not to play a sound to notify for contacts logging in the network."
 msgstr "Có nên phát âm thanh báo khi liên lạc đăng nhập vào mạng, hay không."
 
-#: ../data/empathy.schemas.in.h:49
-msgid "Whether or not to play a sound to notify for contacts logging off the network."
+#: ../data/empathy.schemas.in.h:68
+msgid ""
+"Whether or not to play a sound to notify for contacts logging off the "
+"network."
 msgstr "Có nên phát âm thanh báo khi liên lạc đăng xuất ra mạng, hay không."
 
-#: ../data/empathy.schemas.in.h:50
+#: ../data/empathy.schemas.in.h:69
 msgid "Whether or not to play a sound to notify for events."
 msgstr "Có nên phát âm thanh báo khi sự kiện xảy ra, hay không."
 
-#: ../data/empathy.schemas.in.h:51
+#: ../data/empathy.schemas.in.h:70
 msgid "Whether or not to play a sound to notify for incoming messages."
-msgstr "Có nên phát âm thanh báo khi nhận được tin nhẳn, hay không."
+msgstr "Có nên phát âm thanh báo khi nhận được tin nhắn, hay không."
 
-#: ../data/empathy.schemas.in.h:52
+#: ../data/empathy.schemas.in.h:71
 msgid "Whether or not to play a sound to notify for new conversations."
 msgstr "Có nên phát âm thanh báo khi nhận được cuộc đối thoại mới, hay không."
 
-#: ../data/empathy.schemas.in.h:53
+#: ../data/empathy.schemas.in.h:72
 msgid "Whether or not to play a sound to notify for outgoing messages."
-msgstr "Có nên phát âm thanh báo khi gửi tin nhẳn, hay không."
+msgstr "Có nên phát âm thanh báo khi gửi tin nhắn, hay không."
 
-#: ../data/empathy.schemas.in.h:54
+#: ../data/empathy.schemas.in.h:73
 msgid "Whether or not to play a sound when logging in a network."
 msgstr "Có nên phát âm thanh báo khi đăng nhập vào một mạng, hay không."
 
-#: ../data/empathy.schemas.in.h:55
+#: ../data/empathy.schemas.in.h:74
 msgid "Whether or not to play a sound when logging off a network."
 msgstr "Có nên phát âm thanh báo khi đăng xuất ra một mạng, hay không."
 
-#: ../data/empathy.schemas.in.h:56
-msgid "Whether or not to show a popup notification when receiving a new message even if the chat is already opened, but not focused."
-msgstr "Có nên hiển thị hay không một thông báo tự mở khi nhận một tin nhẳn mới, ngay cả nếu cửa sổ chát đã mở nhưng không có tiêu điểm."
+#: ../data/empathy.schemas.in.h:75
+#| msgid "Whether or not to play a sound notifications when away or busy."
+msgid "Whether or not to play sound notifications when away or busy."
+msgstr "Bật/tắt phát âm thanh thông báo khi vắng mặt hoặc bận."
 
-#: ../data/empathy.schemas.in.h:57
-msgid "Whether or not to show a popup notification when receiving a new message."
-msgstr "Có nên phát âm thanh báo khi nhận được một tin nhẳn mới, hay không."
+#: ../data/empathy.schemas.in.h:76
+#| msgid "Whether or not to show popup notifications when away or busy."
+msgid ""
+"Whether or not to show a popup notification when a contact goes offline."
+msgstr "Bật/tắt thông báo khi một liên lạc ngoại tuyén."
 
-#: ../data/empathy.schemas.in.h:58
-msgid "Whether or not to show avatars for contacts in the contact list and chat windows."
-msgstr "Bật/tắt hiển thị ảnh riêng cho liên lạc trong danh sách liên lạc và cửa sổ trò chuyện."
+#: ../data/empathy.schemas.in.h:77
+#| msgid "Whether or not to show popup notifications when away or busy."
+msgid "Whether or not to show a popup notification when a contact goes online."
+msgstr "Bật tắt thông báo khi một liên lạc trực tuyến."
 
-#: ../data/empathy.schemas.in.h:59
+#: ../data/empathy.schemas.in.h:78
+msgid ""
+"Whether or not to show a popup notification when receiving a new message "
+"even if the chat is already opened, but not focused."
+msgstr ""
+"Có nên hiển thị hay không một thông báo tự mở khi nhận một tin nhắn mới, "
+"ngay cả nếu cửa sổ trò chuyện đã mở nhưng không có tiêu điểm."
+
+#: ../data/empathy.schemas.in.h:79
+msgid ""
+"Whether or not to show a popup notification when receiving a new message."
+msgstr "Có nên phát âm thanh báo khi nhận được một tin nhắn mới, hay không."
+
+#: ../data/empathy.schemas.in.h:80
+msgid ""
+"Whether or not to show avatars for contacts in the contact list and chat "
+"windows."
+msgstr ""
+"Bật/tắt hiển thị ảnh riêng cho liên lạc trong danh sách liên lạc và cửa sổ "
+"trò chuyện."
+
+#: ../data/empathy.schemas.in.h:81
 msgid "Whether or not to show contacts that are offline in the contact list."
-msgstr "Bật/tắt hiển thị các liên lác đang ngoại tuyến trong danh sách liên lạc."
+msgstr "Bật/tắt hiện danh sách ngoại tuyến trong danh sách liên lạc."
 
-#: ../data/empathy.schemas.in.h:60
+#: ../data/empathy.schemas.in.h:82
 msgid "Whether or not to show popup notifications when away or busy."
 msgstr "Có nên phát âm thanh báo khi vắng mặt hay bận, hay không."
 
-#: ../data/empathy.schemas.in.h:61
-msgid "Whether or not to show the message dialog about closing the main window with the 'x' button in the title bar."
-msgstr "Bật/tắt hiển thị hộp thoại thông điệp về việc đóng cửa sổ chính bằng cái nút « x » trên thanh tựa đề hay không."
+#: ../data/empathy.schemas.in.h:83
+#| msgid ""
+#| "Whether or not to show avatars for contacts in the contact list and chat "
+#| "windows."
+msgid "Whether or not to show protocols for contacts in the contact list."
+msgstr "Bật/tắt hiển thị giao thức trong danh sách liên lạc."
 
-#: ../data/empathy.schemas.in.h:62
+#: ../data/empathy.schemas.in.h:84
+#| msgid "Whether to show the contact list in compact mode or not."
+msgid "Whether or not to show the contact list in chat rooms."
+msgstr "Bật/tắt hiển thị danh sách liên lạc trong phòng tán gẫu."
+
+#: ../data/empathy.schemas.in.h:85
+msgid ""
+"Whether or not to show the message dialog about closing the main window with "
+"the 'x' button in the title bar."
+msgstr ""
+"Bật/tắt hiển thị hộp thoại thông điệp về việc đóng cửa sổ chính bằng cái nút "
+"« x » trên thanh tựa đề hay không."
+
+#: ../data/empathy.schemas.in.h:86
 msgid "Whether to show the contact list in compact mode or not."
 msgstr "Bật/tắt danh sách liên lạc ở chế độ tóm gọn."
 
-#: ../data/empathy.schemas.in.h:63
+#: ../data/empathy.schemas.in.h:87
 msgid "Whether to use the theme for chat rooms or not."
 msgstr "Bật/tắt dùng sắc thái cho phòng trò chuyện."
 
-#: ../data/empathy.schemas.in.h:64
-msgid "Which criterium to use when sorting the contact list. Default is to use sort by the contact's name with the value \"name\". A value of \"state\" will sort the contact list by state."
-msgstr ""
-"Tiêu chuẩn nào cần dùng khi sắp xếp danh sách liên lạc:\n"
-" • name\t\tsắp xếp theo tên liên lạc (mặc định)\n"
-" • state\t\tsắp xếp theo tình trạng."
+#: ../data/empathy.schemas.in.h:88
+#| msgid ""
+#| "Which criterium to use when sorting the contact list. Default is to use "
+#| "sort by the contact's name with the value \"name\". A value of \"state\" "
+#| "will sort the contact list by state."
+msgid ""
+"Which criterion to use when sorting the contact list. Default is to use sort "
+"by the contact's name with the value \"name\". A value of \"state\" will "
+"sort the contact list by state."
+msgstr "Tiêu chuẩn nào cần dùng khi sắp xếp danh sách liên lạc. Mặc định là sắp theo \"name\" (tên).  Giá trị là \"state\" (trạng thái) sắp thứ tự theo trạng thái."
 
-#: ../libempathy/empathy-tp-contact-list.c:731
-#: ../src/empathy.c:269
+#: ../libempathy/empathy-ft-handler.c:839
+msgid "The hash of the received file and the sent one do not match"
+msgstr "Số nhận dạng của tập tin nhận được và tập tin được gửi đi không khớp"
+
+#: ../libempathy/empathy-ft-handler.c:1099
+msgid "File transfer not supported by remote contact"
+msgstr "Đầu liên lạc bên kia không hỗ trợ truyền tập tin"
+
+#: ../libempathy/empathy-ft-handler.c:1157
+msgid "The selected file is not a regular file"
+msgstr "Tập tin được chọn không phải tập tin bình thường"
+
+#: ../libempathy/empathy-ft-handler.c:1166
+msgid "The selected file is empty"
+msgstr "Tập tin được chọn là tập tin rỗng"
+
+#: ../libempathy/empathy-tp-contact-list.c:834 ../src/empathy.c:293
 msgid "People nearby"
 msgstr "Người gần"
 
-#: ../libempathy/empathy-utils.c:252
+#: ../libempathy/empathy-tp-file.c:280
+msgid "Socket type not supported"
+msgstr "Kiểu socket không hỗ trợ"
+
+#: ../libempathy/empathy-tp-file.c:399
+msgid "No reason was specified"
+msgstr "Không cung cấp lý do"
+
+#: ../libempathy/empathy-tp-file.c:402
+msgid "The change in state was requested"
+msgstr "Thay đổi về tình trạng đã được yêu cầu"
+
+#: ../libempathy/empathy-tp-file.c:405
+msgid "You canceled the file transfer"
+msgstr "Bạn đã thôi tiến trình truyền tập tin"
+
+#: ../libempathy/empathy-tp-file.c:408
+msgid "The other participant canceled the file transfer"
+msgstr "Người dự khác đã thôi tiến trình truyền tập tin"
+
+#: ../libempathy/empathy-tp-file.c:411
+msgid "Error while trying to transfer the file"
+msgstr "Gặp lỗi trong khi thử truyền tập tin đó"
+
+#: ../libempathy/empathy-tp-file.c:414
+msgid "The other participant is unable to transfer the file"
+msgstr "Người dự khác không thể truyền tập tin đó"
+
+#: ../libempathy/empathy-tp-file.c:417 ../libempathy/empathy-utils.c:314
+msgid "Unknown reason"
+msgstr "Lỗi không rõ"
+
+#: ../libempathy/empathy-utils.c:238
 msgid "Available"
 msgstr "Có mặt"
 
-#: ../libempathy/empathy-utils.c:254
+#: ../libempathy/empathy-utils.c:240
 msgid "Busy"
 msgstr "Bận"
 
-#: ../libempathy/empathy-utils.c:257
+#: ../libempathy/empathy-utils.c:243
 msgid "Away"
 msgstr "Vắng mặt"
 
-#: ../libempathy/empathy-utils.c:259
+#: ../libempathy/empathy-utils.c:245
 msgid "Hidden"
 msgstr "Ẩn"
 
-#: ../libempathy/empathy-utils.c:262
+#: ../libempathy/empathy-utils.c:247
 msgid "Offline"
 msgstr "Ngoại tuyến"
 
-#: ../libempathy-gtk/empathy-account-chooser.c:326
+#: ../libempathy/empathy-utils.c:286
+#| msgid "No reason was specified"
+msgid "No reason specified"
+msgstr "Không cung cấp lý do"
+
+#: ../libempathy/empathy-utils.c:288
+msgid "User requested disconnect"
+msgstr "Người dùng yêu cầu ngắt kết nối"
+
+#: ../libempathy/empathy-utils.c:290
+msgid "Network error"
+msgstr "Lỗi mạng"
+
+#: ../libempathy/empathy-utils.c:292
+msgid "Authentication failed"
+msgstr "Lỗi xác thực"
+
+#: ../libempathy/empathy-utils.c:294
+msgid "Encryption error"
+msgstr "Lỗi mật mã"
+
+#: ../libempathy/empathy-utils.c:296
+msgid "Name in use"
+msgstr "Tên đang được dùng"
+
+#: ../libempathy/empathy-utils.c:298
+msgid "Certificate not provided"
+msgstr "Chứng nhận không được cung cấp"
+
+#: ../libempathy/empathy-utils.c:300
+msgid "Certificate untrusted"
+msgstr "Chứng nhận không đáng tin"
+
+#: ../libempathy/empathy-utils.c:302
+msgid "Certificate expired"
+msgstr "Chứng nhận đã hết hạn dùng"
+
+#: ../libempathy/empathy-utils.c:304
+msgid "Certificate not activated"
+msgstr "Chứng nhận không được kích hoạt"
+
+#: ../libempathy/empathy-utils.c:306
+msgid "Certificate hostname mismatch"
+msgstr "Tên máy của chứng nhận không tương ứng"
+
+#: ../libempathy/empathy-utils.c:308
+msgid "Certificate fingerprint mismatch"
+msgstr "Vân tay của chứng nhận không tương ứng"
+
+#: ../libempathy/empathy-utils.c:310
+msgid "Certificate self-signed"
+msgstr "Chứng nhận tự ký"
+
+#: ../libempathy/empathy-utils.c:312
+msgid "Certificate error"
+msgstr "Lỗi chứng nhận"
+
+#: ../libempathy/empathy-utils.c:424 ../src/empathy-import-mc4-accounts.c:104
+#| msgid "People nearby"
+msgid "People Nearby"
+msgstr "Người chung quanh"
+
+#: ../libempathy/empathy-utils.c:429
+#| msgid "Use _Yahoo Japan"
+msgid "Yahoo! Japan"
+msgstr "Yahoo! Nhật Bản"
+
+#: ../libempathy/empathy-utils.c:430
+msgid "Facebook Chat"
+msgstr "Tán gẫu Facebook"
+
+#: ../libempathy/empathy-time.c:137
+#, c-format
+msgid "%d second ago"
+msgid_plural "%d seconds ago"
+msgstr[0] "%d giây trước"
+
+#: ../libempathy/empathy-time.c:142
+#, c-format
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "%d phút trước"
+
+#: ../libempathy/empathy-time.c:147
+#, c-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "%d giờ trước"
+
+#: ../libempathy/empathy-time.c:152
+#, c-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "%d ngày trước"
+
+#: ../libempathy/empathy-time.c:157
+#, c-format
+msgid "%d week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] "%d tuần trước"
+
+#: ../libempathy/empathy-time.c:162
+#, c-format
+msgid "%d month ago"
+msgid_plural "%d months ago"
+msgstr[0] "%d tháng trước"
+
+#: ../libempathy/empathy-time.c:167
+msgid "in the future"
+msgstr "trong tương lai"
+
+#: ../libempathy-gtk/empathy-account-chooser.c:450
 msgid "All"
 msgstr "Tất cả"
 
-#: ../libempathy-gtk/empathy-account-widget.c:302
-#: ../libempathy-gtk/empathy-account-widget.c:347
+#: ../libempathy-gtk/empathy-account-widget.c:527
+#: ../libempathy-gtk/empathy-account-widget.c:583
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-generic.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:1
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:1
-msgid "<b>Advanced</b>"
-msgstr "<b>Cấp cao</b>"
+#: ../libempathy-gtk/empathy-account-widget.c:1317
+#| msgid "_Join"
+msgid "L_og in"
+msgstr "Đăng _nhập"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:2
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:2
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:2
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:3
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:2
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:4
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:2
-msgid "Forget password and clear the entry."
-msgstr "Quên mật khẩu và xoá mục nhập."
+#: ../libempathy-gtk/empathy-account-widget.c:1381
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
+#: ../src/empathy-chatrooms-window.ui.h:1
+#: ../src/empathy-new-chatroom-dialog.ui.h:1
+msgid "Account:"
+msgstr "Tài khoản:"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:3
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:4
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:4
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:4
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:3
+#: ../libempathy-gtk/empathy-account-widget.c:1392
+msgid "Enabled"
+msgstr "Đã bật"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1454
+msgid "This account already exists on the server"
+msgstr "Tài khoản này đã có trên máy chủ"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1457
+#| msgid "I already have an account I want to use"
+msgid "Create a new account on the server"
+msgstr "Tạo tài khoản mới trên máy chủ"
+
+#. To translators: The first parameter is the login id and the
+#. * second one is the server. The resulting string will be something
+#. * like: "MyUserName on chat.freenode.net".
+#. * You should reverse the order of these arguments if the
+#. * server should come before the login id in your locale.
+#: ../libempathy-gtk/empathy-account-widget.c:1839
+#, c-format
+#| msgid "%s of %s"
+msgid "%1$s on %2$s"
+msgstr "%1$s trên %2$s"
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#: ../libempathy-gtk/empathy-account-widget.c:1857
+#, c-format
+#| msgid "Account"
+msgid "%s Account"
+msgstr "Tài khoản %s"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1861
+#| msgid "New %s account"
+msgid "New account"
+msgstr "Tài khoản mới"
+
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> TênHiểnThị</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-generic.ui.h:1
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:2
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:1
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:2
+#| msgid "<b>Advanced</b>"
+msgid "Advanced"
+msgstr "Cao cấp"
+
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
 msgid "Pass_word:"
-msgstr "Mật khẩ_u :"
+msgstr "Mật khẩ_u:"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:4
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:4
 msgid "Screen _Name:"
 msgstr "Tê_n hiển thị:"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:6
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:11
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:8
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:5
+msgid "What is your AIM password?"
+msgstr "Mật khẩu AIM của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:6
+msgid "What is your AIM screen name?"
+msgstr "Tên hiển thị AIM của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
 msgstr "_Cổng:"
 
-#: ../libempathy-gtk/empathy-account-widget-aim.glade.h:6
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:6
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:7
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:12
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:6
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:10
-#: ../src/empathy-new-chatroom-dialog.glade.h:10
+#: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
+#: ../src/empathy-new-chatroom-dialog.ui.h:9
 msgid "_Server:"
-msgstr "_Máy phục vụ :"
+msgstr "_Máy phục vụ:"
 
-#: ../libempathy-gtk/empathy-account-widget-groupwise.glade.h:3
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:4
-#: ../libempathy-gtk/empathy-account-widget-msn.glade.h:3
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:1
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> username</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> tênngườidùng</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:3
 msgid "Login I_D:"
 msgstr "I_D đăng nhập:"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:3
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:5
+msgid "What is your GroupWise User ID?"
+msgstr "ID GroupWise của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:6
+msgid "What is your GroupWise password?"
+msgstr "Mật khẩu GroupWise của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> 123456789</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> 123456789</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:3
 msgid "ICQ _UIN:"
 msgstr "ICQ _UIN:"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.glade.h:5
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:6
-msgid "_Charset:"
-msgstr "Bộ _ký tự :"
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
+msgid "What is your ICQ UIN?"
+msgstr "UIN ICQ của bạn là gì?"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.c:245
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
+msgid "What is your ICQ password?"
+msgstr "Mật khẩu ICQ của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
+msgid "_Charset:"
+msgstr "_Bảng mã:"
+
+#: ../libempathy-gtk/empathy-account-widget-irc.c:244
 msgid "New Network"
 msgstr "Mạng mới"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:1
-msgid "<b>Network</b>"
-msgstr "<b>Mạng</b>"
+#: ../libempathy-gtk/empathy-account-widget-sip.c:184
+#: ../libempathy-gtk/empathy-account-widget-sip.c:217
+#| msgid "_About"
+msgid "Auto"
+msgstr "Tự động"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:2
-msgid "<b>Servers</b>"
-msgstr "<b>Máy phục vụ</b>"
+#: ../libempathy-gtk/empathy-account-widget-sip.c:187
+msgid "UDP"
+msgstr "UDP"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:3
+#: ../libempathy-gtk/empathy-account-widget-sip.c:190
+msgid "TCP"
+msgstr "TCP"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:193
+msgid "TLS"
+msgstr "TLS"
+
+#. translators: this string is very specific to SIP's internal; maybe
+#. * best to keep the English version.
+#: ../libempathy-gtk/empathy-account-widget-sip.c:222
+#| msgid "Western"
+msgid "Register"
+msgstr "Đăng ký"
+
+#. translators: this string is very specific to SIP's internal; maybe
+#. * best to keep the English version.
+#: ../libempathy-gtk/empathy-account-widget-sip.c:227
+msgid "Options"
+msgstr "Tuỳ chọn"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:230
+msgid "None"
+msgstr "Không"
+
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:1
 msgid "Charset:"
-msgstr "Bộ ký tự :"
+msgstr "Bảng mã:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:4
-msgid "Create a new IRC network"
-msgstr "Tạo một mạng IRC mới"
-
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:5
-msgid "Edit the selected IRC network"
-msgstr "Sửa mạng IRC được chọn"
-
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:6
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:2
 msgid "Network"
 msgstr "Mạng"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:7
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:3
 msgid "Network:"
 msgstr "Mạng:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:8
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:4
 msgid "Nickname:"
-msgstr "Tên hiệu :"
+msgstr "Biệt hiệu:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:9
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:5
 msgid "Password:"
-msgstr "Mật khẩu :"
+msgstr "Mật khẩu:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:10
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:6
 msgid "Quit message:"
 msgstr "Thông điệp thoát:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:11
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:7
 msgid "Real name:"
 msgstr "Tên thật:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.glade.h:12
-msgid "Remove the selected IRC network"
-msgstr "Gỡ bỏ mạng IRC được chọn"
+#: ../libempathy-gtk/empathy-account-widget-irc.ui.h:8
+#| msgid "Server"
+msgid "Servers"
+msgstr "Máy phục vụ"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:2
-msgid "<b>Override server settings</b>"
-msgstr "<b>Thiết lập máy phục vụ ghi đè</b>"
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> user@gmail.com</span>"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:6
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
+msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> user@jabber.org</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
+#| msgid "<b>Override server settings</b>"
+msgid "Override server settings"
+msgstr "Đè thiết lập máy chủ"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Pri_ority:"
 msgstr "Ư_u tiên:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:7
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 msgid "Reso_urce:"
 msgstr "Tài ngu_yên:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
 msgid "Use old SS_L"
 msgstr "Dùng SS_L cũ"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:9
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+msgid "What is your Google ID?"
+msgstr "ID Google của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+msgid "What is your Google password?"
+msgstr "Mật khẩu Google của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+msgid "What is your Jabber ID?"
+msgstr "ID Jabber của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+msgid "What is your Jabber password?"
+msgstr "Mật khẩu Jabber của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+msgid "What is your desired Jabber ID?"
+msgstr "ID Jabber bạn mong muốn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+msgid "What is your desired Jabber password?"
+msgstr "Mật khẩu Jabber mong muốn của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "_Encryption required (TLS/SSL)"
 msgstr "Yêu cầu _mật mã (TLS/SSL)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.glade.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "_Ignore SSL certificate errors"
 msgstr "_Bỏ qua lỗi chứng nhận SSL"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:2
-msgid "_Email:"
-msgstr "Đị_a chỉ thư :"
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:1
+msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> user@hotmail.com</span>"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:3
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:5
+msgid "What is your Windows Live password?"
+msgstr "Mật khẩu Windows Live của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
+msgid "What is your Windows Live user name?"
+msgstr "Tên người dùng Windows Live của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
+msgid "_Email:"
+msgstr "Đị_a chỉ thư:"
+
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:3
 msgid "_First Name:"
 msgstr "_Tên:"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:4
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:4
 msgid "_Jabber ID:"
 msgstr "ID _Jabber:"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:5
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:5
 msgid "_Last Name:"
-msgstr "_Họ :"
+msgstr "_Họ:"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:6
-#: ../src/empathy-chatrooms-window.glade.h:8
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:6
 msgid "_Nickname:"
-msgstr "Tê_n hiệu :"
+msgstr "Tê_n hiệu:"
 
-#: ../libempathy-gtk/empathy-account-widget-salut.glade.h:7
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:7
 msgid "_Published Name:"
-msgstr "Tên công _bố :"
+msgstr "Tên công _bố:"
 
-#. look up the DNS SRV record at the service's domain for the host name of a STUN server.
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:3
-msgid "Discover STUN"
-msgstr "Phát hiện STUN"
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:1
+#| msgid "<b>Client Information</b>"
+msgid "<b>Keep-Alive Options</b>"
+msgstr "<b>Tuỳ chọn Keep-Alive (giữ kết nối)</b>"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:6
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:2
+msgid "<b>Miscellaneous Options</b>"
+msgstr "<b>Tuỳ chọn linh tinh</b>"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:3
+msgid "<b>NAT Traversal Options</b>"
+msgstr "<b>Tuỳ chọn vượt NAT</b>"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:4
+#| msgid "<b>Groups</b>"
+msgid "<b>Proxy Options</b>"
+msgstr "<b>Tuỳ chọn máy trung chuyển</b>"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
+msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
+msgstr "<span size=\"small\"><b>Ví dụ:</b> user@my.sip.server</span>"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:7
+#| msgid "Authentication failed"
+msgid "Authentication username:"
+msgstr "Tên người dùng để xác thực:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:8
+#| msgid "Discover STUN"
+msgid "Discover Binding"
+msgstr "Phát hiện gắn kết"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:9
+msgid "Discover the STUN server automatically"
+msgstr "Tự động phát hiện máy chủ STUN"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:10
+msgid "Hostname of the proxy for outbound requests."
+msgstr "Tên máy trung chuyển cho kết nối ra ngoài."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:11
+msgid "Interval (seconds)"
+msgstr "Khoảng lặp (giây)"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:12
+msgid ""
+"Look up the DNS SRV record at the service's domain for the host name of a "
+"STUN server."
+msgstr "Tra bản ghi DNS SRV tại tên miền của máy chủ STUN."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:13
+msgid "Loose Routing"
+msgstr "Định tuyến lỏng lẻo"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:14
+msgid "Mechanism:"
+msgstr "Cơ chế:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:16
+msgid "Port of the proxy for outbound requests."
+msgstr "Cổng máy trung chuyển cho kết nối ra ngoài."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:17
+#| msgid "_Port:"
+msgid "Port:"
+msgstr "Cổng:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:18
 msgid "STUN Server:"
 msgstr "Máy chủ STUN:"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:7
-msgid "STUN port:"
-msgstr "Cổng STUN:"
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:19
+#| msgid "_Server:"
+msgid "Server:"
+msgstr "Máy phục vụ:"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.glade.h:8
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:20
+msgid ""
+"The username for SIP authentication, if different from the SIP URI\n"
+"username."
+msgstr "Tên người dùng cho xác thực SIP, nếu khác với URI tên người dùng của SIP."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:22
+#| msgid "STUN port:"
+msgid "Transport:"
+msgstr "Phương tiện:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:23
+msgid ""
+"Update the registration binding if the external address for the client is "
+"discovered to be different from the local binding."
+msgstr "Cập nhật đăng ký nếu phát hiện địa chỉ bên ngoài của chương trình khác với địa chỉ bên trong."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:24
+msgid ""
+"Use the loose routing behavior and the Route header as recommended in RFC "
+"3261."
+msgstr "Dùng định tuyến lỏng lẻo và header \"Route\" nhưng đề cập trong RFC 3261."
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:25
+msgid "What is your SIP account password?"
+msgstr "Mật khẩu SIP của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:26
+msgid "What is your SIP login ID?"
+msgstr "ID đăng nhập SIP của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:27
 msgid "_Username:"
 msgstr "Tên người _dùng:"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:4
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
 msgid "Use _Yahoo Japan"
 msgstr "Dùng _Yahoo Nhật bản"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:5
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
+msgid "What is your Yahoo! ID?"
+msgstr "Yahoo! ID của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
+msgid "What is your Yahoo! password?"
+msgstr "Mật khẩu Yahoo! của bạn là gì?"
+
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "Yahoo I_D:"
 msgstr "I_D Yahoo:"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:7
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "_Ignore conference and chatroom invitations"
-msgstr "Lời đ_i các lời mời vào hội thảo hay phòng chát"
+msgstr "Lời đ_i các lời mời vào hội thảo hay phòng trò chuyện"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.glade.h:9
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
 msgid "_Room List locale:"
 msgstr "_Miền địa phương danh sách phòng:"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:462
-#: ../libempathy-gtk/empathy-avatar-chooser.c:537
+#: ../libempathy-gtk/empathy-avatar-chooser.c:449
+#: ../libempathy-gtk/empathy-avatar-chooser.c:525
 msgid "Couldn't convert image"
 msgstr "Không thể chuyển đổi ảnh"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:463
+#: ../libempathy-gtk/empathy-avatar-chooser.c:450
 msgid "None of the accepted image formats is supported on your system"
 msgstr "Không có định dạng ảnh đã chấp nhận mà được hỗ trợ trên hệ thống này"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:956
+#: ../libempathy-gtk/empathy-avatar-chooser.c:915
 msgid "Select Your Avatar Image"
 msgstr "Chọn ảnh riêng"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:959
+#: ../libempathy-gtk/empathy-avatar-chooser.c:918
 msgid "No Image"
 msgstr "Không ảnh"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:1021
+#: ../libempathy-gtk/empathy-avatar-chooser.c:980
 msgid "Images"
 msgstr "Ảnh"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:1025
+#: ../libempathy-gtk/empathy-avatar-chooser.c:984
 msgid "All Files"
 msgstr "Mọi tập tin"
 
-#: ../libempathy-gtk/empathy-avatar-image.c:294
+#: ../libempathy-gtk/empathy-avatar-image.c:327
 msgid "Click to enlarge"
 msgstr "Nhấn để phóng to"
 
-#: ../libempathy-gtk/empathy-chat.c:507
+#: ../libempathy-gtk/empathy-chat.c:199
+msgid "Failed to reconnect this chat"
+msgstr "Lỗi tái kết nối cuộc trò chuyện này"
+
+#: ../libempathy-gtk/empathy-chat.c:621
+#| msgid "_Invite to chatroom"
+msgid "Failed to join chatroom"
+msgstr "Lỗi tham gia phòng trò chuyện"
+
+#: ../libempathy-gtk/empathy-chat.c:639
+msgid "Failed to open private chat"
+msgstr "Lỗi mở trò chuyện riêng tư"
+
+#: ../libempathy-gtk/empathy-chat.c:678
+msgid "Topic not supported on this conversation"
+msgstr "Chủ đề không được hỗ trợ trong cuộc trò chuyện này"
+
+#: ../libempathy-gtk/empathy-chat.c:684
+msgid "You are not allowed to change the topic"
+msgstr "Bạn không được phép thay đổi chủ đề trò chuyện"
+
+#: ../libempathy-gtk/empathy-chat.c:802
+msgid "/clear, clear all messages from the current conversation"
+msgstr "/clear, xoá mọi trao đổi trong cuộc trò chuyện hiện thời"
+
+#: ../libempathy-gtk/empathy-chat.c:805
+msgid "/topic <topic>, set the topic of the current conversation"
+msgstr "/topic <chủ đề>, đặt chủ đề cho cuộc trò chuyện hiện thời"
+
+#: ../libempathy-gtk/empathy-chat.c:808
+msgid "/join <chatroom id>, join a new chatroom"
+msgstr "/join <id phòng trò chuyện>, tham gia phòng trò chuyện mới"
+
+#: ../libempathy-gtk/empathy-chat.c:811
+msgid "/j <chatroom id>, join a new chatroom"
+msgstr "/j <id phòng trò chuyện>, tham gia phòng trò chuyện mới"
+
+#: ../libempathy-gtk/empathy-chat.c:814
+msgid "/query <contact id> [<message>], open a private chat"
+msgstr "/query <id liên lạc> [<thông điệp>], mở trò chuyện riêng tư"
+
+#: ../libempathy-gtk/empathy-chat.c:817
+msgid "/msg <contact id> <message>, open a private chat"
+msgstr "/msg <id liên lạc> <thông điệp>, mở trò chuyện riêng tư"
+
+#: ../libempathy-gtk/empathy-chat.c:820
+msgid "/nick <nickname>, change your nickname on current server"
+msgstr "/nick <biệt hiệu>, đổi biệt hiệu của bạn trên máy chủ hiện thời"
+
+#: ../libempathy-gtk/empathy-chat.c:823
+msgid "/me <message>, send an ACTION message to the current conversation"
+msgstr "/me <thông điệp>, gửi thông điệp ACTION (hành động) đến cuộc trò chuyện hiện thời"
+
+#: ../libempathy-gtk/empathy-chat.c:826
+msgid ""
+"/say <message>, send <message> to the current conversation. This is used to "
+"send a message starting with a '/'. For example: \"/say /join is used to "
+"join a new chatroom\""
+msgstr "/say <thông điệp>, gửi <thông điệp> đến cuộc trò chuyện hiện thời. Dùng để gửi thông điệp bắt đầu bằng '/'. Ví dụ \"/sau /join được dùng để tham gia phòng trò chuyện\""
+
+#: ../libempathy-gtk/empathy-chat.c:831
+msgid ""
+"/help [<command>], show all supported commands. If <command> is defined, "
+"show its usage."
+msgstr "/help [<lệnh>], hiện mọi lệnh hỗ trợ. Nếu có <lệnh> thì hiện cách sử dụng."
+
+#: ../libempathy-gtk/empathy-chat.c:841
+#, c-format
+#| msgid ""
+#| "\n"
+#| "Message: %s"
+msgid "Usage: %s"
+msgstr "Cách dùng: %s"
+
+#: ../libempathy-gtk/empathy-chat.c:870
+#| msgid "Unknown reason"
+msgid "Unknown command"
+msgstr "Lệnh lạ"
+
+#: ../libempathy-gtk/empathy-chat.c:991
+msgid "Unknown command, see /help for the available commands"
+msgstr "Lệnh lạ, xem /help để biết danh sách lệnh có thể dùng"
+
+#: ../libempathy-gtk/empathy-chat.c:1130
 msgid "offline"
 msgstr "ngoại tuyến"
 
-#: ../libempathy-gtk/empathy-chat.c:510
+#: ../libempathy-gtk/empathy-chat.c:1133
 msgid "invalid contact"
 msgstr "liên lạc không hợp lệ"
 
-#: ../libempathy-gtk/empathy-chat.c:513
+#: ../libempathy-gtk/empathy-chat.c:1136
 msgid "permission denied"
 msgstr "không đủ quyền truy cập"
 
-#: ../libempathy-gtk/empathy-chat.c:516
+#: ../libempathy-gtk/empathy-chat.c:1139
 msgid "too long message"
-msgstr "tin nhẳn quá dài"
+msgstr "tin nhắn quá dài"
 
-#: ../libempathy-gtk/empathy-chat.c:519
+#: ../libempathy-gtk/empathy-chat.c:1142
 msgid "not implemented"
 msgstr "chưa được thực hiện"
 
-#: ../libempathy-gtk/empathy-chat.c:522
+#: ../libempathy-gtk/empathy-chat.c:1145
 msgid "unknown"
 msgstr "không rõ"
 
-#: ../libempathy-gtk/empathy-chat.c:526
+#: ../libempathy-gtk/empathy-chat.c:1149
 #, c-format
 msgid "Error sending message '%s': %s"
-msgstr "Gặp lỗi khi gửi tin nhẳn « %s »: %s"
+msgstr "Gặp lỗi khi gửi tin nhắn « %s »: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:556
+#: ../libempathy-gtk/empathy-chat.c:1179
 #, c-format
 msgid "Topic set to: %s"
 msgstr "Chủ đề được đặt thành: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:558
+#: ../libempathy-gtk/empathy-chat.c:1181
 msgid "No topic defined"
 msgstr "Chưa xác định chủ đề"
 
-#: ../libempathy-gtk/empathy-chat.c:973
+#: ../libempathy-gtk/empathy-chat.c:1554
+msgid "(No Suggestions)"
+msgstr "(Không có gợi ý)"
+
+#: ../libempathy-gtk/empathy-chat.c:1608
 msgid "Insert Smiley"
 msgstr "Chèn hình cười"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:991
-#: ../libempathy-gtk/empathy-ui-utils.c:1538
+#: ../libempathy-gtk/empathy-chat.c:1626
+#: ../libempathy-gtk/empathy-ui-utils.c:1657
 msgid "_Send"
 msgstr "_Gửi"
 
-#: ../libempathy-gtk/empathy-chat.c:1025
-msgid "_Check Word Spelling..."
-msgstr "_Kiểm tra chính tả từ..."
+#: ../libempathy-gtk/empathy-chat.c:1660
+msgid "_Spelling Suggestions"
+msgstr "_Gợi ý chính tả"
 
-#: ../libempathy-gtk/empathy-chat.c:1131
+#: ../libempathy-gtk/empathy-chat.c:1775
 #, c-format
-msgid "%s has joined the room"
-msgstr "%s vào phòng"
+#| msgid "Contact disconnected"
+msgid "%s has disconnected"
+msgstr "%s đã ngắt kết nối"
 
-#: ../libempathy-gtk/empathy-chat.c:1134
+#. translators: reverse the order of these arguments
+#. * if the kicked should come before the kicker in your locale.
+#.
+#: ../libempathy-gtk/empathy-chat.c:1782
+#, c-format
+msgid "%1$s was kicked by %2$s"
+msgstr "%2$s đã đá văng %1$s"
+
+#: ../libempathy-gtk/empathy-chat.c:1785
+#, c-format
+msgid "%s was kicked"
+msgstr "%s đã bị đá"
+
+#. translators: reverse the order of these arguments
+#. * if the banned should come before the banner in your locale.
+#.
+#: ../libempathy-gtk/empathy-chat.c:1793
+#, c-format
+msgid "%1$s was banned by %2$s"
+msgstr "%2$s đã cấm %1$s"
+
+#: ../libempathy-gtk/empathy-chat.c:1796
+#, c-format
+msgid "%s was banned"
+msgstr "%s đã bị cấm"
+
+#: ../libempathy-gtk/empathy-chat.c:1800
 #, c-format
 msgid "%s has left the room"
 msgstr "%s rời phòng"
 
-#: ../libempathy-gtk/empathy-chat.c:1248
-#: ../src/empathy-call-window.c:467
+#. Note to translators: this string is appended to
+#. * notifications like "foo has left the room", with the message
+#. * given by the user living the room. If this poses a problem,
+#. * please let us know. :-)
+#.
+#: ../libempathy-gtk/empathy-chat.c:1809
+#, c-format
+msgid " (%s)"
+msgstr " (%s)"
+
+#: ../libempathy-gtk/empathy-chat.c:1834
+#, c-format
+msgid "%s has joined the room"
+msgstr "%s vào phòng"
+
+#: ../libempathy-gtk/empathy-chat.c:1859
+#, c-format
+msgid "%s is now known as %s"
+msgstr "%s bây giờ là %s"
+
+#: ../libempathy-gtk/empathy-chat.c:1994 ../src/empathy-call-window.c:1537
 msgid "Disconnected"
 msgstr "Bị ngắt kết nối"
 
-#: ../libempathy-gtk/empathy-chat.c:1644
+#: ../libempathy-gtk/empathy-chat.c:2521
+msgid "Wrong password; please try again:"
+msgstr "Mật khẩu sai; vui lòng thử lại:"
+
+#: ../libempathy-gtk/empathy-chat.c:2522
+msgid "Retry"
+msgstr "Thử lại"
+
+#: ../libempathy-gtk/empathy-chat.c:2527
+msgid "This room is protected by a password:"
+msgstr "Vào phòng này cần mật khẩu:"
+
+#: ../libempathy-gtk/empathy-chat.c:2528
+msgid "Join"
+msgstr "Vào"
+
+#: ../libempathy-gtk/empathy-chat.c:2668
 msgid "Connected"
 msgstr "Đã kết nối"
 
-#: ../libempathy-gtk/empathy-chat.c:1694
-#: ../libempathy-gtk/empathy-log-window.c:505
+#: ../libempathy-gtk/empathy-chat.c:2721
+#: ../libempathy-gtk/empathy-log-window.c:546
 msgid "Conversation"
 msgstr "Cuộc nói chuyện"
 
-#: ../libempathy-gtk/empathy-chat.glade.h:1
-msgid "<b>Topic:</b>"
-msgstr "<b>Chủ đề:</b>"
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:679
+msgid "Topic:"
+msgstr "Chủ đề:"
 
-#: ../libempathy-gtk/empathy-chat.glade.h:2
-msgid "Group Chat"
-msgstr "Trò chuyện nhóm"
-
-#: ../libempathy-gtk/empathy-chat-text-view.c:340
+#. Copy Link Address menu item
+#: ../libempathy-gtk/empathy-chat-text-view.c:317
+#: ../libempathy-gtk/empathy-theme-adium.c:817
 msgid "_Copy Link Address"
 msgstr "_Chép địa chỉ liên kết"
 
-#: ../libempathy-gtk/empathy-chat-text-view.c:348
+#. Open Link menu item
+#: ../libempathy-gtk/empathy-chat-text-view.c:324
+#: ../libempathy-gtk/empathy-theme-adium.c:824
 msgid "_Open Link"
 msgstr "Mở _liên kết"
 
-#: ../libempathy-gtk/empathy-chat-text-view.c:439
-msgid "%A %d %B %Y"
-msgstr "%A %d %B %Y"
+#. Translators: timestamp displayed between conversations in
+#. * chat windows (strftime format string)
+#: ../libempathy-gtk/empathy-chat-text-view.c:422
+#| msgid "%A %d %B %Y"
+msgid "%A %B %d %Y"
+msgstr "%A %B %d %Y"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:180
-msgid "Personal Information"
-msgstr "Thông tin cá nhân"
-
-#: ../libempathy-gtk/empathy-contact-dialogs.c:183
+#: ../libempathy-gtk/empathy-contact-dialogs.c:238
 msgid "Edit Contact Information"
 msgstr "Sửa thông tin liên lạc"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:186
-msgid "Contact Information"
-msgstr "Thông tin liên lạc"
+#: ../libempathy-gtk/empathy-contact-dialogs.c:289
+msgid "Personal Information"
+msgstr "Thông tin cá nhân"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:266
-msgid "I would like to add you to my contact list."
-msgstr "Tôi muốn thêm bạn vào danh sách liên lạc mình."
-
-#: ../libempathy-gtk/empathy-contact-dialogs.c:290
+#: ../libempathy-gtk/empathy-contact-dialogs.c:394
 msgid "New Contact"
 msgstr "Liên lạc mới"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.glade.h:1
+#: ../libempathy-gtk/empathy-contact-dialogs.ui.h:1
 msgid "Decide _Later"
 msgstr "Quyết định _sau này"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.glade.h:2
+#: ../libempathy-gtk/empathy-contact-dialogs.ui.h:2
 msgid "Subscription Request"
 msgstr "Yêu cầu đăng ký"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1249
+#: ../libempathy-gtk/empathy-contact-list-view.c:1557
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Bạn có thực sự muốn gỡ bỏ nhóm « %s » không?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1251
+#: ../libempathy-gtk/empathy-contact-list-view.c:1559
 msgid "Removing group"
 msgstr "Đang gỡ bỏ nhóm"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1298
-#: ../libempathy-gtk/empathy-contact-list-view.c:1377
+#. Remove
+#: ../libempathy-gtk/empathy-contact-list-view.c:1606
+#: ../libempathy-gtk/empathy-contact-list-view.c:1683
 msgid "_Remove"
 msgstr "_Bỏ"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1328
+#: ../libempathy-gtk/empathy-contact-list-view.c:1636
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Bạn thực sự muốn gỡ bỏ liên lạc « %s » không?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1330
+#: ../libempathy-gtk/empathy-contact-list-view.c:1638
 msgid "Removing contact"
 msgstr "Đang gỡ bỏ liên lạc"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1335
-msgid "Sorry, I don't want you in my contact list anymore."
-msgstr "Tiếc là tôi đã gỡ bỏ bạn khỏi danh sách liên lạc của mình."
+#: ../libempathy-gtk/empathy-contact-menu.c:195
+#: ../src/empathy-main-window.ui.h:14
+msgid "_Add Contact..."
+msgstr "Thê_m liên lạc..."
 
-#: ../libempathy-gtk/empathy-contact-menu.c:130
-#: ../src/empathy-main-window.glade.h:9
+#: ../libempathy-gtk/empathy-contact-menu.c:222
+#: ../src/empathy-main-window.ui.h:15
 msgid "_Chat"
 msgstr "_Trò chuyện"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:161
-#: ../src/empathy-call-window.glade.h:5
-msgid "_Call"
-msgstr "_Gọi"
+#: ../libempathy-gtk/empathy-contact-menu.c:253
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Audio Call"
+msgstr "_Gọi (tiếng)"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:200
-#: ../src/empathy-main-window.glade.h:17
-msgid "_View Previous Conversations"
-msgstr "_Xem cuộc nói chuyện trước"
+#: ../libempathy-gtk/empathy-contact-menu.c:285
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Video Call"
+msgstr "_Gọi (hình)"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:222
+#: ../libempathy-gtk/empathy-contact-menu.c:324
+#: ../src/empathy-main-window.ui.h:26
+#| msgid "Previous Conversations"
+msgid "_Previous Conversations"
+msgstr "_Cuộc nói chuyện trước"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:346
 msgid "Send file"
 msgstr "Gửi tập tin"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:250
+#: ../libempathy-gtk/empathy-contact-menu.c:369
+msgid "Share my desktop"
+msgstr "Chia sẻ màn hình làm việc"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:397
 msgid "Infor_mation"
 msgstr "Thôn_g tin"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:277
-#: ../src/empathy-chat-window.glade.h:14
-#: ../src/empathy-main-window.glade.h:11
+#: ../libempathy-gtk/empathy-contact-menu.c:441
+#: ../src/empathy-chat-window.ui.h:11 ../src/empathy-main-window.ui.h:19
 msgid "_Edit"
 msgstr "_Sửa"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:336
-msgid "Inviting to this room"
-msgstr "Mời vào phòng này"
+#: ../libempathy-gtk/empathy-contact-menu.c:496
+#: ../src/empathy-chat-window.c:864
+#| msgid "Inviting to this room"
+msgid "Inviting you to this room"
+msgstr "Mời bạn vào phòng này"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:369
+#: ../libempathy-gtk/empathy-contact-menu.c:527
 msgid "_Invite to chatroom"
-msgstr "Mờ_i vào phòng chát"
+msgstr "Mờ_i vào phòng trò chuyện"
 
-#: ../libempathy-gtk/empathy-contact-selector.c:111
+#: ../libempathy-gtk/empathy-contact-selector.c:129
 msgid "Select a contact"
 msgstr "Chọn liên lạc"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:358
+#: ../libempathy-gtk/empathy-contact-widget.c:447
 msgid "Save Avatar"
 msgstr "Lưu ảnh riêng"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:414
+#: ../libempathy-gtk/empathy-contact-widget.c:503
 msgid "Unable to save avatar"
 msgstr "Không thể lưu ảnh riêng"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:895
+#: ../libempathy-gtk/empathy-contact-widget.c:1001
 msgid "Select"
 msgstr "Chọn"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:904
-#: ../src/empathy-main-window.c:991
+#: ../libempathy-gtk/empathy-contact-widget.c:1010
+#: ../src/empathy-main-window.c:1038
 msgid "Group"
 msgstr "Nhóm"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:1
-msgid "<b>Client Information</b>"
-msgstr "<b>Thông tin ứng dụng khách</b>"
+#: ../libempathy-gtk/empathy-contact-widget.c:1261
+msgid "Country ISO Code:"
+msgstr "Mã ISO quốc gia:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:2
-msgid "<b>Contact Details</b>"
-msgstr "<b>Chi tiết liên lạc</b>"
+#: ../libempathy-gtk/empathy-contact-widget.c:1263
+#| msgid "Account:"
+msgid "Country:"
+msgstr "Quốc gia:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:3
-msgid "<b>Contact</b>"
-msgstr "<b>Liên lạc</b>"
+#: ../libempathy-gtk/empathy-contact-widget.c:1265
+#| msgid "Status:"
+msgid "State:"
+msgstr "Bang:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:4
-msgid "<b>Groups</b>"
-msgstr "<b>Nhóm</b>"
+#: ../libempathy-gtk/empathy-contact-widget.c:1267
+#| msgid "Client:"
+msgid "City:"
+msgstr "Thành phố:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:5
-#: ../libempathy-gtk/empathy-new-message-dialog.glade.h:1
-#: ../src/empathy-chatrooms-window.glade.h:1
-#: ../src/empathy-new-chatroom-dialog.glade.h:1
-msgid "Account:"
-msgstr "Tài khoản:"
+#: ../libempathy-gtk/empathy-contact-widget.c:1269
+#| msgid "Armenian"
+msgid "Area:"
+msgstr "Vùng:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:6
+#: ../libempathy-gtk/empathy-contact-widget.c:1271
+msgid "Postal Code:"
+msgstr "Mã bưu chính:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1273
+#| msgid "Select"
+msgid "Street:"
+msgstr "Đường:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1275
+msgid "Building:"
+msgstr "Toà nhà:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1277
+#| msgid "_For:"
+msgid "Floor:"
+msgstr "Tầng:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1279
+#| msgid "_Room:"
+msgid "Room:"
+msgstr "Phòng:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1281
+#| msgid "Type:"
+msgid "Text:"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1283
+#| msgid "Version:"
+msgid "Description:"
+msgstr "Mô tả:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1285
+msgid "URI:"
+msgstr "URI:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1287
+msgid "Accuracy Level:"
+msgstr "Mức chính xác:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1289
+msgid "Error:"
+msgstr "Nhiểu:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1291
+msgid "Vertical Error (meters):"
+msgstr "Nhiễu dọc (mét):"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1293
+msgid "Horizontal Error (meters):"
+msgstr "Nhiễu ngang (mét):"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1295
+msgid "Speed:"
+msgstr "Tốc độ:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1297
+#| msgid "Version:"
+msgid "Bearing:"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1299
+msgid "Climb Speed:"
+msgstr "Tốc độ leo:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1301
+msgid "Last Updated on:"
+msgstr "Lần cập nhật cuối:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1303
+msgid "Longitude:"
+msgstr "Kinh độ:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1305
+msgid "Latitude:"
+msgstr "Vĩ độ:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1307
+msgid "Altitude:"
+msgstr "Cao độ:"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1368
+#| msgid "<b>Contact</b>"
+msgid "<b>Location</b>"
+msgstr "<b>Vị trí</b>"
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1381
+#| msgid "<b>Contact</b>"
+msgid "<b>Location</b>, "
+msgstr "<b>Vị trí</b>, "
+
+#: ../libempathy-gtk/empathy-contact-widget.c:1431
+msgid "%B %e, %Y at %R UTC"
+msgstr "%B %e, %Y lúc %R UTC"
+
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:1
+msgid "<b>Location</b> at (date)\t"
+msgstr "<b>Vị trí</b> vào (ngày)\t"
+
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
 msgstr "Bí danh:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:7
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:4
 msgid "Birthday:"
 msgstr "Ngày sinh:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:8
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:5
+#| msgid "<b>Client Information</b>"
+msgid "Client Information"
+msgstr "Thông tin ứng dụng khách"
+
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:6
 msgid "Client:"
 msgstr "Ứng dụng khách:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:9
-msgid "Contact information"
-msgstr "Thông tin liên lạc"
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:7
+#: ../src/empathy-main-window.c:1021
+msgid "Contact"
+msgstr "Liên lạc"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:10
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:8
+#| msgid "<b>Contact Details</b>"
+msgid "Contact Details"
+msgstr "Chi tiết liên lạc"
+
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:9
 msgid "Email:"
-msgstr "Địa chỉ thư :"
+msgstr "Địa chỉ thư:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:11
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:10
 msgid "Fullname:"
-msgstr "Tên đầy đủ :"
+msgstr "Tên đầy đủ:"
+
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:11
+#| msgid "Group"
+msgid "Groups"
+msgstr "Nhóm"
 
 #. Identifier to connect to Instant Messaging network
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:13
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:13
 msgid "Identifier:"
 msgstr "Nhận diện:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:14
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:14
 msgid "Information requested..."
 msgstr "Yêu cầu thông tin..."
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:15
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:15
 msgid "OS:"
 msgstr "HĐH:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:16
-msgid "Select the groups you want this contact to appear in.  Note that you can select more than one group or no groups."
-msgstr "Chọn những nhóm nơi bạn muốn liên lạc này xuất hiện; bạn có khả năng chọn một hay nhiều nhóm, hay không chọn nhóm (≥0 nhóm)."
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:16
+msgid ""
+"Select the groups you want this contact to appear in.  Note that you can "
+"select more than one group or no groups."
+msgstr ""
+"Chọn những nhóm nơi bạn muốn liên lạc này xuất hiện; bạn có khả năng chọn "
+"một hay nhiều nhóm, hay không chọn nhóm (≥0 nhóm)."
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:17
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:17
 msgid "Version:"
 msgstr "Phiên bản:"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:18
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:18
 msgid "Web site:"
 msgstr "Trang Web"
 
-#: ../libempathy-gtk/empathy-contact-widget.glade.h:19
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:19
 msgid "_Add Group"
 msgstr "_Thêm Nhóm"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:284
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:280
 msgid "new server"
 msgstr "máy phục vụ mới"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:513
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:507
 msgid "Server"
 msgstr "Máy phục vụ"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:528
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:522
 msgid "Port"
 msgstr "Cổng"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:541
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:535
 msgid "SSL"
 msgstr "SSL"
 
-#: ../libempathy-gtk/empathy-log-window.c:498
-#: ../src/empathy-import-dialog.c:276
+#: ../libempathy-gtk/empathy-log-window.c:539
+#: ../src/empathy-import-widget.c:310
 msgid "Account"
 msgstr "Tài khoản"
 
-#: ../libempathy-gtk/empathy-log-window.c:515
+#: ../libempathy-gtk/empathy-log-window.c:556
 msgid "Date"
 msgstr "Ngày"
 
-#. Tab Label
-#: ../libempathy-gtk/empathy-log-window.glade.h:2
+#: ../libempathy-gtk/empathy-log-window.ui.h:1
 msgid "Conversations"
 msgstr "Cuộc nói chuyện"
 
-#: ../libempathy-gtk/empathy-log-window.glade.h:3
+#: ../libempathy-gtk/empathy-log-window.ui.h:2
 msgid "Previous Conversations"
 msgstr "Cuộc nói chuyện trước"
 
-#. Tab Label
-#: ../libempathy-gtk/empathy-log-window.glade.h:5
+#: ../libempathy-gtk/empathy-log-window.ui.h:3
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#. Searching *for* something
-#: ../libempathy-gtk/empathy-log-window.glade.h:7
+#: ../libempathy-gtk/empathy-log-window.ui.h:4
 msgid "_For:"
 msgstr "_Tìm:"
 
-#: ../libempathy-gtk/empathy-new-message-dialog.glade.h:2
-msgid "C_all"
-msgstr "_Gọi"
-
-#: ../libempathy-gtk/empathy-new-message-dialog.glade.h:3
-msgid "C_hat"
-msgstr "_Trò chuyện"
-
-#: ../libempathy-gtk/empathy-new-message-dialog.glade.h:4
+#: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:2
 msgid "Contact ID:"
 msgstr "ID liên lạc:"
 
-#: ../libempathy-gtk/empathy-new-message-dialog.glade.h:5
+#. add chat button
+#: ../libempathy-gtk/empathy-new-message-dialog.c:144
+msgid "C_hat"
+msgstr "_Trò chuyện"
+
+#. Tweak the dialog
+#: ../libempathy-gtk/empathy-new-message-dialog.c:154
 msgid "New Conversation"
 msgstr "Cuộc nói chuyện mới"
 
+#. add video toggle
+#: ../libempathy-gtk/empathy-new-call-dialog.c:188
+#| msgid "Send Video"
+msgid "Send _Video"
+msgstr "Truyền _hình"
+
+#. add chat button
+#: ../libempathy-gtk/empathy-new-call-dialog.c:196
+#: ../src/empathy-call-window.ui.h:17
+msgid "_Call"
+msgstr "_Gọi"
+
+#. Tweak the dialog
+#: ../libempathy-gtk/empathy-new-call-dialog.c:206
+#| msgid "New Contact"
+msgid "New Call"
+msgstr "Cuộc gọi mới"
+
+#. COL_STATUS_TEXT
+#. COL_STATE_ICON_NAME
+#. COL_STATE
+#. COL_DISPLAY_MARKUP
+#. COL_STATUS_CUSTOMISABLE
+#. COL_TYPE
+#: ../libempathy-gtk/empathy-presence-chooser.c:167
+#: ../libempathy-gtk/empathy-presence-chooser.c:203
+#| msgid "Custom messages..."
+msgid "Custom Message..."
+msgstr "Tin nhắn tự chọn..."
+
+#: ../libempathy-gtk/empathy-presence-chooser.c:220
+#: ../libempathy-gtk/empathy-presence-chooser.c:222
+#| msgid "Custom messages..."
+msgid "Edit Custom Messages..."
+msgstr "Sửa tin nhắn tự chọn..."
+
+#: ../libempathy-gtk/empathy-presence-chooser.c:344
+msgid "Click to remove this status as a favorite"
+msgstr "Nhấn để bỏ trạng thái này khỏi danh sách yêu thích"
+
+#: ../libempathy-gtk/empathy-presence-chooser.c:353
+msgid "Click to make this status a favorite"
+msgstr "Nhấn để chọn trạng thái này là yêu thích"
+
+#: ../libempathy-gtk/empathy-presence-chooser.c:387
+#| msgid "Status"
+msgid "Set status"
+msgstr "Đặt trạng thái"
+
+#: ../libempathy-gtk/empathy-presence-chooser.c:896
+msgid "Set your presence and current status"
+msgstr "Đặt hiện diện và trạng thái"
+
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:685
+#: ../libempathy-gtk/empathy-presence-chooser.c:1083
 msgid "Custom messages..."
-msgstr "Tin nhẳn tự chọn..."
+msgstr "tin nhắn tự chọn..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.glade.h:1
-msgid "Custom message"
-msgstr "Tin nhẳn tự chọn"
-
-#: ../libempathy-gtk/empathy-presence-chooser.glade.h:2
-msgid "Message:"
-msgstr "Tin nhẳn:"
-
-#: ../libempathy-gtk/empathy-presence-chooser.glade.h:3
-msgid "Save message"
-msgstr "Lưu tin nhẳn"
-
-#: ../libempathy-gtk/empathy-presence-chooser.glade.h:4
-msgid "Status:"
-msgstr "Trạng thái:"
-
-#: ../libempathy-gtk/empathy-spell-dialog.c:88
-msgid "Word"
-msgstr "Từ"
-
-#: ../libempathy-gtk/empathy-spell-dialog.c:265
-msgid "Suggestions for the word"
-msgstr "Đề nghị từ"
-
-#: ../libempathy-gtk/empathy-spell-dialog.glade.h:1
-msgid "Spell Checker"
-msgstr "Bộ kiểm lỗi chính tả"
-
-#: ../libempathy-gtk/empathy-spell-dialog.glade.h:2
-msgid "Suggestions for the word:"
-msgstr "Đề nghị từ :"
-
-#: ../libempathy-gtk/empathy-theme-manager.c:60
-msgid "Classic"
-msgstr "Cổ điển"
-
-#: ../libempathy-gtk/empathy-theme-manager.c:61
-msgid "Simple"
-msgstr "Đơn giản"
-
-#: ../libempathy-gtk/empathy-theme-manager.c:62
-msgid "Clean"
-msgstr "Dọn"
-
-#: ../libempathy-gtk/empathy-theme-manager.c:63
-msgid "Blue"
-msgstr "Xanh"
-
-#: ../libempathy-gtk/empathy-ui-utils.c:1385
-msgid "Unable to open URI"
-msgstr "Không thể mở địa chỉ URI"
-
-#: ../libempathy-gtk/empathy-ui-utils.c:1530
-msgid "Select a file"
-msgstr "Chọn một tập tin"
-
-#: ../libempathy-gtk/empathy-ui-utils.c:1566
+#: ../libempathy-gtk/empathy-sound.c:51
 msgid "Received an instant message"
 msgstr "Nhận được một tin nhắn"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1568
+#: ../libempathy-gtk/empathy-sound.c:53
 msgid "Sent an instant message"
 msgstr "Đã gửi một tin nhắn"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1570
+#: ../libempathy-gtk/empathy-sound.c:55
 msgid "Incoming chat request"
-msgstr "Yêu cầu chát gửi đến"
+msgstr "Yêu cầu trò chuyện gửi đến"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1572
+#: ../libempathy-gtk/empathy-sound.c:57
 msgid "Contact connected"
 msgstr "Liên lạc mới kết nối"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1574
+#: ../libempathy-gtk/empathy-sound.c:59
 msgid "Contact disconnected"
 msgstr "Liên lạc mới bị ngắt kết nối"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1576
+#: ../libempathy-gtk/empathy-sound.c:61
 msgid "Connected to server"
 msgstr "Mới kết nối tới máy phục vụ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1578
+#: ../libempathy-gtk/empathy-sound.c:63
 msgid "Disconnected from server"
 msgstr "Bị ngắt kết nối ra máy phục vụ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1580
+#: ../libempathy-gtk/empathy-sound.c:65
 msgid "Incoming voice call"
 msgstr "Cuộc gọi nói tiếng gửi đến"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1582
+#: ../libempathy-gtk/empathy-sound.c:67
 msgid "Outgoing voice call"
 msgstr "Cuộc gọi tiếng nói gửi đi"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1584
+#: ../libempathy-gtk/empathy-sound.c:69
 msgid "Voice call ended"
 msgstr "Cuộc gọi tiếng nói đã kết thúc"
+
+#: ../libempathy-gtk/empathy-status-preset-dialog.c:364
+#| msgid "Custom message"
+msgid "Enter Custom Message"
+msgstr "Nhập tin nhắn tự chọn"
+
+#: ../libempathy-gtk/empathy-status-preset-dialog.c:523
+#| msgid "Custom message"
+msgid "Edit Custom Messages"
+msgstr "Sửa tin nhắn tự chọn"
+
+#: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:1
+msgid "Add _New Preset"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-status-preset-dialog.ui.h:2
+#| msgid "Save message"
+msgid "Saved Presets"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-theme-manager.c:67
+msgid "Classic"
+msgstr "Cổ điển"
+
+#: ../libempathy-gtk/empathy-theme-manager.c:68
+msgid "Simple"
+msgstr "Đơn giản"
+
+#: ../libempathy-gtk/empathy-theme-manager.c:69
+msgid "Clean"
+msgstr "Dọn"
+
+#: ../libempathy-gtk/empathy-theme-manager.c:70
+msgid "Blue"
+msgstr "Xanh"
+
+#: ../libempathy-gtk/empathy-ui-utils.c:1519
+msgid "Unable to open URI"
+msgstr "Không thể mở địa chỉ URI"
+
+#: ../libempathy-gtk/empathy-ui-utils.c:1649
+msgid "Select a file"
+msgstr "Chọn một tập tin"
+
+#: ../libempathy-gtk/empathy-ui-utils.c:1709
+#| msgid "Select a contact"
+msgid "Select a destination"
+msgstr "Chọn đích"
 
 #: ../libempathy-gtk/totem-subtitle-encoding.c:158
 msgid "Current Locale"
@@ -1164,85 +2074,73 @@ msgstr "Phương Tây"
 msgid "Vietnamese"
 msgstr "Tiếng Việt"
 
-#.
-#. * vim: sw=2 ts=8 cindent noai bs=2
-#.
-#: ../megaphone/data/GNOME_Megaphone_Applet.schemas.in.h:1
-msgid "The contact to display in the applet. Empty means no contact is displayed."
-msgstr "Liên lạc cần hiển thị trong tiểu dụng. Bỏ trống thì không hiển thị gì."
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:108
+msgid "The contact selected cannot receive files."
+msgstr "Liên lạc được chọn không thể nhận tập tin."
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.schemas.in.h:2
-msgid "The contact's avatar token. Empty means contact has no avatar."
-msgstr "Hiệu bài ảnh riêng của liên lạc. Bỏ trống thì liên lạc không có ảnh riêng."
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:114
+#| msgid "Contact goes offline"
+msgid "The contact selected is offline."
+msgstr "Liên lạc được chọn đã ngoại tuyến"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:1
-msgid "Megaphone"
-msgstr "Nói bằng loa"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:169
+#| msgid "too long message"
+msgid "No error message"
+msgstr "Không có thông báo lỗi"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:2
-#: ../megaphone/src/megaphone-applet.c:417
-msgid "Talk!"
-msgstr "Nói chuyện !"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
+msgid "Instant Message (Empathy)"
+msgstr "Tin nhắn nhanh (Empathy)"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:1
-#: ../nothere/data/GNOME_NotHere_Applet.xml.h:1
-msgid "_About"
-msgstr "_Giới thiệu"
-
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:2
-msgid "_Information"
-msgstr "Thông t_in"
-
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:3
-#: ../src/empathy-main-window.glade.h:15
-msgid "_Preferences"
-msgstr "Tù_y thích"
-
-#: ../megaphone/src/megaphone-applet.c:255
-msgid "Please configure a contact."
-msgstr "Hãy cấu hình một liên lạc."
-
-#: ../megaphone/src/megaphone-applet.c:348
-msgid "Select contact..."
-msgstr "Chọn liên lạc..."
-
-#: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:1
-msgid "Presence"
-msgstr "Sự có mặt"
-
-#: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:2
-#: ../nothere/src/nothere-applet.c:106
-msgid "Set your own presence"
-msgstr "Đặt sự có mặt của bạn"
-
-#: ../src/empathy.c:426
+#: ../src/empathy.c:893
 msgid "Don't connect on startup"
 msgstr "Không kết nối khi khởi chạy"
 
-#: ../src/empathy.c:430
-msgid "Don't show the contact list on startup"
-msgstr "Không hiển thị danh sách liên lạc khi khởi chạy"
+#: ../src/empathy.c:897
+#| msgid "Don't show the contact list on startup"
+msgid "Don't display the contact list or any other dialogs on startup"
+msgstr "Không hiển thị danh sách liên lạc hoặc các hộp thoại khác khi khởi chạy"
 
-#: ../src/empathy.c:434
+#: ../src/empathy.c:901
 msgid "Show the accounts dialog"
 msgstr "Hiện hộp thoại tài khoản"
 
-#: ../src/empathy.c:446
-msgid "- Empathy Instant Messenger"
+#: ../src/empathy.c:913
+#| msgid "- Empathy Instant Messenger"
+msgid "- Empathy IM Client"
 msgstr "— Trình gửi tin nhắn Empathy"
 
 #: ../src/empathy-about-dialog.c:84
-msgid "Empathy is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version."
-msgstr "Empathy là phần mềm tự do; bạn có thể phát hành lại nó và/hoặc sửa đổi nó với điều kiện của Giấy Phép Công Cộng GNU như được xuất bản bởi Tổ Chức Phần Mềm Tự Do; hoặc phiên bản 2 của Giấy Phép này, hoặc (tùy chọn) bất kỳ phiên bản sau nào."
+msgid ""
+"Empathy is free software; you can redistribute it and/or modify it under the "
+"terms of the GNU General Public License as published by the Free Software "
+"Foundation; either version 2 of the License, or (at your option) any later "
+"version."
+msgstr ""
+"Empathy là phần mềm tự do; bạn có thể phát hành lại nó và/hoặc sửa đổi nó "
+"với điều kiện của Giấy Phép Công Cộng GNU như được xuất bản bởi Tổ Chức Phần "
+"Mềm Tự Do; hoặc phiên bản 2 của Giấy Phép này, hoặc (tùy chọn) bất kỳ phiên "
+"bản sau nào."
 
 #: ../src/empathy-about-dialog.c:88
-msgid "Empathy is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details."
-msgstr "Empathy được phát hành vì mong muốn nó có ích, nhưng KHÔNG CÓ BẢO HÀNH GÌ CẢ, THẬM CHÍ KHÔNG CÓ BẢO ĐẢM ĐƯỢC NGỤ Ý KHẢ NĂNG BÁN HAY KHẢ NĂNG LÀM ĐƯỢC VIỆC DỨT KHOÁT. Xem Giấy Phép Công Cộng GNU để biết thêm chi tiết."
+msgid ""
+"Empathy is distributed in the hope that it will be useful, but WITHOUT ANY "
+"WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
+"FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more "
+"details."
+msgstr ""
+"Empathy được phát hành vì mong muốn nó có ích, nhưng KHÔNG CÓ BẢO HÀNH GÌ "
+"CẢ, THẬM CHÍ KHÔNG CÓ BẢO ĐẢM ĐƯỢC NGỤ Ý KHẢ NĂNG BÁN HAY KHẢ NĂNG LÀM ĐƯỢC "
+"VIỆC DỨT KHOÁT. Xem Giấy Phép Công Cộng GNU để biết thêm chi tiết."
 
 #: ../src/empathy-about-dialog.c:92
-msgid "You should have received a copy of the GNU General Public License along with Empathy; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-130159 USA"
+msgid ""
+"You should have received a copy of the GNU General Public License along with "
+"Empathy; if not, write to the Free Software Foundation, Inc., 51 Franklin "
+"Street, Fifth Floor, Boston, MA 02110-130159 USA"
 msgstr ""
-"Bạn đã nhận một bản sao của Giấy Phép Công Cộng GNU cùng với Empathy; nếu không, hãy viết thư cho Tổ Chức Phần Mềm Tự Do,\n"
+"Bạn đã nhận một bản sao của Giấy Phép Công Cộng GNU cùng với Empathy; nếu "
+"không, hãy viết thư cho Tổ Chức Phần Mềm Tự Do,\n"
 "Free Software Foundation, Inc.,\n"
 "51 Franklin Street, Fifth Floor,\n"
 "Boston, MA  02110-1301, USA (Mỹ)."
@@ -1255,339 +2153,643 @@ msgstr "Ứng dụng khách tin nhắn tức khắc cho GNOME"
 msgid "translator-credits"
 msgstr "Nhóm Việt hóa GNOME <gnomevi-list@lists.sourceforge.net>"
 
-#: ../src/empathy-accounts-dialog.c:391
-msgid "Enabled"
-msgstr "Đã bật"
+#: ../src/empathy-account-assistant.c:118
+#| msgid "Empathy has asked about importing accounts"
+msgid "There has been an error while importing the accounts."
+msgstr "Lỗi nhập tài khoản."
 
-#: ../src/empathy-accounts-dialog.c:401
-#: ../src/empathy-accounts-dialog.glade.h:4
-msgid "Accounts"
-msgstr "Tài khoản"
+#: ../src/empathy-account-assistant.c:121
+msgid "There has been an error while parsing the account details."
+msgstr "Lỗi phân tích chi tiết tài khoản."
 
+#: ../src/empathy-account-assistant.c:124
+msgid "There has been an error while creating the account."
+msgstr "Lỗi tại tài khoản."
+
+#: ../src/empathy-account-assistant.c:126
+msgid "There has been an error."
+msgstr "Gặp lỗi."
+
+#: ../src/empathy-account-assistant.c:141
+#, c-format
+msgid "The error message was: <span style=\"italic\">%s</span>"
+msgstr "Thông báo lỗi là <span style=\"italic\">%s</span>"
+
+#: ../src/empathy-account-assistant.c:149
+msgid ""
+"You can either go back and try to enter your accounts' details again or quit "
+"this assistant and add accounts later from the Edit menu."
+msgstr "Bạn có thể hoặc quay lại, hoặc thử nhập chi tiết tài khoản lần nữa, hoặc thoát trình hỗ trợ này và thêm tài khoản sau."
+
+#: ../src/empathy-account-assistant.c:184
+msgid "An error occurred"
+msgstr "Gặp lỗi"
+
+#. Create account
 #. To translator: %s is the protocol name
-#: ../src/empathy-accounts-dialog.c:833
+#. Create account
+#. To translator: %s is the name of the protocol, such as "Google Talk" or
+#. * "Yahoo!"
+#.
+#: ../src/empathy-account-assistant.c:331
+#: ../src/empathy-accounts-dialog.c:1486
 #, c-format
 msgid "New %s account"
 msgstr "Tài khoản %s mới"
 
-#: ../src/empathy-accounts-dialog.c:943
+#: ../src/empathy-account-assistant.c:403
+msgid "What kind of chat account do you have?"
+msgstr "Bạn có những loại tài khoản tin nhanh/trò chuyện nào?"
+
+#: ../src/empathy-account-assistant.c:409
+#| msgid "I already have an account I want to use"
+msgid "Do you have any other chat accounts you want to set up?"
+msgstr "Bạn còn tài khoản nào khác muốn thiết lập không?"
+
+#: ../src/empathy-account-assistant.c:415
+msgid "Enter your account details"
+msgstr "Điền chi tiết tài khoản"
+
+#: ../src/empathy-account-assistant.c:420
+#| msgid "%s is calling you, do you want to answer?"
+msgid "What kind of chat account do you want to create?"
+msgstr "Bạn muốn tạo loại tài khoản nào?"
+
+#: ../src/empathy-account-assistant.c:426
+#| msgid "Do you really want to remove the contact '%s'?"
+msgid "Do you want to create other chat accounts?"
+msgstr "Bạn muốn tạo tài khoản khác không?"
+
+#: ../src/empathy-account-assistant.c:433
+msgid "Enter the details for the new account"
+msgstr "Nhập chi tiết tài khoản mới"
+
+#: ../src/empathy-account-assistant.c:519
+msgid ""
+"With Empathy you can chat with people online nearby and with friends and "
+"colleagues who use Google Talk, AIM, Windows Live and many other chat "
+"programs. With a microphone or a webcam you can also have audio or video "
+"calls."
+msgstr "Với Empathy bạn có thể trò chuyện với bạn bè trực tuyến dùng Google Talk, AIM, Windows Live và các chương trình trò chuyện trực tuyến khác. Với microphone và webcam, bạn còn có thể thực hiện gọi điện có hình."
+
+#: ../src/empathy-account-assistant.c:536
+msgid "Do you have an account you've been using with another chat program?"
+msgstr "Bạn có tài khoản đang dùng với chương trình tin nhắn/trò chuyện khác không?"
+
+#: ../src/empathy-account-assistant.c:559
+msgid "Yes, import my account details from "
+msgstr "Có, nhập thông tin tài khoản từ "
+
+#: ../src/empathy-account-assistant.c:580
+msgid "Yes, I'll enter my account details now"
+msgstr "Có, tôi sẽ điền thông tin tài khoản bây giờ"
+
+#: ../src/empathy-account-assistant.c:602
+#| msgid "Show and edit accounts"
+msgid "No, I want a new account"
+msgstr "Không, tôi muốn tạo tài khoản mới"
+
+#: ../src/empathy-account-assistant.c:612
+msgid "No, I just want to see people online nearby for now"
+msgstr "Không, tôi chỉ muốn biết tình hình hàng xóm"
+
+#: ../src/empathy-account-assistant.c:633
+#| msgid "Select who would you like to invite:"
+msgid "Select the accounts you want to import:"
+msgstr "Chọn tài khoản bạn muốn nhập:"
+
+#: ../src/empathy-account-assistant.c:720
+#: ../src/empathy-new-chatroom-dialog.c:541
+#: ../src/empathy-new-chatroom-dialog.c:542
+msgid "Yes"
+msgstr "Có"
+
+#: ../src/empathy-account-assistant.c:727
+msgid "No, that's all for now"
+msgstr "Không, tạm thời vậy thôi"
+
+#: ../src/empathy-account-assistant.c:920
+msgid "Welcome to Empathy"
+msgstr "Chào mừng sử dụng Empathy"
+
+#: ../src/empathy-account-assistant.c:929
+#| msgid "Import Accounts"
+msgid "Import your existing accounts"
+msgstr "Nhập tài khoản đã có"
+
+#. The primary text of the dialog shown to the user when he is about to lose
+#. * unsaved changes
+#: ../src/empathy-accounts-dialog.c:65
 #, c-format
-msgid ""
-"You are about to remove your %s account!\n"
-"Are you sure you want to proceed?"
-msgstr ""
-"Bạn sắp gỡ bỏ tài khoản %s.\n"
-"Có chắc muốn tiếp tục không?"
+msgid "There are unsaved modification regarding your %s account."
+msgstr "Có vài thay đổi chưa lưu trong tài khoản %s của bạn."
 
-#: ../src/empathy-accounts-dialog.c:949
-msgid ""
-"Any associated conversations and chat rooms will NOT be removed if you decide to proceed.\n"
-"\n"
-"Should you decide to add the account back at a later time, they will still be available."
-msgstr ""
-"Cuộc đối thoại nào hay phòng trò chuyện nào tương ứng sẽ KHÔNG bị gỡ bỏ nếu bạn chọn tiếp tục.\n"
-"\n"
-"Như thế thì chúng sẽ vẫn còn sẵn sàng nếu bạn chọn thêm lại tài khoản này vào lúc sau."
+#. The primary text of the dialog shown to the user when he is about to lose
+#. * an unsaved new account
+#: ../src/empathy-accounts-dialog.c:69
+msgid "Your new account has not been saved yet."
+msgstr "Tài khoản mới của bạn chưa được lưu."
 
-#: ../src/empathy-accounts-dialog.glade.h:1
-msgid "<b>New Account</b>"
-msgstr "<b>Tài khoản mới</b>"
-
-#: ../src/empathy-accounts-dialog.glade.h:2
-msgid "<b>No protocol installed</b>"
-msgstr "<b>Chưa cài đặt giao thức</b>"
-
-#: ../src/empathy-accounts-dialog.glade.h:3
-msgid "<b>Settings</b>"
-msgstr "<b>Thiết lập</b>"
-
-#: ../src/empathy-accounts-dialog.glade.h:5
-msgid "Cr_eate"
-msgstr "_Tạo"
-
-#: ../src/empathy-accounts-dialog.glade.h:6
-msgid "I already have an account I want to use"
-msgstr "Tôi đã có tài khoản muốn dùng rồi"
-
-#: ../src/empathy-accounts-dialog.glade.h:7
-msgid "Import Accounts..."
-msgstr "Nhập tài khoản..."
-
-#: ../src/empathy-accounts-dialog.glade.h:8
-msgid "To add a new account, you first have to install a backend for each protocol you want to use."
-msgstr "Để thêm một tài khoản, trước tiên bạn cần phải cài đặt một hậu phương cho mỗi giao thức cần dùng (v.d. IRC, Yahoo)."
-
-#: ../src/empathy-accounts-dialog.glade.h:9
-msgid "Type:"
-msgstr "Kiểu :"
-
-#: ../src/empathy-call-window.c:180
-msgid "Contrast"
-msgstr "Độ tương phản"
-
-#: ../src/empathy-call-window.c:180
-msgid "Brightness"
-msgstr "Độ sáng"
-
-#: ../src/empathy-call-window.c:180
-msgid "Gamma"
-msgstr "Gama (γ)"
-
-#: ../src/empathy-call-window.c:212
-msgid "Volume"
-msgstr "Âm"
-
-#: ../src/empathy-call-window.c:288
-msgid "_Sidebar"
-msgstr "Khung _lề"
-
-#: ../src/empathy-call-window.c:306
-msgid "Dialpad"
-msgstr "Vùng quay số"
-
-#: ../src/empathy-call-window.c:310
-msgid "Audio input"
-msgstr "Âm vào"
-
-#: ../src/empathy-call-window.c:314
-msgid "Video input"
-msgstr "Phim vào"
-
-#: ../src/empathy-call-window.c:327
+#: ../src/empathy-accounts-dialog.c:229 ../src/empathy-call-window.c:729
 msgid "Connecting..."
 msgstr "Đang kết nối..."
 
-#: ../src/empathy-call-window.c:490
+#: ../src/empathy-accounts-dialog.c:256
 #, c-format
-msgid "Connected -- %d:%02dm"
-msgstr "Có kết nối -- %d:%02dm"
+#| msgid "Disconnected"
+msgid "Disconnected - %s"
+msgstr "Đã đứt kết nối - %s"
 
-#: ../src/empathy-call-window.glade.h:1
+#: ../src/empathy-accounts-dialog.c:261
+#, c-format
+#| msgid "Offline"
+msgid "Offline - %s"
+msgstr "Ngoại tuyến - %s"
+
+#: ../src/empathy-accounts-dialog.c:274
+msgid "Offline - No Network Connection"
+msgstr "Ngoại tuyến - Không có kết nối mạng"
+
+#: ../src/empathy-accounts-dialog.c:282
+#| msgid "Unknown reason"
+msgid "Unknown Status"
+msgstr "Trạng thái lạ"
+
+#: ../src/empathy-accounts-dialog.c:293
+msgid "Offline - Account disabled"
+msgstr "Ngoại tuyến - Tài khoản bị tắt"
+
+#: ../src/empathy-accounts-dialog.c:613
+#| msgid ""
+#| "You are about to remove your %s account!\n"
+#| "Are you sure you want to proceed?"
+msgid ""
+"You are about to create a new account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Bạn sắp tạo tài khoản mới. Việc này sẽ huỷ toàn\n"
+"bộ những thay đổi của bạn. Bạn có muốn tiếp tục không?"
+
+#: ../src/empathy-accounts-dialog.c:903
+#, c-format
+#| msgid "Do you really want to remove the group '%s'?"
+msgid "Do you want to remove %s from your computer?"
+msgstr "Bạn có thực sự muốn gỡ bỏ %s không?"
+
+#: ../src/empathy-accounts-dialog.c:907
+msgid "This will not remove your account on the server."
+msgstr "Hành động này sẽ xoá tài khoản của bạn khỏi máy chủ."
+
+#: ../src/empathy-accounts-dialog.c:1089
+#| msgid ""
+#| "You are about to remove your %s account!\n"
+#| "Are you sure you want to proceed?"
+msgid ""
+"You are about to select another account, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Bạn đang chọn một tài khoản khác. Việc này sẽ huỷ toàn bộ\n"
+"những thay đổi của bạn. Bạn có muốn tiếp tục không?"
+
+#: ../src/empathy-accounts-dialog.c:1560
+#| msgid ""
+#| "You are about to remove your %s account!\n"
+#| "Are you sure you want to proceed?"
+msgid ""
+"You are about to close the window, which will discard\n"
+"your changes. Are you sure you want to proceed?"
+msgstr ""
+"Bạn đang đóng cửa sổ. Việc này sẽ huỷ các thay\n"
+"đổi của bạn. Bạn có muốn tiếp tục không?"
+
+#.  Translators: this is used only when built on a moblin platform 
+#: ../src/empathy-accounts-dialog.c:1733
+#| msgid "_Next Tab"
+msgid "_Next"
+msgstr "_Tiếp"
+
+#: ../src/empathy-accounts-dialog.ui.h:1
+msgid "Accounts"
+msgstr "Tài khoản"
+
+#: ../src/empathy-accounts-dialog.ui.h:2
+msgid "Add new"
+msgstr "Thêm mới"
+
+#: ../src/empathy-accounts-dialog.ui.h:3
+msgid "Cr_eate"
+msgstr "_Tạo"
+
+#: ../src/empathy-accounts-dialog.ui.h:4
+#| msgid "<b>No protocol installed</b>"
+msgid "No protocol installed"
+msgstr "Chưa cài đặt giao thức"
+
+#: ../src/empathy-accounts-dialog.ui.h:5
+msgid ""
+"To add a new account, you first have to install a backend for each protocol "
+"you want to use."
+msgstr ""
+"Để thêm một tài khoản, trước tiên bạn cần phải cài đặt một hậu phương cho "
+"mỗi giao thức cần dùng (v.d. IRC, Yahoo)."
+
+#: ../src/empathy-accounts-dialog.ui.h:6
+#| msgid "_Add Contact..."
+msgid "_Add..."
+msgstr "Thê_m..."
+
+#: ../src/empathy-accounts-dialog.ui.h:7
+#| msgid "Import"
+msgid "_Import..."
+msgstr "_Nhập..."
+
+#: ../src/empathy-accounts-dialog.ui.h:8
+#| msgid "Account"
+msgid "account"
+msgstr "tài khoản"
+
+#: ../src/empathy-call-window.c:453
+msgid "Contrast"
+msgstr "Độ tương phản"
+
+#: ../src/empathy-call-window.c:456
+msgid "Brightness"
+msgstr "Độ sáng"
+
+#: ../src/empathy-call-window.c:459
+msgid "Gamma"
+msgstr "Gama (γ)"
+
+#: ../src/empathy-call-window.c:567
+msgid "Volume"
+msgstr "Âm"
+
+#: ../src/empathy-call-window.c:1022
+msgid "_Sidebar"
+msgstr "Khung _lề"
+
+#: ../src/empathy-call-window.c:1041
+msgid "Dialpad"
+msgstr "Vùng quay số"
+
+#: ../src/empathy-call-window.c:1047
+msgid "Audio input"
+msgstr "Âm vào"
+
+#: ../src/empathy-call-window.c:1051
+msgid "Video input"
+msgstr "Phim vào"
+
+#. translators: Call is a noun and %s is the contact name. This string
+#. * is used in the window title
+#: ../src/empathy-call-window.c:1116
+#, c-format
+msgid "Call with %s"
+msgstr "Gọi cho %s"
+
+#. translators: Call is a noun. This string is used in the window
+#. * title
+#: ../src/empathy-call-window.c:1197
+#| msgid "_Call"
+msgid "Call"
+msgstr "Gọi"
+
+#. Translators: number of minutes:seconds the caller has been connected
+#: ../src/empathy-call-window.c:1700
+#, c-format
+#| msgid "Connected -- %d:%02dm"
+msgid "Connected — %d:%02dm"
+msgstr "Có kết nối - %d:%02dm"
+
+#: ../src/empathy-call-window.c:1761
+msgid "Technical Details"
+msgstr "Chi tiết kỹ thuật"
+
+#: ../src/empathy-call-window.c:1799
+#, c-format
+msgid ""
+"%s's software does not understand any of the audio formats supported by your "
+"computer"
+msgstr "Phần mềm của %s không hiểu bất kỳ định dạng âm thanh nào mà máy bạn hỗ trợ"
+
+#: ../src/empathy-call-window.c:1804
+#, c-format
+msgid ""
+"%s's software does not understand any of the video formats supported by your "
+"computer"
+msgstr "Phần mềm của %s không hiểu bất kỳ định dạng hình ảnh nào mà máy bạn hỗ trợ"
+
+#: ../src/empathy-call-window.c:1810
+#, c-format
+msgid ""
+"Can't establish a connection to %s. One of you might be on a network that "
+"does not allow direct connections."
+msgstr "Không thể tạo kết nối đến %s. Có thể một trong số các bạn nằm trong một mạng không hỗ trợ kết nối trực tiếp."
+
+#: ../src/empathy-call-window.c:1816
+msgid "There was a failure on the network"
+msgstr "Lỗi mạng"
+
+#: ../src/empathy-call-window.c:1820
+msgid ""
+"The audio formats necessary for this call are not installed on your computer"
+msgstr "Định dạng âm thanh cần thiết cho cuộc gọi này chưa được cài đặt trên máy tính"
+
+#: ../src/empathy-call-window.c:1823
+msgid ""
+"The video formats necessary for this call are not installed on your computer"
+msgstr "Định dạng hình ảnh cần thiết cho cuộc gọi này chưa được cài đặt trên máy tính"
+
+#: ../src/empathy-call-window.c:1833
+#, c-format
+msgid ""
+"Something not expected happened in a Telepathy component. Please <a href=\"%s"
+"\">report this bug</a> and attach logs gathered from the 'Debug' window in "
+"the Help menu."
+msgstr "Điều gì đó không mong đợi đã xảy ra với một thành phần Telepathy. Vui lòng <a href=\"%s\">thông báo lỗi này</a> và đính kèm thông tin từ cửa sổ \"Tìm lỗi\" trong menu Trợ giúp."
+
+#: ../src/empathy-call-window.c:1841
+msgid "There was a failure in the call engine"
+msgstr "Lỗi trong hệ thống gọi"
+
+#: ../src/empathy-call-window.c:1880
+msgid "Can't establish audio stream"
+msgstr "Không thể tạo luồng âm thanh"
+
+#: ../src/empathy-call-window.c:1890
+msgid "Can't establish video stream"
+msgstr "Không thể tạo luồng hình ảnh"
+
+#: ../src/empathy-call-window.ui.h:1
+#| msgid "Compact contact list"
+msgid "Call the contact again"
+msgstr "Gọi lại lần nữa"
+
+#: ../src/empathy-call-window.ui.h:2
+msgid "Camera Off"
+msgstr "Tắt máy quay"
+
+#: ../src/empathy-call-window.ui.h:3
+msgid "Camera On"
+msgstr "Bật máy quay"
+
+#: ../src/empathy-call-window.ui.h:4
+msgid "Disable camera and stop sending video"
+msgstr "Tắt máy quay và ngừng truyền hình"
+
+#: ../src/empathy-call-window.ui.h:5
+msgid "Enable camera and send video"
+msgstr "Bật máy quay và truyền hình"
+
+#: ../src/empathy-call-window.ui.h:6
+msgid "Enable camera but don't send video"
+msgstr "Bật máy quay nhưng không truyền hình"
+
+#: ../src/empathy-call-window.ui.h:7
 msgid "Hang up"
 msgstr "Ngừng nói"
 
-#: ../src/empathy-call-window.glade.h:2
-msgid "Send Video"
-msgstr "Gửi phim"
+#: ../src/empathy-call-window.ui.h:8
+msgid "Hang up current call"
+msgstr "Chấm dứt cuộc gọi hiện tại"
 
-#: ../src/empathy-call-window.glade.h:3
-msgid "Send video"
-msgstr "Gửi phim"
+#: ../src/empathy-call-window.ui.h:9
+#| msgid "Video preview"
+msgid "Preview"
+msgstr "Xem trước"
 
-#: ../src/empathy-call-window.glade.h:4
-msgid "Video preview"
-msgstr "Xem thử phim"
+#: ../src/empathy-call-window.ui.h:10
+msgid "Redial"
+msgstr "Gọi lại"
 
-#: ../src/empathy-call-window.glade.h:6
+#: ../src/empathy-call-window.ui.h:11
+#| msgid "Send Video"
+msgid "Send Audio"
+msgstr "Truyền tiếng"
+
+#: ../src/empathy-call-window.ui.h:12
+msgid "Toggle audio transmission"
+msgstr "Bật/tắt truyền tiếng"
+
+#: ../src/empathy-call-window.ui.h:13
+#| msgid "Send Video"
+msgid "V_ideo"
+msgstr "_Hình"
+
+#: ../src/empathy-call-window.ui.h:14
+#| msgid "Video input"
+msgid "Video Off"
+msgstr "Tắt hình"
+
+#: ../src/empathy-call-window.ui.h:15
+#| msgid "Video input"
+msgid "Video On"
+msgstr "Bật hình"
+
+#: ../src/empathy-call-window.ui.h:16
+#| msgid "Video preview"
+msgid "Video Preview"
+msgstr "Xem trước"
+
+#: ../src/empathy-call-window.ui.h:18 ../src/empathy-main-window.ui.h:28
 msgid "_View"
 msgstr "_Xem"
 
-#: ../src/empathy-chat-window.c:313
+#: ../src/empathy-chat-window.c:435 ../src/empathy-chat-window.c:455
 #, c-format
-msgid "Conversations (%d)"
-msgstr "Cuộc nói chuyện (%d)"
+msgid "%s (%d unread)"
+msgid_plural "%s (%d unread)"
+msgstr[0] "%s (%d chưa đọc)"
 
-#: ../src/empathy-chat-window.c:418
-msgid "Topic:"
-msgstr "Chủ đề:"
+#: ../src/empathy-chat-window.c:447
+#, c-format
+msgid "%s (and %u other)"
+msgid_plural "%s (and %u others)"
+msgstr[0] "%s (và %u nữa)"
 
-#: ../src/empathy-chat-window.c:423
+#: ../src/empathy-chat-window.c:463
+#, c-format
+msgid "%s (%d unread from others)"
+msgid_plural "%s (%d unread from others)"
+msgstr[0] "%s (%d chưa đọc từ người khác)"
+
+#: ../src/empathy-chat-window.c:472
+#, c-format
+msgid "%s (%d unread from all)"
+msgid_plural "%s (%d unread from all)"
+msgstr[0] "%s (%d chưa đọc tất cả)"
+
+#: ../src/empathy-chat-window.c:683
 msgid "Typing a message."
-msgstr "Đang gõ tin nhẳn."
+msgstr "Đang gõ tin nhắn."
 
-#: ../src/empathy-chat-window.c:892
-#: ../src/empathy-event-manager.c:425
-#, c-format
-msgid "New message from %s"
-msgstr "Tin nhẳn mới từ %s"
-
-#: ../src/empathy-chat-window.glade.h:1
+#: ../src/empathy-chat-window.ui.h:1
 msgid "C_lear"
 msgstr "_Dọn"
 
-#: ../src/empathy-chat-window.glade.h:2
+#: ../src/empathy-chat-window.ui.h:2
+#| msgid "Contact"
+msgid "C_ontact"
+msgstr "_Liên lạc"
+
+#: ../src/empathy-chat-window.ui.h:3
 msgid "Chat"
 msgstr "Trò chuyện"
 
-#: ../src/empathy-chat-window.glade.h:3
+#: ../src/empathy-chat-window.ui.h:4
 msgid "Insert _Smiley"
 msgstr "_Chèn hình cười"
 
-#: ../src/empathy-chat-window.glade.h:4
-msgid "Invitation _message:"
-msgstr "Lời _mời:"
+#: ../src/empathy-chat-window.ui.h:5
+msgid "Invite _Participant..."
+msgstr "Mởi người _tham gia..."
 
-#: ../src/empathy-chat-window.glade.h:5
-msgid "Invite"
-msgstr "Mời"
-
-#: ../src/empathy-chat-window.glade.h:6
+#: ../src/empathy-chat-window.ui.h:6
 msgid "Move Tab _Left"
 msgstr "Dời thẻ sang t_rái"
 
-#: ../src/empathy-chat-window.glade.h:7
+#: ../src/empathy-chat-window.ui.h:7
 msgid "Move Tab _Right"
 msgstr "Dời thẻ sang _phải"
 
-#: ../src/empathy-chat-window.glade.h:8
-msgid "Select who would you like to invite:"
-msgstr "Hãy chọn người bạn muốn mời:"
-
-#: ../src/empathy-chat-window.glade.h:9
-msgid "You have been invited to join a chat conference."
-msgstr "Bạn đã được mời tham gia một hội thảo trò chuyện."
-
-#: ../src/empathy-chat-window.glade.h:10
-msgid "_Contact"
-msgstr "_Liên lạc"
-
-#: ../src/empathy-chat-window.glade.h:11
-#: ../src/empathy-main-window.glade.h:10
+#: ../src/empathy-chat-window.ui.h:8 ../src/empathy-main-window.ui.h:17
 msgid "_Contents"
 msgstr "Mụ_c lục"
 
-#: ../src/empathy-chat-window.glade.h:12
+#: ../src/empathy-chat-window.ui.h:9
 msgid "_Conversation"
 msgstr "_Cuộc nói chuyện"
 
-#: ../src/empathy-chat-window.glade.h:13
+#: ../src/empathy-chat-window.ui.h:10
 msgid "_Detach Tab"
 msgstr "Gỡ _ra thẻ"
 
-#: ../src/empathy-chat-window.glade.h:15
+#: ../src/empathy-chat-window.ui.h:12
 msgid "_Favorite Chatroom"
 msgstr "Phòng trò chuyện ư_a thích"
 
-#: ../src/empathy-chat-window.glade.h:16
-#: ../src/empathy-main-window.glade.h:12
+#: ../src/empathy-chat-window.ui.h:13 ../src/empathy-main-window.ui.h:21
 msgid "_Help"
 msgstr "Trợ g_iúp"
 
-#: ../src/empathy-chat-window.glade.h:17
+#: ../src/empathy-chat-window.ui.h:14
 msgid "_Next Tab"
 msgstr "Thẻ _sau"
 
-#: ../src/empathy-chat-window.glade.h:18
+#: ../src/empathy-chat-window.ui.h:15
 msgid "_Previous Tab"
 msgstr "Thẻ t_rước"
 
-#: ../src/empathy-chat-window.glade.h:19
+#: ../src/empathy-chat-window.ui.h:16 ../src/empathy-status-icon.ui.h:5
+msgid "_Show Contact List"
+msgstr "_Hiện danh sách liên lạc"
+
+#: ../src/empathy-chat-window.ui.h:17
 msgid "_Tabs"
 msgstr "_Thẻ"
 
-#: ../src/empathy-chatrooms-window.c:262
+#: ../src/empathy-chatrooms-window.c:256
 msgid "Name"
 msgstr "Tên"
 
-#: ../src/empathy-chatrooms-window.c:280
+#: ../src/empathy-chatrooms-window.c:274
 msgid "Room"
 msgstr "Phòng"
 
-#: ../src/empathy-chatrooms-window.c:289
+#: ../src/empathy-chatrooms-window.c:282
 msgid "Auto-Connect"
 msgstr "Tự động kết nối"
 
-#: ../src/empathy-chatrooms-window.glade.h:2
-msgid "Edit Favorite Room"
-msgstr "Sửa phòng ưa thích"
-
-#: ../src/empathy-chatrooms-window.glade.h:3
-msgid "Join room on start_up"
-msgstr "Vào phòng khi khởi chạ_y"
-
-#: ../src/empathy-chatrooms-window.glade.h:4
-msgid "Join this chat room when Empathy starts and you are connected"
-msgstr "Vào phòng trò chuyện này khi trình Empathy khởi chạy và bạn đã kết nối"
-
-#: ../src/empathy-chatrooms-window.glade.h:5
+#: ../src/empathy-chatrooms-window.ui.h:2
 msgid "Manage Favorite Rooms"
 msgstr "Quản lý phòng ưa thích"
 
-#: ../src/empathy-chatrooms-window.glade.h:6
-msgid "N_ame:"
-msgstr "_Tên:"
+#: ../src/empathy-event-manager.c:345
+#| msgid "Incoming voice call"
+msgid "Incoming video call"
+msgstr "Cuộc gọi hình đến"
 
-#: ../src/empathy-chatrooms-window.glade.h:7
-msgid "S_erver:"
-msgstr "_Máy phục vụ:"
-
-#: ../src/empathy-chatrooms-window.glade.h:9
-#: ../src/empathy-new-chatroom-dialog.glade.h:9
-msgid "_Room:"
-msgstr "_Phòng:"
-
-#: ../src/empathy-event-manager.c:373
+#: ../src/empathy-event-manager.c:345
 msgid "Incoming call"
 msgstr "Cuộc gọi gửi đến"
 
-#: ../src/empathy-event-manager.c:376
+#: ../src/empathy-event-manager.c:349
+#, c-format
+#| msgid "%s is calling you, do you want to answer?"
+msgid "%s is video calling you, do you want to answer?"
+msgstr "%s đang gọi: bạn có muốn trả lời không?"
+
+#: ../src/empathy-event-manager.c:350
 #, c-format
 msgid "%s is calling you, do you want to answer?"
 msgstr "%s đang gọi: bạn có muốn đáp ứng không?"
 
-#: ../src/empathy-event-manager.c:383
+#: ../src/empathy-event-manager.c:372
 msgid "_Reject"
 msgstr "_Từ chối"
 
-#: ../src/empathy-event-manager.c:389
+#: ../src/empathy-event-manager.c:378
 msgid "_Answer"
 msgstr "T_rả lời"
 
-#: ../src/empathy-event-manager.c:512
+#: ../src/empathy-event-manager.c:495
+#, c-format
+#| msgid "Incoming call from %s"
+msgid "Incoming video call from %s"
+msgstr "Cuộc gọi gửi đến từ %s"
+
+#: ../src/empathy-event-manager.c:495
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Cuộc gọi gửi đến từ %s"
 
-#: ../src/empathy-event-manager.c:560
+#: ../src/empathy-event-manager.c:541
 #, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s gửi cho bạn một lời mời"
 
-#: ../src/empathy-event-manager.c:566
+#: ../src/empathy-event-manager.c:547
 msgid "An external application will be started to handle it."
 msgstr "Một ứng dụng bên ngoài sẽ được khởi chạy để xử lý nó."
 
-#: ../src/empathy-event-manager.c:571
+#: ../src/empathy-event-manager.c:552
 msgid "You don't have the needed external application to handle it."
 msgstr "Bạn không có ứng dụng bên ngoài cần thiết để xử lý nó."
 
-#: ../src/empathy-event-manager.c:694
-#| msgid "Romanian"
+#: ../src/empathy-event-manager.c:680
 msgid "Room invitation"
 msgstr "Mời vào phòng"
 
-#: ../src/empathy-event-manager.c:697
+#: ../src/empathy-event-manager.c:683
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s mời bạn tham gia %s"
 
-#. Decline button
-#: ../src/empathy-event-manager.c:705
-#: ../src/empathy-ft-manager.c:1021
+#: ../src/empathy-event-manager.c:691
 msgid "_Decline"
 msgstr "_Từ chối"
 
-#: ../src/empathy-event-manager.c:710
-#| msgid "Join"
+#: ../src/empathy-event-manager.c:696
+#: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Vào"
 
-#: ../src/empathy-event-manager.c:740
+#: ../src/empathy-event-manager.c:735
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s đã mời bạn tham gia %s"
 
-#: ../src/empathy-event-manager.c:865
+#: ../src/empathy-event-manager.c:761
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Tập tin gửi đến từ %s"
 
-#: ../src/empathy-event-manager.c:959
+#: ../src/empathy-event-manager.c:941
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "%s yêu cầu đang ký"
 
-#: ../src/empathy-event-manager.c:963
+#: ../src/empathy-event-manager.c:945
 #, c-format
 msgid ""
 "\n"
@@ -1596,478 +2798,843 @@ msgstr ""
 "\n"
 " Thông điệp: %s"
 
-#: ../src/empathy-ft-manager.c:113
+#. someone is logging off
+#: ../src/empathy-event-manager.c:985
+#, c-format
+msgid "%s is now offline."
+msgstr "%s ngoại tuyến."
+
+#. someone is logging in
+#: ../src/empathy-event-manager.c:1001
+#, c-format
+msgid "%s is now online."
+msgstr "%s trực tuyến."
+
+#. Translators: time left, when it is more than one hour
+#: ../src/empathy-ft-manager.c:100
 #, c-format
 msgid "%u:%02u.%02u"
 msgstr "%u:%02u.%02u"
 
-#: ../src/empathy-ft-manager.c:115
+#. Translators: time left, when is is less than one hour
+#: ../src/empathy-ft-manager.c:103
 #, c-format
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
 
-#: ../src/empathy-ft-manager.c:164
-msgid "No reason was specified"
-msgstr "Không cung cấp lý do"
+#: ../src/empathy-ft-manager.c:179
+msgctxt "file transfer percent"
+msgid "Unknown"
+msgstr "Không rõ"
 
-#: ../src/empathy-ft-manager.c:166
-msgid "The change in state was requested"
-msgstr "Thay đổi về tình trạng đã được yêu cầu"
+#: ../src/empathy-ft-manager.c:274
+#, c-format
+#| msgid "%s of %s"
+msgid "%s of %s at %s/s"
+msgstr "%s trên %s, %s/s"
 
-#: ../src/empathy-ft-manager.c:168
-msgid "You canceled the file transfer"
-msgstr "Bạn đã thôi tiến trình truyền tập tin"
-
-#: ../src/empathy-ft-manager.c:170
-msgid "The other participant canceled the file transfer"
-msgstr "Người dự khác đã thôi tiến trình truyền tập tin"
-
-#: ../src/empathy-ft-manager.c:172
-msgid "Error while trying to transfer the file"
-msgstr "Gặp lỗi trong khi thử truyền tập tin đó"
-
-#: ../src/empathy-ft-manager.c:174
-msgid "The other participant is unable to transfer the file"
-msgstr "Người dự khác không thể truyền tập tin đó"
-
-#: ../src/empathy-ft-manager.c:176
-msgid "Unknown reason"
-msgstr "Lỗi không rõ"
+#: ../src/empathy-ft-manager.c:275
+#, c-format
+msgid "%s of %s"
+msgstr "%s trên %s"
 
 #. translators: first %s is filename, second %s is the contact name
-#: ../src/empathy-ft-manager.c:224
+#: ../src/empathy-ft-manager.c:306
 #, c-format
 msgid "Receiving \"%s\" from %s"
 msgstr "Đang nhận « %s » từ %s"
 
 #. translators: first %s is filename, second %s is the contact name
-#: ../src/empathy-ft-manager.c:227
+#: ../src/empathy-ft-manager.c:309
 #, c-format
 msgid "Sending \"%s\" to %s"
 msgstr "Đang gửi « %s » cho %s"
 
-#: ../src/empathy-ft-manager.c:237
-msgctxt "file size"
-msgid "Unknown"
-msgstr "Không rõ"
-
-#. translators: first %s is the transferred size, second %s is
-#. * the total file size
-#: ../src/empathy-ft-manager.c:245
+#. translators: first %s is filename, second %s
+#. * is the contact name
+#: ../src/empathy-ft-manager.c:339
 #, c-format
-msgid "%s of %s"
-msgstr "%s trên %s"
+#| msgid "Receiving \"%s\" from %s"
+msgid "Error receiving \"%s\" from %s"
+msgstr "Lỗi nhận \"%s\" từ %s"
 
-#: ../src/empathy-ft-manager.c:252
-msgid "Waiting the other participant's response"
-msgstr "Đang đợi đáp ứng của người dự khác"
+#: ../src/empathy-ft-manager.c:342
+msgid "Error receiving a file"
+msgstr "Lỗi nhận tập tin"
 
-#: ../src/empathy-ft-manager.c:262
+#: ../src/empathy-ft-manager.c:347
+#, c-format
+#| msgid "Sending \"%s\" to %s"
+msgid "Error sending \"%s\" to %s"
+msgstr "Lỗi gửi \"%s\" đến %s"
+
+#: ../src/empathy-ft-manager.c:350
+#| msgid "Error sending message '%s': %s"
+msgid "Error sending a file"
+msgstr "Lỗi gửi tập tin"
+
+#. translators: first %s is filename, second %s
+#. * is the contact name
+#: ../src/empathy-ft-manager.c:489
 #, c-format
 msgid "\"%s\" received from %s"
 msgstr "« %s » được nhận từ %s"
 
-#: ../src/empathy-ft-manager.c:268
+#. translators: first %s is filename, second %s
+#. * is the contact name
+#: ../src/empathy-ft-manager.c:494
 #, c-format
 msgid "\"%s\" sent to %s"
 msgstr "« %s » được gửi cho %s"
 
-#: ../src/empathy-ft-manager.c:271
+#: ../src/empathy-ft-manager.c:497
 msgid "File transfer completed"
 msgstr "Hoàn tất truyền tập tin"
 
-#: ../src/empathy-ft-manager.c:280
+#: ../src/empathy-ft-manager.c:616 ../src/empathy-ft-manager.c:783
+#| msgid "Waiting the other participant's response"
+msgid "Waiting for the other participant's response"
+msgstr "Đang đợi trả lời từ bên kia"
+
+#: ../src/empathy-ft-manager.c:642 ../src/empathy-ft-manager.c:680
 #, c-format
-msgid "\"%s\" receiving from %s"
-msgstr "« %s » đang nhận từ %s"
+msgid "Checking integrity of \"%s\""
+msgstr "Đang kiểm tra tính toàn vẹn của \"%s\""
 
-#: ../src/empathy-ft-manager.c:286
+#: ../src/empathy-ft-manager.c:645 ../src/empathy-ft-manager.c:683
 #, c-format
-msgid "\"%s\" sending to %s"
-msgstr "« %s » đang gửi cho %s"
+msgid "Hashing \"%s\""
+msgstr "Đang tính mã nhận dạng cho \"%s\""
 
-#: ../src/empathy-ft-manager.c:289
-#, c-format
-msgid "File transfer canceled: %s"
-msgstr "Tiến trình truyền tập tin bị thôi: %s"
-
-#: ../src/empathy-ft-manager.c:304
-msgctxt "remaining time"
-msgid "Unknown"
-msgstr "Không rõ"
-
-#: ../src/empathy-ft-manager.c:364
-msgctxt "file transfer percent"
-msgid "Unknown"
-msgstr "Không rõ"
-
-#: ../src/empathy-ft-manager.c:700
+#: ../src/empathy-ft-manager.c:991
 msgid "%"
 msgstr "%"
 
-#: ../src/empathy-ft-manager.c:712
+#: ../src/empathy-ft-manager.c:1003
 msgid "File"
 msgstr "Tập tin"
 
-#: ../src/empathy-ft-manager.c:734
+#: ../src/empathy-ft-manager.c:1025
 msgid "Remaining"
 msgstr "Còn lại"
 
-#: ../src/empathy-ft-manager.c:885
-msgid "Cannot save file to this location"
-msgstr "Không thể lưu tập tin vào vị trí này"
+#: ../src/empathy-ft-manager.ui.h:1
+#| msgid "File transfers"
+msgid "File Transfers"
+msgstr "Truyền tập tin"
 
-#: ../src/empathy-ft-manager.c:931
-msgid "Save file as..."
-msgstr "Lưu tập tin dạng..."
-
-#: ../src/empathy-ft-manager.c:1001
-msgid "unknown size"
-msgstr "kích cỡ không rõ"
-
-#: ../src/empathy-ft-manager.c:1007
-#, c-format
-msgid "%s would like to send you a file"
-msgstr "%s muốn gửi cho bạn một tập tin"
-
-#: ../src/empathy-ft-manager.c:1012
-#, c-format
-msgid "Do you want to accept the file \"%s\" (%s)?"
-msgstr "Bạn có muốn chấp nhận tập tin « %s » (%s) không?"
-
-#. Accept button
-#: ../src/empathy-ft-manager.c:1030
-msgid "_Accept"
-msgstr "_Chấp nhận"
-
-#: ../src/empathy-ft-manager.glade.h:1
-msgid "File transfers"
-msgstr "Việc truyền tập tin"
-
-#: ../src/empathy-ft-manager.glade.h:2
+#: ../src/empathy-ft-manager.ui.h:2
 msgid "Remove completed, canceled and failed file transfers from the list"
-msgstr "Gỡ bỏ khỏi danh sách các việc truyền tập tin là hoàn tất, bị thôi hay bị lỗi"
+msgstr ""
+"Gỡ bỏ khỏi danh sách các việc truyền tập tin là hoàn tất, bị thôi hay bị lỗi"
 
-#: ../src/empathy-import-dialog.c:254
-msgid "Import"
-msgstr "Nhập"
+#: ../src/empathy-import-dialog.c:84
+msgid ""
+"No accounts to import could be found. Empathy currently only supports "
+"importing accounts from Pidgin."
+msgstr ""
+"Không tìm thấy tài khoản có thể nhập vào. Trình Empathy hiện thời chỉ hỗ trợ "
+"chức năng nhập tài khoản từ Pidgin (đã Gaim)."
 
-#: ../src/empathy-import-dialog.c:263
-msgid "Protocol"
-msgstr "Giao thức"
-
-#: ../src/empathy-import-dialog.c:289
-msgid "Source"
-msgstr "Nguồn"
-
-#: ../src/empathy-import-dialog.c:377
-msgid "No accounts to import could be found. Empathy currently only supports importing accounts from Pidgin."
-msgstr "Không tìm thấy tài khoản có thể nhập vào. Trình Empathy hiện thời chỉ hỗ trợ chức năng nhập tài khoản từ Pidgin (đã Gaim)."
-
-#: ../src/empathy-import-dialog.glade.h:1
+#: ../src/empathy-import-dialog.c:199
 msgid "Import Accounts"
 msgstr "Nhập tài khoản"
 
-#: ../src/empathy-main-window.c:391
-msgid "No error specified"
-msgstr "Lỗi không xác định"
+#. Translators: this is the header of a treeview column
+#: ../src/empathy-import-widget.c:290
+msgid "Import"
+msgstr "Nhập"
 
-#: ../src/empathy-main-window.c:394
-msgid "Network error"
-msgstr "Lỗi mạng"
+#: ../src/empathy-import-widget.c:299
+msgid "Protocol"
+msgstr "Giao thức"
 
-#: ../src/empathy-main-window.c:397
-msgid "Authentication failed"
-msgstr "Lỗi xác thực"
+#: ../src/empathy-import-widget.c:323
+msgid "Source"
+msgstr "Nguồn"
 
-#: ../src/empathy-main-window.c:400
-msgid "Encryption error"
-msgstr "Lỗi mật mã"
+#: ../src/empathy-import-mc4-accounts.c:106
+#, c-format
+#| msgid "New %s account"
+msgid "%s account"
+msgstr "Tài khoản %s"
 
-#: ../src/empathy-main-window.c:403
-msgid "Name in use"
-msgstr "Tên đang được dùng"
+#: ../src/empathy-main-window.c:431
+#| msgid "Disconnected"
+msgid "Reconnect"
+msgstr "Tái kết nối"
 
-#: ../src/empathy-main-window.c:406
-msgid "Certificate not provided"
-msgstr "Chứng nhận không được cung cấp"
+#: ../src/empathy-main-window.c:438
+#| msgid "_Edit account"
+msgid "Edit Account"
+msgstr "Sửa tài khoản"
 
-#: ../src/empathy-main-window.c:409
-msgid "Certificate untrusted"
-msgstr "Chứng nhận không đáng tin"
+#: ../src/empathy-main-window.c:445
+#| msgid "Clean"
+msgid "Close"
+msgstr "Đóng"
 
-#: ../src/empathy-main-window.c:412
-msgid "Certificate expired"
-msgstr "Chứng nhận đã hết hạn dùng"
-
-#: ../src/empathy-main-window.c:415
-msgid "Certificate not activated"
-msgstr "Chứng nhận không được kích hoạt"
-
-#: ../src/empathy-main-window.c:418
-msgid "Certificate hostname mismatch"
-msgstr "Tên máy của chứng nhận không tương ứng"
-
-#: ../src/empathy-main-window.c:421
-msgid "Certificate fingerprint mismatch"
-msgstr "Vân tay của chứng nhận không tương ứng"
-
-#: ../src/empathy-main-window.c:424
-msgid "Certificate self-signed"
-msgstr "Chứng nhận tự ký"
-
-#: ../src/empathy-main-window.c:427
-msgid "Certificate error"
-msgstr "Lỗi chứng nhận"
-
-#: ../src/empathy-main-window.c:430
-msgid "Unknown error"
-msgstr "Lỗi không rõ"
-
-#: ../src/empathy-main-window.c:594
+#: ../src/empathy-main-window.c:1331
 msgid "Show and edit accounts"
 msgstr "Hiện và sửa tài khoản"
 
-#: ../src/empathy-main-window.c:974
-msgid "Contact"
-msgstr "Liên lạc"
-
-#: ../src/empathy-main-window.c:1176
-msgid "_Edit account"
-msgstr "_Sửa tài khoản"
-
-#: ../src/empathy-main-window.glade.h:1
+#: ../src/empathy-main-window.ui.h:1
 msgid "Contact List"
 msgstr "Danh sách Liên lạc"
 
-#: ../src/empathy-main-window.glade.h:2
+#: ../src/empathy-main-window.ui.h:2
+msgid "Contacts on a _Map"
+msgstr "Liên lạc trên _bản đồ"
+
+#: ../src/empathy-main-window.ui.h:3
 msgid "Context"
 msgstr "Ngữ cảnh"
 
-#: ../src/empathy-main-window.glade.h:3
+#: ../src/empathy-main-window.ui.h:4
 msgid "Join _Favorites"
 msgstr "_Vào Ưa thích"
 
-#: ../src/empathy-main-window.glade.h:4
-msgid "Join _New..."
-msgstr "Vào _mới..."
-
-#: ../src/empathy-main-window.glade.h:5
+#: ../src/empathy-main-window.ui.h:5
 msgid "Manage Favorites"
 msgstr "Quản lý Ưa thích"
 
-#: ../src/empathy-main-window.glade.h:6
-msgid "Show _Offline Contacts"
-msgstr "Hiện liên lạc ng_oại tuyến"
+#: ../src/empathy-main-window.ui.h:6
+msgid "N_ormal Size"
+msgstr "Cỡ _thường"
 
-#: ../src/empathy-main-window.glade.h:7
+#: ../src/empathy-main-window.ui.h:7 ../src/empathy-status-icon.ui.h:1
+msgid "New _Call..."
+msgstr "_Gọi điện..."
+
+#: ../src/empathy-main-window.ui.h:8
+msgid "Normal Size With _Avatars"
+msgstr "Ảnh riêng cỡ _thường"
+
+#: ../src/empathy-main-window.ui.h:9
+#| msgid "Preferences"
+msgid "P_references"
+msgstr "_Tùy thích"
+
+#: ../src/empathy-main-window.ui.h:10
+#| msgid "Protocol"
+msgid "Show P_rotocols"
+msgstr "_Hiện giao thức"
+
+#: ../src/empathy-main-window.ui.h:11
+#| msgid "Sort by _name"
+msgid "Sort by _Name"
+msgstr "Sắp theo tê_n"
+
+#: ../src/empathy-main-window.ui.h:12
+#| msgid "Sort by s_tate"
+msgid "Sort by _Status"
+msgstr "Sắp theo _tình trạng"
+
+#: ../src/empathy-main-window.ui.h:13
 msgid "_Accounts"
 msgstr "_Tài khoản"
 
-#: ../src/empathy-main-window.glade.h:8
-msgid "_Add Contact..."
-msgstr "Thê_m liên lạc..."
+#: ../src/empathy-main-window.ui.h:16
+msgid "_Compact Size"
+msgstr "Cỡ _gọn"
 
-#: ../src/empathy-main-window.glade.h:13
-#: ../src/empathy-status-icon.glade.h:2
+#: ../src/empathy-main-window.ui.h:18
+msgid "_Debug"
+msgstr "_Tìm lỗi"
+
+#: ../src/empathy-main-window.ui.h:20
+#| msgid "File transfers"
+msgid "_File Transfers"
+msgstr "Truyền tập tin"
+
+#: ../src/empathy-main-window.ui.h:22
+#| msgid "_Join"
+msgid "_Join..."
+msgstr "_Tham gia..."
+
+#: ../src/empathy-main-window.ui.h:23 ../src/empathy-status-icon.ui.h:3
 msgid "_New Conversation..."
 msgstr "Cuộc _nói chuyện mới..."
 
-#: ../src/empathy-main-window.glade.h:14
+#: ../src/empathy-main-window.ui.h:24
+#| msgid "Show _Offline Contacts"
+msgid "_Offline Contacts"
+msgstr "Liên lạc ng_oại tuyến"
+
+#: ../src/empathy-main-window.ui.h:25
 msgid "_Personal Information"
 msgstr "T_hông tin cá nhân"
 
-#: ../src/empathy-main-window.glade.h:16
+#: ../src/empathy-main-window.ui.h:27
 msgid "_Room"
 msgstr "_Phòng"
 
-#: ../src/empathy-new-chatroom-dialog.c:291
-msgid "Chat Rooms"
+#: ../src/empathy-new-chatroom-dialog.c:338
+#| msgid "Chat Rooms"
+msgid "Chat Room"
 msgstr "Phòng trò chuyện"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:2
-msgid "Browse:"
-msgstr "Duyệt:"
+#: ../src/empathy-new-chatroom-dialog.c:354
+#| msgid "Themes"
+msgid "Members"
+msgstr "Thành viên"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:3
-msgid "Enter the room name to join here or click on one or more rooms in the list."
-msgstr "Hãy gõ tên phòng cần vào, hoặc chọn một hay nhiều phòng trong danh sách."
+#: ../src/empathy-new-chatroom-dialog.c:539
+#, c-format
+msgctxt ""
+"Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/no "
+"and a number."
+msgid ""
+"<b>%s</b>\n"
+"Invite required: %s\n"
+"Password required: %s\n"
+"Members: %s"
+msgstr ""
+"<b>%s</b>\n"
+"Cần giấy mời: %s\n"
+"Cần mật khẩu: %s\n"
+"Thành viên: %s"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:4
-msgid "Enter the server which hosts the room, or leave it empty if the room is on the current account's server"
-msgstr "Hãy gõ máy phục vụ có hỗ trợ phông, hoặc bỏ trống nếu phòng không nằm trên máy phục vụ của tài khoản hiện thời."
+#: ../src/empathy-new-chatroom-dialog.c:541
+#: ../src/empathy-new-chatroom-dialog.c:542
+msgid "No"
+msgstr "Không"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:5
-msgid "Join"
-msgstr "Vào"
+#: ../src/empathy-new-chatroom-dialog.c:569
+msgid "Could not start room listing"
+msgstr "Không thể lấy danh sách phòng"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:6
-msgid "Join New"
-msgstr "Vào mới"
+#: ../src/empathy-new-chatroom-dialog.c:579
+msgid "Could not stop room listing"
+msgstr "Không thể ngừng danh sách phòng"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:7
-msgid "Re_fresh"
-msgstr "Cậ_p nhật"
+#: ../src/empathy-new-chatroom-dialog.ui.h:2
+msgid "Couldn't load room list"
+msgstr "Không thể nạp danh sách phòng"
 
-#: ../src/empathy-new-chatroom-dialog.glade.h:8
-msgid "This list represents all chat rooms hosted on the server you have entered."
-msgstr "Danh sách này đại diện tất cả các phòng trò chuyện nằm trên máy phục vụ bạn đã nhập."
+#: ../src/empathy-new-chatroom-dialog.ui.h:3
+msgid ""
+"Enter the room name to join here or click on one or more rooms in the list."
+msgstr ""
+"Hãy gõ tên phòng cần vào, hoặc chọn một hay nhiều phòng trong danh sách."
 
-#: ../src/empathy-preferences.c:157
+#: ../src/empathy-new-chatroom-dialog.ui.h:4
+msgid ""
+"Enter the server which hosts the room, or leave it empty if the room is on "
+"the current account's server"
+msgstr ""
+"Hãy gõ máy phục vụ có hỗ trợ phông, hoặc bỏ trống nếu phòng không nằm trên "
+"máy phục vụ của tài khoản hiện thời."
+
+#: ../src/empathy-new-chatroom-dialog.ui.h:5
+#| msgid "Room"
+msgid "Join Room"
+msgstr "Vào phòng"
+
+#: ../src/empathy-new-chatroom-dialog.ui.h:6
+#| msgid "_Room List locale:"
+msgid "Room List"
+msgstr "Danh sách phòng"
+
+#: ../src/empathy-new-chatroom-dialog.ui.h:8
+msgid "_Room:"
+msgstr "_Phòng:"
+
+#: ../src/empathy-preferences.c:148
 msgid "Message received"
-msgstr "Nhận được tin nhẳn"
+msgstr "Nhận được tin nhắn"
 
-#: ../src/empathy-preferences.c:158
+#: ../src/empathy-preferences.c:149
 msgid "Message sent"
-msgstr "Tin nhẳn được gửi"
+msgstr "tin nhắn được gửi"
 
-#: ../src/empathy-preferences.c:159
+#: ../src/empathy-preferences.c:150
 msgid "New conversation"
 msgstr "Cuộc trao đổi mới"
 
-#: ../src/empathy-preferences.c:160
+#: ../src/empathy-preferences.c:151
 msgid "Contact goes online"
 msgstr "Liên lạc mới trực tuyến"
 
-#: ../src/empathy-preferences.c:161
+#: ../src/empathy-preferences.c:152
 msgid "Contact goes offline"
 msgstr "Liên lạc mới ngoại tuyến"
 
-#: ../src/empathy-preferences.c:162
+#: ../src/empathy-preferences.c:153
 msgid "Account connected"
 msgstr "Tài khoản đã kết nối"
 
-#: ../src/empathy-preferences.c:163
+#: ../src/empathy-preferences.c:154
 msgid "Account disconnected"
 msgstr "Tài khoản bị ngắt kết nối"
 
-#: ../src/empathy-preferences.c:397
+#: ../src/empathy-preferences.c:394
 msgid "Language"
 msgstr "Ngôn ngữ"
 
-#: ../src/empathy-preferences.glade.h:1
-msgid "<b>Appearance</b>"
-msgstr "<b>Diện mạo</b>"
+#: ../src/empathy-preferences.ui.h:1
+#| msgid "<b>Appearance</b>"
+msgid "Appearance"
+msgstr "Diện mạo"
 
-#: ../src/empathy-preferences.glade.h:2
-msgid "<b>Behaviour</b>"
-msgstr "<b>Ứng xử</b>"
-
-#: ../src/empathy-preferences.glade.h:3
-msgid "<b>Contact List</b>"
-msgstr "<b>Danh sách Liên lạc</b>"
-
-#: ../src/empathy-preferences.glade.h:4
-msgid "<b>Enable spell checking for languages:</b>"
-msgstr "<b>Bật kiểm tra chính tả cho ngôn ngữ :</b>"
-
-#: ../src/empathy-preferences.glade.h:5
-msgid "<b>Play sound for events</b>"
-msgstr "<b>Phát âm về sự kiện</b>"
-
-#: ../src/empathy-preferences.glade.h:6
-msgid "<small>The list of languages reflects only the languages for which you have a dictionary installed.</small>"
-msgstr "<small>Danh sách ngôn ngữ này phản ánh chỉ những ngôn ngữ cho mà bạn đã cài đặt từ điển.</small>"
-
-#: ../src/empathy-preferences.glade.h:7
+#: ../src/empathy-preferences.ui.h:2
 msgid "Automatically _connect on startup "
 msgstr "Tự động kết nối khi khởi _chạy"
 
-#: ../src/empathy-preferences.glade.h:8
-msgid "Avatars are user chosen images shown in the contact list"
-msgstr "Ảnh riêng là ảnh được người dùng chọn mà được hiển thị trong danh sách liên lạc"
+#: ../src/empathy-preferences.ui.h:3
+#| msgid "<b>Behaviour</b>"
+msgid "Behavior"
+msgstr "Ứng xử"
 
-#: ../src/empathy-preferences.glade.h:9
+#: ../src/empathy-preferences.ui.h:4
 msgid "Chat Th_eme:"
 msgstr "_Sắc thái trò chuyện: "
 
-#: ../src/empathy-preferences.glade.h:10
+#: ../src/empathy-preferences.ui.h:5
 msgid "Disable notifications when _away or busy"
 msgstr "Tắt thông báo khi vắng mặt h_ay bận"
 
-#: ../src/empathy-preferences.glade.h:11
+#: ../src/empathy-preferences.ui.h:6
 msgid "Disable sounds when _away or busy"
 msgstr "Tắt phát âm khi vắng mặt h_ay bận"
 
-#: ../src/empathy-preferences.glade.h:12
-msgid "Enable notifications when the _chat is not focused"
-msgstr "Thông báo khi _cửa sổ chát không có tiêu điểm"
+#: ../src/empathy-preferences.ui.h:7
+#| msgid "Enable notifications when the _chat is not focused"
+msgid "Enable notifications when a contact comes online"
+msgstr "Bật thông báo khi liên lạc trực tuyến"
 
-#: ../src/empathy-preferences.glade.h:13
+#: ../src/empathy-preferences.ui.h:8
+#| msgid "Enable notifications when the _chat is not focused"
+msgid "Enable notifications when a contact goes offline"
+msgstr "Bật thông báo khi liên lạc ngoại tuyến"
+
+#: ../src/empathy-preferences.ui.h:9
+msgid "Enable notifications when the _chat is not focused"
+msgstr "Thông báo khi _cửa sổ trò chuyện không có tiêu điểm"
+
+#: ../src/empathy-preferences.ui.h:10
+#| msgid "<b>Enable spell checking for languages:</b>"
+msgid "Enable spell checking for languages:"
+msgstr "Bật kiểm tra chính tả cho ngôn ngữ:"
+
+#: ../src/empathy-preferences.ui.h:11
 msgid "General"
 msgstr "Chung"
 
-#: ../src/empathy-preferences.glade.h:14
+#: ../src/empathy-preferences.ui.h:12
+#| msgid "Notifications"
+msgid "Location"
+msgstr "Vị trí"
+
+#: ../src/empathy-preferences.ui.h:13
+#| msgid "Use notification sounds"
+msgid "Location sources:"
+msgstr "Nguồn vị trí:"
+
+#: ../src/empathy-preferences.ui.h:14
 msgid "Notifications"
 msgstr "Thông báo"
 
-#: ../src/empathy-preferences.glade.h:15
+#: ../src/empathy-preferences.ui.h:15
+#| msgid "<b>Play sound for events</b>"
+msgid "Play sound for events"
+msgstr "Phát âm về sự kiện"
+
+#: ../src/empathy-preferences.ui.h:16
 msgid "Preferences"
 msgstr "Tùy thích"
 
-#: ../src/empathy-preferences.glade.h:16
-msgid "Show _avatars"
-msgstr "Hiện ảnh _riêng"
+#: ../src/empathy-preferences.ui.h:17
+msgid "Privacy"
+msgstr "Riêng tư"
 
-#: ../src/empathy-preferences.glade.h:17
+#: ../src/empathy-preferences.ui.h:18
+msgid ""
+"Reduced location accuracy means that nothing more precise than your city, "
+"state and country will be published.  GPS coordinates will be accurate to 1 "
+"decimal place."
+msgstr "Giảm độ chính xác nghĩa là chỉ công bố vị trí của bạn đến mức thành phố, bang và quốc gia. Toạ độ GPS có thể chính xác đến 1 chữ số."
+
+#: ../src/empathy-preferences.ui.h:19
 msgid "Show _smileys as images"
 msgstr "HIện _hình cười dạng ảnh"
 
-#: ../src/empathy-preferences.glade.h:18
-msgid "Show co_mpact contact list"
-msgstr "Hiện danh sách liên lạc tó_m gọn"
+#: ../src/empathy-preferences.ui.h:20
+#| msgid "_Show Contact List"
+msgid "Show contact _list in rooms"
+msgstr "_Hiện danh sách liên lạc trong phòng"
 
-#: ../src/empathy-preferences.glade.h:19
-msgid "Sort by _name"
-msgstr "Sắp xếp theo tê_n"
-
-#: ../src/empathy-preferences.glade.h:20
-msgid "Sort by s_tate"
-msgstr "Sắp xếp theo _tình trạng"
-
-#: ../src/empathy-preferences.glade.h:21
+#: ../src/empathy-preferences.ui.h:21
 msgid "Sounds"
 msgstr "Âm thanh"
 
-#: ../src/empathy-preferences.glade.h:22
+#: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
 msgstr "Kiểm tra chính tả"
 
-#: ../src/empathy-preferences.glade.h:23
+#: ../src/empathy-preferences.ui.h:23
+#| msgid ""
+#| "<small>The list of languages reflects only the languages for which you "
+#| "have a dictionary installed.</small>"
+msgid ""
+"The list of languages reflects only the languages for which you have a "
+"dictionary installed."
+msgstr "Danh sách ngôn ngữ này phản ánh chỉ những ngôn ngữ cho mà bạn đã cài đặt từ điển."
+
+#: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
 msgstr "Sắc thái"
 
-#: ../src/empathy-preferences.glade.h:24
+#: ../src/empathy-preferences.ui.h:25
+#| msgid "Megaphone"
+msgid "_Cellphone"
+msgstr "Điện thoại _di đông"
+
+#: ../src/empathy-preferences.ui.h:26
 msgid "_Enable bubble notifications"
 msgstr "_Bật thông báo trong bóng"
 
-#: ../src/empathy-preferences.glade.h:25
+#: ../src/empathy-preferences.ui.h:27
 msgid "_Enable sound notifications"
 msgstr "_Phát âm thông báo"
 
-#: ../src/empathy-preferences.glade.h:26
+#: ../src/empathy-preferences.ui.h:28
+msgid "_GPS"
+msgstr "_GPS"
+
+#: ../src/empathy-preferences.ui.h:29
+msgid "_Network (IP, Wifi)"
+msgstr "_Mạng (IP, Wifi)"
+
+#: ../src/empathy-preferences.ui.h:30
 msgid "_Open new chats in separate windows"
 msgstr "Mở cuộc trò chuyện mới tr_ong cửa sổ riêng"
 
-#: ../src/empathy-status-icon.glade.h:1
+#: ../src/empathy-preferences.ui.h:31
+msgid "_Publish location to my contacts"
+msgstr "_Công bố vị trí cho bạn bè tôi"
+
+#: ../src/empathy-preferences.ui.h:32
+msgid "_Reduce location accuracy"
+msgstr "_Giảm độ chính xác vị trí"
+
+#: ../src/empathy-status-icon.c:179
+msgid "Respond"
+msgstr "Trả lời"
+
+#: ../src/empathy-status-icon.ui.h:2
 msgid "Status"
 msgstr "Trạng thái"
 
-#: ../src/empathy-status-icon.glade.h:3
+#: ../src/empathy-status-icon.ui.h:4
 msgid "_Quit"
 msgstr "T_hoát"
 
-#: ../src/empathy-status-icon.glade.h:4
-msgid "_Show Contact List"
-msgstr "_Hiện danh sách liên lạc"
-
-#: ../src/empathy-tube-dispatch.c:356
+#: ../src/empathy-tube-dispatch.c:376
 #, c-format
 msgid "Unable to start application for service %s: %s"
 msgstr "Không thể khởi chạy ứng dụng cho dịch vụ %s: %s"
 
-#: ../src/empathy-tube-dispatch.c:427
+#: ../src/empathy-tube-dispatch.c:447
 #, c-format
-msgid "An invitation was offered for service %s, but you don't have the needed application to handle it"
-msgstr "Bạn đã nhận một lời mời sử dụng dịch vụ %s, nhưng không có ứng dụng cần thiết để xử lý nó"
+msgid ""
+"An invitation was offered for service %s, but you don't have the needed "
+"application to handle it"
+msgstr ""
+"Bạn đã nhận một lời mời sử dụng dịch vụ %s, nhưng không có ứng dụng cần "
+"thiết để xử lý nó"
 
+#: ../src/empathy-map-view.ui.h:1
+#| msgid "Contact List"
+msgid "Contact Map View"
+msgstr "Xem bản đồ danh sách"
+
+#: ../src/empathy-debug-window.c:1063
+#| msgid "Server"
+msgid "Save"
+msgstr "Lưu"
+
+#: ../src/empathy-debug-window.c:1185
+msgid "Debug Window"
+msgstr "Cửa sổ tìm lỗi"
+
+#: ../src/empathy-debug-window.c:1265
+msgid "Pause"
+msgstr "Tạm ngừng"
+
+#: ../src/empathy-debug-window.c:1277
+msgid "Level "
+msgstr "Cấp "
+
+#: ../src/empathy-debug-window.c:1297
+msgid "Debug"
+msgstr "Tìm lỗi"
+
+#: ../src/empathy-debug-window.c:1303
+msgid "Info"
+msgstr "Thông tin"
+
+#: ../src/empathy-debug-window.c:1309 ../src/empathy-debug-window.c:1358
+#| msgid "Message:"
+msgid "Message"
+msgstr "Thông báo"
+
+#: ../src/empathy-debug-window.c:1315
+#| msgid "Remaining"
+msgid "Warning"
+msgstr "Cảnh báo"
+
+#: ../src/empathy-debug-window.c:1321
+#| msgid "Croatian"
+msgid "Critical"
+msgstr "Nghiêm trọng"
+
+#: ../src/empathy-debug-window.c:1327
+msgid "Error"
+msgstr "Lỗi"
+
+#: ../src/empathy-debug-window.c:1346
+#| msgid "Simple"
+msgid "Time"
+msgstr "Thời gian"
+
+#: ../src/empathy-debug-window.c:1349
+#| msgid "Romanian"
+msgid "Domain"
+msgstr "Miền"
+
+#: ../src/empathy-debug-window.c:1351
+msgid "Category"
+msgstr "Phân loại"
+
+#: ../src/empathy-debug-window.c:1353
+msgid "Level"
+msgstr "Cấp"
+
+#: ../src/empathy-debug-window.c:1385
+msgid ""
+"The selected connection manager does not support the remote debugging "
+"extension."
+msgstr "Trình quản lý kết nối được chọn không hỗ trợ tìm lỗi từ xa"
+
+#~ msgid "Empathy Instant Messenger"
+#~ msgstr "Trình gửi tin nhắn Empathy"
+
+#~ msgid "Forget password and clear the entry."
+#~ msgstr "Quên mật khẩu và xoá mục nhập."
+
+#~ msgid "<b>Network</b>"
+#~ msgstr "<b>Mạng</b>"
+
+#~ msgid "<b>Servers</b>"
+#~ msgstr "<b>Máy phục vụ</b>"
+
+#~ msgid "Create a new IRC network"
+#~ msgstr "Tạo một mạng IRC mới"
+
+#~ msgid "Edit the selected IRC network"
+#~ msgstr "Sửa mạng IRC được chọn"
+
+#~ msgid "Remove the selected IRC network"
+#~ msgstr "Gỡ bỏ mạng IRC được chọn"
+
+#~ msgid "_Check Word Spelling..."
+#~ msgstr "_Kiểm tra chính tả từ..."
+
+#~ msgid "<b>Topic:</b>"
+#~ msgstr "<b>Chủ đề:</b>"
+
+#~ msgid "Group Chat"
+#~ msgstr "Trò chuyện nhóm"
+
+#~ msgid "Contact Information"
+#~ msgstr "Thông tin liên lạc"
+
+#~ msgid "I would like to add you to my contact list."
+#~ msgstr "Tôi muốn thêm bạn vào danh sách liên lạc mình."
+
+#~ msgid "Sorry, I don't want you in my contact list anymore."
+#~ msgstr "Tiếc là tôi đã gỡ bỏ bạn khỏi danh sách liên lạc của mình."
+
+#~ msgid "_View Previous Conversations"
+#~ msgstr "_Xem cuộc nói chuyện trước"
+
+#~ msgid "Contact information"
+#~ msgstr "Thông tin liên lạc"
+
+#~ msgid "C_all"
+#~ msgstr "_Gọi"
+
+#~ msgid "Word"
+#~ msgstr "Từ"
+
+#~ msgid "Suggestions for the word"
+#~ msgstr "Đề nghị từ"
+
+#~ msgid "Spell Checker"
+#~ msgstr "Bộ kiểm lỗi chính tả"
+
+#~ msgid "Suggestions for the word:"
+#~ msgstr "Đề nghị từ :"
+
+#~ msgid ""
+#~ "The contact to display in the applet. Empty means no contact is displayed."
+#~ msgstr ""
+#~ "Liên lạc cần hiển thị trong tiểu dụng. Bỏ trống thì không hiển thị gì."
+
+#~ msgid "The contact's avatar token. Empty means contact has no avatar."
+#~ msgstr ""
+#~ "Hiệu bài ảnh riêng của liên lạc. Bỏ trống thì liên lạc không có ảnh riêng."
+
+#~ msgid "Talk!"
+#~ msgstr "Nói chuyện !"
+
+#~ msgid "_Information"
+#~ msgstr "Thông t_in"
+
+#~ msgid "_Preferences"
+#~ msgstr "Tù_y thích"
+
+#~ msgid "Please configure a contact."
+#~ msgstr "Hãy cấu hình một liên lạc."
+
+#~ msgid "Select contact..."
+#~ msgstr "Chọn liên lạc..."
+
+#~ msgid "Presence"
+#~ msgstr "Sự có mặt"
+
+#~ msgid "Set your own presence"
+#~ msgstr "Đặt sự có mặt của bạn"
+
+#~ msgid ""
+#~ "Any associated conversations and chat rooms will NOT be removed if you "
+#~ "decide to proceed.\n"
+#~ "\n"
+#~ "Should you decide to add the account back at a later time, they will "
+#~ "still be available."
+#~ msgstr ""
+#~ "Cuộc đối thoại nào hay phòng trò chuyện nào tương ứng sẽ KHÔNG bị gỡ bỏ "
+#~ "nếu bạn chọn tiếp tục.\n"
+#~ "\n"
+#~ "Như thế thì chúng sẽ vẫn còn sẵn sàng nếu bạn chọn thêm lại tài khoản này "
+#~ "vào lúc sau."
+
+#~ msgid "<b>New Account</b>"
+#~ msgstr "<b>Tài khoản mới</b>"
+
+#~ msgid "<b>Settings</b>"
+#~ msgstr "<b>Thiết lập</b>"
+
+#~ msgid "Import Accounts..."
+#~ msgstr "Nhập tài khoản..."
+
+#~ msgid "Send video"
+#~ msgstr "Gửi phim"
+
+#~ msgid "Conversations (%d)"
+#~ msgstr "Cuộc nói chuyện (%d)"
+
+#~ msgid "New message from %s"
+#~ msgstr "tin nhắn mới từ %s"
+
+#~ msgid "Invitation _message:"
+#~ msgstr "Lời _mời:"
+
+#~ msgid "Invite"
+#~ msgstr "Mời"
+
+#~ msgid "You have been invited to join a chat conference."
+#~ msgstr "Bạn đã được mời tham gia một hội thảo trò chuyện."
+
+#~ msgid "_Contact"
+#~ msgstr "_Liên lạc"
+
+#~ msgid "Edit Favorite Room"
+#~ msgstr "Sửa phòng ưa thích"
+
+#~ msgid "Join room on start_up"
+#~ msgstr "Vào phòng khi khởi chạ_y"
+
+#~ msgid "Join this chat room when Empathy starts and you are connected"
+#~ msgstr ""
+#~ "Vào phòng trò chuyện này khi trình Empathy khởi chạy và bạn đã kết nối"
+
+#~ msgid "N_ame:"
+#~ msgstr "_Tên:"
+
+#~ msgid "S_erver:"
+#~ msgstr "_Máy phục vụ:"
+
+#~ msgctxt "file size"
+#~ msgid "Unknown"
+#~ msgstr "Không rõ"
+
+#~ msgid "\"%s\" receiving from %s"
+#~ msgstr "« %s » đang nhận từ %s"
+
+#~ msgid "\"%s\" sending to %s"
+#~ msgstr "« %s » đang gửi cho %s"
+
+#~ msgid "File transfer canceled: %s"
+#~ msgstr "Tiến trình truyền tập tin bị thôi: %s"
+
+#~ msgctxt "remaining time"
+#~ msgid "Unknown"
+#~ msgstr "Không rõ"
+
+#~ msgid "Cannot save file to this location"
+#~ msgstr "Không thể lưu tập tin vào vị trí này"
+
+#~ msgid "Save file as..."
+#~ msgstr "Lưu tập tin dạng..."
+
+#~ msgid "unknown size"
+#~ msgstr "kích cỡ không rõ"
+
+#~ msgid "%s would like to send you a file"
+#~ msgstr "%s muốn gửi cho bạn một tập tin"
+
+#~ msgid "Do you want to accept the file \"%s\" (%s)?"
+#~ msgstr "Bạn có muốn chấp nhận tập tin « %s » (%s) không?"
+
+#~ msgid "_Accept"
+#~ msgstr "_Chấp nhận"
+
+#~ msgid "No error specified"
+#~ msgstr "Lỗi không xác định"
+
+#~ msgid "Unknown error"
+#~ msgstr "Lỗi không rõ"
+
+#~ msgid "Join _New..."
+#~ msgstr "Vào _mới..."
+
+#~ msgid "Browse:"
+#~ msgstr "Duyệt:"
+
+#~ msgid "Join New"
+#~ msgstr "Vào mới"
+
+#~ msgid "Re_fresh"
+#~ msgstr "Cậ_p nhật"
+
+#~ msgid ""
+#~ "This list represents all chat rooms hosted on the server you have entered."
+#~ msgstr ""
+#~ "Danh sách này đại diện tất cả các phòng trò chuyện nằm trên máy phục vụ "
+#~ "bạn đã nhập."
+
+#~ msgid "<b>Contact List</b>"
+#~ msgstr "<b>Danh sách Liên lạc</b>"
+
+#~ msgid "Avatars are user chosen images shown in the contact list"
+#~ msgstr ""
+#~ "Ảnh riêng là ảnh được người dùng chọn mà được hiển thị trong danh sách "
+#~ "liên lạc"
+
+#~ msgid "Show _avatars"
+#~ msgstr "Hiện ảnh _riêng"
+
+#~ msgid "Show co_mpact contact list"
+#~ msgstr "Hiện danh sách liên lạc tó_m gọn"
