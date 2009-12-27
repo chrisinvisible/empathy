@@ -349,6 +349,10 @@ empathy_account_dialog_widget_cancelled_cb (
       g_object_unref (account);
     }
 
+  gtk_widget_set_sensitive (priv->treeview, TRUE);
+  gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_set_sensitive (priv->button_import, TRUE);
+
   if (settings != NULL)
     g_object_unref (settings);
 }
@@ -360,6 +364,7 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   gchar *display_name;
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   display_name = empathy_account_widget_get_default_display_name (
       widget_object);
@@ -372,6 +377,10 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   accounts_dialog_update_settings (dialog, settings);
   accounts_dialog_update_status_infobar (dialog,
       empathy_account_settings_get_account (settings));
+
+  gtk_widget_set_sensitive (priv->treeview, TRUE);
+  gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_set_sensitive (priv->button_import, TRUE);
 
   if (settings)
     g_object_unref (settings);
@@ -632,6 +641,7 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
     EmpathyAccountsDialog *dialog)
 {
   TpAccount *account = NULL;
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   if (accounts_dialog_has_pending_change (dialog, &account))
     {
@@ -651,6 +661,9 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
   else
     {
       accounts_dialog_setup_ui_to_add_account (dialog);
+      gtk_widget_set_sensitive (priv->treeview, FALSE);
+      gtk_widget_set_sensitive (priv->button_add, FALSE);
+      gtk_widget_set_sensitive (priv->button_import, FALSE);
     }
 }
 
