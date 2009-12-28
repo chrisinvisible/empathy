@@ -159,6 +159,20 @@ static void accounts_dialog_add (EmpathyAccountsDialog *dialog,
 static void accounts_dialog_model_set_selected (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings);
 
+static void accounts_dialog_connection_changed_cb (TpAccount *account,
+    guint old_status,
+    guint current,
+    guint reason,
+    gchar *dbus_error_name,
+    GHashTable *details,
+    EmpathyAccountsDialog *dialog);
+
+static void accounts_dialog_presence_changed_cb (TpAccount *account,
+    guint presence,
+    gchar *status,
+    gchar *status_message,
+    EmpathyAccountsDialog *dialog);
+
 static void
 accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
     const gchar *display_name)
@@ -359,6 +373,7 @@ empathy_account_dialog_widget_cancelled_cb (
 
 static void
 empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
+    TpAccount *account,
     EmpathyAccountsDialog *dialog)
 {
   gchar *display_name;
@@ -381,6 +396,11 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   gtk_widget_set_sensitive (priv->treeview, TRUE);
   gtk_widget_set_sensitive (priv->button_add, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
+
+  empathy_signal_connect_weak (account, "status-changed",
+      G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
+  empathy_signal_connect_weak (account, "presence-changed",
+      G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
 
   if (settings)
     g_object_unref (settings);

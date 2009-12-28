@@ -738,7 +738,7 @@ account_widget_applied_cb (GObject *source_object,
 
           tp_account_set_enabled_async (account, TRUE,
               account_widget_account_enabled_cb, widget);
-          g_signal_emit (widget, signals[ACCOUNT_CREATED], 0);
+          g_signal_emit (widget, signals[ACCOUNT_CREATED], 0, account);
         }
       else if (priv->enabled_checkbox != NULL)
         {
@@ -1735,9 +1735,9 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
   signals[ACCOUNT_CREATED] =
       g_signal_new ("account-created", G_TYPE_FROM_CLASS (klass),
           G_SIGNAL_RUN_LAST, 0, NULL, NULL,
-          g_cclosure_marshal_VOID__VOID,
+          g_cclosure_marshal_VOID__POINTER,
           G_TYPE_NONE,
-          0);
+          1, G_TYPE_POINTER);
 
   signals[CANCELLED] =
       g_signal_new ("cancelled", G_TYPE_FROM_CLASS (klass),
