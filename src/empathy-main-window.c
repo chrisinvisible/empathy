@@ -1132,6 +1132,12 @@ main_window_account_validity_changed_cb (TpAccountManager *manager,
 					 gboolean valid,
 					 EmpathyMainWindow *window)
 {
+	if (valid) {
+		g_signal_connect (account, "status-changed",
+				  G_CALLBACK (main_window_connection_changed_cb),
+				  window);
+	}
+
 	main_window_account_removed_cb (manager, account, window);
 }
 
@@ -1200,6 +1206,10 @@ account_manager_prepared_cb (GObject *source_object,
 				  G_CALLBACK (main_window_connection_changed_cb),
 				  window);
 	}
+
+	g_signal_connect (manager, "account-validity-changed",
+			  G_CALLBACK (main_window_account_validity_changed_cb),
+			  window);
 
 	main_window_update_status (window);
 
