@@ -176,6 +176,19 @@ contact_manager_status_changed_cb (TpAccount *account,
 }
 
 static void
+contact_manager_validity_changed_cb (TpAccountManager *account_manager,
+				     TpAccount *account,
+				     gboolean valid,
+				     EmpathyContactManager *manager)
+{
+	if (valid) {
+		empathy_signal_connect_weak (account, "status-changed",
+			    G_CALLBACK (contact_manager_status_changed_cb),
+			    G_OBJECT (manager));
+	}
+}
+
+static void
 contact_manager_finalize (GObject *object)
 {
 	EmpathyContactManagerPriv *priv = GET_PRIV (object);
@@ -272,6 +285,10 @@ account_manager_prepared_cb (GObject *source_object,
 		    G_OBJECT (manager));
 	}
 	g_list_free (accounts);
+
+	empathy_signal_connect_weak (account_manager, "account-validity-changed",
+			     G_CALLBACK (contact_manager_validity_changed_cb),
+			     G_OBJECT (manager));
 }
 
 static void
