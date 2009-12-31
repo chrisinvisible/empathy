@@ -1830,7 +1830,7 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
             "product=Telepathy&amp;component=%s", cm);
 
         result = g_strdup_printf (
-            _("Something not expected happened in a Telepathy component. "
+            _("Something unexpected happened in a Telepathy component. "
               "Please <a href=\"%s\">report this bug</a> and attach "
               "logs gathered from the 'Debug' window in the Help menu."), url);
 

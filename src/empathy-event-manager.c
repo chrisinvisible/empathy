@@ -346,8 +346,8 @@ event_channel_process_voip_func (EventPriv *event)
 
   gtk_message_dialog_format_secondary_text (
     GTK_MESSAGE_DIALOG (dialog), video ?
-      _("%s is video calling you, do you want to answer?"):
-      _("%s is calling you, do you want to answer?"),
+      _("%s is video calling you. Do you want to answer?"):
+      _("%s is calling you. Do you want to answer?"),
       empathy_contact_get_name (event->approval->contact));
 
   /* Set image of the dialog */

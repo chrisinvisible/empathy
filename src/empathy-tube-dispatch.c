@@ -445,7 +445,7 @@ empathy_tube_dispatch_handle (EmpathyTubeDispatch *tube_dispatch)
 
       msg = g_strdup_printf (
         _("An invitation was offered for service %s, but you don't have the "
-          "needed application to handle it"), priv->service);
+          "application necessary to handle it"), priv->service);
 
       empathy_tube_dispatch_show_error (tube_dispatch, msg);
 

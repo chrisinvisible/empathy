@@ -105,13 +105,13 @@ validate_destination (NstPlugin *plugin,
 
   if (!empathy_contact_can_send_files (contact))
     {
-      *error = g_strdup (_("The contact selected cannot receive files."));
+      *error = g_strdup (_("The selected contact cannot receive files."));
       ret = FALSE;
     }
 
   if (ret && !empathy_contact_is_online (contact))
     {
-      *error = g_strdup (_("The contact selected is offline."));
+      *error = g_strdup (_("The selected contact is offline."));
       ret = FALSE;
     }
 

@@ -115,15 +115,15 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_widget_show (w);
 
   if (page_num == PAGE_IMPORT)
-    message = _("There has been an error while importing the accounts.");
+    message = _("There was an error while importing the accounts.");
   else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_ENTER_ACCOUNT)
-    message = _("There has been an error while parsing the account details.");
+    message = _("There was an error while parsing the account details.");
   else if (page_num >= PAGE_ENTER_CREATE &&
       priv->first_resp == RESPONSE_CREATE_ACCOUNT)
-    message = _("There has been an error while creating the account.");
+    message = _("There was an error while creating the account.");
   else
-    message = _("There has been an error.");
+    message = _("There was an error.");
 
   w = gtk_label_new (message);
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);

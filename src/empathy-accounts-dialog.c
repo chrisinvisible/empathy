@@ -62,7 +62,7 @@
 /* The primary text of the dialog shown to the user when he is about to lose
  * unsaved changes */
 #define PENDING_CHANGES_QUESTION_PRIMARY_TEXT \
-  _("There are unsaved modification regarding your %s account.")
+  _("There are unsaved modifications to your %s account.")
 /* The primary text of the dialog shown to the user when he is about to lose
  * an unsaved new account */
 #define UNSAVED_NEW_ACCOUNT_QUESTION_PRIMARY_TEXT \

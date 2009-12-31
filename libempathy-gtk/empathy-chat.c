@@ -618,7 +618,7 @@ chat_command_join_cb (EmpathyDispatchOperation *dispatch,
 	if (error != NULL) {
 		DEBUG ("Error: %s", error->message);
 		empathy_chat_view_append_event (chat->view,
-			_("Failed to join chatroom"));
+			_("Failed to join chat room"));
 	}
 }
 
