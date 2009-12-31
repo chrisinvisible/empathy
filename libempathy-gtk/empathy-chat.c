@@ -799,36 +799,36 @@ typedef struct {
 
 static ChatCommandItem commands[] = {
 	{"clear", 1, 1, chat_command_clear,
-	 N_("/clear, clear all messages from the current conversation")},
+	 N_("/clear: clear all messages from the current conversation")},
 
 	{"topic", 2, 2, chat_command_topic,
-	 N_("/topic <topic>, set the topic of the current conversation")},
+	 N_("/topic <topic>: set the topic of the current conversation")},
 
 	{"join", 2, 2, chat_command_join,
-	 N_("/join <chatroom id>, join a new chatroom")},
+	 N_("/join <chat room ID>: join a new chat room")},
 
 	{"j", 2, 2, chat_command_join,
-	 N_("/j <chatroom id>, join a new chatroom")},
+	 N_("/j <chat room ID>: join a new chat room")},
 
 	{"query", 2, 3, chat_command_query,
-	 N_("/query <contact id> [<message>], open a private chat")},
+	 N_("/query <contact ID> [<message>]: open a private chat")},
 
 	{"msg", 3, 3, chat_command_msg,
-	 N_("/msg <contact id> <message>, open a private chat")},
+	 N_("/msg <contact ID> <message>: open a private chat")},
 
 	{"nick", 2, 2, chat_command_nick,
-	 N_("/nick <nickname>, change your nickname on current server")},
+	 N_("/nick <nickname>: change your nickname on the current server")},
 
 	{"me", 2, 2, chat_command_me,
-	 N_("/me <message>, send an ACTION message to the current conversation")},
+	 N_("/me <message>: send an ACTION message to the current conversation")},
 
 	{"say", 2, 2, chat_command_say,
-	 N_("/say <message>, send <message> to the current conversation. "
+	 N_("/say <message>: send <message> to the current conversation. "
 	    "This is used to send a message starting with a '/'. For example: "
-	    "\"/say /join is used to join a new chatroom\"")},
+	    "\"/say /join is used to join a new chat room\"")},
 
 	{"help", 1, 2, chat_command_help,
-	 N_("/help [<command>], show all supported commands. "
+	 N_("/help [<command>]: show all supported commands. "
 	    "If <command> is defined, show its usage.")},
 };
 
@@ -988,7 +988,7 @@ chat_send (EmpathyChat  *chat,
 
 		if (!second_slash) {
 			empathy_chat_view_append_event (chat->view,
-				_("Unknown command, see /help for the available"
+				_("Unknown command; see /help for the available"
 				  " commands"));
 			return;
 		}

@@ -229,7 +229,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       switch (status)
         {
           case TP_CONNECTION_STATUS_CONNECTING:
-            message = _("Connecting...");
+            message = _("Connecting…");
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_INFO);
 
@@ -245,7 +245,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
               }
             else
               {
-                message = g_strdup_printf ("%s - %s",
+                message = g_strdup_printf ("%s — %s",
                     empathy_presence_get_default_message (presence),
                     status_message);
               }
@@ -256,12 +256,12 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_widget_hide (priv->throbber);
             break;
           case TP_CONNECTION_STATUS_DISCONNECTED:
-            message = g_strdup_printf (_("Disconnected - %s"),
+            message = g_strdup_printf (_("Disconnected — %s"),
                 empathy_status_reason_get_default_message (reason));
 
             if (reason == TP_CONNECTION_STATUS_REASON_REQUESTED)
               {
-                message = g_strdup_printf (_("Offline - %s"),
+                message = g_strdup_printf (_("Offline — %s"),
                     empathy_status_reason_get_default_message (reason));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_WARNING);
@@ -274,7 +274,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 
             connectivity = empathy_connectivity_dup_singleton ();
             if (!empathy_connectivity_is_online (connectivity))
-               message = _("Offline - No Network Connection");
+               message = _("Offline — No Network Connection");
 
             g_object_unref (connectivity);
             ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
@@ -293,7 +293,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     }
   else
     {
-      message = _("Offline - Account disabled");
+      message = _("Offline — Account Disabled");
 
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);

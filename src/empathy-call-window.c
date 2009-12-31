@@ -726,7 +726,7 @@ empathy_call_window_set_state_connecting (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  empathy_call_window_status_message (window, _("Connecting..."));
+  empathy_call_window_status_message (window, _("Connecting…"));
   priv->call_state = CONNECTING;
 
   if (priv->outgoing)

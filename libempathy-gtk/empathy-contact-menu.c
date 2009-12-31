@@ -192,7 +192,7 @@ empathy_contact_add_menu_item_new (EmpathyContact *contact)
 		return NULL;
 	}
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact..."));
+	item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact…"));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);

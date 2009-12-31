@@ -164,7 +164,7 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 				    G_TYPE_BOOLEAN,   /* COL_STATUS_CUSTOMISABLE */
 				    G_TYPE_INT);      /* COL_TYPE */
 
-	custom_message = g_strdup_printf ("<i>%s</i>", _("Custom Message..."));
+	custom_message = g_strdup_printf ("<i>%s</i>", _("Custom Message…"));
 
 	for (i = 0; states[i].state != TP_CONNECTION_PRESENCE_TYPE_UNSET; i++) {
 		GList       *list, *l;
@@ -200,7 +200,7 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 			g_list_free (list);
 
 			gtk_list_store_insert_with_values (store, NULL, -1,
-				COL_STATUS_TEXT, _("Custom Message..."),
+				COL_STATUS_TEXT, _("Custom Message…"),
 				COL_STATE_ICON_NAME, icon_name,
 				COL_STATE, states[i].state,
 				COL_DISPLAY_MARKUP, custom_message,
@@ -217,9 +217,9 @@ presence_chooser_create_model (EmpathyPresenceChooser *self)
 			-1);
 
 	gtk_list_store_insert_with_values (store, NULL, -1,
-		COL_STATUS_TEXT, _("Edit Custom Messages..."),
+		COL_STATUS_TEXT, _("Edit Custom Messages…"),
 		COL_STATE_ICON_NAME, GTK_STOCK_EDIT,
-		COL_DISPLAY_MARKUP, _("Edit Custom Messages..."),
+		COL_DISPLAY_MARKUP, _("Edit Custom Messages…"),
 		COL_TYPE, ENTRY_TYPE_EDIT_CUSTOM,
 		-1);
 
@@ -1080,7 +1080,7 @@ empathy_presence_chooser_create_menu (void)
 	gtk_widget_show (item);
 
 	/* Custom messages */
-	item = gtk_image_menu_item_new_with_label (_("Custom messages..."));
+	item = gtk_image_menu_item_new_with_label (_("Custom messages…"));
 	image = gtk_image_new_from_stock (GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
