@@ -102,8 +102,11 @@
             <property name="visible">True</property>
             <property name="xalign">0</property>
             <property name="xpad">3</property>
-            <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@my.sip.server&lt;/span&gt;</property>
+            <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@my.sip.server</property>
             <property name="use_markup">True</property>
+            <attributes>
+              <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+            </attributes>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -199,8 +202,10 @@ username.</property>
                   <object class="GtkLabel" id="label_nat_traversal">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;NAT Traversal Options&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="label" translatable="yes">NAT Traversal Options</property>
+                    <attributes>
+                      <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                    </attributes>
                   </object>
                   <packing>
                     <property name="right_attach">4</property>
@@ -210,8 +215,10 @@ username.</property>
                   <object class="GtkLabel" id="label_proxy">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Proxy Options&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="label" translatable="yes">Proxy Options</property>
+                    <attributes>
+                      <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                    </attributes>
                   </object>
                   <packing>
                     <property name="right_attach">4</property>
@@ -223,8 +230,10 @@ username.</property>
                   <object class="GtkLabel" id="label_misc">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Miscellaneous Options&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="label" translatable="yes">Miscellaneous Options</property>
+                    <attributes>
+                      <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                    </attributes>
                   </object>
                   <packing>
                     <property name="right_attach">4</property>
@@ -318,8 +327,10 @@ username.</property>
                   <object class="GtkLabel" id="label_keep_alive">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Keep-Alive Options&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
+                    <property name="label" translatable="yes">Keep-Alive Options</property>
+                    <attributes>
+                      <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                    </attributes>
                   </object>
                   <packing>
                     <property name="right_attach">4</property>
@@ -555,8 +566,11 @@ username.</property>
               <object class="GtkLabel" id="label_example">
                 <property name="visible">True</property>
                 <property name="xalign">0.10000000149011612</property>
-                <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@my.sip.server&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@my.sip.server</property>
                 <property name="use_markup">True</property>
+                <attributes>
+                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                </attributes>
               </object>
               <packing>
                 <property name="position">1</property>

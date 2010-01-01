@@ -108,8 +108,11 @@
             <property name="visible">True</property>
             <property name="xalign">0</property>
             <property name="xpad">3</property>
-            <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@hotmail.com&lt;/span&gt;</property>
+            <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@hotmail.com</property>
             <property name="use_markup">True</property>
+            <attributes>
+              <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+            </attributes>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -254,8 +257,11 @@
               <object class="GtkLabel" id="label_example">
                 <property name="visible">True</property>
                 <property name="xalign">0.10000000149011612</property>
-                <property name="label" translatable="yes">&lt;span size="small"&gt;&lt;b&gt;Example:&lt;/b&gt; user@hotmail.com&lt;/span&gt;</property>
+                <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@hotmail.com</property>
                 <property name="use_markup">True</property>
+                <attributes>
+                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                </attributes>
               </object>
               <packing>
                 <property name="position">1</property>
