@@ -695,13 +695,24 @@ static void
 chat_command_join (EmpathyChat *chat,
 		   GStrv        strv)
 {
+	guint i = 0;
 	EmpathyChatPriv *priv = GET_PRIV (chat);
-	TpConnection *connection;
 
-	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	empathy_dispatcher_join_muc (connection, strv[1],
-				     chat_command_join_cb,
-				     chat);
+	GStrv rooms = g_strsplit_set (strv[1], ", ", -1);
+
+	while (rooms[i] != NULL) {
+		/* ignore empty strings */
+		if (EMP_STR_EMPTY (rooms[i])) {
+			TpConnection *connection;
+
+			connection = empathy_tp_chat_get_connection (priv->tp_chat);
+			empathy_dispatcher_join_muc (connection, rooms[i],
+						     chat_command_join_cb,
+						     chat);
+		}
+		i++;
+	}
+	g_strfreev (rooms);
 }
 
 static void
