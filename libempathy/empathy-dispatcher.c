@@ -1532,6 +1532,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   priv = GET_PRIV (self);
 
   connection_data = g_hash_table_lookup (priv->connections, connection);
+  g_assert (connection_data != NULL);
 
   /* Don't know the room handle yet */
   request_data  = new_dispatcher_request_data (self, connection,
