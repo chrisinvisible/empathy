@@ -820,6 +820,7 @@ hash_job_done (gpointer user_data)
   if (hash_data->error != NULL)
     {
       error = hash_data->error;
+      hash_data->error = NULL;
       goto cleanup;
     }
 
