@@ -1366,9 +1366,9 @@ contact_widget_location_update (EmpathyContactWidget *information)
   value = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
   if (value == NULL)
     {
-      gchar *location = g_strdup_printf ("<b>%s</b>", _("Location"));
-      gtk_label_set_markup (GTK_LABEL (information->label_location), location);
-      g_free (location);
+      gchar *loc = g_strdup_printf ("<b>%s</b>", _("Location"));
+      gtk_label_set_markup (GTK_LABEL (information->label_location), loc);
+      g_free (loc);
     }
   else
     {
