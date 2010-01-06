@@ -88,6 +88,8 @@ typedef struct
   GtkWidget *vbox_contact;
   GtkWidget *widget_avatar;
   GtkWidget *widget_account;
+  GtkWidget *image_account;
+  GtkWidget *label_account;
   GtkWidget *widget_id;
   GtkWidget *widget_alias;
   GtkWidget *label_alias;
@@ -619,11 +621,23 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
     }
   else
     {
-      information->widget_account = gtk_label_new (NULL);
+      /* Pack the protocol icon with the account name in an hbox */
+      information->widget_account = gtk_hbox_new (FALSE, 6);
+
+      information->label_account = gtk_label_new (NULL);
       if (!(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP)) {
-        gtk_label_set_selectable (GTK_LABEL (information->widget_account), TRUE);
+        gtk_label_set_selectable (GTK_LABEL (information->label_account), TRUE);
       }
-      gtk_misc_set_alignment (GTK_MISC (information->widget_account), 0, 0.5);
+      gtk_misc_set_alignment (GTK_MISC (information->label_account), 0, 0.5);
+      gtk_widget_show (information->label_account);
+
+      information->image_account = gtk_image_new ();
+      gtk_widget_show (information->image_account);
+
+      gtk_box_pack_start (GTK_BOX (information->widget_account),
+          information->image_account, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (information->widget_account),
+          information->label_account, FALSE, TRUE, 0);
     }
   gtk_table_attach_defaults (GTK_TABLE (information->table_contact),
            information->widget_account,
@@ -759,7 +773,11 @@ contact_widget_contact_update (EmpathyContactWidget *information)
           const gchar *name;
 
           name = tp_account_get_display_name (account);
-          gtk_label_set_label (GTK_LABEL (information->widget_account), name);
+          gtk_label_set_label (GTK_LABEL (information->label_account), name);
+
+          name = tp_account_get_icon_name (account);
+          gtk_image_set_from_icon_name (GTK_IMAGE (information->image_account),
+              name, GTK_ICON_SIZE_MENU);
         }
     }
 
