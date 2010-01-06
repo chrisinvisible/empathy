@@ -1271,6 +1271,13 @@ chat_input_text_buffer_changed_cb (GtkTextBuffer *buffer,
 }
 
 static gboolean
+empathy_isspace_cb (gunichar c,
+		 gpointer data)
+{
+	return g_unichar_isspace (c);
+}
+
+static gboolean
 chat_input_key_press_event_cb (GtkWidget   *widget,
 			       GdkEventKey *event,
 			       EmpathyChat *chat)
@@ -1364,7 +1371,9 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 
 		/* Get the start of the nick to complete. */
 		gtk_text_buffer_get_iter_at_mark (buffer, &start, gtk_text_buffer_get_insert (buffer));
-		gtk_text_iter_backward_word_start (&start);
+		if (gtk_text_iter_backward_find_char (&start, &empathy_isspace_cb, NULL, NULL)) {
+			gtk_text_iter_set_offset (&start, gtk_text_iter_get_offset (&start) + 1);
+		}
 		is_start_of_buffer = gtk_text_iter_is_start (&start);
 
 		list = empathy_contact_list_get_members (EMPATHY_CONTACT_LIST (priv->tp_chat));
