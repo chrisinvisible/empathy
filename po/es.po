@@ -2,14 +2,14 @@
 # Copyright (C) 2003 Free Software Foundation
 # This file is distributed under the same license as the Gossip package.
 #
-# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2009.
+# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2009, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2009-12-28 01:06+0000\n"
-"PO-Revision-Date: 2009-12-28 02:11+0100\n"
+"POT-Creation-Date: 2010-01-06 11:04+0000\n"
+"PO-Revision-Date: 2010-01-06 16:06+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -51,11 +51,13 @@ msgid "Chat window theme"
 msgstr "Tema de la ventana de charla"
 
 #: ../data/empathy.schemas.in.h:4
+#| msgid ""
+#| "Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
 msgid ""
-"Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
+"Comma-separated list of spell checker languages to use (e.g. \"en, fr, nl\")."
 msgstr ""
 "Lista separada por comas de idiomas que se usarán en la revisión ortográfica "
-"(ej. en, fr, nl)."
+"(ej. «es, en, fr»)."
 
 #: ../data/empathy.schemas.in.h:5
 msgid "Compact contact list"
@@ -155,12 +157,14 @@ msgid "Open new chats in separate windows"
 msgstr "Abrir chats nuevos en ventanas separadas"
 
 #: ../data/empathy.schemas.in.h:29
-msgid "Path of the adium theme to use"
-msgstr "Ruta del tema adium que usar"
+#| msgid "Path of the adium theme to use"
+msgid "Path of the Adium theme to use"
+msgstr "Ruta del tema Adium que usar"
 
 #: ../data/empathy.schemas.in.h:30
-msgid "Path of the adium theme to use if the theme used for chat is adium."
-msgstr "Ruta al tema adium que usar si el tema usado para el chat es adium."
+#| msgid "Path of the adium theme to use if the theme used for chat is adium."
+msgid "Path of the Adium theme to use if the theme used for chat is Adium."
+msgstr "Ruta al tema Adium que usar si el tema usado para el chat es Adium."
 
 #: ../data/empathy.schemas.in.h:31
 msgid "Play a sound for incoming messages"
@@ -191,16 +195,22 @@ msgid "Play a sound when we log out"
 msgstr "Reproducir un sonido cuando finalizo una sesión"
 
 #: ../data/empathy.schemas.in.h:38
-msgid "Popup notifications if the chat isn't focused"
+#, fuzzy
+#| msgid "Popup notifications if the chat isn't focused"
+msgid "Pop up notifications if the chat isn't focused"
 msgstr ""
 "Mostrar notificaciones emergentes si la ventana de chat no tiene el foco"
 
 #: ../data/empathy.schemas.in.h:39
-msgid "Popup notifications when a contact sign in"
+#, fuzzy
+#| msgid "Popup notifications when a contact sign in"
+msgid "Pop up notifications when a contact logs in"
 msgstr "Mostrar notificaciones emergentes cuando un contacto se conecta."
 
 #: ../data/empathy.schemas.in.h:40
-msgid "Popup notifications when a contact sign out"
+#, fuzzy
+#| msgid "Popup notifications when a contact sign out"
+msgid "Pop up notifications when a contact logs out"
 msgstr "Mostrar notificaciones emergentes cuando un contacto se desconecta."
 
 #: ../data/empathy.schemas.in.h:41
@@ -257,220 +267,306 @@ msgid "Use theme for chat rooms"
 msgstr "Usar tema para salas de chat"
 
 #: ../data/empathy.schemas.in.h:54
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy can publish the user's location to his contacts."
+msgid "Whether Empathy can publish the user's location to their contacts."
+msgstr ""
+"Indica si Empathy puede publicar la ubicación del usuario a sus contactos."
+
+#: ../data/empathy.schemas.in.h:55
+#, fuzzy
+#| msgid "Whether or not Empathy can use the GPS to guess the location."
+msgid "Whether Empathy can use the GPS to guess the location."
+msgstr "Indica si Empathy puede usar el GPS para deducir la ubicación."
+
+#: ../data/empathy.schemas.in.h:56
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy can use the cellular network to guess the location."
+msgid "Whether Empathy can use the cellular network to guess the location."
+msgstr ""
+"Indica si Empathy puede usar la red telefónica móvil para deducir la "
+"ubicación."
+
+#: ../data/empathy.schemas.in.h:57
+#, fuzzy
+#| msgid "Whether or not Empathy can use the network to guess the location."
+msgid "Whether Empathy can use the network to guess the location."
+msgstr "Indica si Empathy puede usar la red para deducir la ubicación."
+
+#: ../data/empathy.schemas.in.h:58
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy has asked about importing accounts from other "
+#| "programs."
+msgid "Whether Empathy has asked about importing accounts from other programs."
+msgstr ""
+"Indica si Empathy ha preguntado acerca de importar cuentas de otros "
+"programas."
+
+#: ../data/empathy.schemas.in.h:59
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy should automatically log in to your accounts on "
+#| "startup."
+msgid "Whether Empathy should automatically log into your accounts on startup."
+msgstr ""
+"Indica si Empathy debe iniciar sesión en sus cuentas automáticamente al "
+"inicio."
+
+#: ../data/empathy.schemas.in.h:60
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy should reduce the location's accuracy for privacy "
+#| "reasons."
+msgid ""
+"Whether Empathy should reduce the location's accuracy for privacy reasons."
+msgstr ""
+"Indica si Empathy debería reducir la precisión de la ubicación por motivos "
+"de privacidad."
+
+#: ../data/empathy.schemas.in.h:61
+#, fuzzy
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid ""
+"Whether Empathy should use the avatar of the contact as the chat window icon."
+msgstr ""
+"Indica si Empathy debería usar el avatar del contacto como el icono de la "
+"ventana de chat."
+
+#: ../data/empathy.schemas.in.h:62
 msgid ""
 "Whether WebKit developer tools, such as the Web Inspector, should be enabled."
 msgstr ""
 "Indica si las herramientas de desarrollo de WebKit, tales como el Inspector "
 "web, den activarse."
 
-#: ../data/empathy.schemas.in.h:55
-msgid "Whether or not Empathy can publish the user's location to his contacts."
-msgstr ""
-"Indica si Empathy puede publicar la ubicación del usuario a sus contactos."
-
-#: ../data/empathy.schemas.in.h:56
-msgid "Whether or not Empathy can use the GPS to guess the location."
-msgstr "Indica si Empathy puede usar el GPS para deducir la ubicación."
-
-#: ../data/empathy.schemas.in.h:57
-msgid ""
-"Whether or not Empathy can use the cellular network to guess the location."
-msgstr ""
-"Indica si Empathy puede usar la red telefónica móvil para deducir la "
-"ubicación."
-
-#: ../data/empathy.schemas.in.h:58
-msgid "Whether or not Empathy can use the network to guess the location."
-msgstr "Indica si Empathy puede usar la red para deducir la ubicación."
-
-#: ../data/empathy.schemas.in.h:59
-msgid ""
-"Whether or not Empathy has asked about importing accounts from other "
-"programs."
-msgstr ""
-"Indica si Empathy ha preguntado acerca de importar cuentas de otros "
-"programas."
-
-#: ../data/empathy.schemas.in.h:60
-msgid ""
-"Whether or not Empathy should automatically log in to your accounts on "
-"startup."
-msgstr ""
-"Indica si Empathy debe iniciar sesión en sus cuentas automáticamente al "
-"inicio."
-
-#: ../data/empathy.schemas.in.h:61
-msgid ""
-"Whether or not Empathy should reduce the location's accuracy for privacy "
-"reasons."
-msgstr ""
-"Indica si Empathy debería reducir la precisión de la ubicación por motivos "
-"de privacidad."
-
-#: ../data/empathy.schemas.in.h:62
-msgid ""
-"Whether or not Empathy should use the avatar of the contact as the chat "
-"window icon."
-msgstr ""
-"Indica si Empathy debería usar el avatar del contacto como el icono de la "
-"ventana de chat."
-
 #: ../data/empathy.schemas.in.h:63
+#, fuzzy
+#| msgid ""
+#| "Whether or not connectivity managers should be used to automatically "
+#| "disconnect/reconnect."
 msgid ""
-"Whether or not connectivity managers should be used to automatically "
-"disconnect/reconnect."
+"Whether connectivity managers should be used to automatically disconnect/"
+"reconnect."
 msgstr ""
 "Indica si se debe usan usar gestores de conectividad para desconectarse/"
 "reconectarse automáticamente."
 
 #: ../data/empathy.schemas.in.h:64
-msgid ""
-"Whether or not the Salut account has been created on the first Empathy run."
+#, fuzzy
+#| msgid ""
+#| "Whether or not the Salut account has been created on the first Empathy "
+#| "run."
+msgid "Whether the Salut account has been created on the first Empathy run."
 msgstr ""
 "Indica si la cuenta Salut se ha creado cuando ejecutó por primera vez "
 "Empathy."
 
 #: ../data/empathy.schemas.in.h:65
+#, fuzzy
+#| msgid ""
+#| "Whether or not to check words typed against the languages you want to "
+#| "check with."
 msgid ""
-"Whether or not to check words typed against the languages you want to check "
-"with."
+"Whether to check words typed against the languages you want to check with."
 msgstr ""
 "Indica si se deben revisar las palabras tecleadas con respecto a los idiomas "
 "con los que quiere comprobarlo."
 
 #: ../data/empathy.schemas.in.h:66
-msgid ""
-"Whether or not to convert smileys into graphical images in conversations."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to convert smileys into graphical images in conversations."
+msgid "Whether to convert smileys into graphical images in conversations."
 msgstr ""
 "Indica si se deben convertir los emoticonos en imágenes gráficas en las "
 "conversaciones."
 
 #: ../data/empathy.schemas.in.h:67
-msgid ""
-"Whether or not to play a sound to notify for contacts logging in the network."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to play a sound to notify for contacts logging in the "
+#| "network."
+msgid "Whether to play a sound to notify of contacts logging into the network."
 msgstr ""
 "Indica si se debe reproducir un sonido para notificar los inicios de sesión "
 "de los contactos en la red."
 
 #: ../data/empathy.schemas.in.h:68
+#, fuzzy
+#| msgid ""
+#| "Whether or not to play a sound to notify for contacts logging off the "
+#| "network."
 msgid ""
-"Whether or not to play a sound to notify for contacts logging off the "
-"network."
+"Whether to play a sound to notify of contacts logging out of the network."
 msgstr ""
 "Indica si se debe reproducir un sonido para notificar las finalizaciones de "
 "sesión de los contactos en la red."
 
 #: ../data/empathy.schemas.in.h:69
-msgid "Whether or not to play a sound to notify for events."
+#, fuzzy
+#| msgid "Whether or not to play a sound to notify for events."
+msgid "Whether to play a sound to notify of events."
 msgstr "Indica si se debe reproducir un sonido para notificar eventos."
 
 #: ../data/empathy.schemas.in.h:70
-msgid "Whether or not to play a sound to notify for incoming messages."
+#, fuzzy
+#| msgid "Whether or not to play a sound to notify for incoming messages."
+msgid "Whether to play a sound to notify of incoming messages."
 msgstr ""
 "Indica si se debe reproducir un sonido para notificar mensajes entrantes."
 
 #: ../data/empathy.schemas.in.h:71
-msgid "Whether or not to play a sound to notify for new conversations."
+#, fuzzy
+#| msgid "Whether or not to play a sound to notify for new conversations."
+msgid "Whether to play a sound to notify of new conversations."
 msgstr ""
 "Indica si se debe reproducir un sonido para notificar conversaciones nuevas."
 
 #: ../data/empathy.schemas.in.h:72
-msgid "Whether or not to play a sound to notify for outgoing messages."
+#, fuzzy
+#| msgid "Whether or not to play a sound to notify for outgoing messages."
+msgid "Whether to play a sound to notify of outgoing messages."
 msgstr ""
 "Indica si se debe reproducir un sonido para notificar mensajes salientes."
 
 #: ../data/empathy.schemas.in.h:73
-msgid "Whether or not to play a sound when logging in a network."
+#, fuzzy
+#| msgid "Whether or not to play a sound when logging in a network."
+msgid "Whether to play a sound when logging into a network."
 msgstr "Indica si se debe reproducir un sonido al iniciar sesión en una red."
 
 #: ../data/empathy.schemas.in.h:74
-msgid "Whether or not to play a sound when logging off a network."
+#, fuzzy
+#| msgid "Whether or not to play a sound when logging off a network."
+msgid "Whether to play a sound when logging out of a network."
 msgstr "Indica si se debe reproducir un sonido al finalizar sesión en una red."
 
 #: ../data/empathy.schemas.in.h:75
-msgid "Whether or not to play sound notifications when away or busy."
+#, fuzzy
+#| msgid "Whether or not to play sound notifications when away or busy."
+msgid "Whether to play sound notifications when away or busy."
 msgstr ""
 "Indica si se deben reproducir sonidos de notificaciones cuando se esté "
 "ausente u ocupado."
 
 #: ../data/empathy.schemas.in.h:76
-msgid ""
-"Whether or not to show a popup notification when a contact goes offline."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show a popup notification when a contact goes offline."
+msgid "Whether to show a popup notification when a contact goes offline."
 msgstr ""
 "Indica si se deben mostrar las notificaciones emergentes cuando un contacto "
 "se desconecta."
 
 #: ../data/empathy.schemas.in.h:77
-msgid "Whether or not to show a popup notification when a contact goes online."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show a popup notification when a contact goes online."
+msgid "Whether to show a popup notification when a contact goes online."
 msgstr ""
 "Indica si se deben mostrar las notificaciones emergentes cuando se conecta."
 
 #: ../data/empathy.schemas.in.h:78
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show a popup notification when receiving a new message "
+#| "even if the chat is already opened, but not focused."
 msgid ""
-"Whether or not to show a popup notification when receiving a new message "
-"even if the chat is already opened, but not focused."
+"Whether to show a popup notification when receiving a new message even if "
+"the chat is already opened, but not focused."
 msgstr ""
 "Indica si de deben mostrar notificaciones emergentes al recibir un mensaje "
 "nuevo incluso si la ventana de chat ya está abierta pero no tiene el foco."
 
 #: ../data/empathy.schemas.in.h:79
-msgid ""
-"Whether or not to show a popup notification when receiving a new message."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show a popup notification when receiving a new message."
+msgid "Whether to show a popup notification when receiving a new message."
 msgstr ""
 "Indica si se deben mostrar notificaciones emergentes al recibir un mensaje "
 "nuevo."
 
 #: ../data/empathy.schemas.in.h:80
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show avatars for contacts in the contact list and chat "
+#| "windows."
 msgid ""
-"Whether or not to show avatars for contacts in the contact list and chat "
-"windows."
+"Whether to show avatars for contacts in the contact list and chat windows."
 msgstr ""
 "Indica si se deben mostrar los avatares para los contactos en la lista de "
 "contactos y ventanas de chat."
 
 #: ../data/empathy.schemas.in.h:81
-msgid "Whether or not to show contacts that are offline in the contact list."
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show contacts that are offline in the contact list."
+msgid "Whether to show contacts that are offline in the contact list."
 msgstr ""
 "Indica si se debe mostrar los contactos que están desconectados en la lista "
 "de contactos."
 
 #: ../data/empathy.schemas.in.h:82
-msgid "Whether or not to show popup notifications when away or busy."
+#, fuzzy
+#| msgid "Whether or not to show popup notifications when away or busy."
+msgid "Whether to show popup notifications when away or busy."
 msgstr ""
 "Indica si se deben mostrar las notificaciones emergentes cuando se esté "
 "ausente u ocupado."
 
 #: ../data/empathy.schemas.in.h:83
-msgid "Whether or not to show protocols for contacts in the contact list."
+#, fuzzy
+#| msgid "Whether or not to show protocols for contacts in the contact list."
+msgid "Whether to show protocols for contacts in the contact list."
 msgstr ""
 "Indica si se deben mostrar los protocolos para los contactos en la lista de "
 "contactos."
 
 #: ../data/empathy.schemas.in.h:84
-msgid "Whether or not to show the contact list in chat rooms."
+#, fuzzy
+#| msgid "Whether or not to show the contact list in chat rooms."
+msgid "Whether to show the contact list in chat rooms."
 msgstr "Indica si se debe mostrar la lista de contactos en salas de chat."
 
 #: ../data/empathy.schemas.in.h:85
+#, fuzzy
+#| msgid "Whether to show the contact list in compact mode or not."
+msgid "Whether to show the contact list in compact mode."
+msgstr "Indica si se debe mostrar la lista de contactos en modo compacto."
+
+#: ../data/empathy.schemas.in.h:86
+#, fuzzy
+#| msgid ""
+#| "Whether or not to show the message dialog about closing the main window "
+#| "with the 'x' button in the title bar."
 msgid ""
-"Whether or not to show the message dialog about closing the main window with "
-"the 'x' button in the title bar."
+"Whether to show the message dialog about closing the main window with the "
+"'x' button in the title bar."
 msgstr ""
 "Indica si se debe mostrar un mensaje de diálogo sobre cómo cerrar la ventana "
 "principal con el botón 'x' en la barra de título."
 
-#: ../data/empathy.schemas.in.h:86
-msgid "Whether to show the contact list in compact mode or not."
-msgstr "Indica si se debe mostrar la lista de contactos en modo compacto."
-
 #: ../data/empathy.schemas.in.h:87
-msgid "Whether to use the theme for chat rooms or not."
+#| msgid "Whether to use the theme for chat rooms or not."
+msgid "Whether to use the theme for chat rooms."
 msgstr "Indica si se debe usar el tema para salas de chat."
 
 #: ../data/empathy.schemas.in.h:88
+#, fuzzy
+#| msgid ""
+#| "Which criterion to use when sorting the contact list. Default is to use "
+#| "sort by the contact's name with the value \"name\". A value of \"state\" "
+#| "will sort the contact list by state."
 msgid ""
-"Which criterion to use when sorting the contact list. Default is to use sort "
-"by the contact's name with the value \"name\". A value of \"state\" will "
-"sort the contact list by state."
+"Which criterion to use when sorting the contact list. Default is to sort by "
+"the contact's name with the value \"name\". A value of \"state\" will sort "
+"the contact list by state."
 msgstr ""
 "Qué criterio usar al ordenar la lista de contactos. El criterio "
 "predeterminado es ordenar por el nombre del contacto con el valor "
@@ -811,7 +907,8 @@ msgstr "¿Cuaĺ es su contraseña de ICQ?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
-msgid "_Charset:"
+#| msgid "_Charset:"
+msgid "_Character set:"
 msgstr "Conjunto de _caracteres:"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.c:244
@@ -852,7 +949,8 @@ msgid "None"
 msgstr "Ninguno"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:1
-msgid "Charset:"
+#| msgid "Charset:"
+msgid "Character set:"
 msgstr "Conjunto de caracteres:"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:2
@@ -944,16 +1042,18 @@ msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
 msgstr "<span size=\"small\"><b>Ejemplo:</b> usuario@hotmail.com</span>"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:5
+#| msgid "What is your Windows Live password?"
+msgid "What is your Windows Live ID?"
+msgstr "¿Cuál es su ID de Windows Live?"
+
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
 msgid "What is your Windows Live password?"
 msgstr "¿Cuál es su contraseña de Windows Live?"
 
-#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
-msgid "What is your Windows Live user name?"
-msgstr "¿Cuaĺ es su usuario de Windows Live?"
-
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
-msgid "_Email:"
-msgstr "Correo-_e:"
+#| msgid "_Email:"
+msgid "_E-mail address:"
+msgstr "Dirección de correo-_e:"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:3
 msgid "_First Name:"
@@ -1088,8 +1188,9 @@ msgid "_Username:"
 msgstr "_Usuario:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
-msgid "Use _Yahoo Japan"
-msgstr "User _Yahoo Japan"
+#| msgid "Use _Yahoo Japan"
+msgid "Use _Yahoo! Japan"
+msgstr "Usar _Yahoo! Japan"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "What is your Yahoo! ID?"
@@ -1100,11 +1201,14 @@ msgid "What is your Yahoo! password?"
 msgstr "¿Cuál es su contraseña de Yahoo!?"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
-msgid "Yahoo I_D:"
-msgstr "I_D de Yahoo:"
+#| msgid "Yahoo I_D:"
+msgid "Yahoo! I_D:"
+msgstr "I_D de Yahoo!:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
-msgid "_Ignore conference and chatroom invitations"
+#, fuzzy
+#| msgid "_Ignore conference and chatroom invitations"
+msgid "_Ignore conference and chat room invitations"
 msgstr "_Ignorar invitaciones a conferencias y salas de chat"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
@@ -1117,7 +1221,9 @@ msgid "Couldn't convert image"
 msgstr "No se pudo convertir la imagen"
 
 #: ../libempathy-gtk/empathy-avatar-chooser.c:450
-msgid "None of the accepted image formats is supported on your system"
+#, fuzzy
+#| msgid "None of the accepted image formats is supported on your system"
+msgid "None of the accepted image formats are supported on your system"
 msgstr "Su sistema no soporta ninguno de los formatos de imagen aceptados"
 
 #: ../libempathy-gtk/empathy-avatar-chooser.c:915
@@ -1145,8 +1251,9 @@ msgid "Failed to reconnect this chat"
 msgstr "Falló al reconectar a este chat"
 
 #: ../libempathy-gtk/empathy-chat.c:621
-msgid "Failed to join chatroom"
-msgstr "Falló al unirse a la sala"
+#| msgid "Failed to join chatroom"
+msgid "Failed to join chat room"
+msgstr "Falló al unirse a la sala de chat"
 
 #: ../libempathy-gtk/empathy-chat.c:639
 msgid "Failed to open private chat"
@@ -1161,53 +1268,68 @@ msgid "You are not allowed to change the topic"
 msgstr "No le está permitido cambiar el tema"
 
 #: ../libempathy-gtk/empathy-chat.c:802
-msgid "/clear, clear all messages from the current conversation"
-msgstr "/clear, limpiar todos los mensajes de la conversación actual"
+#| msgid "/clear, clear all messages from the current conversation"
+msgid "/clear: clear all messages from the current conversation"
+msgstr "/clear: limpiar todos los mensajes de la conversación actual"
 
 #: ../libempathy-gtk/empathy-chat.c:805
-msgid "/topic <topic>, set the topic of the current conversation"
-msgstr "/topic <tema>, establecer el tema para la conversación actual"
+#| msgid "/topic <topic>, set the topic of the current conversation"
+msgid "/topic <topic>: set the topic of the current conversation"
+msgstr "/topic <tema>: establecer el tema para la conversación actual"
 
 #: ../libempathy-gtk/empathy-chat.c:808
-msgid "/join <chatroom id>, join a new chatroom"
-msgstr "/join <id de sala de chat>, unirse a una sala de chat nueva"
+#| msgid "/join <chatroom id>, join a new chatroom"
+msgid "/join <chat room ID>: join a new chat room"
+msgstr "/join <id de sala de chat>: unirse a una sala de chat nueva"
 
 #: ../libempathy-gtk/empathy-chat.c:811
-msgid "/j <chatroom id>, join a new chatroom"
-msgstr "/j <id de sala de chat>, unirse a una sala de chat nueva"
+#| msgid "/j <chatroom id>, join a new chatroom"
+msgid "/j <chat room ID>: join a new chat room"
+msgstr "/j <id de sala de chat>: unirse a una sala de chat nueva"
 
 #: ../libempathy-gtk/empathy-chat.c:814
-msgid "/query <contact id> [<message>], open a private chat"
-msgstr "/query <id del contacto> [<mensaje>], abrir un chat privado"
+#| msgid "/query <contact id> [<message>], open a private chat"
+msgid "/query <contact ID> [<message>]: open a private chat"
+msgstr "/query <id del contacto> [<mensaje>]: abrir un chat privado"
 
 #: ../libempathy-gtk/empathy-chat.c:817
-msgid "/msg <contact id> <message>, open a private chat"
-msgstr "/msg <id del contacto> <mensaje>, abrir un chat privado"
+#| msgid "/msg <contact id> <message>, open a private chat"
+msgid "/msg <contact ID> <message>: open a private chat"
+msgstr "/msg <id del contacto> <mensaje>: abrir un chat privado"
 
 #: ../libempathy-gtk/empathy-chat.c:820
-msgid "/nick <nickname>, change your nickname on current server"
-msgstr "/nick <apodo>, cambiar su apodo en el servidor actual"
+#| msgid "/nick <nickname>, change your nickname on current server"
+msgid "/nick <nickname>: change your nickname on the current server"
+msgstr "/nick <apodo>: cambiar su apodo en el servidor actual"
 
 #: ../libempathy-gtk/empathy-chat.c:823
-msgid "/me <message>, send an ACTION message to the current conversation"
-msgstr "/me <mensaje>, enviar un mensaje de ACCIÓN a la conversación actual"
+#| msgid "/me <message>, send an ACTION message to the current conversation"
+msgid "/me <message>: send an ACTION message to the current conversation"
+msgstr "/me <mensaje>: enviar un mensaje de ACCIÓN a la conversación actual"
 
 #: ../libempathy-gtk/empathy-chat.c:826
+#| msgid ""
+#| "/say <message>, send <message> to the current conversation. This is used "
+#| "to send a message starting with a '/'. For example: \"/say /join is used "
+#| "to join a new chatroom\""
 msgid ""
-"/say <message>, send <message> to the current conversation. This is used to "
+"/say <message>: send <message> to the current conversation. This is used to "
 "send a message starting with a '/'. For example: \"/say /join is used to "
-"join a new chatroom\""
+"join a new chat room\""
 msgstr ""
-"/say <mensaje>, enviar un <mensaje> a la conversación actual. Esto se usa "
+"/say <mensaje>: enviar un <mensaje> a la conversación actual. Esto se usa "
 "para enviar un mensaje comenzando por una «/». Por ejemplo: «/say /join se usa "
 "para unirse a una sala de chat nueva»"
 
 #: ../libempathy-gtk/empathy-chat.c:831
+#| msgid ""
+#| "/help [<command>], show all supported commands. If <command> is defined, "
+#| "show its usage."
 msgid ""
-"/help [<command>], show all supported commands. If <command> is defined, "
+"/help [<command>]: show all supported commands. If <command> is defined, "
 "show its usage."
 msgstr ""
-"/help [<comando>], mostrar todos los comandos soportados. Si <comando> está "
+"/help [<comando>]: mostrar todos los comandos soportados. Si <comando> está "
 "definido, muestra su uso."
 
 #: ../libempathy-gtk/empathy-chat.c:841
@@ -1220,8 +1342,9 @@ msgid "Unknown command"
 msgstr "Comando desconocido"
 
 #: ../libempathy-gtk/empathy-chat.c:991
-msgid "Unknown command, see /help for the available commands"
-msgstr "Comando desconocido, consulte /help para ver los comandos disponibles"
+#| msgid "Unknown command, see /help for the available commands"
+msgid "Unknown command; see /help for the available commands"
+msgstr "Comando desconocido; consulte /help para ver los comandos disponibles"
 
 #: ../libempathy-gtk/empathy-chat.c:1130
 msgid "offline"
@@ -1261,25 +1384,25 @@ msgstr "El tema se ha establecido a: %s"
 msgid "No topic defined"
 msgstr "No se ha definido el tema"
 
-#: ../libempathy-gtk/empathy-chat.c:1554
+#: ../libempathy-gtk/empathy-chat.c:1563
 msgid "(No Suggestions)"
 msgstr "(Sin sugerencias)"
 
-#: ../libempathy-gtk/empathy-chat.c:1608
+#: ../libempathy-gtk/empathy-chat.c:1617
 msgid "Insert Smiley"
 msgstr "Insertar emoticono"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:1626
+#: ../libempathy-gtk/empathy-chat.c:1635
 #: ../libempathy-gtk/empathy-ui-utils.c:1657
 msgid "_Send"
 msgstr "E_nviar"
 
-#: ../libempathy-gtk/empathy-chat.c:1660
+#: ../libempathy-gtk/empathy-chat.c:1669
 msgid "_Spelling Suggestions"
 msgstr "_Sugerencias ortográficas"
 
-#: ../libempathy-gtk/empathy-chat.c:1775
+#: ../libempathy-gtk/empathy-chat.c:1784
 #, c-format
 msgid "%s has disconnected"
 msgstr "%s se ha desconectado"
@@ -1287,12 +1410,12 @@ msgstr "%s se ha desconectado"
 #. translators: reverse the order of these arguments
 #. * if the kicked should come before the kicker in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1782
+#: ../libempathy-gtk/empathy-chat.c:1791
 #, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%2$s expulsó a %1$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1785
+#: ../libempathy-gtk/empathy-chat.c:1794
 #, c-format
 msgid "%s was kicked"
 msgstr "%s fue expulsado"
@@ -1300,17 +1423,17 @@ msgstr "%s fue expulsado"
 #. translators: reverse the order of these arguments
 #. * if the banned should come before the banner in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1793
+#: ../libempathy-gtk/empathy-chat.c:1802
 #, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%2$s vetó a %1$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1796
+#: ../libempathy-gtk/empathy-chat.c:1805
 #, c-format
 msgid "%s was banned"
 msgstr "%s fue vetado"
 
-#: ../libempathy-gtk/empathy-chat.c:1800
+#: ../libempathy-gtk/empathy-chat.c:1809
 #, c-format
 msgid "%s has left the room"
 msgstr "%s ha dejado la sala"
@@ -1320,46 +1443,46 @@ msgstr "%s ha dejado la sala"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1809
+#: ../libempathy-gtk/empathy-chat.c:1818
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
-#: ../libempathy-gtk/empathy-chat.c:1834
+#: ../libempathy-gtk/empathy-chat.c:1843
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s ha entrado en la sala"
 
-#: ../libempathy-gtk/empathy-chat.c:1859
+#: ../libempathy-gtk/empathy-chat.c:1868
 #, c-format
 msgid "%s is now known as %s"
 msgstr "Ahora %s se llama %s"
 
-#: ../libempathy-gtk/empathy-chat.c:1994 ../src/empathy-call-window.c:1537
+#: ../libempathy-gtk/empathy-chat.c:2003 ../src/empathy-call-window.c:1537
 msgid "Disconnected"
 msgstr "Desconectado"
 
-#: ../libempathy-gtk/empathy-chat.c:2521
+#: ../libempathy-gtk/empathy-chat.c:2530
 msgid "Wrong password; please try again:"
 msgstr "Contraseña incorrecta; inténtelo de nuevo:"
 
-#: ../libempathy-gtk/empathy-chat.c:2522
+#: ../libempathy-gtk/empathy-chat.c:2531
 msgid "Retry"
 msgstr "Volver a intentarlo"
 
-#: ../libempathy-gtk/empathy-chat.c:2527
+#: ../libempathy-gtk/empathy-chat.c:2536
 msgid "This room is protected by a password:"
 msgstr "Esta sala está protegida por contraseña:"
 
-#: ../libempathy-gtk/empathy-chat.c:2528
+#: ../libempathy-gtk/empathy-chat.c:2537
 msgid "Join"
 msgstr "Unirse"
 
-#: ../libempathy-gtk/empathy-chat.c:2668
+#: ../libempathy-gtk/empathy-chat.c:2677
 msgid "Connected"
 msgstr "Conectado"
 
-#: ../libempathy-gtk/empathy-chat.c:2721
+#: ../libempathy-gtk/empathy-chat.c:2730
 #: ../libempathy-gtk/empathy-log-window.c:546
 msgid "Conversation"
 msgstr "Conversación"
@@ -1432,7 +1555,8 @@ msgstr "Quitando el contacto"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:195
 #: ../src/empathy-main-window.ui.h:14
-msgid "_Add Contact..."
+#| msgid "_Add Contact..."
+msgid "_Add Contact…"
 msgstr "_Añadir contacto…"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:222
@@ -1478,8 +1602,9 @@ msgid "Inviting you to this room"
 msgstr "Invitándolo a esta sala"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:527
-msgid "_Invite to chatroom"
-msgstr "_Invitar a la sala"
+#| msgid "_Invite to chatroom"
+msgid "_Invite to chat room"
+msgstr "_Invitar a la sala de chat"
 
 #: ../libempathy-gtk/empathy-contact-selector.c:129
 msgid "Select a contact"
@@ -1640,11 +1765,12 @@ msgid "Contact Details"
 msgstr "Detalles del contacto"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:9
-msgid "Email:"
-msgstr "Correo-e:"
+msgid "E-mail address:"
+msgstr "Dirección de correo-e:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:10
-msgid "Fullname:"
+#| msgid "Fullname:"
+msgid "Full name:"
 msgstr "Nombre completo:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:11
@@ -1657,7 +1783,8 @@ msgid "Identifier:"
 msgstr "Identificador:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
-msgid "Information requested..."
+#| msgid "Information requested..."
+msgid "Information requested…"
 msgstr "Información solicitada…"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:15
@@ -1677,7 +1804,8 @@ msgid "Version:"
 msgstr "Versión:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:18
-msgid "Web site:"
+#| msgid "Web site:"
+msgid "Website:"
 msgstr "Página web:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:19
@@ -1763,12 +1891,14 @@ msgstr "Llamada nueva"
 #. COL_TYPE
 #: ../libempathy-gtk/empathy-presence-chooser.c:167
 #: ../libempathy-gtk/empathy-presence-chooser.c:203
-msgid "Custom Message..."
+#| msgid "Custom message"
+msgid "Custom Message…"
 msgstr "Mensaje personalizado…"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:220
 #: ../libempathy-gtk/empathy-presence-chooser.c:222
-msgid "Edit Custom Messages..."
+#| msgid "Edit Custom Messages"
+msgid "Edit Custom Messages…"
 msgstr "Editar mensajes personalizados…"
 
 #: ../libempathy-gtk/empathy-presence-chooser.c:344
@@ -1789,7 +1919,8 @@ msgstr "Establecer su presencia y estado actual"
 
 #. Custom messages
 #: ../libempathy-gtk/empathy-presence-chooser.c:1083
-msgid "Custom messages..."
+#| msgid "Custom message"
+msgid "Custom messages…"
 msgstr "Mensajes personalizados…"
 
 #: ../libempathy-gtk/empathy-sound.c:51
@@ -2044,11 +2175,13 @@ msgid "Vietnamese"
 msgstr "Vietnamita"
 
 #: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:108
-msgid "The contact selected cannot receive files."
+#| msgid "The contact selected cannot receive files."
+msgid "The selected contact cannot receive files."
 msgstr "El contacto seleccionado no puede recibir archivos."
 
 #: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:114
-msgid "The contact selected is offline."
+#| msgid "The contact selected is offline."
+msgid "The selected contact is offline."
 msgstr "El contacto seleccionado está desconectado."
 
 #: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:169
@@ -2115,22 +2248,29 @@ msgstr "Un cliente de mensajería instantánea para GNOME"
 
 #: ../src/empathy-about-dialog.c:126
 msgid "translator-credits"
-msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2007-2009"
+msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2007-2010"
 
 #: ../src/empathy-account-assistant.c:118
-msgid "There has been an error while importing the accounts."
+#, fuzzy
+#| msgid "There has been an error while importing the accounts."
+msgid "There was an error while importing the accounts."
 msgstr "Hubo un error al importar las cuentas."
 
 #: ../src/empathy-account-assistant.c:121
-msgid "There has been an error while parsing the account details."
+#, fuzzy
+#| msgid "There has been an error while parsing the account details."
+msgid "There was an error while parsing the account details."
 msgstr "Hubo un error al analizar los detalles de la cuenta."
 
 #: ../src/empathy-account-assistant.c:124
-msgid "There has been an error while creating the account."
+#, fuzzy
+#| msgid "There has been an error while creating the account."
+msgid "There was an error while creating the account."
 msgstr "Hubo un error al crear la cuenta."
 
 #: ../src/empathy-account-assistant.c:126
-msgid "There has been an error."
+#| msgid "There has been an error."
+msgid "There was an error."
 msgstr "Hubo un error."
 
 #: ../src/empathy-account-assistant.c:141
@@ -2242,8 +2382,9 @@ msgstr "Importar sus cuentas existentes"
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
 #: ../src/empathy-accounts-dialog.c:65
-#, c-format
-msgid "There are unsaved modification regarding your %s account."
+#, fuzzy, c-format
+#| msgid "There are unsaved modification regarding your %s account."
+msgid "There are unsaved modifications to your %s account."
 msgstr "Existen modificaciones sin guardar en su cuenta %s."
 
 #. The primary text of the dialog shown to the user when he is about to lose
@@ -2253,21 +2394,26 @@ msgid "Your new account has not been saved yet."
 msgstr "Aún no se ha guardado su cuenta nueva."
 
 #: ../src/empathy-accounts-dialog.c:232 ../src/empathy-call-window.c:729
-msgid "Connecting..."
+#| msgid "Connecting..."
+msgid "Connecting…"
 msgstr "Conectando…"
 
 #: ../src/empathy-accounts-dialog.c:259
-#, c-format
-msgid "Disconnected - %s"
+#, fuzzy, c-format
+#| msgid "Disconnected - %s"
+msgid "Disconnected — %s"
 msgstr "Desconectado - %s"
 
 #: ../src/empathy-accounts-dialog.c:264
-#, c-format
-msgid "Offline - %s"
+#, fuzzy, c-format
+#| msgid "Offline - %s"
+msgid "Offline — %s"
 msgstr "Desconectado - %s"
 
 #: ../src/empathy-accounts-dialog.c:277
-msgid "Offline - No Network Connection"
+#, fuzzy
+#| msgid "Offline - No Network Connection"
+msgid "Offline — No Network Connection"
 msgstr "Desconectado - Sin conexión de red"
 
 #: ../src/empathy-accounts-dialog.c:285
@@ -2275,7 +2421,9 @@ msgid "Unknown Status"
 msgstr "Estado desconocido"
 
 #: ../src/empathy-accounts-dialog.c:296
-msgid "Offline - Account disabled"
+#, fuzzy
+#| msgid "Offline - Account disabled"
+msgid "Offline — Account Disabled"
 msgstr "Desconectado - Cuenta desactivada"
 
 #: ../src/empathy-accounts-dialog.c:645
@@ -2320,7 +2468,6 @@ msgid "No protocol installed"
 msgstr "No hay protocolos instalados"
 
 #: ../src/empathy-accounts-dialog.ui.h:3
-#| msgid "Protocol"
 msgid "Protocol:"
 msgstr "Protocolo:"
 
@@ -2333,11 +2480,12 @@ msgstr ""
 "protocolo que quiera usar."
 
 #: ../src/empathy-accounts-dialog.ui.h:5
-msgid "_Add..."
+msgid "_Add…"
 msgstr "_Añadir…"
 
 #: ../src/empathy-accounts-dialog.ui.h:6
-msgid "_Import..."
+#| msgid "Import"
+msgid "_Import…"
 msgstr "_Importar…"
 
 #: ../src/empathy-call-window.c:453
@@ -2441,9 +2589,13 @@ msgstr ""
 "llamada"
 
 #: ../src/empathy-call-window.c:1833
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "Something not expected happened in a Telepathy component. Please <a href="
+#| "\"%s\">report this bug</a> and attach logs gathered from the 'Debug' "
+#| "window in the Help menu."
 msgid ""
-"Something not expected happened in a Telepathy component. Please <a href=\"%s"
+"Something unexpected happened in a Telepathy component. Please <a href=\"%s"
 "\">report this bug</a> and attach logs gathered from the 'Debug' window in "
 "the Help menu."
 msgstr ""
@@ -2580,7 +2732,8 @@ msgid "Insert _Smiley"
 msgstr "Insertar _emoticono"
 
 #: ../src/empathy-chat-window.ui.h:5
-msgid "Invite _Participant..."
+#| msgid "Invite _Participant..."
+msgid "Invite _Participant…"
 msgstr "Invitar pa_rticipante…"
 
 #: ../src/empathy-chat-window.ui.h:6
@@ -2604,7 +2757,8 @@ msgid "_Detach Tab"
 msgstr "_Desacoplar solapa"
 
 #: ../src/empathy-chat-window.ui.h:12
-msgid "_Favorite Chatroom"
+#| msgid "_Favorite Chatroom"
+msgid "_Favorite Chat Room"
 msgstr "Sala de chat _favorita"
 
 #: ../src/empathy-chat-window.ui.h:13 ../src/empathy-main-window.ui.h:21
@@ -2652,13 +2806,15 @@ msgid "Incoming call"
 msgstr "Llamada entrante"
 
 #: ../src/empathy-event-manager.c:349
-#, c-format
-msgid "%s is video calling you, do you want to answer?"
+#, fuzzy, c-format
+#| msgid "%s is video calling you, do you want to answer?"
+msgid "%s is video calling you. Do you want to answer?"
 msgstr "%s le está llamando con vídeo, ¿quiere responder?"
 
 #: ../src/empathy-event-manager.c:350
-#, c-format
-msgid "%s is calling you, do you want to answer?"
+#, fuzzy, c-format
+#| msgid "%s is calling you, do you want to answer?"
+msgid "%s is calling you. Do you want to answer?"
 msgstr "%s le está llamando, ¿quiere responder?"
 
 #: ../src/empathy-event-manager.c:372
@@ -2930,7 +3086,8 @@ msgid "N_ormal Size"
 msgstr "Tamaño n_ormal"
 
 #: ../src/empathy-main-window.ui.h:7 ../src/empathy-status-icon.ui.h:1
-msgid "New _Call..."
+#| msgid "New Call"
+msgid "New _Call…"
 msgstr "_Llamada nueva…"
 
 #: ../src/empathy-main-window.ui.h:8
@@ -2970,12 +3127,14 @@ msgid "_File Transfers"
 msgstr "_Transferencias de archivos"
 
 #: ../src/empathy-main-window.ui.h:22
-msgid "_Join..."
+#| msgid "_Join"
+msgid "_Join…"
 msgstr "_Unirse…"
 
 #: ../src/empathy-main-window.ui.h:23 ../src/empathy-status-icon.ui.h:3
-msgid "_New Conversation..."
-msgstr "_Conversación nueva…"
+#| msgid "New Conversation"
+msgid "_New Conversation…"
+msgstr "Conversación _nueva…"
 
 #: ../src/empathy-main-window.ui.h:24
 msgid "_Offline Contacts"
@@ -3212,8 +3371,9 @@ msgid "_GPS"
 msgstr "_GPS"
 
 #: ../src/empathy-preferences.ui.h:29
-msgid "_Network (IP, Wifi)"
-msgstr "_Red (Ip, WiFi)"
+#| msgid "_Network (IP, Wifi)"
+msgid "_Network (IP, Wi-Fi)"
+msgstr "_Red (IP, Wi-Fi)"
 
 #: ../src/empathy-preferences.ui.h:30
 msgid "_Open new chats in separate windows"
@@ -3245,10 +3405,13 @@ msgid "Unable to start application for service %s: %s"
 msgstr "No se pudo iniciar la aplicación para el servicio %s: %s"
 
 #: ../src/empathy-tube-dispatch.c:447
-#, c-format
+#, fuzzy, c-format
+#| msgid ""
+#| "An invitation was offered for service %s, but you don't have the needed "
+#| "application to handle it"
 msgid ""
-"An invitation was offered for service %s, but you don't have the needed "
-"application to handle it"
+"An invitation was offered for service %s, but you don't have the application "
+"necessary to handle it"
 msgstr ""
 "Se le ha ofrecido una invitación para el servicio %s pero no tiene la "
 "aplicación necesaria para manejarla"
@@ -3320,6 +3483,46 @@ msgid ""
 msgstr ""
 "El gestor de conexiones seleccionado no soporta la extensión de depuración "
 "remota."
+
+#: ../src/empathy-invite-participant-dialog.c:34
+#: ../src/empathy-invite-participant-dialog.c:48
+#| msgid "Invite _Participant..."
+msgid "Invite Participant"
+msgstr "Invitar participante"
+
+#: ../src/empathy-invite-participant-dialog.c:35
+msgid "Choose a contact to invite into the conversation:"
+msgstr "Elegir un contacto para invitar a la conversación:"
+
+#~ msgid "What is your Windows Live user name?"
+#~ msgstr "¿Cuaĺ es su usuario de Windows Live?"
+
+#~ msgid "Email:"
+#~ msgstr "Correo-e:"
+
+#~ msgid "Custom Message..."
+#~ msgstr "Mensaje personalizado…"
+
+#~ msgid "Edit Custom Messages..."
+#~ msgstr "Editar mensajes personalizados…"
+
+#~ msgid "Custom messages..."
+#~ msgstr "Mensajes personalizados…"
+
+#~ msgid "_Add..."
+#~ msgstr "_Añadir…"
+
+#~ msgid "_Import..."
+#~ msgstr "_Importar…"
+
+#~ msgid "New _Call..."
+#~ msgstr "_Llamada nueva…"
+
+#~ msgid "_Join..."
+#~ msgstr "_Unirse…"
+
+#~ msgid "_New Conversation..."
+#~ msgstr "_Conversación nueva…"
 
 #~ msgid "_Next"
 #~ msgstr "_Siguiente"
@@ -3562,9 +3765,6 @@ msgstr ""
 
 #~ msgid "_Check Word Spelling..."
 #~ msgstr "_Comprobar ortografía…"
-
-#~ msgid "Custom message"
-#~ msgstr "Mensaje personalizado…"
 
 #~ msgid "Word"
 #~ msgstr "Palabra"
