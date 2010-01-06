@@ -1709,11 +1709,9 @@ contact_list_store_get_contact_status_icon_with_icon_name (
 			g_hash_table_insert (priv->status_icons,
 			    g_strdup (icon_name),
 			    pixbuf_status);
-			DEBUG( "Created status icon %s\n", icon_name);
 		}
-	} else {
-		DEBUG( "retrieved from cache status icon %s\n", icon_name);
 	}
+
 	g_free (icon_name);
 	return pixbuf_status;
 }
