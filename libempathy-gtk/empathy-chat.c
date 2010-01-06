@@ -1390,6 +1390,8 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 			guint        len;
 			const gchar *text;
 			gchar       *complete_char = NULL;
+			GString     *message = NULL;
+			GList       *l;
 
 			gtk_text_buffer_delete (buffer, &start, &current);
 
@@ -1405,6 +1407,18 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 				text = empathy_contact_get_name (completed_list->data);
 			} else {
 				text = completed;
+
+				/* Print all hits to the scrollback view, so the
+				 * user knows what possibilities he has.
+				 * Fixes #599779
+				 * */
+				 message = g_string_new ("");
+				 for (l = completed_list; l != NULL; l = l->next) {
+					g_string_append (message, empathy_contact_get_name (l->data));
+					g_string_append (message, " - ");
+				 }
+				 empathy_chat_view_append_event (chat->view, message->str);
+				 g_string_free (message, TRUE);
 			}
 
 			gtk_text_buffer_insert_at_cursor (buffer, text, strlen (text));
