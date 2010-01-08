@@ -1,10 +1,10 @@
-# translation of empathy-help.po to Español
-# Jorge González <jorgegonz@svn.gnome.org>, 2009.
+# translation of empathy-help.master.po to Español
+# Jorge González <jorgegonz@svn.gnome.org>, 2009, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: empathy-help\n"
-"POT-Creation-Date: 2009-08-14 21:29+0200\n"
-"PO-Revision-Date: 2009-08-15 14:20+0200\n"
+"Project-Id-Version: empathy-help.master\n"
+"POT-Creation-Date: 2009-12-14 16:05+0000\n"
+"PO-Revision-Date: 2010-01-08 20:47+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,271 +12,289 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"Report-Msgid-Bugs-To: \n"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:8(desc)
+#: C/legal.xml:3(p)
+#, fuzzy
+#| msgid ""
+#| "This work is licensed under a <link href=\"http://creativecommons.org/"
+#| "licenses/by-sa/3.0/us/\">Creative Commons Attribution-Share Alike 3.0 "
+#| "United States License</link>."
+msgid ""
+"This work is licensed under a <link href=\"http://creativecommons.org/"
+"licenses/by-sa/3.0/\">Creative Commons Attribution-Share Alike 3.0 Unported "
+"License</link>."
+msgstr ""
+"Este trabajo está licenciado bajo una <link href=\"http://creativecommons."
+"org/licenses/by-sa/3.0/us/\">Licencia Creative Commons atribución - "
+"compartir igual 3.0 para los Estados Unidos</link>."
+
+#: C/legal.xml:6(p)
+msgid ""
+"As a special exception, the copyright holders give you permission to copy, "
+"modify, and distribute the example code contained in this document under the "
+"terms of your choosing, without restriction."
+msgstr ""
+"Como excepción especial, los poseedores de los derechos de autor le dan "
+"permiso para copiar, modificar y distribuir el ejemplo de código contenido "
+"en este documento bajo los términos que usted elija, sin restricción."
+
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/video-call.page:41(None) C/video-call.page:57(None)
+#: C/audio-video.page:66(None) C/audio-call.page:59(None)
+msgid "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
+msgstr ""
+"@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
+
+#: C/video-call.page:10(desc)
 msgid "Start a video conversation with one of your contacts."
 msgstr "Iniciar una conversación de vídeo con uno de sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:14(title)
+#: C/video-call.page:20(name) C/status-icons.page:16(name)
+#: C/share-desktop.page:13(name) C/set-custom-status.page:19(name)
+#: C/send-file.page:21(name) C/salut-protocol.page:18(name)
+#: C/remove-account.page:17(name) C/prob-conn-neterror.page:17(name)
+#: C/prob-conn-name.page:16(name) C/prob-conn-auth.page:20(name)
+#: C/prob-conn-acctdisabled.page:18(name) C/prev-conv.page:16(name)
+#: C/offline-contacts.page:17(name) C/irc-start-conversation.page:15(name)
+#: C/irc-send-file.page:16(name) C/irc-nick-password.page:18(name)
+#: C/irc-manage.page:17(name) C/irc-join-room.page:16(name)
+#: C/irc-join-pwd.page:16(name) C/introduction.page:13(name)
+#: C/index.page:15(name) C/import-account.page:23(name)
+#: C/group-conversations.page:19(name) C/geolocation-what-is.page:18(name)
+#: C/geolocation-turn.page:18(name) C/geolocation-supported.page:16(name)
+#: C/geolocation-privacy.page:17(name) C/geolocation-not-showing.page:17(name)
+#: C/geolocation.page:17(name) C/favorite-rooms.page:13(name)
+#: C/disable-account.page:19(name) C/create-account.page:17(name)
+#: C/audio-video.page:16(name) C/audio-call.page:17(name)
+#: C/add-account.page:18(name)
+msgid "Milo Casagrande"
+msgstr "Milo Casagrande"
+
+#: C/video-call.page:21(email) C/status-icons.page:17(email)
+#: C/share-desktop.page:14(email) C/set-custom-status.page:20(email)
+#: C/send-file.page:22(email) C/salut-protocol.page:19(email)
+#: C/remove-account.page:18(email) C/prob-conn-neterror.page:18(email)
+#: C/prob-conn-name.page:17(email) C/prob-conn-auth.page:21(email)
+#: C/prob-conn-acctdisabled.page:19(email) C/prev-conv.page:17(email)
+#: C/offline-contacts.page:18(email) C/irc-start-conversation.page:16(email)
+#: C/irc-send-file.page:17(email) C/irc-nick-password.page:19(email)
+#: C/irc-manage.page:18(email) C/irc-join-room.page:17(email)
+#: C/irc-join-pwd.page:17(email) C/introduction.page:14(email)
+#: C/index.page:16(email) C/import-account.page:24(email)
+#: C/group-conversations.page:20(email) C/geolocation-what-is.page:19(email)
+#: C/geolocation-turn.page:19(email) C/geolocation-supported.page:17(email)
+#: C/geolocation-privacy.page:18(email)
+#: C/geolocation-not-showing.page:18(email) C/geolocation.page:18(email)
+#: C/favorite-rooms.page:14(email) C/disable-account.page:20(email)
+#: C/create-account.page:18(email) C/audio-video.page:17(email)
+#: C/audio-call.page:18(email) C/add-account.page:19(email)
+msgid "milo@ubuntu.com"
+msgstr "milo@ubuntu.com"
+
+#: C/video-call.page:31(title)
 msgid "Start a video conversation"
 msgstr "Comenzar una conversación de vídeo"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:18(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:42(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:26(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:31(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:34(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:36(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:39(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:27(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:37(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:20(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:26(p)
-msgid "From the <gui>Contact List</gui> window, perform one of the following:"
-msgstr ""
-"En la ventana de la <gui>Lista de contactos</gui> realice una de las "
-"siguientes acciones:"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:23(p)
+#: C/video-call.page:33(p)
 msgid ""
-"Select the contact you want to have a conversation with, and click on the "
-"video call icon next to their name."
+"If you have a webcam, you can call your contacts and have an video "
+"conversation with them. This features only works with certain types of "
+"accounts, and it requires the other person to have an application that "
+"supports video calls."
 msgstr ""
-"Seleccione el contacto con el que quiera tener una conversación y pulse en "
-"el icono de vídeo llamada junto a su nombre."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:29(p)
+#: C/video-call.page:40(p)
 msgid ""
-"Right-click on the name of the contact you want to have a conversation with, "
-"and select <gui>Video Call</gui>."
+"From the <gui>Contact List</gui> window, click the <media type=\"image\" "
+"mime=\"image/png\" src=\"figures/camera-web.png\">video call</media> icon "
+"next to the name of the contact you wish to call. Alternatively, right click "
+"the contact and choose <gui>Video Call</gui>."
 msgstr ""
-"Pulse con el botón derecho del ratón sobre el nombre del contacto con el que "
-"quiera tener una conversación y seleccione <gui>Llamada de vídeo</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:37(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:39(p)
+#: C/video-call.page:46(p) C/audio-call.page:48(p)
+#, fuzzy
+#| msgid ""
+#| "A new window will open. When the connection is established, you will see "
+#| "written, at the bottom of the window, <gui>Connected</gui> and the total "
+#| "conversation time."
 msgid ""
 "A new window will open. When the connection is established, you will see "
-"written, at the bottom of the window, <gui>Connected</gui> and the total "
+"<gui>Connected</gui> at the bottom of the window, along with the total "
 "conversation time."
 msgstr ""
 "Se abrirá una ventana nueva. Cuando se establezca la conexión, verá escrito, "
 "en la parte inferior de la ventana, <gui>Connectado</gui> y el tiempo total "
 "de conversación."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:44(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:46(p)
-msgid "To close the conversation, click on <gui>Hang up</gui>."
-msgstr "Para cerrar la conversación pulse <gui>Colgar</gui>."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/video-call.page:50(p)
+#: C/video-call.page:51(p) C/audio-call.page:53(p)
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
 msgid ""
-"To turn a video conversation into an audio one, from the call window "
-"deselect <guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click on "
-"the video call icon."
+"To end the conversation, choose <guiseq><gui>Call</gui><gui>Hang up</gui></"
+"guiseq>."
 msgstr ""
-"Para convertir una conversación de vídeo en una de sonido, desde la ventana "
-"de llamada deseleccione <guiseq><gui>Llamar</gui><gui>Enviar vídeo</gui></"
-"guiseq> o pulse el icono de vídeo llamada."
+"Para finalizar una conversación elija <guiseq><gui>Llamada</gui><gui>Colgar</"
+"gui></guiseq>."
+
+#: C/video-call.page:55(p)
+#| msgid ""
+#| "To turn a video conversation into an audio one, from the call window "
+#| "deselect <guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click "
+#| "on the video call icon."
+msgid ""
+"To turn a video conversation into an adio conversation, choose "
+"<guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click the <media "
+"type=\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">video call</"
+"media> toolbar button to deselect it."
+msgstr ""
+"Para convertir una conversación de vídeo en una de sonido, elija "
+"<guiseq><gui>Llamada</gui><gui>Enviar vídeo</gui></guiseq>, o pulse el botón "
+"<media type=\"image\" mime=\"image/png\" src=\"figures/camera-web.png"
+"\">Llamada de vídeo</media> en la barra de herramientas para deseleccionarlo."
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:55(None)
+#: C/status-icons.page:36(None)
 msgid "@@image: 'figures/available.png'; md5=1952a8952efbe87e84b21e09e0587e71"
 msgstr "@@image: 'figures/available.png'; md5=1952a8952efbe87e84b21e09e0587e71"
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:73(None)
+#: C/status-icons.page:42(None)
 msgid "@@image: 'figures/busy.png'; md5=6cab57171fb6d732a85ace48f11cf207"
 msgstr "@@image: 'figures/busy.png'; md5=6cab57171fb6d732a85ace48f11cf207"
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:90(None)
+#: C/status-icons.page:50(None)
 msgid "@@image: 'figures/away.png'; md5=9a93ccca527af39cbe11db5c9d915ca0"
 msgstr "@@image: 'figures/away.png'; md5=9a93ccca527af39cbe11db5c9d915ca0"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:6(desc)
-msgid "Understanding the various status icons."
-msgstr "Entender los diversos iconos de estado."
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/status-icons.page:59(None) C/status-icons.page:66(None)
+#| msgid ""
+#| "@@image: 'figures/available.png'; md5=1952a8952efbe87e84b21e09e0587e71"
+msgid "@@image: 'figures/offline.png'; md5=565ba82fbedd22e4eb5b810750199527"
+msgstr "@@image: 'figures/offline.png'; md5=565ba82fbedd22e4eb5b810750199527"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:27(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:16(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:27(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:11(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:36(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:14(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:32(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:14(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:28(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:12(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:11(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:25(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:11(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:12(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:10(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:15(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:15(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:12(name)
-msgid "Milo Casagrande"
-msgstr "Milo Casagrande"
+#: C/status-icons.page:7(desc)
+#| msgid "Understanding the various status icons."
+msgid "Understanding the various statuses and status icons."
+msgstr "Entender los diversos estados e iconos de estado."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:17(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:12(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:15(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:15(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:13(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:12(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:12(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:13(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:11(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:16(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:16(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:13(email)
-msgid "milo@ubuntu.com"
-msgstr "milo@ubuntu.com"
+#: C/status-icons.page:20(name) C/salut-protocol.page:33(cite)
+#: C/prev-conv.page:20(name) C/prev-conv.page:35(cite)
+#: C/import-account.page:27(name) C/disable-account.page:23(name)
+#: C/audio-video.page:105(cite) C/audio-video.page:113(cite)
+#: C/audio-call.page:36(cite) C/add-account.page:22(name)
+#: C/accounts-window.page:18(name) C/account-jabber.page:13(name)
+#: C/account-irc.page:13(name)
+msgid "Shaun McCance"
+msgstr "Shaun McCance"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:19(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:15(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:20(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:15(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:18(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:18(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:22(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:18(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:16(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:15(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:15(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:16(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:17(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:14(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:19(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:19(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:18(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:16(year)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:16(year)
-msgid "2009"
-msgstr "2009"
+#: C/status-icons.page:21(email) C/prev-conv.page:21(email)
+#: C/import-account.page:28(email) C/disable-account.page:24(email)
+#: C/add-account.page:23(email) C/accounts-window.page:19(email)
+#: C/account-jabber.page:14(email) C/account-irc.page:14(email)
+msgid "shaunm@gnome.org"
+msgstr "shaunm@gnome.org"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:20(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:16(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:21(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:16(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:19(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:19(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:23(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:19(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:17(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:16(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:16(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:17(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:18(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:15(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:20(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:20(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:19(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:17(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:17(name)
-msgid "GNOME Documentation Project"
-msgstr "Proyecto de documentación de GNOME"
+#: C/status-icons.page:32(title)
+#| msgid "Status icons"
+msgid "Status Types and Icons"
+msgstr "Tipos de estados e iconos"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:24(title)
-msgid "Status icons"
-msgstr "Iconos de estado"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:28(p)
-msgid ""
-"Need to understand when the extended away icon is used: how many minuts/"
-"hours should pass?"
-msgstr ""
-"Necesita entender cuándo se usa el icono de ausencia extendida: ¿cuántos "
-"minutos/horas deben pasar?"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:31(p)
-msgid "Need also to check for images to work!"
-msgstr "Necesita también comprobar que funcionen las imágenes."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:40(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:26(p)
-msgid "Icon"
-msgstr "Icono"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:45(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:31(p)
-msgid "Description"
-msgstr "Descripción"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:55(media)
+#: C/status-icons.page:36(media)
 msgid "Available icon"
 msgstr "Icono de disponible"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:61(p)
-msgid "This is the default icon for the <em>Available</em> status."
-msgstr "Éste es el icono predeterminado para el estado <em>Disponible</em>."
+#: C/status-icons.page:37(gui)
+#| msgid "Available icon"
+msgid "Available"
+msgstr "Disponible"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:64(p)
+#: C/status-icons.page:38(p)
 msgid ""
-"Use this icon when you are availble to have conversations with other people."
+"Use the <em>Available</em> status when you are at your computer and able to "
+"chat with your contacts. You can set a custom message for this status."
 msgstr ""
-"Use este icono cuando esté disponible para tener conversaciones con otras "
-"personas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:73(media)
+#: C/status-icons.page:42(media)
 msgid "Busy icon"
 msgstr "Icono de ocupado"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:79(p)
-msgid "This is the default icon for the <em>Busy</em> status."
-msgstr "Éste es el icono predeterminado para el estado <em>Ocupado</em>."
+#: C/status-icons.page:43(gui)
+#| msgid "Busy icon"
+msgid "Busy"
+msgstr "Ocupado"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:82(p)
-msgid "Use this icon when you do not want to be disturbed."
-msgstr "Use este icono cuando no quiera que le molesten."
+#: C/status-icons.page:44(p)
+msgid ""
+"Use the <em>Busy</em> status to let your contacts know that you don’t want "
+"to chat right now. They can still contact you, for instance if they have "
+"something urgent they need to discuss. By default, <app>Empathy</app> will "
+"not use notification bubbles and sounds when you are busy. You can set a "
+"custom message for this status."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:90(media)
+#: C/status-icons.page:50(media)
 msgid "Away icon"
 msgstr "Icono de ausente"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:96(p)
-msgid "This is the default icon for the <em>Away</em> status."
-msgstr "Éste es el icono predeterminado para el estado <em>Ausente</em>."
+#: C/status-icons.page:51(gui)
+#| msgid "Away icon"
+msgid "Away"
+msgstr "Ausente"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/status-icons.page:99(p)
+#: C/status-icons.page:52(p)
 msgid ""
-"Use this icon when you are going away from the computer. This icon is used "
-"also when you leave the computer and the screensaver turns on."
+"Use the <em>Away</em> status when you are going away from your computer. "
+"<app>Empathy</app> automatically sets your status to Away if you do not use "
+"your computer for a while, or if your screensaver is on. By default, "
+"<app>Empathy</app> will not use notification bubbles and sounds when you are "
+"away. You can set a custom message for this status."
 msgstr ""
-"Use este icono cuando vaya a estar ausente del equipo. Este icono se usa "
-"cuando deja el equipo y se activa el salvapantallas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:7(desc)
+#: C/status-icons.page:59(media) C/status-icons.page:66(media)
+msgid "Offline icon"
+msgstr "Icono de desconectado"
+
+#: C/status-icons.page:60(gui)
+msgid "Hidden"
+msgstr "Oculto"
+
+#: C/status-icons.page:61(p)
+msgid ""
+"When you set your status to <em>Hidden</em>, you will appear as offline to "
+"your contacts. You will still be connected to your accounts, and you still "
+"see your contacts’ statuses and start conversations with them."
+msgstr ""
+
+#: C/status-icons.page:67(gui)
+msgid "Offline"
+msgstr "Desconectado"
+
+#: C/status-icons.page:68(p)
+msgid ""
+"Setting your status to <em>Offline</em> disconnects you from all of your "
+"accounts."
+msgstr ""
+"Establecer su estado como <em>Desconectado</em> le desconecta de todas sus "
+"cuentas."
+
+#: C/share-desktop.page:7(desc)
 msgid "Share the desktop with your contacts."
 msgstr "Compartir el escritorio con sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:24(title)
+#: C/share-desktop.page:25(title)
 msgid "Share your desktop"
 msgstr "Compartir su escritorio"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:26(p)
+#: C/share-desktop.page:27(p)
 msgid ""
 "It is possible, with some of your contacts, to share your desktop with them, "
 "or to start using your contacts desktop. You can use this functionality to "
@@ -288,7 +306,7 @@ msgstr ""
 "mostrar su escritorio a sus contactos, o preguntar por ayuda o ayudar a sus "
 "contactos a resolver problemas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:34(p)
+#: C/share-desktop.page:35(p)
 msgid ""
 "In order to be able to share your desktop or to remotely use your contacts "
 "desktop, it is necessary to have a remote desktop viewer application "
@@ -298,7 +316,14 @@ msgstr ""
 "contactos es necesario tener una aplicación de visión remota de escritorios "
 "instalada en su sistema."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:47(p)
+#: C/share-desktop.page:43(p) C/send-message.page:32(p) C/send-file.page:37(p)
+#: C/favorite-rooms.page:62(p)
+msgid "From the <gui>Contact List</gui> window, perform one of the following:"
+msgstr ""
+"En la ventana de la <gui>Lista de contactos</gui> realice una de las "
+"siguientes acciones:"
+
+#: C/share-desktop.page:48(p)
 msgid ""
 "Select the contact you want to share your desktop with, and choose "
 "<guiseq><gui>Edit</gui><gui>Contact</gui><gui>Share my desktop</gui></"
@@ -308,7 +333,7 @@ msgstr ""
 "<guiseq><gui>Editar</gui><gui>Contacto</gui><gui>Compartir mi escritorio</"
 "gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:53(p)
+#: C/share-desktop.page:54(p)
 msgid ""
 "Right-click on the name of the contact you want to share your desktop with, "
 "and select <gui>Share my desktop</gui>."
@@ -317,7 +342,7 @@ msgstr ""
 "quiera compartir su escritorio y seleccione <gui>Compartir mi escritorio</"
 "gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:61(p)
+#: C/share-desktop.page:62(p)
 msgid ""
 "A request will be sent to the contact you want to share your desktop with. "
 "If they accept, the default remote desktop viewer application will be "
@@ -329,7 +354,7 @@ msgstr ""
 "escritorios para permitirle desconectar al usuario que está controlando su "
 "escritorio."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:66(p)
+#: C/share-desktop.page:67(p)
 msgid ""
 "For more information about how to use the remote desktop viewer application, "
 "refer to its help."
@@ -337,7 +362,7 @@ msgstr ""
 "Para obtener más información acerca de cómo usar la aplicación de visión de "
 "escritorios remotos, consulte su ayuda."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:73(p)
+#: C/share-desktop.page:74(p)
 msgid ""
 "When you share your desktop with someone else, it is possible to experience "
 "system performance slowdown and low Internet speed."
@@ -345,7 +370,7 @@ msgstr ""
 "Cuando comparte su escritorio con otros, es posible que experimente una "
 "ralentización del rendimiento del sistema y una baja velocidad de Internet."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/share-desktop.page:79(p)
+#: C/share-desktop.page:80(p)
 msgid ""
 "Not all your contacts might be able to support this functionality. It is "
 "necessary for them to have at least the 2.28 version of <app>Empathy</app> "
@@ -355,23 +380,24 @@ msgstr ""
 "tengan al menos la versión 2.28 de <app>Empathy</app> y una aplicación de "
 "visión remota de escritorios instalada en su sistema."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:9(desc)
-msgid "Set a personal message for your status."
-msgstr "Establecer un mensaje personal para su estado."
+#: C/set-custom-status.page:9(desc)
+#| msgid "Set a personal message for your status."
+msgid "Add, edit or delete personal messages for your status."
+msgstr "Añadir, editar o borrar un mensaje personal para su estado."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:15(name)
+#: C/set-custom-status.page:15(name)
 msgid "Jim Campbell"
 msgstr "Jim Campbell"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:16(email)
+#: C/set-custom-status.page:16(email)
 msgid "jwcampbell@gmail.com"
 msgstr "jwcampbell@gmail.com"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:26(title)
+#: C/set-custom-status.page:31(title)
 msgid "Set a custom message"
 msgstr "Establecer un mensaje personalizado"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:28(p)
+#: C/set-custom-status.page:33(p)
 msgid ""
 "Sometimes you may want to set a custom message for your status, for example "
 "to let people know that you will be unavailable for a certain period of time."
@@ -380,7 +406,7 @@ msgstr ""
 "para hacer saber a sus contactos que no estará disponible por un periodo de "
 "tiempo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:32(p)
+#: C/set-custom-status.page:37(p)
 msgid ""
 "It is possible to set a custom message based on the different statuses "
 "available."
@@ -388,8 +414,7 @@ msgstr ""
 "Es posible establecer un mensaje personalizado basado en los diferentes "
 "estados disponibles."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:38(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:74(p)
+#: C/set-custom-status.page:43(p) C/set-custom-status.page:79(p)
 msgid ""
 "From the <gui>Contact List</gui> window, click on the drop-down list at the "
 "top."
@@ -397,7 +422,7 @@ msgstr ""
 "Desde la ventana de la <gui>Lista de contactos</gui>, pulse en la lista "
 "desplegable en la parte superior."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:44(p)
+#: C/set-custom-status.page:49(p)
 msgid ""
 "Select the status you want to add a custom message to. You have to select "
 "the one identified with the label <gui>Custom Message</gui>."
@@ -406,7 +431,7 @@ msgstr ""
 "que seleccionar el identificado con la etiqueta <gui>Mensaje personalizado</"
 "gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:50(p)
+#: C/set-custom-status.page:55(p)
 msgid ""
 "Enter your custom message in the text box at the top of the window, and "
 "press <key>Enter</key> to set the message."
@@ -414,7 +439,7 @@ msgstr ""
 "Introduzca su mensaje personalizado en la caja de texto en la parte superior "
 "de la ventana y pulse <key>Intro</key> para establecer el mensaje."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:56(p)
+#: C/set-custom-status.page:61(p)
 msgid ""
 "If you want to set the custom message as a favorite, saving it in order to "
 "use it again, click on the little star on the right of the text box where "
@@ -424,7 +449,7 @@ msgstr ""
 "para usarlo de nuevo, pulse en la pequeña estrella a la derecha de la caja "
 "de texto donde escribió su mensaje personalizado."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:61(p)
+#: C/set-custom-status.page:66(p)
 msgid ""
 "If you do not do it, the custom message will not be available the next time "
 "you use <app>Empathy</app>. It will be saved only for the current session."
@@ -432,19 +457,19 @@ msgstr ""
 "Si no lo hace el mensaje personalizado no estará disponible la próxima vez "
 "que use <app>Empathy</app>. Sólo se guardará durante la sesión actual."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:70(title)
+#: C/set-custom-status.page:75(title)
 msgid "Edit, remove and add a custom message"
 msgstr "Editar, quitar y añadir un mensaje personalizado"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:80(p)
+#: C/set-custom-status.page:85(p)
 msgid "Select <gui>Edit Custom Message</gui>."
 msgstr "Seleccione <gui>Editar mensaje personalizado</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:87(p)
+#: C/set-custom-status.page:92(p)
 msgid "To edit a custom message:"
 msgstr "Para editar un mensaje personalizado:"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:92(p)
+#: C/set-custom-status.page:97(p)
 msgid ""
 "From the <gui>Saved Presets</gui> box, select the status message you want to "
 "edit and double-click on it."
@@ -452,17 +477,17 @@ msgstr ""
 "Desde la caja <gui>Estados guardados</gui>, seleccione el mensaje de estado "
 "que quiere editar y pulse dos veces sobre él."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:98(p)
+#: C/set-custom-status.page:103(p)
 msgid "Type the new custom message and press <key>Enter</key> to modify it."
 msgstr ""
 "Escriba el mensaje personalizado nuevo y pulse <key>Intro</key> para "
 "modificarlo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:105(p)
+#: C/set-custom-status.page:110(p)
 msgid "To remove a custom message:"
 msgstr "Para quitar un mensaje personalizado:"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:110(p)
+#: C/set-custom-status.page:115(p)
 msgid ""
 "From the <gui>Saved Presets</gui> box, select the status message you want to "
 "remove."
@@ -470,19 +495,18 @@ msgstr ""
 "Desde la caja <gui>Estados guardados</gui>, seleccione el mensaje de estado "
 "que quiere quitar."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:116(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:57(p)
+#: C/set-custom-status.page:121(p)
 msgid "Click on the <gui>Remove</gui> button."
 msgstr "Pulse el botón <gui>Quitar</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:123(p)
+#: C/set-custom-status.page:128(p)
 msgid ""
 "To add a new custom message, from the <gui>Add New Preset</gui> section:"
 msgstr ""
 "Para añadir un mensaje personalizado nuevo, desde la sección <gui>Añadir "
 "estado guardado</gui> "
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:128(p)
+#: C/set-custom-status.page:133(p)
 msgid ""
 "Click on the drop-down list to select the status you want to set a custom "
 "message to."
@@ -490,19 +514,19 @@ msgstr ""
 "Pulse en la lista desplegable para seleccionar el estado en el que quiere "
 "establecer un mensaje personalizado."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:134(p)
+#: C/set-custom-status.page:139(p)
 msgid "Click on the text box, and type the new custom message."
 msgstr "Pulse en la caja de texto y escriba el mensaje personalizado nuevo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:139(p)
+#: C/set-custom-status.page:144(p)
 msgid "Click on <gui>Add</gui> to add the new message to the presets ones."
 msgstr "Pulse <gui>Añadir</gui> para añadir un mensaje nuevo a los guardados."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:148(p)
+#: C/set-custom-status.page:153(p)
 msgid "When finished, click on <gui>Close</gui>."
 msgstr "Cuando haya terminado pulse <gui>Cerrar</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/set-custom-status.page:155(p)
+#: C/set-custom-status.page:160(p)
 msgid ""
 "When you edit or add a new custom message, it will not be set as the current "
 "status message. You will need to select it from the <gui>Contact List</gui> "
@@ -512,55 +536,52 @@ msgstr ""
 "mensaje de estado actual. Tiene que seleccionarlo en la ventana de "
 "<gui>Lista de contactos</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:7(desc)
+#: C/send-message.page:8(desc)
 msgid "Send a message to one of your contacts."
 msgstr "Enviar un mensaje a uno de sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:11(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:12(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:27(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:33(cite)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:14(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:17(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:13(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:14(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:12(name)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:25(cite)
+#: C/send-message.page:16(name) C/send-file.page:17(name)
+#: C/prob-conn.page:14(name) C/prob-conn-neterror.page:13(name)
+#: C/prob-conn-auth.page:16(name) C/prob-conn-acctdisabled.page:14(name)
+#: C/change-status.page:19(name) C/add-contact.page:18(name)
 msgid "Phil Bull"
 msgstr "Phil Bull"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:12(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:13(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:15(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:18(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:14(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:15(email)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:13(email)
+#: C/send-message.page:17(email) C/send-file.page:18(email)
+#: C/prob-conn.page:15(email) C/prob-conn-neterror.page:14(email)
+#: C/prob-conn-auth.page:17(email) C/prob-conn-acctdisabled.page:15(email)
+#: C/change-status.page:20(email) C/add-contact.page:19(email)
 msgid "philbull@gmail.com"
 msgstr "philbull@gmail.com"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:22(title)
+#: C/send-message.page:28(title)
 msgid "Send a message to someone"
 msgstr "Enviar un mensaje a alguien"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:31(p)
+#: C/send-message.page:37(p)
+#| msgid ""
+#| "Double-click the name of the contact that you want to have a conversation "
+#| "with."
 msgid ""
-"Double-click the name of the contact that you want to have a conversation "
+"Double click the name of the contact that you want to have a conversation "
 "with."
 msgstr ""
-"Pulse dos veces sobre el nombre del contacto con el que quiere conversar."
+"Pulse dos veces sobre el nombre del contacto con el que quiere tener una "
+"conversación."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:37(p)
+#: C/send-message.page:43(p)
+#, fuzzy
+#| msgid ""
+#| "Right-click on the name of the contact you want to have a conversation "
+#| "with, and select <gui>Chat</gui>."
 msgid ""
 "Right-click on the name of the contact you want to have a conversation with, "
-"and select <gui>Chat</gui>."
+"and choose <gui>Chat</gui>."
 msgstr ""
 "Pulse con el botón derecho del ratón sobre el nombre del contacto con el que "
 "quiera tener una conversación y seleccione <gui>Chat</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-message.page:45(p)
+#: C/send-message.page:51(p)
 msgid ""
 "A new window will open. Type a message into the box at the bottom of the "
 "window and press <key>Enter</key> to send it."
@@ -569,23 +590,27 @@ msgstr ""
 "ventana de charla en la parte inferior de la ventana, <key>Intro</key> y el "
 "tiempo total de conversación."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:7(desc)
+#: C/send-file.page:8(desc)
 msgid "Send a file from your computer to one of your contacts."
 msgstr "Enviar un archivo desde su equipo a uno de sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:27(title)
+#: C/send-file.page:33(title)
 msgid "Send files"
 msgstr "Enviar archivos"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:36(p)
+#: C/send-file.page:42(p)
+#, fuzzy
+#| msgid ""
+#| "Right-click on the contact you want to send a file, and select <gui>Send "
+#| "file</gui>."
 msgid ""
-"Right-click on the contact you want to send a file, and select <gui>Send "
+"Right click on the contact you want to send a file to, and choose <gui>Send "
 "file</gui>."
 msgstr ""
 "Pulse con el botón derecho sobre el contacto al que quiere enviar un archivo "
 "y seleccione <gui>Enviar archivo</gui>.."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:41(p)
+#: C/send-file.page:47(p)
 msgid ""
 "Click on the contact you want to send a file, and choose <guiseq><gui>Edit</"
 "gui><gui>Contact</gui><gui>Send file</gui></guiseq>."
@@ -594,50 +619,47 @@ msgstr ""
 "<guiseq><gui>Editar</gui><gui>Contacto</gui><gui>Enviar archivo</gui></"
 "guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:49(p)
+#: C/send-file.page:55(p)
 msgid "Select the file to send, and click on <gui>Send</gui>."
 msgstr "Seleccione el archivo para enviar y pulse <gui>Enviar</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:54(p)
+#: C/send-file.page:60(p)
+msgid "The <gui>File Transfers</gui> window will appear."
+msgstr "Aparecerá la ventana <gui>Transferencias de archivos</gui>."
+
+#: C/send-file.page:63(p)
+#, fuzzy
+#| msgid ""
+#| "The <gui>File Transfers</gui> window will appear. Wait for your contact "
+#| "to accept the file transfer, or click <gui>Stop</gui> to halt the "
+#| "transfer."
 msgid ""
-"The <gui>File Transfers</gui> window will appear. Wait for your contact to "
-"accept the file transfer, or click <gui>Stop</gui> to halt the transfer."
+"Wait for your contact to accept the file transfer, or click <gui>Stop</gui> "
+"to halt the transfer."
 msgstr ""
 "Aparecerá la ventana de <gui>Transferencias de archivos</gui>. Espere a que "
 "su contacto acepte la transferencia de archivo o pulse <gui>Detener</gui> "
 "para detener la transferencia."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:62(p)
+#: C/send-file.page:69(p)
 msgid ""
-"It is possible to send files only using the following services: <em>Jabber</"
-"em>, <em>Google Talk</em> and <em>Salut</em>."
+"Once the transfer is finished, it is possible to close the <gui>File "
+"Transfers</gui> window."
 msgstr ""
-"Sólo es posible enviar archivos usando los siguientes servicios: <em>Jabber</"
-"em>, <em>Google Talk</em> y <em>Salut</em>."
+"Una vez que la transferencia haya finalizado, es posible cerrar la ventana "
+"<gui>Transferencias de archivos</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:68(p)
+#: C/send-file.page:77(p)
+#, fuzzy
+#| msgid ""
+#| "Once a transfer is finished, you can close the <gui>File Transfers</gui> "
+#| "window. If you have multiple finished transfers listed in the window, "
+#| "click on <gui>Clear</gui> to empty the list. This will only remove the "
+#| "files from the list and will not delete them from your computer."
 msgid ""
-"If your contact accepts the file transfer, you can watch the progress of the "
-"transfer and see the estimated amount of time remaining before it is "
-"complete."
-msgstr ""
-"Si su contacto acepta la transferencia del archivo puede ver el progreso de "
-"la transferencia y el tiempo restante estimado antes de que se complete."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:72(p)
-msgid ""
-"If they do not accept it, the status of the transfer will change to "
-"<gui>File transfer cancelled</gui>, and the file will not be sent."
-msgstr ""
-"Si no la aceptan, el estado de la transferencia del archivo cambiará a "
-"<gui>Transferencia de archivo cancelada</gui> y no se enviará el archivo."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:76(p)
-msgid ""
-"Once a transfer is finished, you can close the <gui>File Transfers</gui> "
-"window. If you have multiple finished transfers listed in the window, click "
-"on <gui>Clear</gui> to empty the list. This will only remove the files from "
-"the list and will not delete them from your computer."
+"If you have multiple finished transfers listed in the window, click on "
+"<gui>Clear</gui> to empty the list. This will only remove the files from the "
+"list and will not delete them from your computer."
 msgstr ""
 "Una vez que la transferencia ha finalizado puede cerrar la ventana de "
 "<gui>Transferencias de archivos</gui>. Si tiene múltiples transferencias "
@@ -645,7 +667,19 @@ msgstr ""
 "lista. Esto sólo quitará los archivos de la lista y no los borrará de su "
 "equipo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/send-file.page:84(p)
+#: C/send-file.page:84(p)
+#, fuzzy
+#| msgid ""
+#| "It is possible to send files only using the following services: "
+#| "<em>Jabber</em>, <em>Google Talk</em> and <em>Salut</em>."
+msgid ""
+"It is possible to send files only using the following services: <em>Jabber</"
+"em>, <em>Google Talk</em> and <em>People Nearby</em>."
+msgstr ""
+"Sólo es posible enviar archivos usando los siguientes servicios: <em>Jabber</"
+"em>, <em>Google Talk</em> y <em>Salut</em>."
+
+#: C/send-file.page:90(p)
 msgid ""
 "In order to send a file to someone, you need to be connected to the "
 "Internet, or to a local area network."
@@ -653,32 +687,35 @@ msgstr ""
 "Para poder enviar un archivo a alguien necesita estar conectado a Internet o "
 "a una red de área local."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:7(desc)
-msgid "Undesrtanding the <em>Salut</em> protocol."
+#: C/salut-protocol.page:8(desc)
+#, fuzzy
+#| msgid "Undesrtanding the <em>Salut</em> protocol."
+msgid "Undesrtanding the People Nearby feature."
 msgstr "Entender el protocolo <em>Salut</em>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:24(title)
-msgid "What is the <em>Salut</em> service?"
-msgstr "¿Qué es el servicio <em>Salut</em>?"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:28(p)
-msgid ""
-"Need to work on this section, explaining people in clear words what the hell "
-"is this service!"
+#: C/salut-protocol.page:30(title)
+msgid "What is People Nearby?"
 msgstr ""
-"Se necesita trabajo en esta sección, explicando en palabras clara qué "
-"demonios es este servicio."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:34(p)
+#: C/salut-protocol.page:34(p)
+msgid "I'd like to see this played up a bit more."
+msgstr ""
+
+#: C/salut-protocol.page:37(p)
+#, fuzzy
+#| msgid ""
+#| "The <em>Salut</em> service is a serverless communication service: you do "
+#| "not need to connect and authenticate to a central server in order to use "
+#| "it."
 msgid ""
-"The <em>Salut</em> service is a serverless communication service: you do not "
+"The People Nearby service is a serverless communication service: you do not "
 "need to connect and authenticate to a central server in order to use it."
 msgstr ""
 "El servicio <em>Salut</em> es un servicio de comunicación sin servidores: no "
 "necesita conectarse y autenticarse contra un servidor central para poder "
 "usarlo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:39(p)
+#: C/salut-protocol.page:42(p)
 msgid ""
 "This kind of serverless messaging system is restricted to a local area "
 "network and an active Internet connection is not necessary."
@@ -686,7 +723,7 @@ msgstr ""
 "Este tipo de sistemas de mensajería sin servidores está restringido a redes "
 "de área local y no se necesita una conexión activa con Internet."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:43(p)
+#: C/salut-protocol.page:46(p)
 msgid ""
 "The people that use this service inside the same local area network will be "
 "auto-discovered, and it will be possible to send them messages and files as "
@@ -696,7 +733,7 @@ msgstr ""
 "autodescubrirá y será posible enviarles mensajes y archivos al igual que con "
 "otros servicios."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/salut-protocol.page:48(p)
+#: C/salut-protocol.page:51(p)
 msgid ""
 "All the modern local area networks should be able to support this kind of "
 "service."
@@ -704,224 +741,260 @@ msgstr ""
 "Todas las redes modernas de área local deberían poder soportar este tipo de "
 "servicio."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:7(desc)
+#: C/remove-account.page:8(desc)
 msgid "Completely remove an account from <app>Empathy</app>."
 msgstr "Quitar completamente una cuenta en <app>Empathy</app>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:21(title)
+#: C/remove-account.page:29(title)
 msgid "Remove an account"
 msgstr "Quitar una cuenta"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:23(p)
+#: C/remove-account.page:31(p)
 msgid ""
-"Removing an account means to delete it from your computer with all the "
-"conversations you had with other people."
+"You can completely remove an account from <app>Empathy</app> if you no "
+"longer wish to use the account. If you wish to use the account in "
+"<app>Empathy</app> again in the future, you will have to add your account "
+"details again."
 msgstr ""
-"Quitar una cuenta significa borrarla de su equipo junto con todas las "
-"conversaciones que haya tenido con otras personas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:27(p)
+#: C/remove-account.page:38(p) C/irc-nick-password.page:47(p)
+#: C/disable-account.page:44(p) C/add-account.page:43(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
 msgid ""
-"After removing an account you will not be able to recover it or to recover "
-"the conversations you had."
+"From the <gui>Contact List</gui> window, choose <guiseq><gui>Edit</"
+"gui><gui>Accounts</gui></guiseq>, or press <key>F4</key>."
 msgstr ""
-"Después de quitar una cuenta no podrá recuperarla o recuperar las "
-"conversaciones que tuvo con ella."
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
+"gui><gui>Unirse</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:39(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:44(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:32(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:42(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:31(p)
-msgid "Press <key>F4</key>."
-msgstr "Pulse <key>F4</key>."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:44(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:49(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:37(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:47(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:36(p)
-msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
-msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:51(p)
+#: C/remove-account.page:42(p)
+#, fuzzy
+#| msgid ""
+#| "Select the account you wish to remove from the box on the left of the "
+#| "dialog."
 msgid ""
-"Select the account you wish to remove from the box on the left of the dialog."
+"Select the account you wish to remove from the accounts list on the left "
+"side of the window."
 msgstr ""
 "Seleccione la cuenta que quiere quitar en la caja a la izquierda del diálogo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/remove-account.page:62(p)
+#: C/remove-account.page:46(p)
+msgid "Click on the trash icon next to the account name to remove the account."
+msgstr ""
+
+#: C/remove-account.page:49(p)
+#, fuzzy
+#| msgid ""
+#| "A dialog will be shown asking for confirmation. Click on the <gui>Remove</"
+#| "gui> button to permanently remove the account."
 msgid ""
-"A dialog will be shown asking for confirmation. Click on the <gui>Remove</"
-"gui> button to permanently remove the account."
+"A dialog will be shown asking for confirmation. Click the <gui>Remove</gui> "
+"button to permanently remove the account."
 msgstr ""
 "Se mostrará un diálogo preguntando por una confirmación. Pulse el botón "
 "<gui>Quitar</gui> para quitar la cuenta permanentemente."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:7(desc)
+#: C/remove-account.page:55(p)
+msgid ""
+"Even after removing an account, <app>Empathy</app> does not delete your "
+"conversation history for that account."
+msgstr ""
+
+#: C/prob-conn.page:7(desc)
 msgid "Diagnose common problems connecting to an instant messaging service."
 msgstr ""
 "Diagnosticar problemas comunes al conectarse a un servicio de mensajería "
 "instantánea."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:24(title)
+#: C/prob-conn.page:26(title)
 msgid "Problems connecting to an instant messaging service"
 msgstr "Problemas al conectarse a un servicio de mensajería instantánea"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:28(p)
+#: C/prob-conn-neterror.page:7(desc)
 msgid ""
-"This is a stub. We should identify the most common causes for a user not "
-"being able to connect and document those."
+"An error message which says \"<gui>Network error</gui>\" appears in the main "
+"window."
 msgstr ""
-"Esto es un esbozo. Deberíamos identificar las causas más comunes para que un "
-"usuario no se pueda conectar y documentarlas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:34(p)
-msgid "Check whether gui tags are allowed in section titles and descs."
-msgstr ""
-"Comprobar si las etiquetas del IGU están permitidas en los títulos de "
-"sección y descripciones."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn.page:37(p)
-msgid ""
-"You can... but the end result is not very good: the title is in blue and the "
-"gui element in grey."
-msgstr ""
-"Puede... pero el resultado no es muy bueno: el título está en azul y el "
-"elemento del IGU en gris."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:8(desc)
-msgid ""
-"An error message appears in the main <app>Empathy</app> window which says "
-"\"Network error\"."
-msgstr ""
-"Aparece un mensaje de error en la ventana principal de <app>Empathy</app> "
-"que muestra «Error de red»."
-
-#. TODO: rework this page in order to talk about the IRC problem: if you
-#.   don't set your nickname, this is the kind of error that will be shown.
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:29(title)
+#: C/prob-conn-neterror.page:29(title)
 msgid "I get a message that says \"Network error\""
 msgstr "Obtengo un mensaje que muestra «Error de red»"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:31(p)
+#: C/prob-conn-neterror.page:32(cite)
+msgid "shaunm"
+msgstr "shaunm"
+
+#: C/prob-conn-neterror.page:33(p)
 msgid ""
-"If you try to connect and an error message appears in the main Empathy "
-"window which says \"Network error\", Empathy cannot communicate with the "
-"instant messaging service for some reason."
+"Empathy no longer allows you to create an IRC account without a valid nick. "
+"I've removed the guide link. Remove the text."
+msgstr ""
+
+#: C/prob-conn-neterror.page:37(p)
+#, fuzzy
+#| msgid ""
+#| "If you try to connect and an error message appears in the main Empathy "
+#| "window which says \"Network error\", Empathy cannot communicate with the "
+#| "instant messaging service for some reason."
+msgid ""
+"This kind of error happens when <app>Empathy</app> cannot communicate with "
+"the instant messaging service for some reason."
 msgstr ""
 "Si intenta conectarse y aparece un mensaje de error en la ventana principal "
 "de Empathy que muestra «Error de red», Empathy no se puede comunicar con el "
 "servicio de mensajería instantánea por alguna razón."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:39(p)
-msgid "Check that you are connected to the Internet or network."
+#: C/prob-conn-neterror.page:41(p)
+msgid ""
+"Also, this kind of error happens when you try to use an IRC account without "
+"setting a nickname."
+msgstr ""
+
+#: C/prob-conn-neterror.page:48(p) C/prob-conn-auth.page:41(p)
+#: C/prob-conn-acctdisabled.page:40(p)
+#, fuzzy
+#| msgid "Check that you are connected to the Internet or network."
+msgid ""
+"Make sure that you are connected to the Internet, or to a local area network."
 msgstr "Compruebe que está conectado a Internet o a una red."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:46(p)
-msgid "Click the <gui>Edit Account</gui> button in the error message."
+#: C/prob-conn-neterror.page:53(p) C/prob-conn-name.page:38(p)
+#: C/prob-conn-auth.page:53(p)
+#, fuzzy
+#| msgid "Click the <gui>Edit Account</gui> button in the error message."
+msgid "Click on the <gui>Edit Account</gui> button in the error message."
 msgstr "Pulse el botón <gui>Editar cuenta</gui> en el mensaje de error."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:51(p)
+#: C/prob-conn-neterror.page:60(p) C/prob-conn-acctdisabled.page:56(p)
+#, fuzzy
+#| msgid ""
+#| "Expand the <gui>Advanced</gui> section and make sure that the details "
+#| "such as server address and port are correct. You should be able to find "
+#| "these details from the website of the messaging service."
 msgid ""
-"Expand the <gui>Advanced</gui> section and make sure that the details such "
-"as server address and port are correct. You should be able to find these "
-"details from the website of the messaging service."
+"Check in the <gui>Advanced</gui> section that all the details are correct. "
+"You should be able to find these details from the website of the messaging "
+"service."
 msgstr ""
 "Expanda la sección <gui>Avanzadas</gui> y asegúrese de que los detalles "
 "tales como la dirección y el puerto del servidor son correctos. Debería "
 "poder encontrar estos detalles en la página web del servicio de mensajería."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-neterror.page:58(p)
+#: C/prob-conn-neterror.page:66(p)
 msgid ""
-"Uncheck the <gui>Enabled</gui> box next to the name of your account and then "
-"check it again to try to connect to the service again."
+"In the case of an IRC account, type your nickname in the <gui>Nickname</gui> "
+"text box."
+msgstr ""
+
+#: C/prob-conn-neterror.page:74(p) C/prob-conn-name.page:59(p)
+#: C/prob-conn-auth.page:63(p)
+#, fuzzy
+#| msgid ""
+#| "Uncheck the <gui>Enabled</gui> box next to the name of your account and "
+#| "then check it again to try to connect to the service again."
+msgid ""
+"Deselect the <gui>Enabled</gui> check-box next to the name of your account, "
+"and then select it again to try to reconnect to the service."
 msgstr ""
 "Desmarque la caja <gui>Activada</gui> junto al nombre de su cuenta y después "
 "márquela de nuevo para intentar conectar con el servicio de nuevo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:8(desc)
-msgid ""
-"An error message appears in the main <app>Empathy</app> window which says "
-"\"Name in use\"."
+#: C/prob-conn-name.page:9(title)
+msgid "“Name in use”"
 msgstr ""
-"Aparece un mensaje de error en la ventana principal de <app>Empathy</app> y "
-"muestra «Nombre en uso»."
 
-#. TODO: work on this page. This error appears with the IRC account
-#.     when you set a nickname that is already in use on that network. We need
-#.     to write topics for changing your nickname and to set the password of your
-#.     nickname.
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:31(title)
-msgid "I get a message that says \"Name in use\""
+#: C/prob-conn-name.page:10(desc)
+msgid ""
+"An error message which says “<gui>Name in use</gui>” appears in the main "
+"window."
+msgstr ""
+
+#: C/prob-conn-name.page:28(title)
+#, fuzzy
+#| msgid "I get a message that says \"Name in use\""
+msgid "I get a message that says “Name in use”"
 msgstr "Obtengo un mensaje de error que muestra «Nombre en uso»"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:33(p)
+#: C/prob-conn-name.page:30(p)
+#, fuzzy
+#| msgid ""
+#| "This kind of error happens when you try to connect to your IRC account "
+#| "and you are using a nickname that is being used by someone else on that "
+#| "particular network."
 msgid ""
 "This kind of error happens when you try to connect to your IRC account and "
-"you are using a nickname that is being used by someone else on that "
+"you are using a nickname that is already being used by someone else on that "
 "particular network."
 msgstr ""
 "Este tipo de error sucede cuando intenta conectarse a su cuenta de IRC y "
 "está usando un apodo que ya está usando otra persona en esa red en "
 "particular."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:39(p)
-msgid ""
-"To resolve this problem, click on the <gui>Edit Account</gui> button and "
-"perform one of the following:"
-msgstr ""
-"Para resolver este problema pulse el botón <gui>Editar cuenta</gui> y "
-"realice una de las siguientes acciones:"
+#: C/prob-conn-name.page:45(p)
+#, fuzzy
+#| msgid "In the <gui>Alias</gui> text box, type their name."
+msgid "In the <gui>Nickname</gui> text box, type a new nickname."
+msgstr "En la caja de texto <gui>Apodo</gui> escriba su nombre."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:46(p)
-msgid "Change your nickname."
-msgstr "Cambie su apodo."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-name.page:51(p)
+#: C/prob-conn-name.page:50(p)
+#, fuzzy
+#| msgid ""
+#| "Set the password for that nickname, if you have registered that nickname "
+#| "within the network you are using. For more information, see <link xref="
+#| "\"irc-nick-password\"/>."
 msgid ""
-"Set the password for that nickname, if you have registered that nickname "
-"within the network you are using. For more information, see <link xref=\"irc-"
+"If you have registered that nickname within the network you are using, set "
+"the password for that nickname. For more information, see <link xref=\"irc-"
 "nick-password\"/>."
 msgstr ""
 "Establezca la contraseña para ese apodo, si ha registrado ese apodo en la "
 "red que está usando. Para obtener más información consulte la <link xref="
 "\"irc-nick-password\"/>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:8(desc)
+#: C/prob-conn-auth.page:8(desc)
+#, fuzzy
+#| msgid ""
+#| "An error message appears in the main window saying that "
+#| "\"<gui>Authentication failed</gui>\"."
 msgid ""
-"An error message appears in the main window saying that "
-"\"<gui>Authentication failed</gui>\"."
+"An error message which says \"<gui>Authentication failed</gui>\" appears in "
+"the main window."
 msgstr ""
 "Aparece un mensaje de error en la ventana principal y muestra «<gui>Falló la "
 "autenticación</gui>»."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:29(title)
+#: C/prob-conn-auth.page:32(title)
 msgid "I get a message that says \"Authentication failed\""
 msgstr "Obtengo un mensaje que dice «Falló la autenticación»"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:33(p)
+#: C/prob-conn-auth.page:34(p)
+#, fuzzy
+#| msgid ""
+#| "If you try to connect and you get a message saying <gui>Authentication "
+#| "failed</gui>, your instant messaging service is not allowing you to "
+#| "connect because it does not recognize your username or password for some "
+#| "reason."
 msgid ""
-"Could be useful to link here how to change your password or how to recover "
-"it. Need to write that section."
-msgstr ""
-"Podría ser útil enlazar aquí cómo cambiar su contraseña o cómo recuperarla. "
-"Se debe escribir esa sección."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:39(p)
-msgid ""
-"If you try to connect and you get a message saying <gui>Authentication "
-"failed</gui>, your instant messaging service is not allowing you to connect "
-"because it does not recognize your username or password for some reason."
+"This kind of error happens when your instant messaging service is not "
+"allowing you to connect because it does not recognize your username or "
+"password for some reason."
 msgstr ""
 "Si intenta conectarse y obtiene un mensaje diciendo <gui>Falló la "
 "autenticación</gui> su servicio de mensajería instantánea no le está "
 "permitiendo conectarse porque por algún motivo no reconoce su nombre de "
 "usuario o su contraseña."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:47(p)
+#: C/prob-conn-auth.page:46(p)
+#, fuzzy
+#| msgid ""
+#| "Make sure that you have registered for an account with the service you "
+#| "are trying to connect to. If you do not have an account, most services "
+#| "will not allow you to connect."
 msgid ""
-"Make sure that you have registered for an account with the service you are "
+"Make sure that you have registered an account with the service you are "
 "trying to connect to. If you do not have an account, most services will not "
 "allow you to connect."
 msgstr ""
@@ -929,19 +1002,14 @@ msgstr ""
 "intentando conectarse. Si no tiene una cuenta la mayoría de los servicios no "
 "le permitirán que se conecte."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-auth.page:54(p)
+#: C/prob-conn-auth.page:58(p) C/prob-conn-acctdisabled.page:51(p)
+#, fuzzy
+#| msgid "Make sure that your username and password are correct."
 msgid ""
-"Click the <gui>Edit Account</gui> button in the error message. Type your "
-"username and password again to make sure that they are correct. Deselect the "
-"<gui>Enabled</gui> box next to the name of your account and then select it "
-"to try to connect to the service again."
-msgstr ""
-"Pulse el botón <gui>Editar cuenta</gui> en el mensaje de error. Escriba de "
-"nuevo su nombre de usuario y contraseña para asegurarse de que son "
-"correctos. Desmarque la caja <gui>Activada</gui> junto al nombre de la "
-"cuenta y después márquela para intentar conectarse de nuevo con el servicio."
+"Type your username and password again to make sure that they are correct."
+msgstr "Asegúrese de que su nombre de usuario y contraseña son correctos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:7(desc)
+#: C/prob-conn-acctdisabled.page:7(desc)
 msgid ""
 "The instant messaging account that you want to use is not enabled in the "
 "list of accounts."
@@ -949,178 +1017,390 @@ msgstr ""
 "La cuenta de mensajería instantánea que quiere usar no está activada en la "
 "lista de cuentas."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:23(title)
+#: C/prob-conn-acctdisabled.page:30(title)
 msgid "My account is not enabled"
 msgstr "Mi cuenta no está activada"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:25(p)
+#: C/prob-conn-acctdisabled.page:32(p)
+#, fuzzy
+#| msgid ""
+#| "If the instant messaging account that you want to use is not enabled in "
+#| "the drop-down account list when you try to start a new conversation or "
+#| "join a chat, your account details may not be correct."
 msgid ""
 "If the instant messaging account that you want to use is not enabled in the "
 "drop-down account list when you try to start a new conversation or join a "
-"chat, your account details may not be correct."
+"room, your account details may not be correct."
 msgstr ""
 "Si la cuenta de mensajería instantánea que quiere usar no está activada en "
 "la lista desplegable de cuentas cuando intenta iniciar una conversación "
 "nueva o unirse a una charla, puede que los detalles de su cuenta no sean "
 "correctos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:33(p)
+#: C/prob-conn-acctdisabled.page:45(p)
+#, fuzzy
+#| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
 msgid ""
-"Click <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq> and make sure that "
-"the <gui>Enabled</gui> checkbox is checked."
-msgstr ""
-"Pulse <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq> y asegúrese de "
-"que la caja de verificación <gui>Activada</gui> está marcada."
+"Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq> and select the "
+"account that is not working."
+msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:39(p)
-msgid "Make sure that your username and password are correct."
-msgstr "Asegúrese de que su nombre de usuario y contraseña son correctos."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/prob-conn-acctdisabled.page:44(p)
+#: C/prob-conn-acctdisabled.page:62(p)
+#, fuzzy
+#| msgid ""
+#| "Uncheck the <gui>Enabled</gui> box next to the name of your account and "
+#| "then check it again to try to connect to the service again."
 msgid ""
-"Expand the <gui>Advanced</gui> section of the <app>Accounts</app> window and "
-"make sure that all of the server settings are correct."
+"Check that the <gui>Enabled</gui> check-box next to the name of your account "
+"is selected. If it is not, select the check-box to enalbe the account."
 msgstr ""
-"Expanda la sección <gui>Avanzadas</gui> de la ventana de <app>Cuentas</app> "
-"y asegúrese de que todos los ajustes del servidor son correctos."
+"Desmarque la caja <gui>Activada</gui> junto al nombre de su cuenta y después "
+"márquela de nuevo para intentar conectar con el servicio de nuevo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:7(desc)
-msgid "How to see the contacts that are not online."
+#: C/prev-conv.page:8(desc)
+#, fuzzy
+#| msgid "Icon for audio conversation"
+msgid "Browse or search your previous conversations."
+msgstr "Icono para la conversación de sonido"
+
+#: C/prev-conv.page:32(title)
+#, fuzzy
+#| msgid "Group conversations"
+msgid "View previous conversations"
+msgstr "Conversaciones de grupos"
+
+#: C/prev-conv.page:36(p)
+msgid ""
+"Highlighting text is quirky: <link href=\"http://bugzilla.gnome.org/show_bug."
+"cgi?id=593733\">#593733</link>. If there's an actual highlighting going on, "
+"independent of the selection (like in yellow or something), we can use the "
+"term \"highlight\". Otherwise we need to use the term \"select\". Watch that "
+"bug."
+msgstr ""
+
+#: C/prev-conv.page:43(p)
+msgid ""
+"<app>Empathy</app> automatically saves all your text conversations you have "
+"with your contacts. You can <link xref=\"#search\">search through all of "
+"your previous conversations</link> or <link xref=\"#browse\">browse previous "
+"conversations</link> by contact and date."
+msgstr ""
+
+#: C/prev-conv.page:51(p)
+#, fuzzy
+#| msgid ""
+#| "In order to send a file to someone, you need to be connected to the "
+#| "Internet, or to a local area network."
+msgid ""
+"You do not need to be connected to the Internet to view and search your "
+"previous conversations."
+msgstr ""
+"Para poder enviar un archivo a alguien necesita estar conectado a Internet o "
+"a una red de área local."
+
+#: C/prev-conv.page:58(title)
+#, fuzzy
+#| msgid "Start a video conversation"
+msgid "Search previous conversations"
+msgstr "Comenzar una conversación de vídeo"
+
+#: C/prev-conv.page:60(p)
+msgid ""
+"You can perform a full-text search through all of your previous "
+"conversations."
+msgstr ""
+
+#: C/prev-conv.page:64(p) C/prev-conv.page:93(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
+msgid ""
+"From the <gui>Contact List</gui> window, choose <guiseq><gui>View</"
+"gui><gui>Previous Conversations</gui></guiseq>. Alternatively, press "
+"<key>F3</key>."
+msgstr ""
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
+"gui><gui>Unirse</gui></guiseq>."
+
+#: C/prev-conv.page:68(p)
+#, fuzzy
+#| msgid "Deselect the <gui>Enabled</gui> check-box."
+msgid "Select the <gui>Search</gui> tab."
+msgstr "Deseleccione la caja de verificación <gui>Activada</gui>."
+
+#: C/prev-conv.page:71(p)
+msgid ""
+"In the <gui>For</gui> field, type the text you want to search for. Click "
+"<gui>Find</gui> or press <key>Enter</key>."
+msgstr ""
+
+#: C/prev-conv.page:75(p)
+msgid ""
+"Any conversations that matched your search terms will be shown in the list "
+"below the search field. By default, conversations are ordered by date."
+msgstr ""
+
+#: C/prev-conv.page:79(p)
+msgid ""
+"Click on a conversation to view it. <app>Empathy</app> will select the text "
+"in the conversation that matched your search terms."
+msgstr ""
+
+#: C/prev-conv.page:86(title)
+#, fuzzy
+#| msgid "Group conversations"
+msgid "Browse previous conversations"
+msgstr "Conversaciones de grupos"
+
+#: C/prev-conv.page:88(p)
+#, fuzzy
+#| msgid "Start a group conversation with your contacts."
+msgid ""
+"You can browse your previous conversations with your contacts or in chat "
+"rooms by date."
+msgstr "Iniciar una conversación en grupo con sus contactos."
+
+#: C/prev-conv.page:97(p)
+#, fuzzy
+#| msgid "Deselect the <gui>Enabled</gui> check-box."
+msgid "Select the <gui>Conversations</gui> tab."
+msgstr "Deseleccione la caja de verificación <gui>Activada</gui>."
+
+#: C/prev-conv.page:100(p)
+msgid ""
+"Select an account from the drop-down list in the top left. A list of "
+"contacts and chat room for that account will be shown below."
+msgstr ""
+
+#: C/prev-conv.page:104(p)
+msgid ""
+"Select a contact or chat room to view your previous conversations from. By "
+"default the most recent conversation will be shown."
+msgstr ""
+
+#: C/prev-conv.page:108(p)
+msgid ""
+"You can browse your conversations by date. Days on which you had a "
+"conversation with the selected contact will be shown in bold text. Click a "
+"date to select it. Click the arrows next to the month and year to browse "
+"earlier dates."
+msgstr ""
+
+#: C/prev-conv.page:114(p)
+msgid ""
+"You can search for text in the displayed conversation by typing into the "
+"search field at the top. The matching text will be highlighted."
+msgstr ""
+
+#: C/prev-conv.page:118(p)
+msgid ""
+"You can quickly view the previous conversations with one of your contacts "
+"from the <gui>Contact List</gui> window. Simply right click the contact and "
+"choose <gui>View Previous Conversations</gui>. The <gui>Previous "
+"Conversations</gui> window will open with that contact already selected."
+msgstr ""
+
+#: C/offline-contacts.page:8(desc)
+#, fuzzy
+#| msgid "How to see the contacts that are not online."
+msgid "See all of your contacts, even those that are not online."
 msgstr "Cómo ver los contactos que no están conectados."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:25(title)
-msgid "Display offline contacts"
+#: C/offline-contacts.page:29(title)
+#, fuzzy
+#| msgid "Display offline contacts"
+msgid "Show offline contacts"
 msgstr "Mostrar contactos desconectados"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:29(p)
-msgid "Need to rework on the terminology used."
-msgstr "Se debe trabajar en la terminología usada."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:41(p)
-msgid "Choose <guiseq><gui>View</gui><gui>Offline Contacts</gui></guiseq>."
+#: C/offline-contacts.page:31(p)
+msgid ""
+"Normally, <app>Empathy</app> only shows your contacts that are currently "
+"online. You can show all of your contacts instead, including those that are "
+"offline."
 msgstr ""
-"Elija <guiseq><gui>Ver</gui><gui>Contactos desconectados</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:46(p)
-msgid "Press <keyseq><key>Ctrl</key><key>H</key></keyseq>."
-msgstr "Pulse <keyseq><key>Ctrl</key><key>H</key></keyseq>."
+#: C/offline-contacts.page:37(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
+msgid ""
+"From the <gui>Contact List</gui> window, choose <guiseq><gui>View</"
+"gui><gui>Offline Contacts</gui></guiseq>, or press <keyseq><key>Ctrl</"
+"key><key>H</key></keyseq>."
+msgstr ""
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
+"gui><gui>Unirse</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/offline-contacts.page:53(p)
+#: C/offline-contacts.page:42(p)
 msgid "To hide the offline contacts again, repeat the same procedure above."
 msgstr ""
 "Para ocultar los contactos desconectados de nuevo, repita el mismo "
 "procedimiento anterior."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:8(desc)
-msgid "How to set the password of a nickname."
-msgstr "Cómo establecer la contraseña de un apodo."
+#: C/irc-start-conversation.page:8(desc)
+#, fuzzy
+#| msgid "Start a group conversation with your contacts."
+msgid "Start a conversation witn an IRC contact."
+msgstr "Iniciar una conversación en grupo con sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:23(title)
-msgid "Set the nickname password"
+#: C/irc-start-conversation.page:27(title)
+msgid "Chat with somebody on IRC"
+msgstr ""
+
+#: C/irc-start-conversation.page:29(p)
+msgid ""
+"You can hold private conversations with other IRC users, outside of the "
+"public IRC chat rooms. To start a conversation with another IRC user:"
+msgstr ""
+
+#: C/irc-start-conversation.page:34(p)
+msgid ""
+"In the contact list for an IRC chat room, double click the name of the user "
+"you want to chat with. Alternatively, right click the name of the user and "
+"choose <gui>Chat</gui>."
+msgstr ""
+
+#: C/irc-start-conversation.page:42(p)
+msgid ""
+"The IRC room contact list is not the same as <app>Empathy</app> contact "
+"list. It contains a list of users in the IRC chat room you joined. Different "
+"rooms can have different contacts listed."
+msgstr ""
+
+#: C/irc-start-conversation.page:49(p)
+msgid ""
+"The IRC room contact list is usually on the right side of the IRC room "
+"window. If you do not see it, choose <guiseq><gui>Conversation</"
+"gui><gui>Show Contact List</gui></guiseq>."
+msgstr ""
+
+#: C/irc-send-file.page:9(desc)
+msgid "<app>Empathy</app> does not currently support sending files using IRC."
+msgstr ""
+
+#: C/irc-send-file.page:28(title)
+#, fuzzy
+#| msgid "Send files"
+msgid "Send files over IRC"
+msgstr "Enviar archivos"
+
+#: C/irc-send-file.page:30(p)
+msgid "It is not currently possible to send files using IRC."
+msgstr ""
+
+#: C/irc-nick-password.page:10(desc)
+msgid "Protect your nickname to prevent other IRC users from using it."
+msgstr ""
+
+#: C/irc-nick-password.page:30(title)
+#, fuzzy
+#| msgid "Set the nickname password"
+msgid "Use a nickname password on IRC"
 msgstr "Establecer la contraseña para un apodo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:25(p)
+#: C/irc-nick-password.page:32(p)
 msgid ""
-"Registering a nickname is useful to preserve your identity on IRC and you "
-"will be able to use always the same nickname. In some cirtumstances, some "
-"IRC channels may be configured to accept only registered nickname."
+"On some IRC networks, you can register your nickname with a service called "
+"NickServ. By sending special messages to NickServ, you can set your password "
+"and identify yourself. Some IRC chat rooms may not allow you to join without "
+"a registered nickname."
 msgstr ""
-"Registrar un apodo es útil para preservar su identidad en el IRC y siempre "
-"podrá usar ese apodo. En algunas circunstancias, algunos canales de IRC "
-"pueden estar configurados para aceptar sólo apodos registrados."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:31(p)
+#: C/irc-nick-password.page:37(p)
 msgid ""
-"If you have registered your nickname with a password on a network that "
-"supports nickname registration, you can use that password with <app>Empathy</"
-"app> to identify yourself as the owner of the nickname."
+"<app>Empathy</app> does not currently support nickname registration. Some "
+"IRC networks, however, will automatically forward a <em>server password</em> "
+"to NickServ. On these networks, you can use the IRC password in "
+"<app>Empathy</app> to identify yourself to NickServ. The popular FreeNode "
+"network is known to have this feature."
 msgstr ""
-"Si ha registrado su apodo con una contraseña en una red que soporta registro "
-"de apodos, puede usar esa contraseña con <app>Empathy</app> para "
-"identificarse como el propietario del apodo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:56(p)
-msgid "Select the IRC account from the box on the left of the dialog."
+#: C/irc-nick-password.page:43(p)
+msgid "To set an IRC server password:"
+msgstr ""
+
+#: C/irc-nick-password.page:51(p)
+#, fuzzy
+#| msgid "Select the IRC account from the box on the left of the dialog."
+msgid "Select the IRC account from the list on the left of the dialog."
 msgstr "Seleccione la cuenta de IRC en la caja a la izquierda del diálogo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:61(p)
+#: C/irc-nick-password.page:54(p)
+#, fuzzy
+#| msgid ""
+#| "In the <gui>Password</gui> text box, type the password you used to "
+#| "register your nikcname."
 msgid ""
-"If the account is enabled, disable it by deselecting the <gui>Enable</gui> "
-"check-box next to the name of the account."
-msgstr ""
-"Si la cuenta está activada, desactívela deseleccionando la caja de "
-"verificación <gui>Activada</gui> junto al nombre de la cuenta."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:67(p)
-msgid ""
-"In the <gui>Password</gui> text box, type the password you used to register "
+"In the <gui>Password</gui> field, type the password you used to register "
 "your nikcname."
 msgstr ""
 "En la caja de texto <gui>Contraseña</gui> escriba la contraseña que quiere "
 "usar para registrar su apodo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:73(p)
-msgid ""
-"Enable the account by selecting the <gui>Enabled</gui> check-box next to the "
-"name of the account."
-msgstr ""
-"Active la cuenta seleccionando la caja de verificación <gui>Activada</gui> "
-"junto al nombre de la cuenta."
+#: C/irc-nick-password.page:60(p) C/import-account.page:58(p)
+#, fuzzy
+#| msgid "Click on the <gui>Add</gui> button."
+msgid "Click <gui>Apply</gui>."
+msgstr "Pulse el botón <gui>Añadir</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:80(p)
+#: C/irc-nick-password.page:66(p)
 msgid ""
-"Once you are connected, you will receive a message from the nickname server "
-"that will tell you of the established identification."
+"These instructions only allow you to use a password-protected nickname on "
+"certain IRC networks. It is not currently possible to register an IRC "
+"nickname or change your nickname password using <app>Empathy</app>."
 msgstr ""
-"Una vez que está conectado recibirá un mensaje desde el servidor de apodos "
-"que le informará acerca del establecimiento de la identificación."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-nick-password.page:86(p)
-msgid ""
-"At the moment it is not possible to register an IRC nickname with "
-"<app>Empathy</app>, it is only possible to use the password of an already "
-"registered nickname."
-msgstr ""
-"Por el momento no es posible registrar apodos en el IRC con <app>Empathy</"
-"app>, sólo es posible usar una contraseña de un apodo ya registrado."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:7(desc)
-msgid "Manage IRC accounts with <app>Empathy</app>."
+#: C/irc-manage.page:8(desc)
+#, fuzzy
+#| msgid "Manage IRC accounts with <app>Empathy</app>."
+msgid "How to use IRC with <app>Empathy</app>."
 msgstr "Gestionar cuentas IRC con <app>Empathy</app>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:22(title)
-msgid "Use IRC"
-msgstr "Usar IRC"
+#: C/irc-manage.page:29(title)
+msgid "Internet Relay Chat (IRC)"
+msgstr "Internet Relay Chat (IRC)"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:26(p)
-msgid ""
-"Guide page for all the IRC related actions. Need to work on this page if the "
-"content starts to grow. In case we don't have a lot of contets for this "
-"page, rework the other."
-msgstr ""
-"Página de guía para todas las acciones relacionadas con el IRC. Se debe "
-"trabajar en este página para que aumente su contenido. En caso de no tener "
-"mucho contenido para esta página, trabajar más en otras."
+#: C/irc-manage.page:33(title)
+#| msgid "Icon for audio conversation"
+msgid "IRC Chat Rooms and Conversations"
+msgstr "Salas de chat y conversaciones en el IRC"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:34(title)
-msgid "Manage IRC accounts"
-msgstr "Gestionar cuentas IRC"
+#: C/irc-manage.page:35(title)
+#| msgid "Start an audio conversation"
+msgid "Chat Rooms and Conversations"
+msgstr "Salas de chat y conversaciones"
 
-#. TODO: see prob-conn-neterror.page
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-manage.page:39(title)
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:40(title)
-msgid "Fix common problems"
-msgstr "Solucionar problemas comunes"
+#: C/irc-manage.page:40(title)
+#| msgid "Fix common problems"
+msgid "Common IRC Problems"
+msgstr "Problemas comunes en el IRC"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:7(desc)
-msgid "Entering an IRC channel."
+#: C/irc-manage.page:42(title) C/index.page:50(title)
+#| msgid "Fix common problems"
+msgid "Common Problems"
+msgstr "Problemas comunes"
+
+#: C/irc-join-room.page:8(desc)
+#| msgid "Entering an IRC channel."
+msgid "Join an IRC channel."
 msgstr "Entrar en un canal IRC."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:22(title)
-msgid "Join a room"
-msgstr "Unirse a una sala"
+#: C/irc-join-room.page:28(title)
+#| msgid "Join a room"
+msgid "Join an IRC chat room"
+msgstr "Unirse a una sala en el IRC"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:26(p)
+#: C/irc-join-room.page:30(p)
+msgid ""
+"You can join IRC chat rooms (also known as IRC channels) on any IRC network "
+"you’re connected to. To connect to an IRC network, see <link xref=\"add-"
+"account\"/> and <link xref=\"account-irc\"/>."
+msgstr ""
+
+#: C/irc-join-room.page:36(p) C/group-conversations.page:55(p)
+#: C/group-conversations.page:119(p)
 msgid ""
 "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
 "gui><gui>Join</gui></guiseq>."
@@ -1128,7 +1408,7 @@ msgstr ""
 "Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
 "gui><gui>Unirse</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:32(p)
+#: C/irc-join-room.page:42(p)
 msgid ""
 "From the <gui>Account</gui> drop-down list, select the IRC account that "
 "corresponds to the network you want to use."
@@ -1136,366 +1416,953 @@ msgstr ""
 "Desde la lista desplegable <gui>Cuenta</gui> elija la cuenta IRC que "
 "corresponda con la red que quiere usar."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:38(p)
+#: C/irc-join-room.page:48(p)
+#, fuzzy
+#| msgid ""
+#| "In the <gui>Room</gui> text box, type the name of the channel you want to "
+#| "join. Prefix the name with the hash character (<sys>#</sys>)."
 msgid ""
 "In the <gui>Room</gui> text box, type the name of the channel you want to "
-"join. Prefix the name with the hash character (<sys>#</sys>)."
+"join. IRC channel names start with the hash character (<sys>#</sys>)."
 msgstr ""
 "En la caja de texto <gui>Sala</gui>, escriba el nombre del canal al que "
 "quiere unirse. Preceda el nombre con el carácter almohadilla (<sys>#</sys>)."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:44(p)
-msgid "Click on <gui>Join</gui> to enter the room."
+#: C/irc-join-room.page:54(p)
+#, fuzzy
+#| msgid "Click on <gui>Join</gui> to enter the room."
+msgid "Click <gui>Join</gui> to enter the room."
 msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-room.page:51(p)
+#: C/irc-join-room.page:61(p)
 msgid ""
 "To join multiple rooms, you need to repeat the steps above for each room."
 msgstr ""
 "Para entrar en varias salas, debe repetir los pasos anteriores para cada "
 "sala."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:8(desc)
-msgid "Join a password protected room."
-msgstr "Unirse a una sala protegida con contraseña."
+#: C/irc-join-pwd.page:9(desc)
+msgid ""
+"<app>Empathy</app> does not currently support password-protected IRC chat "
+"rooms."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:23(title)
-msgid "Join a protected room"
+#: C/irc-join-pwd.page:28(title)
+#, fuzzy
+#| msgid "Join a protected room"
+msgid "Join a protected IRC chat room"
 msgstr "Unirse a una sala protegida"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-join-pwd.page:25(p)
-msgid "At the moment it is not possible to join a password protected room."
+#: C/irc-join-pwd.page:30(p)
+#, fuzzy
+#| msgid "At the moment it is not possible to join a password protected room."
+msgid ""
+"It is not currently possible to join a password-protected IRC chat room."
 msgstr "Por el momento no es posible unirse a salas protegidas por contraseña."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:9(desc)
-msgid "Create an IRC account."
-msgstr "Crear una cuenta de IRC."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:23(title)
-msgid "Create an IRC account"
-msgstr "Crear una cuenta de IRC"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:44(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:43(p)
-msgid "If it is the first time you launch <app>Empathy</app>:"
-msgstr "Si ésta es la primera vez que lanza <app>Empathy</app>:"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:49(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:65(p)
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/introduction.page:45(None)
+#, fuzzy
+#| msgid ""
+#| "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
 msgid ""
-"From the <gui>Type</gui> drop-down list choose <gui>IRC</gui>, then click on "
-"the <gui>Create</gui> button."
+"@@image: 'figures/empathy-main-window.png'; "
+"md5=489ba00b0fc377aba4c691210b6e0650"
 msgstr ""
-"De la lista desplegable <gui>Tipo</gui> seleccione <gui>IRC</gui>, después "
-"pulse el botón <gui>Crear</gui>."
+"@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:55(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:55(p)
-msgid "Otherwise:"
-msgstr "De otra forma:"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:60(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:60(p)
-msgid "Click on the <gui>Add</gui> button."
-msgstr "Pulse el botón <gui>Añadir</gui>."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:73(p)
-msgid ""
-"From the <gui>Network</gui> drop-down list, select the name of the network "
-"you are creating the account for."
+#: C/introduction.page:9(desc)
+msgid "Introduction to the <app>Empathy</app> instant messenger."
 msgstr ""
-"De la lista desplegable <gui>Red</gui> seleccione el nombre de la red para "
-"la que está creando la cuenta."
 
-#. TODO: rethink the description of the nickname
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:80(p)
+#: C/introduction.page:25(title)
+msgid "Introduction"
+msgstr "Introducción"
+
+#: C/introduction.page:27(p)
 msgid ""
-"In the <gui>Nickname</gui> text box, type the name that will identify "
-"yourself in the network you are creating the account."
+"<app>Empathy</app> is an instant messaging application for the GNOME "
+"Desktop. It supports text messaging, voice &amp; video call, file transfers "
+"and all the most used messaging systems such as MSN and Google Talk."
+msgstr ""
+
+#: C/introduction.page:32(p)
+msgid ""
+"<app>Empathy</app> includes features that help you better collaborate while "
+"at work, and that let you easily keep in touch with your friends."
+msgstr ""
+
+#: C/introduction.page:36(p)
+msgid ""
+"You can group all the conversations in a single window, or have multiple "
+"windows for different kind of conversations; easily search through your "
+"previous conversations, and share your desktop in just two clicks."
+msgstr ""
+
+#: C/introduction.page:43(title)
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, perform one of the following:"
+msgid "<gui>Contact List</gui> window"
+msgstr "Ventana de <gui>Lista de contactos</gui>"
+
+#: C/introduction.page:44(desc)
+msgid "<app>Empathy</app> main window"
+msgstr "Ventana principal de <app>Empathy</app>"
+
+#: C/introduction.page:46(p)
+msgid "<app>Empathy</app> main window."
+msgstr "Ventana principal de <app>Empathy</app>."
+
+#: C/index.page:27(title)
+msgid "Empathy Instant Messenger"
+msgstr "Cliente de mensajería instantánea Empathy"
+
+#: C/index.page:30(title)
+#| msgid "Text conversations"
+msgid "Text Conversations"
+msgstr "Conversaciones de texto"
+
+#: C/index.page:34(title)
+#| msgid "Audio and video conversations"
+msgid "Audio and Video Conversations"
+msgstr "Conversaciones de sonido y vídeo"
+
+#: C/index.page:38(title)
+msgid "Contact Management"
+msgstr "Gestión de contactos"
+
+#: C/index.page:42(title)
+msgid "Account Management"
+msgstr "Gestión de cuentas"
+
+#: C/index.page:46(title)
+#| msgid "Advanced actions"
+msgid "Advanced Actions"
+msgstr "Acciones avanzadas"
+
+#: C/import-account.page:10(desc)
+msgid "Import an account from another instant messaging application."
+msgstr ""
+
+#: C/import-account.page:19(name)
+msgid "Peter Haslam"
+msgstr "Peter Haslam"
+
+#: C/import-account.page:20(email)
+msgid "peter.haslam@freenet.de"
+msgstr "peter.haslam@freenet.de"
+
+#: C/import-account.page:39(title)
+#| msgid "Remove an account"
+msgid "Import an existing account"
+msgstr "Importar una cuenta existente"
+
+#: C/import-account.page:41(p)
+msgid ""
+"The first time you run <app>Empathy</app>, it will offer to import your "
+"accounts from other instant messaging applications. Currently, the only "
+"supported application is <app>Pidgin</app>."
+msgstr ""
+
+#: C/import-account.page:47(p)
+msgid ""
+"Run <app>Empathy</app> for the first time. An assistant will offer you a "
+"number of options to create new accounts."
+msgstr ""
+
+#: C/import-account.page:51(p)
+msgid ""
+"Select <gui>Yes, import my account details from</gui> and click "
+"<gui>Forward</gui>."
+msgstr ""
+
+#: C/import-account.page:55(p)
+msgid "Select the check box next to each account you wish to import."
+msgstr ""
+
+#: C/import-account.page:63(p)
+msgid ""
+"It is not currently possible to import accounts after you have completed the "
+"first-run assistant."
+msgstr ""
+
+#: C/group-conversations.page:8(desc)
+#, fuzzy
+#| msgid "Start a group conversation with your contacts."
+msgid "Start or join a group conversation with your contacts."
+msgstr "Iniciar una conversación en grupo con sus contactos."
+
+#: C/group-conversations.page:31(title)
+msgid "Group conversations"
+msgstr "Conversaciones de grupos"
+
+#: C/group-conversations.page:33(p)
+msgid ""
+"Group conversations permits you to have text conversations with more than "
+"one contact at the same time."
+msgstr ""
+
+#: C/group-conversations.page:37(p)
+msgid ""
+"To have a group conversation you need to have a registered account with "
+"either Jabber or Google Talk, or a People Nearby account."
+msgstr ""
+
+#: C/group-conversations.page:43(p)
+msgid ""
+"You can have a group conversation only with the contacts that are using the "
+"same service as yours."
+msgstr ""
+
+#: C/group-conversations.page:51(title)
+#, fuzzy
+#| msgid "Start a video conversation"
+msgid "Start a group conversation"
+msgstr "Comenzar una conversación de vídeo"
+
+#: C/group-conversations.page:60(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Account</gui> drop-down list, select the IRC account that "
+#| "corresponds to the network you want to use."
+msgid ""
+"From the <gui>Account</gui> drop-down list, select the account you want to "
+"use for the group conversation."
+msgstr ""
+"Desde la lista desplegable <gui>Cuenta</gui> elija la cuenta IRC que "
+"corresponda con la red que quiere usar."
+
+#: C/group-conversations.page:66(p)
+#, fuzzy
+#| msgid ""
+#| "In the <gui>Nickname</gui> text box, type the name that will identify "
+#| "yourself in the network you are creating the account."
+msgid ""
+"In the <gui>Server</gui> text box, type the name of server in which the "
+"conversation will be hosted."
 msgstr ""
 "En la caja de texto <gui>Apodo</gui> escriba el nombre que le identificará "
 "en la red para la que está creando la cuenta."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:86(p)
-msgid ""
-"In the <gui>Password</gui> text box, type the password you used to register "
-"your nikcname. If you do not have one, leave this field blank."
+#: C/group-conversations.page:70(p)
+msgid "Leave it empty if it will be on the current server."
 msgstr ""
-"En la caja de texto <gui>Contraseña</gui> escriba la contraseña que usó para "
-"registrar su apodo. Si no tiene una, deje este campo vacío."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:92(p)
-msgid "In the <gui>Real name</gui> text box, type your real name."
-msgstr "Introduzca su nombre real en la caja de texto <gui>Nombre real</gui>."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:96(p)
-msgid "It is not necessary to insert your real name."
-msgstr "No es necesario que introduzca su nombre real."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:102(p)
+#: C/group-conversations.page:75(p)
+#, fuzzy
+#| msgid ""
+#| "In the <gui>Password</gui> text box, type the password you used to "
+#| "register your nikcname."
 msgid ""
-"In the <gui>Quit message</gui> text box, type a text message that will be "
-"sent when you close your session."
+"In the <gui>Room</gui> text box, type the name you want to give to the "
+"conversation."
 msgstr ""
-"En la caja de texto <gui>Mensaje de salida</gui> escriba un mensaje de texto "
-"que se enviará cuando cierre su sesión."
+"En la caja de texto <gui>Contraseña</gui> escriba la contraseña que quiere "
+"usar para registrar su apodo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:108(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:80(p)
+#: C/group-conversations.page:79(p)
 msgid ""
-"To enable the new account, select the <gui>Enabled</gui> check-box next to "
-"the name of the account in the box on the left of the dialog."
+"This will be the name of the room you are going to have a conversation. This "
+"name will be publicly available for other people to join. It is not possible "
+"to create a private room."
 msgstr ""
-"Para activar la cuenta nueva seleccione la caja de verificación "
-"<gui>Activada</gui> junto al nombre de la cuenta, en la caja a la izquierda "
-"del diálogo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:115(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:88(p)
+#: C/group-conversations.page:87(p)
 msgid ""
-"If you want to change the name that identifies the account in the "
-"<gui>Accounts</gui> dialog, double-click on the name of the account in the "
-"box on the left of the dialog and type the new name."
+"To invite other contacts to join the group conversation, from the "
+"<gui>Contact List</gui> window, select the contact you want to invite, and "
+"perform one of the following:"
 msgstr ""
-"Si quiere cambiar el nombre que identifica la cuenta en el diálogo "
-"<gui>Cuentas</gui>, pulse dos veces en el nombre de la cuenta en la caja a "
-"la izquierda del diálogo y estriba el nombre nuevo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/irc-account.page:122(p)
+#: C/group-conversations.page:94(p)
+#, fuzzy
+#| msgid ""
+#| "Right-click on the contact you want to send a file, and select <gui>Send "
+#| "file</gui>."
+msgid "Right-click on the contact and choose <gui>Invite to chatroom</gui>."
+msgstr ""
+"Pulse con el botón derecho sobre el contacto al que quiere enviar un archivo "
+"y seleccione <gui>Enviar archivo</gui>.."
+
+#: C/group-conversations.page:99(p)
+#, fuzzy
+#| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
 msgid ""
-"If you want to use different networks at the same time, you need to create "
-"an account with each one of the networks you want to use."
+"Choose <guiseq><gui>Edit</gui><gui>Contact</gui><gui>Invite to chatroom</"
+"gui></guiseq>."
+msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+
+#: C/group-conversations.page:104(p)
+msgid ""
+"If you have more than one group conversation open, select the one you want "
+"to invite your contacts."
 msgstr ""
-"Si quiere usar diferentes redes al mismo tiempo debe crear una cuenta con "
-"cada una de las redes que quiera usar."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:21(title)
-msgid "Empathy Instant Messenger"
-msgstr "Cliente de mensajería instantánea Empathy"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:24(title)
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:14(title)
-msgid "Audio and video conversations"
-msgstr "Conversaciones de sonido y vídeo"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:28(title)
-msgid "Text conversations"
-msgstr "Conversaciones de texto"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:32(title)
-msgid "Manage accounts"
-msgstr "Gestionar las cuentas"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/index.page:36(title)
-msgid "Advanced actions"
-msgstr "Acciones avanzadas"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/group-conversations.page:7(desc)
-msgid "Start a group conversation with your contacts."
-msgstr "Iniciar una conversación en grupo con sus contactos."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/group-conversations.page:13(title)
-msgid "Group conversations"
+#: C/group-conversations.page:115(title)
+#, fuzzy
+#| msgid "Group conversations"
+msgid "Join a group conversation"
 msgstr "Conversaciones de grupos"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:8(desc)
-msgid ""
-"Prevent an account from logging-in automatically when you start "
-"<app>Empathy</app>."
+#: C/group-conversations.page:125(p)
+msgid "Expand the <gui>Room List</gui> section to see all the existing rooms."
 msgstr ""
-"Prevenir que una cuenta inicie sesión automáticamente al iniciar "
-"<app>Empathy</app>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:25(title)
+#: C/group-conversations.page:130(p)
+#, fuzzy
+#| msgid ""
+#| "Double-click the name of the contact that you want to have a conversation "
+#| "with."
+msgid "Double-click on the name of a room to join it."
+msgstr ""
+"Pulse dos veces sobre el nombre del contacto con el que quiere conversar."
+
+#: C/group-conversations.page:136(p)
+msgid ""
+"It is not possible to join all existing rooms. Some of the rooms might "
+"require a password, or might be invitation only. <app>Empathy</app> does not "
+"support these kind of rooms."
+msgstr ""
+
+#: C/geolocation-what-is.page:9(desc)
+#, fuzzy
+#| msgid "Understanding the various status icons."
+msgid "Understanding geolocation."
+msgstr "Entender los diversos iconos de estado."
+
+#: C/geolocation-what-is.page:30(title)
+msgid "What is geolocation"
+msgstr ""
+
+#: C/geolocation-what-is.page:32(p)
+msgid ""
+"Geolocation allows you to identify the real geographical location of a "
+"computer or a device connected to the Internet."
+msgstr ""
+
+#: C/geolocation-what-is.page:34(p)
+msgid "With geolocation in <app>Empathy</app> you can:"
+msgstr ""
+
+#: C/geolocation-what-is.page:39(p)
+msgid "Publish your geographical location to your contacts."
+msgstr ""
+
+#: C/geolocation-what-is.page:44(p)
+msgid "See your contacts’ geographical location and quickly contact them."
+msgstr ""
+
+#: C/geolocation-what-is.page:49(p)
+msgid ""
+"Set the accuracy of your location and the device used to discover your "
+"location."
+msgstr ""
+
+#: C/geolocation-what-is.page:57(p)
+msgid ""
+"In order to see your contacts’ geographical locations, they need to use a "
+"service and an application that supports geolocation."
+msgstr ""
+
+#: C/geolocation-turn.page:9(desc)
+msgid "How to activate and deactivate geolocation in <app>Empathy</app>."
+msgstr ""
+
+#: C/geolocation-turn.page:30(title)
+msgid "Activate/Deactivate geolocation"
+msgstr ""
+
+#: C/geolocation-turn.page:34(p)
+#, fuzzy
+#| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
+msgid "Choose <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq>."
+msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+
+#: C/geolocation-turn.page:39(p)
+#, fuzzy
+#| msgid "Deselect the <gui>Enabled</gui> check-box."
+msgid "Select the <gui>Location</gui> tab."
+msgstr "Deseleccione la caja de verificación <gui>Activada</gui>."
+
+#: C/geolocation-turn.page:44(p)
+msgid ""
+"Select <gui>Publish location to my contacts</gui> to activate geolocation."
+msgstr ""
+
+#: C/geolocation-turn.page:47(p)
+msgid "To deactivate geolocation, deselect it."
+msgstr ""
+
+#: C/geolocation-turn.page:52(p)
+msgid ""
+"To increase the accuracy of your position, deselect <gui>Reduce location "
+"accuracy</gui>."
+msgstr ""
+
+#: C/geolocation-turn.page:58(p)
+msgid ""
+"If you have an external device like a GPS or want to send a more accurate "
+"position, select the appropriate option in the <gui>Geoclue Settings</gui> "
+"section."
+msgstr ""
+
+#: C/geolocation-supported.page:7(desc)
+msgid "Services that supports geolocation and compatibility."
+msgstr ""
+
+#: C/geolocation-supported.page:28(title)
+msgid "Supported services"
+msgstr ""
+
+#: C/geolocation-supported.page:30(p)
+msgid ""
+"The geolocation feature at the moment is compatible only with the Jabber "
+"service. In order to use it, you and your contacts need to have a Jabber "
+"account."
+msgstr ""
+
+#: C/geolocation-supported.page:36(p)
+msgid ""
+"It is necessary that also the server you are using supports the geolocation "
+"feature. Most of the Jabber servers support it. See your service website "
+"documentation for more information."
+msgstr ""
+
+#: C/geolocation-supported.page:44(title)
+msgid "Compatibility"
+msgstr "Compatibilidad"
+
+#: C/geolocation-supported.page:46(p)
+msgid ""
+"<app>Empathy</app> geolocation feature is not compatible with other "
+"geographical position services such as <em>Google Latitude</em>, <em>Yahoo "
+"Fire Eagle</em> or <em>Brightkite</em>."
+msgstr ""
+
+#: C/geolocation-privacy.page:8(desc)
+msgid "What information are sent and to who."
+msgstr ""
+
+#: C/geolocation-privacy.page:29(title)
+msgid "Geolocation Privacy"
+msgstr ""
+
+#: C/geolocation-privacy.page:32(title)
+msgid "What information is sent"
+msgstr ""
+
+#: C/geolocation-privacy.page:33(p)
+msgid ""
+"What is possible to send is: your country, region, locality, area, street, "
+"building, floor, room, and postal code, longitude, latitude and altitude, "
+"speed and bearing."
+msgstr ""
+
+#: C/geolocation-privacy.page:37(p)
+msgid ""
+"The accuracy and the quantity of information about your geographical "
+"position are based on the software or on the infrastructure used to discover "
+"your position."
+msgstr ""
+
+#: C/geolocation-privacy.page:41(p)
+msgid ""
+"Different kind of networks may have different accuracy settings, and may "
+"send different information. The use of external devices such as GPS or "
+"mobile phone will increase the accuracy of the information sent."
+msgstr ""
+
+#: C/geolocation-privacy.page:46(p)
+msgid ""
+"When the privacy mode is enabled, nothing more precise than your city will "
+"be sent, even if you are using an external device."
+msgstr ""
+
+#: C/geolocation-privacy.page:53(title)
+msgid "Who can see the information sent"
+msgstr ""
+
+#: C/geolocation-privacy.page:54(p)
+msgid "Only your contacts can see your geographical position."
+msgstr ""
+
+#: C/geolocation-privacy.page:60(title)
+msgid "What is the privacy mode"
+msgstr ""
+
+#: C/geolocation-privacy.page:61(p)
+msgid ""
+"The privacy mode, enabled by default, is a reduced accuracy mode that will "
+"decrease the accuracy of the geographical position sent to your contacts."
+msgstr ""
+
+#: C/geolocation-privacy.page:68(title)
+msgid "Privacy overview"
+msgstr ""
+
+#: C/geolocation-privacy.page:69(p)
+msgid ""
+"Overview of the various geolocation privacy settings in <app>Empathy</app>."
+msgstr ""
+
+#: C/geolocation-privacy.page:74(p)
+msgid "Geolocation is not enabled by default."
+msgstr ""
+
+#: C/geolocation-privacy.page:79(p)
+msgid "Privacy mode is enabled by default."
+msgstr ""
+
+#: C/geolocation-privacy.page:84(p)
+msgid ""
+"Privacy mode prevails even when using external and more precise devices."
+msgstr ""
+
+#: C/geolocation-privacy.page:89(p)
+msgid "Only your contacts can see your position."
+msgstr ""
+
+#: C/geolocation-not-showing.page:8(desc)
+msgid "<app>Empathy</app> does not publish my geographical position."
+msgstr ""
+
+#: C/geolocation-not-showing.page:29(title)
+msgid "Geographical position not published"
+msgstr ""
+
+#: C/geolocation-not-showing.page:31(p)
+msgid ""
+"If your contacts cannot see your location, <app>Empathy</app> might not be "
+"able to discover with a good margin of precision your geographical position."
+msgstr ""
+
+#: C/geolocation-not-showing.page:35(p)
+msgid ""
+"In this case, your position will not be published, but you are still able to "
+"see the location of your contacts."
+msgstr ""
+
+#: C/geolocation-not-showing.page:39(p)
+msgid ""
+"If you want to publish your geographical position, you can try to use an "
+"external device such as a GPS."
+msgstr ""
+
+#: C/geolocation-not-showing.page:45(p)
+msgid ""
+"In order to publish your geographical location, your Jabber server needs to "
+"support the Personal Eventing Protocal (PEP). A list of <link href=\"http://"
+"coccinella.im/servers/servers_by_pubsub_pep.html\">servers which support "
+"PEP</link> is maintained online. Google Talk does not support this feature "
+"at this time."
+msgstr ""
+
+#: C/geolocation.page:8(desc)
+#, fuzzy
+#| msgid "Add a new account to <app>Empathy</app>."
+msgid "Use and understand geolocation in <app>Empathy</app>."
+msgstr "Añadir una cuenta nueva en <app>Empathy</app>."
+
+#: C/geolocation.page:29(title)
+msgid "Geographical position"
+msgstr ""
+
+#: C/geolocation.page:32(title)
+msgid "Geolocation"
+msgstr "Geolocalización"
+
+#: C/geolocation.page:36(title)
+msgid "Fix common problems"
+msgstr "Solucionar problemas comunes"
+
+#: C/favorite-rooms.page:10(desc)
+msgid "Set, join and manage favorite rooms."
+msgstr "Configurar, unirse a y gestionar salas favoritas."
+
+#: C/favorite-rooms.page:25(title)
+msgid "Favorite rooms"
+msgstr "Salas favoritas"
+
+#: C/favorite-rooms.page:28(title)
+msgid "Set a room as a favorite"
+msgstr "Establecer una sala como favorita"
+
+#: C/favorite-rooms.page:31(p)
+#| msgid "Join a room"
+msgid "Join a room."
+msgstr "Unirse a una sala."
+
+#: C/favorite-rooms.page:36(p)
+msgid ""
+"See <link xref=\"irc-join-room\"/> for more information on how to join an "
+"IRC room."
+msgstr ""
+
+#: C/favorite-rooms.page:42(p)
+msgid ""
+"See <link xref=\"group-conversations\"/> for more information on how to "
+"start or join a group conversation."
+msgstr ""
+
+#: C/favorite-rooms.page:50(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
+msgid ""
+"From the conversation window, choose <guiseq><gui>Conversation</"
+"gui><gui>Favorite Chatroom</gui></guiseq>."
+msgstr ""
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
+"gui><gui>Unirse</gui></guiseq>."
+
+#: C/favorite-rooms.page:59(title)
+#, fuzzy
+#| msgid "Join a room"
+msgid "Join favorite rooms"
+msgstr "Unirse a una sala"
+
+#: C/favorite-rooms.page:67(p)
+#, fuzzy
+#| msgid "Press <key>F4</key>."
+msgid "Press <key>F5</key>."
+msgstr "Pulse <key>F4</key>."
+
+#: C/favorite-rooms.page:72(p)
+#, fuzzy
+#| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
+msgid ""
+"Choose <guiseq><gui>Room</gui><gui>Join Favorites</gui></guiseq>, to join "
+"all your favorite rooms."
+msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+
+#: C/favorite-rooms.page:78(p)
+msgid "Choose <gui>Room</gui>, and select the favorite room you want to join."
+msgstr ""
+
+#: C/favorite-rooms.page:86(p)
+#, fuzzy
+#| msgid ""
+#| "To add a new person to your list of contacts, you need to be connected to "
+#| "the Internet and to your account."
+msgid ""
+"To join a favorite room, you need to be connected to the Internet and to "
+"your account."
+msgstr ""
+"Para añadir una persona nueva a su lista de contactos necesita estar "
+"conectado a Internet y a su cuenta."
+
+#: C/favorite-rooms.page:94(title)
+#, fuzzy
+#| msgid "Manage accounts"
+msgid "Manage favorite rooms"
+msgstr "Gestionar las cuentas"
+
+#: C/favorite-rooms.page:97(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+#| "gui><gui>Join</gui></guiseq>."
+msgid ""
+"From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
+"gui><gui>Manage Favorites</gui></guiseq>."
+msgstr ""
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
+"gui><gui>Unirse</gui></guiseq>."
+
+#: C/favorite-rooms.page:103(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Account</gui> drop-down list, select the IRC account that "
+#| "corresponds to the network you want to use."
+msgid ""
+"From the <gui>Account</gui> drop-down list, select the account you want to "
+"manage the favorite rooms of."
+msgstr ""
+"Desde la lista desplegable <gui>Cuenta</gui> elija la cuenta IRC que "
+"corresponda con la red que quiere usar."
+
+#: C/favorite-rooms.page:107(p)
+#, fuzzy
+#| msgid "Click on <gui>Join</gui> to enter the room."
+msgid "Select <gui>All</gui> to see all you favorite rooms."
+msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+
+#: C/favorite-rooms.page:112(p)
+msgid "Select the favorite room you want to manage:"
+msgstr ""
+
+#: C/favorite-rooms.page:117(p)
+msgid ""
+"Select the <gui>Auto-Connect</gui> check-box in order to automatically join "
+"that room when you connect to your account."
+msgstr ""
+
+#: C/favorite-rooms.page:123(p)
+#, fuzzy
+#| msgid "Click on <gui>Join</gui> to enter the room."
+msgid "Click on <gui>Remove</gui> to remove the room from your favorites."
+msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+
+#: C/favorite-rooms.page:130(p)
+#, fuzzy
+#| msgid "When finished, click on <gui>Close</gui>."
+msgid "When done, click <gui>Close</gui>."
+msgstr "Cuando haya terminado pulse <gui>Cerrar</gui>."
+
+#: C/disable-account.page:9(desc)
+msgid "Prevent <app>Empathy</app> from automatically logging in to an account."
+msgstr ""
+
+#: C/disable-account.page:35(title)
 msgid "Disable an account"
 msgstr "Desactivar una cuenta"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:27(p)
+#: C/disable-account.page:37(p)
 msgid ""
-"Disabling an account means to deactivate it, temporarily or permanently. All "
-"the conversations you had will be kept in your computer."
+"You can disable an account to prevent <app>Empathy</app> from logging in to "
+"it without removing the account entirely. You may wish to disable and re-"
+"enable an account if you only want to be logged in to the account at certain "
+"times, but you still want to use <app>Empathy</app> for other accounts."
 msgstr ""
-"Desactivar una cuenta significa desactivarla, temporal o permanentemente. "
-"Todas las conversaciones que tuvo se mantendrán en su equipo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:31(p)
-msgid "After disabling an account, it is possible to enable it again."
-msgstr "Después de desactivar una cuenta es posible activarla de nuevo."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:54(p)
+#: C/disable-account.page:48(p)
+#, fuzzy
+#| msgid ""
+#| "Select the account you wish to disable from the box on the left of the "
+#| "dialog."
 msgid ""
-"Select the account you wish to disable from the box on the left of the "
-"dialog."
+"Select the account you wish to disable from the accounts list on the left "
+"side of the window."
 msgstr ""
 "Seleccione la cuenta que desea desactivar en la caja a la izquierda del "
 "diálogo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/disable-account.page:60(p)
-msgid "Deselect the <gui>Enabled</gui> check-box."
-msgstr "Deseleccione la caja de verificación <gui>Activada</gui>."
+#: C/disable-account.page:52(p)
+msgid ""
+"Deselect <gui style=\"checkbox\">Enabled</gui> on the right side of the "
+"window. This option is after your primary account details, but before any "
+"advanced settings."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:9(desc)
-msgid "Register an account with one of the supported messaging services."
+#: C/disable-account.page:57(p)
+msgid "Click <gui style=\"button\">Apply</gui>."
+msgstr ""
+
+#: C/disable-account.page:63(p)
+msgid ""
+"To re-enable the account, simply select <gui style=\"checkbox\">Enabled</"
+"gui> and click <gui>Apply</gui>."
+msgstr ""
+
+#: C/create-account.page:9(desc)
+#, fuzzy
+#| msgid "Register an account with one of the supported messaging services."
+msgid "Register for an account with one of the supported messaging services."
 msgstr "Registre una cuenta con uno de los servicios de mensajería soportados."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:25(title)
+#: C/create-account.page:29(title)
 msgid "Register for a new account"
 msgstr "Registrar una cuenta nueva"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:27(p)
+#: C/create-account.page:31(p)
 msgid ""
-"You can freely create an account on any of the services listed below. Follow "
-"the instructions reported on each website on how to register your new "
-"account."
+"Most account types require you to create an account with a account provider "
+"before you can connect using instant messaging applications like "
+"<app>Empathy</app>. With some account providers, you can use <app>Empathy</"
+"app> to register for a new account, using the same steps as you would to "
+"<link xref=\"add-account\">add an account</link>."
 msgstr ""
-"Puede crear gratuitamente una cuenta en cualquiera de los servicios listados "
-"debajo. Siga las instrucciones en cada sitio web para saber cómo registrar "
-"una cuenta nueva."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:32(p)
+#: C/create-account.page:37(p)
 msgid ""
-"At the end of the registration process you should have a <em>user name</em> "
-"(or an <em>account ID</em>) and a <em>password</em> that you will use to add "
-"the account to <app>Empathy</app>."
+"This page provides information on creating a new account for various types "
+"of accounts. Your account provider should give you a login ID and a "
+"password, as well as any additional information you need to connect with "
+"<app>Empathy</app>."
 msgstr ""
-"Al final del proceso de registro debería tener un <em>nombre de usuario</em> "
-"(o un <em>ID de cuenta</em>) y una <em>contraseña</em> que usará para añadir "
-"a la cuenta de <app>Empathy</app>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:37(p)
-msgid "Click on the name of the service to visit its website."
-msgstr "Pulse en el nombre del servicio para visitar su página web."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:42(title)
-msgid "Instant Messaging Services"
-msgstr "Servicios de mensajería instantánea"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:47(link)
-msgid "AIM"
-msgstr "AIM"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:52(link)
-msgid "Google Talk"
-msgstr "Google Talk"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:57(link)
-msgid "ICQ"
-msgstr "ICQ"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:62(link)
+#: C/create-account.page:42(title) C/audio-video.page:161(p)
 msgid "Jabber"
 msgstr "Jabber"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:65(p)
+#: C/create-account.page:44(p)
 msgid ""
-"It is possible to use the automatic creation of accounts with this service. "
-"Not all the service providers support it. One service provider known to work "
-"is <em>jabber.org</em>, the default one of the application."
+"Jabber is an open instant messaging system. Like email, Jabber allows you to "
+"choose your account provider and communicate with all other Jabber users, "
+"regardless of their account provider."
 msgstr ""
-"Es posible usar creación automática de cuentas con este servicio. No todos "
-"los proveedores de servicios lo soportan. Un proveedor de servicios que se "
-"sabe que funciona es <em>jabber.org</em>, el predeterminado para la "
-"aplicación."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:75(link)
-msgid "MSN"
-msgstr "MSN"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:80(link)
-msgid "Yahoo!"
-msgstr "Yahoo!"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:87(title)
-msgid "Local Instant Messaging Services"
-msgstr "Servicios de mensajería instantánea locales"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:88(p)
+#: C/create-account.page:48(p)
 msgid ""
-"This service works when you are connected to a local network, you do not "
-"need an Internet connection in order to use it."
+"You will need to create a new account with a Jabber provider. There are many "
+"free providers; one popular provider is <link href=\"http://register.jabber."
+"org/\">Jabber.org</link>."
 msgstr ""
-"Este servicio funciona cuando está conectado a una red local, no necesita "
-"una conexión con Internet para usarlo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:95(em)
-msgid "Salut"
-msgstr "Salut"
+#: C/create-account.page:53(p)
+msgid ""
+"If you use Google Mail or Google Talk, you already have a Jabber account. "
+"Google Talk is a Jabber service. Simply use your Google Mail address and "
+"password in <app>Empathy</app> to connect."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:100(p)
+#: C/create-account.page:60(title) C/audio-video.page:181(p)
+msgid "People Nearby"
+msgstr "Gente cerca"
+
+#: C/create-account.page:62(p)
+msgid ""
+"You do not need to create an account with a service provider to use this "
+"feature. This service works whenever you are connected to a local network, "
+"such as a wireless hotspot. It automatically finds all other users on the "
+"network who are also using this service."
+msgstr ""
+
+#: C/create-account.page:67(p)
 msgid "For more information, see <link xref=\"salut-protocol\"/>."
 msgstr ""
 "Para obtener más información consulte la <link xref=\"salut-protocol\"/>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:107(title)
-msgid "Telephony Services"
-msgstr "Servicios de telefonía"
+#: C/create-account.page:71(title) C/audio-video.page:196(p)
+msgid "SIP"
+msgstr "SIP"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:109(p)
+#: C/create-account.page:73(p)
 msgid ""
-"These services will let you do voice call over the Internet with other "
-"people using the same service or even to normal phones."
+"SIP is an open system which allows users to have audio and video "
+"conversations over the Internet. You need to create an account with a SIP "
+"provider. You can communicate with all other SIP users, regardless of which "
+"SIP provider they use."
 msgstr ""
-"Estos servicios le permiten realizar llamadas de voz en Internet con otras "
-"personas que usen el mismo servicio o incluso teléfonos normales."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:117(link)
-msgid "Ekiga"
-msgstr "Ekiga"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:122(link)
-msgid "Sipphone"
-msgstr "Sipphone"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/create-account.page:128(p)
+#: C/create-account.page:78(p)
 msgid ""
-"In order to call normal phones over the Internet, you may need to subscribe "
-"to a paid service. For more information, please refer to the instructions "
-"provided on the website of the service you will use."
+"There are a number of popular free SIP account providers; one popular "
+"provider is <link href=\"https://signup.sipphone.com/new-users/app?"
+"class=NewUser;proc=start\">Sipphone</link>."
 msgstr ""
-"Para poder realizar llamadas a teléfonos normales a través de Internet puede "
-"que deba suscribirse a un servicio de pago. Para obtener más información "
-"consulte las instrucciones proporcionadas en la página web del servicio que "
-"usará."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:8(desc)
+#: C/create-account.page:83(p)
 msgid ""
-"Change your status, if you are going away from your computer for example."
+"Due to technical differences, the free <link href=\"https://www.ekiga.net/"
+"index.php?page=register\">Ekiga.net</link> service does not currently work "
+"with <app>Empathy</app>."
+msgstr ""
+
+#: C/create-account.page:88(p)
+msgid ""
+"Some SIP providers allow you to call normal phones from your computer. "
+"Generally, you will need to subscribe to a paid service for this feature."
+msgstr ""
+
+#: C/create-account.page:93(title) C/audio-video.page:156(p)
+#, fuzzy
+#| msgid "ICQ"
+msgid "IRC"
+msgstr "ICQ"
+
+#: C/create-account.page:95(p)
+msgid ""
+"You do not need to register for an account to use IRC. Although you specify "
+"a nickname when you add an IRC account to <app>Empathy</app>, this nickname "
+"is only established each time you connect. If another user is using the "
+"nickname, you will need to choose a new nickname."
+msgstr ""
+
+#: C/create-account.page:100(p)
+msgid ""
+"Some IRC networks use a service called NickServ to allow users to protect "
+"thier nicknames. See <link xref=\"irc-nick-password\"/> for more information."
+msgstr ""
+
+#: C/create-account.page:103(p)
+msgid ""
+"Some IRC servers are password protected. You will need to know the password "
+"to connect to these servers. Generally, these are private IRC networks."
+msgstr ""
+
+#: C/create-account.page:108(title)
+msgid "Proprietary Services"
+msgstr ""
+
+#: C/create-account.page:110(p)
+msgid ""
+"There are many proprietary instant messaging services that have been "
+"developed by different companies or organizations. <app>Empathy</app> allows "
+"you to connect to an existing account for most popular services. To create a "
+"new account with one of these services, you will need to visit the service’s "
+"web site and agree to its terms of use."
+msgstr ""
+
+#: C/create-account.page:119(link) C/audio-video.page:131(p)
+msgid "AIM"
+msgstr "AIM"
+
+#: C/create-account.page:124(link) C/audio-video.page:151(p)
+msgid "ICQ"
+msgstr "ICQ"
+
+#: C/create-account.page:129(link) C/audio-video.page:166(p)
+msgid "MSN"
+msgstr "MSN"
+
+#: C/create-account.page:134(link) C/audio-video.page:201(p)
+msgid "Yahoo!"
+msgstr "Yahoo!"
+
+#: C/change-status.page:9(desc)
+#, fuzzy
+#| msgid ""
+#| "Change your status, if you are going away from your computer for example."
+msgid "Change your status to advertise your availability to your contacts."
 msgstr "Cambie su estado si, por ejemplo, se ausenta del equipo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:24(title)
+#: C/change-status.page:31(title)
 msgid "Change your status"
 msgstr "Cambiar su estado"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:28(p)
+#: C/change-status.page:33(p)
+msgid ""
+"You can set your status to indicate your availability to your contacts. "
+"<app>Empathy</app> allows you to select from a list of defined statuses."
+msgstr ""
+
+#: C/change-status.page:38(p)
 msgid ""
 "Click on the drop-down list at the top of the <gui>Contact List</gui> window."
 msgstr ""
 "Pulse en la lista desplegable en la parte superior de la ventana de la "
 "<gui>Lista de contactos</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:33(p)
+#: C/change-status.page:43(p)
 msgid "Select a status from the list."
 msgstr "Seleccione un estado de la lista."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:39(p)
+#: C/change-status.page:49(p)
 msgid ""
-"For example, if you are busy and do not want to be disturbed, select "
-"<gui>Busy</gui>."
+"See <link xref=\"status-icons\"/> for a list of the built-in statuses and "
+"what they mean. You can also <link xref=\"set-custom-message\">add custom "
+"status messages</link> to provide more information about your availability "
+"to your contacts."
 msgstr ""
-"Por ejemplo, si está ocupado y no quiere que le molesten seleccione "
-"<gui>Ocupado</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/change-status.page:45(p)
+#: C/change-status.page:55(p)
+#, fuzzy
+#| msgid ""
+#| "If you do not use your computer for a while, or if the screen saver is "
+#| "turned on, the status will be automatically set to <gui>Away</gui>."
 msgid ""
-"If you do not use your computer for a while, or if the screen saver is "
-"turned on, the status will be automatically set to <gui>Away</gui>."
+"If you do not use your computer for a while, or if the screensaver is on, "
+"the status will be automatically set to Away."
 msgstr ""
 "Si no usa su equipo durante un rato, o si se activa el salvapantallas, el "
 "estado se cambiará automáticamente a <gui>Ausente</gui>."
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:41(None)
+#: C/audio-video.page:54(None) C/audio-call.page:43(None)
 msgid ""
 "@@image: 'figures/audio-input-microphone.png'; "
 "md5=8d89026b66a263a3bc5b1f0665948567"
@@ -1503,133 +2370,255 @@ msgstr ""
 "@@image: 'figures/audio-input-microphone.png'; "
 "md5=8d89026b66a263a3bc5b1f0665948567"
 
-#. When image changes, this message will be marked fuzzy or untranslated for you.
-#. It doesn't matter what you translate it to: it's not used at all.
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:55(None)
-msgid "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
-msgstr ""
-"@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
-
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:7(desc)
-msgid "When it is possible to have an audio or video conversation."
+#: C/audio-video.page:8(desc)
+#, fuzzy
+#| msgid "When it is possible to have an audio or video conversation."
+msgid ""
+"Information on when it is possible to have an audio or video conversation."
 msgstr "Cuándo es posible tener conversaciones de sonido o vídeo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:16(p)
-msgid ""
-"When your contacts support audio or video conversations, you will see, next "
-"to the contacts name in the <gui>Contact List</gui> window, one or two small "
-"icons that represent the different conversations you can have."
-msgstr ""
-"Cuando sus contactos soporten conversaciones de sonido o vídeo verá, junto "
-"al nombre de sus contactos, en la ventana de la <gui>Lista de contactos</"
-"gui>, uno o dos pequeños iconos que representan las diferentes "
-"conversaciones que puede tener."
+#: C/audio-video.page:28(title)
+#, fuzzy
+#| msgid "Audio and video conversations"
+msgid "Audio and Video Support"
+msgstr "Conversaciones de sonido y vídeo"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:41(media)
+#: C/audio-video.page:30(p)
+msgid ""
+"You can only have audio and video conversation with contacts who are using "
+"an application which also supports this feature. When your contacts support "
+"audio or video conversations, you will see the following icons next to their "
+"names in the contact list:"
+msgstr ""
+
+#: C/audio-video.page:39(p)
+msgid "Icon"
+msgstr "Icono"
+
+#: C/audio-video.page:44(p)
+msgid "Description"
+msgstr "Descripción"
+
+#: C/audio-video.page:54(media)
 msgid "Icon for audio conversation"
 msgstr "Icono para la conversación de sonido"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:47(p)
-msgid ""
-"This is the icon that represents the possibility to have an audio "
-"conversation."
-msgstr ""
-"Este es el icono que representa la posibilidad de tener una conversación de "
-"sonido."
+#: C/audio-video.page:60(p)
+#, fuzzy
+#| msgid "When it is possible to have an audio or video conversation."
+msgid "The contact is able to have an audio conversation."
+msgstr "Cuándo es posible tener conversaciones de sonido o vídeo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:55(media)
+#: C/audio-video.page:66(media)
 msgid "Icon for video conversation"
 msgstr "Icono para la conversación de vídeo"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-video.page:61(p)
+#: C/audio-video.page:72(p)
+#, fuzzy
+#| msgid "When it is possible to have an audio or video conversation."
+msgid "The contact is able to have a video conversation."
+msgstr "Cuándo es posible tener conversaciones de sonido o vídeo."
+
+#: C/audio-video.page:79(p)
 msgid ""
-"This is the icon that represents the possibility to have a video "
-"conversation."
+"In order to have an audio conversation, you need to have a sound card that "
+"is supported by your operating system, and a working microphone."
 msgstr ""
-"Este es el icono que representa la posibilidad de tener una conversación de "
-"vídeo."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:8(desc)
-msgid "Start an audio conversation with one of your contacts."
-msgstr "Iniciar una conversación de sonido con uno de sus contactos."
+#: C/audio-video.page:83(p)
+msgid ""
+"In order to have a video conversation, you need to have a webcam that is "
+"supported by your operating system, and a working microphone."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:16(title)
+#: C/audio-video.page:91(title)
+msgid "Supported Account Types"
+msgstr ""
+
+#: C/audio-video.page:93(p)
+msgid ""
+"You can only have audio and video conversations using accounts on certain "
+"supported services. The following table lists whether audio and video is "
+"supported for each type of account."
+msgstr ""
+
+#: C/audio-video.page:98(p)
+msgid ""
+"Account types are provided by plugins. Your system may not have all of the "
+"following types available, or it may have types not listed here. Updated "
+"plugins may make audio or video conversations possible on account types that "
+"are listed as unsupported here."
+msgstr ""
+
+#: C/audio-video.page:106(p)
+msgid ""
+"I'd like to do tables like this using nothing for No and ✔ for Yes, but we "
+"need to look at the accessibility impact. I've <link href=\"http://mail."
+"gnome.org/archives/gnome-doc-list/2009-September/msg00006.html\">asked the "
+"accessibility team</link> for input."
+msgstr ""
+
+#: C/audio-video.page:114(p)
+msgid ""
+"There's recent work on telepathy-butterfly and papyon to support audio and "
+"video for MSN. It might be released in time for 2.28, but since it doesn't "
+"follow the Gnome release schedule, I can't be sure. If it looks like it's "
+"going to ship, let's mark it Yes."
+msgstr ""
+
+#: C/audio-video.page:124(p)
+msgid "Service"
+msgstr "Servicio"
+
+#: C/audio-video.page:125(p)
+msgid "Audio"
+msgstr "Sonido"
+
+#: C/audio-video.page:126(p)
+msgid "Video"
+msgstr "Vídeo"
+
+#: C/audio-video.page:132(p) C/audio-video.page:133(p)
+#: C/audio-video.page:137(p) C/audio-video.page:138(p)
+#: C/audio-video.page:147(p) C/audio-video.page:148(p)
+#: C/audio-video.page:152(p) C/audio-video.page:153(p)
+#: C/audio-video.page:157(p) C/audio-video.page:158(p)
+#: C/audio-video.page:172(p) C/audio-video.page:173(p)
+#: C/audio-video.page:177(p) C/audio-video.page:178(p)
+#: C/audio-video.page:182(p) C/audio-video.page:183(p)
+#: C/audio-video.page:187(p) C/audio-video.page:188(p)
+#: C/audio-video.page:192(p) C/audio-video.page:193(p)
+#: C/audio-video.page:202(p) C/audio-video.page:203(p)
+#: C/audio-video.page:207(p) C/audio-video.page:208(p)
+msgid "No"
+msgstr "No"
+
+#: C/audio-video.page:136(p)
+msgid "gadugadu"
+msgstr "gadugadu"
+
+#: C/audio-video.page:141(p)
+msgid "Google Talk"
+msgstr "Google Talk"
+
+#: C/audio-video.page:142(p) C/audio-video.page:143(p)
+#: C/audio-video.page:162(p) C/audio-video.page:163(p)
+#: C/audio-video.page:167(p) C/audio-video.page:168(p)
+#: C/audio-video.page:197(p) C/audio-video.page:198(p)
+msgid "Yes"
+msgstr "Sí"
+
+#: C/audio-video.page:146(p)
+msgid "Groupwise"
+msgstr "Groupwise"
+
+#: C/audio-video.page:171(p)
+msgid "myspace"
+msgstr "myspace"
+
+#: C/audio-video.page:176(p)
+msgid "qq"
+msgstr "qq"
+
+#: C/audio-video.page:186(p)
+msgid "sametime"
+msgstr ""
+
+#: C/audio-video.page:191(p)
+msgid "silc"
+msgstr "silc"
+
+#: C/audio-video.page:206(p)
+msgid "zephyr"
+msgstr "zephyr"
+
+#: C/audio-call.page:9(desc)
+#| msgid "Check that you are connected to the Internet or network."
+msgid "Call your contacts over the Internet."
+msgstr "Llamar a sus contactos a través de Internet."
+
+#: C/audio-call.page:29(title)
 msgid "Start an audio conversation"
 msgstr "Iniciar una conversación de sonido"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:25(p)
+#: C/audio-call.page:31(p)
 msgid ""
-"Select the contact you want to have a conversation with, and click on the "
-"audio call icon next to their name."
+"You can call your contacts and have an audio conversation with them. This "
+"features only works with certain types of accounts, and it requires the "
+"other person to have an application that supports audio calls."
 msgstr ""
-"Seleccione el contacto con el que quiera tener una conversación y pulse en "
-"el icono de llamada de sonido junto a su nombre."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:31(p)
-msgid ""
-"Right-click on the name of the contact you want to have a conversation with, "
-"and select <gui>Audio Call</gui>."
+#: C/audio-call.page:37(p)
+msgid "Link to A/V support matrix"
 msgstr ""
-"Pulse con el botón derecho del ratón sobre el nombre del contacto con el que "
-"quiera tener una conversación y seleccione <gui>Llamada de sonido</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/audio-call.page:52(p)
+#: C/audio-call.page:42(p)
 msgid ""
-"To turn an audio conversation into a video one, from the call window select "
-"<guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click on the video "
-"call icon."
+"From the <gui>Contact List</gui> window, click the <media type=\"image\" "
+"mime=\"image/png\" src=\"figures/audio-input-microphone.png\">audio call</"
+"media> icon next to the name of the contact you wish to call. Alternatively, "
+"right click the contact and choose <gui>Audio Call</gui>."
+msgstr ""
+
+#: C/audio-call.page:57(p)
+#, fuzzy
+#| msgid ""
+#| "To turn an audio conversation into a video one, from the call window "
+#| "select <guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click on "
+#| "the video call icon."
+msgid ""
+"To turn an audio conversation into a video conversation, choose "
+"<guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click the <media "
+"type=\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">video call</"
+"media> toolbar button to select it."
 msgstr ""
 "Para convertir una conversación de sonido en una de vídeo, desde la ventana "
 "de llamada seleccione <guiseq><gui>Llamar</gui><gui>Enviar vídeo</gui></"
 "guiseq> o pulse el icono de vídeo llamada."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:8(desc)
+#: C/add-contact.page:9(desc)
 msgid "Add someone to the contact list."
 msgstr "Añadir alguien a la lista de contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:22(title)
+#: C/add-contact.page:30(title)
 msgid "Add someone to your list of contacts"
 msgstr "Añadir alguien a su lista de contactos"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:26(p)
-msgid ""
-"Instructions need review, didn't test with other IM services to confirm the "
-"names of the textboxes. Also, check the name of the Add button."
-msgstr ""
-"Las instrucciones necesitan revisión, no se confirmaron con otros servicios "
-"de MI para confirmar los nombres de las cajas de texto. También, comprobar "
-"el nombre del botón Añadir."
-
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:32(p)
+#: C/add-contact.page:34(p)
 msgid "Choose <guiseq><gui>Chat</gui><gui>Add Contact</gui></guiseq>."
 msgstr "Elija <guiseq><gui>Chat</gui><gui>Añadir contacto</gui></guiseq>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:37(p)
+#: C/add-contact.page:37(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Account</gui> drop-down list, select the type of service "
+#| "the person you want to add to your contacts is using."
 msgid ""
-"From the <gui>Account</gui> drop-down list, select the type of service the "
-"person you want to add to your contacts is using."
+"From the <gui>Account</gui> drop-down list, select the account you wish to "
+"use to connect to your contact. Your contact will need to be using the same "
+"service as the account you select."
 msgstr ""
 "Desde la lista desplegable <gui>Cuenta</gui> seleccione el tipo de servicio "
 "que está usando la persona que quiere añadir a sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:43(p)
+#: C/add-contact.page:42(p)
 msgid ""
-"In the <gui>Identifier</gui> text box, type the email address or the "
-"username of the person you want to add to your contacts list."
+"In the <gui>Identifier</gui> field, enter your contact’s login ID, username, "
+"screen name, or other appropriate identifier for the service type."
 msgstr ""
-"En la caja de texto <gui>Identificador</gui> escriba el correo electrónico o "
-"el nombre de usuario de la persona que quiere añadir a su lista de contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:50(p)
-msgid "In the <gui>Alias</gui> text box, type their name."
-msgstr "En la caja de texto <gui>Apodo</gui> escriba su nombre."
+#: C/add-contact.page:46(p)
+msgid ""
+"In the <gui>Alias</gui> field, type your contact’s name as you would like it "
+"to appear in your contact list."
+msgstr ""
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:55(p)
+#: C/add-contact.page:50(p)
 msgid "Click <gui>Add</gui> to add the person to your list of contacts."
 msgstr ""
 "Pulse <gui>Añadir</gui> para añadir la persona a su lista de contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-contact.page:63(p)
+#: C/add-contact.page:58(p)
 msgid ""
 "To add a new person to your list of contacts, you need to be connected to "
 "the Internet and to your account."
@@ -1637,51 +2626,423 @@ msgstr ""
 "Para añadir una persona nueva a su lista de contactos necesita estar "
 "conectado a Internet y a su cuenta."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:8(desc)
+#: C/add-account.page:9(desc)
 msgid "Add a new account to <app>Empathy</app>."
 msgstr "Añadir una cuenta nueva en <app>Empathy</app>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:22(title)
+#: C/add-account.page:34(title)
 msgid "Add a new account"
 msgstr "Añadir una cuenta nueva"
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:48(p)
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:65(p)
+#: C/add-account.page:36(p)
 msgid ""
-"From the <gui>Type</gui> drop-down list choose the service you wish to add "
-"an account for, then click on the <gui>Create</gui> button."
+"You can add instant messaging accounts from any supported service to "
+"communicate with all of your contacts in <app>Empathy</app>. For some "
+"account providers, these steps will also allow you to register for a new "
+"account. For more details, see <link xref=\"create-account\"/>."
 msgstr ""
-"Desde la lista desplegable <gui>Tipo</gui> elija el servicio para el que "
-"quiere crear la cuenta, después pulse en el botón <gui>Crear</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/add-account.page:74(p)
-msgid ""
-"Fill the required fields with your <em>user name</em> and <em>password</em>."
-msgstr ""
-"Rellene los campos necesarios con su <em>nombre de usuario</em> y su "
-"<em>contraseña</em>."
+#: C/add-account.page:47(p)
+#| msgid "Click on the <gui>Add</gui> button."
+msgid "Click the <gui style=\"button\">Add</gui> button."
+msgstr "Pulse el botón <gui style=\"button\">Añadir</gui>."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/legal.xml:3(p)
+#: C/add-account.page:50(p)
+#, fuzzy
+#| msgid ""
+#| "From the <gui>Account</gui> drop-down list, select the type of service "
+#| "the person you want to add to your contacts is using."
 msgid ""
-"This work is licensed under a <link href=\"http://creativecommons.org/"
-"licenses/by-sa/3.0/us/\">Creative Commons Attribution-Share Alike 3.0 United "
-"States License</link>."
+"From the <gui>Add new</gui> drop-down list, select the type of account you "
+"wish to add."
 msgstr ""
-"Este trabajo está licenciado bajo una <link href=\"http://creativecommons."
-"org/licenses/by-sa/3.0/us/\">Licencia Creative Commons atribución - "
-"compartir igual 3.0 para los Estados Unidos</link>."
+"Desde la lista desplegable <gui>Cuenta</gui> seleccione el tipo de servicio "
+"que está usando la persona que quiere añadir a sus contactos."
 
-#: /media/data/jhbuild/checkout/empathy/help/C/legal.xml:6(p)
+#: C/add-account.page:54(p)
 msgid ""
-"As a special exception, the copyright holders give you permission to copy, "
-"modify, and distribute the example code contained in this document under the "
-"terms of your choosing, without restriction."
+"If you do not already have a registered account, select <gui>Create a new "
+"account</gui>. This feature is not available for all account types, and may "
+"not work with some account providers. See <link xref=\"create-account\"/> "
+"for more information."
 msgstr ""
-"Como excepción especial, los poseedores de los derechos de autor le dan "
-"permiso para copiar, modificar y distribuir el ejemplo de código contenido "
-"en este documento bajo los términos que usted elija, sin restricción."
+
+#: C/add-account.page:59(p)
+#| msgid "Click on the <gui>Remove</gui> button."
+msgid "Click <gui>Create</gui>."
+msgstr "Pulse <gui>Crear</gui>."
+
+#: C/add-account.page:62(p)
+msgid ""
+"Enter the required information. For most accounts, you will only need a "
+"login ID and a password. Some accounts may require additional information. "
+"See <link xref=\"accounts-window#details\"/> for more information."
+msgstr ""
+
+#: C/add-account.page:67(p)
+#, fuzzy
+#| msgid "Click on <gui>Join</gui> to enter the room."
+msgid "Click <gui style=\"button\">Connect</gui> to enable the new account."
+msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+
+#: C/add-account.page:73(p)
+msgid ""
+"If you close the <gui>Accounts</gui> window without clicking <gui>Connect</"
+"gui>, the entire account will be lost, and you will need to create it again."
+msgstr ""
+
+#: C/add-account.page:76(p)
+msgid ""
+"If you select another account without clicking <gui>Connect</gui>, any "
+"information you have entered will be lost."
+msgstr ""
+
+#: C/add-account.page:83(p)
+#, fuzzy
+#| msgid ""
+#| "If you want to change the name that identifies the account in the "
+#| "<gui>Accounts</gui> dialog, double-click on the name of the account in "
+#| "the box on the left of the dialog and type the new name."
+msgid ""
+"To change the name the identifies the account in the <gui>Accounts</gui> "
+"window, select the account from the list on the left and either click on the "
+"name or press the space bar. Edit the account name and press <key>Enter</"
+"key> when you’re finished."
+msgstr ""
+"Si quiere cambiar el nombre que identifica la cuenta en el diálogo "
+"<gui>Cuentas</gui>, pulse dos veces en el nombre de la cuenta en la caja a "
+"la izquierda del diálogo y estriba el nombre nuevo."
+
+#: C/accounts-window.page:11(desc)
+#| msgid "Add a new account"
+msgid "Add, modify, and delete accounts."
+msgstr "Añadir, modificar y borrar cuentas."
+
+#: C/accounts-window.page:30(title)
+msgid "Accounts Window"
+msgstr "Ventana de cuentas"
+
+#: C/accounts-window.page:32(p)
+msgid ""
+"The <gui>Accounts</gui> window allows you to add, modify, and delete "
+"accounts."
+msgstr ""
+
+#: C/accounts-window.page:40(title)
+msgid "Account Details"
+msgstr ""
+
+#: C/accounts-window.page:41(p)
+msgid ""
+"For most types of accounts, you can simply enter a login ID and a password. "
+"Certain accounts or account types, however, may require additional "
+"information."
+msgstr ""
+
+#. <copyright>
+#.       <year>2009</year>
+#.       <name>GNOME Documentation Project</name>
+#.     </copyright>
+#: C/account-jabber.page:22(desc)
+msgid "Advanced options for Jabber and Google Talk accounts."
+msgstr ""
+
+#: C/account-jabber.page:26(title)
+msgid "Jabber Account Details"
+msgstr ""
+
+#: C/account-jabber.page:28(p)
+msgid ""
+"Most Jabber accounts will require only a login ID and a password to connect. "
+"For some accounts or on certain types of networks, you may need to enter "
+"additional information in the <gui>Advanced</gui> section. Normally, you "
+"will not need to use the advanced options below. For general instructions on "
+"adding an account, see <link xref=\"add-account\"/>."
+msgstr ""
+
+#: C/account-jabber.page:36(p)
+msgid ""
+"Google Talk is a type of Jabber account. These instructions hold for Google "
+"Talk accounts as well."
+msgstr ""
+
+#: C/account-jabber.page:42(gui)
+msgid "Encryption required (TLS/SSL)"
+msgstr "Se requiere cifrado (TLS/SSL)"
+
+#: C/account-jabber.page:43(gui)
+msgid "Ignore SSL certificate errors"
+msgstr "Ignorar los errores de certificados SSL"
+
+#: C/account-jabber.page:44(p)
+msgid ""
+"Whenever possible, communication between <app>Empathy</app> and the Jabber "
+"server is encrypted. If encrypted communication is not possible, messages "
+"may be sent unencrypted. Select <gui>Encryption required</gui> to prevent "
+"<app>Empathy</app> from communicating with the Jabber server when encryption "
+"is not possible."
+msgstr ""
+
+#: C/account-jabber.page:49(p)
+msgid ""
+"Some Jabber servers may encrypt data using invalid certificates, or using "
+"certificates from unknown authorities. If you trust the server you are "
+"connecting to, you can select <gui>Ignore SSL certificate errors</gui> to "
+"allow encrypted communication with invalid certificates."
+msgstr ""
+
+#: C/account-jabber.page:56(gui)
+msgid "Resource"
+msgstr "Recurso"
+
+#: C/account-jabber.page:57(gui)
+msgid "Priority"
+msgstr "Prioridad"
+
+#: C/account-jabber.page:58(p)
+msgid ""
+"If you have multiple applications (for instance, on separate computers) "
+"connected to your account at the same time, you can set a resource to "
+"uniquely identify each one. By default, <app>Empathy</app> will use "
+"<input>Telepathy</input> as the resource."
+msgstr ""
+
+#: C/account-jabber.page:62(p)
+msgid ""
+"You can set the priority to specify which application should receive "
+"incoming messages from your contacts. New messages will be sent to the "
+"application with the highest priority."
+msgstr ""
+
+#: C/account-jabber.page:67(gui)
+msgid "Override server settings"
+msgstr "Sobreescribir los ajustes del servidor"
+
+#: C/account-jabber.page:68(p)
+msgid ""
+"<app>Empathy</app> will use default settings to connect to the Jabber server "
+"based on your login ID. For some Jabber servers, you will need to enter "
+"custom server settings manually. These settings should be provided for you "
+"by your Jabber provider."
+msgstr ""
+
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/account-irc.page:101(None)
+#| msgid ""
+#| "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
+msgid "@@image: 'figures/gtk-add.png'; md5=a856b499d8d4681b70b5ce6f25bc5c6d"
+msgstr "@@image: 'figures/gtk-add.png'; md5=a856b499d8d4681b70b5ce6f25bc5c6d"
+
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/account-irc.page:104(None)
+#| msgid ""
+#| "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
+msgid "@@image: 'figures/gtk-edit.png'; md5=4f21b451732817be0604fe3e2c8da98b"
+msgstr "@@image: 'figures/gtk-edit.png'; md5=4f21b451732817be0604fe3e2c8da98b"
+
+#. When image changes, this message will be marked fuzzy or untranslated for you.
+#. It doesn't matter what you translate it to: it's not used at all.
+#: C/account-irc.page:107(None)
+#| msgid ""
+#| "@@image: 'figures/available.png'; md5=1952a8952efbe87e84b21e09e0587e71"
+msgid "@@image: 'figures/gtk-remove.png'; md5=215e3a325a3dd619874e35c30a018bb6"
+msgstr ""
+"@@image: 'figures/gtk-remove.png'; md5=215e3a325a3dd619874e35c30a018bb6"
+
+#. <copyright>
+#.       <year>2009</year>
+#.       <name>GNOME Documentation Project</name>
+#.     </copyright>
+#: C/account-irc.page:22(desc)
+msgid "Additional information necessary for connecting to IRC networks."
+msgstr ""
+
+#: C/account-irc.page:26(title)
+msgid "IRC Account Details"
+msgstr ""
+
+#: C/account-irc.page:28(p)
+msgid ""
+"IRC accounts require different information than many other types of "
+"accounts. To create an IRC account, you must specify at least an IRC network "
+"and a nickname. This page details the information you can provide for an IRC "
+"account."
+msgstr ""
+
+#: C/account-irc.page:34(p)
+msgid ""
+"You must have the <sys>telepathy-idle</sys> package installed in order to "
+"use IRC in <app>Empathy</app>."
+msgstr ""
+
+#: C/account-irc.page:40(gui) C/account-irc.page:115(gui)
+msgid "Network"
+msgstr "Red"
+
+#: C/account-irc.page:41(p)
+msgid ""
+"IRC is an open system that allows people to run separate IRC networks. Each "
+"network is distinct and has its own users and chat rooms. <app>Empathy</app> "
+"lists the most popular networks in the <gui>Network</gui> drop-down list. "
+"You can add additional networks. See <link xref=\"#networks\"/> below."
+msgstr ""
+
+#: C/account-irc.page:48(gui)
+msgid "Nickname"
+msgstr "Apodo"
+
+#: C/account-irc.page:49(p)
+msgid ""
+"Your nickname is your unique name on the IRC network. Only one person on a "
+"network may use a given nickname. If you get an error message that says "
+"<link xref=\"prob-conn-name\" role=\"error-msg\"/> you will need to change "
+"your nickname."
+msgstr ""
+
+#: C/account-irc.page:55(gui)
+msgid "Password"
+msgstr "Contraseña"
+
+#: C/account-irc.page:56(p)
+msgid ""
+"Some servers, particularly those on private networks, require a password to "
+"connect. If you are authorized to use the network, the network "
+"administrators should provide you with a password."
+msgstr ""
+
+#: C/account-irc.page:60(title)
+msgid "NickServ Passwords"
+msgstr ""
+
+#: C/account-irc.page:61(p)
+msgid ""
+"On some networks, nicknames can be registered using a service known as "
+"NickServ. <app>Empathy</app> does not directly support nickname passwords. "
+"On some networks, including the popular FreeNode network, server passwords "
+"are automatically forwarded to NickServ, allowing you to set this field to "
+"identify yourself with NickServ. See <link xref=\"irc-nick-password\"/> for "
+"more details."
+msgstr ""
+
+#: C/account-irc.page:71(gui)
+msgid "Real name"
+msgstr "Nombre real"
+
+#: C/account-irc.page:72(p)
+msgid ""
+"You can provide your real name in addition to your nickname. Other users "
+"will be able to see this when they view your information."
+msgstr ""
+
+#: C/account-irc.page:76(gui)
+#| msgid "Set a custom message"
+msgid "Quit message"
+msgstr "Mensaje de salida"
+
+#: C/account-irc.page:77(p)
+msgid ""
+"When you go offline, a quit message is sent to all the chat rooms you’re in "
+"and to all the users you’re having a private conversation with. Use this "
+"field to provide a custom quit message."
+msgstr ""
+
+#: C/account-irc.page:89(title)
+msgid "IRC Networks"
+msgstr ""
+
+#: C/account-irc.page:92(title)
+msgid "Networks"
+msgstr "Redes"
+
+#: C/account-irc.page:94(p)
+msgid ""
+"<app>Empathy</app> includes a list of popular IRC networks. If you wish to "
+"another IRC network, you can add it to the list. You can also modify "
+"networks and remove them from the list."
+msgstr ""
+
+#: C/account-irc.page:99(p)
+msgid ""
+"To add a network to the list, click <media type=\"image\" mime=\"image/png\" "
+"src=\"figures/gtk-add.png\" width=\"16\" height=\"16\">Add</media>."
+msgstr ""
+
+#: C/account-irc.page:102(p)
+msgid ""
+"To modify a network in the list, select the network and click <media type="
+"\"image\" mime=\"image/png\" src=\"figures/gtk-edit.png\" width=\"16\" "
+"height=\"16\">Edit</media>."
+msgstr ""
+
+#: C/account-irc.page:105(p)
+msgid ""
+"To remove a network from the list, select the network and click <media type="
+"\"image\" mime=\"image/png\" src=\"figures/gtk-remove.png\" width=\"16\" "
+"height=\"16\">Remove</media>."
+msgstr ""
+
+#: C/account-irc.page:110(p)
+msgid ""
+"When adding or modifying a network, you can enter the following information:"
+msgstr ""
+
+#: C/account-irc.page:116(p)
+msgid ""
+"This is the name of the network as you want it to appear in the list of "
+"networks."
+msgstr ""
+
+#: C/account-irc.page:120(gui)
+msgid "Charset"
+msgstr "Conjunto de caracteres"
+
+#: C/account-irc.page:121(p)
+msgid ""
+"This specifies the character encoding that is typically used on this "
+"network. A character encoding is a specific way of recording characters "
+"internally in a computer. There are many character encodings, and you need "
+"to use the same character encoding as other users to see their messages "
+"correctly."
+msgstr ""
+
+#. Translators: Recommend character encodings that are common
+#.             for your language.
+#: C/account-irc.page:130(p)
+msgid ""
+"By default, <app>Empathy</app> uses UTF-8, a modern character encoding that "
+"can handle text from most of the world's languages. Another common encoding "
+"for English and some other Western languages is ISO-8859-1."
+msgstr ""
+
+#: C/account-irc.page:136(gui)
+msgid "Servers"
+msgstr "Servidores"
+
+#: C/account-irc.page:137(p)
+msgid ""
+"An IRC network may have many servers you can connect to. When you are "
+"connected to a server on a particular network, you can communicate with all "
+"users on all other servers on that network. You can add and remove servers "
+"for this network using the <gui>Add</gui> and <gui>Remove</gui> buttons."
+msgstr ""
+
+#: C/account-irc.page:142(p)
+msgid ""
+"When a server is selected, click the field under <gui>Server</gui> or "
+"<gui>Port</gui> to edit it. Alternatively, use the left and right arrow keys "
+"to focus the field, and press the space bar to begin editing."
+msgstr ""
+
+#: C/account-irc.page:146(p)
+msgid ""
+"Select the check box in the <gui>SSL</gui> column to encrypt all "
+"communication with a server. Note that this does not prevent other users on "
+"the network from seeing what you write on public chat rooms."
+msgstr ""
 
 #. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2
-#: /media/data/jhbuild/checkout/empathy/help/C/legal.xml:0(None)
+#: C/index.page:0(None)
 msgid "translator-credits"
-msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2008-2009"
+msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2008-2010"
