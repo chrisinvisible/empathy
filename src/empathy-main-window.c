@@ -113,6 +113,10 @@ typedef struct {
 	guint                   size_timeout_id;
 	GHashTable             *errors;
 
+	/* stores a mapping from TpAccount to Handler ID to prevent
+	 * to listen more than once to the status-changed signal */
+	GHashTable             *status_changed_handlers;
+
 	/* Actions that are enabled when there are connected accounts */
 	GList                  *actions_connected;
 } EmpathyMainWindow;
@@ -625,6 +629,9 @@ static void
 main_window_destroy_cb (GtkWidget         *widget,
 			EmpathyMainWindow *window)
 {
+	GHashTableIter iter;
+	gpointer key, value;
+
 	/* Save user-defined accelerators. */
 	main_window_accels_save ();
 
@@ -633,6 +640,14 @@ main_window_destroy_cb (GtkWidget         *widget,
 	g_object_unref (window->account_manager);
 	g_object_unref (window->list_store);
 	g_hash_table_destroy (window->errors);
+
+	/* disconnect all handlers of status-changed signal */
+	g_hash_table_iter_init (&iter, window->status_changed_handlers);
+	while (g_hash_table_iter_next (&iter, &key, &value))
+		g_signal_handler_disconnect (TP_ACCOUNT (key),
+					     GPOINTER_TO_UINT (value));
+
+	g_hash_table_destroy (window->status_changed_handlers);
 
 	g_signal_handlers_disconnect_by_func (window->event_manager,
 			  		      main_window_event_added_cb,
@@ -1133,9 +1148,19 @@ main_window_account_validity_changed_cb (TpAccountManager *manager,
 					 EmpathyMainWindow *window)
 {
 	if (valid) {
-		g_signal_connect (account, "status-changed",
-				  G_CALLBACK (main_window_connection_changed_cb),
-				  window);
+		gulong handler_id;
+		handler_id = GPOINTER_TO_UINT (g_hash_table_lookup (
+			window->status_changed_handlers, account));
+
+		/* connect signal only if it was not connected yet */
+		if (handler_id == 0) {
+			handler_id = g_signal_connect (account,
+				"status-changed",
+				G_CALLBACK (main_window_connection_changed_cb),
+				window);
+			g_hash_table_insert (window->status_changed_handlers,
+				account, GUINT_TO_POINTER (handler_id));
+		}
 	}
 
 	main_window_account_removed_cb (manager, account, window);
@@ -1201,10 +1226,13 @@ account_manager_prepared_cb (GObject *source_object,
 	accounts = tp_account_manager_get_valid_accounts (window->account_manager);
 	for (j = accounts; j != NULL; j = j->next) {
 		TpAccount *account = TP_ACCOUNT (j->data);
+		gulong handler_id;
 
-		g_signal_connect (account, "status-changed",
+		handler_id = g_signal_connect (account, "status-changed",
 				  G_CALLBACK (main_window_connection_changed_cb),
 				  window);
+		g_hash_table_insert (window->status_changed_handlers,
+				     account, GUINT_TO_POINTER (handler_id));
 	}
 
 	g_signal_connect (manager, "account-validity-changed",
@@ -1311,6 +1339,11 @@ empathy_main_window_show (void)
 						g_direct_equal,
 						g_object_unref,
 						NULL);
+
+	window->status_changed_handlers = g_hash_table_new_full (g_direct_hash,
+								 g_direct_equal,
+								 NULL,
+								 NULL);
 
 	/* Set up menu */
 	main_window_favorite_chatroom_menu_setup (window);
