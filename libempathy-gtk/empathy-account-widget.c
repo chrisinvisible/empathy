@@ -1737,7 +1737,7 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
           G_SIGNAL_RUN_LAST, 0, NULL, NULL,
           g_cclosure_marshal_VOID__POINTER,
           G_TYPE_NONE,
-          1, G_TYPE_POINTER);
+          1, G_TYPE_OBJECT);
 
   signals[CANCELLED] =
       g_signal_new ("cancelled", G_TYPE_FROM_CLASS (klass),
