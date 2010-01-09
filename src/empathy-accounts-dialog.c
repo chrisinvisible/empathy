@@ -721,7 +721,6 @@ accounts_dialog_update_settings (EmpathyAccountsDialog *dialog,
    * one for the account selected */
   gtk_widget_hide (priv->frame_no_protocol);
   gtk_widget_show (priv->vbox_details);
-  gtk_widget_set_sensitive (priv->button_add, TRUE);
   gtk_widget_hide (priv->hbox_protocol);
 
   if (priv->settings_widget)
