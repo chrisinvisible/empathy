@@ -1136,6 +1136,19 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 }
 
 static void
+connect_account (EmpathyDispatcher *self,
+    TpAccount *account)
+{
+  EmpathyDispatcherPriv *priv = GET_PRIV (self);
+  TpConnection *conn = tp_account_get_connection (account);
+  if (conn != NULL)
+    dispatcher_status_changed_cb (account, 0, 0, 0, NULL, NULL, self);
+
+  id = g_signal_connect (account, "status-changed",
+      G_CALLBACK (dispatcher_status_changed_cb), self);
+}
+
+static void
 account_manager_prepared_cb (GObject *source_object,
                              GAsyncResult *result,
                              gpointer user_data)
@@ -1156,14 +1169,8 @@ account_manager_prepared_cb (GObject *source_object,
   for (l = accounts; l; l = l->next)
     {
       TpAccount *a = l->data;
-      TpConnection *conn = tp_account_get_connection (a);
 
-      if (conn != NULL)
-        dispatcher_status_changed_cb (a, 0, 0, 0, NULL, NULL, self);
-
-      empathy_signal_connect_weak (a, "status-changed",
-          G_CALLBACK (dispatcher_status_changed_cb),
-          G_OBJECT (self));
+      connect_account (self, a);
     }
   g_list_free (accounts);
 }
