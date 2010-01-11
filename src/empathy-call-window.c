@@ -2052,6 +2052,15 @@ empathy_call_window_remove_video_input (EmpathyCallWindow *self)
   gtk_widget_show (priv->self_user_avatar_widget);
 }
 
+static void
+start_call (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  priv->call_started = TRUE;
+  empathy_call_handler_start_call (priv->handler);
+  gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+}
 
 static gboolean
 empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
@@ -2078,9 +2087,7 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
             gst_message_parse_state_changed (message, NULL, &newstate, NULL);
             if (newstate == GST_STATE_PAUSED)
               {
-                priv->call_started = TRUE;
-                empathy_call_handler_start_call (priv->handler);
-                gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+                start_call (self);
               }
           }
         break;
@@ -2474,10 +2481,8 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
   priv->outgoing = TRUE;
   empathy_call_window_set_state_connecting (window);
 
-  priv->call_started = TRUE;
-  empathy_call_handler_start_call (priv->handler);
+  start_call (window);
   empathy_call_window_setup_avatars (window, priv->handler);
-  gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
 
   gtk_action_set_sensitive (priv->redial, FALSE);
   gtk_widget_set_sensitive (priv->redial_button, FALSE);
