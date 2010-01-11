@@ -1236,8 +1236,6 @@ empathy_call_window_constructed (GObject *object)
       /* Enable 'send video' buttons and display the preview */
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), TRUE);
-
-      display_video_preview (self, TRUE);
     }
   else
     {
