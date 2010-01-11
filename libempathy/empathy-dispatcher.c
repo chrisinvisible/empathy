@@ -1198,6 +1198,37 @@ account_manager_prepared_cb (GObject *source_object,
 }
 
 static void
+account_prepare_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyDispatcher *self = user_data;
+  TpAccount *account = TP_ACCOUNT (source_object);
+  GError *error = NULL;
+
+  if (!tp_account_prepare_finish (account, result, &error))
+    {
+      DEBUG ("Failed to prepare account: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  connect_account (self, account);
+}
+
+static void
+account_validity_changed_cb (TpAccountManager *manager,
+    TpAccount *account,
+    gboolean valid,
+    gpointer user_data)
+{
+  if (!valid)
+    return;
+
+  tp_account_prepare_async (account, NULL, account_prepare_cb, user_data);
+}
+
+static void
 empathy_dispatcher_init (EmpathyDispatcher *self)
 {
   EmpathyDispatcherPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
@@ -1216,6 +1247,10 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
 
   tp_account_manager_prepare_async (priv->account_manager, NULL,
       account_manager_prepared_cb, self);
+
+  empathy_signal_connect_weak (priv->account_manager,
+      "account-validity-changed", G_CALLBACK (account_validity_changed_cb),
+      G_OBJECT (self));
 
   priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
     g_direct_equal);
