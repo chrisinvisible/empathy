@@ -76,6 +76,9 @@ typedef struct
   GList *handlers;
 
   GHashTable *request_channel_class_async_ids;
+  /* (TpAccount *) => gulong
+   * Signal handler ID of the "status-changed" signal */
+  GHashTable *status_changed_handlers;
 } EmpathyDispatcherPriv;
 
 static GList *
@@ -1013,6 +1016,7 @@ dispatcher_finalize (GObject *object)
   GHashTableIter iter;
   gpointer connection;
   GList *list;
+  gpointer account, id;
 
   if (priv->request_channel_class_async_ids != NULL)
     {
@@ -1035,6 +1039,13 @@ dispatcher_finalize (GObject *object)
       g_list_foreach (list, (GFunc) free_find_channel_request, NULL);
       g_list_free (list);
     }
+
+  g_hash_table_iter_init (&iter, priv->status_changed_handlers);
+  while (g_hash_table_iter_next (&iter, &account, &id))
+    {
+      g_signal_handler_disconnect (account, GPOINTER_TO_UINT (id));
+    }
+  g_hash_table_destroy (priv->status_changed_handlers);
 
   g_object_unref (priv->account_manager);
 
@@ -1141,11 +1152,22 @@ connect_account (EmpathyDispatcher *self,
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpConnection *conn = tp_account_get_connection (account);
+  gulong id;
+
+  id = GPOINTER_TO_UINT (g_hash_table_lookup (priv->status_changed_handlers,
+        account));
+
+  if (id != 0)
+    return;
+
   if (conn != NULL)
     dispatcher_status_changed_cb (account, 0, 0, 0, NULL, NULL, self);
 
   id = g_signal_connect (account, "status-changed",
       G_CALLBACK (dispatcher_status_changed_cb), self);
+
+  g_hash_table_insert (priv->status_changed_handlers, account,
+      GUINT_TO_POINTER (id));
 }
 
 static void
@@ -1197,6 +1219,8 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
 
   priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
     g_direct_equal);
+  priv->status_changed_handlers = g_hash_table_new (g_direct_hash,
+      g_direct_equal);
 }
 
 EmpathyDispatcher *
