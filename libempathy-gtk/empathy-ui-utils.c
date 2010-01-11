@@ -535,6 +535,7 @@ empathy_pixbuf_contact_status_icon_with_icon_name (EmpathyContact *contact,
 	gint       numerator, denominator;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+	g_return_val_if_fail (icon_name != NULL, NULL);
 
 	numerator = 3;
 	denominator = 4;
