@@ -1231,17 +1231,13 @@ empathy_call_window_constructed (GObject *object)
   empathy_call_window_setup_avatars (self, priv->handler);
   empathy_call_window_set_state_connecting (self);
 
-  if (empathy_call_handler_has_initial_video (priv->handler))
-    {
-      /* Enable 'send video' buttons and display the preview */
-      gtk_toggle_tool_button_set_active (
-          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), TRUE);
-    }
-  else
+  if (!empathy_call_handler_has_initial_video (priv->handler))
     {
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_off), TRUE);
     }
+  /* If call has InitialVideo, the preview will be started once the call has
+   * been started (start_call()). */
 }
 
 static void empathy_call_window_dispose (GObject *object);
@@ -2060,6 +2056,13 @@ start_call (EmpathyCallWindow *self)
   priv->call_started = TRUE;
   empathy_call_handler_start_call (priv->handler);
   gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+
+  if (empathy_call_handler_has_initial_video (priv->handler))
+    {
+      /* Enable 'send video' buttons and display the preview */
+      gtk_toggle_tool_button_set_active (
+          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_on), TRUE);
+    }
 }
 
 static gboolean
