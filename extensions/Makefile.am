@@ -16,7 +16,8 @@ EXTRA_DIST = \
     misc.xml \
     Channel_Handler.xml \
     Tube_Handler.xml \
-    Debug.xml
+    Debug.xml \
+    Channel_Interface_Conference.xml
 
 noinst_LTLIBRARIES = libemp-extensions.la
 
