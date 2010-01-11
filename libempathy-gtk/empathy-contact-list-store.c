@@ -1724,6 +1724,9 @@ contact_list_store_get_contact_status_icon (EmpathyContactListStore *store,
 	const gchar                 *status_icon_name = NULL;
 
 	status_icon_name = empathy_icon_name_for_contact (contact);
+	if (status_icon_name == NULL)
+		return NULL;
+
 	pixbuf_status = contact_list_store_get_contact_status_icon_with_icon_name (
 			    store,
 			    contact,
