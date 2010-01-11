@@ -1,3 +1,58 @@
+NEW in 2.29.5
+=============
+
+The « Alban, 28 affonds (of Nutella) ! » release.
+
+The contact list has been improved to make it harder to accidentally call
+a contact when you just intended to select a row. The accounts dialog has been
+reworked to reduce the number of steps when adding a new account.
+Thanks to Thomas Meire, a new contributor, the nick auto-completion has been
+improved in rooms.
+We also fixed a bunch of crashes and a regression when starting a video call.
+
+Bugs fixed:
+ - Fixed #554767, IRC tab completion only works with letters (Thomas Meire)
+ - Fixed #576434, ellipsize long status messages in the status combobox
+ - Fixed #590051, too easy to start a call (not wanting it) (Guillaume Desmottes)
+ - Fixed #593268, Make Enable/Disable accounts easier again (Guillaume Desmottes)
+ - Fixed #593483, L10n string split in two feilds
+ - Fixed #599182, Remove useless screen when adding a new account (Guillaume Desmottes)
+ - Fixed #599779, empathy doesn't auto finish IRC usernames when user hits tab (Thomas Meire)
+ - Fixed #600030, EmpathyAccountsDialog should inherit from GtkWindow/GtkDialog
+ - Fixed #603485, Crash when clicking the status icon just after a contact goes online/offline
+ - Fixed #603976, Don't re-enable chat window once reconnected
+ - Fixed #604347, /join command doesn't accept multi rooms (Thomas Meire)
+ - Fixed #604481, StatusIcon no longer gets status message, only says 'available' (Guillaume Desmottes)
+ - Fixed #604702, support creation of PMUCs using the Conference interface
+ - Fixed #605213, Move register radio buttons to the account widget (Guillaume Desmottes)
+ - Fixed #605529, accounts-dialog shows a box around some advanced settings (Felix Kaser)
+ - Fixed #605549, Video call fails with "resource unavailable" (Guillaume Desmottes)
+ - Fixed #605689, SIGSEGV crash when joining a IRC room (Guillaume Desmottes)
+ - Fixed #605818, String fixes
+ - Fixed #605822, protocols icons should be hidden by default (Guillaume Desmottes)
+ - Fixed #605848, Use Pango markup attributes in GtkBuilder file
+ - Fixed #606220, Stopping a transfer during hashing causes double free (Guillaume Desmottes)
+ - Fixed #606513, Don't confuse translator comments and contextual specifier (Claude Paroz)
+ - Fixed #601379, error notification should disappear when account is disabled
+ - Fixed #604154, when discarding changes on create account the "new bla account" should be removed (Felix Kaser)
+ - Fixed #604628, creating an account causes weird behavior (Felix Kaser)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated en_GB Translation (Philip Withnall)
+ - Updated es Translation (Jorge González)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated si Translation (Danishka Navin)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated th Translation (Theppitak Karoonboonyanan)
+ - Updated vi Translation (Nguyễn Thái Ngọc Duy)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated es Documentation translation (Jorge González)
+
 NEW in 2.29.4
 =============
 
