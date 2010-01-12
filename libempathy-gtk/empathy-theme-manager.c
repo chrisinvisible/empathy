@@ -115,6 +115,9 @@ theme_manager_create_irc_view (EmpathyThemeManager *manager)
 					"foreground", "steelblue",
 					"underline", PANGO_UNDERLINE_SINGLE,
 					NULL);
+	empathy_chat_text_view_tag_set (view, EMPATHY_CHAT_TEXT_VIEW_TAG_HIGHLIGHT,
+					"background", "yellow",
+					NULL);
 
 	/* Define IRC tags */
 	empathy_chat_text_view_tag_set (view, EMPATHY_THEME_IRC_TAG_NICK_SELF,

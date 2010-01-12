@@ -48,6 +48,7 @@
 #include "empathy-contact-list-store.h"
 #include "empathy-contact-list-view.h"
 #include "empathy-contact-menu.h"
+#include "empathy-search-bar.h"
 #include "empathy-theme-manager.h"
 #include "empathy-smiley-manager.h"
 #include "empathy-ui-utils.h"
@@ -93,6 +94,7 @@ typedef struct {
 	GtkWidget         *label_topic;
 	GtkWidget         *contact_list_view;
 	GtkWidget         *info_bar_vbox;
+	GtkWidget         *search_bar;
 
 	guint              unread_messages;
 	/* TRUE if the pending messages can be displayed. This is to avoid to show
@@ -1369,6 +1371,11 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
+	/* catch ctrl-f to display the search bar */
+	if ((event->state & GDK_CONTROL_MASK) && (event->keyval == GDK_f)) {
+		empathy_search_bar_show (EMPATHY_SEARCH_BAR (priv->search_bar));
+		return TRUE;
+	}
 	if (!(event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) &&
 	    event->keyval == GDK_Tab) {
 		GtkTextBuffer *buffer;
@@ -2135,6 +2142,13 @@ chat_create_ui (EmpathyChat *chat)
 			   chat->input_text_view);
 	gtk_widget_show (chat->input_text_view);
 
+	/* Add the (invisible) search bar */
+	priv->search_bar = empathy_search_bar_new (chat->view);
+	gtk_box_pack_start (GTK_BOX(priv->vbox_left),
+	                    priv->search_bar,
+	                    FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX(priv->vbox_left), priv->search_bar, 1);
+
 	/* Initialy hide the topic, will be shown if not empty */
 	gtk_widget_hide (priv->hbox_topic);
 
@@ -2150,7 +2164,8 @@ chat_create_ui (EmpathyChat *chat)
 		gtk_paned_set_position (GTK_PANED(priv->hpaned), paned_pos);
 
 	/* Set widget focus order */
-	list = g_list_append (NULL, priv->scrolled_window_input);
+	list = g_list_append (NULL, priv->search_bar);
+	list = g_list_append (list, priv->scrolled_window_input);
 	gtk_container_set_focus_chain (GTK_CONTAINER (priv->vbox_left), list);
 	g_list_free (list);
 

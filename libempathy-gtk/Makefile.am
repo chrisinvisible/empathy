@@ -59,6 +59,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-notify-manager.c		\
 	empathy-presence-chooser.c		\
 	empathy-protocol-chooser.c		\
+	empathy-search-bar.c			\
 	empathy-share-my-desktop.c		\
 	empathy-smiley-manager.c		\
 	empathy-sound.c				\
@@ -104,6 +105,7 @@ libempathy_gtk_headers =			\
 	empathy-notify-manager.h		\
 	empathy-presence-chooser.h		\
 	empathy-protocol-chooser.h		\
+	empathy-search-bar.h			\
 	empathy-share-my-desktop.h		\
 	empathy-smiley-manager.h		\
 	empathy-sound.h				\
@@ -158,7 +160,8 @@ ui_DATA = 					\
 	empathy-status-preset-dialog.ui		\
 	empathy-log-window.ui			\
 	empathy-chat.ui				\
-	empathy-contact-selector-dialog.ui
+	empathy-contact-selector-dialog.ui      \
+	empathy-search-bar.ui
 
 empathy-gtk-marshal.list: $(libempathy_gtk_la_SOURCES) Makefile.am
 	$(QUIET_GEN)( cd $(srcdir) && \

@@ -880,7 +880,7 @@ chat_text_view_find_previous (EmpathyChatView *view,
 		from_start = TRUE;
 	}
 
-	if (priv->find_mark_previous) {
+	if (!new_search && priv->find_mark_previous) {
 		gtk_text_buffer_get_iter_at_mark (buffer,
 						  &iter_at_mark,
 						  priv->find_mark_previous);
@@ -995,7 +995,7 @@ chat_text_view_find_next (EmpathyChatView *view,
 		from_start = TRUE;
 	}
 
-	if (priv->find_mark_next) {
+	if (!new_search && priv->find_mark_next) {
 		gtk_text_buffer_get_iter_at_mark (buffer,
 						  &iter_at_mark,
 						  priv->find_mark_next);
@@ -1161,7 +1161,6 @@ chat_text_view_highlight (EmpathyChatView *view,
 						   &iter_match_end);
 
 		iter = iter_match_end;
-		gtk_text_iter_forward_char (&iter);
 	}
 }
 
