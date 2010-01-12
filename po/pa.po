@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Amanpreet Singh Alam <aalam@users.sf.net>, 2009.
-# A S Alam <aalam@users.sf.net>, 2009.
+# A S Alam <aalam@users.sf.net>, 2009, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2009-08-31 15:45+0000\n"
-"PO-Revision-Date: 2009-09-03 07:07+0530\n"
+"POT-Creation-Date: 2010-01-11 12:12+0000\n"
+"PO-Revision-Date: 2010-01-12 08:33+0530\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
-"Language-Team: Punjabi/Panjabi <punjabi-users@lists.sf.net>\n"
+"Language-Team: ਪੰਜਾਬੀ <punjabi-users@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -30,12 +30,10 @@ msgid "Empathy IM Client"
 msgstr "ਇੰਪੈਂਥੀ IM ਕਲਾਇਟ"
 
 #: ../data/empathy.desktop.in.in.h:3
-#| msgid "Client:"
 msgid "IM Client"
 msgstr "IM ਕਲਾਇਟ"
 
 #: ../data/empathy.desktop.in.in.h:4
-#| msgid "Send and receive instant messages"
 msgid "Send and receive messages"
 msgstr "ਸੁਨੇਹੇ ਭੇਜੋ ਅਤੇ ਲਵੋ"
 
@@ -54,7 +52,9 @@ msgid "Chat window theme"
 msgstr "ਗੱਲਬਾਤ ਵਿੰਡੋ ਥੀਮ"
 
 #: ../data/empathy.schemas.in.h:4
-msgid "Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
+#| msgid ""
+#| "Comma separated list of spell checker languages to use (e.g. en, fr, nl)."
+msgid "Comma-separated list of spell checker languages to use (e.g. \"en, fr, nl\")."
 msgstr "ਸਪੈਲ ਚੈਕਰ ਭਾਸ਼ਾਵਾਂ ਦੀ ਕਾਮਿਆਂ ਨਾਲ ਅੱਡ ਕੀਤੀ ਲਿਸਟ (ਜਿਵੇਂ pa,en,)।"
 
 #: ../data/empathy.schemas.in.h:5
@@ -62,13 +62,13 @@ msgid "Compact contact list"
 msgstr "ਸੰਖੇਪ ਸੰਪਰਕ ਲਿਸਟ"
 
 #: ../data/empathy.schemas.in.h:6
-#| msgid "NetworkManager should be used"
 msgid "Connection managers should be used"
 msgstr "ਕੁਨੈਕਸ਼ਨ ਮੈਨੇਜਰ ਵਰਤਿਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ"
 
 #: ../data/empathy.schemas.in.h:7
-msgid "Contact list sort criterium"
-msgstr "ਸੰਪਰਕ ਲਿਸਟ ਲੜੀਬੱਧ"
+#| msgid "Contact list sort criterium"
+msgid "Contact list sort criterion"
+msgstr "ਸੰਪਰਕ ਲਿਸਟ ਲੜੀਬੱਧ ਢੰਗ"
 
 #: ../data/empathy.schemas.in.h:8
 msgid "Default directory to select an avatar image from"
@@ -155,11 +155,13 @@ msgid "Open new chats in separate windows"
 msgstr "ਨਵੀਆਂ ਗੱਲਬਾਤਾਂ ਵੱਖ ਵੱਖ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ"
 
 #: ../data/empathy.schemas.in.h:29
-msgid "Path of the adium theme to use"
+#| msgid "Path of the adium theme to use"
+msgid "Path of the Adium theme to use"
 msgstr "ਵਰਤਣ ਵਾਸਤੀ ਅਡੀਓਮ ਥੀਮ ਲਈ ਪਾਥ"
 
 #: ../data/empathy.schemas.in.h:30
-msgid "Path of the adium theme to use if the theme used for chat is adium."
+#| msgid "Path of the adium theme to use if the theme used for chat is adium."
+msgid "Path of the Adium theme to use if the theme used for chat is Adium."
 msgstr "ਅਡੀਓਮ ਥੀਮ ਲਈ ਪਾਥ, ਜੋ ਕਿ ਵਰਤਣਾ ਹੈ, ਜਦੋਂ ਗੱਲਬਾਤ ਲਈ ਅਡੀਓਮ ਥੀਮ ਚੁਣਿਆ ਹੋਵੇ।"
 
 #: ../data/empathy.schemas.in.h:31
@@ -191,16 +193,19 @@ msgid "Play a sound when we log out"
 msgstr "ਜਦੋਂ ਅਸੀਂ ਲਾਗ-ਆਉਟ ਕਰਨਾ ਹੋਵੇ ਤਾਂ ਧੁਨੀ ਚਲਾਓ"
 
 #: ../data/empathy.schemas.in.h:38
-msgid "Popup notifications if the chat isn't focused"
-msgstr "ਜੇ ਗੱਲਬਾਤ ਫੋਕਸ ਨਾ ਹੋਵੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਕਰੋ"
+#| msgid "Popup notifications if the chat isn't focused"
+msgid "Pop up notifications if the chat isn't focused"
+msgstr "ਜੇ ਗੱਲਬਾਤ ਫੋਕਸ ਨਾ ਹੋਵੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਸੂਚਨਾ ਦਿਓ"
 
 #: ../data/empathy.schemas.in.h:39
-msgid "Popup notifications when a contact sign in"
-msgstr "ਜੇ ਸੰਪਰਕ ਸਾਇਨ ਇਨ ਕਰੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਕਰੋ"
+#| msgid "Popup notifications when a contact sign in"
+msgid "Pop up notifications when a contact logs in"
+msgstr "ਜੇ ਸੰਪਰਕ ਲਾਗ ਇਨ ਕਰੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਸੂਚਨਾ ਦਿਓ"
 
 #: ../data/empathy.schemas.in.h:40
-msgid "Popup notifications when a contact sign out"
-msgstr "ਜੇ ਸੰਪਰਕ ਸਾਈਨ-ਆਉਟ ਕਰੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਕਰੋ"
+#| msgid "Popup notifications when a contact sign out"
+msgid "Pop up notifications when a contact logs out"
+msgstr "ਜੇ ਸੰਪਰਕ ਲਾਗ ਆਉਟ ਕਰੇ ਤਾਂ ਸੂਚਨਾ ਪੋਪਅੱਪ ਸੂਚਨਾ ਦਿਓ"
 
 #: ../data/empathy.schemas.in.h:41
 msgid "Salut account is created"
@@ -223,220 +228,278 @@ msgid "Show offline contacts"
 msgstr "ਆਫਲਾਈਨ ਸੰਪਰਕ ਵੇਖੋ"
 
 #: ../data/empathy.schemas.in.h:46
+#| msgid "Protocol"
+msgid "Show protocols"
+msgstr "ਪਰੋਟੋਕਾਲ ਵੇਖੋ"
+
+#: ../data/empathy.schemas.in.h:47
 msgid "Spell checking languages"
 msgstr "ਸ਼ਬਦ-ਜੋੜ ਭਾਸ਼ਾਵਾਂ"
 
-#: ../data/empathy.schemas.in.h:47
+#: ../data/empathy.schemas.in.h:48
 msgid "The default folder to save file transfers in."
 msgstr "ਫਾਇਲ ਸੰਚਾਰ ਸੰਭਾਲਣ ਲਈ ਡਿਫਾਲਟ ਫੋਲਡਰ ਹੈ।"
 
-#: ../data/empathy.schemas.in.h:48
+#: ../data/empathy.schemas.in.h:49
 msgid "The last directory that an avatar image was chosen from."
 msgstr "ਆਖਰੀ ਡਾਇਰੈਕਟਰੀ, ਜਿੱਥੇ ਅਵਤਾਰ ਚਿੱਤਰ ਚੁਣਿਆ ਗਿਆ ਸੀ।"
 
-#: ../data/empathy.schemas.in.h:49
+#: ../data/empathy.schemas.in.h:50
 msgid "The theme that is used to display the conversation in chat windows."
 msgstr "ਥੀਮ, ਜੋ ਕਿ ਗੱਲਬਾਤ ਵਿੰਡੋ ਵਿੱਚ ਗੱਲਾਂ ਵੇਖਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾਵੇ।"
 
-#: ../data/empathy.schemas.in.h:50
+#: ../data/empathy.schemas.in.h:51
 msgid "Use graphical smileys"
 msgstr "ਗਰਾਫਿਕਸ ਚਿਹਰੇ ਵਰਤੋਂ"
 
-#: ../data/empathy.schemas.in.h:51
+#: ../data/empathy.schemas.in.h:52
 msgid "Use notification sounds"
 msgstr "ਸਾਊਂਡ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵਰਤੋਂ"
 
-#: ../data/empathy.schemas.in.h:52
+#: ../data/empathy.schemas.in.h:53
 msgid "Use theme for chat rooms"
 msgstr "ਗੱਲਬਾਤ ਰੂਮ ਲਈ ਥੀਮ ਵਰਤੋਂ"
 
-#: ../data/empathy.schemas.in.h:53
-msgid "Whether WebKit developer tools, such as the Web Inspector, should be enabled."
-msgstr "ਕੀ ਵੈੱਬਕਿੱਟ ਡਿਵੈਲਪਰ ਟੂਲ, ਜਿਵੇਂ ਕਿ ਵੈੱਬ ਇੰਸਪੈਕਟਰ ਆਦਿ ਯੋਗ ਕਰਨੇ ਹਨ।"
-
 #: ../data/empathy.schemas.in.h:54
-msgid "Whether or not Empathy can publish the user's location to his contacts."
-msgstr "ਕੀ ਇੰਪੈਂਥੀ ਯੂਜ਼ਰ ਦਾ ਟਿਕਾਣਾ ਉਸ ਦੇ ਸੰਪਰਕਾਂ ਲਈ ਦੇਵੇ।"
+#| msgid ""
+#| "Whether or not Empathy can publish the user's location to his contacts."
+msgid "Whether Empathy can publish the user's location to their contacts."
+msgstr "ਕੀ ਇੰਪੈਂਥੀ ਯੂਜ਼ਰ ਦੇ ਟਿਕਾਣਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਉਸ ਦੇ ਸੰਪਰਕਾਂ ਨਾਲ ਦੇਵੇ।"
 
 #: ../data/empathy.schemas.in.h:55
-msgid "Whether or not Empathy can use the GPS to guess the location."
+#| msgid "Whether or not Empathy can use the GPS to guess the location."
+msgid "Whether Empathy can use the GPS to guess the location."
 msgstr "ਕੀ ਇੰਪੈਂਥੀ ਟਿਕਾਣੇ ਦਾ ਅਨੁਮਾਨ ਲਗਾਉਣ ਲਈ GPS ਵਰਤੇ।"
 
 #: ../data/empathy.schemas.in.h:56
-msgid "Whether or not Empathy can use the cellular network to guess the location."
+#| msgid ""
+#| "Whether or not Empathy can use the cellular network to guess the location."
+msgid "Whether Empathy can use the cellular network to guess the location."
 msgstr "ਕੀ ਇੰਪੈਂਥੀ ਟਿਕਾਣੇ ਦਾ ਅਨੁਮਾਨ ਲਗਾਉਣ ਲਈ ਸੈਲੂਲਰ ਨੈੱਟਵਰਕ ਵਰਤੇ।"
 
 #: ../data/empathy.schemas.in.h:57
-msgid "Whether or not Empathy can use the network to guess the location."
+#| msgid "Whether or not Empathy can use the network to guess the location."
+msgid "Whether Empathy can use the network to guess the location."
 msgstr "ਕੀ ਇੰਪੈਥੀ ਟਿਕਾਣੇ ਦਾ ਅਨੁਮਾਨ ਲਾਉਣ ਲਈ ਨੈੱਟਵਰਕ ਵਰਤ ਸਕਦਾ ਹੈ।"
 
 #: ../data/empathy.schemas.in.h:58
-msgid ""
-"Whether or not Empathy has asked about importing accounts from other "
-"programs."
+#| msgid ""
+#| "Whether or not Empathy has asked about importing accounts from other "
+#| "programs."
+msgid "Whether Empathy has asked about importing accounts from other programs."
 msgstr "ਕੀ ਇੰਪੈਂਥੀ ਹੋਰ ਪਰੋਗਰਾਮਾਂ ਤੋਂ ਅਕਾਊਂਟ ਇੰਪੋਰਟ ਕਰਨ ਲਈ ਪੁੱਛੇ।"
 
 #: ../data/empathy.schemas.in.h:59
-msgid ""
-"Whether or not Empathy should automatically log in to your accounts on "
-"startup."
-msgstr "ਕੀ ਇੰਪੈਂਥੀ ਸ਼ੁਰੂ ਸਮੇਂ ਆਟੋਮੈਟਿਕ ਹੀ ਤੁਹਾਡੇ ਅਕਾਊਂਟਾਂ ਵਿੱਚ ਲਾਗਇਨ ਕਰੇ।"
+#| msgid ""
+#| "Whether or not Empathy should automatically log in to your accounts on "
+#| "startup."
+msgid "Whether Empathy should automatically log into your accounts on startup."
+msgstr "ਕੀ ਇੰਪੈਂਥੀ ਸ਼ੁਰੂ ਸਮੇਂ ਆਟੋਮੈਟਿਕ ਹੀ ਤੁਹਾਡੇ ਅਕਾਊਂਟਾਂ ਵਿੱਚ ਲਾਗ ਇਨ ਕਰੇ।"
 
 #: ../data/empathy.schemas.in.h:60
-msgid ""
-"Whether or not Empathy should reduce the location's accuracy for privacy "
-"reasons."
+#| msgid ""
+#| "Whether or not Empathy should reduce the location's accuracy for privacy "
+#| "reasons."
+msgid "Whether Empathy should reduce the location's accuracy for privacy reasons."
 msgstr "ਕੀ ਇੰਪੈਂਥੀ ਪਰਾਈਵੇਸੀ ਕਾਰਨਾਂ ਕਰਕੇ ਟਿਕਾਣੇ ਦੀ ਸ਼ੁੱਧਤਾ ਘਟਾਵੇ।"
 
 #: ../data/empathy.schemas.in.h:61
-msgid ""
-"Whether or not Empathy should use the avatar of the contact as the chat "
-"window icon."
+#| msgid ""
+#| "Whether or not Empathy should use the avatar of the contact as the chat "
+#| "window icon."
+msgid "Whether Empathy should use the avatar of the contact as the chat window icon."
 msgstr "ਕੀ ਇੰਪੈਂਥੀ ਗੱਲਬਾਤ ਵਿੰਡੋ ਆਈਕਾਨ ਵਜੋਂ ਸੰਪਰਕ ਦੇ ਅਵਤਾਰ ਨੂੰ ਵਰਤੇ"
 
 #: ../data/empathy.schemas.in.h:62
-#| msgid ""
-#| "Whether or not the network manager should be used to automatically "
-#| "disconnect/reconnect."
-msgid ""
-"Whether or not connectivity managers should be used to automatically "
-"disconnect/reconnect."
-msgstr "ਕੀ ਕੁਨੈਕੁਵਿਟੀ ਮੈਨੇਜਰ ਆਟੋਮੈਟਿਕ ਡਿਸ-ਕੁਨੈਕਟ/ਮੁੜ-ਕੁਨਕੈਟ ਲਈ ਵਰਤਿਆ ਜਾਵੇ"
+msgid "Whether WebKit developer tools, such as the Web Inspector, should be enabled."
+msgstr "ਕੀ ਵੈੱਬਕਿੱਟ ਡਿਵੈਲਪਰ ਟੂਲ, ਜਿਵੇਂ ਕਿ ਵੈੱਬ ਇੰਸਪੈਕਟਰ ਆਦਿ ਯੋਗ ਕਰਨੇ ਹਨ।"
 
 #: ../data/empathy.schemas.in.h:63
-msgid "Whether or not the Salut account has been created on the first Empathy run."
-msgstr "ਕੀ ਪਹਿਲੀ ਵਾਰ ਇੰਪੈਂਥੀ ਚਲਾਉਣ ਲਈ ਲਾਉਟ ਅਕਾਊਂਟ ਬਣਾਇਆ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not connectivity managers should be used to automatically "
+#| "disconnect/reconnect."
+msgid ""
+"Whether connectivity managers should be used to automatically disconnect/"
+"reconnect."
+msgstr "ਕੀ ਕੁਨੈਕੁਵਿਟੀ ਮੈਨੇਜਰ ਆਟੋਮੈਟਿਕ ਡਿਸ-ਕੁਨੈਕਟ/ਮੁੜ-ਕੁਨਕੈਟ ਲਈ ਵਰਤਿਆ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:64
-msgid ""
-"Whether or not to check words typed against the languages you want to check "
-"with."
-msgstr "ਕੀ ਜਦੋਂ ਤੁਸੀਂ ਲਿਖੋ ਤਾਂ ਸ਼ਬਦਾਂ ਨੂੰ ਭਾਸ਼ਾ ਲਈ ਚੈੱਕ ਕੀਤਾ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not the Salut account has been created on the first Empathy "
+#| "run."
+msgid "Whether the Salut account has been created on the first Empathy run."
+msgstr "ਕੀ ਪਹਿਲੀ ਵਾਰ ਇੰਪੈਂਥੀ ਚਲਾਉਣ ਲਈ ਲਾਉਟ ਅਕਾਊਂਟ ਬਣਾਇਆ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:65
-msgid "Whether or not to convert smileys into graphical images in conversations."
-msgstr "ਕੀ ਸਮਾਈਲੀ ਨੂੰ ਗੱਲਬਾਤ ਵਿੱਚ ਗਰਾਫਿਕਲ ਚਿੱਤਰਾਂ ਵਿੱਚ ਬਦਲਿਆ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not to check words typed against the languages you want to "
+#| "check with."
+msgid "Whether to check words typed against the languages you want to check with."
+msgstr "ਕੀ ਜਦੋਂ ਤੁਸੀਂ ਲਿਖੋ ਤਾਂ ਸ਼ਬਦਾਂ ਨੂੰ ਭਾਸ਼ਾ ਲਈ ਚੈੱਕ ਕੀਤਾ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:66
-msgid "Whether or not to play a sound to notify for contacts logging in the network."
-msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੰਪਰਕ ਦੇ ਲਾਗਇਨ ਕਰਨ ਸਮੇਂ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not to convert smileys into graphical images in conversations."
+msgid "Whether to convert smileys into graphical images in conversations."
+msgstr "ਕੀ ਸਮਾਈਲੀ ਨੂੰ ਗੱਲਬਾਤ ਵਿੱਚ ਗਰਾਫਿਕਲ ਚਿੱਤਰਾਂ ਵਿੱਚ ਬਦਲਿਆ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:67
-msgid ""
-"Whether or not to play a sound to notify for contacts logging off the "
-"network."
-msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੰਪਰਕ ਦੇ ਲਾਗਆਫ਼ ਕਰਨ ਸਮੇਂ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not to play a sound to notify for contacts logging in the "
+#| "network."
+msgid "Whether to play a sound to notify of contacts logging into the network."
+msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੰਪਰਕ ਦੇ ਲਾਗ ਇਨ ਕਰਨ ਸਮੇਂ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:68
-msgid "Whether or not to play a sound to notify for events."
-msgstr "ਕੀ ਈਵੈਂਟਾਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
+#| msgid ""
+#| "Whether or not to play a sound to notify for contacts logging off the "
+#| "network."
+msgid "Whether to play a sound to notify of contacts logging out of the network."
+msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਸੰਪਰਕ ਦੇ ਲਾਗ ਆਫ਼ ਕਰਨ ਸਮੇਂ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:69
-msgid "Whether or not to play a sound to notify for incoming messages."
-msgstr "ਕੀ ਆ ਰਹੇ ਸੁਨੇਹਿਆਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
+#| msgid "Whether or not to play a sound to notify for events."
+msgid "Whether to play a sound to notify of events."
+msgstr "ਕੀ ਈਵੈਂਟਾਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:70
-msgid "Whether or not to play a sound to notify for new conversations."
-msgstr "ਕੀ ਨਵੀਆਂ ਗੱਲਾਬਾਤਾਂ ਦੀ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
+#| msgid "Whether or not to play a sound to notify for incoming messages."
+msgid "Whether to play a sound to notify of incoming messages."
+msgstr "ਕੀ ਆ ਰਹੇ ਸੁਨੇਹਿਆਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
 
 #: ../data/empathy.schemas.in.h:71
-msgid "Whether or not to play a sound to notify for outgoing messages."
-msgstr "ਕੀ ਬਾਹਰ ਜਾ ਰਹੇ ਸੁਨੇਹਿਆਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
+#| msgid "Whether or not to play a sound to notify for new conversations."
+msgid "Whether to play a sound to notify of new conversations."
+msgstr "ਕੀ ਨਵੀਆਂ ਗੱਲਾਬਾਤਾਂ ਦੀ ਸੂਚਨਾ ਲਈ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
 
 #: ../data/empathy.schemas.in.h:72
-msgid "Whether or not to play a sound when logging in a network."
-msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਲਾਗਇਨ ਕਰਨ ਦੌਰਾਨ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
+#| msgid "Whether or not to play a sound to notify for outgoing messages."
+msgid "Whether to play a sound to notify of outgoing messages."
+msgstr "ਕੀ ਬਾਹਰ ਜਾ ਰਹੇ ਸੁਨੇਹਿਆਂ ਲਈ ਸੂਚਨਾ ਵਾਸਤੇ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
 
 #: ../data/empathy.schemas.in.h:73
-msgid "Whether or not to play a sound when logging off a network."
-msgstr "ਕੀ ਨੈੱਟਵਰਕ ਤੋਂ ਲਾਗ-ਆਫ਼ ਕਰਨ ਦੌਰਾਨ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
+#| msgid "Whether or not to play a sound when logging in a network."
+msgid "Whether to play a sound when logging into a network."
+msgstr "ਕੀ ਨੈੱਟਵਰਕ ਉੱਤੇ ਲਾਗ ਇਨ ਕਰਨ ਦੌਰਾਨ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ।"
 
 #: ../data/empathy.schemas.in.h:74
-msgid "Whether or not to play sound notifications when away or busy."
-msgstr "ਜਦੋਂ ਦੂਰ ਜਾਂ ਰੁੱਝੇ ਹੋਵੇ ਤਾਂ ਕੀ ਸਾਊਂਡ ਸੂਚਨਾਵਾਂ ਚਲਾਉਣੀਆਂ ਹਨ ਜਾਂ ਨਹੀਂ।"
+#| msgid "Whether or not to play a sound when logging off a network."
+msgid "Whether to play a sound when logging out of a network."
+msgstr "ਕੀ ਨੈੱਟਵਰਕ ਤੋਂ ਲਾਗ ਆਫ਼ ਕਰਨ ਦੌਰਾਨ ਸਾਊਂਡ ਚਲਾਈ ਜਾਵੇ"
 
 #: ../data/empathy.schemas.in.h:75
-msgid "Whether or not to show a popup notification when a contact goes offline."
-msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਏ ਜਾਣ, ਜਦੋਂ ਸੰਪਰਕ ਆਫਲਾਈਨ ਹੋਵੇ।"
+#| msgid "Whether or not to play sound notifications when away or busy."
+msgid "Whether to play sound notifications when away or busy."
+msgstr "ਜਦੋਂ ਦੂਰ ਜਾਂ ਰੁੱਝੇ ਹੋਵੇ ਤਾਂ ਕੀ ਸਾਊਂਡ ਸੂਚਨਾਵਾਂ ਚਲਾਉਣੀਆਂ ਹਨ।"
 
 #: ../data/empathy.schemas.in.h:76
-msgid "Whether or not to show a popup notification when a contact goes online."
-msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਏ ਜਾਣ, ਜਦੋਂ ਸੰਪਰਕ ਆਨਲਾਈਨ ਹੋਵੇ।"
+#| msgid ""
+#| "Whether or not to show a popup notification when a contact goes offline."
+msgid "Whether to show a popup notification when a contact goes offline."
+msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਏ ਜਾਣ, ਜਦੋਂ ਸੰਪਰਕ ਆਫਲਾਈਨ ਹੋਵੇ।"
 
 #: ../data/empathy.schemas.in.h:77
+#| msgid ""
+#| "Whether or not to show a popup notification when a contact goes online."
+msgid "Whether to show a popup notification when a contact goes online."
+msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਏ ਜਾਣ, ਜਦੋਂ ਸੰਪਰਕ ਆਨਲਾਈਨ ਹੋਵੇ।"
+
+#: ../data/empathy.schemas.in.h:78
+#| msgid ""
+#| "Whether or not to show a popup notification when receiving a new message "
+#| "even if the chat is already opened, but not focused."
 msgid ""
-"Whether or not to show a popup notification when receiving a new message "
-"even if the chat is already opened, but not focused."
+"Whether to show a popup notification when receiving a new message even if "
+"the chat is already opened, but not focused."
 msgstr ""
 "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਇਆ ਜਾਵੇ, ਜਦੋਂ ਇੱਕ ਨਵਾਂ ਸੁਨੇਹਾ ਮਿਲੇ, ਭਾਵੇਂ ਗੱਲਬਾਤ ਪਹਿਲਾਂ ਖੁੱਲ੍ਹੀ ਹੋਵੇ, ਪਰ "
 "ਫੋਕਸ ਨਾ ਹੋਵੇ।"
 
-#: ../data/empathy.schemas.in.h:78
-msgid "Whether or not to show a popup notification when receiving a new message."
+#: ../data/empathy.schemas.in.h:79
+#| msgid ""
+#| "Whether or not to show a popup notification when receiving a new message."
+msgid "Whether to show a popup notification when receiving a new message."
 msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਇਆ ਜਾਵੇ, ਜਦੋਂ ਨਵਾਂ ਸੁਨੇਹਾ ਮਿਲੇ।"
 
-#: ../data/empathy.schemas.in.h:79
-msgid ""
-"Whether or not to show avatars for contacts in the contact list and chat "
-"windows."
+#: ../data/empathy.schemas.in.h:80
+#| msgid ""
+#| "Whether or not to show avatars for contacts in the contact list and chat "
+#| "windows."
+msgid "Whether to show avatars for contacts in the contact list and chat windows."
 msgstr "ਕੀ ਸੰਪਰਕ ਲਿਸਟ ਅਤੇ ਗੱਲਬਾਤ ਵਿੰਡੋਜ਼ ਵਿੱਚ ਸੰਪਰਕਾਂ ਲਈ ਅਵਤਾਰ ਵੇਖਾਏ ਜਾਣ।"
 
-#: ../data/empathy.schemas.in.h:80
-msgid "Whether or not to show contacts that are offline in the contact list."
+#: ../data/empathy.schemas.in.h:81
+#| msgid ""
+#| "Whether or not to show contacts that are offline in the contact list."
+msgid "Whether to show contacts that are offline in the contact list."
 msgstr "ਕੀ ਸੰਪਰਕ, ਜੋ ਕਿ ਆਫਲਾਈਨ ਹਨ, ਸੰਪਰਕ ਲਿਸਟ ਵਿੱਚ ਵੇਖਾਏ ਜਾਣ"
 
-#: ../data/empathy.schemas.in.h:81
-msgid "Whether or not to show popup notifications when away or busy."
+#: ../data/empathy.schemas.in.h:82
+#| msgid "Whether or not to show popup notifications when away or busy."
+msgid "Whether to show popup notifications when away or busy."
 msgstr "ਕੀ ਪੋਪਅੱਪ ਨੋਟੀਫਿਕੇਸ਼ਨ ਵੇਖਾਏ ਜਾਣ, ਜਦੋਂ ਦੂਰ ਰੁੱਝੇ ਹੋਵੋ"
 
-#: ../data/empathy.schemas.in.h:82
-msgid "Whether or not to show the contact list in chat rooms."
-msgstr "ਕੀ ਗਲੱਬਾਤ ਰੂਮ ਵਿੱਚ ਸੰਪਰਕ ਲਿਸਟ ਵੇਖਣੀ ਹੈ ਜਾਂ ਨਹੀਂ।"
-
 #: ../data/empathy.schemas.in.h:83
-msgid ""
-"Whether or not to show the message dialog about closing the main window with "
-"the 'x' button in the title bar."
-msgstr "ਕੀ ਟਾਈਟਲ ਬਾਰ ਵਿੱਚ 'x' ਬਟਨ ਦਬਾਉਣ ਨਾਲ ਮੁੱਖ ਵਿੰਡੋ ਬੰਦ ਕਰਨ ਬਾਰੇ ਸੁਨੇਹਾ ਡਾਈਲਾਗ ਵੇਖਾਇਆ ਜਾਵੇ।"
+#| msgid ""
+#| "Whether or not to show avatars for contacts in the contact list and chat "
+#| "windows."
+msgid "Whether to show protocols for contacts in the contact list."
+msgstr "ਕੀ ਸੰਪਰਕ ਲਿਸਟ ਵਿੱਚ ਸੰਪਰਕਾਂ ਲਈ ਪਰੋਟੋਕਾਲ ਵੇਖਾਏ ਜਾਣ।"
 
 #: ../data/empathy.schemas.in.h:84
-msgid "Whether to show the contact list in compact mode or not."
-msgstr "ਕੀ ਸੰਪਰਕ ਲਿਸਟ ਨੂੰ ਸੰਖੇਪ ਮੋਡ ਵਿੱਚ ਵੇਖਣਾ ਹੈ।"
+#| msgid "Whether or not to show the contact list in chat rooms."
+msgid "Whether to show the contact list in chat rooms."
+msgstr "ਕੀ ਗਲੱਬਾਤ ਰੂਮ ਵਿੱਚ ਸੰਪਰਕ ਲਿਸਟ ਵੇਖਣੀ ਹੈ।"
 
 #: ../data/empathy.schemas.in.h:85
-msgid "Whether to use the theme for chat rooms or not."
-msgstr "ਕੀ ਗੱਲਬਾਤ ਰੂਮ ਲਈ ਥੀਮ ਵਰਤਣਾ ਹੈ।"
+#| msgid "Whether to show the contact list in compact mode or not."
+msgid "Whether to show the contact list in compact mode."
+msgstr "ਕੀ ਸੰਪਰਕ ਲਿਸਟ ਨੂੰ ਸੰਖੇਪ ਮੋਡ ਵਿੱਚ ਵੇਖਣਾ ਹੈ।"
 
 #: ../data/empathy.schemas.in.h:86
+#| msgid ""
+#| "Whether or not to show the message dialog about closing the main window "
+#| "with the 'x' button in the title bar."
 msgid ""
-"Which criterium to use when sorting the contact list. Default is to use sort "
-"by the contact's name with the value \"name\". A value of \"state\" will "
-"sort the contact list by state."
+"Whether to show the message dialog about closing the main window with the "
+"'x' button in the title bar."
+msgstr "ਕੀ ਟਾਈਟਲ ਬਾਰ ਵਿੱਚ 'x' ਬਟਨ ਦਬਾਉਣ ਨਾਲ ਮੁੱਖ ਵਿੰਡੋ ਬੰਦ ਕਰਨ ਬਾਰੇ ਸੁਨੇਹਾ ਡਾਈਲਾਗ ਵੇਖਾਇਆ ਜਾਵੇ।"
+
+#: ../data/empathy.schemas.in.h:87
+#| msgid "Whether to use the theme for chat rooms or not."
+msgid "Whether to use the theme for chat rooms."
+msgstr "ਕੀ ਗੱਲਬਾਤ ਰੂਮ ਲਈ ਥੀਮ ਵਰਤਣਾ ਹੈ।"
+
+#: ../data/empathy.schemas.in.h:88
+#| msgid ""
+#| "Which criterium to use when sorting the contact list. Default is to use "
+#| "sort by the contact's name with the value \"name\". A value of \"state\" "
+#| "will sort the contact list by state."
+msgid ""
+"Which criterion to use when sorting the contact list. Default is to sort by "
+"the contact's name with the value \"name\". A value of \"state\" will sort "
+"the contact list by state."
 msgstr ""
 "ਜਦੋਂ ਸੰਪਰਕ ਲਿਸਟ ਲੜੀਬੱਧ ਕਰਨੀ ਹੋਵੇ ਤਾਂ ਕਿਹੜਾ ਮਾਪ-ਢੰਡ ਵਰਤਣਾ ਹੈ। ਲੜੀਬੱਧ ਕਰਨ ਲਈ ਡਿਫਾਲਟ ਸੰਪਰਕ "
 "ਦੇ ਨਾਂ ਨਾਲ \"name (ਨਾਂ)\" ਹੈ। \"state (ਹਾਲਤ)\" ਨੂੰ ਸੰਪਰਕ ਦੀ ਹਾਲਤ ਮੁਤਾਬਕ ਲੜੀਬੱਧ ਕਰੋ"
 
-#: ../libempathy/empathy-account.c:1158
-msgid "Can't set an empty display name"
-msgstr "ਖਾਲੀ ਡਿਸਪਲੇਅ ਨਾਂ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
-
-#: ../libempathy/empathy-ft-handler.c:839
+#: ../libempathy/empathy-ft-handler.c:840
 msgid "The hash of the received file and the sent one do not match"
 msgstr "ਮਿਲੀ ਫਾਇਲ ਅਤੇ ਭੇਜੀ ਦਾ ਹੈਸ਼ ਰਲਦਾ ਨਹੀਂ ਹੈ"
 
-#: ../libempathy/empathy-ft-handler.c:1099
+#: ../libempathy/empathy-ft-handler.c:1100
 msgid "File transfer not supported by remote contact"
 msgstr "ਰਿਮੋਟ ਸੰਪਰਕ ਵਲੋਂ ਫਾਇਲ ਟਰਾਂਸਫਰ ਸਹਾਇਕ ਨਹੀਂ"
 
-#: ../libempathy/empathy-ft-handler.c:1157
+#: ../libempathy/empathy-ft-handler.c:1158
 msgid "The selected file is not a regular file"
 msgstr "ਚੁਣੀ ਫਾਇਲ ਨਿਯਮਤ ਫਾਇਲ ਨਹੀਂ ਹੈ"
 
-#: ../libempathy/empathy-ft-handler.c:1166
+#: ../libempathy/empathy-ft-handler.c:1167
 msgid "The selected file is empty"
 msgstr "ਚੁਣੀ ਫਾਇਲ ਖਾਲੀ ਹੈ"
 
-#: ../libempathy/empathy-tp-contact-list.c:844 ../src/empathy.c:285
+#: ../libempathy/empathy-tp-contact-list.c:834 ../src/empathy.c:293
 msgid "People nearby"
 msgstr "ਨੇੜਲੇ ਲੋਕ"
 
@@ -468,41 +531,97 @@ msgstr "ਫਾਇਲ ਸੰਚਾਰ ਦੀ ਕੋਸ਼ਿਸ਼ ਦੌਰਾ�
 msgid "The other participant is unable to transfer the file"
 msgstr "ਹੋਰ ਯੋਗਦਾਨੀ ਫਾਇਲ ਸੰਚਾਰ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
-#: ../libempathy/empathy-tp-file.c:417
+#: ../libempathy/empathy-tp-file.c:417 ../libempathy/empathy-utils.c:314
 msgid "Unknown reason"
 msgstr "ਅਣਜਾਣ ਕਾਰਨ"
 
-#: ../libempathy/empathy-utils.c:235
+#: ../libempathy/empathy-utils.c:238
 msgid "Available"
 msgstr "ਉਪਲੱਬਧ"
 
-#: ../libempathy/empathy-utils.c:237
+#: ../libempathy/empathy-utils.c:240
 msgid "Busy"
 msgstr "ਰੁਝੇ"
 
-#: ../libempathy/empathy-utils.c:240
+#: ../libempathy/empathy-utils.c:243
 msgid "Away"
 msgstr "ਦੂਰ"
 
-#: ../libempathy/empathy-utils.c:242
+#: ../libempathy/empathy-utils.c:245
 msgid "Hidden"
 msgstr "ਓਹਲੇ"
 
-#: ../libempathy/empathy-utils.c:244
+#: ../libempathy/empathy-utils.c:247
 msgid "Offline"
 msgstr "ਆਫਲਾਈਨ"
 
-#: ../libempathy/empathy-utils.c:380 ../src/empathy-import-mc4-accounts.c:104
-#| msgid "People nearby"
+#: ../libempathy/empathy-utils.c:286
+#| msgid "No reason was specified"
+msgid "No reason specified"
+msgstr "ਕੋਈ ਕਾਰਨ ਨਹੀਂ ਦਿੱਤਾ"
+
+#: ../libempathy/empathy-utils.c:288
+#| msgid "%s has disconnected"
+msgid "User requested disconnect"
+msgstr "ਯੂਜ਼ਰ ਨੇ ਡਿਸ-ਕੁਨੈਕਟ ਹੋਣ ਦੀ ਮੰਗ ਕੀਤੀ"
+
+#: ../libempathy/empathy-utils.c:290
+msgid "Network error"
+msgstr "ਨੈੱਟਵਰਕ ਗਲਤੀ"
+
+#: ../libempathy/empathy-utils.c:292
+msgid "Authentication failed"
+msgstr "ਪਰਮਾਣਕਿਤਾ ਫੇਲ੍ਹ ਹੈ"
+
+#: ../libempathy/empathy-utils.c:294
+msgid "Encryption error"
+msgstr "ਇੰਕ੍ਰਿਪਸ਼ਨ ਗਲਤੀ"
+
+#: ../libempathy/empathy-utils.c:296
+msgid "Name in use"
+msgstr "ਵਰਤਣ ਲਈ ਨਾਂ"
+
+#: ../libempathy/empathy-utils.c:298
+msgid "Certificate not provided"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਨਹੀਂ ਦਿੱਤਾ"
+
+#: ../libempathy/empathy-utils.c:300
+msgid "Certificate untrusted"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਬੇਭਰੋਸੇਯੋਗ"
+
+#: ../libempathy/empathy-utils.c:302
+msgid "Certificate expired"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਦੀ ਮਿਆਦ ਪੁੱਗੀ"
+
+#: ../libempathy/empathy-utils.c:304
+msgid "Certificate not activated"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
+
+#: ../libempathy/empathy-utils.c:306
+msgid "Certificate hostname mismatch"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਹੋਸਟ-ਨਾਂ ਨਹੀਂ ਮਿਲਦਾ"
+
+#: ../libempathy/empathy-utils.c:308
+msgid "Certificate fingerprint mismatch"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਫਿੰਗਰ-ਪਰਿੰਟ ਮਿਲਦਾ ਨਹੀਂ"
+
+#: ../libempathy/empathy-utils.c:310
+msgid "Certificate self-signed"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਖੁਦ-ਦਸਤਖਤੀ ਹੈ"
+
+#: ../libempathy/empathy-utils.c:312
+msgid "Certificate error"
+msgstr "ਸਰਟੀਫਿਕੇਟ ਗਲਤੀ"
+
+#: ../libempathy/empathy-utils.c:424 ../src/empathy-import-mc4-accounts.c:104
 msgid "People Nearby"
 msgstr "ਨੇੜਲੇ ਲੋਕ"
 
-#: ../libempathy/empathy-utils.c:385
-#| msgid "Use _Yahoo Japan"
+#: ../libempathy/empathy-utils.c:429
 msgid "Yahoo! Japan"
 msgstr "ਯਾਹੂ! ਜਾਪਾਨ"
 
-#: ../libempathy/empathy-utils.c:386
+#: ../libempathy/empathy-utils.c:430
 msgid "Facebook Chat"
 msgstr "ਫੇਸਬੁੱਕ ਚੈਟ"
 
@@ -552,23 +671,67 @@ msgstr[1] "%d ਮਹੀਨੇ ਪਹਿਲਾਂ"
 msgid "in the future"
 msgstr "ਭਵਿੱਖ ਵਿੱਚ"
 
-#: ../libempathy-gtk/empathy-account-chooser.c:424
+#: ../libempathy-gtk/empathy-account-chooser.c:450
 msgid "All"
 msgstr "ਸਭ"
 
-#: ../libempathy-gtk/empathy-account-widget.c:430
-#: ../libempathy-gtk/empathy-account-widget.c:486
+#: ../libempathy-gtk/empathy-account-widget.c:527
+#: ../libempathy-gtk/empathy-account-widget.c:583
 #, c-format
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1264
+#: ../libempathy-gtk/empathy-account-widget.c:1320
+#| msgid "_Join"
+msgid "L_og in"
+msgstr "ਲਾਗਇਨ(_o)"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1387
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
+#: ../src/empathy-chatrooms-window.ui.h:1
+#: ../src/empathy-new-chatroom-dialog.ui.h:1
+msgid "Account:"
+msgstr "ਅਕਾਊਂਟ:"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1398
 msgid "Enabled"
 msgstr "ਚਾਲੂ"
 
+#: ../libempathy-gtk/empathy-account-widget.c:1460
+msgid "This account already exists on the server"
+msgstr "ਇਹ ਅਕਾਊਂਟ ਸਰਵਰ ਉੱਤੇ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1463
+#| msgid "_Create a new account"
+msgid "Create a new account on the server"
+msgstr "ਸਰਵਰ ਉੱਤੇ ਨਵਾਂ ਅਕਾਊਂਟ ਬਣਾਓ"
+
+#. To translators: The first parameter is the login id and the
+#. * second one is the server. The resulting string will be something
+#. * like: "MyUserName on chat.freenode.net".
+#. * You should reverse the order of these arguments if the
+#. * server should come before the login id in your locale.
+#: ../libempathy-gtk/empathy-account-widget.c:1846
+#, c-format
+msgid "%1$s on %2$s"
+msgstr "%2$s ਉੱਤੇ %1$s"
+
+#. To translators: The parameter is the protocol name. The resulting
+#. * string will be something like: "Jabber Account"
+#: ../libempathy-gtk/empathy-account-widget.c:1864
+#, c-format
+msgid "%s Account"
+msgstr "%s ਅਕਾਊਂਟ"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1868
+msgid "New account"
+msgstr "ਨਵਾਂ ਅਕਾਊਂਟ"
+
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> MyScreenName</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> MyScreenName</span>"
+msgid "<b>Example:</b> MyScreenName"
+msgstr "<b>ਜਿਵੇਂ:</b> MyScreenName"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:2
 #: ../libempathy-gtk/empathy-account-widget-generic.ui.h:1
@@ -587,7 +750,7 @@ msgstr "ਤਕਨੀਕੀ"
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:14
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
 msgid "Pass_word:"
 msgstr "ਪਾਸਵਰਡ(_w):"
@@ -625,8 +788,9 @@ msgstr "ਸਰਵਰ(_S):"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:1
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> username</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ ਕਿ:</b> username</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> username</span>"
+msgid "<b>Example:</b> username"
+msgstr "<b>ਜਿਵੇਂ ਕਿ:</b> username"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
@@ -643,8 +807,9 @@ msgid "What is your GroupWise password?"
 msgstr "ਤੁਹਾਡਾ ਗਰੁੱਪਵਾਈਜ਼ ਪਾਸਵਰਡ ਕੀ ਹੈ?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> 123456789</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> 123456789</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> 123456789</span>"
+msgid "<b>Example:</b> 123456789"
+msgstr "<b>ਜਿਵੇਂ:</b> 123456789"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:3
 msgid "ICQ _UIN:"
@@ -660,16 +825,54 @@ msgstr "ਤੁਹਾਡਾ ICQ ਪਾਸਵਰਡ ਕੀ ਹੈ?"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
-msgid "_Charset:"
-msgstr "ਅੱਖਰ-ਸੈੱਟ(_C):"
+#| msgid "_Charset:"
+msgid "_Character set:"
+msgstr "ਅੱਖਰ ਸੈੱਟ(_C):"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.c:244
 msgid "New Network"
 msgstr "ਨਵਾਂ ਨੈੱਟਵਰਕ"
 
+#: ../libempathy-gtk/empathy-account-widget-sip.c:184
+#: ../libempathy-gtk/empathy-account-widget-sip.c:217
+#| msgid "_About"
+msgid "Auto"
+msgstr "ਆਟੋ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:187
+msgid "UDP"
+msgstr "UDP"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:190
+msgid "TCP"
+msgstr "TCP"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:193
+msgid "TLS"
+msgstr "TLS"
+
+#. translators: this string is very specific to SIP's internal; maybe
+#. * best to keep the English version.
+#: ../libempathy-gtk/empathy-account-widget-sip.c:222
+#| msgid "Western"
+msgid "Register"
+msgstr "ਰਜਿਸਟਰ"
+
+#. translators: this string is very specific to SIP's internal; maybe
+#. * best to keep the English version.
+#: ../libempathy-gtk/empathy-account-widget-sip.c:227
+msgid "Options"
+msgstr "ਚੋਣਾਂ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.c:230
+#| msgid "No"
+msgid "None"
+msgstr "ਕੋਈ ਨਹੀਂ"
+
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:1
-msgid "Charset:"
-msgstr "ਅੱਖਰਸੈੱਟ:"
+#| msgid "Charset:"
+msgid "Character set:"
+msgstr "ਅੱਖਰ ਸੈੱਟ:"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:2
 msgid "Network"
@@ -700,12 +903,14 @@ msgid "Servers"
 msgstr "ਸਰਵਰ"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> user@gmail.com</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> user@gmail.com</span>"
+msgid "<b>Example:</b> user@gmail.com"
+msgstr "<b>ਜਿਵੇਂ:</b> user@gmail.com"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:2
-msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> user@jabber.org</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> user@jabber.org</span>"
+msgid "<b>Example:</b> user@jabber.org"
+msgstr "<b>ਜਿਵੇਂ:</b> user@jabber.org"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
 msgid "Override server settings"
@@ -756,20 +961,23 @@ msgid "_Ignore SSL certificate errors"
 msgstr "SSL ਸਰਟੀਫਿਕੇਟ ਗਲਤੀਆਂ ਅਣਡਿੱਠੀਆਂ(_I)"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> user@hotmail.com</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> user@hotmail.com</span>"
+msgid "<b>Example:</b> user@hotmail.com"
+msgstr "<b>ਜਿਵੇਂ:</b> user@hotmail.com"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:5
+#| msgid "What is your Windows Live password?"
+msgid "What is your Windows Live ID?"
+msgstr "ਤੁਹਾਡਾ ਵਿੰਡੋਜ਼ ਲਾਈਵ ID ਕੀ ਹੈ?"
+
+#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
 msgid "What is your Windows Live password?"
 msgstr "ਤੁਹਾਡਾ ਵਿੰਡੋਜ਼ ਲਾਈਵ ਪਾਸਵਰਡ ਕੀ ਹੈ?"
 
-#: ../libempathy-gtk/empathy-account-widget-msn.ui.h:6
-msgid "What is your Windows Live user name?"
-msgstr "ਤੁਹਾਡਾ ਵਿੰਡੋਜ਼ ਲਾਈਵ ਯੂਜ਼ਰ ਨਾਂ ਕੀ ਹੈ?"
-
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
-msgid "_Email:"
-msgstr "ਈਮੇਲ(_E):"
+#| msgid "_Email:"
+msgid "_E-mail address:"
+msgstr "ਈਮੇਲ ਐਡਰੈੱਸ(_E):"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:3
 msgid "_First Name:"
@@ -792,37 +1000,119 @@ msgid "_Published Name:"
 msgstr "ਪਰਕਾਸ਼ਿਤ ਕੀਤਾ ਨਾਂ(_P):"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:1
-msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
-msgstr "<span size=\"small\"><b>ਜਿਵੇਂ:</b> user@my.sip.server</span>"
+#| msgid "<span size=\"small\"><b>Example:</b> user@my.sip.server</span>"
+msgid "<b>Example:</b> user@my.sip.server"
+msgstr "<b>ਜਿਵੇਂ:</b> user@my.sip.server"
 
-#. look up the DNS SRV record at the service's domain for the host name of a STUN server.
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:3
+#| msgid "Authentication failed"
+msgid "Authentication username:"
+msgstr "ਪਰਮਾਣਕਿਤ ਯੂਜ਼ਰਨਾਂ:"
+
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:4
-msgid "Discover STUN"
-msgstr "STUN ਖੋਜ"
+#| msgid "Discover STUN"
+msgid "Discover Binding"
+msgstr "ਬਾਈਡਿੰਗ ਖੋਜ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:5
+msgid "Discover the STUN server automatically"
+msgstr ""
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:6
+msgid "Hostname of the proxy for outbound requests."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:7
+msgid "Interval (seconds)"
+msgstr "ਅੰਤਰਾਲ (ਸਕਿੰਟ)"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:8
+msgid "Keep-Alive Options"
+msgstr "ਜਾਰੀ ਰੱਖਣ ਚੋਣਾਂ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:9
+msgid ""
+"Look up the DNS SRV record at the service's domain for the host name of a "
+"STUN server."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:10
+msgid "Loose Routing"
+msgstr "ਹਲਕਾ ਰੂਟਿੰਗ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:11
+msgid "Mechanism:"
+msgstr "ਫੰਘ:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:12
+msgid "Miscellaneous Options"
+msgstr "ਫੁਟਕਲ ਚੋਣਾਂ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:13
+msgid "NAT Traversal Options"
+msgstr "NAT ਟਰਾਂਸਵਰਸਲ ਚੋਣਾਂ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:15
+msgid "Port of the proxy for outbound requests."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:16
+#| msgid "_Port:"
+msgid "Port:"
+msgstr "ਪੋਰਟ:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:17
+msgid "Proxy Options"
+msgstr "ਪਰਾਕਸੀ ਚੋਣਾਂ"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:18
 msgid "STUN Server:"
 msgstr "STUN ਸਰਵਰ:"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:7
-msgid "STUN port:"
-msgstr "STUN ਪੋਰਟ:"
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:19
+#| msgid "_Server:"
+msgid "Server:"
+msgstr "ਸਰਵਰ:"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:20
+msgid ""
+"The username for SIP authentication, if different from the SIP URI\n"
+"username."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:22
+#| msgid "STUN port:"
+msgid "Transport:"
+msgstr "ਟਰਾਂਸਪੋਰਟ:"
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:23
+msgid ""
+"Update the registration binding if the external address for the client is "
+"discovered to be different from the local binding."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:24
+msgid ""
+"Use the loose routing behavior and the Route header as recommended in RFC "
+"3261."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:25
 msgid "What is your SIP account password?"
 msgstr "ਤੁਹਾਡਾ SIP ਅਕਾਊਂਟ ਪਾਸਵਰਡ ਕੀ ਹੈ?"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:9
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:26
 msgid "What is your SIP login ID?"
 msgstr "ਤੁਹਾਡਾ SIP ਲਾਗਇਨ ID ਕੀ ਹੈ?"
 
-#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-sip.ui.h:27
 msgid "_Username:"
 msgstr "ਯੂਜ਼ਰ ਨਾਂ(_U):"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
-msgid "Use _Yahoo Japan"
-msgstr "ਯਾਹੂ ਜਾਪਾਨ ਵਰਤੋਂ(_Y)"
+#| msgid "Use _Yahoo Japan"
+msgid "Use _Yahoo! Japan"
+msgstr "ਯਾਹੂ! ਜਾਪਾਨ ਵਰਤੋਂ(_Y)"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "What is your Yahoo! ID?"
@@ -833,12 +1123,14 @@ msgid "What is your Yahoo! password?"
 msgstr "ਤੁਹਾਡਾ ਯਾਹੂ! ਪਾਸਵਰਡ ਕੀ ਹੈ?"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
-msgid "Yahoo I_D:"
-msgstr "ਯਾਹੂ I_D:"
+#| msgid "Yahoo I_D:"
+msgid "Yahoo! I_D:"
+msgstr "ਯਾਹੂ! I_D:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
-msgid "_Ignore conference and chatroom invitations"
-msgstr "ਕਨਫਰੰਸ ਅਤੇ ਗੱਲਬਾਤ-ਰੂਮ ਸੱਦੇ ਅਣਡਿੱਠੇ(_I)"
+#| msgid "_Ignore conference and chatroom invitations"
+msgid "_Ignore conference and chat room invitations"
+msgstr "ਕਨਫਰੰਸ ਅਤੇ ਗੱਲਬਾਤ ਰੂਮ ਸੱਦੇ ਅਣਡਿੱਠੇ(_I)"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
 msgid "_Room List locale:"
@@ -850,94 +1142,170 @@ msgid "Couldn't convert image"
 msgstr "ਚਿੱਤਰ ਨਾ ਬਦਲੋ"
 
 #: ../libempathy-gtk/empathy-avatar-chooser.c:450
-msgid "None of the accepted image formats is supported on your system"
+#| msgid "None of the accepted image formats is supported on your system"
+msgid "None of the accepted image formats are supported on your system"
 msgstr "ਕੋਈ ਵੀ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਚਿੱਤਰ ਫਾਰਮੈਟ ਤੁਹਾਡੇ ਸਿਸਟਮ ਵਲੋਂ ਸਹਾਇਕ ਨਹੀਂ ਹੈ।"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:933
+#: ../libempathy-gtk/empathy-avatar-chooser.c:915
 msgid "Select Your Avatar Image"
 msgstr "ਆਪਣਾ ਅਵਤਾਰ ਲੇਖ ਚੁਣੋ"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:936
+#: ../libempathy-gtk/empathy-avatar-chooser.c:918
 msgid "No Image"
 msgstr "ਕੋਈ ਚਿੱਤਰ ਨਹੀਂ"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:998
+#: ../libempathy-gtk/empathy-avatar-chooser.c:980
 msgid "Images"
 msgstr "ਚਿੱਤਰ"
 
-#: ../libempathy-gtk/empathy-avatar-chooser.c:1002
+#: ../libempathy-gtk/empathy-avatar-chooser.c:984
 msgid "All Files"
 msgstr "ਸਭ ਫਾਇਲਾਂ"
 
-#: ../libempathy-gtk/empathy-avatar-image.c:324
+#: ../libempathy-gtk/empathy-avatar-image.c:327
 msgid "Click to enlarge"
 msgstr "ਵੱਡਾ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ"
 
-#: ../libempathy-gtk/empathy-chat.c:186
+#: ../libempathy-gtk/empathy-chat.c:199
 msgid "Failed to reconnect this chat"
 msgstr "ਇਸ ਗੱਲ ਨਾਲ ਫੇਰ-ਕੁਨੈਕਟ ਹੋਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: ../libempathy-gtk/empathy-chat.c:403
-msgid "Unsupported command"
-msgstr "ਗ਼ੈਰ-ਸਹਾਇਕ ਕਮਾਂਡ"
+#: ../libempathy-gtk/empathy-chat.c:621
+#| msgid "_Invite to chatroom"
+msgid "Failed to join chat room"
+msgstr "ਗੱਲਬਾਤ-ਰੂਮ ਜੁਆਇੰਨ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: ../libempathy-gtk/empathy-chat.c:535
+#: ../libempathy-gtk/empathy-chat.c:639
+#| msgid "Failed to reconnect this chat"
+msgid "Failed to open private chat"
+msgstr "ਪ੍ਰਾਈਵੇਟ ਗੱਲਬਾਤ ਖੋਲ੍ਹਣ ਲਈ ਫੇਲ੍ਹ"
+
+#: ../libempathy-gtk/empathy-chat.c:678
+msgid "Topic not supported on this conversation"
+msgstr "ਇਹ ਗੱਲਬਾਤ ਲਈ ਵਿਸ਼ਾ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
+
+#: ../libempathy-gtk/empathy-chat.c:684
+msgid "You are not allowed to change the topic"
+msgstr "ਤੁਹਾਨੂੰ ਵਿਸ਼ਾ ਬਦਲਣ ਦਾ ਅਧਿਕਾਰ ਨਹੀਂ ਹੈ"
+
+#: ../libempathy-gtk/empathy-chat.c:813
+msgid "/clear: clear all messages from the current conversation"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:816
+msgid "/topic <topic>: set the topic of the current conversation"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:819
+msgid "/join <chat room ID>: join a new chat room"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:822
+msgid "/j <chat room ID>: join a new chat room"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:825
+msgid "/query <contact ID> [<message>]: open a private chat"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:828
+msgid "/msg <contact ID> <message>: open a private chat"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:831
+msgid "/nick <nickname>: change your nickname on the current server"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:834
+msgid "/me <message>: send an ACTION message to the current conversation"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:837
+msgid ""
+"/say <message>: send <message> to the current conversation. This is used to "
+"send a message starting with a '/'. For example: \"/say /join is used to "
+"join a new chat room\""
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:842
+msgid ""
+"/help [<command>]: show all supported commands. If <command> is defined, "
+"show its usage."
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:852, c-format
+#| msgid ""
+#| "\n"
+#| "Message: %s"
+msgid "Usage: %s"
+msgstr "ਵਰਤੋਂ: %s"
+
+#: ../libempathy-gtk/empathy-chat.c:881
+#| msgid "Unknown reason"
+msgid "Unknown command"
+msgstr "ਅਣਜਾਣ ਕਮਾਂਡ"
+
+#: ../libempathy-gtk/empathy-chat.c:1002
+msgid "Unknown command; see /help for the available commands"
+msgstr ""
+
+#: ../libempathy-gtk/empathy-chat.c:1141
 msgid "offline"
 msgstr "ਆਫਲਾਈਨ"
 
-#: ../libempathy-gtk/empathy-chat.c:538
+#: ../libempathy-gtk/empathy-chat.c:1144
 msgid "invalid contact"
 msgstr "ਗਲਤ ਸੰਪਰਕ"
 
-#: ../libempathy-gtk/empathy-chat.c:541
+#: ../libempathy-gtk/empathy-chat.c:1147
 msgid "permission denied"
 msgstr "ਅਧਿਕਾਰ ਪਾਬੰਦੀ"
 
-#: ../libempathy-gtk/empathy-chat.c:544
+#: ../libempathy-gtk/empathy-chat.c:1150
 msgid "too long message"
 msgstr "ਬਹੁਤ ਲੰਮਾ ਸੁਨੇਹਾ"
 
-#: ../libempathy-gtk/empathy-chat.c:547
+#: ../libempathy-gtk/empathy-chat.c:1153
 msgid "not implemented"
 msgstr "ਸਥਾਪਤ ਨਹੀਂ"
 
-#: ../libempathy-gtk/empathy-chat.c:550
+#: ../libempathy-gtk/empathy-chat.c:1156
 msgid "unknown"
 msgstr "ਅਣਜਾਣ"
 
-#: ../libempathy-gtk/empathy-chat.c:554
+#: ../libempathy-gtk/empathy-chat.c:1160
 #, c-format
 msgid "Error sending message '%s': %s"
 msgstr "ਸੁਨੇਹਾ '%s' ਭੇਜਣ ਦੌਰਾਨ ਗਲਤੀ: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:584
+#: ../libempathy-gtk/empathy-chat.c:1190
 #, c-format
 msgid "Topic set to: %s"
 msgstr "ਵਿਸ਼ਾ ਨਹੀਂ ਕੀਤਾ: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:586
+#: ../libempathy-gtk/empathy-chat.c:1192
 msgid "No topic defined"
 msgstr "ਕੋਈ ਵਿਸ਼ਾ ਨਹੀਂ ਦਿੱਤਾ"
 
-#: ../libempathy-gtk/empathy-chat.c:956
+#: ../libempathy-gtk/empathy-chat.c:1588
 msgid "(No Suggestions)"
 msgstr "(ਕੋਈ ਸੁਝਾਅ ਨਹੀਂ)"
 
-#: ../libempathy-gtk/empathy-chat.c:1010
+#: ../libempathy-gtk/empathy-chat.c:1642
 msgid "Insert Smiley"
 msgstr "ਚਿਹਰਾ ਸ਼ਾਮਲ ਕਰੋ"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:1028
-#: ../libempathy-gtk/empathy-ui-utils.c:1484
+#: ../libempathy-gtk/empathy-chat.c:1660
+#: ../libempathy-gtk/empathy-ui-utils.c:1657
 msgid "_Send"
 msgstr "ਭੇਜੋ(_S)"
 
-#: ../libempathy-gtk/empathy-chat.c:1062
+#: ../libempathy-gtk/empathy-chat.c:1694
 msgid "_Spelling Suggestions"
 msgstr "ਸਪੈਲਿੰਗ ਸੁਝਾਅ(_S)"
 
-#: ../libempathy-gtk/empathy-chat.c:1177
+#: ../libempathy-gtk/empathy-chat.c:1809
 #, c-format
 msgid "%s has disconnected"
 msgstr "%s ਡਿਸ-ਕੁਨੈਕਟ ਹੋ ਗਿਆ ਹੈ"
@@ -945,12 +1313,12 @@ msgstr "%s ਡਿਸ-ਕੁਨੈਕਟ ਹੋ ਗਿਆ ਹੈ"
 #. translators: reverse the order of these arguments
 #. * if the kicked should come before the kicker in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1184, c-format
-#| msgid "%s was kicked by %s"
+#: ../libempathy-gtk/empathy-chat.c:1816
+#, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%2$s ਨੇ %1$s ਨੂੰ ਕਿੱਕ ਮਾਰੀ"
 
-#: ../libempathy-gtk/empathy-chat.c:1187
+#: ../libempathy-gtk/empathy-chat.c:1819
 #, c-format
 msgid "%s was kicked"
 msgstr "%s ਨੂੰ ਕਿੱਕ ਮਾਰੀ"
@@ -958,17 +1326,17 @@ msgstr "%s ਨੂੰ ਕਿੱਕ ਮਾਰੀ"
 #. translators: reverse the order of these arguments
 #. * if the banned should come before the banner in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1195, c-format
-#| msgid "%s was banned by %s"
+#: ../libempathy-gtk/empathy-chat.c:1827
+#, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%2$s ਵਲੋਂ %1$s ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ"
 
-#: ../libempathy-gtk/empathy-chat.c:1198
+#: ../libempathy-gtk/empathy-chat.c:1830
 #, c-format
 msgid "%s was banned"
 msgstr "%s ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ"
 
-#: ../libempathy-gtk/empathy-chat.c:1202
+#: ../libempathy-gtk/empathy-chat.c:1834
 #, c-format
 msgid "%s has left the room"
 msgstr "%s ਨੇ ਰੂਮ ਛੱਡਿਆ"
@@ -978,61 +1346,81 @@ msgstr "%s ਨੇ ਰੂਮ ਛੱਡਿਆ"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1211
+#: ../libempathy-gtk/empathy-chat.c:1843
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
-#: ../libempathy-gtk/empathy-chat.c:1234
+#: ../libempathy-gtk/empathy-chat.c:1868
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s ਰੂਮ ਵਿੱਚ ਦਾਖਲ ਹੋਇਆ"
 
-#: ../libempathy-gtk/empathy-chat.c:1367 ../src/empathy-call-window.c:1277
+#: ../libempathy-gtk/empathy-chat.c:1893, c-format
+#| msgid "%s is now online."
+msgid "%s is now known as %s"
+msgstr "%s ਨੂੰ ਹੁਣ %s ਵਜੋਂ ਜਾਣਿਆ ਜਾਵੇਗਾ"
+
+#: ../libempathy-gtk/empathy-chat.c:2028 ../src/empathy-call-window.c:1537
 msgid "Disconnected"
 msgstr "ਕੁਨੈਕਸ਼ਨ ਖਤਮ"
 
-#: ../libempathy-gtk/empathy-chat.c:1803
+#: ../libempathy-gtk/empathy-chat.c:2555
+msgid "Wrong password; please try again:"
+msgstr "ਗਲਤ ਪਾਸਵਰਡ; ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜੀ:"
+
+#: ../libempathy-gtk/empathy-chat.c:2556
+msgid "Retry"
+msgstr "ਮੁੜ-ਕੋਸ਼ਿਸ਼"
+
+#: ../libempathy-gtk/empathy-chat.c:2561
+msgid "This room is protected by a password:"
+msgstr "ਇਹ ਰੂਮ ਪਾਸਵਰਡ ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ:"
+
+#: ../libempathy-gtk/empathy-chat.c:2562
+msgid "Join"
+msgstr "ਦਾਖਲ"
+
+#: ../libempathy-gtk/empathy-chat.c:2702
 msgid "Connected"
 msgstr "ਕੁਨੈਕਟ ਕੀਤਾ"
 
-#: ../libempathy-gtk/empathy-chat.c:1853
-#: ../libempathy-gtk/empathy-log-window.c:502
+#: ../libempathy-gtk/empathy-chat.c:2755
+#: ../libempathy-gtk/empathy-log-window.c:546
 msgid "Conversation"
 msgstr "ਗੱਲਬਾਤ"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:471
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:679
 msgid "Topic:"
 msgstr "ਵਿਸ਼ਾ:"
 
 #. Copy Link Address menu item
-#: ../libempathy-gtk/empathy-chat-text-view.c:316
-#: ../libempathy-gtk/empathy-theme-adium.c:276
+#: ../libempathy-gtk/empathy-chat-text-view.c:317
+#: ../libempathy-gtk/empathy-theme-adium.c:817
 msgid "_Copy Link Address"
 msgstr "ਲਿੰਕ ਐਡਰੈੱਸ ਕਾਪੀ ਕਰੋ(_C)"
 
 #. Open Link menu item
-#: ../libempathy-gtk/empathy-chat-text-view.c:323
-#: ../libempathy-gtk/empathy-theme-adium.c:284
+#: ../libempathy-gtk/empathy-chat-text-view.c:324
+#: ../libempathy-gtk/empathy-theme-adium.c:824
 msgid "_Open Link"
 msgstr "ਲਿੰਕ ਖੋਲ੍ਹੋ(_O)"
 
 #. Translators: timestamp displayed between conversations in
 #. * chat windows (strftime format string)
-#: ../libempathy-gtk/empathy-chat-text-view.c:421
+#: ../libempathy-gtk/empathy-chat-text-view.c:422
 msgid "%A %B %d %Y"
 msgstr "%A %d %B %Y"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:177
-#: ../libempathy-gtk/empathy-contact-dialogs.c:236
+#: ../libempathy-gtk/empathy-contact-dialogs.c:238
 msgid "Edit Contact Information"
 msgstr "ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਸੋਧ"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:287
+#: ../libempathy-gtk/empathy-contact-dialogs.c:289
 msgid "Personal Information"
 msgstr "ਨਿੱਜੀ ਜਾਣਕਾਰੀ"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:392
+#: ../libempathy-gtk/empathy-contact-dialogs.c:394
 msgid "New Contact"
 msgstr "ਨਵਾਂ ਸੰਪਰਕ"
 
@@ -1044,37 +1432,38 @@ msgstr "ਬਾਅਦ 'ਚ ਸੋਚੂ(_L)"
 msgid "Subscription Request"
 msgstr "ਮੈਂਬਰੀ ਮੰਗ"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1412
+#: ../libempathy-gtk/empathy-contact-list-view.c:1510
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "ਕੀ ਤੁਸੀਂ ਗਰੁੱਪ '%s' ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1414
+#: ../libempathy-gtk/empathy-contact-list-view.c:1512
 msgid "Removing group"
 msgstr "ਗਰੁੱਪ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1461
-#: ../libempathy-gtk/empathy-contact-list-view.c:1538
+#: ../libempathy-gtk/empathy-contact-list-view.c:1559
+#: ../libempathy-gtk/empathy-contact-list-view.c:1636
 msgid "_Remove"
 msgstr "ਹਟਾਓ(_R)"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1491
+#: ../libempathy-gtk/empathy-contact-list-view.c:1589
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "ਕੀ ਤੁਸੀਂ ਸੰਪਰਕ '%s' ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1493
+#: ../libempathy-gtk/empathy-contact-list-view.c:1591
 msgid "Removing contact"
 msgstr "ਸੰਪਰਕ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:195
-#: ../src/empathy-main-window.ui.h:11
-msgid "_Add Contact..."
+#: ../src/empathy-main-window.ui.h:14
+#| msgid "_Add Contact..."
+msgid "_Add Contact…"
 msgstr "ਸੰਪਰਕ ਸ਼ਾਮਲ(_A)..."
 
 #: ../libempathy-gtk/empathy-contact-menu.c:222
-#: ../src/empathy-main-window.ui.h:12
+#: ../src/empathy-main-window.ui.h:15
 msgid "_Chat"
 msgstr "ਗੱਲਬਾਤ(_C)"
 
@@ -1086,11 +1475,12 @@ msgstr "ਆਡੀਓ ਕਾਲ(_A)"
 #: ../libempathy-gtk/empathy-contact-menu.c:285
 msgctxt "menu item"
 msgid "_Video Call"
-msgstr "ਵੀਡਿਓ ਕਾਲ(_V)"
+msgstr "ਵਿਡੀਓ ਕਾਲ(_V)"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:324
-msgid "_View Previous Conversations"
-msgstr "ਪਿਛਲੀ ਗੱਲਬਾਤ ਵੇਖੋ(_V)"
+#: ../src/empathy-main-window.ui.h:26
+msgid "_Previous Conversations"
+msgstr "ਪਿਛਲੀ ਗੱਲਬਾਤ(_P)"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:346
 msgid "Send file"
@@ -1105,157 +1495,154 @@ msgid "Infor_mation"
 msgstr "ਜਾਣਕਾਰੀ(_m)"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:441
-#: ../src/empathy-chat-window.ui.h:10 ../src/empathy-main-window.ui.h:16
+#: ../src/empathy-chat-window.ui.h:11 ../src/empathy-main-window.ui.h:19
 msgid "_Edit"
 msgstr "ਸੋਧ(_E)"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:501
-msgid "Inviting to this room"
-msgstr "ਇਸ ਰੂਮ ਲਈ ਸੱਦਾ"
+#: ../libempathy-gtk/empathy-contact-menu.c:496
+#: ../src/empathy-chat-window.c:864
+#| msgid "Inviting to this room"
+msgid "Inviting you to this room"
+msgstr "ਇਸ ਰੂਮ ਲਈ ਤੁਹਾਨੂੰ ਸੱਦਾ"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:532
-msgid "_Invite to chatroom"
-msgstr "ਗੱਲਬਾਤ-ਰੂਮ ਲਈ ਸੱਦਾ(_I)"
+#: ../libempathy-gtk/empathy-contact-menu.c:527
+#| msgid "_Invite to chatroom"
+msgid "_Invite to chat room"
+msgstr "ਗੱਲਬਾਤ ਰੂਮ ਲਈ ਸੱਦਾ(_I)"
 
 #: ../libempathy-gtk/empathy-contact-selector.c:129
 msgid "Select a contact"
-msgstr "ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ"
+msgstr "ਸੰਪਰਕ ਚੁਣੋ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:447
+#: ../libempathy-gtk/empathy-contact-widget.c:449
 msgid "Save Avatar"
 msgstr "ਅਵਤਾਰ ਸੰਭਾਲੋ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:503
+#: ../libempathy-gtk/empathy-contact-widget.c:505
 msgid "Unable to save avatar"
 msgstr "ਅਵਤਾਰ ਸੰਭਾਲਣ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1000
+#: ../libempathy-gtk/empathy-contact-widget.c:1019
 msgid "Select"
 msgstr "ਚੁਣੋ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1009
-#: ../src/empathy-main-window.c:1019
+#: ../libempathy-gtk/empathy-contact-widget.c:1028
+#: ../src/empathy-main-window.c:1038
 msgid "Group"
 msgstr "ਗਰੁੱਪ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1260
+#: ../libempathy-gtk/empathy-contact-widget.c:1279
 msgid "Country ISO Code:"
 msgstr "ਦੇਸ਼ ISO ਕੋਡ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1262
+#: ../libempathy-gtk/empathy-contact-widget.c:1281
 msgid "Country:"
 msgstr "ਦੇਸ਼:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1264
+#: ../libempathy-gtk/empathy-contact-widget.c:1283
 msgid "State:"
 msgstr "ਹਾਲਤ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1266
+#: ../libempathy-gtk/empathy-contact-widget.c:1285
 msgid "City:"
 msgstr "ਸ਼ਹਿਰ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1268
+#: ../libempathy-gtk/empathy-contact-widget.c:1287
 msgid "Area:"
 msgstr "ਏਰੀਆ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1270
+#: ../libempathy-gtk/empathy-contact-widget.c:1289
 msgid "Postal Code:"
 msgstr "ਡਾਕ ਕੋਡ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1272
+#: ../libempathy-gtk/empathy-contact-widget.c:1291
 msgid "Street:"
 msgstr "ਗਲੀ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1274
+#: ../libempathy-gtk/empathy-contact-widget.c:1293
 msgid "Building:"
 msgstr "ਇਮਾਰਤ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1276
+#: ../libempathy-gtk/empathy-contact-widget.c:1295
 msgid "Floor:"
 msgstr "ਮੰਜ਼ਲ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1278
+#: ../libempathy-gtk/empathy-contact-widget.c:1297
 msgid "Room:"
 msgstr "ਘਰ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1280
+#: ../libempathy-gtk/empathy-contact-widget.c:1299
 msgid "Text:"
 msgstr "ਟੈਕਸਟ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1282
+#: ../libempathy-gtk/empathy-contact-widget.c:1301
 msgid "Description:"
 msgstr "ਵੇਰਵਾ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1284
+#: ../libempathy-gtk/empathy-contact-widget.c:1303
 msgid "URI:"
 msgstr "URI:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1286
+#: ../libempathy-gtk/empathy-contact-widget.c:1305
 msgid "Accuracy Level:"
 msgstr "ਸ਼ੁੱਧਤਾ ਲੈਵਲ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1288
+#: ../libempathy-gtk/empathy-contact-widget.c:1307
 msgid "Error:"
 msgstr "ਗਲਤੀ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1290
+#: ../libempathy-gtk/empathy-contact-widget.c:1309
 msgid "Vertical Error (meters):"
 msgstr "ਵਰਟੀਕਲ ਗਲਤੀ (ਮੀਟਰ):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1292
+#: ../libempathy-gtk/empathy-contact-widget.c:1311
 msgid "Horizontal Error (meters):"
 msgstr "ਹਰੀਜੱਟਲ ਗਲਤੀ (ਮੀਟਰ):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1294
+#: ../libempathy-gtk/empathy-contact-widget.c:1313
 msgid "Speed:"
 msgstr "ਗਤੀ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1296
+#: ../libempathy-gtk/empathy-contact-widget.c:1315
 msgid "Bearing:"
 msgstr "ਬੀਰਿੰਗ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1298
+#: ../libempathy-gtk/empathy-contact-widget.c:1317
 msgid "Climb Speed:"
 msgstr "ਚੜ੍ਹਨ ਗਤੀ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1300
+#: ../libempathy-gtk/empathy-contact-widget.c:1319
 msgid "Last Updated on:"
 msgstr "ਆਖਰੀ ਅੱਪਡੇਟ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1302
+#: ../libempathy-gtk/empathy-contact-widget.c:1321
 msgid "Longitude:"
 msgstr "ਲੰਬਕਾਰੀ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1304
+#: ../libempathy-gtk/empathy-contact-widget.c:1323
 msgid "Latitude:"
 msgstr "ਵਿਥਕਾਰ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1306
+#: ../libempathy-gtk/empathy-contact-widget.c:1325
 msgid "Altitude:"
 msgstr "ਉਚਾਈ:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1353
-msgid "<b>Location</b>"
-msgstr "<b>ਟਿਕਾਣਾ</b>"
+#: ../libempathy-gtk/empathy-contact-widget.c:1387
+#: ../src/empathy-preferences.ui.h:12
+msgid "Location"
+msgstr "ਟਿਕਾਣਾ"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1366
+#: ../libempathy-gtk/empathy-contact-widget.c:1403
 msgid "<b>Location</b>, "
 msgstr "<b>ਟਿਕਾਣਾ</b>, "
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1416
+#: ../libempathy-gtk/empathy-contact-widget.c:1453
 msgid "%B %e, %Y at %R UTC"
 msgstr "%R UTC %e %B %Y ਨੂੰ"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:1
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>ਟਿਕਾਣਾ</b> (date) ਨੂੰ\t"
-
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:1
-#: ../src/empathy-chatrooms-window.ui.h:1
-#: ../src/empathy-new-chatroom-dialog.ui.h:1
-msgid "Account:"
-msgstr "ਅਕਾਊਂਟ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
 msgid "Alias:"
@@ -1274,7 +1661,7 @@ msgid "Client:"
 msgstr "ਕਲਾਇਟ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:7
-#: ../src/empathy-main-window.c:1002
+#: ../src/empathy-main-window.c:1021
 msgid "Contact"
 msgstr "ਸੰਪਰਕ"
 
@@ -1283,11 +1670,12 @@ msgid "Contact Details"
 msgstr "ਸੰਪਰਕ ਵੇਰਵਾ"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:9
-msgid "Email:"
-msgstr "ਈਮੇਲ:"
+msgid "E-mail address:"
+msgstr "ਈਮੇਲ ਐਡਰੈੱਸ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:10
-msgid "Fullname:"
+#| msgid "Fullname:"
+msgid "Full name:"
 msgstr "ਪੂਰਾ ਨਾਂ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:11
@@ -1300,8 +1688,9 @@ msgid "Identifier:"
 msgstr "ਪਛਾਣਕਰਤਾ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
-msgid "Information requested..."
-msgstr "ਜਾਣਕਾਰੀ ਲੋੜੀਦੀ..."
+#| msgid "Information requested..."
+msgid "Information requested…"
+msgstr "ਜਾਣਕਾਰੀ ਮੰਗੀ ਗਈ..."
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:15
 msgid "OS:"
@@ -1320,35 +1709,36 @@ msgid "Version:"
 msgstr "ਵਰਜਨ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:18
-msgid "Web site:"
+#| msgid "Web site:"
+msgid "Website:"
 msgstr "ਵੈੱਬਸਾਈਟ:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:19
 msgid "_Add Group"
 msgstr "ਗਰੁੱਪ ਸ਼ਾਮਲ(_A)"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:281
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:280
 msgid "new server"
 msgstr "ਨਵਾਂ ਸਰਵਰ"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:508
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:507
 msgid "Server"
 msgstr "ਸਰਵਰ"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:523
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:522
 msgid "Port"
 msgstr "ਪੋਰਟ"
 
-#: ../libempathy-gtk/empathy-irc-network-dialog.c:536
+#: ../libempathy-gtk/empathy-irc-network-dialog.c:535
 msgid "SSL"
 msgstr "SSL"
 
-#: ../libempathy-gtk/empathy-log-window.c:495
-#: ../src/empathy-import-widget.c:321
+#: ../libempathy-gtk/empathy-log-window.c:539
+#: ../src/empathy-import-widget.c:310
 msgid "Account"
 msgstr "ਅਕਾਊਂਟ"
 
-#: ../libempathy-gtk/empathy-log-window.c:512
+#: ../libempathy-gtk/empathy-log-window.c:556
 msgid "Date"
 msgstr "ਮਿਤੀ"
 
@@ -1368,21 +1758,37 @@ msgstr "ਖੋਜ"
 msgid "_For:"
 msgstr "ਲਈ(_F):"
 
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:2
-msgid "C_all"
-msgstr "ਕਾਲ(_a)"
-
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:3
-msgid "C_hat"
-msgstr "ਗੱਲਬਾਤ(_h)"
-
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:4
+#: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:2
 msgid "Contact ID:"
 msgstr "ਸੰਪਰਕ ID:"
 
-#: ../libempathy-gtk/empathy-new-message-dialog.ui.h:5
+#. add chat button
+#: ../libempathy-gtk/empathy-new-message-dialog.c:144
+msgid "C_hat"
+msgstr "ਗੱਲਬਾਤ(_h)"
+
+#. Tweak the dialog
+#: ../libempathy-gtk/empathy-new-message-dialog.c:154
 msgid "New Conversation"
 msgstr "ਨਵੀਂ ਗੱਲਬਾਤ"
+
+#. add video toggle
+#: ../libempathy-gtk/empathy-new-call-dialog.c:188
+#| msgid "Send video"
+msgid "Send _Video"
+msgstr "ਵਿਡੀਓ ਭੇਜੋ(_V)"
+
+#. add chat button
+#: ../libempathy-gtk/empathy-new-call-dialog.c:196
+#: ../src/empathy-call-window.ui.h:17
+msgid "_Call"
+msgstr "ਕਾਲ ਕਰੋ(_C)"
+
+#. Tweak the dialog
+#: ../libempathy-gtk/empathy-new-call-dialog.c:206
+#| msgid "Call"
+msgid "New Call"
+msgstr "ਨਵੀਂ ਕਾਲ"
 
 #. COL_STATUS_TEXT
 #. COL_STATE_ICON_NAME
@@ -1390,35 +1796,38 @@ msgstr "ਨਵੀਂ ਗੱਲਬਾਤ"
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
-#: ../libempathy-gtk/empathy-presence-chooser.c:176
-#: ../libempathy-gtk/empathy-presence-chooser.c:212
-msgid "Custom Message..."
+#: ../libempathy-gtk/empathy-presence-chooser.c:167
+#: ../libempathy-gtk/empathy-presence-chooser.c:203
+#| msgid "Custom Message..."
+msgid "Custom Message…"
 msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹਾ..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:229
-#: ../libempathy-gtk/empathy-presence-chooser.c:231
-msgid "Edit Custom Messages..."
+#: ../libempathy-gtk/empathy-presence-chooser.c:220
+#: ../libempathy-gtk/empathy-presence-chooser.c:222
+#| msgid "Edit Custom Messages"
+msgid "Edit Custom Messages…"
 msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹੇ ਸੋਧੋ..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:330
+#: ../libempathy-gtk/empathy-presence-chooser.c:344
 msgid "Click to remove this status as a favorite"
 msgstr "ਇਹ ਹਾਲਤ ਨੂੰ ਪਸੰਦੀਦਾ ਵਜੋਂ ਹਟਾਉਣ ਲਈ ਕਲਿੱਕ ਕਰੋ"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:339
+#: ../libempathy-gtk/empathy-presence-chooser.c:353
 msgid "Click to make this status a favorite"
 msgstr "ਇਹ ਹਾਲਤ ਨੂੰ ਪਸੰਦੀਦਾ ਬਣਾਉਣ ਲਈ ਕਲਿੱਕ ਕਰੋ"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:373
+#: ../libempathy-gtk/empathy-presence-chooser.c:387
 msgid "Set status"
 msgstr "ਹਾਲਤ ਸੈੱਟ ਕਰੋ"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:794
+#: ../libempathy-gtk/empathy-presence-chooser.c:896
 msgid "Set your presence and current status"
 msgstr "ਆਪਣੀ ਮੌਜੂਦਗੀ ਅਤੇ ਮੌਜੂਦਾ ਹਾਲਤ ਸੈੱਟ ਕਰੋ"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1043
-msgid "Custom messages..."
+#: ../libempathy-gtk/empathy-presence-chooser.c:1083
+#| msgid "Custom messages..."
+msgid "Custom messages…"
 msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹੇ..."
 
 #: ../libempathy-gtk/empathy-sound.c:51
@@ -1439,7 +1848,7 @@ msgstr "ਸੰਪਰਕ ਕੁਨੈਕਟ ਹੋਇਆ"
 
 #: ../libempathy-gtk/empathy-sound.c:59
 msgid "Contact disconnected"
-msgstr "ਸੰਪਰਕ ਨੇ ਕੁਨੈਕਸ਼ਨ ਖਤਮ"
+msgstr "ਸੰਪਰਕ ਦਾ ਕੁਨੈਕਸ਼ਨ ਖਤਮ"
 
 #: ../libempathy-gtk/empathy-sound.c:61
 msgid "Connected to server"
@@ -1461,11 +1870,11 @@ msgstr "ਜਾ ਰਹੀ ਆਵਾਜ਼ ਕਾਲ"
 msgid "Voice call ended"
 msgstr "ਆਵਾਜ਼ ਕਾਲ ਖਤਮ ਕੀਤੀ"
 
-#: ../libempathy-gtk/empathy-status-preset-dialog.c:362
+#: ../libempathy-gtk/empathy-status-preset-dialog.c:364
 msgid "Enter Custom Message"
 msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹਾ ਦਿਓ"
 
-#: ../libempathy-gtk/empathy-status-preset-dialog.c:521
+#: ../libempathy-gtk/empathy-status-preset-dialog.c:523
 msgid "Edit Custom Messages"
 msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹੇ ਸੋਧੋ"
 
@@ -1493,15 +1902,15 @@ msgstr "ਸਾਫ਼"
 msgid "Blue"
 msgstr "ਨੀਲਾ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1386
+#: ../libempathy-gtk/empathy-ui-utils.c:1519
 msgid "Unable to open URI"
 msgstr "URI ਖੋਲ੍ਹਣ ਲਈ ਅਸਮਰੱਥ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1476
+#: ../libempathy-gtk/empathy-ui-utils.c:1649
 msgid "Select a file"
-msgstr "ਇੱਕ ਫਾਇਲ ਚੁਣੋ"
+msgstr "ਫਾਇਲ ਚੁਣੋ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1536
+#: ../libempathy-gtk/empathy-ui-utils.c:1709
 msgid "Select a destination"
 msgstr "ਟਿਕਾਣਾ ਚੁਣੋ"
 
@@ -1672,75 +2081,43 @@ msgstr "ਦੱਖਣੀ"
 msgid "Vietnamese"
 msgstr "ਵੀਅਤਨਾਮੀ"
 
-#.
-#. * vim: sw=2 ts=8 cindent noai bs=2
-#.
-#: ../megaphone/data/GNOME_Megaphone_Applet.schemas.in.h:1
-msgid "The contact to display in the applet. Empty means no contact is displayed."
-msgstr "ਐਪਲਿਟ ਵਿੱਚ ਵੇਖਾਉਣ ਲਈ ਸੰਪਰਕ। ਖਾਲੀ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਕੋਈ ਵੀ ਸੰਪਰਕ ਨਹੀਂ ਵੇਖਾਇਆ।"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:108
+#| msgid "The selected file is not a regular file"
+msgid "The selected contact cannot receive files."
+msgstr "ਚੁਣਿਆ ਸੰਪਰਕ ਫਾਇਲਾਂ ਨਹੀਂ ਲੈ ਸਕਦਾ ਹੈ।"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.schemas.in.h:2
-msgid "The contact's avatar token. Empty means contact has no avatar."
-msgstr "ਸੰਪਰਕ ਦਾ ਅਵਤਾਰ ਟੋਕਨ ਹੈ। ਖਾਲੀ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਕੋਈ ਅਵਤਾਰ ਨਹੀਂ।"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:114
+#| msgid "The selected file is empty"
+msgid "The selected contact is offline."
+msgstr "ਚੁਣਿਆ ਸੰਪਰਕ ਆਫਲਾਈਨ ਹੈ।"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:1
-msgid "Megaphone"
-msgstr "ਮੇਗਾਫੋਨ"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:169
+#| msgid "too long message"
+msgid "No error message"
+msgstr "ਕੋਈ ਗਲਤੀ ਸੁਨੇਹਾ ਨਹੀਂ"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.server.in.in.h:2
-#: ../megaphone/src/megaphone-applet.c:518
-msgid "Talk!"
-msgstr "ਗੱਲ!"
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
+msgid "Instant Message (Empathy)"
+msgstr "ਤੁਰੰਤ ਸੁਨੇਹਾ (ਇੰਪੈਂਥੀ)"
 
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:1
-#: ../nothere/data/GNOME_NotHere_Applet.xml.h:1
-msgid "_About"
-msgstr "ਇਸ ਬਾਰੇ(_A)"
-
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:2
-msgid "_Information"
-msgstr "ਜਾਣਕਾਰੀ(_I)"
-
-#: ../megaphone/data/GNOME_Megaphone_Applet.xml.h:3
-#: ../src/empathy-main-window.ui.h:23
-msgid "_Preferences"
-msgstr "ਮੇਰੀ ਪਸੰਦ(_P)"
-
-#: ../megaphone/src/megaphone-applet.c:166
-msgid "Please configure a contact."
-msgstr "ਇੱਕ ਸੰਪਰਕ ਲਈ ਸੰਰਚਨਾ ਕਰੋ ਜੀ।"
-
-#: ../megaphone/src/megaphone-applet.c:256
-msgid "Select contact..."
-msgstr "ਸੰਪਰਕ ਸ਼ਾਮਲ..."
-
-#: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:1
-msgid "Presence"
-msgstr "ਮੌਜੂਦਗੀ"
-
-#: ../nothere/data/GNOME_NotHere_Applet.server.in.in.h:2
-#: ../nothere/src/nothere-applet.c:105
-msgid "Set your own presence"
-msgstr "ਆਪਣੀ ਮੌਜੂਦਗੀ ਦਿਓ"
-
-#: ../src/empathy.c:657
+#: ../src/empathy.c:893
 msgid "Don't connect on startup"
 msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਕੁਨੈਕਟ ਨਾ ਕਰੋ"
 
-#: ../src/empathy.c:661
-msgid "Don't show the contact list on startup"
-msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਸੰਪਰਕ ਸੂਚੀ ਨਾ ਵੇਖਾਓ"
+#: ../src/empathy.c:897
+#| msgid "Don't show the contact list on startup"
+msgid "Don't display the contact list or any other dialogs on startup"
+msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਸੰਪਰਕ ਲਿਸਟ ਜਾਂ ਕੋਈ ਹੋਰ ਡਾਈਲਾਗ ਨਾ ਵੇਖਾਓ"
 
-#: ../src/empathy.c:665
+#: ../src/empathy.c:901
 msgid "Show the accounts dialog"
 msgstr "ਅਕਾਊਂਟ ਡਾਈਲਾਗ ਵੇਖੋ"
 
-#: ../src/empathy.c:677
-#| msgid "- Empathy Instant Messenger"
+#: ../src/empathy.c:913
 msgid "- Empathy IM Client"
-msgstr "- ਇੰਪੈਂਥੀ ਤੁਰੰਤ ਸੁਨੇਹੇਦਾਰ"
+msgstr "- ਇੰਪੈਂਥੀ ਤੁਰੰਤ ਸੁਨੇਹੇਦਾਰ ਕਲਾਇਟ"
 
-#: ../src/empathy-about-dialog.c:83
+#: ../src/empathy-about-dialog.c:84
 msgid ""
 "Empathy is free software; you can redistribute it and/or modify it under the "
 "terms of the GNU General Public License as published by the Free Software "
@@ -1751,7 +2128,7 @@ msgstr ""
 "ਸਾਫਟਵੇਅਰ ਫਾਊਨਡੇਸ਼ਨ ਨੇ ਤਿਆਰ ਕੀਤਾ ਹੈ, ਦੇ ਵਰਜਨ ੨ ਜਾਂ ਨਵੇਂ ਦੀਆਂ ਸ਼ਰਤਾਂ (ਉਹ ਤੁਹਾਡੀ ਆਪਣੀ ਮਰਜ਼ੀ "
 "ਹੈ) ਅਧੀਨ ਵੰਡ ਅਤੇ/ਜਾਂ ਸੋਧ ਸਕਦੇ ਹੋ।"
 
-#: ../src/empathy-about-dialog.c:87
+#: ../src/empathy-about-dialog.c:88
 msgid ""
 "Empathy is distributed in the hope that it will be useful, but WITHOUT ANY "
 "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
@@ -1762,7 +2139,7 @@ msgstr ""
 "ਨਹੀਂ ਲਈ ਜਾ ਰਹੀ ਹੈ, ਕਿਸੇ ਖਾਸ ਕੰਮ ਲਈ ਅਨੁਕੂਲ ਹੋਣ ਜਾਂ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਨ ਦੀ ਵੀ ਕੋਈ ਗਾਰੰਟੀ ਨਹੀਂ "
 "ਹੈ। ਹੋਰ ਵੇਰਵੇ ਲਈ ਗਨੂ ਜਰਨਲ ਪਬਲਿਕ ਲਾਇਸੈਂਸ ਨੂੰ ਪੜ੍ਹੋ।"
 
-#: ../src/empathy-about-dialog.c:91
+#: ../src/empathy-about-dialog.c:92
 msgid ""
 "You should have received a copy of the GNU General Public License along with "
 "Empathy; if not, write to the Free Software Foundation, Inc., 51 Franklin "
@@ -1772,31 +2149,34 @@ msgstr ""
 "ਫਰੀ ਸਾਫਟਵੇਅਰ ਫਾਊਨਡੇਸ਼ਨ, ੫੧ ਫਰਾਕਲਿੰਨ ਸਟਰੀਟ, ਪੰਜਵੀਂ ਮੰਜ਼ਲ,ਬੋਸਟਨ, ਐਮ ਏ ੦੨੧੧੦-੧੩੦੧੫੯, "
 "ਅਮਰੀਕਾ ਨੂੰ ਲਿਖੋ।"
 
-#: ../src/empathy-about-dialog.c:119
+#: ../src/empathy-about-dialog.c:120
 msgid "An Instant Messaging client for GNOME"
 msgstr "ਗਨੋਮ ਲਈ ਤੁਰੰਤ ਸੁਨੇਹੇਦਾਰ ਕਲਾਇਟ"
 
-#: ../src/empathy-about-dialog.c:125
+#: ../src/empathy-about-dialog.c:126
 msgid "translator-credits"
 msgstr ""
-"ਅਮਨਪਰੀਤ ਸਿੰਘ ਆਲਮ <aalam@users.sf.net) 2007, 2008, 2009\n"
+"ਅਮਨਪਰੀਤ ਸਿੰਘ ਆਲਮ <aalam@users.sf.net) 2007, 2008, 2009, 2010\n"
 "http://www.satluj.com/"
 
 #: ../src/empathy-account-assistant.c:118
-#| msgid "Empathy has asked about importing accounts"
-msgid "There has been an error while importing the accounts."
+#| msgid "There has been an error while importing the accounts."
+msgid "There was an error while importing the accounts."
 msgstr "ਅਕਾਊਂਟ ਇੰਪੋਰਟ ਕਰਨ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।"
 
 #: ../src/empathy-account-assistant.c:121
-msgid "There has been an error while parsing the account details."
+#| msgid "There has been an error while parsing the account details."
+msgid "There was an error while parsing the account details."
 msgstr "ਅਕਾਊਂਟ ਵੇਰਵਾ ਪਾਰਸ ਕਰਨ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।"
 
 #: ../src/empathy-account-assistant.c:124
-msgid "There has been an error while creating the account."
+#| msgid "There has been an error while creating the account."
+msgid "There was an error while creating the account."
 msgstr "ਅਕਾਊਂਟ ਬਣਾਉਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ।"
 
 #: ../src/empathy-account-assistant.c:126
-msgid "There has been an error."
+#| msgid "There has been an error."
+msgid "There was an error."
 msgstr "ਗਲਤੀ ਆਈ ਹੈ।"
 
 #: ../src/empathy-account-assistant.c:141
@@ -1809,8 +2189,8 @@ msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this assistant and add accounts later from the Edit menu."
 msgstr ""
-"ਤੁਸੀਂ ਜਾ ਕੇ ਆਪਣੇ ਅਕਾਊਂਟ ਵੇਰਵੇ ਵਿੱਚ ਆਪਣੇ ਵੇਰਵਾ ਲਈ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਇਹ ਸਹਾਇਕ ਬੰਦ "
-"ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਸੋਧ ਮੇਨੂ ਵਿੱਚੋਂ ਅਕਾਊਂਟ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।"
+"ਤੁਸੀਂ ਜਾ ਕੇ ਆਪਣੇ ਅਕਾਊਂਟ ਵੇਰਵੇ ਵਿੱਚ ਆਪਣੇ ਵੇਰਵਾ ਲਈ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਇਹ ਸਹਾਇਕ ਬੰਦ ਕਰਕੇ "
+"ਬਾਅਦ ਵਿੱਚ ਸੋਧ ਮੇਨੂ ਵਿੱਚੋਂ ਅਕਾਊਂਟ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।"
 
 #: ../src/empathy-account-assistant.c:184
 msgid "An error occurred"
@@ -1822,128 +2202,130 @@ msgstr "ਗਲਤੀ ਆਈ"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:321
-#: ../src/empathy-accounts-dialog.c:1399
+#: ../src/empathy-account-assistant.c:331 ../src/empathy-accounts-dialog.c:504
 #, c-format
 msgid "New %s account"
 msgstr "ਨਵਾਂ %s ਅਕਾਊਂਟ"
 
-#: ../src/empathy-account-assistant.c:393
+#: ../src/empathy-account-assistant.c:403
 msgid "What kind of chat account do you have?"
 msgstr "ਤੁਹਾਡੇ ਕੋਲ ਕਿਸ ਕਿਸਮ ਦਾ ਚੈਟ ਅਕਾਊਂਟ ਹੈ?"
 
-#: ../src/empathy-account-assistant.c:399
-#| msgid "I already have an account I want to use"
+#: ../src/empathy-account-assistant.c:409
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "ਕੀ ਤੁਹਾਡੇ ਕੋਲ ਹੋਰ ਚੈਟ ਅਕਾਊਂਟ ਹੈ, ਜੋ ਤੁਸੀਂ ਸੈੱਟਅੱਪ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-account-assistant.c:405
+#: ../src/empathy-account-assistant.c:415
 msgid "Enter your account details"
 msgstr "ਆਪਣੇ ਅਕਾਊਂਟ ਦਾ ਵੇਰਵਾ ਦਿਓ"
 
-#: ../src/empathy-account-assistant.c:410
-#| msgid "%s is calling you, do you want to answer?"
+#: ../src/empathy-account-assistant.c:420
 msgid "What kind of chat account do you want to create?"
 msgstr "ਕਿਸ ਕਿਸਮ ਦਾ ਚੈਟ ਅਕਾਊਂਟ ਤੁਸੀਂ ਬਣਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-account-assistant.c:416
-#| msgid "Do you really want to remove the contact '%s'?"
+#: ../src/empathy-account-assistant.c:426
 msgid "Do you want to create other chat accounts?"
 msgstr "ਕੀ ਤੁਸੀਂ ਹੋਰ ਚੈਟ ਅਕਾਊਂਟ ਬਣਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-account-assistant.c:423
+#: ../src/empathy-account-assistant.c:433
 msgid "Enter the details for the new account"
 msgstr "ਨਵੇਂ ਅਕਾਊਂਟ ਲਈ ਵੇਰਵਾ ਦਿਓ"
 
-#: ../src/empathy-account-assistant.c:509
+#: ../src/empathy-account-assistant.c:519
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
 "programs. With a microphone or a webcam you can also have audio or video "
 "calls."
 msgstr ""
-"ਇੰਪੈਂਥੀ ਨਾਲ ਤੁਸੀਂ ਨੇੜਲੇ ਆਨਲਾਈਨ ਲੋਕਾਂ ਤੇ ਦੋਸਤਾਂ, ਮਿੱਤਰਾਂ, ਸਾਥੀਆਂ, ਜੋ ਕਿ ਗੂਗਲ ਟਾਕ, "
-"AIM, ਵਿੰਡੋਜ਼ ਲਾਈਨ ਅਤੇ ਹੋਰ ਚੈਤ ਪਰੋਗਰਾਮਾਂ ਨਾਲ ਗੱਲਾਂ ਕਰ ਸਕਦੇ ਹੋ। ਮਾਈਕਰੋਫੋਨ ਜਾਂ ਵੈੱਬ ਕੈਮ ਨਾਲ "
-"ਤੁਸੀਂ ਆਡੀਓ ਅਤੇ ਵਿਡੀਓ ਕਾਲ ਵੀ ਕਰ ਸਕਦੇ ਹੋ।"
+"ਇੰਪੈਂਥੀ ਨਾਲ ਤੁਸੀਂ ਨੇੜਲੇ ਆਨਲਾਈਨ ਲੋਕਾਂ ਤੇ ਦੋਸਤਾਂ, ਮਿੱਤਰਾਂ, ਸਾਥੀਆਂ, ਜੋ ਕਿ ਗੂਗਲ ਟਾਕ, AIM, ਵਿੰਡੋਜ਼ "
+"ਲਾਈਨ ਅਤੇ ਹੋਰ ਚੈਤ ਪਰੋਗਰਾਮਾਂ ਨਾਲ ਗੱਲਾਂ ਕਰ ਸਕਦੇ ਹੋ। ਮਾਈਕਰੋਫੋਨ ਜਾਂ ਵੈੱਬ ਕੈਮ ਨਾਲ ਤੁਸੀਂ ਆਡੀਓ ਅਤੇ "
+"ਵਿਡੀਓ ਕਾਲ ਵੀ ਕਰ ਸਕਦੇ ਹੋ।"
 
-#: ../src/empathy-account-assistant.c:526
+#: ../src/empathy-account-assistant.c:536
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "ਕੀ ਤੁਹਾਡੇ ਕੋਲ ਕੋਈ ਅਕਾਊਂਟ ਹੈ, ਜੋ ਕਿ ਤੁਸੀਂ ਹੋਰ ਚੈਟ ਪਰੋਗਰਾਮ ਨਾਲ ਵਰਤਦੇ ਰਹੇ ਹੋ?"
 
-#: ../src/empathy-account-assistant.c:549
+#: ../src/empathy-account-assistant.c:559
 msgid "Yes, import my account details from "
 msgstr "ਹਾਂ, ਮੇਰਾ ਅਕਾਊਂਟ ਵੇਰਵਾ ਲਵੋ "
 
-#: ../src/empathy-account-assistant.c:570
+#: ../src/empathy-account-assistant.c:580
 msgid "Yes, I'll enter my account details now"
 msgstr "ਹਾਂ, ਮੈਂ ਆਪਣਾ ਅਕਾਊਂਟ ਵੇਰਵਾ ਹੁਣ ਦੇਵਾਂਗਾ"
 
-#: ../src/empathy-account-assistant.c:592
-#| msgid "_Create a new account"
+#: ../src/empathy-account-assistant.c:602
 msgid "No, I want a new account"
 msgstr "ਨਹੀਂ, ਮੈਂ ਨਵਾਂ ਅਕਾਊਂਟ ਚਾਹੁੰਦਾ ਹਾਂ"
 
-#: ../src/empathy-account-assistant.c:602
+#: ../src/empathy-account-assistant.c:612
 msgid "No, I just want to see people online nearby for now"
 msgstr "ਨਹੀਂ, ਮੈਂ ਸਿਰਫ਼ ਹੁਣ ਆਪਣੇ ਨੇੜੇ ਆਨਲਾਈਨ ਲੋਕਾਂ ਨੂੰ ਵੇਖਣਾ ਚਾਹੁੰਦਾ ਹਾਂ"
 
-#: ../src/empathy-account-assistant.c:623
-#| msgid "Select who would you like to invite:"
+#: ../src/empathy-account-assistant.c:633
 msgid "Select the accounts you want to import:"
 msgstr "ਅਕਾਊਂਟ ਚੁਣੋ, ਜੋ ਤੁਸੀਂ ਇੰਪੋਰਟ ਕਰਨੇ ਚਾਹੁੰਦੇ ਹੋ:"
 
-#: ../src/empathy-account-assistant.c:710
-#: ../src/empathy-new-chatroom-dialog.c:496
-#: ../src/empathy-new-chatroom-dialog.c:497
+#: ../src/empathy-account-assistant.c:720
+#: ../src/empathy-new-chatroom-dialog.c:541
+#: ../src/empathy-new-chatroom-dialog.c:542
 msgid "Yes"
 msgstr "ਹਾਂ"
 
-#: ../src/empathy-account-assistant.c:717
+#: ../src/empathy-account-assistant.c:727
 msgid "No, that's all for now"
 msgstr "ਨਹੀਂ, ਹੁਣ ਲਈ ਕਾਫ਼ੀ ਹੈ"
 
-#: ../src/empathy-account-assistant.c:910
+#: ../src/empathy-account-assistant.c:920
 msgid "Welcome to Empathy"
 msgstr "ਇੰਪੈਂਥੀ ਵਲੋਂ ਜੀ ਆਇਆਂ ਨੂੰ"
 
-#: ../src/empathy-account-assistant.c:919
-#| msgid "_Reuse an existing account"
+#: ../src/empathy-account-assistant.c:929
 msgid "Import your existing accounts"
 msgstr "ਆਪਣੇ ਮੌਜੂਦਾ ਅਕਾਊਂਟ ਇੰਪੋਰਟ ਕਰੋ"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
-#: ../src/empathy-accounts-dialog.c:63
-#, c-format
-msgid "There are unsaved modification regarding your %s account."
+#: ../src/empathy-accounts-dialog.c:65, c-format
+#| msgid "There are unsaved modification regarding your %s account."
+msgid "There are unsaved modifications to your %s account."
 msgstr "ਤੁਹਾਡੇ ਅਕਾਊਂਟ %s ਨਾਲ ਸਬੰਧਿਤ ਕੁਝ ਨਾ-ਸੰਭਾਲੀਆਂ ਸੋਧਾਂ ਹਨ।"
 
-#. To translators: The first parameter is the login id and the
-#. * second one is the server. The resulting string will be something
-#. * like: "MyUserName on chat.freenode.net".
-#. * You should reverse the order of these arguments if the
-#. * server should come before the login id in your locale.
-#: ../src/empathy-accounts-dialog.c:236, c-format
-#| msgid "%s of %s"
-msgid "%1$s on %2$s"
-msgstr "%2$s ਉੱਤੇ %1$s"
+#. The primary text of the dialog shown to the user when he is about to lose
+#. * an unsaved new account
+#: ../src/empathy-accounts-dialog.c:69
+msgid "Your new account has not been saved yet."
+msgstr "ਤੁਹਾਡਾ ਨਵਾਂ ਅਕਾਊਂਟ ਹਾਲੇ ਨਹੀਂ ਸੰਭਾਲਿਆ ਗਿਆ ਹੈ।"
 
-#. To translators: The parameter is the protocol name. The resulting
-#. * string will be something like: "Jabber Account"
-#: ../src/empathy-accounts-dialog.c:248, c-format
-#| msgid "Account"
-msgid "%s Account"
-msgstr "%s ਅਕਾਊਂਟ"
+#: ../src/empathy-accounts-dialog.c:230 ../src/empathy-call-window.c:729
+#| msgid "Connecting..."
+msgid "Connecting…"
+msgstr "ਕੁਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ..."
 
-#: ../src/empathy-accounts-dialog.c:252
-#| msgid "New %s account"
-msgid "New account"
-msgstr "ਨਵਾਂ ਅਕਾਊਂਟ"
+#: ../src/empathy-accounts-dialog.c:257, c-format
+#| msgid "Disconnected"
+msgid "Disconnected — %s"
+msgstr "ਕੁਨੈਕਸ਼ਨ ਖਤਮ  — %s"
 
-#: ../src/empathy-accounts-dialog.c:501
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#: ../src/empathy-accounts-dialog.c:262, c-format
+#| msgid "Offline"
+msgid "Offline — %s"
+msgstr "ਆਫਲਾਈਨ — %s"
+
+#: ../src/empathy-accounts-dialog.c:275
+msgid "Offline — No Network Connection"
+msgstr "ਆਫਲਾਈਨ — ਕੋਈ ਨੈੱਟਵਰਕ ਕੁਨੈਕਸ਼ਨ ਨਹੀਂ"
+
+#: ../src/empathy-accounts-dialog.c:283
+#| msgid "Unknown reason"
+msgid "Unknown Status"
+msgstr "ਅਣਜਾਣ ਹਾਲਤ"
+
+#: ../src/empathy-accounts-dialog.c:294
+msgid "Offline — Account Disabled"
+msgstr "ਆਫਲਾਈਨ — ਅਕਾਊਂਟ ਆਯੋਗ ਹੈ"
+
+#: ../src/empathy-accounts-dialog.c:642
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1951,31 +2333,16 @@ msgstr ""
 "ਤੁਸੀਂ ਨਵਾਂ ਅਕਾਊਂਟ ਬਣਾਉਣ ਜਾ ਰਹੇ ਹੋ, ਜੋ ਕਿ ਤੁਹਾਡੇ ਬਦਲਾਅ ਖਤਮ ਕਰ ਦੇਵੇਗਾ।\n"
 "ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-accounts-dialog.c:786
-#, c-format
-msgid ""
-"You are about to remove your %s account!\n"
-"Are you sure you want to proceed?"
-msgstr ""
-"ਤੁਸੀਂ %s ਅਕਾਊਂਟ ਹਟਾਉਣ ਲਈ ਤਿਆਰ ਹੋ!\n"
-"ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+#: ../src/empathy-accounts-dialog.c:931, c-format
+#| msgid "Do you really want to remove the group '%s'?"
+msgid "Do you want to remove %s from your computer?"
+msgstr "ਕੀ ਤੁਸੀਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ %s ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-accounts-dialog.c:791
-msgid ""
-"Any associated conversations and chat rooms will NOT be removed if you "
-"decide to proceed.\n"
-"\n"
-"Should you decide to add the account back at a later time, they will still "
-"be available."
-msgstr ""
-"ਜੇ ਤੁਸੀਂ ਅੱਗੇ ਜਾਣ ਦਾ ਫੈਸਲਾ ਕੀਤਾ ਤਾਂ ਕੋਈ ਵੀ ਸਬੰਧਿਤ ਗੱਲਬਾਤ ਅਤੇ ਗੱਲਬਾਤ ਰੂਮ ਹਟਾਏ ਨਹੀਂ ਜਾਣਗੇ।\n"
-"\n"
-"ਕੀ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਅਕਾਊਂਟ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਹ ਤਾਂ ਵੀ ਉਪਲੱਬਧ ਰਹਿਣਗੇ।"
+#: ../src/empathy-accounts-dialog.c:935
+msgid "This will not remove your account on the server."
+msgstr "ਇਹ ਸਰਵਰ ਤੋਂ ਤੁਹਾਡਾ ਅਕਾਊਂਟ ਨਹੀਂ ਹਟਾਏਗਾ।"
 
-#: ../src/empathy-accounts-dialog.c:979
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#: ../src/empathy-accounts-dialog.c:1117
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1983,10 +2350,7 @@ msgstr ""
 "ਤੁਸੀਂ ਨਵਾਂ ਅਕਾਊਂਟ ਚੁਣਨ ਜਾ ਰਹੇ ਹੋ, ਜੋ ਕਿ ਤੁਹਾਡੇ ਬਦਲਾਅ ਅਣਡਿੱਠੇ ਕਰ ਦੇਵੇਗਾ।\n"
 "ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-accounts-dialog.c:1474
-#| msgid ""
-#| "You are about to remove your %s account!\n"
-#| "Are you sure you want to proceed?"
+#: ../src/empathy-accounts-dialog.c:1637
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -1994,23 +2358,21 @@ msgstr ""
 "ਤੁਸੀਂ ਵਿੰਡੋ ਬੰਦ ਕਰਨ ਲਈ ਤਿਆਰ ਹੋ, ਜਿਸ ਨਾਲ ਤੁਹਾਡੇ ਬਦਲਾਅ\n"
 "ਅਣਡਿੱਠੇ ਕੀਤੇ ਜਾਣਗੇ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-accounts-dialog.ui.h:1
+#. Tweak the dialog
+#: ../src/empathy-accounts-dialog.c:1731
 msgid "Accounts"
 msgstr "ਅਕਾਊਂਟ"
 
-#: ../src/empathy-accounts-dialog.ui.h:2
-msgid "Add new"
-msgstr "ਨਵਾਂ ਸ਼ਾਮਲ"
-
-#: ../src/empathy-accounts-dialog.ui.h:3
-msgid "Cr_eate"
-msgstr "ਬਣਾਓ(_e)"
-
-#: ../src/empathy-accounts-dialog.ui.h:4
+#: ../src/empathy-accounts-dialog.ui.h:1
 msgid "No protocol installed"
 msgstr "ਕੋਈ ਪਰੋਟੋਕਾਲ ਇੰਸਟਾਲ ਨਹੀਂ"
 
-#: ../src/empathy-accounts-dialog.ui.h:5
+#: ../src/empathy-accounts-dialog.ui.h:2
+#| msgid "Protocol"
+msgid "Protocol:"
+msgstr "ਪਰੋਟੋਕਾਲ:"
+
+#: ../src/empathy-accounts-dialog.ui.h:3
 msgid ""
 "To add a new account, you first have to install a backend for each protocol "
 "you want to use."
@@ -2018,111 +2380,225 @@ msgstr ""
 "ਨਵਾਂ ਅਕਾਊਂਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਹਰੇਕ ਵਰਤਣ ਵਾਲੇ ਪਰੋਟੋਕਾਲ, ਜੋ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ, ਲਈ ਬੈਕਐਂਡ ਇੰਸਟਾਲ "
 "ਕਰਨੀ ਪਵੇਗੀ।"
 
-#: ../src/empathy-accounts-dialog.ui.h:6
-msgid "_Add..."
-msgstr "ਸ਼ਾਮਲ(_A)..."
+#: ../src/empathy-accounts-dialog.ui.h:4
+msgid "_Add&#x2026;"
+msgstr "ਸ਼ਾਮਲ(_A)&#x2026;"
 
-#: ../src/empathy-accounts-dialog.ui.h:7
-msgid "_Create a new account"
-msgstr "ਨਵਾਂ ਅਕਾਊਂਟ ਬਣਾਓ(_C)"
+#: ../src/empathy-accounts-dialog.ui.h:5
+msgid "_Import&#x2026;"
+msgstr "ਇੰਪੋਰਟ(_I)&#x2026;"
 
-#: ../src/empathy-accounts-dialog.ui.h:8
-msgid "_Reuse an existing account"
-msgstr "ਮੌਜੂਦਾ ਅਕਾਊਂਟ ਨੂੰ ਵਰਤੋਂ(_R)"
-
-#: ../src/empathy-accounts-dialog.ui.h:9
-#| msgid "Account"
-msgid "account"
-msgstr "ਅਕਾਊਂਟ"
-
-#: ../src/empathy-call-window.c:426
+#: ../src/empathy-call-window.c:453
 msgid "Contrast"
 msgstr "ਕਨਟਰਾਸਟ"
 
-#: ../src/empathy-call-window.c:429
+#: ../src/empathy-call-window.c:456
 msgid "Brightness"
 msgstr "ਚਮਕ"
 
-#: ../src/empathy-call-window.c:432
+#: ../src/empathy-call-window.c:459
 msgid "Gamma"
 msgstr "ਗਾਮਾ"
 
-#: ../src/empathy-call-window.c:539
+#: ../src/empathy-call-window.c:567
 msgid "Volume"
 msgstr "ਆਵਾਜ਼"
 
-#: ../src/empathy-call-window.c:671
-msgid "Connecting..."
-msgstr "ਕੁਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ..."
-
-#: ../src/empathy-call-window.c:778
+#: ../src/empathy-call-window.c:1022
 msgid "_Sidebar"
 msgstr "ਬਾਹੀ(_S)"
 
-#: ../src/empathy-call-window.c:797
+#: ../src/empathy-call-window.c:1041
 msgid "Dialpad"
 msgstr "ਡਾਇਲ-ਪੈਡ"
 
-#: ../src/empathy-call-window.c:803
+#: ../src/empathy-call-window.c:1047
 msgid "Audio input"
 msgstr "ਆਡੀਓ ਆਉਟਪੁੱਟ"
 
-#: ../src/empathy-call-window.c:807
+#: ../src/empathy-call-window.c:1051
 msgid "Video input"
-msgstr "ਵੀਡਿਓ ਆਉਟਪੁੱਟ"
+msgstr "ਵਿਡੀਓ ਆਉਟਪੁੱਟ"
 
-#. translators: Call is a noun and %s is the contact name. This string is used
-#. * in the window title
-#: ../src/empathy-call-window.c:868
+#. translators: Call is a noun and %s is the contact name. This string
+#. * is used in the window title
+#: ../src/empathy-call-window.c:1116
 #, c-format
 msgid "Call with %s"
 msgstr "%s ਲਈ ਕਾਲ ਕਰੋ"
 
-#. translators: Call is a noun. This string is used in the window title
-#: ../src/empathy-call-window.c:938
+#. translators: Call is a noun. This string is used in the window
+#. * title
+#: ../src/empathy-call-window.c:1197
 msgid "Call"
 msgstr "ਕਾਲ ਕਰੋ"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1390
+#: ../src/empathy-call-window.c:1700
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "ਕੁਨੈਕਟ ਹੈ -- %d:%02dm"
 
+#: ../src/empathy-call-window.c:1761
+#| msgid "Contact Details"
+msgid "Technical Details"
+msgstr "ਤਕਨੀਕੀ ਵੇਰਵਾ"
+
+#: ../src/empathy-call-window.c:1799
+#, c-format
+msgid ""
+"%s's software does not understand any of the audio formats supported by your "
+"computer"
+msgstr ""
+
+#: ../src/empathy-call-window.c:1804
+#, c-format
+msgid ""
+"%s's software does not understand any of the video formats supported by your "
+"computer"
+msgstr ""
+
+#: ../src/empathy-call-window.c:1810
+#, c-format
+msgid ""
+"Can't establish a connection to %s. One of you might be on a network that "
+"does not allow direct connections."
+msgstr ""
+
+#: ../src/empathy-call-window.c:1816
+msgid "There was a failure on the network"
+msgstr "ਨੈੱਟਵਰਕ ਉੱਤੇ ਸਮੱਸਿਆ ਆਈ ਹੈ"
+
+#: ../src/empathy-call-window.c:1820
+msgid "The audio formats necessary for this call are not installed on your computer"
+msgstr "ਇਹ ਕਾਲ ਲਈ ਲੋੜੀਦੇ ਆਡੀਓ ਫਾਰਮੈਟ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਉੱਤੇ ਇੰਸਟਾਲ ਨਹੀਂ ਹਨ"
+
+#: ../src/empathy-call-window.c:1823
+msgid "The video formats necessary for this call are not installed on your computer"
+msgstr "ਇਹ ਕਾਲ ਲਈ ਲੋੜੀਦੇ ਵਿਡੀਓ ਫਾਰਮੈਟ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਉੱਤੇ ਇੰਸਟਾਲ ਨਹੀਂ ਹਨ"
+
+#: ../src/empathy-call-window.c:1833
+#, c-format
+msgid ""
+"Something unexpected happened in a Telepathy component. Please <a href=\"%s"
+"\">report this bug</a> and attach logs gathered from the 'Debug' window in "
+"the Help menu."
+msgstr ""
+
+#: ../src/empathy-call-window.c:1841
+msgid "There was a failure in the call engine"
+msgstr "ਕਾਲ ਇੰਜਣ ਵਿੱਚ ਕੋਈ ਸਮੱਸਿਆ ਆਈ ਹੈ"
+
+#: ../src/empathy-call-window.c:1880
+msgid "Can't establish audio stream"
+msgstr "ਆਡੀਓ ਸਟਰੀਮ ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕਦੀ"
+
+#: ../src/empathy-call-window.c:1890
+msgid "Can't establish video stream"
+msgstr "ਵਿਡੀਓ ਸਟਰੀਮ ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕਦੀ"
+
 #: ../src/empathy-call-window.ui.h:1
+#| msgid "Compact contact list"
+msgid "Call the contact again"
+msgstr "ਸੰਪਰਕ ਨੂੰ ਫੇਰ ਕਾਲ ਕਰੋ"
+
+#: ../src/empathy-call-window.ui.h:2
+msgid "Camera Off"
+msgstr "ਕੈਮਰਾ ਬੰਦ ਕਰੋ"
+
+#: ../src/empathy-call-window.ui.h:3
+msgid "Camera On"
+msgstr "ਕੈਮਰਾ ਚਾਲੂ"
+
+#: ../src/empathy-call-window.ui.h:4
+msgid "Disable camera and stop sending video"
+msgstr "ਕੈਮਰਾ ਬੰਦ ਕਰਕੇ ਵਿਡੀਓ ਭੇਜਣਾ ਰੋਕੋ"
+
+#: ../src/empathy-call-window.ui.h:5
+msgid "Enable camera and send video"
+msgstr "ਕੈਮਰਾ ਚਾਲੂ ਕਰੋ ਤੇ ਵਿਡੀਓ ਭੇਜੋ"
+
+#: ../src/empathy-call-window.ui.h:6
+msgid "Enable camera but don't send video"
+msgstr "ਕੈਮਰਾ ਚਲਾਓ, ਪਰ ਵਿਡੀਓ ਨਾ ਭੇਜੋ"
+
+#: ../src/empathy-call-window.ui.h:7
 msgid "Hang up"
 msgstr "ਬੰਦ ਕਰੋ"
 
-#: ../src/empathy-call-window.ui.h:2
+#: ../src/empathy-call-window.ui.h:8
+msgid "Hang up current call"
+msgstr "ਮੌਜੂਦਾ ਕਾਲ ਬੰਦ ਕਰੋ"
+
+#: ../src/empathy-call-window.ui.h:9
+#| msgid "Video preview"
+msgid "Preview"
+msgstr "ਝਲਕ"
+
+#: ../src/empathy-call-window.ui.h:10
 msgid "Redial"
 msgstr "ਰੀ-ਡਾਇਲ"
 
-#: ../src/empathy-call-window.ui.h:3
+#: ../src/empathy-call-window.ui.h:11
 msgid "Send Audio"
 msgstr "ਆਡੀਓ ਭੇਜੋ"
 
-#: ../src/empathy-call-window.ui.h:4
-msgid "Send video"
-msgstr "ਵੀਡਿਓ ਭੇਜੋ"
+#: ../src/empathy-call-window.ui.h:12
+msgid "Toggle audio transmission"
+msgstr ""
 
-#: ../src/empathy-call-window.ui.h:5
-msgid "Video preview"
-msgstr "ਵੀਡਿਓ ਝਲਕ"
+#: ../src/empathy-call-window.ui.h:13
+msgid "V_ideo"
+msgstr "ਵਿਡੀਓ(_i)"
 
-#: ../src/empathy-call-window.ui.h:6
-msgid "_Call"
-msgstr "ਕਾਲ ਕਰੋ(_C)"
+#: ../src/empathy-call-window.ui.h:14
+#| msgid "Video input"
+msgid "Video Off"
+msgstr "ਵਿਡੀਓ ਬੰਦ"
 
-#: ../src/empathy-call-window.ui.h:7 ../src/empathy-main-window.ui.h:26
+#: ../src/empathy-call-window.ui.h:15
+#| msgid "Video input"
+msgid "Video On"
+msgstr "ਵਿਡੀਓ ਚਾਲੂ"
+
+#: ../src/empathy-call-window.ui.h:16
+#| msgid "Video preview"
+msgid "Video Preview"
+msgstr "ਵਿਡੀਓ ਝਲਕ"
+
+#: ../src/empathy-call-window.ui.h:18 ../src/empathy-main-window.ui.h:28
 msgid "_View"
 msgstr "ਵੇਖੋ(_V)"
 
-#: ../src/empathy-chat-window.c:343
+#: ../src/empathy-chat-window.c:435 ../src/empathy-chat-window.c:455
 #, c-format
-msgid "Conversations (%d)"
-msgstr "ਗੱਲਬਾਤ (%d)"
+msgid "%s (%d unread)"
+msgid_plural "%s (%d unread)"
+msgstr[0] "%s (%d ਨਾ-ਪੜ੍ਹੇ)"
+msgstr[1] "%s (%d ਨਾ-ਪੜ੍ਹੇ)"
 
-#: ../src/empathy-chat-window.c:475
+#: ../src/empathy-chat-window.c:447
+#, c-format
+msgid "%s (and %u other)"
+msgid_plural "%s (and %u others)"
+msgstr[0] "%s (ਅਤੇ %u ਹੋਰ)"
+msgstr[1] "%s (ਅਤੇ %u ਹੋਰ)"
+
+#: ../src/empathy-chat-window.c:463
+#, c-format
+msgid "%s (%d unread from others)"
+msgid_plural "%s (%d unread from others)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/empathy-chat-window.c:472
+#, c-format
+msgid "%s (%d unread from all)"
+msgid_plural "%s (%d unread from all)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/empathy-chat-window.c:683
 msgid "Typing a message."
 msgstr "ਸੁਨੇਹਾ ਲਿਖਦਾ/ਲਿਖਦੀ ਹੈ।"
 
@@ -2131,70 +2607,76 @@ msgid "C_lear"
 msgstr "ਸਾਫ਼ ਕਰੋ(_l)"
 
 #: ../src/empathy-chat-window.ui.h:2
+#| msgid "Contact"
+msgid "C_ontact"
+msgstr "ਸੰਪਰਕ(_o)"
+
+#: ../src/empathy-chat-window.ui.h:3
 msgid "Chat"
 msgstr "ਗੱਲਬਾਤ"
 
-#: ../src/empathy-chat-window.ui.h:3
+#: ../src/empathy-chat-window.ui.h:4
 msgid "Insert _Smiley"
 msgstr "ਬੰਦਾ-ਖੁਸ਼ ਸ਼ਾਮਲ(_S)"
 
-#: ../src/empathy-chat-window.ui.h:4
+#: ../src/empathy-chat-window.ui.h:5
+msgid "Invite _Participant…"
+msgstr "ਭਾਗ ਲੈਣ ਵਾਲਿਆਂ ਨੂੰ ਸੱਦਾ(_P)..."
+
+#: ../src/empathy-chat-window.ui.h:6
 msgid "Move Tab _Left"
 msgstr "ਟੈਬ ਖੱਬੇ ਭੇਜੋ(_L)"
 
-#: ../src/empathy-chat-window.ui.h:5
+#: ../src/empathy-chat-window.ui.h:7
 msgid "Move Tab _Right"
 msgstr "ਟੈਬ ਸੱਜੇ ਭੇਜੋ(_R)"
 
-#: ../src/empathy-chat-window.ui.h:6
-msgid "_Contact"
-msgstr "ਸੰਪਰਕ(_C)"
-
-#: ../src/empathy-chat-window.ui.h:7 ../src/empathy-main-window.ui.h:14
+#: ../src/empathy-chat-window.ui.h:8 ../src/empathy-main-window.ui.h:17
 msgid "_Contents"
 msgstr "ਸਮੱਗਰੀ(_C)"
 
-#: ../src/empathy-chat-window.ui.h:8
+#: ../src/empathy-chat-window.ui.h:9
 msgid "_Conversation"
 msgstr "ਗੱਲਬਾਤ(_C)"
 
-#: ../src/empathy-chat-window.ui.h:9
+#: ../src/empathy-chat-window.ui.h:10
 msgid "_Detach Tab"
 msgstr "ਟੈਬ ਵੱਖ ਕਰੋ(_D)"
 
-#: ../src/empathy-chat-window.ui.h:11
-msgid "_Favorite Chatroom"
+#: ../src/empathy-chat-window.ui.h:12
+#| msgid "_Favorite Chatroom"
+msgid "_Favorite Chat Room"
 msgstr "ਪਸੰਦੀਦਾ ਗੱਲਬਾਤ-ਰੂਮ(_F)"
 
-#: ../src/empathy-chat-window.ui.h:12 ../src/empathy-main-window.ui.h:18
+#: ../src/empathy-chat-window.ui.h:13 ../src/empathy-main-window.ui.h:21
 msgid "_Help"
 msgstr "ਮੱਦਦ(_H)"
 
-#: ../src/empathy-chat-window.ui.h:13
+#: ../src/empathy-chat-window.ui.h:14
 msgid "_Next Tab"
 msgstr "ਅਗਲੀ ਟੈਬ(_N)"
 
-#: ../src/empathy-chat-window.ui.h:14
+#: ../src/empathy-chat-window.ui.h:15
 msgid "_Previous Tab"
 msgstr "ਪਿਛਲੀ ਟੈਬ(_P)"
 
-#: ../src/empathy-chat-window.ui.h:15 ../src/empathy-status-icon.ui.h:4
+#: ../src/empathy-chat-window.ui.h:16 ../src/empathy-status-icon.ui.h:5
 msgid "_Show Contact List"
 msgstr "ਸੰਪਰਕ ਲਿਸਟ ਵੇਖੋ(_S)"
 
-#: ../src/empathy-chat-window.ui.h:16
+#: ../src/empathy-chat-window.ui.h:17
 msgid "_Tabs"
 msgstr "ਟੈਬਾਂ(_T)"
 
-#: ../src/empathy-chatrooms-window.c:258
+#: ../src/empathy-chatrooms-window.c:256
 msgid "Name"
 msgstr "ਨਾਂ"
 
-#: ../src/empathy-chatrooms-window.c:276
+#: ../src/empathy-chatrooms-window.c:274
 msgid "Room"
 msgstr "ਰੂਮ"
 
-#: ../src/empathy-chatrooms-window.c:285
+#: ../src/empathy-chatrooms-window.c:282
 msgid "Auto-Connect"
 msgstr "ਆਟੋ-ਕੁਨੈਕਟ"
 
@@ -2202,75 +2684,90 @@ msgstr "ਆਟੋ-ਕੁਨੈਕਟ"
 msgid "Manage Favorite Rooms"
 msgstr "ਪਸੰਦੀਦਾ ਰੂਮ ਪਰਬੰਧ"
 
-#: ../src/empathy-event-manager.c:322
+#: ../src/empathy-event-manager.c:345
+#| msgid "Incoming voice call"
+msgid "Incoming video call"
+msgstr "ਆ ਰਹੀ ਵਿਡੀਓ ਕਾਲ"
+
+#: ../src/empathy-event-manager.c:345
 msgid "Incoming call"
 msgstr "ਆ ਰਹੀ ਕਾਲ"
 
-#: ../src/empathy-event-manager.c:325
-#, c-format
-msgid "%s is calling you, do you want to answer?"
+#: ../src/empathy-event-manager.c:349, c-format
+#| msgid "%s is calling you, do you want to answer?"
+msgid "%s is video calling you. Do you want to answer?"
+msgstr "%s ਤੁਹਾਨੂੰ ਵਿਡੀਓ ਕਾਲ ਕਰ ਰਿਹਾ ਹੈ, ਕੀ ਤੁਸੀਂ ਜਵਾਬ ਦੇਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+
+#: ../src/empathy-event-manager.c:350, c-format
+#| msgid "%s is calling you, do you want to answer?"
+msgid "%s is calling you. Do you want to answer?"
 msgstr "%s ਤੁਹਾਨੂੰ ਕਾਲ ਕਰ ਰਿਹਾ ਹੈ, ਕੀ ਤੁਸੀਂ ਜਵਾਬ ਦੇਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../src/empathy-event-manager.c:332
+#: ../src/empathy-event-manager.c:372
 msgid "_Reject"
 msgstr "ਰੱਦ ਕਰੋ(_R)"
 
-#: ../src/empathy-event-manager.c:338
+#: ../src/empathy-event-manager.c:378
 msgid "_Answer"
 msgstr "ਜਵਾਬ ਦਿਓ(_A)"
 
-#: ../src/empathy-event-manager.c:453
+#: ../src/empathy-event-manager.c:495, c-format
+#| msgid "Incoming call from %s"
+msgid "Incoming video call from %s"
+msgstr "%s ਤੋਂ ਵਿਡੀਓ ਕਾਲ ਆ ਰਹੀ ਹੈ"
+
+#: ../src/empathy-event-manager.c:495
 #, c-format
 msgid "Incoming call from %s"
 msgstr "%s ਤੋਂ ਕਾਲ ਆ ਰਹੀ ਹੈ"
 
-#: ../src/empathy-event-manager.c:497
+#: ../src/empathy-event-manager.c:541
 #, c-format
 msgid "%s is offering you an invitation"
 msgstr "%s ਤੁਹਾਨੂੰ ਇੱਕ ਸੱਦਾ ਦੇ ਰਿਹਾ ਹੈ"
 
-#: ../src/empathy-event-manager.c:503
+#: ../src/empathy-event-manager.c:547
 msgid "An external application will be started to handle it."
 msgstr "ਇਸ ਨੂੰ ਵਰਤਣ ਲਈ ਇੱਕ ਬਾਹਰੀ ਐਪਲੀਕੇਸ਼ਨ ਵਰਤੀ ਜਾਵੇਗੀ।"
 
-#: ../src/empathy-event-manager.c:508
+#: ../src/empathy-event-manager.c:552
 msgid "You don't have the needed external application to handle it."
 msgstr "ਤੁਹਾਨੂੰ ਇਹ ਹੈਂਡਲ ਕਰਨ ਲਈ ਬਾਹਰੀ ਐਪਲੀਕੇਸ਼ਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।"
 
-#: ../src/empathy-event-manager.c:635
+#: ../src/empathy-event-manager.c:680
 msgid "Room invitation"
 msgstr "ਰੂਮ ਸੱਦਾ"
 
-#: ../src/empathy-event-manager.c:638
+#: ../src/empathy-event-manager.c:683
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s ਤੁਹਾਨੂੰ %s ਜੁਆਇੰਨ ਕਰਨ ਲਈ ਸੱਦ ਰਿਹਾ ਹੈ"
 
-#: ../src/empathy-event-manager.c:646
+#: ../src/empathy-event-manager.c:691
 msgid "_Decline"
 msgstr "ਇਨਕਾਰ(_D)"
 
-#: ../src/empathy-event-manager.c:651
+#: ../src/empathy-event-manager.c:696
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "ਦਾਖਲ(_J)"
 
-#: ../src/empathy-event-manager.c:690
+#: ../src/empathy-event-manager.c:735
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s ਨੇ ਤੁਹਾਨੂੰ %s ਦਾਖਲ ਹੋਣ ਲਈ ਸੱਦਿਆ"
 
-#: ../src/empathy-event-manager.c:716
+#: ../src/empathy-event-manager.c:761
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "%s ਤੋਂ ਆ ਰਿਹਾ ਫਾਇਲ ਸੰਚਾਰ"
 
-#: ../src/empathy-event-manager.c:896
+#: ../src/empathy-event-manager.c:941
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "%s ਵਲੋਂ ਮੈਂਬਰੀ ਚਾਹੀਦੀ ਹੈ"
 
-#: ../src/empathy-event-manager.c:900
+#: ../src/empathy-event-manager.c:945
 #, c-format
 msgid ""
 "\n"
@@ -2280,117 +2777,117 @@ msgstr ""
 "ਸੁਨੇਹਾ: %s"
 
 #. someone is logging off
-#: ../src/empathy-event-manager.c:936
+#: ../src/empathy-event-manager.c:985
 #, c-format
 msgid "%s is now offline."
 msgstr "%s ਹੁਣ ਆਫਲਾਈਨ ਹੈ।"
 
 #. someone is logging in
-#: ../src/empathy-event-manager.c:952
+#: ../src/empathy-event-manager.c:1001
 #, c-format
 msgid "%s is now online."
 msgstr "%s ਹੁਣ ਆਨਲਾਈਨ ਹੈ।"
 
 #. Translators: time left, when it is more than one hour
-#: ../src/empathy-ft-manager.c:101
+#: ../src/empathy-ft-manager.c:100
 #, c-format
 msgid "%u:%02u.%02u"
 msgstr "%u:%02u.%02u"
 
 #. Translators: time left, when is is less than one hour
-#: ../src/empathy-ft-manager.c:104
+#: ../src/empathy-ft-manager.c:103
 #, c-format
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
 
-#: ../src/empathy-ft-manager.c:180
+#: ../src/empathy-ft-manager.c:179
 msgctxt "file transfer percent"
 msgid "Unknown"
 msgstr "ਅਣਜਾਣ"
 
-#: ../src/empathy-ft-manager.c:275
+#: ../src/empathy-ft-manager.c:274
 #, c-format
 msgid "%s of %s at %s/s"
 msgstr "%3$s/s ਨਾਲ %2$s ਵਿੱਚੋਂ %1$s"
 
-#: ../src/empathy-ft-manager.c:276
+#: ../src/empathy-ft-manager.c:275
 #, c-format
 msgid "%s of %s"
 msgstr "%2$s ਵਿੱਚੋਂ %1$s"
 
 #. translators: first %s is filename, second %s is the contact name
-#: ../src/empathy-ft-manager.c:307
+#: ../src/empathy-ft-manager.c:306
 #, c-format
 msgid "Receiving \"%s\" from %s"
-msgstr "%2$s ਵਲੋਂ \"%1$s\" ਭੇਜੀ ਜਾ ਰਹੀ ਹੈ"
+msgstr "%2$s ਵਲੋਂ \"%1$s\" ਆ ਰਹੀ ਹੈ"
 
 #. translators: first %s is filename, second %s is the contact name
-#: ../src/empathy-ft-manager.c:310
+#: ../src/empathy-ft-manager.c:309
 #, c-format
 msgid "Sending \"%s\" to %s"
 msgstr "\"%s\" %s ਨੂੰ ਭੇਜੀ ਜਾ ਰਹੀ ਹੈ"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
-#: ../src/empathy-ft-manager.c:340
+#: ../src/empathy-ft-manager.c:339
 #, c-format
 msgid "Error receiving \"%s\" from %s"
 msgstr "%2$s ਤੋਂ \"%1$s\"  ਲੈਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: ../src/empathy-ft-manager.c:343
+#: ../src/empathy-ft-manager.c:342
 msgid "Error receiving a file"
 msgstr "ਫਾਇਲ ਲੈਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: ../src/empathy-ft-manager.c:348
+#: ../src/empathy-ft-manager.c:347
 #, c-format
 msgid "Error sending \"%s\" to %s"
 msgstr "\"%s\" %s ਨੂੰ ਭੇਜਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: ../src/empathy-ft-manager.c:351
+#: ../src/empathy-ft-manager.c:350
 msgid "Error sending a file"
 msgstr "ਫਾਇਲ ਭੇਜਣ ਦੌਰਾਨ ਗਲਤੀ"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
-#: ../src/empathy-ft-manager.c:490
+#: ../src/empathy-ft-manager.c:489
 #, c-format
 msgid "\"%s\" received from %s"
 msgstr "%2$s ਤੋਂ \"%1$s\" ਮਿਲੀ"
 
 #. translators: first %s is filename, second %s
 #. * is the contact name
-#: ../src/empathy-ft-manager.c:495
+#: ../src/empathy-ft-manager.c:494
 #, c-format
 msgid "\"%s\" sent to %s"
 msgstr "\"%s\" %s ਨੂੰ ਭੇਜੀ"
 
-#: ../src/empathy-ft-manager.c:498
+#: ../src/empathy-ft-manager.c:497
 msgid "File transfer completed"
 msgstr "ਫਾਇਲ ਸੰਚਾਰ ਪੂਰਾ ਹੋਇਆ"
 
-#: ../src/empathy-ft-manager.c:617 ../src/empathy-ft-manager.c:784
+#: ../src/empathy-ft-manager.c:616 ../src/empathy-ft-manager.c:783
 msgid "Waiting for the other participant's response"
 msgstr "ਹੋਰ ਦਰਸ਼ਕਾਂ ਦੇ ਜਵਾਬ ਦੀ ਉਡੀਕ ਹੈ"
 
-#: ../src/empathy-ft-manager.c:643 ../src/empathy-ft-manager.c:681
+#: ../src/empathy-ft-manager.c:642 ../src/empathy-ft-manager.c:680
 #, c-format
 msgid "Checking integrity of \"%s\""
 msgstr "\"%s\" ਦੀ ਐਂਟੀਗਰੇਟੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: ../src/empathy-ft-manager.c:646 ../src/empathy-ft-manager.c:684
+#: ../src/empathy-ft-manager.c:645 ../src/empathy-ft-manager.c:683
 #, c-format
 msgid "Hashing \"%s\""
 msgstr "\"%s\" ਹੈਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: ../src/empathy-ft-manager.c:1024
+#: ../src/empathy-ft-manager.c:991
 msgid "%"
 msgstr "%"
 
-#: ../src/empathy-ft-manager.c:1036
+#: ../src/empathy-ft-manager.c:1003
 msgid "File"
 msgstr "ਫਾਇਲ"
 
-#: ../src/empathy-ft-manager.c:1058
+#: ../src/empathy-ft-manager.c:1025
 msgid "Remaining"
 msgstr "ਬਾਕੀ"
 
@@ -2415,84 +2912,39 @@ msgid "Import Accounts"
 msgstr "ਅਕਾਊਂਟ ਇੰਪੋਰਟ"
 
 #. Translators: this is the header of a treeview column
-#: ../src/empathy-import-widget.c:301
+#: ../src/empathy-import-widget.c:290
 msgid "Import"
 msgstr "ਇੰਪੋਰਟ"
 
-#: ../src/empathy-import-widget.c:310
+#: ../src/empathy-import-widget.c:299
 msgid "Protocol"
 msgstr "ਪਰੋਟੋਕਾਲ"
 
-#: ../src/empathy-import-widget.c:334
+#: ../src/empathy-import-widget.c:323
 msgid "Source"
 msgstr "ਸਰੋਤ"
 
-#: ../src/empathy-import-mc4-accounts.c:106, c-format
-#| msgid "New %s account"
+#: ../src/empathy-import-mc4-accounts.c:106
+#, c-format
 msgid "%s account"
 msgstr "%s ਅਕਾਊਂਟ"
 
-#: ../src/empathy-main-window.c:399
-msgid "_Edit account"
-msgstr "ਅਕਾਊਂਟ ਸੋਧ(_E)"
+#: ../src/empathy-main-window.c:431
+#| msgid "Disconnected"
+msgid "Reconnect"
+msgstr "ਮੁੜ-ਕੁਨੈਕਟ"
 
-#: ../src/empathy-main-window.c:502
-msgid "No error specified"
-msgstr "ਕੋਈ ਗਲਤੀ ਨਹੀਂ ਦਿੱਤੀ"
+#: ../src/empathy-main-window.c:438
+#| msgid "_Edit account"
+msgid "Edit Account"
+msgstr "ਅਕਾਊਂਟ ਸੋਧ"
 
-#: ../src/empathy-main-window.c:505
-msgid "Network error"
-msgstr "ਨੈੱਟਵਰਕ ਗਲਤੀ"
+#: ../src/empathy-main-window.c:445
+#| msgid "Clean"
+msgid "Close"
+msgstr "ਬੰਦ ਕਰੋ"
 
-#: ../src/empathy-main-window.c:508
-msgid "Authentication failed"
-msgstr "ਪਰਮਾਣਕਿਤਾ ਫੇਲ੍ਹ ਹੈ"
-
-#: ../src/empathy-main-window.c:511
-msgid "Encryption error"
-msgstr "ਇੰਕ੍ਰਿਪਸ਼ਨ ਗਲਤੀ"
-
-#: ../src/empathy-main-window.c:514
-msgid "Name in use"
-msgstr "ਵਰਤਣ ਲਈ ਨਾਂ"
-
-#: ../src/empathy-main-window.c:517
-msgid "Certificate not provided"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਨਹੀਂ ਦਿੱਤਾ"
-
-#: ../src/empathy-main-window.c:520
-msgid "Certificate untrusted"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਬੇਭਰੋਸੇਯੋਗ"
-
-#: ../src/empathy-main-window.c:523
-msgid "Certificate expired"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਦੀ ਮਿਆਦ ਪੁੱਗੀ"
-
-#: ../src/empathy-main-window.c:526
-msgid "Certificate not activated"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
-
-#: ../src/empathy-main-window.c:529
-msgid "Certificate hostname mismatch"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਹੋਸਟ-ਨਾਂ ਨਹੀਂ ਮਿਲਦਾ"
-
-#: ../src/empathy-main-window.c:532
-msgid "Certificate fingerprint mismatch"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਫਿੰਗਰ-ਪਰਿੰਟ ਮਿਲਦਾ ਨਹੀਂ"
-
-#: ../src/empathy-main-window.c:535
-msgid "Certificate self-signed"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਖੁਦ-ਦਸਤਖਤੀ ਹੈ"
-
-#: ../src/empathy-main-window.c:538
-msgid "Certificate error"
-msgstr "ਸਰਟੀਫਿਕੇਟ ਗਲਤੀ"
-
-#: ../src/empathy-main-window.c:541
-msgid "Unknown error"
-msgstr "ਅਣਜਾਣ ਗਲਤੀ"
-
-#: ../src/empathy-main-window.c:1288
+#: ../src/empathy-main-window.c:1331
 msgid "Show and edit accounts"
 msgstr "ਅਕਾਊਂਟ ਵੇਖੋ ਅਤੇ ਸੋਧੋ"
 
@@ -2520,73 +2972,89 @@ msgstr "ਪਸੰਦ ਪਰਬੰਧ"
 msgid "N_ormal Size"
 msgstr "ਸਧਾਰਨ ਆਕਾਰ(_o)"
 
-#: ../src/empathy-main-window.ui.h:7
+#: ../src/empathy-main-window.ui.h:7 ../src/empathy-status-icon.ui.h:1
+msgid "New _Call…"
+msgstr "ਨਵੀਂ ਕਾਲ(_C)..."
+
+#: ../src/empathy-main-window.ui.h:8
 msgid "Normal Size With _Avatars"
 msgstr "ਅਵਤਾਰਾਂ ਨਾਲ ਸਧਾਰਨ ਆਕਾਰ(_A)"
 
-#: ../src/empathy-main-window.ui.h:8
-#| msgid "Sort by _name"
+#: ../src/empathy-main-window.ui.h:9
+#| msgid "Preferences"
+msgid "P_references"
+msgstr "ਪਸੰਦ(_r)"
+
+#: ../src/empathy-main-window.ui.h:10
+#| msgid "Protocol"
+msgid "Show P_rotocols"
+msgstr "ਪਰੋਟੋਕਾਲ ਵੇਖੋ(_r)"
+
+#: ../src/empathy-main-window.ui.h:11
 msgid "Sort by _Name"
 msgstr "ਨਾਂ ਨਾਲ ਲੜੀਬੱਧ(_N)"
 
-#: ../src/empathy-main-window.ui.h:9
-#| msgid "Sort by s_tate"
+#: ../src/empathy-main-window.ui.h:12
 msgid "Sort by _Status"
 msgstr "ਹਾਲਤ ਨਾਲ ਲੜੀਬੱਧ(_S)"
 
-#: ../src/empathy-main-window.ui.h:10
+#: ../src/empathy-main-window.ui.h:13
 msgid "_Accounts"
 msgstr "ਅਕਾਊਂਟ(_A)"
 
-#: ../src/empathy-main-window.ui.h:13
+#: ../src/empathy-main-window.ui.h:16
 msgid "_Compact Size"
 msgstr "ਸੰਖੇਪ ਆਕਾਰ(_C)"
 
-#: ../src/empathy-main-window.ui.h:15
+#: ../src/empathy-main-window.ui.h:18
 msgid "_Debug"
 msgstr "ਡੀਬੱਗ(_D)"
 
-#: ../src/empathy-main-window.ui.h:17
+#: ../src/empathy-main-window.ui.h:20
 msgid "_File Transfers"
 msgstr "ਫਾਇਲ ਟਰਾਂਸਫਰ(_F)"
 
-#: ../src/empathy-main-window.ui.h:19
-msgid "_Join..."
-msgstr "ਜੁਆਇੰਨ(_J)..."
+#: ../src/empathy-main-window.ui.h:22
+#| msgid "_Join"
+msgid "_Join…"
+msgstr "ਦਾਖਲ(_J)..."
 
-#: ../src/empathy-main-window.ui.h:20 ../src/empathy-status-icon.ui.h:2
-msgid "_New Conversation..."
-msgstr "ਨਵੀਂ ਗੱਲਬਾਤ(_N)..."
+#: ../src/empathy-main-window.ui.h:23 ../src/empathy-status-icon.ui.h:3
+#| msgid "New Conversation"
+msgid "_New Conversation…"
+msgstr "ਨਵੀਂ ਗੱਲਬਾਤ..."
 
-#: ../src/empathy-main-window.ui.h:21
+#: ../src/empathy-main-window.ui.h:24
 msgid "_Offline Contacts"
 msgstr "ਆਫਲਾਈਨ ਸੰਪਰਕ(_O)"
 
-#: ../src/empathy-main-window.ui.h:22
+#: ../src/empathy-main-window.ui.h:25
 msgid "_Personal Information"
 msgstr "ਨਿੱਜੀ ਜਾਣਕਾਰੀ(_P)"
 
-#: ../src/empathy-main-window.ui.h:24
-msgid "_Previous Conversations"
-msgstr "ਪਿਛਲੀ ਗੱਲਬਾਤ(_P)"
-
-#: ../src/empathy-main-window.ui.h:25
+#: ../src/empathy-main-window.ui.h:27
 msgid "_Room"
 msgstr "ਰੂਮ(_R)"
 
-#: ../src/empathy-new-chatroom-dialog.c:328
+#: ../src/empathy-new-chatroom-dialog.c:338
 msgid "Chat Room"
 msgstr "ਗੱਲਬਾਤ ਰੂਮ"
 
-#: ../src/empathy-new-chatroom-dialog.c:344
+#: ../src/empathy-new-chatroom-dialog.c:354
 msgid "Members"
 msgstr "ਮੈਂਬਰ"
 
-#: ../src/empathy-new-chatroom-dialog.c:494
-#, c-format
-msgctxt ""
-"Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/no "
-"and a number."
+#. Translators: Room/Join's roomlist tooltip. Parameters are a channel name,
+#. yes/no, yes/no and a number.
+#: ../src/empathy-new-chatroom-dialog.c:539, c-format
+#| msgctxt ""
+#| "Room/Join's roomlist tooltip. Parametersare a channel name, yes/no, yes/"
+#| "no and a number."
+#| msgid ""
+#| "<b>%s</b>\n"
+#| "Invite required: %s\n"
+#| "Password required: %s\n"
+#| "Members: %s"
 msgid ""
 "<b>%s</b>\n"
 "Invite required: %s\n"
@@ -2594,20 +3062,20 @@ msgid ""
 "Members: %s"
 msgstr ""
 "<b>%s</b>\n"
-"ਸੱਦਾ ਲੋੜੀਦਾ: %s\n"
+"ਸੱਦਾ ਲੋੜੀਂਦਾ: %s\n"
 "ਪਾਸਵਰਡ ਲੋੜੀਦਾ: %s\n"
 "ਮੈਂਬਰ: %s"
 
-#: ../src/empathy-new-chatroom-dialog.c:496
-#: ../src/empathy-new-chatroom-dialog.c:497
+#: ../src/empathy-new-chatroom-dialog.c:541
+#: ../src/empathy-new-chatroom-dialog.c:542
 msgid "No"
 msgstr "ਨਹੀਂ"
 
-#: ../src/empathy-new-chatroom-dialog.c:524
+#: ../src/empathy-new-chatroom-dialog.c:569
 msgid "Could not start room listing"
 msgstr "ਰੂਮ ਲਿਸਟ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../src/empathy-new-chatroom-dialog.c:534
+#: ../src/empathy-new-chatroom-dialog.c:579
 msgid "Could not stop room listing"
 msgstr "ਰੂਮ ਲਿਸਟ ਕਰਨਾ ਰੋਕਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
@@ -2670,90 +3138,71 @@ msgid "Language"
 msgstr "ਭਾਸ਼ਾ"
 
 #: ../src/empathy-preferences.ui.h:1
-msgid "Allow _GPS usage"
-msgstr "_GPS ਵਰਤੋਂ ਮਨਜ਼ੂਰ"
-
-#: ../src/empathy-preferences.ui.h:2
-msgid "Allow _cellphone usage"
-msgstr "ਸੈਲ-ਫੋਨ ਵਰਤੋਂ ਮਨਜ਼ੂਰ(_C)"
-
-#: ../src/empathy-preferences.ui.h:3
-msgid "Allow _network usage"
-msgstr "ਨੈੱਟਵਰਕ ਵਰਤੋਂ ਮਨਜ਼ੂਰ(_N)"
-
-#: ../src/empathy-preferences.ui.h:4
 msgid "Appearance"
 msgstr "ਦਿੱਖ"
 
-#: ../src/empathy-preferences.ui.h:5
+#: ../src/empathy-preferences.ui.h:2
 msgid "Automatically _connect on startup "
 msgstr "ਸ਼ੁਰੂ ਸਮੇਂ ਆਟੋਮੈਟਿਕ ਹੀ ਕੁਨੈਕਟ ਕਰੋ(_c)"
 
-#: ../src/empathy-preferences.ui.h:6
+#: ../src/empathy-preferences.ui.h:3
 msgid "Behavior"
 msgstr "ਰਵੱਈਆ"
 
-#: ../src/empathy-preferences.ui.h:7
+#: ../src/empathy-preferences.ui.h:4
 msgid "Chat Th_eme:"
 msgstr "ਗੱਲਬਾਤ ਥੀਮ(_e):"
 
-#: ../src/empathy-preferences.ui.h:8
+#: ../src/empathy-preferences.ui.h:5
 msgid "Disable notifications when _away or busy"
 msgstr "ਜਦੋਂ ਦੂਰ ਜਾਂ ਰੁੱਝਿਆ/ਰੁਝੀ ਤਾਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਬੰਦ ਰੱਖੋ(_a)"
 
-#: ../src/empathy-preferences.ui.h:9
+#: ../src/empathy-preferences.ui.h:6
 msgid "Disable sounds when _away or busy"
 msgstr "ਜਦੋਂ ਦੂਰ ਜਾਂ ਰੁਝਿਆ/ਰੁਝੀ ਹੋਵਾਂ ਤਾਂ ਸਾਊਂਡ ਬੰਦ ਰੱਖੋ(_a)"
 
-#: ../src/empathy-preferences.ui.h:10
+#: ../src/empathy-preferences.ui.h:7
 msgid "Enable notifications when a contact comes online"
 msgstr "ਜਦੋਂ ਸੰਪਰਕ ਆਨਲਾਈਨ ਆਵੇ ਤਾਂ ਸੂਚਨਾ ਦਿਓ"
 
-#: ../src/empathy-preferences.ui.h:11
+#: ../src/empathy-preferences.ui.h:8
 msgid "Enable notifications when a contact goes offline"
 msgstr "ਜਦੋਂ ਸੰਪਰਕ ਆਫਲਾਈਨ ਜਾਵੇ ਤਾਂ ਸੂਚਨਾ ਦਿਓ"
 
-#: ../src/empathy-preferences.ui.h:12
+#: ../src/empathy-preferences.ui.h:9
 msgid "Enable notifications when the _chat is not focused"
 msgstr "ਜਦੋਂ ਗੱਲਬਾਤ ਫੋਕਸ ਨਾ ਹੋਵੇ ਤਾਂ ਸੂਚਨਾ ਦਿਓ(_c)"
 
-#: ../src/empathy-preferences.ui.h:13
+#: ../src/empathy-preferences.ui.h:10
 msgid "Enable spell checking for languages:"
 msgstr "ਭਾਸ਼ਾਵਾਂ ਲਈ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕ ਕਰਨਾ ਯੋਗ:"
 
-#: ../src/empathy-preferences.ui.h:14
+#: ../src/empathy-preferences.ui.h:11
 msgid "General"
 msgstr "ਆਮ"
 
-#: ../src/empathy-preferences.ui.h:15
-msgid "Geoclue Settings"
-msgstr "ਭੂਗੋਲਿਕ-ਸੁਰਾਗ ਸੈਟਿੰਗ"
+#: ../src/empathy-preferences.ui.h:13
+#| msgid "Location"
+msgid "Location sources:"
+msgstr "ਟਿਕਾਣਾ ਸਰੋਤ:"
 
-#: ../src/empathy-preferences.ui.h:16
-msgid "Location"
-msgstr "ਟਿਕਾਣਾ"
-
-#: ../src/empathy-preferences.ui.h:17
+#: ../src/empathy-preferences.ui.h:14
 msgid "Notifications"
 msgstr "ਨੋਟੀਫਿਕੇਸ਼ਨ"
 
-#: ../src/empathy-preferences.ui.h:18
+#: ../src/empathy-preferences.ui.h:15
 msgid "Play sound for events"
 msgstr "ਘਟਨਾਵਾਂ ਲਈ ਸਾਊਂਡ ਚਲਾਓ"
 
-#: ../src/empathy-preferences.ui.h:19
+#: ../src/empathy-preferences.ui.h:16
 msgid "Preferences"
 msgstr "ਪਸੰਦ"
 
-#: ../src/empathy-preferences.ui.h:20
+#: ../src/empathy-preferences.ui.h:17
 msgid "Privacy"
 msgstr "ਪਰਾਈਵੇਸੀ"
 
-#: ../src/empathy-preferences.ui.h:21
-#| msgid ""
-#| "Reduced location accuracy means that nothing more precise than your city, "
-#| "state and country will be published.  GPS coordinates will have a random "
-#| "value added (&#xB1;0.25&#xB0;)."
+#: ../src/empathy-preferences.ui.h:18
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
@@ -2762,39 +3211,52 @@ msgstr ""
 "ਟਿਕਾਣਾ ਸ਼ੁੱਧਤਾ ਘਟਾਉਣ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਤੁਹਾਡੇ ਸ਼ਹਿਰ, ਸੂਬਾ ਅਤੇ ਦੇਸ਼ ਤੋਂ ਵੱਧ ਕੁਝ ਵੀ ਵੇਖਾਇਆ ਨਹੀਂ "
 "ਜਾਵੇਗਾ। GPS ਧੁਰਾ ਮੁੱਲ 1 ਦਸ਼ਮਲਵ ਥਾਂ ਨਾਲ ਸ਼ੁੱਧ ਹੋਣਗੇ।"
 
-#: ../src/empathy-preferences.ui.h:22
+#: ../src/empathy-preferences.ui.h:19
 msgid "Show _smileys as images"
 msgstr "ਖੁਸ਼ ਚਿੱਤਰਾਂ ਵਾਂਗ ਵੇਖੋ(_s)"
 
-#: ../src/empathy-preferences.ui.h:23
+#: ../src/empathy-preferences.ui.h:20
 msgid "Show contact _list in rooms"
 msgstr "ਰੂਮ ਵਿੱਚ ਸੰਪਰਕ ਲਿਸਟ ਵੇਖੋ(_l)"
 
-#: ../src/empathy-preferences.ui.h:24
+#: ../src/empathy-preferences.ui.h:21
 msgid "Sounds"
 msgstr "ਸਾਊਂਡ"
 
-#: ../src/empathy-preferences.ui.h:25
+#: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
 msgstr "ਸ਼ਬਦਜੋੜ ਜਾਂਚ"
 
-#: ../src/empathy-preferences.ui.h:26
+#: ../src/empathy-preferences.ui.h:23
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
 msgstr "ਭਾਸ਼ਾ ਦੀ ਲਿਸਟ ਵੇਖਾ ਰਿਹਾ ਹੈ, ਜਿੰਨ੍ਹਾਂ ਲਈ ਤੁਹਾਡੇ ਕੋਲ ਸ਼ਬਦ-ਕੋਸ਼ ਇੰਸਟਾਲ ਹੈ।"
 
-#: ../src/empathy-preferences.ui.h:27
+#: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
 msgstr "ਥੀਮ"
 
-#: ../src/empathy-preferences.ui.h:28
+#: ../src/empathy-preferences.ui.h:25
+#| msgid "Megaphone"
+msgid "_Cellphone"
+msgstr "ਸੈੱਲਫੋਨ(_C)"
+
+#: ../src/empathy-preferences.ui.h:26
 msgid "_Enable bubble notifications"
 msgstr "ਬੁਲਬੁਲਾ ਨੋਟੀਫਿਕੇਸ਼ਨ ਚਾਲੂ(_E)"
 
-#: ../src/empathy-preferences.ui.h:29
+#: ../src/empathy-preferences.ui.h:27
 msgid "_Enable sound notifications"
 msgstr "ਸਾਊਂਡ ਨੋਟੀਫਿਕੇਸ਼ਨ ਚਾਲੂ(_E)"
+
+#: ../src/empathy-preferences.ui.h:28
+msgid "_GPS"
+msgstr "_GPS"
+
+#: ../src/empathy-preferences.ui.h:29
+msgid "_Network (IP, Wi-Fi)"
+msgstr "ਨੈੱਟਵਰਕ (IP, Wi-Fi)(_N) "
 
 #: ../src/empathy-preferences.ui.h:30
 msgid "_Open new chats in separate windows"
@@ -2808,11 +3270,15 @@ msgstr "ਮੇਰੇ ਸੰਪਰਕਾਂ ਲਈ ਟਿਕਾਣਾ ਦੱਸ�
 msgid "_Reduce location accuracy"
 msgstr "ਟਿਕਾਣਾ ਸ਼ੁੱਧਤਾ ਘਟਾਓ(_R)"
 
-#: ../src/empathy-status-icon.ui.h:1
+#: ../src/empathy-status-icon.c:179
+msgid "Respond"
+msgstr "ਜਵਾਬ"
+
+#: ../src/empathy-status-icon.ui.h:2
 msgid "Status"
 msgstr "ਹਾਲਤ"
 
-#: ../src/empathy-status-icon.ui.h:3
+#: ../src/empathy-status-icon.ui.h:4
 msgid "_Quit"
 msgstr "ਬੰਦ ਕਰੋ(_Q)"
 
@@ -2821,79 +3287,206 @@ msgstr "ਬੰਦ ਕਰੋ(_Q)"
 msgid "Unable to start application for service %s: %s"
 msgstr "%s ਸਰਵਿਸ ਲਈ ਐਪਲੀਕੇਸ਼ਨ ਖੋਲ੍ਹਣ ਲਈ ਅਸਮਰੱਥ: %s"
 
-#: ../src/empathy-tube-dispatch.c:447
-#, c-format
+#: ../src/empathy-tube-dispatch.c:447, c-format
+#| msgid ""
+#| "An invitation was offered for service %s, but you don't have the needed "
+#| "application to handle it"
 msgid ""
-"An invitation was offered for service %s, but you don't have the needed "
-"application to handle it"
+"An invitation was offered for service %s, but you don't have the application "
+"necessary to handle it"
 msgstr "ਸਰਵਿਸ %s ਲਈ ਸੱਦਾ ਦਿੱਤਾ ਗਿਆ ਸੀ, ਪਰ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਨੂੰ ਵਰਤਣ ਲਈ ਕਾਰਜ ਨਹੀਂ ਹੈ।"
 
 #: ../src/empathy-map-view.ui.h:1
 msgid "Contact Map View"
 msgstr "ਸੰਪਰਕ ਮੈਪ ਝਲਕ"
 
-#: ../src/empathy-debug-window.c:111 ../src/empathy-debug-window.c:1081
-msgid "Error"
-msgstr "ਗਲਤੀ"
-
-#: ../src/empathy-debug-window.c:114 ../src/empathy-debug-window.c:1075
-msgid "Critical"
-msgstr "ਨਾਜ਼ੁਕ"
-
-#: ../src/empathy-debug-window.c:117 ../src/empathy-debug-window.c:1069
-msgid "Warning"
-msgstr "ਚੇਤਾਵਨੀ"
-
-#: ../src/empathy-debug-window.c:120 ../src/empathy-debug-window.c:1063
-#: ../src/empathy-debug-window.c:1111
-msgid "Message"
-msgstr "ਸੁਨੇਹਾ"
-
-#: ../src/empathy-debug-window.c:123 ../src/empathy-debug-window.c:1057
-msgid "Info"
-msgstr "ਜਾਣਕਾਰੀ"
-
-#: ../src/empathy-debug-window.c:126 ../src/empathy-debug-window.c:1051
-msgid "Debug"
-msgstr "ਡੀਬੱਗ"
-
-#: ../src/empathy-debug-window.c:841
+#: ../src/empathy-debug-window.c:1063
 msgid "Save"
 msgstr "ਸੰਭਾਲੋ"
 
-#: ../src/empathy-debug-window.c:944
+#: ../src/empathy-debug-window.c:1185
 msgid "Debug Window"
 msgstr "ਡੀਬੱਗ ਵਿੰਡੋ"
 
-#: ../src/empathy-debug-window.c:1019
+#: ../src/empathy-debug-window.c:1265
 msgid "Pause"
 msgstr "ਵਿਰਾਮ"
 
-#: ../src/empathy-debug-window.c:1031
+#: ../src/empathy-debug-window.c:1277
 msgid "Level "
 msgstr "ਲੈਵਲ "
 
-#: ../src/empathy-debug-window.c:1100
+#: ../src/empathy-debug-window.c:1297
+msgid "Debug"
+msgstr "ਡੀਬੱਗ"
+
+#: ../src/empathy-debug-window.c:1303
+msgid "Info"
+msgstr "ਜਾਣਕਾਰੀ"
+
+#: ../src/empathy-debug-window.c:1309 ../src/empathy-debug-window.c:1358
+msgid "Message"
+msgstr "ਸੁਨੇਹਾ"
+
+#: ../src/empathy-debug-window.c:1315
+msgid "Warning"
+msgstr "ਚੇਤਾਵਨੀ"
+
+#: ../src/empathy-debug-window.c:1321
+msgid "Critical"
+msgstr "ਨਾਜ਼ੁਕ"
+
+#: ../src/empathy-debug-window.c:1327
+msgid "Error"
+msgstr "ਗਲਤੀ"
+
+#: ../src/empathy-debug-window.c:1346
 msgid "Time"
 msgstr "ਸਮਾਂ"
 
-#: ../src/empathy-debug-window.c:1102
+#: ../src/empathy-debug-window.c:1349
 msgid "Domain"
 msgstr "ਡੋਮੇਨ"
 
-#: ../src/empathy-debug-window.c:1104
+#: ../src/empathy-debug-window.c:1351
 msgid "Category"
 msgstr "ਕੈਟਾਗਰੀ"
 
-#: ../src/empathy-debug-window.c:1106
+#: ../src/empathy-debug-window.c:1353
 msgid "Level"
 msgstr "ਲੈਵਲ"
 
-#: ../src/empathy-debug-window.c:1138
+#: ../src/empathy-debug-window.c:1385
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
 msgstr "ਚੁਣਿਆ ਕੁਨੈਕਸ਼ਨ ਮੈਨੇਜਰ ਰਿਮੋਟ ਡੀਬੱਗ ਇਕਸਟੈਨਸ਼ਨ ਲਈ ਸਹਾਇਕ ਨਹੀਂ ਹੈ।"
+
+#: ../src/empathy-invite-participant-dialog.c:34
+#: ../src/empathy-invite-participant-dialog.c:48
+msgid "Invite Participant"
+msgstr "ਭਾਗ ਲੈਣ ਵਾਲਿਆਂ ਨੂੰ ਸੱਦਾ"
+
+#: ../src/empathy-invite-participant-dialog.c:35
+msgid "Choose a contact to invite into the conversation:"
+msgstr ""
+
+#~ msgid "Can't set an empty display name"
+#~ msgstr "ਖਾਲੀ ਡਿਸਪਲੇਅ ਨਾਂ ਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ"
+
+#~ msgid "What is your Windows Live user name?"
+#~ msgstr "ਤੁਹਾਡਾ ਵਿੰਡੋਜ਼ ਲਾਈਵ ਯੂਜ਼ਰ ਨਾਂ ਕੀ ਹੈ?"
+
+#~ msgid "Unsupported command"
+#~ msgstr "ਗ਼ੈਰ-ਸਹਾਇਕ ਕਮਾਂਡ"
+
+#~ msgid "_View Previous Conversations"
+#~ msgstr "ਪਿਛਲੀ ਗੱਲਬਾਤ ਵੇਖੋ(_V)"
+
+#~ msgid "<b>Location</b>"
+#~ msgstr "<b>ਟਿਕਾਣਾ</b>"
+
+#~ msgid "Email:"
+#~ msgstr "ਈਮੇਲ:"
+
+#~ msgid "C_all"
+#~ msgstr "ਕਾਲ(_a)"
+
+#~ msgid "Edit Custom Messages..."
+#~ msgstr "ਪਸੰਦੀਦਾ ਸੁਨੇਹੇ ਸੋਧੋ..."
+
+#~ msgid ""
+#~ "The contact to display in the applet. Empty means no contact is displayed."
+#~ msgstr "ਐਪਲਿਟ ਵਿੱਚ ਵੇਖਾਉਣ ਲਈ ਸੰਪਰਕ। ਖਾਲੀ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਕੋਈ ਵੀ ਸੰਪਰਕ ਨਹੀਂ ਵੇਖਾਇਆ।"
+
+#~ msgid "The contact's avatar token. Empty means contact has no avatar."
+#~ msgstr "ਸੰਪਰਕ ਦਾ ਅਵਤਾਰ ਟੋਕਨ ਹੈ। ਖਾਲੀ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਕੋਈ ਅਵਤਾਰ ਨਹੀਂ।"
+
+#~ msgid "Talk!"
+#~ msgstr "ਗੱਲ!"
+
+#~ msgid "_Information"
+#~ msgstr "ਜਾਣਕਾਰੀ(_I)"
+
+#~ msgid "_Preferences"
+#~ msgstr "ਮੇਰੀ ਪਸੰਦ(_P)"
+
+#~ msgid "Please configure a contact."
+#~ msgstr "ਇੱਕ ਸੰਪਰਕ ਲਈ ਸੰਰਚਨਾ ਕਰੋ ਜੀ।"
+
+#~ msgid "Select contact..."
+#~ msgstr "ਸੰਪਰਕ ਸ਼ਾਮਲ..."
+
+#~ msgid "Presence"
+#~ msgstr "ਮੌਜੂਦਗੀ"
+
+#~ msgid "Set your own presence"
+#~ msgstr "ਆਪਣੀ ਮੌਜੂਦਗੀ ਦਿਓ"
+
+#~ msgid ""
+#~ "You are about to remove your %s account!\n"
+#~ "Are you sure you want to proceed?"
+#~ msgstr ""
+#~ "ਤੁਸੀਂ %s ਅਕਾਊਂਟ ਹਟਾਉਣ ਲਈ ਤਿਆਰ ਹੋ!\n"
+#~ "ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
+
+#~ msgid ""
+#~ "Any associated conversations and chat rooms will NOT be removed if you "
+#~ "decide to proceed.\n"
+#~ "\n"
+#~ "Should you decide to add the account back at a later time, they will "
+#~ "still be available."
+#~ msgstr ""
+#~ "ਜੇ ਤੁਸੀਂ ਅੱਗੇ ਜਾਣ ਦਾ ਫੈਸਲਾ ਕੀਤਾ ਤਾਂ ਕੋਈ ਵੀ ਸਬੰਧਿਤ ਗੱਲਬਾਤ ਅਤੇ ਗੱਲਬਾਤ ਰੂਮ ਹਟਾਏ ਨਹੀਂ "
+#~ "ਜਾਣਗੇ।\n"
+#~ "\n"
+#~ "ਕੀ ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਅਕਾਊਂਟ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਹ ਤਾਂ ਵੀ ਉਪਲੱਬਧ ਰਹਿਣਗੇ।"
+
+#~ msgid "Add new"
+#~ msgstr "ਨਵਾਂ ਸ਼ਾਮਲ"
+
+#~ msgid "Cr_eate"
+#~ msgstr "ਬਣਾਓ(_e)"
+
+#~ msgid "_Add..."
+#~ msgstr "ਸ਼ਾਮਲ(_A)..."
+
+#~ msgid "_Reuse an existing account"
+#~ msgstr "ਮੌਜੂਦਾ ਅਕਾਊਂਟ ਨੂੰ ਵਰਤੋਂ(_R)"
+
+#~| msgid "Account"
+#~ msgid "account"
+#~ msgstr "ਅਕਾਊਂਟ"
+
+#~ msgid "Conversations (%d)"
+#~ msgstr "ਗੱਲਬਾਤ (%d)"
+
+#~ msgid "_Contact"
+#~ msgstr "ਸੰਪਰਕ(_C)"
+
+#~ msgid "No error specified"
+#~ msgstr "ਕੋਈ ਗਲਤੀ ਨਹੀਂ ਦਿੱਤੀ"
+
+#~ msgid "Unknown error"
+#~ msgstr "ਅਣਜਾਣ ਗਲਤੀ"
+
+#~ msgid "_Join..."
+#~ msgstr "ਜੁਆਇੰਨ(_J)..."
+
+#~ msgid "_New Conversation..."
+#~ msgstr "ਨਵੀਂ ਗੱਲਬਾਤ(_N)..."
+
+#~ msgid "Allow _GPS usage"
+#~ msgstr "_GPS ਵਰਤੋਂ ਮਨਜ਼ੂਰ"
+
+#~ msgid "Allow _cellphone usage"
+#~ msgstr "ਸੈਲ-ਫੋਨ ਵਰਤੋਂ ਮਨਜ਼ੂਰ(_C)"
+
+#~ msgid "Allow _network usage"
+#~ msgstr "ਨੈੱਟਵਰਕ ਵਰਤੋਂ ਮਨਜ਼ੂਰ(_N)"
+
+#~ msgid "Geoclue Settings"
+#~ msgstr "ਭੂਗੋਲਿਕ-ਸੁਰਾਗ ਸੈਟਿੰਗ"
 
 #~ msgid "Empathy Instant Messenger"
 #~ msgstr "ਇੰਪੈਂਥੀ ਤੁਰੰਤ ਸੁਨੇਹੇਦਾਰ"
@@ -3072,9 +3665,6 @@ msgstr "ਚੁਣਿਆ ਕੁਨੈਕਸ਼ਨ ਮੈਨੇਜਰ ਰਿਮੋ
 
 #~ msgid "Browse:"
 #~ msgstr "ਝਲਕ:"
-
-#~ msgid "Join"
-#~ msgstr "ਦਾਖਲ"
 
 #~ msgid "Join New"
 #~ msgstr "ਨਵੇਂ 'ਚ ਦਾਖਲ"
