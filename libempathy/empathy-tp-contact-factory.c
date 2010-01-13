@@ -54,6 +54,8 @@ typedef struct {
 	guint           avatar_max_size;
 	gboolean        can_request_ft;
 	gboolean        can_request_st;
+	/* TRUE if ContactCapabilities is implemented by the Connection */
+	gboolean        contact_caps_supported;
 } EmpathyTpContactFactoryPriv;
 
 G_DEFINE_TYPE (EmpathyTpContactFactory, empathy_tp_contact_factory, G_TYPE_OBJECT);
@@ -684,8 +686,12 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 
 		caps = empathy_contact_get_capabilities (contact);
 
-		if (priv->can_request_ft)
-			caps |= EMPATHY_CAPABILITIES_FT;
+		if (!priv->contact_caps_supported) {
+			/* ContactCapabilities is not supported; assume all contacts can do file
+			 * transfer if it's implemented in the CM */
+			if (priv->can_request_ft)
+				caps |= EMPATHY_CAPABILITIES_FT;
+		}
 
 		if (priv->can_request_st)
 			caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
@@ -748,8 +754,12 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 	caps = empathy_contact_get_capabilities (contact);
 
 	/* Set the FT capability */
-	if (priv->can_request_ft) {
-		caps |= EMPATHY_CAPABILITIES_FT;
+	if (!priv->contact_caps_supported) {
+		/* ContactCapabilities is not supported; assume all contacts can do file
+		 * transfer if it's implemented in the CM */
+		if (priv->can_request_ft) {
+			caps |= EMPATHY_CAPABILITIES_FT;
+		}
 	}
 
 	/* Set the Stream Tube capability */
@@ -1342,6 +1352,10 @@ connection_ready_cb (TpConnection *connection,
 									   G_OBJECT (tp_factory),
 									   NULL);
 
+	if (tp_proxy_has_interface_by_id (connection,
+				TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_CAPABILITIES)) {
+		priv->contact_caps_supported = TRUE;
+	}
 
 	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
 									  -1,
@@ -1474,6 +1488,7 @@ empathy_tp_contact_factory_init (EmpathyTpContactFactory *tp_factory)
 	tp_factory->priv = priv;
 	priv->can_request_ft = FALSE;
 	priv->can_request_st = FALSE;
+	priv->contact_caps_supported = FALSE;
 }
 
 static GHashTable *factories = NULL;
