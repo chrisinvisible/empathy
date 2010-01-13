@@ -731,6 +731,75 @@ tp_contact_factory_got_avatar_requirements_cb (TpConnection *proxy,
 }
 
 static void
+update_contact_capabilities (EmpathyTpContactFactory *self,
+			     GHashTable *caps)
+{
+	GHashTableIter iter;
+	gpointer key, value;
+
+	g_hash_table_iter_init (&iter, caps);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		TpHandle handle = GPOINTER_TO_UINT (key);
+		GPtrArray *classes = value;
+		guint i;
+		EmpathyContact *contact;
+		EmpathyCapabilities  capabilities;
+
+		contact = tp_contact_factory_find_by_handle (self, handle);
+		if (contact == NULL)
+			continue;
+
+		capabilities = empathy_contact_get_capabilities (contact);
+		capabilities &= ~EMPATHY_CAPABILITIES_UNKNOWN;
+
+		for (i = 0; i < classes->len; i++) {
+			GValueArray *class_struct;
+			GHashTable *fixed_prop;
+			TpHandleType handle_type;
+			const gchar *chan_type;
+
+			class_struct = g_ptr_array_index (classes, i);
+			fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
+
+			handle_type = tp_asv_get_uint32 (fixed_prop,
+				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
+			if (handle_type != TP_HANDLE_TYPE_CONTACT)
+				continue;
+
+			chan_type = tp_asv_get_string (fixed_prop,
+				TP_IFACE_CHANNEL ".ChannelType");
+
+			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+				capabilities |= EMPATHY_CAPABILITIES_FT;
+		}
+
+		DEBUG ("Changing capabilities for contact %s (%d) to %d",
+			empathy_contact_get_id (contact),
+			empathy_contact_get_handle (contact),
+			capabilities);
+
+		empathy_contact_set_capabilities (contact, capabilities);
+	}
+}
+
+static void
+tp_contact_factory_got_contact_capabilities (TpConnection *connection,
+					     GHashTable *caps,
+					     const GError *error,
+					     gpointer user_data,
+					     GObject *weak_object)
+{
+	EmpathyTpContactFactory *self = EMPATHY_TP_CONTACT_FACTORY (weak_object);
+
+	if (error != NULL) {
+		DEBUG ("Error: %s", error->message);
+		return;
+	}
+
+	update_contact_capabilities (self, caps);
+}
+
+static void
 tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 				EmpathyContact          *contact)
 {
@@ -802,6 +871,13 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 									 tp_factory,
 									 NULL,
 									 NULL);
+	}
+
+	if (priv->contact_caps_supported) {
+		tp_cli_connection_interface_contact_capabilities_call_get_contact_capabilities (
+			priv->connection, -1, &handles,
+			tp_contact_factory_got_contact_capabilities, NULL, NULL,
+			G_OBJECT (tp_factory));
 	}
 
 	DEBUG ("Contact added: %s (%d)",
@@ -1318,6 +1394,17 @@ tp_contact_factory_finalize (GObject *object)
 }
 
 static void
+tp_contact_factory_contact_capabilities_changed_cb (TpConnection *connection,
+						    GHashTable *caps,
+						    gpointer user_data,
+						    GObject *weak_object)
+{
+	EmpathyTpContactFactory *self = EMPATHY_TP_CONTACT_FACTORY (weak_object);
+
+	update_contact_capabilities (self, caps);
+}
+
+static void
 connection_ready_cb (TpConnection *connection,
 				const GError *error,
 				gpointer user_data)
@@ -1355,6 +1442,10 @@ connection_ready_cb (TpConnection *connection,
 	if (tp_proxy_has_interface_by_id (connection,
 				TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_CAPABILITIES)) {
 		priv->contact_caps_supported = TRUE;
+
+		tp_cli_connection_interface_contact_capabilities_connect_to_contact_capabilities_changed (
+			priv->connection, tp_contact_factory_contact_capabilities_changed_cb,
+			NULL, NULL, G_OBJECT (tp_factory), NULL);
 	}
 
 	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
