@@ -755,11 +755,13 @@ update_contact_capabilities (EmpathyTpContactFactory *self,
 		for (i = 0; i < classes->len; i++) {
 			GValueArray *class_struct;
 			GHashTable *fixed_prop;
+			GStrv allowed_prop;
 			TpHandleType handle_type;
 			const gchar *chan_type;
 
 			class_struct = g_ptr_array_index (classes, i);
 			fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
+			allowed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 1));
 
 			handle_type = tp_asv_get_uint32 (fixed_prop,
 				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
@@ -772,8 +774,21 @@ update_contact_capabilities (EmpathyTpContactFactory *self,
 			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
 				capabilities |= EMPATHY_CAPABILITIES_FT;
 
-			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE))
+			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE)) {
 				capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+			}
+			else if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA)) {
+				guint j;
+
+				for (j = 0; allowed_prop[j] != NULL; j++) {
+					if (!tp_strdiff (allowed_prop[j],
+							TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio"))
+						capabilities |= EMPATHY_CAPABILITIES_AUDIO;
+					else if (!tp_strdiff (allowed_prop[j],
+							TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo"))
+						capabilities |= EMPATHY_CAPABILITIES_VIDEO;
+				}
+			}
 		}
 
 		DEBUG ("Changing capabilities for contact %s (%d) to %d",
