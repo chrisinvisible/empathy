@@ -691,10 +691,10 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 			 * transfer if it's implemented in the CM */
 			if (priv->can_request_ft)
 				caps |= EMPATHY_CAPABILITIES_FT;
-		}
 
-		if (priv->can_request_st)
-			caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+			if (priv->can_request_st)
+				caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+		}
 
 		empathy_contact_set_capabilities (contact, caps);
 	}
@@ -771,6 +771,9 @@ update_contact_capabilities (EmpathyTpContactFactory *self,
 
 			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
 				capabilities |= EMPATHY_CAPABILITIES_FT;
+
+			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE))
+				capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
 		}
 
 		DEBUG ("Changing capabilities for contact %s (%d) to %d",
@@ -829,11 +832,11 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 		if (priv->can_request_ft) {
 			caps |= EMPATHY_CAPABILITIES_FT;
 		}
-	}
 
-	/* Set the Stream Tube capability */
-	if (priv->can_request_st) {
-		caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+		/* Set the Stream Tube capability */
+		if (priv->can_request_st) {
+			caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+		}
 	}
 
 	empathy_contact_set_capabilities (contact, caps);
