@@ -857,7 +857,13 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 			G_OBJECT (tp_factory));
 	}
 
-	if (tp_proxy_has_interface_by_id (priv->connection,
+	if (priv->contact_caps_supported) {
+		tp_cli_connection_interface_contact_capabilities_call_get_contact_capabilities (
+			priv->connection, -1, &handles,
+			tp_contact_factory_got_contact_capabilities, NULL, NULL,
+			G_OBJECT (tp_factory));
+	}
+	else if (tp_proxy_has_interface_by_id (priv->connection,
 			TP_IFACE_QUARK_CONNECTION_INTERFACE_CAPABILITIES)) {
 		tp_cli_connection_interface_capabilities_call_get_capabilities (
 			priv->connection, -1, &handles,
@@ -874,13 +880,6 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 									 tp_factory,
 									 NULL,
 									 NULL);
-	}
-
-	if (priv->contact_caps_supported) {
-		tp_cli_connection_interface_contact_capabilities_call_get_contact_capabilities (
-			priv->connection, -1, &handles,
-			tp_contact_factory_got_contact_capabilities, NULL, NULL,
-			G_OBJECT (tp_factory));
 	}
 
 	DEBUG ("Contact added: %s (%d)",
@@ -1429,18 +1428,6 @@ connection_ready_cb (TpConnection *connection,
 									 NULL, NULL,
 									 G_OBJECT (tp_factory),
 									 NULL);
-	tp_cli_connection_interface_capabilities_connect_to_capabilities_changed (priv->connection,
-										  tp_contact_factory_capabilities_changed_cb,
-										  NULL, NULL,
-										  G_OBJECT (tp_factory),
-										  NULL);
-
-
-	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
-									   tp_contact_factory_location_updated_cb,
-									   NULL, NULL,
-									   G_OBJECT (tp_factory),
-									   NULL);
 
 	if (tp_proxy_has_interface_by_id (connection,
 				TP_IFACE_QUARK_CONNECTION_INTERFACE_CONTACT_CAPABILITIES)) {
@@ -1450,6 +1437,19 @@ connection_ready_cb (TpConnection *connection,
 			priv->connection, tp_contact_factory_contact_capabilities_changed_cb,
 			NULL, NULL, G_OBJECT (tp_factory), NULL);
 	}
+	else {
+		tp_cli_connection_interface_capabilities_connect_to_capabilities_changed (priv->connection,
+											  tp_contact_factory_capabilities_changed_cb,
+											  NULL, NULL,
+											  G_OBJECT (tp_factory),
+											  NULL);
+	}
+
+	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
+									   tp_contact_factory_location_updated_cb,
+									   NULL, NULL,
+									   G_OBJECT (tp_factory),
+									   NULL);
 
 	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
 									  -1,
