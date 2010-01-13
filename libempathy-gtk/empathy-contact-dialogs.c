@@ -415,6 +415,7 @@ empathy_new_contact_dialog_show_with_contact (GtkWindow *parent,
 						     EMPATHY_CONTACT_WIDGET_EDIT_ACCOUNT |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ID |
 						     EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
+	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
 	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
 			    TRUE, TRUE, 0);

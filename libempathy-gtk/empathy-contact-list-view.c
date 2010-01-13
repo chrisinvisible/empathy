@@ -175,6 +175,8 @@ contact_list_view_query_tooltip_cb (EmpathyContactListView *view,
 		priv->tooltip_widget = empathy_contact_widget_new (contact,
 			EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP |
 			EMPATHY_CONTACT_WIDGET_SHOW_LOCATION);
+		gtk_container_set_border_width (
+			GTK_CONTAINER (priv->tooltip_widget), 8);
 		g_object_ref (priv->tooltip_widget);
 		g_signal_connect (priv->tooltip_widget, "destroy",
 				  G_CALLBACK (contact_list_view_tooltip_destroy_cb),
