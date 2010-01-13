@@ -127,7 +127,6 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 	xmlSaveFormatFileEnc (priv->file, doc, "utf-8", 1);
 	xmlFreeDoc (doc);
 
-	xmlCleanupParser ();
 	xmlMemoryDump ();
 
 	return TRUE;

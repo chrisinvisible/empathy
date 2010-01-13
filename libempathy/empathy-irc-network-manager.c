@@ -719,7 +719,6 @@ irc_network_manager_file_save (EmpathyIrcNetworkManager *self)
   xmlSaveFormatFileEnc (priv->user_file, doc, "utf-8", 1);
   xmlFreeDoc (doc);
 
-  xmlCleanupParser ();
   xmlMemoryDump ();
 
   priv->have_to_save = FALSE;

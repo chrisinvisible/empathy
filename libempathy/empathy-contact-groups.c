@@ -221,7 +221,6 @@ contact_groups_file_save (void)
 	xmlSaveFormatFileEnc (file, doc, "utf-8", 1);
 	xmlFreeDoc (doc);
 
-	xmlCleanupParser ();
 	xmlMemoryDump ();
 
 	g_free (file);

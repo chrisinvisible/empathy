@@ -294,7 +294,6 @@ empathy_plist_parse_from_file (const char *filename)
 	parsed_doc = empathy_plist_parse (root_element);
 
 	xmlFreeDoc (doc);
-	xmlCleanupParser ();
 
 	return parsed_doc;
 }
@@ -329,7 +328,6 @@ empathy_plist_parse_from_memory (const char *data, gsize len)
 	parsed_doc = empathy_plist_parse (root_element);
 
 	xmlFreeDoc (doc);
-	xmlCleanupParser ();
 
 	return parsed_doc;
 }
