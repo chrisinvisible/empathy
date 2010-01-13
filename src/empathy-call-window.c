@@ -1432,7 +1432,7 @@ empathy_call_window_request_resource_cb (EmpathyCallHandler *handler,
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  if (type != TP_MEDIA_STREAM_TYPE_VIDEO)
+  if (type != FS_MEDIA_TYPE_VIDEO)
     return TRUE;
 
   if (direction == FS_DIRECTION_RECV)
