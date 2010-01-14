@@ -268,6 +268,7 @@ account_widget_irc_combobox_network_changed_cb (GtkWidget *combobox,
                                                 EmpathyAccountWidgetIrc *settings)
 {
   update_server_params (settings);
+  empathy_account_widget_changed (settings->self);
 }
 
 static void
