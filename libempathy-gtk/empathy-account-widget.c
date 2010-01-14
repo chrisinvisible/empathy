@@ -168,12 +168,8 @@ static void
 account_widget_entry_changed_cb (GtkEditable *entry,
     EmpathyAccountWidget *self)
 {
-  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-
   account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
-  account_widget_handle_control_buttons_sensitivity (self);
-
-  priv->contains_pending_changes = TRUE;
+  empathy_account_widget_changed (self);
 }
 
 static void
@@ -214,8 +210,7 @@ account_widget_int_changed_cb (GtkWidget *widget,
       g_return_if_reached ();
     }
 
-  account_widget_handle_control_buttons_sensitivity (self);
-  priv->contains_pending_changes = TRUE;
+  empathy_account_widget_changed (self);
 }
 
 static void
@@ -247,8 +242,7 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
       empathy_account_settings_set_boolean (priv->settings, param_name, value);
     }
 
-  account_widget_handle_control_buttons_sensitivity (self);
-  priv->contains_pending_changes = TRUE;
+  empathy_account_widget_changed (self);
 }
 
 static void
@@ -265,8 +259,7 @@ account_widget_forget_clicked_cb (GtkWidget *button,
   empathy_account_settings_unset (priv->settings, param_name);
   gtk_entry_set_text (GTK_ENTRY (priv->entry_password), "");
 
-  account_widget_handle_control_buttons_sensitivity (self);
-  priv->contains_pending_changes = TRUE;
+  empathy_account_widget_changed (self);
 }
 
 static void
@@ -345,8 +338,7 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
       empathy_account_settings_set_string (priv->settings, param_name, value);
     }
 
-  account_widget_handle_control_buttons_sensitivity (self);
-  priv->contains_pending_changes = TRUE;
+  empathy_account_widget_changed (self);
 }
 
 void
