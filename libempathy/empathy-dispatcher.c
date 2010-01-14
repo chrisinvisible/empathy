@@ -45,7 +45,6 @@
 #include "empathy-dispatcher.h"
 #include "empathy-handler.h"
 #include "empathy-utils.h"
-#include "empathy-tube-handler.h"
 #include "empathy-tp-contact-factory.h"
 #include "empathy-chatroom-manager.h"
 #include "empathy-utils.h"

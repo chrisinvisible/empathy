@@ -23,9 +23,7 @@ LDADD =								\
 bin_PROGRAMS =			\
 	empathy
 
-BUILT_SOURCES= \
-	empathy-tube-dispatch-enumtypes.h \
-	empathy-tube-dispatch-enumtypes.c
+BUILT_SOURCES=
 
 empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
@@ -49,7 +47,6 @@ empathy_handwritten_source = \
 	empathy-preferences.c empathy-preferences.h			\
 	empathy-sidebar.c empathy-sidebar.h				\
 	empathy-status-icon.c empathy-status-icon.h			\
-	empathy-tube-dispatch.c empathy-tube-dispatch.h			\
 	empathy.c
 
 empathy_SOURCES =							\

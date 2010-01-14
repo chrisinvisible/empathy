@@ -61,7 +61,6 @@ libempathy_headers =				\
 	empathy-tp-contact-list.h		\
 	empathy-tp-file.h			\
 	empathy-tp-roomlist.h			\
-	empathy-tube-handler.h			\
 	empathy-types.h				\
 	empathy-utils.h
 
@@ -102,7 +101,6 @@ libempathy_la_SOURCES =					\
 	empathy-tp-contact-list.c			\
 	empathy-tp-file.c				\
 	empathy-tp-roomlist.c				\
-	empathy-tube-handler.c				\
 	empathy-utils.c
 
 # do not distribute generated files
