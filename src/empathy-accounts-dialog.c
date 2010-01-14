@@ -820,7 +820,7 @@ accounts_dialog_name_editing_started_cb (GtkCellRenderer *renderer,
 }
 
 static void
-accounts_dialog_model_pixbuf_data_func (GtkTreeViewColumn *tree_column,
+accounts_dialog_model_protocol_pixbuf_data_func (GtkTreeViewColumn *tree_column,
     GtkCellRenderer *cell,
     GtkTreeModel *model,
     GtkTreeIter *iter,
@@ -1037,12 +1037,12 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (view, column);
 
-  /* Icon renderer */
+  /* Protocol icon renderer */
   cell = gtk_cell_renderer_pixbuf_new ();
   gtk_tree_view_column_pack_start (column, cell, FALSE);
   gtk_tree_view_column_set_cell_data_func (column, cell,
       (GtkTreeCellDataFunc)
-      accounts_dialog_model_pixbuf_data_func,
+      accounts_dialog_model_protocol_pixbuf_data_func,
       dialog,
       NULL);
 
