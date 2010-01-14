@@ -630,6 +630,57 @@ tp_contact_factory_location_updated_cb (TpConnection      *tp_conn,
 	tp_contact_factory_update_location (tp_factory, handle, location);
 }
 
+static EmpathyCapabilities
+channel_classes_to_capabilities (GPtrArray *classes,
+				 gboolean audio_video)
+{
+	EmpathyCapabilities capabilities = 0;
+	guint i;
+
+	for (i = 0; i < classes->len; i++) {
+		GValueArray *class_struct;
+		GHashTable *fixed_prop;
+		GStrv allowed_prop;
+		TpHandleType handle_type;
+		const gchar *chan_type;
+
+		class_struct = g_ptr_array_index (classes, i);
+		fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
+		allowed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 1));
+
+		handle_type = tp_asv_get_uint32 (fixed_prop,
+			TP_IFACE_CHANNEL ".TargetHandleType", NULL);
+		if (handle_type != TP_HANDLE_TYPE_CONTACT)
+			continue;
+
+		chan_type = tp_asv_get_string (fixed_prop,
+			TP_IFACE_CHANNEL ".ChannelType");
+
+		if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER)) {
+			capabilities |= EMPATHY_CAPABILITIES_FT;
+		}
+
+		else if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE)) {
+			capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+		}
+		else if (audio_video && !tp_strdiff (chan_type,
+			TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA)) {
+			guint j;
+
+			for (j = 0; allowed_prop[j] != NULL; j++) {
+				if (!tp_strdiff (allowed_prop[j],
+						TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio"))
+					capabilities |= EMPATHY_CAPABILITIES_AUDIO;
+				else if (!tp_strdiff (allowed_prop[j],
+						TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo"))
+					capabilities |= EMPATHY_CAPABILITIES_VIDEO;
+			}
+		}
+	}
+
+	return capabilities;
+}
+
 static void
 get_requestable_channel_classes_cb (TpProxy *connection,
 				    const GValue *value,
@@ -640,8 +691,8 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 	EmpathyTpContactFactory     *self = EMPATHY_TP_CONTACT_FACTORY (weak_object);
 	EmpathyTpContactFactoryPriv *priv = GET_PRIV (self);
 	GPtrArray                   *classes;
-	guint                        i;
 	GList                       *l;
+	EmpathyCapabilities         capabilities;
 
 	if (error != NULL) {
 		DEBUG ("Error: %s", error->message);
@@ -649,32 +700,13 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 	}
 
 	classes = g_value_get_boxed (value);
-	for (i = 0; i < classes->len; i++) {
-		GValueArray *class_struct;
-		GHashTable *fixed_prop;
-		GValue *chan_type, *handle_type;
 
-		class_struct = g_ptr_array_index (classes, i);
-		fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
+	capabilities = channel_classes_to_capabilities (classes, FALSE);
+	if ((capabilities & EMPATHY_CAPABILITIES_FT) != 0)
+		priv->can_request_ft = TRUE;
 
-		handle_type = g_hash_table_lookup (fixed_prop,
-			TP_IFACE_CHANNEL ".TargetHandleType");
-		if (handle_type == NULL ||
-		    g_value_get_uint (handle_type) != TP_HANDLE_TYPE_CONTACT)
-			continue;
-
-		chan_type = g_hash_table_lookup (fixed_prop,
-			TP_IFACE_CHANNEL ".ChannelType");
-		if (chan_type == NULL)
-			continue;
-
-		if (!tp_strdiff (g_value_get_string (chan_type),
-		    TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
-			priv->can_request_ft = TRUE;
-		else if (!tp_strdiff (g_value_get_string (chan_type),
-		         TP_IFACE_CHANNEL_TYPE_STREAM_TUBE))
-			priv->can_request_st = TRUE;
-	}
+	if ((capabilities & EMPATHY_CAPABILITIES_STREAM_TUBE) != 0)
+		priv->can_request_st = TRUE;
 
 	if (!priv->can_request_ft && !priv->can_request_st)
 		return ;
@@ -741,7 +773,6 @@ update_contact_capabilities (EmpathyTpContactFactory *self,
 	while (g_hash_table_iter_next (&iter, &key, &value)) {
 		TpHandle handle = GPOINTER_TO_UINT (key);
 		GPtrArray *classes = value;
-		guint i;
 		EmpathyContact *contact;
 		EmpathyCapabilities  capabilities;
 
@@ -752,44 +783,7 @@ update_contact_capabilities (EmpathyTpContactFactory *self,
 		capabilities = empathy_contact_get_capabilities (contact);
 		capabilities &= ~EMPATHY_CAPABILITIES_UNKNOWN;
 
-		for (i = 0; i < classes->len; i++) {
-			GValueArray *class_struct;
-			GHashTable *fixed_prop;
-			GStrv allowed_prop;
-			TpHandleType handle_type;
-			const gchar *chan_type;
-
-			class_struct = g_ptr_array_index (classes, i);
-			fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
-			allowed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 1));
-
-			handle_type = tp_asv_get_uint32 (fixed_prop,
-				TP_IFACE_CHANNEL ".TargetHandleType", NULL);
-			if (handle_type != TP_HANDLE_TYPE_CONTACT)
-				continue;
-
-			chan_type = tp_asv_get_string (fixed_prop,
-				TP_IFACE_CHANNEL ".ChannelType");
-
-			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
-				capabilities |= EMPATHY_CAPABILITIES_FT;
-
-			if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE)) {
-				capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
-			}
-			else if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA)) {
-				guint j;
-
-				for (j = 0; allowed_prop[j] != NULL; j++) {
-					if (!tp_strdiff (allowed_prop[j],
-							TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio"))
-						capabilities |= EMPATHY_CAPABILITIES_AUDIO;
-					else if (!tp_strdiff (allowed_prop[j],
-							TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo"))
-						capabilities |= EMPATHY_CAPABILITIES_VIDEO;
-				}
-			}
-		}
+		capabilities |= channel_classes_to_capabilities (classes, TRUE);
 
 		DEBUG ("Changing capabilities for contact %s (%d) to %d",
 			empathy_contact_get_id (contact),
