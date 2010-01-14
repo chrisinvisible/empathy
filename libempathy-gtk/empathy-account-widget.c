@@ -1870,3 +1870,13 @@ empathy_account_widget_get_default_display_name (EmpathyAccountWidget *self)
 
   return default_display_name;
 }
+
+/* Used by subclass to indicate that widget contains pending changes */
+void
+empathy_account_widget_changed (EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  account_widget_handle_control_buttons_sensitivity (self);
+  priv->contains_pending_changes = TRUE;
+}

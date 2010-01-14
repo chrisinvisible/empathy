@@ -73,6 +73,9 @@ void empathy_account_widget_discard_pending_changes
 gchar * empathy_account_widget_get_default_display_name (
     EmpathyAccountWidget *widget);
 
+/* protected methods */
+void empathy_account_widget_changed (EmpathyAccountWidget *widget);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_WIDGET_H__ */
