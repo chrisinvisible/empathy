@@ -52,6 +52,9 @@ typedef struct {
 	guint           avatar_max_width;
 	guint           avatar_max_height;
 	guint           avatar_max_size;
+	/* can_request_ft and can_request_st are meaningful only if the connection
+	 * doesn't implement ContactCapabilities. If it's implemented, we use it to
+	 * check if contacts support file transfer and stream tubes. */
 	gboolean        can_request_ft;
 	gboolean        can_request_st;
 	/* TRUE if ContactCapabilities is implemented by the Connection */
@@ -701,12 +704,17 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 
 	classes = g_value_get_boxed (value);
 
+	DEBUG ("ContactCapabilities is not implemented; use RCC");
 	capabilities = channel_classes_to_capabilities (classes, FALSE);
-	if ((capabilities & EMPATHY_CAPABILITIES_FT) != 0)
+	if ((capabilities & EMPATHY_CAPABILITIES_FT) != 0) {
+		DEBUG ("Assume all contacts support FT as CM implements it");
 		priv->can_request_ft = TRUE;
+	}
 
-	if ((capabilities & EMPATHY_CAPABILITIES_STREAM_TUBE) != 0)
+	if ((capabilities & EMPATHY_CAPABILITIES_STREAM_TUBE) != 0) {
+		DEBUG ("Assume all contacts support stream tubes as CM implements them");
 		priv->can_request_st = TRUE;
+	}
 
 	if (!priv->can_request_ft && !priv->can_request_st)
 		return ;
@@ -718,15 +726,13 @@ get_requestable_channel_classes_cb (TpProxy *connection,
 
 		caps = empathy_contact_get_capabilities (contact);
 
-		if (!priv->contact_caps_supported) {
-			/* ContactCapabilities is not supported; assume all contacts can do file
-			 * transfer if it's implemented in the CM */
-			if (priv->can_request_ft)
-				caps |= EMPATHY_CAPABILITIES_FT;
+		/* ContactCapabilities is not supported; assume all contacts can do file
+		 * transfer if it's implemented in the CM */
+		if (priv->can_request_ft)
+			caps |= EMPATHY_CAPABILITIES_FT;
 
-			if (priv->can_request_st)
-				caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
-		}
+		if (priv->can_request_st)
+			caps |= EMPATHY_CAPABILITIES_STREAM_TUBE;
 
 		empathy_contact_set_capabilities (contact, caps);
 	}
@@ -1466,11 +1472,13 @@ connection_ready_cb (TpConnection *connection,
 									  NULL, NULL,
 									  G_OBJECT (tp_factory));
 
-	tp_cli_dbus_properties_call_get (priv->connection, -1,
-		TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
-		"RequestableChannelClasses",
-		get_requestable_channel_classes_cb, NULL, NULL,
-		G_OBJECT (tp_factory));
+	if (!priv->contact_caps_supported) {
+		tp_cli_dbus_properties_call_get (priv->connection, -1,
+			TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
+			"RequestableChannelClasses",
+			get_requestable_channel_classes_cb, NULL, NULL,
+			G_OBJECT (tp_factory));
+	}
 
 out:
 	g_object_unref (tp_factory);
