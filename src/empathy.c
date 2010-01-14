@@ -709,12 +709,6 @@ setup_dispatcher (void)
     { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
     /* stream media to contacts */
     { TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA, TP_HANDLE_TYPE_CONTACT  },
-    /* stream tubes to contacts and rooms */
-    { TP_IFACE_CHANNEL_TYPE_STREAM_TUBE, TP_HANDLE_TYPE_CONTACT  },
-    { TP_IFACE_CHANNEL_TYPE_STREAM_TUBE, TP_HANDLE_TYPE_ROOM  },
-    /* d-bus tubes to contacts and rooms */
-    { TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, TP_HANDLE_TYPE_CONTACT },
-    { TP_IFACE_CHANNEL_TYPE_DBUS_TUBE, TP_HANDLE_TYPE_ROOM  },
     /* roomlists */
     { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
   };

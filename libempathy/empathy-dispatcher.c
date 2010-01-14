@@ -63,7 +63,6 @@ typedef struct
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
   gpointer token;
-  GSList *tubes;
 
   /* channels which the dispatcher is listening "invalidated" */
   GList *channels;

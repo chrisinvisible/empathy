@@ -47,7 +47,6 @@
 
 #include "empathy-event-manager.h"
 #include "empathy-main-window.h"
-#include "empathy-tube-dispatch.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_DISPATCHER
 #include <libempathy/empathy-debug.h>
@@ -67,8 +66,6 @@ typedef struct {
   gulong invalidated_handler;
   /* Remove contact if applicable */
   EmpathyContact *contact;
-  /* Tube dispatcher if applicable */
-  EmpathyTubeDispatch *tube_dispatch;
   /* option signal handler and it's instance */
   gulong handler;
   GObject *handler_instance;
@@ -140,9 +137,6 @@ event_manager_approval_free (EventManagerApproval *approval)
 
   if (approval->contact != NULL)
     g_object_unref (approval->contact);
-
-  if (approval->tube_dispatch != NULL)
-    g_object_unref (approval->tube_dispatch);
 
   if (approval->dialog != NULL)
     {
@@ -525,101 +519,6 @@ event_manager_media_channel_contact_changed_cb (EmpathyTpCall *call,
 }
 
 static void
-event_manager_tube_approved_cb (EventPriv *event)
-{
-  empathy_tube_dispatch_handle (event->approval->tube_dispatch);
-}
-
-static void
-event_manager_add_tube_approval (EventManagerApproval *approval,
-  EmpathyTubeDispatchAbility ability)
-{
-  const gchar *icon_name;
-  gchar       *header;
-  const gchar *msg;
-
-  header = g_strdup_printf (_("%s is offering you an invitation"),
-    empathy_contact_get_name (approval->contact));
-
-  if (ability == EMPATHY_TUBE_DISPATCHABILITY_POSSIBLE)
-    {
-      icon_name = GTK_STOCK_EXECUTE;
-      msg = _("An external application will be started to handle it.");
-    }
-  else
-    {
-      icon_name = GTK_STOCK_DIALOG_ERROR;
-      msg = _("You don't have the needed external "
-              "application to handle it.");
-    }
-
-  event_manager_add (approval->manager, approval->contact,
-      EMPATHY_EVENT_TYPE_TUBE, icon_name, header, msg, approval,
-      event_manager_tube_approved_cb, approval);
-
-  g_free (header);
-  /* FIXME better sound for incoming tubes ? */
-  empathy_sound_play (empathy_main_window_get (),
-    EMPATHY_SOUND_CONVERSATION_NEW);
-}
-
-static void
-event_manager_tube_dispatch_ability_cb (GObject *object,
-   GParamSpec *spec, gpointer user_data)
-{
-  EventManagerApproval *approval = (EventManagerApproval *) user_data;
-  EmpathyTubeDispatchAbility dispatchability;
-
-  dispatchability =
-    empathy_tube_dispatch_is_dispatchable (approval->tube_dispatch);
-
-  if (dispatchability != EMPATHY_TUBE_DISPATCHABILITY_UNKNOWN)
-    {
-      event_manager_add_tube_approval (approval, dispatchability);
-      g_signal_handler_disconnect (object, approval->handler);
-      approval->handler = 0;
-    }
-}
-
-static void
-event_manager_tube_got_contact_cb (EmpathyTpContactFactory *factory,
-                                   EmpathyContact *contact,
-                                   const GError *error,
-                                   gpointer user_data,
-                                   GObject *object)
-{
-  EventManagerApproval *approval = (EventManagerApproval *) user_data;
-  EmpathyTubeDispatchAbility dispatchability;
-
-  if (error != NULL)
-    {
-      /* FIXME: We should probably still display the event */
-      DEBUG ("Error: %s", error->message);
-      return;
-    }
-
-  approval->contact = g_object_ref (contact);
-
-  dispatchability = empathy_tube_dispatch_is_dispatchable
-    (approval->tube_dispatch);
-
-  switch (dispatchability)
-    {
-      case EMPATHY_TUBE_DISPATCHABILITY_UNKNOWN:
-        approval->handler = g_signal_connect (approval->tube_dispatch,
-          "notify::dispatchability",
-          G_CALLBACK (event_manager_tube_dispatch_ability_cb), approval);
-        approval->handler_instance = G_OBJECT (approval->tube_dispatch);
-        break;
-      case EMPATHY_TUBE_DISPATCHABILITY_POSSIBLE:
-        /* fallthrough */
-      case EMPATHY_TUBE_DISPATCHABILITY_IMPOSSIBLE:
-        event_manager_add_tube_approval (approval, dispatchability);
-        break;
-    }
-}
-
-static void
 invite_dialog_response_cb (GtkDialog *dialog,
                            gint response,
                            EventManagerApproval *approval)
@@ -874,28 +773,6 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
         event_manager_ft_got_contact_cb, approval, NULL, G_OBJECT (manager));
 
       g_object_unref (factory);
-    }
-  else if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE) ||
-      !tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_DBUS_TUBE))
-    {
-      TpChannel *channel;
-      TpHandle handle;
-      TpHandleType handle_type;
-      TpConnection *connection;
-      EmpathyTpContactFactory *factory;
-
-      channel = empathy_dispatch_operation_get_channel (operation);
-      handle = tp_channel_get_handle (channel, &handle_type);
-
-      /* Only understand p2p tubes */
-      if (handle_type != TP_HANDLE_TYPE_CONTACT)
-        return;
-
-      approval->tube_dispatch = empathy_tube_dispatch_new (operation);
-      connection = tp_channel_borrow_connection (channel);
-      factory = empathy_tp_contact_factory_dup_singleton (connection);
-      empathy_tp_contact_factory_get_from_handle (factory, handle,
-        event_manager_tube_got_contact_cb, approval, NULL, G_OBJECT (manager));
     }
   else
     {
