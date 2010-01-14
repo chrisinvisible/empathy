@@ -819,6 +819,75 @@ accounts_dialog_name_editing_started_cb (GtkCellRenderer *renderer,
   DEBUG ("Editing account name started; stopping flashing");
 }
 
+static const gchar *
+get_status_icon_for_account (EmpathyAccountsDialog *self,
+    TpAccount *account)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (self);
+  TpConnectionStatus status;
+  TpConnectionStatusReason reason;
+  TpConnectionPresenceType presence;
+
+  if (account == NULL)
+    return empathy_icon_name_for_presence (TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+
+  if (!tp_account_is_enabled (account))
+    return empathy_icon_name_for_presence (TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+
+  status = tp_account_get_connection_status (account, &reason);
+
+  if (status == TP_CONNECTION_STATUS_DISCONNECTED)
+    {
+      if (reason != TP_CONNECTION_STATUS_REASON_REQUESTED)
+        /* An error occured */
+        return GTK_STOCK_DIALOG_ERROR;
+
+        presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+    }
+  else if (status == TP_CONNECTION_STATUS_CONNECTING)
+    {
+      /* Account is connecting. Display a blinking account alternating between
+       * the offline icon and the requested presence. */
+      if (priv->connecting_show)
+        presence = tp_account_get_requested_presence (account, NULL, NULL);
+      else
+        presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+    }
+  else
+    {
+      /* status == TP_CONNECTION_STATUS_CONNECTED */
+      presence = tp_account_get_current_presence (account, NULL, NULL);
+
+      /* If presence is Unset (CM doesn't implement SimplePresence),
+       * display the 'available' icon.
+       * We also check Offline because of this MC5 bug: fd.o #26060 */
+      if (presence == TP_CONNECTION_PRESENCE_TYPE_OFFLINE ||
+          presence == TP_CONNECTION_PRESENCE_TYPE_UNSET)
+        presence = TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
+    }
+
+  return empathy_icon_name_for_presence (presence);
+}
+
+static void
+accounts_dialog_model_status_pixbuf_data_func (GtkTreeViewColumn *tree_column,
+    GtkCellRenderer *cell,
+    GtkTreeModel *model,
+    GtkTreeIter *iter,
+    EmpathyAccountsDialog *dialog)
+{
+  TpAccount *account;
+
+  gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
+
+  g_object_set (cell,
+      "icon-name", get_status_icon_for_account (dialog, account),
+      NULL);
+
+  if (account != NULL)
+    g_object_unref (account);
+}
+
 static void
 accounts_dialog_model_protocol_pixbuf_data_func (GtkTreeViewColumn *tree_column,
     GtkCellRenderer *cell,
@@ -1036,6 +1105,15 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   column = gtk_tree_view_column_new ();
   gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_append_column (view, column);
+
+  /* Status icon renderer */
+  cell = gtk_cell_renderer_pixbuf_new ();
+  gtk_tree_view_column_pack_start (column, cell, FALSE);
+  gtk_tree_view_column_set_cell_data_func (column, cell,
+      (GtkTreeCellDataFunc)
+      accounts_dialog_model_status_pixbuf_data_func,
+      dialog,
+      NULL);
 
   /* Protocol icon renderer */
   cell = gtk_cell_renderer_pixbuf_new ();
