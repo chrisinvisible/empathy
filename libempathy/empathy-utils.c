@@ -285,7 +285,7 @@ empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
 	case TP_CONNECTION_STATUS_REASON_NONE_SPECIFIED:
 		return _("No reason specified");
 	case TP_CONNECTION_STATUS_REASON_REQUESTED:
-		return _("User requested disconnect");
+		return _("Status is set to offline");
 	case TP_CONNECTION_STATUS_REASON_NETWORK_ERROR:
 		return _("Network error");
 	case TP_CONNECTION_STATUS_REASON_AUTHENTICATION_FAILED:
