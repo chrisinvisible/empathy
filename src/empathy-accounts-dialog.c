@@ -570,6 +570,8 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
   GtkTreeModel *model;
   GtkTreeIter iter;
   gboolean creating;
+  EmpathyAccountSettings *settings;
+  gchar *account = NULL, *password = NULL;
 
   /* The "changed" signal is fired during the initiation of the
    * EmpathyProtocolChooser while populating the widget. Such signals should
@@ -587,12 +589,39 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return;
 
+  /* Save "account" and "password" parameters */
+  g_object_get (priv->setting_widget_object, "settings", &settings, NULL);
+
+  if (settings != NULL)
+    {
+      account = g_strdup (empathy_account_settings_get_string (settings,
+            "account"));
+      password = g_strdup (empathy_account_settings_get_string (settings,
+            "password"));
+      g_object_unref (settings);
+    }
+
   /* We are creating a new widget to replace the current one, don't ask
    * confirmation to the user. */
   priv->force_change_row = TRUE;
   gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 
   accounts_dialog_setup_ui_to_add_account (dialog);
+
+  /* Restore "account" and "password" parameters in the new widget */
+  if (account != NULL)
+    {
+      empathy_account_widget_set_account_param (priv->setting_widget_object,
+          account);
+      g_free (account);
+    }
+
+  if (password != NULL)
+    {
+      empathy_account_widget_set_password_param (priv->setting_widget_object,
+          password);
+      g_free (password);
+    }
 }
 
 static void
