@@ -224,6 +224,14 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       presence = tp_account_get_current_presence (account, NULL, &status_message);
       account_enabled = tp_account_is_enabled (account);
       creating_account = FALSE;
+
+      if (status == TP_CONNECTION_STATUS_CONNECTED &&
+          (presence == TP_CONNECTION_PRESENCE_TYPE_OFFLINE ||
+           presence == TP_CONNECTION_PRESENCE_TYPE_UNSET))
+        /* If presence is Unset (CM doesn't implement SimplePresence) but we
+         * are connected, consider ourself as Available.
+         * We also check Offline because of this MC5 bug: fd.o #26060 */
+        presence = TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
     }
   else
     {
