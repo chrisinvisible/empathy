@@ -1471,6 +1471,25 @@ accounts_dialog_connection_changed_cb (TpAccount *account,
 }
 
 static void
+update_account_in_treeview (EmpathyAccountsDialog *self,
+    TpAccount *account)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (self);
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  if (accounts_dialog_get_account_iter (self, account, &iter))
+    {
+      GtkTreePath *path;
+
+      path = gtk_tree_model_get_path (model, &iter);
+      gtk_tree_model_row_changed (model, path, &iter);
+      gtk_tree_path_free (path);
+    }
+}
+
+static void
 accounts_dialog_presence_changed_cb (TpAccount *account,
     guint presence,
     gchar *status,
@@ -1479,6 +1498,8 @@ accounts_dialog_presence_changed_cb (TpAccount *account,
 {
   /* Update the status-infobar in the details view */
   accounts_dialog_update_status_infobar (dialog, account);
+
+  update_account_in_treeview (dialog, account);
 }
 
 static void
