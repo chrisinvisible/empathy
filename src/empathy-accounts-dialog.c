@@ -899,7 +899,6 @@ accounts_dialog_model_protocol_pixbuf_data_func (GtkTreeViewColumn *tree_column,
   gchar              *icon_name;
   GdkPixbuf          *pixbuf;
   TpConnectionStatus  status;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   gtk_tree_model_get (model, iter,
       COL_STATUS, &status,
@@ -908,29 +907,6 @@ accounts_dialog_model_protocol_pixbuf_data_func (GtkTreeViewColumn *tree_column,
 
   icon_name = empathy_account_settings_get_icon_name (settings);
   pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_BUTTON);
-
-  if (pixbuf)
-    {
-      if (status == TP_CONNECTION_STATUS_DISCONNECTED ||
-          (status == TP_CONNECTION_STATUS_CONNECTING &&
-              !priv->connecting_show))
-        {
-          GdkPixbuf *modded_pixbuf;
-
-          modded_pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB,
-              TRUE,
-              8,
-              gdk_pixbuf_get_width (pixbuf),
-              gdk_pixbuf_get_height (pixbuf));
-
-          gdk_pixbuf_saturate_and_pixelate (pixbuf,
-              modded_pixbuf,
-              1.0,
-              TRUE);
-          g_object_unref (pixbuf);
-          pixbuf = modded_pixbuf;
-        }
-    }
 
   g_object_set (cell,
       "visible", TRUE,
