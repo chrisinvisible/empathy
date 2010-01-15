@@ -73,6 +73,12 @@ void empathy_account_widget_discard_pending_changes
 gchar * empathy_account_widget_get_default_display_name (
     EmpathyAccountWidget *widget);
 
+void empathy_account_widget_set_account_param (EmpathyAccountWidget *widget,
+    const gchar *account);
+
+void empathy_account_widget_set_password_param (EmpathyAccountWidget *self,
+    const gchar *password);
+
 /* protected methods */
 void empathy_account_widget_changed (EmpathyAccountWidget *widget);
 

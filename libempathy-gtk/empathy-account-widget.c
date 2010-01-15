@@ -81,6 +81,9 @@ typedef struct {
 
   TpAccountManager *account_manager;
 
+  GtkWidget *param_account_widget;
+  GtkWidget *param_password_widget;
+
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
 
@@ -396,6 +399,11 @@ empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
 
       str = empathy_account_settings_get_string (priv->settings, param_name);
       gtk_entry_set_text (GTK_ENTRY (widget), str ? str : "");
+
+      if (!tp_strdiff (param_name, "account"))
+        priv->param_account_widget = widget;
+      else if (!tp_strdiff (param_name, "password"))
+        priv->param_password_widget = widget;
 
       if (strstr (param_name, "password"))
         {
@@ -1871,4 +1879,28 @@ empathy_account_widget_changed (EmpathyAccountWidget *self)
 
   account_widget_handle_control_buttons_sensitivity (self);
   priv->contains_pending_changes = TRUE;
+}
+
+void
+empathy_account_widget_set_account_param (EmpathyAccountWidget *self,
+    const gchar *account)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  if (priv->param_account_widget == NULL)
+    return;
+
+  gtk_entry_set_text (GTK_ENTRY (priv->param_account_widget), account);
+}
+
+void
+empathy_account_widget_set_password_param (EmpathyAccountWidget *self,
+    const gchar *account)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  if (priv->param_password_widget == NULL)
+    return;
+
+  gtk_entry_set_text (GTK_ENTRY (priv->param_password_widget), account);
 }
