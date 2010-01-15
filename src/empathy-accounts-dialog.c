@@ -1649,6 +1649,7 @@ accounts_dialog_account_disabled_cb (TpAccountManager *manager,
     EmpathyAccountsDialog *dialog)
 {
   enable_or_disable_account (dialog, account, FALSE);
+  update_account_in_treeview (dialog, account);
 }
 
 static void
