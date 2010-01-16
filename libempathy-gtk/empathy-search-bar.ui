@@ -67,6 +67,18 @@
       </packing>
     </child>
     <child>
+      <object class="GtkCheckButton" id="search_match_case">
+        <property name="label" translatable="yes">Match case</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="receives_default">False</property>
+        <property name="draw_indicator">True</property>
+      </object>
+      <packing>
+        <property name="position">6</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkHBox" id="search_not_found">
         <property name="spacing">6</property>
         <child>

@@ -38,6 +38,8 @@ struct _EmpathySearchBarPriv
 
   GtkWidget *search_entry;
 
+  GtkWidget *search_match_case;
+
   GtkWidget *search_close;
   GtkWidget *search_previous;
   GtkWidget *search_next;
@@ -155,13 +157,17 @@ empathy_search_bar_search (EmpathySearchBar *self,
 {
   gchar *search;
   gboolean found;
+  gboolean match_case;
   EmpathySearchBarPriv *priv;
 
   priv = GET_PRIV (self);
 
   search = gtk_editable_get_chars (GTK_EDITABLE(priv->search_entry), 0, -1);
+  match_case = gtk_toggle_button_get_active (
+      GTK_TOGGLE_BUTTON (priv->search_match_case));
 
   /* highlight & search */
+  // TODO: add case parameter
   empathy_chat_view_highlight (priv->chat_view, search);
   if (next)
     {
@@ -224,6 +230,7 @@ empathy_search_bar_init (EmpathySearchBar * self)
       "search_previous", &priv->search_previous,
       "search_next", &priv->search_next,
       "search_not_found", &priv->search_not_found,
+      "search_match_case", &priv->search_match_case,
       NULL);
   g_free (filename);
 
