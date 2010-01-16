@@ -232,6 +232,11 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
          * are connected, consider ourself as Available.
          * We also check Offline because of this MC5 bug: fd.o #26060 */
         presence = TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
+
+      /* set presence to offline if account is disabled
+       * (else no icon is shown in infobar)*/
+      if (!account_enabled)
+        presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
     }
   else
     {
