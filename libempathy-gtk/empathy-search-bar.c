@@ -127,7 +127,7 @@ empathy_search_bar_show (EmpathySearchBar *self)
   EmpathySearchBarPriv *priv = GET_PRIV (self);
 
   search = gtk_editable_get_chars (GTK_EDITABLE (priv->search_entry), 0, -1);
-  empathy_chat_view_highlight (priv->chat_view, search);
+  empathy_chat_view_highlight (priv->chat_view, search, TRUE);
   empathy_search_bar_update_buttons (self, search);
 
   /* grab the focus to the search entry */
@@ -143,7 +143,7 @@ empathy_search_bar_close_cb (GtkButton *button,
 {
   EmpathySearchBarPriv *priv = GET_PRIV (user_data);
 
-  empathy_chat_view_highlight (priv->chat_view, "");
+  empathy_chat_view_highlight (priv->chat_view, "", FALSE);
   gtk_widget_hide (GTK_WIDGET (user_data));
 
   /* give the focus back to the focus-chain with the chat view */
@@ -168,7 +168,7 @@ empathy_search_bar_search (EmpathySearchBar *self,
 
   /* highlight & search */
   // TODO: add case parameter
-  empathy_chat_view_highlight (priv->chat_view, search);
+  empathy_chat_view_highlight (priv->chat_view, search, match_case);
   if (next)
     {
       found = empathy_chat_view_find_next (priv->chat_view, search, new_search);

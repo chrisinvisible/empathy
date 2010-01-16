@@ -175,12 +175,13 @@ empathy_chat_view_find_abilities (EmpathyChatView *view,
 
 void
 empathy_chat_view_highlight (EmpathyChatView *view,
-			     const gchar     *text)
+			     const gchar     *text,
+			     gboolean         match_case)
 {
 	g_return_if_fail (EMPATHY_IS_CHAT_VIEW (view));
 
 	if (EMPATHY_TYPE_CHAT_VIEW_GET_IFACE (view)->highlight) {
-		EMPATHY_TYPE_CHAT_VIEW_GET_IFACE (view)->highlight (view, text);
+		EMPATHY_TYPE_CHAT_VIEW_GET_IFACE (view)->highlight (view, text, match_case);
 	}
 }
 

@@ -62,7 +62,8 @@ struct _EmpathyChatViewIface {
 						  gboolean        *can_do_previous,
 						  gboolean        *can_do_next);
 	void             (*highlight)            (EmpathyChatView *view,
-						  const gchar     *text);
+						  const gchar     *text,
+						  gboolean         match_case);
 	void             (*copy_clipboard)       (EmpathyChatView *view);
 };
 
@@ -87,7 +88,8 @@ void             empathy_chat_view_find_abilities       (EmpathyChatView *view,
 							 gboolean        *can_do_previous,
 							 gboolean        *can_do_next);
 void             empathy_chat_view_highlight            (EmpathyChatView *view,
-							 const gchar     *text);
+							 const gchar     *text,
+							 gboolean         match_case);
 void             empathy_chat_view_copy_clipboard       (EmpathyChatView *view);
 
 G_END_DECLS

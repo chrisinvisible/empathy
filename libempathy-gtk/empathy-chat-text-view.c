@@ -1120,8 +1120,10 @@ chat_text_view_find_abilities (EmpathyChatView *view,
 
 static void
 chat_text_view_highlight (EmpathyChatView *view,
-			    const gchar     *text)
+			    const gchar     *text,
+			    gboolean         match_case)
 {
+	// TODO: do something useful with the match_case var
 	GtkTextBuffer *buffer;
 	GtkTextIter    iter;
 	GtkTextIter    iter_start;

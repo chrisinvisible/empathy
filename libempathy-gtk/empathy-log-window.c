@@ -407,7 +407,7 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 
 	/* Highlight and find messages */
 	empathy_chat_view_highlight (window->chatview_find,
-				    window->last_find);
+				    window->last_find, FALSE);
 	empathy_chat_view_find_next (window->chatview_find,
 				    window->last_find,
 				    TRUE);
@@ -1108,7 +1108,7 @@ log_window_entry_chats_changed_cb (GtkWidget       *entry,
 	const gchar *str;
 
 	str = gtk_entry_get_text (GTK_ENTRY (window->entry_chats));
-	empathy_chat_view_highlight (window->chatview_chats, str);
+	empathy_chat_view_highlight (window->chatview_chats, str, FALSE);
 
 	if (str) {
 		empathy_chat_view_find_next (window->chatview_chats,
