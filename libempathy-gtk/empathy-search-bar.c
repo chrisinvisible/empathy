@@ -37,7 +37,6 @@ struct _EmpathySearchBarPriv
   EmpathyChatView *chat_view;
 
   GtkWidget *search_entry;
-  gchar *last_search;
 
   GtkWidget *search_close;
   GtkWidget *search_previous;
@@ -101,15 +100,8 @@ empathy_search_bar_size_allocate (GtkWidget *widget,
 }
 
 static void
-empathy_search_bar_finalize (GObject *object)
-{
-  EmpathySearchBarPriv *priv = GET_PRIV (object);
-
-  g_free (priv->last_search);
-}
-
-static void
-empathy_search_bar_update_buttons (EmpathySearchBar *self)
+empathy_search_bar_update_buttons (EmpathySearchBar *self,
+    gchar *search)
 {
   gboolean can_go_forward = FALSE;
   gboolean can_go_backward = FALSE;
@@ -117,32 +109,24 @@ empathy_search_bar_update_buttons (EmpathySearchBar *self)
   EmpathySearchBarPriv* priv = GET_PRIV (self);
 
   /* update previous / next buttons */
-  if (priv->last_search)
-    {
-      empathy_chat_view_find_abilities (priv->chat_view, priv->last_search,
-          &can_go_backward, &can_go_forward);
-    }
+  empathy_chat_view_find_abilities (priv->chat_view, search,
+      &can_go_backward, &can_go_forward);
 
   gtk_widget_set_sensitive (priv->search_previous,
-      can_go_backward && !EMP_STR_EMPTY (priv->last_search));
+      can_go_backward && !EMP_STR_EMPTY (search));
   gtk_widget_set_sensitive (priv->search_next,
-      can_go_forward && !EMP_STR_EMPTY (priv->last_search));
+      can_go_forward && !EMP_STR_EMPTY (search));
 }
 
 void
 empathy_search_bar_show (EmpathySearchBar *self)
 {
+  gchar *search;
   EmpathySearchBarPriv *priv = GET_PRIV (self);
 
-  if (priv->last_search)
-    {
-      /* make sure we have an up to date last_search */
-      g_free (priv->last_search);
-      priv->last_search = gtk_editable_get_chars (
-          GTK_EDITABLE (priv->search_entry), 0, -1);
-    }
-  empathy_chat_view_highlight (priv->chat_view, priv->last_search);
-  empathy_search_bar_update_buttons (self);
+  search = gtk_editable_get_chars (GTK_EDITABLE (priv->search_entry), 0, -1);
+  empathy_chat_view_highlight (priv->chat_view, search);
+  empathy_search_bar_update_buttons (self, search);
 
   /* grab the focus to the search entry */
   gtk_widget_grab_focus (priv->search_entry);
@@ -165,47 +149,58 @@ empathy_search_bar_close_cb (GtkButton *button,
 }
 
 static void
-empathy_search_bar_entry_changed (GtkEditable *entry,
-    gpointer user_data)
+empathy_search_bar_search (EmpathySearchBar *self,
+    gboolean next,
+    gboolean new_search)
 {
-  EmpathySearchBarPriv *priv;
-  gboolean found;
   gchar *search;
+  gboolean found;
+  EmpathySearchBarPriv *priv;
 
-  priv = GET_PRIV (user_data);
+  priv = GET_PRIV (self);
 
-  search = gtk_editable_get_chars (entry, 0, -1);
+  search = gtk_editable_get_chars (GTK_EDITABLE(priv->search_entry), 0, -1);
 
-  found = empathy_chat_view_find_previous (priv->chat_view, search, TRUE);
+  /* highlight & search */
+  empathy_chat_view_highlight (priv->chat_view, search);
+  if (next)
+    {
+      found = empathy_chat_view_find_next (priv->chat_view, search, new_search);
+    }
+  else
+    {
+      found = empathy_chat_view_find_previous (priv->chat_view, search, new_search);
+    }
+
+  /* (don't) display the not found label */
   gtk_widget_set_visible (priv->search_not_found,
       !(found || EMP_STR_EMPTY (search)));
 
-  empathy_chat_view_highlight (priv->chat_view, search);
+  /* update the buttons */
+  empathy_search_bar_update_buttons (self, search);
 
-  g_free (priv->last_search);
-  priv->last_search = search;
+  g_free (search);
+}
 
-  empathy_search_bar_update_buttons (EMPATHY_SEARCH_BAR (user_data));
+static void
+empathy_search_bar_entry_changed (GtkEditable *entry,
+    gpointer user_data)
+{
+  empathy_search_bar_search (EMPATHY_SEARCH_BAR (user_data), FALSE, TRUE);
 }
 
 static void
 empathy_search_bar_next_cb (GtkButton *button,
     gpointer user_data)
 {
-  EmpathySearchBarPriv *priv = GET_PRIV (user_data);
-
-  empathy_chat_view_find_next (priv->chat_view, priv->last_search, FALSE);
-  empathy_search_bar_update_buttons (EMPATHY_SEARCH_BAR (user_data));
+  empathy_search_bar_search (EMPATHY_SEARCH_BAR (user_data), TRUE, FALSE);
 }
 
 static void
 empathy_search_bar_previous_cb (GtkButton *button,
     gpointer user_data)
 {
-  EmpathySearchBarPriv *priv = GET_PRIV (user_data);
-
-  empathy_chat_view_find_previous (priv->chat_view, priv->last_search, FALSE);
-  empathy_search_bar_update_buttons (EMPATHY_SEARCH_BAR (user_data));
+  empathy_search_bar_search (EMPATHY_SEARCH_BAR (user_data), FALSE, FALSE);
 }
 
 static void
@@ -251,8 +246,6 @@ empathy_search_bar_class_init (EmpathySearchBarClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  gobject_class->finalize = empathy_search_bar_finalize;
 
   g_type_class_add_private (gobject_class, sizeof (EmpathySearchBarPriv));
 
