@@ -708,6 +708,9 @@ theme_adium_find_previous (EmpathyChatView *view,
 			   const gchar     *search_criteria,
 			   gboolean         new_search)
 {
+	if (new_search) {
+		webkit_web_view_unmark_text_matches (WEBKIT_WEB_VIEW (view));
+	}
 	return webkit_web_view_search_text (WEBKIT_WEB_VIEW (view),
 					    search_criteria, FALSE,
 					    FALSE, TRUE);
@@ -718,6 +721,9 @@ theme_adium_find_next (EmpathyChatView *view,
 		       const gchar     *search_criteria,
 		       gboolean         new_search)
 {
+	if (new_search) {
+		webkit_web_view_unmark_text_matches (WEBKIT_WEB_VIEW (view));
+	}
 	return webkit_web_view_search_text (WEBKIT_WEB_VIEW (view),
 					    search_criteria, FALSE,
 					    TRUE, TRUE);
