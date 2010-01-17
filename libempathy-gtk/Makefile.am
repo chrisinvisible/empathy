@@ -1,4 +1,3 @@
-include $(top_srcdir)/tools/shave.mk
 include $(top_srcdir)/tools/flymake.mk
 
 AM_CPPFLAGS =                                           \
@@ -164,27 +163,27 @@ ui_DATA = 					\
 	empathy-search-bar.ui
 
 empathy-gtk-marshal.list: $(libempathy_gtk_la_SOURCES) Makefile.am
-	$(QUIET_GEN)( cd $(srcdir) && \
+	$(AM_V_GEN)( cd $(srcdir) && \
 	sed -n -e 's/.*empathy_gtk_marshal_\([[:upper:][:digit:]]*__[[:upper:][:digit:]_]*\).*/\1/p' \
 	$(libempathy_gtk_la_SOURCES) ) \
 	| sed -e 's/__/:/' -e 'y/_/,/' | sort -u > $@.tmp
-	if cmp -s $@.tmp $@; then \
+	@if cmp -s $@.tmp $@; then \
 		rm $@.tmp; \
 	else \
 		mv $@.tmp $@; \
 	fi
 
 %-marshal.h: %-marshal.list Makefile
-	$(QUIET_GEN)$(GLIB_GENMARSHAL) --header --prefix=_$(subst -,_,$*)_marshal $< > $*-marshal.h
+	$(AM_V_GEN)$(GLIB_GENMARSHAL) --header --prefix=_$(subst -,_,$*)_marshal $< > $*-marshal.h
 
 %-marshal.c: %-marshal.list Makefile
-	$(QUIET_GEN)echo "#include \"empathy-gtk-marshal.h\"" > $@ && \
+	$(AM_V_GEN)echo "#include \"empathy-gtk-marshal.h\"" > $@ && \
 	$(GLIB_GENMARSHAL) --body --prefix=_$(subst -,_,$*)_marshal $< >> $*-marshal.c
 
 empathy-gtk-enum-types.h: stamp-empathy-gtk-enum-types.h
-	$(QUIET_GEN)true
+	$(AM_V_GEN)true
 stamp-empathy-gtk-enum-types.h: Makefile $(libempathy_gtk_headers)
-	$(QUIET_GEN)(cd $(srcdir) \
+	$(AM_V_GEN)(cd $(srcdir) \
 	&& glib-mkenums \
 			--fhead "#ifndef __LIBEMPATHY_GTK_ENUM_TYPES_H__\n" \
 			--fhead "#define __LIBEMPATHY_GTK_ENUM_TYPES_H__ 1\n\n" \
@@ -201,7 +200,7 @@ stamp-empathy-gtk-enum-types.h: Makefile $(libempathy_gtk_headers)
 	&& echo timestamp > $(@F)
 
 empathy-gtk-enum-types.c: Makefile $(libempathy_gtk_headers)
-	$(QUIET_GEN)(cd $(srcdir) \
+	$(AM_V_GEN)(cd $(srcdir) \
 	&& glib-mkenums \
 			--fhead "#include <config.h>\n" \
 			--fhead "#include <glib-object.h>\n" \

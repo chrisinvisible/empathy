@@ -20,7 +20,7 @@ servicefile_in_files = org.freedesktop.Telepathy.Client.Empathy.service.in
 servicefile_DATA = $(servicefile_in_files:.service.in=.service)
 
 org.freedesktop.Telepathy.Client.Empathy.service: org.freedesktop.Telepathy.Client.Empathy.service.in
-	$(QUIET_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
+	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
 
 clientfiledir = $(datarootdir)/telepathy/clients
 clientfile_DATA = Empathy.client

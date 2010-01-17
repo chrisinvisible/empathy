@@ -62,6 +62,12 @@ AC_CONFIG_AUX_DIR(.)
 GNOME_COMMON_INIT
 
 AM_INIT_AUTOMAKE(1.9 dist-bzip2 no-define -Wno-portability)
+
+# Support silent build rules, requires at least automake-1.11. Disable
+# by either passing --disable-silent-rules to configure or passing V=1
+# to make
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 AC_ISC_POSIX
 AC_PROG_CC
 AC_HEADER_STDC
@@ -442,8 +448,6 @@ AC_ARG_ENABLE(coding-style-checks,
 AC_SUBST([ENABLE_CODING_STYLE_CHECKS])
 # -----------------------------------------------------------
 
-SHAVE_INIT(.)
-
 AC_OUTPUT([
    Makefile
    data/Makefile
@@ -460,8 +464,6 @@ AC_OUTPUT([
    tests/interactive/Makefile
    tests/xml/Makefile
    tools/Makefile
-   shave
-   shave-libtool
 ])
 
 echo "
@@ -470,7 +472,6 @@ Configure summary:
 	Compiler....................:  ${CC}
 	Compiler Flags..............:  ${CFLAGS} ${ERROR_CFLAGS}
 	Prefix......................:  ${prefix}
-	Shaved build................:  ${enable_shave}
 	Coding style checks.........:  ${ENABLE_CODING_STYLE_CHECKS}
 
     Features:

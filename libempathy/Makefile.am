@@ -1,4 +1,3 @@
-include $(top_srcdir)/tools/shave.mk
 include $(top_srcdir)/tools/flymake.mk
 
 AM_CPPFLAGS =                                           \
@@ -124,27 +123,27 @@ include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style
 
 empathy-marshal.list: $(libempathy_la_SOURCES) Makefile.am
-	$(QUIET_GEN)( cd $(srcdir) && \
+	$(AM_V_GEN)( cd $(srcdir) && \
 	sed -n -e 's/.*empathy_marshal_\([[:upper:][:digit:]]*__[[:upper:][:digit:]_]*\).*/\1/p' \
 	$(libempathy_la_SOURCES) ) \
 	| sed -e 's/__/:/' -e 'y/_/,/' | sort -u > $@.tmp
-	if cmp -s $@.tmp $@; then \
+	@if cmp -s $@.tmp $@; then \
 		rm $@.tmp; \
 	else \
 		mv $@.tmp $@; \
 	fi
 
 %-marshal.h: %-marshal.list Makefile
-	$(QUIET_GEN)$(GLIB_GENMARSHAL) --header --prefix=_$(subst -,_,$*)_marshal $< > $*-marshal.h
+	$(AM_V_GEN)$(GLIB_GENMARSHAL) --header --prefix=_$(subst -,_,$*)_marshal $< > $*-marshal.h
 
 %-marshal.c: %-marshal.list Makefile
-	$(QUIET_GEN)echo "#include \"empathy-marshal.h\"" > $@ && \
+	$(AM_V_GEN)echo "#include \"empathy-marshal.h\"" > $@ && \
 	$(GLIB_GENMARSHAL) --body --prefix=_$(subst -,_,$*)_marshal $< >> $*-marshal.c
 
 empathy-enum-types.h: stamp-empathy-enum-types.h
-	$(QUIET_GEN)true
+	$(AM_V_GEN)true
 stamp-empathy-enum-types.h: $(libempathy_headers) Makefile
-	$(QUIET_GEN)(cd $(srcdir) \
+	$(AM_V_GEN)(cd $(srcdir) \
 	&& glib-mkenums \
 			--fhead "#ifndef __LIBEMPATHY_ENUM_TYPES_H__\n" \
 			--fhead "#define __LIBEMPATHY_ENUM_TYPES_H__ 1\n\n" \
@@ -161,7 +160,7 @@ stamp-empathy-enum-types.h: $(libempathy_headers) Makefile
 	&& echo timestamp > $(@F)
 
 empathy-enum-types.c: $(libempathy_headers) Makefile
-	$(QUIET_GEN)(cd $(srcdir) \
+	$(AM_V_GEN)(cd $(srcdir) \
 	&& glib-mkenums \
 			--fhead "#include <config.h>\n" \
 			--fhead "#include <glib-object.h>\n" \
