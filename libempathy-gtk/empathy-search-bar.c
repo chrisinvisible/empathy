@@ -215,6 +215,13 @@ empathy_search_bar_previous_cb (GtkButton *button,
 }
 
 static void
+empathy_search_bar_match_case_toggled (GtkButton *button,
+    gpointer user_data)
+{
+  empathy_search_bar_search (EMPATHY_SEARCH_BAR (user_data), TRUE, FALSE);
+}
+
+static void
 empathy_search_bar_init (EmpathySearchBar * self)
 {
   gchar *filename;
@@ -245,6 +252,7 @@ empathy_search_bar_init (EmpathySearchBar * self)
       "search_entry", "changed", empathy_search_bar_entry_changed,
       "search_previous", "clicked", empathy_search_bar_previous_cb,
       "search_next", "clicked", empathy_search_bar_next_cb,
+      "search_match_case", "toggled", empathy_search_bar_match_case_toggled,
       NULL);
 
   gtk_container_add (GTK_CONTAINER (self), internal);
