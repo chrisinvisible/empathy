@@ -838,7 +838,8 @@ chat_text_view_clear (EmpathyChatView *view)
 static gboolean
 chat_text_view_find_previous (EmpathyChatView *view,
 				const gchar     *search_criteria,
-				gboolean         new_search)
+				gboolean         new_search,
+				gboolean         match_case)
 {
 	EmpathyChatTextViewPriv *priv;
 	GtkTextBuffer      *buffer;
@@ -891,6 +892,7 @@ chat_text_view_find_previous (EmpathyChatView *view,
 
 	priv->find_last_direction = FALSE;
 
+	/* FIXME: doesn't respect match_case */
 	found = empathy_text_iter_backward_search (&iter_at_mark,
 						   search_criteria,
 						   &iter_match_start,
@@ -909,7 +911,8 @@ chat_text_view_find_previous (EmpathyChatView *view,
 			priv->find_wrapped = TRUE;
 			result = chat_text_view_find_previous (view,
 								 search_criteria,
-								 FALSE);
+								 FALSE,
+								 match_case);
 			priv->find_wrapped = FALSE;
 		}
 
@@ -953,7 +956,8 @@ chat_text_view_find_previous (EmpathyChatView *view,
 static gboolean
 chat_text_view_find_next (EmpathyChatView *view,
 			    const gchar     *search_criteria,
-			    gboolean         new_search)
+			    gboolean         new_search,
+			    gboolean         match_case)
 {
 	EmpathyChatTextViewPriv *priv;
 	GtkTextBuffer      *buffer;
@@ -1006,6 +1010,7 @@ chat_text_view_find_next (EmpathyChatView *view,
 
 	priv->find_last_direction = TRUE;
 
+	/* FIXME: doesn't respect match_case */
 	found = empathy_text_iter_forward_search (&iter_at_mark,
 						  search_criteria,
 						  &iter_match_start,
@@ -1024,7 +1029,8 @@ chat_text_view_find_next (EmpathyChatView *view,
 			priv->find_wrapped = TRUE;
 			result = chat_text_view_find_next (view,
 							     search_criteria,
-							     FALSE);
+							     FALSE,
+							     match_case);
 			priv->find_wrapped = FALSE;
 		}
 

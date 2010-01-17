@@ -53,10 +53,12 @@ struct _EmpathyChatViewIface {
 	void             (*clear)                (EmpathyChatView *view);
 	gboolean         (*find_previous)        (EmpathyChatView *view,
 						  const gchar     *search_criteria,
-						  gboolean         new_search);
+						  gboolean         new_search,
+						  gboolean         match_case);
 	gboolean         (*find_next)            (EmpathyChatView *view,
 						  const gchar     *search_criteria,
-						  gboolean         new_search);
+						  gboolean         new_search,
+						  gboolean         match_case);
 	void             (*find_abilities)       (EmpathyChatView *view,
 						  const gchar     *search_criteria,
 						  gboolean        *can_do_previous,
@@ -79,10 +81,12 @@ gboolean         empathy_chat_view_get_has_selection    (EmpathyChatView *view);
 void             empathy_chat_view_clear                (EmpathyChatView *view);
 gboolean         empathy_chat_view_find_previous        (EmpathyChatView *view,
 							 const gchar     *search_criteria,
-							 gboolean         new_search);
+							 gboolean         new_search,
+							 gboolean         match_case);
 gboolean         empathy_chat_view_find_next            (EmpathyChatView *view,
 							 const gchar     *search_criteria,
-							 gboolean         new_search);
+							 gboolean         new_search,
+							 gboolean         match_case);
 void             empathy_chat_view_find_abilities       (EmpathyChatView *view,
 							 const gchar     *search_criteria,
 							 gboolean        *can_do_previous,

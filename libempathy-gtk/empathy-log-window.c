@@ -410,7 +410,8 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 				    window->last_find, FALSE);
 	empathy_chat_view_find_next (window->chatview_find,
 				    window->last_find,
-				    TRUE);
+				    TRUE,
+				    FALSE);
 	empathy_chat_view_find_abilities (window->chatview_find,
 					 window->last_find,
 					 &can_do_previous,
@@ -605,6 +606,7 @@ log_window_button_next_clicked_cb (GtkWidget       *widget,
 
 		empathy_chat_view_find_next (window->chatview_find,
 					    window->last_find,
+					    FALSE,
 					    FALSE);
 		empathy_chat_view_find_abilities (window->chatview_find,
 						 window->last_find,
@@ -625,6 +627,7 @@ log_window_button_previous_clicked_cb (GtkWidget       *widget,
 
 		empathy_chat_view_find_previous (window->chatview_find,
 						window->last_find,
+						FALSE,
 						FALSE);
 		empathy_chat_view_find_abilities (window->chatview_find,
 						 window->last_find,
@@ -1113,7 +1116,8 @@ log_window_entry_chats_changed_cb (GtkWidget       *entry,
 	if (str) {
 		empathy_chat_view_find_next (window->chatview_chats,
 					    str,
-					    TRUE);
+					    TRUE,
+					    FALSE);
 	}
 }
 
@@ -1128,6 +1132,7 @@ log_window_entry_chats_activate_cb (GtkWidget       *entry,
 	if (str) {
 		empathy_chat_view_find_next (window->chatview_chats,
 					    str,
+					    FALSE,
 					    FALSE);
 	}
 }

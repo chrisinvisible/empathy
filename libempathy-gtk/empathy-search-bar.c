@@ -167,15 +167,20 @@ empathy_search_bar_search (EmpathySearchBar *self,
       GTK_TOGGLE_BUTTON (priv->search_match_case));
 
   /* highlight & search */
-  // TODO: add case parameter
   empathy_chat_view_highlight (priv->chat_view, search, match_case);
   if (next)
     {
-      found = empathy_chat_view_find_next (priv->chat_view, search, new_search);
+      found = empathy_chat_view_find_next (priv->chat_view,
+          search,
+          new_search,
+          match_case);
     }
   else
     {
-      found = empathy_chat_view_find_previous (priv->chat_view, search, new_search);
+      found = empathy_chat_view_find_previous (priv->chat_view,
+          search,
+          new_search,
+          match_case);
     }
 
   /* (don't) display the not found label */
