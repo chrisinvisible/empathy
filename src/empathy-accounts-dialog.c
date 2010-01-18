@@ -842,7 +842,7 @@ get_status_icon_for_account (EmpathyAccountsDialog *self,
         /* An error occured */
         return GTK_STOCK_DIALOG_ERROR;
 
-        presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
+      presence = TP_CONNECTION_PRESENCE_TYPE_OFFLINE;
     }
   else if (status == TP_CONNECTION_STATUS_CONNECTING)
     {
