@@ -810,9 +810,6 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_contact_list_store_set_is_compact (window->list_store,
 						   value == CONTACT_LIST_COMPACT_SIZE);
-
-	gtk_action_set_sensitive (GTK_ACTION (window->show_protocols),
-						value != CONTACT_LIST_COMPACT_SIZE );
 }
 
 static void main_window_notify_show_protocols_cb (EmpathyConf       *conf,

@@ -1679,14 +1679,10 @@ contact_list_store_get_contact_status_icon_with_icon_name (
 	EmpathyContactListStorePriv *priv;
 	const gchar                 *protocol_name = NULL;
 	gchar                       *icon_name = NULL;
-	gboolean                     show_protocol = FALSE;
 
 	priv = GET_PRIV (store);
 
-	if (priv->show_protocols && !priv->is_compact) {
-		show_protocol = TRUE;
-	}
-	if (show_protocol) {
+	if (priv->show_protocols) {
 		protocol_name = empathy_protocol_name_for_contact (contact);
 		icon_name = g_strdup_printf ("%s-%s", status_icon_name, protocol_name);
 	} else {
@@ -1696,7 +1692,7 @@ contact_list_store_get_contact_status_icon_with_icon_name (
 	if (pixbuf_status == NULL) {
 		pixbuf_status = empathy_pixbuf_contact_status_icon_with_icon_name (contact,
 				    status_icon_name,
-				    show_protocol);
+				    priv->show_protocols);
 		if (pixbuf_status != NULL) {
 			g_hash_table_insert (priv->status_icons,
 			    g_strdup (icon_name),
