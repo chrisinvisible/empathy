@@ -180,7 +180,7 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
   gchar *text;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  text = g_markup_printf_escaped ("<big><b>%s</b></big>", display_name);
+  text = g_markup_printf_escaped ("<b>%s</b>", display_name);
   gtk_label_set_markup (GTK_LABEL (priv->label_name), text);
 
   g_free (text);
@@ -192,6 +192,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   const gchar               *message;
+  gchar                     *message_markup;
   gchar                     *status_message = NULL;
   guint                     status;
   guint                     reason;
@@ -327,7 +328,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       gtk_widget_hide (priv->throbber);
     }
 
-  gtk_label_set_text (GTK_LABEL (priv->label_status), message);
+  message_markup = g_markup_printf_escaped ("<i>%s</i>", message);
+  gtk_label_set_markup (GTK_LABEL (priv->label_status), message_markup);
   gtk_widget_show (priv->label_status);
 
   if (!creating_account)
@@ -336,6 +338,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     gtk_widget_hide (priv->infobar);
 
   g_free (status_message);
+  g_free (message_markup);
 }
 
 static void
@@ -1808,7 +1811,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gchar                        *filename;
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
   GtkWidget                    *content_area;
-  GtkWidget *action_area;
+  GtkWidget *action_area, *vbox, *hbox, *align;
 
   filename = empathy_file_lookup ("empathy-accounts-dialog.ui", "src");
 
@@ -1819,8 +1822,6 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "alignment_settings", &priv->alignment_settings,
       "alignment_infobar", &priv->alignment_infobar,
       "treeview", &priv->treeview,
-      "image_type", &priv->image_type,
-      "label_name", &priv->label_name,
       "button_add", &priv->button_add,
       "button_import", &priv->button_import,
       "hbox_protocol", &priv->hbox_protocol,
@@ -1855,27 +1856,56 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
     gtk_window_set_transient_for (GTK_WINDOW (dialog),
         priv->parent_window);
 
-  /* set up spinner */
-  priv->throbber = ephy_spinner_new ();
-  ephy_spinner_set_size (EPHY_SPINNER (priv->throbber), GTK_ICON_SIZE_SMALL_TOOLBAR);
-
   priv->infobar = gtk_info_bar_new ();
   gtk_container_add (GTK_CONTAINER (priv->alignment_infobar),
       priv->infobar);
   gtk_widget_show (priv->infobar);
+
+  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
+
+  priv->image_type = gtk_image_new_from_stock (GTK_STOCK_CUT,
+      GTK_ICON_SIZE_DIALOG);
+  gtk_misc_set_alignment (GTK_MISC (priv->image_type), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (content_area), priv->image_type, FALSE, FALSE, 0);
+  gtk_widget_show (priv->image_type);
+
+  vbox = gtk_vbox_new (FALSE, 6);
+  gtk_box_pack_start (GTK_BOX (content_area), vbox, TRUE, TRUE, 0);
+  gtk_widget_show (vbox);
+
+  /* first row */
+  align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+  gtk_widget_show (align);
+
+  priv->label_name = gtk_label_new (NULL);
+  gtk_container_add (GTK_CONTAINER (align), priv->label_name);
+  gtk_widget_show (priv->label_name);
+
+  gtk_box_pack_start (GTK_BOX (vbox), align, TRUE, TRUE, 0);
+
+  /* second row */
+  align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+  gtk_widget_show (align);
+  hbox = gtk_hbox_new (FALSE, 6);
+  gtk_widget_show (hbox);
+  gtk_container_add (GTK_CONTAINER (align), hbox);
+
+  gtk_box_pack_start (GTK_BOX (vbox), align, TRUE, TRUE, 0);
+
+  /* set up spinner */
+  priv->throbber = ephy_spinner_new ();
+  ephy_spinner_set_size (EPHY_SPINNER (priv->throbber), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
   priv->image_status = gtk_image_new_from_icon_name (
             empathy_icon_name_for_presence (
             TP_CONNECTION_PRESENCE_TYPE_OFFLINE), GTK_ICON_SIZE_SMALL_TOOLBAR);
 
   priv->label_status = gtk_label_new (NULL);
+  gtk_widget_show (priv->label_status);
 
-  content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->infobar));
-  gtk_box_pack_start (GTK_BOX (content_area), priv->throbber,
-      FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (content_area), priv->image_status,
-      FALSE, FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (content_area), priv->label_status);
+  gtk_box_pack_start (GTK_BOX (hbox), priv->throbber, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), priv->image_status, FALSE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (hbox), priv->label_status, TRUE, TRUE, 0);
 
   /* Tweak the dialog */
   gtk_window_set_title (GTK_WINDOW (dialog), _("Accounts"));
