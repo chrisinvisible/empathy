@@ -704,7 +704,7 @@ chat_command_join (EmpathyChat *chat,
 
 	while (rooms[i] != NULL) {
 		/* ignore empty strings */
-		if (EMP_STR_EMPTY (rooms[i])) {
+		if (!EMP_STR_EMPTY (rooms[i])) {
 			TpConnection *connection;
 
 			connection = empathy_tp_chat_get_connection (priv->tp_chat);
