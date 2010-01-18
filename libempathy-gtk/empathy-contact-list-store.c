@@ -1112,7 +1112,6 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	gboolean                    do_set_active = FALSE;
 	gboolean                    do_set_refresh = FALSE;
 	gboolean                    show_avatar = FALSE;
-	gboolean                    show_protocol = FALSE;
 	GdkPixbuf                  *pixbuf_avatar;
 	GdkPixbuf                  *pixbuf_status;
 
@@ -1206,9 +1205,6 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 
 	if (priv->show_avatars && !priv->is_compact) {
 		show_avatar = TRUE;
-	}
-	if (priv->show_protocols && !priv->is_compact) {
-		show_protocol = TRUE;
 	}
 	pixbuf_avatar = empathy_pixbuf_avatar_from_contact_scaled (contact, 32, 32);
 	pixbuf_status = contact_list_store_get_contact_status_icon (store, contact);
