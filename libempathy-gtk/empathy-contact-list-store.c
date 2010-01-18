@@ -1641,7 +1641,6 @@ contact_list_store_update_list_mode_foreach (GtkTreeModel           *model,
 {
 	EmpathyContactListStorePriv *priv;
 	gboolean                     show_avatar = FALSE;
-	gboolean                     show_protocol = FALSE;
 	EmpathyContact              *contact;
 	GdkPixbuf                   *pixbuf_status;
 
@@ -1649,9 +1648,6 @@ contact_list_store_update_list_mode_foreach (GtkTreeModel           *model,
 
 	if (priv->show_avatars && !priv->is_compact) {
 		show_avatar = TRUE;
-	}
-	if (priv->show_protocols && !priv->is_compact) {
-		show_protocol = TRUE;
 	}
 
 	gtk_tree_model_get (model, iter,
