@@ -38,13 +38,36 @@
             <property name="spacing">6</property>
             <property name="homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="button_add">
-                <property name="label" translatable="yes">_Add&#x2026;</property>
+              <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="image">add_image</property>
-                <property name="use_underline">True</property>
+                <property name="spacing">6</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkButton" id="button_add">
+                    <property name="label" translatable="yes">_Add&#x2026;</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">add_image</property>
+                    <property name="use_underline">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button_remove">
+                    <property name="label" translatable="yes">_Remove</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="image">remove_image</property>
+                    <property name="use_underline">True</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">0</property>
@@ -186,7 +209,12 @@
       </packing>
     </child>
   </object>
+  <object class="GtkImage" id="remove_image">
+    <property name="visible">True</property>
+    <property name="stock">gtk-remove</property>
+  </object>
   <object class="GtkImage" id="add_image">
+    <property name="visible">True</property>
     <property name="stock">gtk-add</property>
   </object>
 </interface>

@@ -87,6 +87,7 @@ typedef struct {
   GtkWidget *treeview;
 
   GtkWidget *button_add;
+  GtkWidget *button_remove;
   GtkWidget *button_import;
 
   GtkWidget *combobox_protocol;
@@ -381,6 +382,7 @@ empathy_account_dialog_widget_cancelled_cb (
 
   gtk_widget_set_sensitive (priv->treeview, TRUE);
   gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_set_sensitive (priv->button_remove, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
 
   if (settings != NULL)
@@ -411,6 +413,7 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
 
   gtk_widget_set_sensitive (priv->treeview, TRUE);
   gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_set_sensitive (priv->button_remove, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
 
   empathy_signal_connect_weak (account, "status-changed",
@@ -728,6 +731,7 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
       accounts_dialog_setup_ui_to_add_account (dialog);
       gtk_widget_set_sensitive (priv->treeview, FALSE);
       gtk_widget_set_sensitive (priv->button_add, FALSE);
+      gtk_widget_set_sensitive (priv->button_remove, FALSE);
       gtk_widget_set_sensitive (priv->button_import, FALSE);
     }
 }
@@ -1025,26 +1029,23 @@ accounts_dialog_delete_account_response_cb (GtkDialog *message_dialog,
 }
 
 static void
-accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
-    const gchar *path_string,
-    EmpathyAccountsDialog *dialog)
+accounts_dialog_remove_account_iter (EmpathyAccountsDialog *dialog,
+    GtkTreeIter *iter)
 {
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   TpAccount *account;
   GtkTreeModel *model;
-  GtkTreeIter iter;
   gchar *question_dialog_primary_text;
-  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 
-  if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
-    return;
-
-  gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, &account, -1);
+  gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
   if (account == NULL || !tp_account_is_valid (account))
     {
-      gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+      if (account != NULL)
+        g_object_unref (account);
+      gtk_list_store_remove (GTK_LIST_STORE (model), iter);
       accounts_dialog_model_select_first (dialog);
       return;
     }
@@ -1061,13 +1062,44 @@ accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
       GTK_STOCK_REMOVE, GTK_RESPONSE_YES, NULL);
 
   g_free (question_dialog_primary_text);
-
-  if (account != NULL)
-    {
-      g_object_unref (account);
-      account = NULL;
-    }
 }
+
+static void
+accounts_dialog_button_remove_clicked_cb (GtkWidget *button,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeView  *view;
+  GtkTreeModel *model;
+  GtkTreeSelection *selection;
+  GtkTreeIter iter;
+
+  view = GTK_TREE_VIEW (priv->treeview);
+  model = gtk_tree_view_get_model (view);
+  selection = gtk_tree_view_get_selection (view);
+  if (!gtk_tree_selection_get_selected (selection, NULL, &iter))
+      return;
+
+  accounts_dialog_remove_account_iter (dialog, &iter);
+}
+
+#ifdef HAVE_MOBLIN
+static void
+accounts_dialog_view_delete_activated_cb (EmpathyCellRendererActivatable *cell,
+    const gchar *path_string,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
+    return;
+
+  accounts_dialog_remove_account_iter (dialog, &iter);
+}
+#endif
 
 static void
 accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
@@ -1120,6 +1152,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
       dialog);
   g_object_set (cell, "ypad", 4, NULL);
 
+#ifdef HAVE_MOBLIN
   /* Delete column */
   cell = empathy_cell_renderer_activatable_new ();
   gtk_tree_view_column_pack_start (column, cell, FALSE);
@@ -1131,6 +1164,7 @@ accounts_dialog_model_add_columns (EmpathyAccountsDialog *dialog)
   g_signal_connect (cell, "path-activated",
       G_CALLBACK (accounts_dialog_view_delete_activated_cb),
       dialog);
+#endif
 }
 
 static EmpathyAccountSettings *
@@ -1159,6 +1193,7 @@ static void
 accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
     EmpathyAccountsDialog *dialog)
 {
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   EmpathyAccountSettings *settings;
   GtkTreeModel *model;
   GtkTreeIter   iter;
@@ -1171,6 +1206,9 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
 
   if (settings != NULL)
     g_object_unref (settings);
+
+  /* Update remove button sensitivity */
+  gtk_widget_set_sensitive (priv->button_remove, is_selection);
 }
 
 static void
@@ -1823,6 +1861,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "alignment_infobar", &priv->alignment_infobar,
       "treeview", &priv->treeview,
       "button_add", &priv->button_add,
+      "button_remove", &priv->button_remove,
       "button_import", &priv->button_import,
       "hbox_protocol", &priv->hbox_protocol,
       NULL);
@@ -1830,6 +1869,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 
   empathy_builder_connect (gui, dialog,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
+      "button_remove", "clicked", accounts_dialog_button_remove_clicked_cb,
       "button_import", "clicked", accounts_dialog_button_import_clicked_cb,
       NULL);
 
@@ -1843,7 +1883,11 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 
 #ifdef HAVE_MOBLIN
   gtk_widget_hide (action_area);
+  gtk_widget_hide (priv->button_remove);
 #endif
+
+  /* Remove button is unsensitive until we have a selected account */
+  gtk_widget_set_sensitive (priv->button_remove, FALSE);
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
   gtk_box_pack_start (GTK_BOX (priv->hbox_protocol), priv->combobox_protocol,
