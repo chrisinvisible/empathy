@@ -730,6 +730,7 @@ theme_adium_find_next (EmpathyChatView *view,
 static void
 theme_adium_find_abilities (EmpathyChatView *view,
 			    const gchar    *search_criteria,
+                            gboolean        match_case,
 			    gboolean       *can_do_previous,
 			    gboolean       *can_do_next)
 {

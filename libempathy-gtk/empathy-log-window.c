@@ -414,6 +414,7 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 				    FALSE);
 	empathy_chat_view_find_abilities (window->chatview_find,
 					 window->last_find,
+					 FALSE,
 					 &can_do_previous,
 					 &can_do_next);
 	gtk_widget_set_sensitive (window->button_previous, can_do_previous);
@@ -610,6 +611,7 @@ log_window_button_next_clicked_cb (GtkWidget       *widget,
 					    FALSE);
 		empathy_chat_view_find_abilities (window->chatview_find,
 						 window->last_find,
+						 FALSE,
 						 &can_do_previous,
 						 &can_do_next);
 		gtk_widget_set_sensitive (window->button_previous, can_do_previous);
@@ -631,6 +633,7 @@ log_window_button_previous_clicked_cb (GtkWidget       *widget,
 						FALSE);
 		empathy_chat_view_find_abilities (window->chatview_find,
 						 window->last_find,
+						 FALSE,
 						 &can_do_previous,
 						 &can_do_next);
 		gtk_widget_set_sensitive (window->button_previous, can_do_previous);

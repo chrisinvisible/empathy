@@ -61,6 +61,7 @@ struct _EmpathyChatViewIface {
 						  gboolean         match_case);
 	void             (*find_abilities)       (EmpathyChatView *view,
 						  const gchar     *search_criteria,
+						  gboolean         match_case,
 						  gboolean        *can_do_previous,
 						  gboolean        *can_do_next);
 	void             (*highlight)            (EmpathyChatView *view,
@@ -89,6 +90,7 @@ gboolean         empathy_chat_view_find_next            (EmpathyChatView *view,
 							 gboolean         match_case);
 void             empathy_chat_view_find_abilities       (EmpathyChatView *view,
 							 const gchar     *search_criteria,
+							 gboolean         match_case,
 							 gboolean        *can_do_previous,
 							 gboolean        *can_do_next);
 void             empathy_chat_view_highlight            (EmpathyChatView *view,

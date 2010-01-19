@@ -103,7 +103,8 @@ empathy_search_bar_size_allocate (GtkWidget *widget,
 
 static void
 empathy_search_bar_update_buttons (EmpathySearchBar *self,
-    gchar *search)
+    gchar *search,
+    gboolean match_case)
 {
   gboolean can_go_forward = FALSE;
   gboolean can_go_backward = FALSE;
@@ -111,7 +112,7 @@ empathy_search_bar_update_buttons (EmpathySearchBar *self,
   EmpathySearchBarPriv* priv = GET_PRIV (self);
 
   /* update previous / next buttons */
-  empathy_chat_view_find_abilities (priv->chat_view, search,
+  empathy_chat_view_find_abilities (priv->chat_view, search, match_case,
       &can_go_backward, &can_go_forward);
 
   gtk_widget_set_sensitive (priv->search_previous,
@@ -124,11 +125,13 @@ void
 empathy_search_bar_show (EmpathySearchBar *self)
 {
   gchar *search;
+  gboolean match_case;
   EmpathySearchBarPriv *priv = GET_PRIV (self);
 
   search = gtk_editable_get_chars (GTK_EDITABLE (priv->search_entry), 0, -1);
+  match_case = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->search_match_case));
   empathy_chat_view_highlight (priv->chat_view, search, TRUE);
-  empathy_search_bar_update_buttons (self, search);
+  empathy_search_bar_update_buttons (self, search, match_case);
 
   /* grab the focus to the search entry */
   gtk_widget_grab_focus (priv->search_entry);
@@ -188,7 +191,7 @@ empathy_search_bar_search (EmpathySearchBar *self,
       !(found || EMP_STR_EMPTY (search)));
 
   /* update the buttons */
-  empathy_search_bar_update_buttons (self, search);
+  empathy_search_bar_update_buttons (self, search, match_case);
 
   g_free (search);
 }

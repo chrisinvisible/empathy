@@ -164,6 +164,7 @@ empathy_chat_view_find_next (EmpathyChatView *view,
 void
 empathy_chat_view_find_abilities (EmpathyChatView *view,
 				  const gchar    *search_criteria,
+				  gboolean        match_case,
 				  gboolean       *can_do_previous,
 				  gboolean       *can_do_next)
 {
@@ -172,6 +173,7 @@ empathy_chat_view_find_abilities (EmpathyChatView *view,
 	if (EMPATHY_TYPE_CHAT_VIEW_GET_IFACE (view)->find_abilities) {
 		EMPATHY_TYPE_CHAT_VIEW_GET_IFACE (view)->find_abilities (view,
 									 search_criteria,
+									 match_case,
 									 can_do_previous,
 									 can_do_next);
 	}

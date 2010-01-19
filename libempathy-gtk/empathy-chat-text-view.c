@@ -1096,6 +1096,7 @@ chat_text_view_find_next (EmpathyChatView *view,
 static void
 chat_text_view_find_abilities (EmpathyChatView *view,
 				 const gchar    *search_criteria,
+				 gboolean        match_case,
 				 gboolean       *can_do_previous,
 				 gboolean       *can_do_next)
 {
@@ -1122,11 +1123,20 @@ chat_text_view_find_abilities (EmpathyChatView *view,
 			gtk_text_buffer_get_start_iter (buffer, &iter_at_mark);
 		}
 
-		*can_do_previous = empathy_text_iter_backward_search (&iter_at_mark,
-								      search_criteria,
-								      &iter_match_start,
-								      &iter_match_end,
-								      NULL);
+		if (match_case) {
+			*can_do_previous = gtk_text_iter_backward_search (&iter_at_mark,
+								          search_criteria,
+								          0,
+								          &iter_match_start,
+								          &iter_match_end,
+								          NULL);
+		} else {
+			*can_do_previous = empathy_text_iter_backward_search (&iter_at_mark,
+									      search_criteria,
+									      &iter_match_start,
+									      &iter_match_end,
+									      NULL);
+		}
 	}
 
 	if (can_do_next) {
@@ -1138,11 +1148,20 @@ chat_text_view_find_abilities (EmpathyChatView *view,
 			gtk_text_buffer_get_start_iter (buffer, &iter_at_mark);
 		}
 
-		*can_do_next = empathy_text_iter_forward_search (&iter_at_mark,
-								 search_criteria,
-								 &iter_match_start,
-								 &iter_match_end,
-								 NULL);
+		if (match_case) {
+			*can_do_next = gtk_text_iter_forward_search (&iter_at_mark,
+								     search_criteria,
+								     0,
+								     &iter_match_start,
+								     &iter_match_end,
+								     NULL);
+		} else {
+			*can_do_next = empathy_text_iter_forward_search (&iter_at_mark,
+									 search_criteria,
+									 &iter_match_start,
+									 &iter_match_end,
+									 NULL);
+		}
 	}
 }
 
@@ -1177,11 +1196,11 @@ chat_text_view_highlight (EmpathyChatView *view,
 	while (1) {
 		if (match_case) {
 			found = gtk_text_iter_forward_search (&iter,
-								  text,
-								  0,
-								  &iter_match_start,
-								  &iter_match_end,
-								  NULL);
+							      text,
+							      0,
+							      &iter_match_start,
+							      &iter_match_end,
+							      NULL);
 		} else {
 			found = empathy_text_iter_forward_search (&iter,
 								  text,
