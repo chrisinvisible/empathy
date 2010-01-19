@@ -85,6 +85,13 @@
           <accelerator key="V" modifiers="GDK_CONTROL_MASK"/>
         </child>
         <child>
+          <object class="GtkAction" id="menu_edit_find">
+            <property name="stock_id">gtk-find</property>
+            <property name="name">menu_edit_find</property>
+          </object>
+          <accelerator key="F" modifiers="GDK_CONTROL_MASK"/>
+        </child>
+        <child>
           <object class="GtkAction" id="menu_tabs">
             <property name="name">menu_tabs</property>
             <property name="label" translatable="yes">_Tabs</property>
@@ -160,6 +167,8 @@
           <menuitem action="menu_edit_cut"/>
           <menuitem action="menu_edit_copy"/>
           <menuitem action="menu_edit_paste"/>
+          <separator/>
+          <menuitem action="menu_edit_find"/>
         </menu>
         <menu action="menu_tabs">
           <menuitem action="menu_tabs_prev"/>

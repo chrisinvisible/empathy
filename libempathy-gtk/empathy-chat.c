@@ -1371,11 +1371,6 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
-	/* catch ctrl-f to display the search bar */
-	if ((event->state & GDK_CONTROL_MASK) && (event->keyval == GDK_f)) {
-		empathy_search_bar_show (EMPATHY_SEARCH_BAR (priv->search_bar));
-		return TRUE;
-	}
 	if (!(event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) &&
 	    event->keyval == GDK_Tab) {
 		GtkTextBuffer *buffer;
@@ -2888,6 +2883,18 @@ empathy_chat_paste (EmpathyChat *chat)
 	clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
 
 	gtk_text_buffer_paste_clipboard (buffer, clipboard, NULL, TRUE);
+}
+
+void
+empathy_chat_find (EmpathyChat *chat)
+{
+	EmpathyChatPriv *priv;
+	
+	g_return_if_fail (EMPATHY_IS_CHAT (chat));
+	
+	priv = GET_PRIV (chat);
+	
+	empathy_search_bar_show (EMPATHY_SEARCH_BAR (priv->search_bar));
 }
 
 void

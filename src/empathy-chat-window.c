@@ -93,6 +93,7 @@ typedef struct {
 	GtkAction   *menu_edit_cut;
 	GtkAction   *menu_edit_copy;
 	GtkAction   *menu_edit_paste;
+	GtkAction   *menu_edit_find;
 
 	GtkAction   *menu_tabs_next;
 	GtkAction   *menu_tabs_prev;
@@ -1002,6 +1003,19 @@ chat_window_paste_activate_cb (GtkAction         *action,
 }
 
 static void
+chat_window_find_activate_cb (GtkAction         *action,
+			      EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_CHAT_WINDOW (window));
+
+	priv = GET_PRIV (window);
+
+	empathy_chat_find (priv->current_chat);
+}
+
+static void
 chat_window_tabs_next_activate_cb (GtkAction         *action,
 				   EmpathyChatWindow *window)
 {
@@ -1805,6 +1819,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 				       "menu_edit_cut", &priv->menu_edit_cut,
 				       "menu_edit_copy", &priv->menu_edit_copy,
 				       "menu_edit_paste", &priv->menu_edit_paste,
+				       "menu_edit_find", &priv->menu_edit_find,
 				       "menu_tabs_next", &priv->menu_tabs_next,
 				       "menu_tabs_prev", &priv->menu_tabs_prev,
 				       "menu_tabs_left", &priv->menu_tabs_left,
@@ -1824,6 +1839,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_edit_cut", "activate", chat_window_cut_activate_cb,
 			      "menu_edit_copy", "activate", chat_window_copy_activate_cb,
 			      "menu_edit_paste", "activate", chat_window_paste_activate_cb,
+			      "menu_edit_find", "activate", chat_window_find_activate_cb,
 			      "menu_tabs_next", "activate", chat_window_tabs_next_activate_cb,
 			      "menu_tabs_prev", "activate", chat_window_tabs_previous_activate_cb,
 			      "menu_tabs_left", "activate", chat_window_tabs_left_activate_cb,
