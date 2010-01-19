@@ -892,12 +892,23 @@ chat_text_view_find_previous (EmpathyChatView *view,
 
 	priv->find_last_direction = FALSE;
 
-	/* FIXME: doesn't respect match_case */
-	found = empathy_text_iter_backward_search (&iter_at_mark,
-						   search_criteria,
-						   &iter_match_start,
-						   &iter_match_end,
-						   NULL);
+	/* Use the standard GTK+ method for case sensitive searches. It can't do
+	 * case insensitive searches (see bug #61852), so keep the custom method
+	 * around for case insensitive searches. */
+	if (match_case) {
+		found = gtk_text_iter_backward_search (&iter_at_mark,
+		                                       search_criteria,
+		                                       0, /* no text search flags, we want exact matches */
+		                                       &iter_match_start,
+		                                       &iter_match_end,
+		                                       NULL);
+	} else {
+		found = empathy_text_iter_backward_search (&iter_at_mark,
+		                                           search_criteria,
+		                                           &iter_match_start,
+		                                           &iter_match_end,
+		                                           NULL);
+	}
 
 	if (!found) {
 		gboolean result = FALSE;
@@ -1010,12 +1021,23 @@ chat_text_view_find_next (EmpathyChatView *view,
 
 	priv->find_last_direction = TRUE;
 
-	/* FIXME: doesn't respect match_case */
-	found = empathy_text_iter_forward_search (&iter_at_mark,
-						  search_criteria,
-						  &iter_match_start,
-						  &iter_match_end,
-						  NULL);
+	/* Use the standard GTK+ method for case sensitive searches. It can't do
+	 * case insensitive searches (see bug #61852), so keep the custom method
+	 * around for case insensitive searches. */
+	if (match_case) {
+		found = gtk_text_iter_forward_search (&iter_at_mark,
+		                                      search_criteria,
+		                                      0,
+		                                      &iter_match_start,
+		                                      &iter_match_end,
+		                                      NULL);
+	} else {
+		found = empathy_text_iter_forward_search (&iter_at_mark,
+		                                          search_criteria,
+		                                          &iter_match_start,
+		                                          &iter_match_end,
+		                                          NULL);
+	}
 
 	if (!found) {
 		gboolean result = FALSE;
