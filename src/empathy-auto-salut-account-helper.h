@@ -28,7 +28,7 @@
 
 #include <libempathy/empathy-connection-managers.h>
 
-void create_salut_account_if_needed (EmpathyConnectionManagers *managers);
+void create_salut_account_if_needed (void);
 
 gboolean should_create_salut_account (TpAccountManager *manager);
 

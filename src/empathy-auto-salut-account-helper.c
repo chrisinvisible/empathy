@@ -201,15 +201,33 @@ create_salut_account_am_ready_cb (GObject *source_object,
   g_object_unref (managers);
 }
 
-void
-create_salut_account_if_needed (EmpathyConnectionManagers *managers)
+static void
+create_salut_account_cms_ready_cb (EmpathyConnectionManagers *managers)
 {
   TpAccountManager *manager;
 
   manager = tp_account_manager_dup ();
 
   tp_account_manager_prepare_async (manager, NULL,
-      create_salut_account_am_ready_cb, g_object_ref (managers));
+      create_salut_account_am_ready_cb, managers);
 
   g_object_unref (manager);
+}
+
+void
+create_salut_account_if_needed (void)
+{
+  EmpathyConnectionManagers *managers;
+
+  managers = empathy_connection_managers_dup_singleton ();
+
+  if (empathy_connection_managers_is_ready (managers))
+    {
+      create_salut_account_cms_ready_cb (managers);
+    }
+  else
+    {
+      g_signal_connect (managers, "notify::ready",
+            G_CALLBACK (create_salut_account_cms_ready_cb), NULL);
+    }
 }
