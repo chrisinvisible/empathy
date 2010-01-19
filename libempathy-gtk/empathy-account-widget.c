@@ -1460,6 +1460,9 @@ add_register_buttons (EmpathyAccountWidget *self,
   if (account_widget_is_gtalk (self))
     return;
 
+  if (priv->simple)
+    return;
+
   priv->radiobutton_reuse = gtk_radio_button_new_with_label (NULL,
       _("This account already exists on the server"));
   radiobutton_register = gtk_radio_button_new_with_label (
