@@ -1311,6 +1311,10 @@ presence_changed_cb (TpAccountManager *manager,
   if (priv->destroyed)
     return;
 
+  if (priv->apply_button == NULL)
+    /* This button doesn't exist in 'simple' mode */
+    return;
+
   if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
     {
       /* We are online, display a Login button */
