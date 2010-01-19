@@ -373,6 +373,7 @@ static gboolean
 account_assistant_chooser_enter_details_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
+    gboolean is_gtalk,
     gpointer user_data)
 {
   if (!tp_strdiff (protocol->name, "local-xmpp") ||
@@ -386,6 +387,7 @@ static gboolean
 account_assistant_chooser_create_account_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
+    gboolean is_gtalk,
     gpointer user_data)
 {
   return tp_connection_manager_protocol_can_register (protocol);

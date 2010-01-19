@@ -59,7 +59,9 @@ struct _EmpathyProtocolChooserClass
 };
 
 typedef gboolean (*EmpathyProtocolChooserFilterFunc) (TpConnectionManager *cm,
-    TpConnectionManagerProtocol *protocol, gpointer user_data);
+    TpConnectionManagerProtocol *protocol,
+    gboolean is_gtalk,
+    gpointer user_data);
 
 GType empathy_protocol_chooser_get_type (void) G_GNUC_CONST;
 GtkWidget * empathy_protocol_chooser_new (void);
