@@ -1151,7 +1151,6 @@ chat_text_view_highlight (EmpathyChatView *view,
 			    const gchar     *text,
 			    gboolean         match_case)
 {
-	// TODO: do something useful with the match_case var
 	GtkTextBuffer *buffer;
 	GtkTextIter    iter;
 	GtkTextIter    iter_start;
@@ -1176,12 +1175,20 @@ chat_text_view_highlight (EmpathyChatView *view,
 	}
 
 	while (1) {
-		found = empathy_text_iter_forward_search (&iter,
-							  text,
-							  &iter_match_start,
-							  &iter_match_end,
-							  NULL);
-
+		if (match_case) {
+			found = gtk_text_iter_forward_search (&iter,
+								  text,
+								  0,
+								  &iter_match_start,
+								  &iter_match_end,
+								  NULL);
+		} else {
+			found = empathy_text_iter_forward_search (&iter,
+								  text,
+								  &iter_match_start,
+								  &iter_match_end,
+								  NULL);
+		}
 		if (!found) {
 			break;
 		}
