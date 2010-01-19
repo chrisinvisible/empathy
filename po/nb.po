@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy 2.29.4\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-13 18:49+0100\n"
-"PO-Revision-Date: 2010-01-13 18:53+0100\n"
+"Report-Msgid-Bugs-To:\n"
+"POT-Creation-Date: 2010-01-19 14:08+0100\n"
+"PO-Revision-Date: 2010-01-19 14:14+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -276,90 +276,73 @@ msgid "Whether Empathy should automatically log into your accounts on startup."
 msgstr "Om Empathy skal logge inn til dine kontoer automatisk ved oppstart."
 
 #: ../data/empathy.schemas.in.h:60
-#, fuzzy
 msgid ""
 "Whether Empathy should reduce the location's accuracy for privacy reasons."
-msgstr ""
-"Om Empathy skal bruke personbilde for kontakten som ikon for pratevinduet."
+msgstr "Om Empathy skal redusere nøyaktighet for lokasjon av personvernhensyn."
 
 #: ../data/empathy.schemas.in.h:61
-#, fuzzy
 msgid ""
 "Whether Empathy should use the avatar of the contact as the chat window icon."
-msgstr ""
-"Om Empathy skal bruke personbilde for kontakten som ikon for pratevinduet."
+msgstr "Om Empathy skal bruke personbilde for kontakten som ikon for pratevinduet."
 
 #: ../data/empathy.schemas.in.h:62
 msgid ""
 "Whether WebKit developer tools, such as the Web Inspector, should be enabled."
-msgstr ""
+msgstr "Om utviklerverktøy for WebKit, som Web Inspector, skal slås på."
 
 #: ../data/empathy.schemas.in.h:63
-#, fuzzy
 msgid ""
 "Whether connectivity managers should be used to automatically disconnect/"
 "reconnect."
-msgstr "Om NetworkManager skal brukes til å koble til/fra automatisk."
+msgstr "Om tilkoblingshåndterere skal brukes til å koble til/fra automatisk."
 
 #: ../data/empathy.schemas.in.h:64
-#, fuzzy
 msgid "Whether the Salut account has been created on the first Empathy run."
 msgstr "Om Salut-konto ble opprettet første gang Empathy ble kjørt."
 
 #: ../data/empathy.schemas.in.h:65
-#, fuzzy
 msgid ""
 "Whether to check words typed against the languages you want to check with."
 msgstr "Om stavekontroll skal sjekke ord mot de språkene du ønsker å bruke."
 
 #: ../data/empathy.schemas.in.h:66
-#, fuzzy
 msgid "Whether to convert smileys into graphical images in conversations."
-msgstr "Om smilefjes skal konverteres til grafikk i samtaler."
+msgstr "Om smilefjes skal konverteres til grafiske bilder i samtaler."
 
 #: ../data/empathy.schemas.in.h:67
-#, fuzzy
 msgid "Whether to play a sound to notify of contacts logging into the network."
-msgstr "Om bilder av kontakter skal vises i kontaktlisten og samtalevinduer."
+msgstr "Om en lyd skal spilles av for å varsle om at kontakter logger inn på nettverket."
 
 #: ../data/empathy.schemas.in.h:68
-#, fuzzy
 msgid ""
 "Whether to play a sound to notify of contacts logging out of the network."
-msgstr "Om bilder av kontakter skal vises i kontaktlisten og samtalevinduer."
+msgstr "Om en lyd skal spilles av for å varsle at kontakter logger ut av nettverket."
 
 #: ../data/empathy.schemas.in.h:69
-#, fuzzy
 msgid "Whether to play a sound to notify of events."
-msgstr "Om lyder skal spilles av når opptatt."
+msgstr "Om lyder skal spilles av for å varsle om hendelser."
 
 #: ../data/empathy.schemas.in.h:70
-#, fuzzy
 msgid "Whether to play a sound to notify of incoming messages."
-msgstr "Om lyder skal spilles av når meldinger kommer inn."
+msgstr "Om lyder skal spilles av for å varsle om innkommende meldinger."
 
 #: ../data/empathy.schemas.in.h:71
-#, fuzzy
 msgid "Whether to play a sound to notify of new conversations."
-msgstr "Om lyder skal spilles av når meldinger kommer inn."
+msgstr "Om lyder skal spilles av for å varsle om nye samtaler."
 
 #: ../data/empathy.schemas.in.h:72
-#, fuzzy
 msgid "Whether to play a sound to notify of outgoing messages."
-msgstr "Om lyder skal spilles av når meldinger kommer inn."
+msgstr "Om lyder skal spilles av for å varsle om utgående meldinger."
 
 #: ../data/empathy.schemas.in.h:73
-#, fuzzy
 msgid "Whether to play a sound when logging into a network."
-msgstr "Om lyder skal spilles av når borte."
+msgstr "Om lyder skal spilles av når du logger inn på et nettverk."
 
 #: ../data/empathy.schemas.in.h:74
-#, fuzzy
 msgid "Whether to play a sound when logging out of a network."
-msgstr "Om lyder skal spilles av når borte."
+msgstr "Om lyder skal spilles av når du logger ut av et nettverk."
 
 #: ../data/empathy.schemas.in.h:75
-#, fuzzy
 msgid "Whether to play sound notifications when away or busy."
 msgstr "Om lyder skal spilles av når du er borte eller opptatt."
 
@@ -407,12 +390,10 @@ msgid "Whether to show protocols for contacts in the contact list."
 msgstr "Om bilder av kontakter skal vises i kontaktlisten og samtalevinduer."
 
 #: ../data/empathy.schemas.in.h:84
-#, fuzzy
 msgid "Whether to show the contact list in chat rooms."
-msgstr "Om kontaktlisten skal vises i kompakt modus."
+msgstr "Om kontaktlisten skal vises i praterom."
 
 #: ../data/empathy.schemas.in.h:85
-#, fuzzy
 msgid "Whether to show the contact list in compact mode."
 msgstr "Om kontaktlisten skal vises i kompakt modus."
 
@@ -506,8 +487,8 @@ msgid "Away"
 msgstr "Borte"
 
 #: ../libempathy/empathy-utils.c:245
-msgid "Hidden"
-msgstr "Skjult"
+msgid "Invisible"
+msgstr "Usynlig"
 
 #: ../libempathy/empathy-utils.c:247
 msgid "Offline"
@@ -518,8 +499,8 @@ msgid "No reason specified"
 msgstr "Ingen årsak oppgitt"
 
 #: ../libempathy/empathy-utils.c:288
-msgid "User requested disconnect"
-msgstr "Bruker ba om frakobling"
+msgid "Status is set to offline"
+msgstr "Status er satt til frakoblet"
 
 #: ../libempathy/empathy-utils.c:290
 msgid "Network error"
@@ -1374,6 +1355,7 @@ msgstr "Fjerner gruppe"
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:1561
 #: ../libempathy-gtk/empathy-contact-list-view.c:1638
+#: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "Fje_rn"
 
@@ -2019,19 +2001,19 @@ msgstr "Ingen feilmelding"
 msgid "Instant Message (Empathy)"
 msgstr "Lynmelding (Empathy)"
 
-#: ../src/empathy.c:893
+#: ../src/empathy.c:887
 msgid "Don't connect on startup"
 msgstr "Ikke koble til ved oppstart"
 
-#: ../src/empathy.c:897
+#: ../src/empathy.c:891
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ikke vis kontaktlisten eller andre dialoger ved oppstart"
 
-#: ../src/empathy.c:901
+#: ../src/empathy.c:895
 msgid "Show the accounts dialog"
 msgstr "Vis kontovinduet"
 
-#: ../src/empathy.c:913
+#: ../src/empathy.c:907
 msgid "- Empathy IM Client"
 msgstr "- Empathy lynmeldingsprogram"
 
@@ -2118,7 +2100,7 @@ msgstr "En feil oppsto"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:331 ../src/empathy-accounts-dialog.c:533
+#: ../src/empathy-account-assistant.c:331 ../src/empathy-accounts-dialog.c:552
 #, c-format
 msgid "New %s account"
 msgstr "Ny %s-konto"
@@ -2214,33 +2196,33 @@ msgstr "Det finnes ikke-lagrede endringer for din %s-konto."
 msgid "Your new account has not been saved yet."
 msgstr "Din nye konto er ikke lagret ennå."
 
-#: ../src/empathy-accounts-dialog.c:244 ../src/empathy-call-window.c:729
+#: ../src/empathy-accounts-dialog.c:259 ../src/empathy-call-window.c:729
 msgid "Connecting…"
 msgstr "Kobler til..."
 
-#: ../src/empathy-accounts-dialog.c:271
+#: ../src/empathy-accounts-dialog.c:286
 #, c-format
 msgid "Disconnected — %s"
 msgstr "Koblet fra - %s"
 
-#: ../src/empathy-accounts-dialog.c:276
+#: ../src/empathy-accounts-dialog.c:291
 #, c-format
 msgid "Offline — %s"
 msgstr "Frakoblet - %s"
 
-#: ../src/empathy-accounts-dialog.c:289
+#: ../src/empathy-accounts-dialog.c:304
 msgid "Offline — No Network Connection"
 msgstr "Frakoblet - Ingen nettverkstilkobling"
 
-#: ../src/empathy-accounts-dialog.c:297
+#: ../src/empathy-accounts-dialog.c:312
 msgid "Unknown Status"
 msgstr "Ukjent status"
 
-#: ../src/empathy-accounts-dialog.c:308
+#: ../src/empathy-accounts-dialog.c:323
 msgid "Offline — Account Disabled"
 msgstr "Frakoblet - Konto deaktivert"
 
-#: ../src/empathy-accounts-dialog.c:672
+#: ../src/empathy-accounts-dialog.c:720
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2248,16 +2230,16 @@ msgstr ""
 "Du er i ferd med å lage en ny konto hvilket vil forkaste\n"
 "dine endringer. Er du sikker på at du vil fortsette?"
 
-#: ../src/empathy-accounts-dialog.c:963
+#: ../src/empathy-accounts-dialog.c:1054
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Vil du fjerne %s fra din datamaskin?"
 
-#: ../src/empathy-accounts-dialog.c:967
+#: ../src/empathy-accounts-dialog.c:1058
 msgid "This will not remove your account on the server."
 msgstr "Dette vil ikke fjerne din konto på tjeneren."
 
-#: ../src/empathy-accounts-dialog.c:1149
+#: ../src/empathy-accounts-dialog.c:1286
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2265,7 +2247,7 @@ msgstr ""
 "Du er i ferd med å velge en annen konto hvilket vil forkaste\n"
 "dine endringer. Er du sikker på at du vil fortsette?"
 
-#: ../src/empathy-accounts-dialog.c:1669
+#: ../src/empathy-accounts-dialog.c:1828
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2274,7 +2256,7 @@ msgstr ""
 "dine endringer. Er du sikker på at du vil fortsette?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1763
+#: ../src/empathy-accounts-dialog.c:1955
 msgid "Accounts"
 msgstr "Kontoer"
 
@@ -2602,89 +2584,76 @@ msgstr "Koble til automatisk"
 msgid "Manage Favorite Rooms"
 msgstr "Håndter favorittrom"
 
-#: ../src/empathy-event-manager.c:345
+#: ../src/empathy-event-manager.c:339
 msgid "Incoming video call"
 msgstr "Innkommende videosamtale"
 
-#: ../src/empathy-event-manager.c:345
+#: ../src/empathy-event-manager.c:339
 msgid "Incoming call"
 msgstr "Innkommende samtale"
 
-#: ../src/empathy-event-manager.c:349
+#: ../src/empathy-event-manager.c:343
 #, c-format
 msgid "%s is video calling you. Do you want to answer?"
 msgstr "%s ringer deg med video. Vil du svare?"
 
-#: ../src/empathy-event-manager.c:350
+#: ../src/empathy-event-manager.c:344
 #, c-format
 msgid "%s is calling you. Do you want to answer?"
 msgstr "%s ringer deg. Vil du svare?"
 
-#: ../src/empathy-event-manager.c:372
+#: ../src/empathy-event-manager.c:366
 msgid "_Reject"
 msgstr "Av_vis"
 
-#: ../src/empathy-event-manager.c:378
+#: ../src/empathy-event-manager.c:372
 msgid "_Answer"
 msgstr "Sv_ar"
 
-#: ../src/empathy-event-manager.c:495
+#: ../src/empathy-event-manager.c:489
 #, c-format
 msgid "Incoming video call from %s"
 msgstr "Innkommende videosamtale fra %s"
 
-#: ../src/empathy-event-manager.c:495
+#: ../src/empathy-event-manager.c:489
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Innkommende samtale fra %s"
 
-#: ../src/empathy-event-manager.c:541
-#, c-format
-msgid "%s is offering you an invitation"
-msgstr "%s tilbyr deg en invitasjon"
-
-#: ../src/empathy-event-manager.c:547
-msgid "An external application will be started to handle it."
-msgstr "Et eksternt program vil bli startet for å håndtere den."
-
-#: ../src/empathy-event-manager.c:552
-msgid "You don't have the needed external application to handle it."
-msgstr "Du har ikke nødvendig eksternt program som kan håndtere dette."
-
-#: ../src/empathy-event-manager.c:680
+#: ../src/empathy-event-manager.c:579
 msgid "Room invitation"
 msgstr "Invitasjon til rom"
 
-#: ../src/empathy-event-manager.c:683
+#: ../src/empathy-event-manager.c:582
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s inviterer deg til å bli med i %s"
 
-#: ../src/empathy-event-manager.c:691
+#: ../src/empathy-event-manager.c:590
 msgid "_Decline"
 msgstr "_Avslå"
 
-#: ../src/empathy-event-manager.c:696
+#: ../src/empathy-event-manager.c:595
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Bli med"
 
-#: ../src/empathy-event-manager.c:735
+#: ../src/empathy-event-manager.c:634
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s inviterte deg til å bli med i %s"
 
-#: ../src/empathy-event-manager.c:761
+#: ../src/empathy-event-manager.c:660
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Innkommende filoverføring fra %s"
 
-#: ../src/empathy-event-manager.c:941
+#: ../src/empathy-event-manager.c:818
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Abonnement forespurt av %s"
 
-#: ../src/empathy-event-manager.c:945
+#: ../src/empathy-event-manager.c:822
 #, c-format
 msgid ""
 "\n"
@@ -2694,13 +2663,13 @@ msgstr ""
 "Melding: %s"
 
 #. someone is logging off
-#: ../src/empathy-event-manager.c:985
+#: ../src/empathy-event-manager.c:862
 #, c-format
 msgid "%s is now offline."
 msgstr "%s er nå frakoblet."
 
 #. someone is logging in
-#: ../src/empathy-event-manager.c:1001
+#: ../src/empathy-event-manager.c:878
 #, c-format
 msgid "%s is now online."
 msgstr "%s er nå tilkoblet."
@@ -3188,20 +3157,6 @@ msgstr "Status"
 #: ../src/empathy-status-icon.ui.h:4
 msgid "_Quit"
 msgstr "_Avslutt"
-
-#: ../src/empathy-tube-dispatch.c:376
-#, c-format
-msgid "Unable to start application for service %s: %s"
-msgstr "Kan ikke starte program for tjeneste %s: %s"
-
-#: ../src/empathy-tube-dispatch.c:447
-#, c-format
-msgid ""
-"An invitation was offered for service %s, but you don't have the application "
-"necessary to handle it"
-msgstr ""
-"En invitasjon ble tilbudt for tjeneste %s, men du har ikke programmet som "
-"kreves for å håndtere denne."
 
 #: ../src/empathy-map-view.ui.h:1
 msgid "Contact Map View"
