@@ -29,6 +29,7 @@ empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
 	empathy-account-assistant.c empathy-account-assistant.h		\
 	empathy-accounts-dialog.c empathy-accounts-dialog.h		\
+	empathy-auto-salut-account-helper.c empathy-auto-salut-account-helper.h \
 	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
 	empathy-call-window.c empathy-call-window.h			\
 	empathy-chat-window.c empathy-chat-window.h			\
