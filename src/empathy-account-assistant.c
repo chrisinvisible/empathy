@@ -390,6 +390,9 @@ account_assistant_chooser_create_account_filter_func (
     gboolean is_gtalk,
     gpointer user_data)
 {
+  if (is_gtalk)
+    return FALSE;
+
   return tp_connection_manager_protocol_can_register (protocol);
 }
 
