@@ -27,6 +27,7 @@
 #include "empathy-account-assistant.h"
 #include "empathy-import-widget.h"
 #include "empathy-import-utils.h"
+#include "empathy-auto-salut-account-helper.h"
 
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-utils.h>
@@ -754,6 +755,8 @@ account_assistant_close_cb (GtkAssistant *assistant,
 
   if (priv->is_creating)
     return;
+
+  create_salut_account_if_needed ();
 
   gtk_widget_destroy (GTK_WIDGET (assistant));
 }

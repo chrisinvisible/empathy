@@ -208,7 +208,6 @@ check_connection_managers_ready (EmpathyConnectionManagers *managers)
       if (!empathy_import_mc4_accounts (managers) && !start_hidden)
         maybe_show_account_assistant ();
 
-      create_salut_account_if_needed ();
       g_object_unref (managers);
       return TRUE;
     }
