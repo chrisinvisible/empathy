@@ -2889,11 +2889,11 @@ void
 empathy_chat_find (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv;
-	
+
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
-	
+
 	priv = GET_PRIV (chat);
-	
+
 	empathy_search_bar_show (EMPATHY_SEARCH_BAR (priv->search_bar));
 }
 
