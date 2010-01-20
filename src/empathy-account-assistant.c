@@ -35,6 +35,7 @@
 #include <libempathy-gtk/empathy-account-widget.h>
 #include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
+#include <libempathy-gtk/empathy-conf.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -235,14 +236,25 @@ account_assistant_account_enabled_cb (GObject *source,
   GError *error = NULL;
   EmpathyAccountAssistant *self = user_data;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  const gchar *protocol;
+  TpAccount *account = TP_ACCOUNT (source);
 
-  tp_account_set_enabled_finish (TP_ACCOUNT (source),
-      result, &error);
+  tp_account_set_enabled_finish (account, result, &error);
 
   if (error)
     {
       g_warning ("Error enabling an account: %s", error->message);
       g_error_free (error);
+    }
+
+  protocol = tp_account_get_protocol (account);
+  if (!tp_strdiff (protocol, "local-xmpp"))
+    {
+      DEBUG ("Salut account has been created; update gconf key");
+
+      empathy_conf_set_bool (empathy_conf_get (),
+          EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
+          TRUE);
     }
 
   if (priv->create_enter_resp == RESPONSE_CREATE_STOP)
