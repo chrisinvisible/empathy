@@ -36,6 +36,9 @@
 #include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
+#define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
+#include <libempathy/empathy-debug.h>
+
 G_DEFINE_TYPE (EmpathyAccountAssistant, empathy_account_assistant,
     GTK_TYPE_ASSISTANT)
 
@@ -87,6 +90,7 @@ typedef struct {
   GtkWidget *salut_page;
   EmpathyAccountSettings *salut_settings;
   GtkWidget *salut_account_widget;
+  gboolean create_salut_account;
 
   GtkWindow *parent_window;
 
@@ -287,16 +291,17 @@ account_assistant_apply_account_cb (GObject *source,
 }
 
 static void
-account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self)
+account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self,
+    EmpathyAccountSettings *settings)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
-  if (priv->settings == NULL)
+  if (settings == NULL)
     return;
 
   priv->is_creating = TRUE;
 
-  empathy_account_settings_apply_async (priv->settings,
+  empathy_account_settings_apply_async (settings,
       account_assistant_apply_account_cb, self);
 }
 
@@ -753,8 +758,6 @@ account_assistant_close_cb (GtkAssistant *assistant,
   if (priv->is_creating)
     return;
 
-  create_salut_account_if_needed ();
-
   gtk_widget_destroy (GTK_WIDGET (assistant));
 }
 
@@ -767,11 +770,12 @@ impl_signal_apply (GtkAssistant *assistant)
 
   current_page = gtk_assistant_get_current_page (assistant);
 
-  if (current_page >= PAGE_ENTER_CREATE)
-    account_assistant_apply_account_and_finish (self);
-
-  if (current_page == PAGE_IMPORT)
+  if (current_page == PAGE_ENTER_CREATE)
+    account_assistant_apply_account_and_finish (self, priv->settings);
+  else if (current_page == PAGE_IMPORT)
     empathy_import_widget_add_selected_accounts (priv->iw);
+  else if (current_page == PAGE_SALUT && priv->create_salut_account)
+    account_assistant_apply_account_and_finish (self, priv->salut_settings);
 }
 
 static void
@@ -790,7 +794,7 @@ impl_signal_prepare (GtkAssistant *assistant,
 
   current_idx = gtk_assistant_get_current_page (assistant);
 
-  if (current_idx >= PAGE_ENTER_CREATE)
+  if (current_idx == PAGE_ENTER_CREATE)
     {
       if (!priv->enter_create_forward)
         {
@@ -801,7 +805,7 @@ impl_signal_prepare (GtkAssistant *assistant,
       else
         {
           priv->enter_create_forward = FALSE;
-          account_assistant_apply_account_and_finish (self);
+          account_assistant_apply_account_and_finish (self, priv->settings);
         }
     }
 }
@@ -916,11 +920,13 @@ create_salut_check_box_toggled_cb (GtkWidget *widget,
   if (!sensitive)
     {
       page_valid = TRUE;
+      priv->create_salut_account = FALSE;
     }
   else
     {
       /* page is complete if the account is valid */
       page_valid = empathy_account_settings_is_valid (priv->salut_settings);
+      priv->create_salut_account = TRUE;
     }
 
   gtk_assistant_set_page_complete (GTK_ASSISTANT (self), priv->salut_page,
@@ -989,7 +995,6 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), w, TRUE, TRUE, 0);
   gtk_widget_show (w);
 
-  /* TODO: use this setting to create the account */
   settings = create_salut_account_settings ();
 
   widget_object = empathy_account_widget_new_for_protocol (settings, TRUE);
@@ -1055,6 +1060,7 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
       _("Please enter personal details"));
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->salut_page = page;
+  priv->create_salut_account = TRUE;
 
   gtk_window_set_resizable (GTK_WINDOW (self), FALSE);
 }
