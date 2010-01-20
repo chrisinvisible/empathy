@@ -265,14 +265,17 @@ account_assistant_apply_account_cb (GObject *source,
 
   empathy_account_settings_apply_finish (settings, result, &error);
 
-  /* set default display name */
-  display_name = empathy_account_widget_get_default_display_name (
-      priv->current_widget_object);
+  if (empathy_account_settings_get_display_name (settings) == NULL)
+    {
+      /* set default display name */
+      display_name = empathy_account_widget_get_default_display_name (
+          priv->current_widget_object);
 
-  empathy_account_settings_set_display_name_async (settings,
-      display_name, NULL, NULL);
+      empathy_account_settings_set_display_name_async (settings,
+          display_name, NULL, NULL);
 
-  g_free (display_name);
+      g_free (display_name);
+    }
 
   priv->is_creating = FALSE;
 
