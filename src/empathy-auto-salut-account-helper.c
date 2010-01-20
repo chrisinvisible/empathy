@@ -103,6 +103,67 @@ salut_account_created (GObject *source,
       TRUE);
 }
 
+EmpathyAccountSettings *
+create_salut_account_settings (void)
+{
+  EmpathyAccountSettings  *settings;
+  EBook *book;
+  EContact *contact;
+  gchar *nickname = NULL;
+  gchar *first_name = NULL;
+  gchar *last_name = NULL;
+  gchar *email = NULL;
+  gchar *jid = NULL;
+  GError *error = NULL;
+
+  settings = empathy_account_settings_new ("salut", "local-xmpp",
+      _("People nearby"));
+
+  /* Get self EContact from EDS */
+  if (!e_book_get_self (&contact, &book, &error))
+    {
+      DEBUG ("Failed to get self econtact: %s",
+          error ? error->message : "No error given");
+      g_error_free (error);
+      return settings;
+    }
+
+  nickname = e_contact_get (contact, E_CONTACT_NICKNAME);
+  first_name = e_contact_get (contact, E_CONTACT_GIVEN_NAME);
+  last_name = e_contact_get (contact, E_CONTACT_FAMILY_NAME);
+  email = e_contact_get (contact, E_CONTACT_EMAIL_1);
+  jid = e_contact_get (contact, E_CONTACT_IM_JABBER_HOME_1);
+
+  if (!tp_strdiff (nickname, "nickname"))
+    {
+      g_free (nickname);
+      nickname = NULL;
+    }
+
+  DEBUG ("Salut account created:\nnickname=%s\nfirst-name=%s\n"
+     "last-name=%s\nemail=%s\njid=%s\n",
+     nickname, first_name, last_name, email, jid);
+
+  empathy_account_settings_set_string (settings,
+      "nickname", nickname ? nickname : "");
+  empathy_account_settings_set_string (settings,
+      "first-name", first_name ? first_name : "");
+  empathy_account_settings_set_string (settings,
+      "last-name", last_name ? last_name : "");
+  empathy_account_settings_set_string (settings, "email", email ? email : "");
+  empathy_account_settings_set_string (settings, "jid", jid ? jid : "");
+
+  g_free (nickname);
+  g_free (first_name);
+  g_free (last_name);
+  g_free (email);
+  g_free (jid);
+  g_object_unref (contact);
+  g_object_unref (book);
+
+  return settings;
+}
+
 static void
 create_salut_account_am_ready_cb (GObject *source_object,
     GAsyncResult *result,
@@ -113,13 +174,6 @@ create_salut_account_am_ready_cb (GObject *source_object,
   EmpathyAccountSettings  *settings;
   TpConnectionManager *manager;
   const TpConnectionManagerProtocol *protocol;
-  EBook      *book;
-  EContact   *contact;
-  gchar      *nickname = NULL;
-  gchar      *first_name = NULL;
-  gchar      *last_name = NULL;
-  gchar      *email = NULL;
-  gchar      *jid = NULL;
   GError     *error = NULL;
 
   if (!tp_account_manager_prepare_finish (account_manager, result, &error))
@@ -148,56 +202,19 @@ create_salut_account_am_ready_cb (GObject *source_object,
 
   DEBUG ("Trying to add a salut account...");
 
-  /* Get self EContact from EDS */
-  if (!e_book_get_self (&contact, &book, &error))
+  settings = create_salut_account_settings ();
+  if (!empathy_account_settings_is_valid (settings))
     {
-      DEBUG ("Failed to get self econtact: %s",
-          error ? error->message : "No error given");
-      g_clear_error (&error);
+      g_object_unref (settings);
       goto out;
     }
-
-  settings = empathy_account_settings_new ("salut", "local-xmpp",
-      _("People nearby"));
-
-  nickname = e_contact_get (contact, E_CONTACT_NICKNAME);
-  first_name = e_contact_get (contact, E_CONTACT_GIVEN_NAME);
-  last_name = e_contact_get (contact, E_CONTACT_FAMILY_NAME);
-  email = e_contact_get (contact, E_CONTACT_EMAIL_1);
-  jid = e_contact_get (contact, E_CONTACT_IM_JABBER_HOME_1);
-
-  if (!tp_strdiff (nickname, "nickname"))
-    {
-      g_free (nickname);
-      nickname = NULL;
-    }
-
-  DEBUG ("Salut account created:\nnickname=%s\nfirst-name=%s\n"
-     "last-name=%s\nemail=%s\njid=%s\n",
-     nickname, first_name, last_name, email, jid);
-
-  empathy_account_settings_set_string (settings,
-      "nickname", nickname ? nickname : "");
-  empathy_account_settings_set_string (settings,
-      "first-name", first_name ? first_name : "");
-  empathy_account_settings_set_string (settings,
-      "last-name", last_name ? last_name : "");
-  empathy_account_settings_set_string (settings, "email", email ? email : "");
-  empathy_account_settings_set_string (settings, "jid", jid ? jid : "");
 
   empathy_account_settings_apply_async (settings,
       salut_account_created, NULL);
 
-  g_free (nickname);
-  g_free (first_name);
-  g_free (last_name);
-  g_free (email);
-  g_free (jid);
   g_object_unref (settings);
-  g_object_unref (contact);
-  g_object_unref (book);
 
- out:
+out:
   g_object_unref (managers);
 }
 

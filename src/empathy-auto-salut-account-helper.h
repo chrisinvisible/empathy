@@ -27,9 +27,12 @@
 #include <telepathy-glib/account-manager.h>
 
 #include <libempathy/empathy-connection-managers.h>
+#include <libempathy/empathy-account-settings.h>
 
 void create_salut_account_if_needed (void);
 
 gboolean should_create_salut_account (TpAccountManager *manager);
+
+EmpathyAccountSettings * create_salut_account_settings (void);
 
 #endif
