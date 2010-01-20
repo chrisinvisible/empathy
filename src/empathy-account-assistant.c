@@ -72,6 +72,7 @@ typedef struct {
   FirstPageResponse first_resp;
   CreateEnterPageResponse create_enter_resp;
   gboolean enter_create_forward;
+  TpAccountManager *account_mgr;
 
   /* enter or create page */
   GtkWidget *enter_or_create_page;
@@ -92,6 +93,7 @@ typedef struct {
   EmpathyAccountSettings *salut_settings;
   GtkWidget *salut_account_widget;
   gboolean create_salut_account;
+  gboolean should_create_salut_account;
 
   GtkWindow *parent_window;
 
@@ -509,6 +511,24 @@ account_assistant_page_forward_func (gint current_page,
 }
 
 static void
+update_intro_page_buttons (EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  GtkWidget *intro_page;
+
+  intro_page = gtk_assistant_get_nth_page (GTK_ASSISTANT (self),
+      PAGE_INTRO);
+
+  if (priv->first_resp == RESPONSE_SALUT_ONLY &&
+      !priv->should_create_salut_account)
+    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
+        GTK_ASSISTANT_PAGE_SUMMARY);
+  else
+    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
+        GTK_ASSISTANT_PAGE_INTRO);
+}
+
+static void
 account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
     EmpathyAccountAssistant *self)
 {
@@ -519,6 +539,8 @@ account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
       (G_OBJECT (button), "response"));
 
   priv->first_resp = response;
+
+  update_intro_page_buttons (self);
 }
 
 static GtkWidget *
@@ -891,6 +913,9 @@ do_dispose (GObject *obj)
       priv->settings = NULL;
     }
 
+  g_object_unref (priv->account_mgr);
+  priv->account_mgr = NULL;
+
   if (G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose != NULL)
     G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose (obj);
 }
@@ -1029,6 +1054,32 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
 }
 
 static void
+account_mgr_prepare_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyAccountAssistant *self = user_data;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (manager, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  if (!should_create_salut_account (manager))
+    {
+      DEBUG ("No need to create a Salut account");
+      priv->should_create_salut_account = FALSE;
+
+      update_intro_page_buttons (self);
+    }
+}
+
+static void
 empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv;
@@ -1038,6 +1089,8 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EMPATHY_TYPE_ACCOUNT_ASSISTANT,
       EmpathyAccountAssistantPriv);
   self->priv = priv;
+
+  priv->account_mgr = tp_account_manager_dup ();
 
   g_signal_connect (self, "close",
       G_CALLBACK (account_assistant_close_cb), NULL);
@@ -1076,6 +1129,10 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->salut_page = page;
   priv->create_salut_account = TRUE;
+  priv->should_create_salut_account = TRUE;
+
+  tp_account_manager_prepare_async (priv->account_mgr, NULL,
+      account_mgr_prepare_cb, self);
 
   gtk_window_set_resizable (GTK_WINDOW (self), FALSE);
 }
