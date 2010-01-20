@@ -852,10 +852,12 @@ account_widget_build_salut (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  GtkWidget *expander_advanced;
 
   self->ui_details->gui = empathy_builder_get_file (filename,
       "table_common_settings", &priv->table_common_settings,
       "vbox_salut_settings", &self->ui_details->widget,
+      "expander_advanced_settings", &expander_advanced,
       NULL);
 
   empathy_account_widget_handle_params (self,
@@ -866,6 +868,9 @@ account_widget_build_salut (EmpathyAccountWidget *self,
       "entry_email", "email",
       "entry_jid", "jid",
       NULL);
+
+  if (priv->simple)
+    gtk_widget_hide (expander_advanced);
 
   self->ui_details->default_focus = g_strdup ("entry_first_name");
 }
