@@ -57,6 +57,7 @@ enum {
   PAGE_INTRO = 0,
   PAGE_IMPORT = 1,
   PAGE_ENTER_CREATE = 2,
+  PAGE_SALUT = 3,
 };
 
 enum {
@@ -81,6 +82,11 @@ typedef struct {
 
   /* import page */
   EmpathyImportWidget *iw;
+
+  /* salut page */
+  GtkWidget *salut_page;
+  EmpathyAccountSettings *salut_settings;
+  GtkWidget *salut_account_widget;
 
   GtkWindow *parent_window;
 
@@ -461,8 +467,10 @@ account_assistant_page_forward_func (gint current_page,
       if (priv->first_resp == RESPONSE_ENTER_ACCOUNT ||
           priv->first_resp == RESPONSE_CREATE_ACCOUNT)
         retval = PAGE_ENTER_CREATE;
-      if (priv->first_resp == RESPONSE_IMPORT)
+      else if (priv->first_resp == RESPONSE_IMPORT)
         retval = PAGE_IMPORT;
+      else if (priv->first_resp == RESPONSE_SALUT_ONLY)
+        retval = PAGE_SALUT;
     }
 
   if (current_page == PAGE_IMPORT ||
@@ -486,22 +494,11 @@ account_assistant_radio_choice_toggled_cb (GtkToggleButton *button,
 {
   FirstPageResponse response;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
-  GtkWidget *intro_page;
 
   response = GPOINTER_TO_INT (g_object_get_data
       (G_OBJECT (button), "response"));
 
   priv->first_resp = response;
-
-  intro_page = gtk_assistant_get_nth_page (GTK_ASSISTANT (self),
-      PAGE_INTRO);
-
-  if (response == RESPONSE_SALUT_ONLY)
-    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
-        GTK_ASSISTANT_PAGE_SUMMARY);
-  else
-    gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
-        GTK_ASSISTANT_PAGE_INTRO);
 }
 
 static GtkWidget *
@@ -905,6 +902,113 @@ empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
 }
 
 static void
+create_salut_check_box_toggled_cb (GtkWidget *widget,
+    EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  gboolean sensitive;
+  gboolean page_valid;
+
+  sensitive = !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+
+  gtk_widget_set_sensitive (priv->salut_account_widget, sensitive);
+
+  if (!sensitive)
+    {
+      page_valid = TRUE;
+    }
+  else
+    {
+      /* page is complete if the account is valid */
+      page_valid = empathy_account_settings_is_valid (priv->salut_settings);
+    }
+
+  gtk_assistant_set_page_complete (GTK_ASSISTANT (self), priv->salut_page,
+      page_valid);
+}
+
+static void
+account_assistant_salut_handle_apply_cb (EmpathyAccountWidget *widget_object,
+    gboolean is_valid,
+    EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+
+  gtk_assistant_set_page_complete (GTK_ASSISTANT (self),
+      priv->salut_page, is_valid);
+}
+
+static GtkWidget *
+account_assistant_build_salut_page (EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  GtkWidget *main_vbox, *hbox_1, *w;
+  GdkPixbuf *pix;
+  EmpathyAccountSettings *settings;
+  GtkWidget *account_widget;
+  EmpathyAccountWidget *widget_object;
+
+  main_vbox = gtk_vbox_new (FALSE, 12);
+  gtk_widget_show (main_vbox);
+  gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
+
+  hbox_1 = gtk_hbox_new (FALSE, 12);
+  gtk_box_pack_start (GTK_BOX (main_vbox), hbox_1, TRUE, TRUE, 0);
+  gtk_widget_show (hbox_1);
+
+  w = gtk_label_new (
+      _("Empathy can automatically discover and chat with the people "
+        "connected on the same network as you. "
+        "If you want to use this feature, please check that the "
+        "details below are correct. "
+        "You can easily change these details later or disable this feature "
+        "by using the 'Accounts' dialog."));
+  gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 0);
+  gtk_widget_show (w);
+
+  pix = empathy_pixbuf_from_icon_name_sized ("im-local-xmpp", 80);
+  w = gtk_image_new_from_pixbuf (pix);
+  gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 6);
+  gtk_widget_show (w);
+
+  g_object_unref (pix);
+
+  /* TODO: display a message if Salut is not installed */
+
+  w = gtk_check_button_new_with_label (
+      _("I don't want to enable this feature for now"));
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
+  g_signal_connect (w, "toggled",
+      G_CALLBACK (create_salut_check_box_toggled_cb), self);
+  gtk_widget_show (w);
+
+  w = gtk_alignment_new (0, 0, 0, 0);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (w), 0, 0, 12, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), w, TRUE, TRUE, 0);
+  gtk_widget_show (w);
+
+  /* TODO: use this setting to create the account */
+  settings = create_salut_account_settings ();
+
+  widget_object = empathy_account_widget_new_for_protocol (settings, TRUE);
+  account_widget = empathy_account_widget_get_widget (widget_object);
+
+  priv->salut_settings = settings;
+  priv->salut_account_widget = account_widget;
+
+  g_signal_connect (widget_object, "handle-apply",
+      G_CALLBACK (account_assistant_salut_handle_apply_cb), self);
+
+  gtk_box_pack_start (GTK_BOX (main_vbox), account_widget,
+      FALSE, FALSE, 0);
+  gtk_widget_show (account_widget);
+
+  return main_vbox;
+}
+
+static void
 empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv;
@@ -943,6 +1047,14 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
   gtk_assistant_append_page (assistant, page);
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
   priv->enter_or_create_page = page;
+
+  /* fourth page (salut details) */
+  page = account_assistant_build_salut_page (self);
+  gtk_assistant_append_page (assistant, page);
+  gtk_assistant_set_page_title (assistant, page,
+      _("Please enter personal details"));
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
+  priv->salut_page = page;
 
   gtk_window_set_resizable (GTK_WINDOW (self), FALSE);
 }
