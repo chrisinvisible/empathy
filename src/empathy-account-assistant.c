@@ -65,7 +65,8 @@ enum {
 };
 
 enum {
-  PROP_PARENT = 1
+  PROP_PARENT = 1,
+  PROP_CONNECTION_MGRS,
 };
 
 typedef struct {
@@ -73,6 +74,7 @@ typedef struct {
   CreateEnterPageResponse create_enter_resp;
   gboolean enter_create_forward;
   TpAccountManager *account_mgr;
+  EmpathyConnectionManagers *connection_mgrs;
 
   /* enter or create page */
   GtkWidget *enter_or_create_page;
@@ -860,6 +862,9 @@ do_get_property (GObject *object,
     case PROP_PARENT:
       g_value_set_object (value, priv->parent_window);
       break;
+    case PROP_CONNECTION_MGRS:
+      g_value_set_object (value, priv->connection_mgrs);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -878,6 +883,9 @@ do_set_property (GObject *object,
     case PROP_PARENT:
       priv->parent_window = g_value_get_object (value);
       break;
+    case PROP_CONNECTION_MGRS:
+      priv->connection_mgrs = g_value_dup_object (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -895,6 +903,9 @@ do_constructed (GObject *object)
 
   /* set the dialog hint, so this will be centered over the parent window */
   gtk_window_set_type_hint (GTK_WINDOW (object), GDK_WINDOW_TYPE_HINT_DIALOG);
+
+  g_assert (priv->connection_mgrs != NULL);
+  g_assert (empathy_connection_managers_is_ready (priv->connection_mgrs));
 }
 
 static void
@@ -915,6 +926,9 @@ do_dispose (GObject *obj)
 
   g_object_unref (priv->account_mgr);
   priv->account_mgr = NULL;
+
+  g_object_unref (priv->connection_mgrs);
+  priv->connection_mgrs = NULL;
 
   if (G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose != NULL)
     G_OBJECT_CLASS (empathy_account_assistant_parent_class)->dispose (obj);
@@ -941,6 +955,12 @@ empathy_account_assistant_class_init (EmpathyAccountAssistantClass *klass)
       GTK_TYPE_WINDOW,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (oclass, PROP_PARENT, param_spec);
+
+  param_spec = g_param_spec_object ("connection-managers",
+      "connection-managers", "A EmpathyConnectionManagers",
+      EMPATHY_TYPE_CONNECTION_MANAGERS,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_CONNECTION_MGRS, param_spec);
 
   g_type_class_add_private (klass, sizeof (EmpathyAccountAssistantPriv));
 }
@@ -1138,14 +1158,17 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
 }
 
 GtkWidget *
-empathy_account_assistant_show (GtkWindow *window)
+empathy_account_assistant_show (GtkWindow *window,
+    EmpathyConnectionManagers *connection_mgrs)
 {
   static GtkWidget *dialog = NULL;
 
   if (dialog == NULL)
     {
-      dialog =  g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT, "parent-window",
-        window, NULL);
+      dialog =  g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT,
+          "parent-window", window,
+          "connection-managers", connection_mgrs,
+          NULL);
       g_object_add_weak_pointer (G_OBJECT (dialog), (gpointer *) &dialog);
     }
 

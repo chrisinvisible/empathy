@@ -228,7 +228,8 @@ connection_managers_prepare_cb (GObject *source,
     goto out;
 
   if (should_show_account_assistant (account_mgr, cm_mgr))
-    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()));
+    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()),
+          cm_mgr);
 
 out:
   g_object_unref (cm_mgr);
@@ -336,20 +337,46 @@ migrate_config_to_xdg_dir (void)
 }
 
 static void
+connection_managers_prepare_for_accounts (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyConnectionManagers *cm_mgr = EMPATHY_CONNECTION_MANAGERS (source);
+  GtkWidget *ui;
+
+  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
+    goto out;
+
+  ui = empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()),
+          cm_mgr);
+
+  if (account_dialog_only)
+    g_signal_connect (ui, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+
+out:
+  g_object_unref (cm_mgr);
+}
+
+static void
 do_show_accounts_ui (GtkWindow *window,
     TpAccountManager *manager)
 {
-
-  GtkWidget *ui;
-
   if (has_non_salut_accounts (manager))
-    ui = empathy_accounts_dialog_show (window, NULL);
-  else
-    ui = empathy_account_assistant_show (window);
+    {
+      GtkWidget *ui;
 
-  if (account_dialog_only)
-    g_signal_connect (ui, "destroy",
-      G_CALLBACK (gtk_main_quit), NULL);
+      ui = empathy_accounts_dialog_show (window, NULL);
+
+      if (account_dialog_only)
+        g_signal_connect (ui, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+    }
+  else
+    {
+      EmpathyConnectionManagers *cm_mgr;
+
+      empathy_connection_managers_prepare_async (cm_mgr,
+          connection_managers_prepare_for_accounts, NULL);
+    }
 }
 
 static void

@@ -26,6 +26,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include <libempathy/empathy-connection-managers.h>
+
 G_BEGIN_DECLS
 
 #define EMPATHY_TYPE_ACCOUNT_ASSISTANT empathy_account_assistant_get_type()
@@ -56,7 +58,8 @@ typedef struct {
 
 GType empathy_account_assistant_get_type (void);
 
-GtkWidget *empathy_account_assistant_show (GtkWindow *parent);
+GtkWidget *empathy_account_assistant_show (GtkWindow *parent,
+    EmpathyConnectionManagers *connection_mgrs);
 
 G_END_DECLS
 
