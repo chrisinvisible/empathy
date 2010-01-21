@@ -111,13 +111,11 @@ static void account_assistant_finish_enter_or_create_page (
 static void do_constructed (GObject *object);
 
 static GtkWidget *
-account_assistant_build_error_page (EmpathyAccountAssistant *self,
-    GError *error, gint page_num)
+build_error_page (const gchar *primary_message,
+    const gchar *secondary_message)
 {
   GtkWidget *main_vbox, *w, *hbox;
-  const char *message;
   PangoAttrList *list;
-  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
   main_vbox = gtk_vbox_new (FALSE, 12);
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 12);
@@ -132,18 +130,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
   gtk_widget_show (w);
 
-  if (page_num == PAGE_IMPORT)
-    message = _("There was an error while importing the accounts.");
-  else if (page_num >= PAGE_ENTER_CREATE &&
-      priv->first_resp == RESPONSE_ENTER_ACCOUNT)
-    message = _("There was an error while parsing the account details.");
-  else if (page_num >= PAGE_ENTER_CREATE &&
-      priv->first_resp == RESPONSE_CREATE_ACCOUNT)
-    message = _("There was an error while creating the account.");
-  else
-    message = _("There was an error.");
-
-  w = gtk_label_new (message);
+  w = gtk_label_new (primary_message);
   gtk_box_pack_start (GTK_BOX (hbox), w, FALSE, FALSE, 0);
   list = pango_attr_list_new ();
   pango_attr_list_insert (list, pango_attr_scale_new (PANGO_SCALE_LARGE));
@@ -155,14 +142,39 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
 
   pango_attr_list_unref (list);
 
-  message = g_markup_printf_escaped
-    (_("The error message was: <span style=\"italic\">%s</span>"),
-        error->message);
-  w = gtk_label_new (message);
+  w = gtk_label_new (secondary_message);
   gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
   gtk_widget_show (w);
+
+  return main_vbox;
+}
+
+static GtkWidget *
+account_assistant_build_error_page (EmpathyAccountAssistant *self,
+    GError *error, gint page_num)
+{
+  GtkWidget *main_vbox, *w;
+  const char *primary_message, *secondary_message;
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+
+  if (page_num == PAGE_IMPORT)
+    primary_message = _("There was an error while importing the accounts.");
+  else if (page_num >= PAGE_ENTER_CREATE &&
+      priv->first_resp == RESPONSE_ENTER_ACCOUNT)
+    primary_message = _("There was an error while parsing the account details.");
+  else if (page_num >= PAGE_ENTER_CREATE &&
+      priv->first_resp == RESPONSE_CREATE_ACCOUNT)
+    primary_message = _("There was an error while creating the account.");
+  else
+    primary_message = _("There was an error.");
+
+  secondary_message = g_markup_printf_escaped
+    (_("The error message was: <span style=\"italic\">%s</span>"),
+        error->message);
+
+  main_vbox = build_error_page (primary_message, secondary_message);
 
   w = gtk_label_new (_("You can either go back and try to enter your "
           "accounts' details again or quit this assistant and add accounts "
