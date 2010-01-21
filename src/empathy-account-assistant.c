@@ -1038,8 +1038,6 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
 
   g_object_unref (pix);
 
-  /* TODO: display a message if Salut is not installed */
-
   w = gtk_check_button_new_with_label (
       _("I don't want to enable this feature for now"));
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
@@ -1068,6 +1066,17 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   gtk_widget_show (account_widget);
 
   return main_vbox;
+}
+
+static GtkWidget *
+account_assistant_build_salut_error_page (EmpathyAccountAssistant *self)
+{
+  return build_error_page (
+      _("telepathy-salut not installed"),
+      _("Empathy won't be able to see the people connected on the same "
+        "network as you because telepathy-salut is not installed.\n"
+        "If you want to enable this feature, you should install "
+        "telepathy-salut and activate it in the Accounts dialog"));
 }
 
 static void
@@ -1157,13 +1166,28 @@ do_constructed (GObject *object)
   priv->enter_or_create_page = page;
 
   /* fourth page (salut details) */
-  page = account_assistant_build_salut_page (self);
-  gtk_assistant_append_page (assistant, page);
-  gtk_assistant_set_page_title (assistant, page,
-      _("Please enter personal details"));
-  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
+  if (empathy_connection_managers_get_cm (priv->connection_mgrs, "salut")
+      != NULL)
+    {
+      page = account_assistant_build_salut_page (self);
+      gtk_assistant_append_page (assistant, page);
+      gtk_assistant_set_page_title (assistant, page,
+          _("Please enter personal details"));
+      gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
+
+      priv->create_salut_account = TRUE;
+    }
+  else
+    {
+      page = account_assistant_build_salut_error_page (self);
+      gtk_assistant_append_page (assistant, page);
+      gtk_assistant_set_page_title (assistant, page, _("An error occurred"));
+      gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_SUMMARY);
+
+      priv->create_salut_account = FALSE;
+    }
+
   priv->salut_page = page;
-  priv->create_salut_account = TRUE;
   priv->should_create_salut_account = TRUE;
 
   tp_account_manager_prepare_async (priv->account_mgr, NULL,
