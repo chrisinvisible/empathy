@@ -254,12 +254,16 @@ protocol_chooser_add_cms_list (EmpathyProtocolChooser *protocol_chooser,
 
 static void
 protocol_chooser_cms_ready_cb (EmpathyConnectionManagers *cms,
-    GParamSpec *pspec,
-    EmpathyProtocolChooser *protocol_chooser)
+    const GError *error,
+    gpointer user_data)
 {
-  if (empathy_connection_managers_is_ready (cms))
-    protocol_chooser_add_cms_list
-        (protocol_chooser, empathy_connection_managers_get_cms (cms));
+  EmpathyProtocolChooser *protocol_chooser = user_data;
+
+  if (error != NULL)
+    return;
+
+  protocol_chooser_add_cms_list (protocol_chooser,
+      empathy_connection_managers_get_cms (cms));
 }
 
 static void
@@ -305,12 +309,8 @@ protocol_chooser_constructed (GObject *object)
       "text", COL_LABEL,
       NULL);
 
-  if (empathy_connection_managers_is_ready (priv->cms))
-    protocol_chooser_add_cms_list (protocol_chooser,
-        empathy_connection_managers_get_cms (priv->cms));
-  else
-    g_signal_connect (priv->cms, "notify::ready",
-        G_CALLBACK (protocol_chooser_cms_ready_cb), protocol_chooser);
+  empathy_connection_managers_call_when_ready (priv->cms,
+      protocol_chooser_cms_ready_cb, protocol_chooser);
 
   if (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed)
     G_OBJECT_CLASS
