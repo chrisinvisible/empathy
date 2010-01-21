@@ -95,7 +95,7 @@ typedef struct {
   EmpathyAccountSettings *salut_settings;
   GtkWidget *salut_account_widget;
   gboolean create_salut_account;
-  gboolean should_create_salut_account;
+  gboolean display_salut_page;
 
   GtkWindow *parent_window;
 
@@ -536,7 +536,7 @@ update_intro_page_buttons (EmpathyAccountAssistant *self)
       PAGE_INTRO);
 
   if (priv->first_resp == RESPONSE_SALUT_ONLY &&
-      !priv->should_create_salut_account)
+      !priv->display_salut_page)
     gtk_assistant_set_page_type (GTK_ASSISTANT (self), intro_page,
         GTK_ASSISTANT_PAGE_SUMMARY);
   else
@@ -1099,7 +1099,7 @@ account_mgr_prepare_cb (GObject *source_object,
   if (!should_create_salut_account (manager))
     {
       DEBUG ("No need to create a Salut account");
-      priv->should_create_salut_account = FALSE;
+      priv->display_salut_page = FALSE;
 
       update_intro_page_buttons (self);
     }
@@ -1188,7 +1188,7 @@ do_constructed (GObject *object)
     }
 
   priv->salut_page = page;
-  priv->should_create_salut_account = TRUE;
+  priv->display_salut_page = TRUE;
 
   tp_account_manager_prepare_async (priv->account_mgr, NULL,
       account_mgr_prepare_cb, self);
