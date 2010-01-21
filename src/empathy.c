@@ -200,26 +200,19 @@ maybe_show_account_assistant (void)
   g_object_unref (manager);
 }
 
-static gboolean
-check_connection_managers_ready (EmpathyConnectionManagers *managers)
-{
-  if (empathy_connection_managers_is_ready (managers))
-    {
-      if (!empathy_import_mc4_accounts (managers) && !start_hidden)
-        maybe_show_account_assistant ();
-
-      g_object_unref (managers);
-      return TRUE;
-    }
-  return FALSE;
-}
-
 static void
 connection_managers_ready_cb (EmpathyConnectionManagers *managers,
-    GParamSpec *spec,
+    const GError *error,
     gpointer user_data)
 {
-  check_connection_managers_ready (managers);
+  if (error != NULL)
+    goto out;
+
+  if (!empathy_import_mc4_accounts (managers) && !start_hidden)
+    maybe_show_account_assistant ();
+
+out:
+  g_object_unref (managers);
 }
 
 static void
@@ -495,11 +488,8 @@ account_manager_ready_cb (GObject *source_object,
       EmpathyConnectionManagers *managers;
       managers = empathy_connection_managers_dup_singleton ();
 
-      if (!check_connection_managers_ready (managers))
-        {
-          g_signal_connect (managers, "notify::ready",
-            G_CALLBACK (connection_managers_ready_cb), NULL);
-        }
+      empathy_connection_managers_call_when_ready (managers,
+          connection_managers_ready_cb, NULL);
     }
   else if (!start_hidden)
     {
