@@ -511,8 +511,10 @@ account_assistant_page_forward_func (gint current_page,
         retval = PAGE_SALUT;
     }
 
-  if (current_page == PAGE_IMPORT ||
-      current_page >= PAGE_ENTER_CREATE)
+  if (current_page == PAGE_IMPORT)
+    retval = PAGE_SALUT;
+
+  else if (current_page >= PAGE_ENTER_CREATE)
     /* don't forward anymore */
     retval = -1;
 
@@ -1157,7 +1159,7 @@ do_constructed (GObject *object)
   gtk_assistant_set_page_title (assistant, page,
       _("Import your existing accounts"));
   gtk_assistant_set_page_complete (assistant, page, TRUE);
-  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_INTRO);
 
   /* third page (enter account details) */
   page = account_assistant_build_enter_or_create_page (self);
