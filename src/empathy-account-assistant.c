@@ -108,6 +108,8 @@ static void account_assistant_finish_enter_or_create_page (
     EmpathyAccountAssistant *self,
     gboolean is_enter);
 
+static void do_constructed (GObject *object);
+
 static GtkWidget *
 account_assistant_build_error_page (EmpathyAccountAssistant *self,
     GError *error, gint page_num)
@@ -892,23 +894,6 @@ do_set_property (GObject *object,
 }
 
 static void
-do_constructed (GObject *object)
-{
-  EmpathyAccountAssistantPriv *priv = GET_PRIV (object);
-
-  /* set us as transient for the parent window if any */
-  if (priv->parent_window)
-    gtk_window_set_transient_for (GTK_WINDOW (object),
-        priv->parent_window);
-
-  /* set the dialog hint, so this will be centered over the parent window */
-  gtk_window_set_type_hint (GTK_WINDOW (object), GDK_WINDOW_TYPE_HINT_DIALOG);
-
-  g_assert (priv->connection_mgrs != NULL);
-  g_assert (empathy_connection_managers_is_ready (priv->connection_mgrs));
-}
-
-static void
 do_dispose (GObject *obj)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (obj);
@@ -1103,14 +1088,32 @@ static void
 empathy_account_assistant_init (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv;
-  GtkAssistant *assistant = GTK_ASSISTANT (self);
-  GtkWidget *page;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (self, EMPATHY_TYPE_ACCOUNT_ASSISTANT,
       EmpathyAccountAssistantPriv);
   self->priv = priv;
 
   priv->account_mgr = tp_account_manager_dup ();
+}
+
+static void
+do_constructed (GObject *object)
+{
+  GtkAssistant *assistant = GTK_ASSISTANT (object);
+  EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (object);
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (object);
+  GtkWidget *page;
+
+  /* set us as transient for the parent window if any */
+  if (priv->parent_window)
+    gtk_window_set_transient_for (GTK_WINDOW (object),
+        priv->parent_window);
+
+  /* set the dialog hint, so this will be centered over the parent window */
+  gtk_window_set_type_hint (GTK_WINDOW (object), GDK_WINDOW_TYPE_HINT_DIALOG);
+
+  g_assert (priv->connection_mgrs != NULL);
+  g_assert (empathy_connection_managers_is_ready (priv->connection_mgrs));
 
   g_signal_connect (self, "close",
       G_CALLBACK (account_assistant_close_cb), NULL);
