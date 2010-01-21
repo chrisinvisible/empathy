@@ -72,6 +72,16 @@ guint empathy_connection_managers_get_cms_num
 TpConnectionManager *empathy_connection_managers_get_cm (
   EmpathyConnectionManagers *managers, const gchar *cm);
 
+typedef void (*EmpathyConnectionManagersWhenReadyCb) (
+    EmpathyConnectionManagers *managers,
+    const GError *error,
+    gpointer user_data);
+
+void empathy_connection_managers_call_when_ready (
+    EmpathyConnectionManagers *managers,
+    EmpathyConnectionManagersWhenReadyCb callback,
+    gpointer user_data);
+
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_CONNECTION_MANAGERS_H__*/

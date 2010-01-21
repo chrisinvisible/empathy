@@ -291,3 +291,66 @@ empathy_connection_managers_get_cms_num (EmpathyConnectionManagers *self)
 
   return g_list_length (priv->cms);
 }
+
+typedef struct
+{
+  EmpathyConnectionManagers *self;
+  EmpathyConnectionManagersWhenReadyCb callback;
+  gpointer user_data;
+  guint ready_id;
+} CallWhenReadyContext;
+
+static void
+call_when_ready_ctx_free (CallWhenReadyContext *ctx)
+{
+  g_signal_handler_disconnect (ctx->self, ctx->ready_id);
+  g_object_unref (ctx->self);
+  g_slice_free (CallWhenReadyContext, ctx);
+}
+
+static void
+cwr_ready (EmpathyConnectionManagers *self,
+    GParamSpec *spec,
+    CallWhenReadyContext *ctx)
+{
+  g_assert (ctx->callback != NULL);
+
+  ctx->callback (self, NULL, ctx->user_data);
+
+  call_when_ready_ctx_free (ctx);
+}
+
+static CallWhenReadyContext *
+call_when_ready_ctx_new (EmpathyConnectionManagers *self,
+    EmpathyConnectionManagersWhenReadyCb callback,
+    gpointer user_data)
+{
+  CallWhenReadyContext *ctx = g_slice_new (CallWhenReadyContext);
+
+  ctx->self = g_object_ref (self);
+  ctx->callback = callback;
+  ctx->user_data = user_data;
+
+  ctx->ready_id = g_signal_connect (self, "notify::ready",
+      G_CALLBACK (cwr_ready), ctx);
+
+  return ctx;
+}
+
+void
+empathy_connection_managers_call_when_ready (
+    EmpathyConnectionManagers *self,
+    EmpathyConnectionManagersWhenReadyCb callback,
+    gpointer user_data)
+{
+  EmpathyConnectionManagersPriv *priv = GET_PRIV (self);
+
+  if (priv->ready)
+    {
+      callback (self, NULL, user_data);
+    }
+  else
+    {
+      call_when_ready_ctx_new (self, callback, user_data);
+    }
+}
