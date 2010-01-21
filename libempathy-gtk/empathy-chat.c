@@ -1371,6 +1371,9 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
+	if (event->keyval == GDK_Escape) {
+		empathy_search_bar_hide (EMPATHY_SEARCH_BAR (priv->search_bar));
+	}
 	if (!(event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) &&
 	    event->keyval == GDK_Tab) {
 		GtkTextBuffer *buffer;

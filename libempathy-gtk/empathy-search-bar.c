@@ -20,6 +20,7 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include <libempathy/empathy-utils.h>
 
@@ -155,15 +156,13 @@ empathy_search_bar_show (EmpathySearchBar *self)
   gtk_widget_show (GTK_WIDGET (self));
 }
 
-
-static void
-empathy_search_bar_close_cb (GtkButton *button,
-    gpointer user_data)
+void
+empathy_search_bar_hide (EmpathySearchBar *self)
 {
-  EmpathySearchBarPriv *priv = GET_PRIV (user_data);
+  EmpathySearchBarPriv *priv = GET_PRIV (self);
 
   empathy_chat_view_highlight (priv->chat_view, "", FALSE);
-  gtk_widget_hide (GTK_WIDGET (user_data));
+  gtk_widget_hide (GTK_WIDGET (self));
 
   /* give the focus back to the focus-chain with the chat view */
   gtk_widget_grab_focus (GTK_WIDGET (priv->chat_view));
@@ -213,10 +212,30 @@ empathy_search_bar_search (EmpathySearchBar *self,
 }
 
 static void
+empathy_search_bar_close_cb (GtkButton *button,
+    gpointer user_data)
+{
+  empathy_search_bar_hide (EMPATHY_SEARCH_BAR (user_data));
+}
+
+static void
 empathy_search_bar_entry_changed (GtkEditable *entry,
     gpointer user_data)
 {
   empathy_search_bar_search (EMPATHY_SEARCH_BAR (user_data), FALSE, TRUE);
+}
+
+static gboolean
+empathy_search_bar_key_pressed (GtkWidget   *widget,
+    GdkEventKey *event,
+    gpointer user_data)
+{
+  if (event->keyval == GDK_Escape)
+    {
+      empathy_search_bar_hide (EMPATHY_SEARCH_BAR (widget));
+      return TRUE;
+    }
+  return FALSE;
 }
 
 static void
@@ -273,6 +292,9 @@ empathy_search_bar_init (EmpathySearchBar * self)
       "search_next", "clicked", empathy_search_bar_next_cb,
       "search_match_case", "toggled", empathy_search_bar_match_case_toggled,
       NULL);
+
+  g_signal_connect (G_OBJECT (self), "key-press-event",
+      G_CALLBACK (empathy_search_bar_key_pressed), NULL);
 
   gtk_container_add (GTK_CONTAINER (self), internal);
   gtk_widget_show_all (internal);

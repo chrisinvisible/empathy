@@ -58,6 +58,7 @@ struct _EmpathySearchBarClass
 GType       empathy_search_bar_get_type (void) G_GNUC_CONST;
 GtkWidget * empathy_search_bar_new      (EmpathyChatView  *view);
 void        empathy_search_bar_show     (EmpathySearchBar *searchbar);
+void        empathy_search_bar_hide     (EmpathySearchBar *searchbar);
 
 G_END_DECLS
 
