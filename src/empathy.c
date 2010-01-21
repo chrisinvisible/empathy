@@ -188,16 +188,32 @@ has_non_salut_accounts (TpAccountManager *manager)
   return ret;
 }
 
-static void
-maybe_show_account_assistant (void)
+/* Try to import accounts from MC4 and returns TRUE if we should display the
+ * accounts assistant. */
+static gboolean
+should_show_account_assistant (TpAccountManager *account_mgr,
+    EmpathyConnectionManagers *cm_mgr)
 {
-  TpAccountManager *manager;
-  manager = tp_account_manager_dup ();
+  g_return_val_if_fail (tp_account_manager_is_prepared (account_mgr,
+      TP_ACCOUNT_MANAGER_FEATURE_CORE), FALSE);
+  g_return_val_if_fail (empathy_connection_managers_is_ready (cm_mgr), FALSE);
 
-  if (!has_non_salut_accounts (manager))
-    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()));
+  if (empathy_import_mc4_has_imported ())
+    return FALSE;
 
-  g_object_unref (manager);
+  if (empathy_import_mc4_accounts (cm_mgr))
+    return FALSE;
+
+  if (start_hidden)
+    return FALSE;
+
+  if (has_non_salut_accounts (account_mgr))
+    return FALSE;
+
+  if (!should_create_salut_account (account_mgr))
+    return FALSE;
+
+  return TRUE;
 }
 
 static void
@@ -205,16 +221,50 @@ connection_managers_prepare_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
-  EmpathyConnectionManagers *managers = EMPATHY_CONNECTION_MANAGERS (source);
+  EmpathyConnectionManagers *cm_mgr = EMPATHY_CONNECTION_MANAGERS (source);
+  TpAccountManager *account_mgr = user_data;
 
-  if (!empathy_connection_managers_prepare_finish (managers, result, NULL))
+  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
     goto out;
 
-  if (!empathy_import_mc4_accounts (managers) && !start_hidden)
-    maybe_show_account_assistant ();
+  if (should_show_account_assistant (account_mgr, cm_mgr))
+    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()));
 
 out:
-  g_object_unref (managers);
+  g_object_unref (cm_mgr);
+  g_object_unref (account_mgr);
+}
+
+static void
+account_manager_ready_for_show_assistant (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpAccountManager *account_mgr = TP_ACCOUNT_MANAGER (source_object);
+  GError *error = NULL;
+  EmpathyConnectionManagers *cm_mgr;
+
+  if (!tp_account_manager_prepare_finish (account_mgr, result, &error))
+    {
+      DEBUG ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      g_object_unref (account_mgr);
+      return;
+    }
+
+  cm_mgr = empathy_connection_managers_dup_singleton ();
+
+  empathy_connection_managers_prepare_async (cm_mgr,
+      connection_managers_prepare_cb, account_mgr);
+}
+
+static void
+maybe_show_account_assistant (void)
+{
+  TpAccountManager *account_mgr = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (account_mgr, NULL,
+      account_manager_ready_for_show_assistant, NULL);
 }
 
 static void
@@ -484,19 +534,7 @@ account_manager_ready_cb (GObject *source_object,
       /* if current state is Offline, then put it online */
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
-  if (should_create_salut_account (manager)
-      || !empathy_import_mc4_has_imported ())
-    {
-      EmpathyConnectionManagers *managers;
-      managers = empathy_connection_managers_dup_singleton ();
-
-      empathy_connection_managers_prepare_async (managers,
-          connection_managers_prepare_cb, NULL);
-    }
-  else if (!start_hidden)
-    {
-      maybe_show_account_assistant ();
-    }
+  maybe_show_account_assistant ();
 
   g_object_unref (idle);
   g_object_unref (connectivity);
