@@ -236,7 +236,7 @@ account_assistant_reset_enter_create_page (EmpathyAccountAssistant *self)
   page = account_assistant_build_enter_or_create_page (self);
   idx = gtk_assistant_append_page (GTK_ASSISTANT (self), page);
   gtk_assistant_set_page_type (GTK_ASSISTANT (self), page,
-      GTK_ASSISTANT_PAGE_CONFIRM);
+      GTK_ASSISTANT_PAGE_INTRO);
   priv->enter_or_create_page = page;
 
   gtk_assistant_set_current_page (GTK_ASSISTANT (self), idx);
@@ -510,19 +510,21 @@ account_assistant_page_forward_func (gint current_page,
       else if (priv->first_resp == RESPONSE_SALUT_ONLY)
         retval = PAGE_SALUT;
     }
-
-  if (current_page == PAGE_IMPORT)
-    retval = PAGE_SALUT;
-
-  else if (current_page >= PAGE_ENTER_CREATE)
-    /* don't forward anymore */
-    retval = -1;
-
-  if (current_page >= PAGE_ENTER_CREATE &&
-      priv->create_enter_resp == RESPONSE_CREATE_AGAIN)
+  else if (current_page == PAGE_IMPORT)
     {
-      priv->enter_create_forward = TRUE;
-      retval = current_page;
+      retval = PAGE_SALUT;
+    }
+  else if (current_page >= PAGE_ENTER_CREATE)
+    {
+      if (priv->create_enter_resp == RESPONSE_CREATE_AGAIN)
+        {
+          priv->enter_create_forward = TRUE;
+          retval = current_page;
+        }
+      else
+        {
+          retval = PAGE_SALUT;
+        }
     }
 
   return retval;
@@ -727,11 +729,6 @@ account_assistant_radio_create_again_clicked_cb (GtkButton *button,
           "response"));
 
   priv->create_enter_resp = response;
-
-  gtk_assistant_set_page_type (GTK_ASSISTANT (self),
-      priv->enter_or_create_page,
-      (response == RESPONSE_CREATE_AGAIN) ?
-      GTK_ASSISTANT_PAGE_CONTENT : GTK_ASSISTANT_PAGE_CONFIRM);
 }
 
 static GtkWidget *
@@ -1164,7 +1161,7 @@ do_constructed (GObject *object)
   /* third page (enter account details) */
   page = account_assistant_build_enter_or_create_page (self);
   gtk_assistant_append_page (assistant, page);
-  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_INTRO);
   priv->enter_or_create_page = page;
 
   /* fourth page (salut details) */
