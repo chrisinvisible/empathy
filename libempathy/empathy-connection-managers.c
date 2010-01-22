@@ -297,7 +297,7 @@ notify_ready_cb (EmpathyConnectionManagers *self,
     GParamSpec *spec,
     GSimpleAsyncResult *result)
 {
-  g_simple_async_result_complete_in_idle (result);
+  g_simple_async_result_complete (result);
   g_object_unref (result);
 }
 
