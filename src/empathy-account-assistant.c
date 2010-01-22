@@ -228,6 +228,22 @@ account_assistant_present_error_page (EmpathyAccountAssistant *self,
 }
 
 static void
+update_create_page_buttons (EmpathyAccountAssistant *self)
+{
+  EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
+  GtkAssistantPageType type;
+
+  if (priv->display_salut_page ||
+      priv->create_enter_resp == RESPONSE_CREATE_AGAIN)
+    type = GTK_ASSISTANT_PAGE_CONTENT;
+  else
+    type = GTK_ASSISTANT_PAGE_CONFIRM;
+
+  gtk_assistant_set_page_type (GTK_ASSISTANT (self), priv->enter_or_create_page,
+      type);
+}
+
+static void
 account_assistant_reset_enter_create_page (EmpathyAccountAssistant *self)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
@@ -236,9 +252,8 @@ account_assistant_reset_enter_create_page (EmpathyAccountAssistant *self)
 
   page = account_assistant_build_enter_or_create_page (self);
   idx = gtk_assistant_append_page (GTK_ASSISTANT (self), page);
-  gtk_assistant_set_page_type (GTK_ASSISTANT (self), page,
-      GTK_ASSISTANT_PAGE_INTRO);
   priv->enter_or_create_page = page;
+  update_create_page_buttons (self);
 
   gtk_assistant_set_current_page (GTK_ASSISTANT (self), idx);
 
@@ -526,9 +541,14 @@ account_assistant_page_forward_func (gint current_page,
           priv->enter_create_forward = TRUE;
           retval = current_page;
         }
-      else
+      else if (priv->display_salut_page)
         {
           retval = PAGE_SALUT;
+        }
+      else
+        {
+          /* Don't go forward */
+          retval = -1;
         }
     }
 
@@ -734,6 +754,8 @@ account_assistant_radio_create_again_clicked_cb (GtkButton *button,
           "response"));
 
   priv->create_enter_resp = response;
+
+  update_create_page_buttons (self);
 }
 
 static GtkWidget *
@@ -1109,6 +1131,8 @@ account_mgr_prepare_cb (GObject *source_object,
 
       gtk_assistant_set_page_type (GTK_ASSISTANT (self), priv->import_page,
           GTK_ASSISTANT_PAGE_CONFIRM);
+
+      update_create_page_buttons (self);
     }
 }
 
