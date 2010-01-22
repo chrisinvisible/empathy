@@ -89,6 +89,7 @@ typedef struct {
 
   /* import page */
   EmpathyImportWidget *iw;
+  GtkWidget *import_page;
 
   /* salut page */
   GtkWidget *salut_page;
@@ -512,7 +513,11 @@ account_assistant_page_forward_func (gint current_page,
     }
   else if (current_page == PAGE_IMPORT)
     {
-      retval = PAGE_SALUT;
+      if (priv->display_salut_page)
+        retval = PAGE_SALUT;
+      else
+        /* Don't go forward */
+        retval = -1;
     }
   else if (current_page >= PAGE_ENTER_CREATE)
     {
@@ -1101,6 +1106,9 @@ account_mgr_prepare_cb (GObject *source_object,
       priv->display_salut_page = FALSE;
 
       update_intro_page_buttons (self);
+
+      gtk_assistant_set_page_type (GTK_ASSISTANT (self), priv->import_page,
+          GTK_ASSISTANT_PAGE_CONFIRM);
     }
 }
 
@@ -1157,6 +1165,7 @@ do_constructed (GObject *object)
       _("Import your existing accounts"));
   gtk_assistant_set_page_complete (assistant, page, TRUE);
   gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_INTRO);
+  priv->import_page = page;
 
   /* third page (enter account details) */
   page = account_assistant_build_enter_or_create_page (self);
