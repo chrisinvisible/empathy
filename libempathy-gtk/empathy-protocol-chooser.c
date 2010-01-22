@@ -253,13 +253,14 @@ protocol_chooser_add_cms_list (EmpathyProtocolChooser *protocol_chooser,
 }
 
 static void
-protocol_chooser_cms_ready_cb (EmpathyConnectionManagers *cms,
-    const GError *error,
+protocol_chooser_cms_prepare_cb (GObject *source,
+    GAsyncResult *result,
     gpointer user_data)
 {
+  EmpathyConnectionManagers *cms = EMPATHY_CONNECTION_MANAGERS (source);
   EmpathyProtocolChooser *protocol_chooser = user_data;
 
-  if (error != NULL)
+  if (!empathy_connection_managers_prepare_finish (cms, result, NULL))
     return;
 
   protocol_chooser_add_cms_list (protocol_chooser,
@@ -309,8 +310,8 @@ protocol_chooser_constructed (GObject *object)
       "text", COL_LABEL,
       NULL);
 
-  empathy_connection_managers_call_when_ready (priv->cms,
-      protocol_chooser_cms_ready_cb, protocol_chooser);
+  empathy_connection_managers_prepare_async (priv->cms,
+      protocol_chooser_cms_prepare_cb, protocol_chooser);
 
   if (G_OBJECT_CLASS (empathy_protocol_chooser_parent_class)->constructed)
     G_OBJECT_CLASS

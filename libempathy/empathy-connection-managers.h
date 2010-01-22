@@ -22,6 +22,7 @@
 #define __EMPATHY_CONNECTION_MANAGERS_H__
 
 #include <glib-object.h>
+#include <gio/gio.h>
 
 #include <telepathy-glib/connection-manager.h>
 
@@ -72,15 +73,15 @@ guint empathy_connection_managers_get_cms_num
 TpConnectionManager *empathy_connection_managers_get_cm (
   EmpathyConnectionManagers *managers, const gchar *cm);
 
-typedef void (*EmpathyConnectionManagersWhenReadyCb) (
+void empathy_connection_managers_prepare_async (
     EmpathyConnectionManagers *managers,
-    const GError *error,
+    GAsyncReadyCallback callback,
     gpointer user_data);
 
-void empathy_connection_managers_call_when_ready (
+gboolean empathy_connection_managers_prepare_finish (
     EmpathyConnectionManagers *managers,
-    EmpathyConnectionManagersWhenReadyCb callback,
-    gpointer user_data);
+    GAsyncResult *result,
+    GError **error);
 
 G_END_DECLS
 

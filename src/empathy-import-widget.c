@@ -334,13 +334,14 @@ import_widget_set_up_account_list (EmpathyImportWidget *self)
 }
 
 static void
-import_widget_cms_ready_cb (EmpathyConnectionManagers *cms,
-    const GError *error,
+import_widget_cms_prepare_cb (GObject *source,
+    GAsyncResult *result,
     gpointer user_data)
 {
   EmpathyImportWidget *self = user_data;
 
-  if (error != NULL)
+  if (!empathy_connection_managers_prepare_finish (
+        EMPATHY_CONNECTION_MANAGERS (source), result, NULL))
     return;
 
   import_widget_set_up_account_list (self);
@@ -442,8 +443,8 @@ do_constructed (GObject *obj)
   g_signal_connect (priv->vbox, "destroy",
       G_CALLBACK (import_widget_destroy_cb), self);
 
-  empathy_connection_managers_call_when_ready (priv->cms,
-      import_widget_cms_ready_cb, self);
+  empathy_connection_managers_prepare_async (priv->cms,
+      import_widget_cms_prepare_cb, self);
 }
 
 static void

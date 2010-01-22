@@ -201,11 +201,13 @@ maybe_show_account_assistant (void)
 }
 
 static void
-connection_managers_ready_cb (EmpathyConnectionManagers *managers,
-    const GError *error,
+connection_managers_prepare_cb (GObject *source,
+    GAsyncResult *result,
     gpointer user_data)
 {
-  if (error != NULL)
+  EmpathyConnectionManagers *managers = EMPATHY_CONNECTION_MANAGERS (source);
+
+  if (!empathy_connection_managers_prepare_finish (managers, result, NULL))
     goto out;
 
   if (!empathy_import_mc4_accounts (managers) && !start_hidden)
@@ -488,8 +490,8 @@ account_manager_ready_cb (GObject *source_object,
       EmpathyConnectionManagers *managers;
       managers = empathy_connection_managers_dup_singleton ();
 
-      empathy_connection_managers_call_when_ready (managers,
-          connection_managers_ready_cb, NULL);
+      empathy_connection_managers_prepare_async (managers,
+          connection_managers_prepare_cb, NULL);
     }
   else if (!start_hidden)
     {
