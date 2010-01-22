@@ -849,12 +849,17 @@ impl_signal_apply (GtkAssistant *assistant)
 
   current_page = gtk_assistant_get_current_page (assistant);
 
-  if (current_page == PAGE_ENTER_CREATE)
+  if (current_page == PAGE_SALUT)
+    {
+      if (priv->create_salut_account)
+        account_assistant_apply_account_and_finish (self, priv->salut_settings);
+      return;
+    }
+
+  if (current_page >= PAGE_ENTER_CREATE)
     account_assistant_apply_account_and_finish (self, priv->settings);
   else if (current_page == PAGE_IMPORT)
     empathy_import_widget_add_selected_accounts (priv->iw);
-  else if (current_page == PAGE_SALUT && priv->create_salut_account)
-    account_assistant_apply_account_and_finish (self, priv->salut_settings);
 }
 
 static void
@@ -873,7 +878,7 @@ impl_signal_prepare (GtkAssistant *assistant,
 
   current_idx = gtk_assistant_get_current_page (assistant);
 
-  if (current_idx == PAGE_ENTER_CREATE)
+  if (current_idx >= PAGE_ENTER_CREATE && current_idx != PAGE_SALUT)
     {
       if (!priv->enter_create_forward)
         {
