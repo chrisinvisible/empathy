@@ -534,6 +534,11 @@ account_assistant_page_forward_func (gint current_page,
         /* Don't go forward */
         retval = -1;
     }
+  else if (current_page == PAGE_SALUT)
+    {
+      /* Don't go forward */
+      retval = -1;
+    }
   else if (current_page >= PAGE_ENTER_CREATE)
     {
       if (priv->create_enter_resp == RESPONSE_CREATE_AGAIN)
