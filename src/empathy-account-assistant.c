@@ -1114,10 +1114,11 @@ account_assistant_build_salut_error_page (EmpathyAccountAssistant *self)
 {
   return build_error_vbox (
       _("telepathy-salut not installed"),
-      _("Empathy won't be able to see the people connected on the same "
-        "network as you because telepathy-salut is not installed.\n"
-        "If you want to enable this feature, you should install "
-        "telepathy-salut and activate it in the Accounts dialog"));
+      _("You won't be able to chat with people connected to your local "
+        "network, as telepathy-salut is not installed.\nIf you want to enable "
+        "this feature, please install the telepathy-salut package\nand create "
+        "a People Nearby account from the Accounts dialog "
+        "(<span style=\"italic\">Edit->Accounts</span>)."));
 }
 
 static void
