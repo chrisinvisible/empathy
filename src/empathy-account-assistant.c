@@ -1049,6 +1049,7 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   EmpathyAccountSettings *settings;
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object;
+  gchar *markup;
 
   main_vbox = gtk_vbox_new (FALSE, 12);
   gtk_widget_show (main_vbox);
@@ -1059,14 +1060,16 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   gtk_widget_show (hbox_1);
 
   w = gtk_label_new ("");
-  gtk_label_set_markup (GTK_LABEL (w),
+  markup = g_strdup_printf ("%s (<span style=\"italic\">%s</span>).",
       _("Empathy can automatically discover and chat with the people "
         "connected on the same network as you. "
         "If you want to use this feature, please check that the "
         "details below are correct. "
         "You can easily change these details later or disable this feature "
-        "by using the 'Accounts' dialog "
-        "(<span style=\"italic\">Edit->Accounts</span>)."));
+        "by using the 'Accounts' dialog"),
+      _("Edit->Accounts"));
+  gtk_label_set_markup (GTK_LABEL (w), markup);
+  g_free (markup);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
   gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 0);
@@ -1112,13 +1115,19 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
 static GtkWidget *
 account_assistant_build_salut_error_page (EmpathyAccountAssistant *self)
 {
-  return build_error_vbox (
-      _("telepathy-salut not installed"),
+  GtkWidget *vbox;
+  gchar *markup;
+
+  markup = g_strdup_printf ("%s (<span style=\"italic\">%s</span>).",
       _("You won't be able to chat with people connected to your local "
         "network, as telepathy-salut is not installed.\nIf you want to enable "
         "this feature, please install the telepathy-salut package\nand create "
-        "a People Nearby account from the Accounts dialog "
-        "(<span style=\"italic\">Edit->Accounts</span>)."));
+        "a People Nearby account from the Accounts dialog "),
+        _("Edit->Accounts"));
+
+  vbox = build_error_vbox (_("telepathy-salut not installed"), markup);
+  g_free (markup);
+  return vbox;
 }
 
 static void
