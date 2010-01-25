@@ -1058,13 +1058,15 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), hbox_1, TRUE, TRUE, 0);
   gtk_widget_show (hbox_1);
 
-  w = gtk_label_new (
+  w = gtk_label_new ("");
+  gtk_label_set_markup (GTK_LABEL (w),
       _("Empathy can automatically discover and chat with the people "
         "connected on the same network as you. "
         "If you want to use this feature, please check that the "
         "details below are correct. "
         "You can easily change these details later or disable this feature "
-        "by using the 'Accounts' dialog."));
+        "by using the 'Accounts' dialog "
+        "(<span style=\"italic\">Edit->Accounts</span>)."));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
   gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox_1), w, FALSE, FALSE, 0);
