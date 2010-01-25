@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-01-18 16:55+0000\n"
-"PO-Revision-Date: 2010-01-18 19:07+0100\n"
+"POT-Creation-Date: 2010-01-25 14:14+0000\n"
+"PO-Revision-Date: 2010-01-25 19:36+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -478,7 +478,8 @@ msgstr "El archivo seleccionado no es un archivo regular"
 msgid "The selected file is empty"
 msgstr "El archivo seleccionado está vacío"
 
-#: ../libempathy/empathy-tp-contact-list.c:834 ../src/empathy.c:293
+#: ../libempathy/empathy-tp-contact-list.c:834
+#: ../src/empathy-auto-salut-account-helper.c:96
 msgid "People nearby"
 msgstr "Gente cerca"
 
@@ -527,7 +528,6 @@ msgid "Away"
 msgstr "Ausente"
 
 #: ../libempathy/empathy-utils.c:245
-#| msgid "Invite"
 msgid "Invisible"
 msgstr "Invisible"
 
@@ -659,11 +659,11 @@ msgstr "Todo"
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1320
+#: ../libempathy-gtk/empathy-account-widget.c:1329
 msgid "L_og in"
 msgstr "Iniciar _sesión"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1387
+#: ../libempathy-gtk/empathy-account-widget.c:1396
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -671,15 +671,15 @@ msgstr "Iniciar _sesión"
 msgid "Account:"
 msgstr "Cuenta:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1398
+#: ../libempathy-gtk/empathy-account-widget.c:1407
 msgid "Enabled"
 msgstr "Activada"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1460
+#: ../libempathy-gtk/empathy-account-widget.c:1472
 msgid "This account already exists on the server"
 msgstr "Esta cuenta ya existe en el servidor"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1463
+#: ../libempathy-gtk/empathy-account-widget.c:1475
 msgid "Create a new account on the server"
 msgstr "Crear una cuenta nueva en el servidor"
 
@@ -688,19 +688,19 @@ msgstr "Crear una cuenta nueva en el servidor"
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:1846
+#: ../libempathy-gtk/empathy-account-widget.c:1858
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s en %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:1864
+#: ../libempathy-gtk/empathy-account-widget.c:1876
 #, c-format
 msgid "%s Account"
 msgstr "Cuenta %s"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1868
+#: ../libempathy-gtk/empathy-account-widget.c:1880
 msgid "New account"
 msgstr "Cuenta nueva"
 
@@ -1248,25 +1248,25 @@ msgstr "El tema se ha establecido a: %s"
 msgid "No topic defined"
 msgstr "No se ha definido el tema"
 
-#: ../libempathy-gtk/empathy-chat.c:1595
+#: ../libempathy-gtk/empathy-chat.c:1593
 msgid "(No Suggestions)"
 msgstr "(Sin sugerencias)"
 
-#: ../libempathy-gtk/empathy-chat.c:1649
+#: ../libempathy-gtk/empathy-chat.c:1647
 msgid "Insert Smiley"
 msgstr "Insertar emoticono"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:1667
+#: ../libempathy-gtk/empathy-chat.c:1665
 #: ../libempathy-gtk/empathy-ui-utils.c:1658
 msgid "_Send"
 msgstr "E_nviar"
 
-#: ../libempathy-gtk/empathy-chat.c:1701
+#: ../libempathy-gtk/empathy-chat.c:1699
 msgid "_Spelling Suggestions"
 msgstr "_Sugerencias ortográficas"
 
-#: ../libempathy-gtk/empathy-chat.c:1816
+#: ../libempathy-gtk/empathy-chat.c:1814
 #, c-format
 msgid "%s has disconnected"
 msgstr "%s se ha desconectado"
@@ -1274,12 +1274,12 @@ msgstr "%s se ha desconectado"
 #. translators: reverse the order of these arguments
 #. * if the kicked should come before the kicker in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1823
+#: ../libempathy-gtk/empathy-chat.c:1821
 #, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%2$s expulsó a %1$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1826
+#: ../libempathy-gtk/empathy-chat.c:1824
 #, c-format
 msgid "%s was kicked"
 msgstr "%s fue expulsado"
@@ -1287,17 +1287,17 @@ msgstr "%s fue expulsado"
 #. translators: reverse the order of these arguments
 #. * if the banned should come before the banner in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1834
+#: ../libempathy-gtk/empathy-chat.c:1832
 #, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%2$s vetó a %1$s"
 
-#: ../libempathy-gtk/empathy-chat.c:1837
+#: ../libempathy-gtk/empathy-chat.c:1835
 #, c-format
 msgid "%s was banned"
 msgstr "%s fue vetado"
 
-#: ../libempathy-gtk/empathy-chat.c:1841
+#: ../libempathy-gtk/empathy-chat.c:1839
 #, c-format
 msgid "%s has left the room"
 msgstr "%s ha dejado la sala"
@@ -1307,63 +1307,63 @@ msgstr "%s ha dejado la sala"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1850
+#: ../libempathy-gtk/empathy-chat.c:1848
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
-#: ../libempathy-gtk/empathy-chat.c:1875
+#: ../libempathy-gtk/empathy-chat.c:1873
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s ha entrado en la sala"
 
-#: ../libempathy-gtk/empathy-chat.c:1900
+#: ../libempathy-gtk/empathy-chat.c:1898
 #, c-format
 msgid "%s is now known as %s"
 msgstr "Ahora %s se llama %s"
 
-#: ../libempathy-gtk/empathy-chat.c:2035 ../src/empathy-call-window.c:1531
+#: ../libempathy-gtk/empathy-chat.c:2033 ../src/empathy-call-window.c:1531
 msgid "Disconnected"
 msgstr "Desconectado"
 
-#: ../libempathy-gtk/empathy-chat.c:2570
+#: ../libempathy-gtk/empathy-chat.c:2568
 msgid "Wrong password; please try again:"
 msgstr "Contraseña incorrecta; inténtelo de nuevo:"
 
-#: ../libempathy-gtk/empathy-chat.c:2571
+#: ../libempathy-gtk/empathy-chat.c:2569
 msgid "Retry"
 msgstr "Volver a intentarlo"
 
-#: ../libempathy-gtk/empathy-chat.c:2576
+#: ../libempathy-gtk/empathy-chat.c:2574
 msgid "This room is protected by a password:"
 msgstr "Esta sala está protegida por contraseña:"
 
-#: ../libempathy-gtk/empathy-chat.c:2577
+#: ../libempathy-gtk/empathy-chat.c:2575
 msgid "Join"
 msgstr "Unirse"
 
-#: ../libempathy-gtk/empathy-chat.c:2717
+#: ../libempathy-gtk/empathy-chat.c:2715
 msgid "Connected"
 msgstr "Conectado"
 
-#: ../libempathy-gtk/empathy-chat.c:2770
-#: ../libempathy-gtk/empathy-log-window.c:546
+#: ../libempathy-gtk/empathy-chat.c:2768
+#: ../libempathy-gtk/empathy-log-window.c:548
 msgid "Conversation"
 msgstr "Conversación"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:680
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:681
 msgid "Topic:"
 msgstr "Tema:"
 
 #. Copy Link Address menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:317
-#: ../libempathy-gtk/empathy-theme-adium.c:817
+#: ../libempathy-gtk/empathy-theme-adium.c:823
 msgid "_Copy Link Address"
 msgstr "_Copiar la dirección del enlace"
 
 #. Open Link menu item
 #: ../libempathy-gtk/empathy-chat-text-view.c:324
-#: ../libempathy-gtk/empathy-theme-adium.c:824
+#: ../libempathy-gtk/empathy-theme-adium.c:830
 msgid "_Open Link"
 msgstr "_Abrir enlace"
 
@@ -1405,6 +1405,7 @@ msgstr "Quitando grupo"
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:1561
 #: ../libempathy-gtk/empathy-contact-list-view.c:1638
+#: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "_Quitar"
 
@@ -1460,7 +1461,7 @@ msgid "_Edit"
 msgstr "_Editar"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:496
-#: ../src/empathy-chat-window.c:865
+#: ../src/empathy-chat-window.c:866
 msgid "Inviting you to this room"
 msgstr "Invitándolo a esta sala"
 
@@ -1683,12 +1684,12 @@ msgstr "Puerto"
 msgid "SSL"
 msgstr "SSL"
 
-#: ../libempathy-gtk/empathy-log-window.c:539
+#: ../libempathy-gtk/empathy-log-window.c:541
 #: ../src/empathy-import-widget.c:310
 msgid "Account"
 msgstr "Cuenta"
 
-#: ../libempathy-gtk/empathy-log-window.c:556
+#: ../libempathy-gtk/empathy-log-window.c:558
 msgid "Date"
 msgstr "Fecha"
 
@@ -1780,6 +1781,10 @@ msgid "Find:"
 msgstr "Buscar:"
 
 #: ../libempathy-gtk/empathy-search-bar.ui.h:2
+msgid "Match case"
+msgstr "Coincidir con capitalización"
+
+#: ../libempathy-gtk/empathy-search-bar.ui.h:3
 msgid "Phrase not found"
 msgstr "No se encontró la frase"
 
@@ -2050,19 +2055,19 @@ msgstr "Sin mensaje de eeror"
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
-#: ../src/empathy.c:887
+#: ../src/empathy.c:762
 msgid "Don't connect on startup"
 msgstr "No conectarse automáticamente al inicio"
 
-#: ../src/empathy.c:891
+#: ../src/empathy.c:766
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "No mostrar la lista de contactos o cualquier otro diálogo al inicio"
 
-#: ../src/empathy.c:895
+#: ../src/empathy.c:770
 msgid "Show the accounts dialog"
 msgstr "Mostrar el diálogo de las cuentas"
 
-#: ../src/empathy.c:907
+#: ../src/empathy.c:782
 msgid "- Empathy IM Client"
 msgstr "- Cliente de mensajería instantánea Empathy"
 
@@ -2108,28 +2113,29 @@ msgstr "Un cliente de mensajería instantánea para GNOME"
 msgid "translator-credits"
 msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2007-2010"
 
-#: ../src/empathy-account-assistant.c:118
+#: ../src/empathy-account-assistant.c:165
 msgid "There was an error while importing the accounts."
 msgstr "Hubo un error al importar las cuentas."
 
-#: ../src/empathy-account-assistant.c:121
+#: ../src/empathy-account-assistant.c:168
 msgid "There was an error while parsing the account details."
 msgstr "Hubo un error al analizar los detalles de la cuenta."
 
-#: ../src/empathy-account-assistant.c:124
+#: ../src/empathy-account-assistant.c:171
 msgid "There was an error while creating the account."
 msgstr "Hubo un error al crear la cuenta."
 
-#: ../src/empathy-account-assistant.c:126
+#: ../src/empathy-account-assistant.c:173
 msgid "There was an error."
 msgstr "Hubo un error."
 
-#: ../src/empathy-account-assistant.c:141
+#: ../src/empathy-account-assistant.c:177
 #, c-format
-msgid "The error message was: <span style=\"italic\">%s</span>"
-msgstr "El mensaje de error fue: <span style=\"italic\">%s</span>"
+#| msgid "No error message"
+msgid "The error message was: %s"
+msgstr "El mensaje de error fue: %s"
 
-#: ../src/empathy-account-assistant.c:149
+#: ../src/empathy-account-assistant.c:181
 msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this assistant and add accounts later from the Edit menu."
@@ -2138,7 +2144,8 @@ msgstr ""
 "o salir de este asistente y añadir cuentas posteriormente desde el menú "
 "Editar."
 
-#: ../src/empathy-account-assistant.c:184
+#: ../src/empathy-account-assistant.c:218
+#: ../src/empathy-account-assistant.c:1241
 msgid "An error occurred"
 msgstr "Ocurrió un error"
 
@@ -2148,36 +2155,36 @@ msgstr "Ocurrió un error"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:331 ../src/empathy-accounts-dialog.c:549
+#: ../src/empathy-account-assistant.c:395 ../src/empathy-accounts-dialog.c:552
 #, c-format
 msgid "New %s account"
 msgstr "Cuenta de %s nueva"
 
-#: ../src/empathy-account-assistant.c:403
+#: ../src/empathy-account-assistant.c:472
 msgid "What kind of chat account do you have?"
 msgstr "¿Qué tipo de cuenta tiene?"
 
-#: ../src/empathy-account-assistant.c:409
+#: ../src/empathy-account-assistant.c:478
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "¿Tiene otras cuentas de chat que quiera configurar?"
 
-#: ../src/empathy-account-assistant.c:415
+#: ../src/empathy-account-assistant.c:484
 msgid "Enter your account details"
 msgstr "Introducir los detalles de su cuenta"
 
-#: ../src/empathy-account-assistant.c:420
+#: ../src/empathy-account-assistant.c:489
 msgid "What kind of chat account do you want to create?"
 msgstr "¿Qué tipo de cuenta quiere crear?"
 
-#: ../src/empathy-account-assistant.c:426
+#: ../src/empathy-account-assistant.c:495
 msgid "Do you want to create other chat accounts?"
 msgstr "¿Quiere crear otras cuentas de chat?"
 
-#: ../src/empathy-account-assistant.c:433
+#: ../src/empathy-account-assistant.c:502
 msgid "Enter the details for the new account"
 msgstr "Introducir los detalles para la cuenta nueva"
 
-#: ../src/empathy-account-assistant.c:519
+#: ../src/empathy-account-assistant.c:617
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -2188,47 +2195,83 @@ msgstr ""
 "Google Talk, AIM, Windows Live y muchos otros programas de chat. Con un "
 "micrófono o una cámara web puede hacer incluso llamadas de sonido o vídeo."
 
-#: ../src/empathy-account-assistant.c:536
+#: ../src/empathy-account-assistant.c:634
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "¿Tiene una cuenta que haya estado usando con otro programa de chat?"
 
-#: ../src/empathy-account-assistant.c:559
+#: ../src/empathy-account-assistant.c:657
 msgid "Yes, import my account details from "
 msgstr "Sí, importar los detalles de mi cuenta desde "
 
-#: ../src/empathy-account-assistant.c:580
+#: ../src/empathy-account-assistant.c:678
 msgid "Yes, I'll enter my account details now"
 msgstr "Sí, introduciré ahora los detalles de mi cuenta"
 
-#: ../src/empathy-account-assistant.c:602
+#: ../src/empathy-account-assistant.c:700
 msgid "No, I want a new account"
 msgstr "No, quiero crear una cuenta nueva"
 
-#: ../src/empathy-account-assistant.c:612
+#: ../src/empathy-account-assistant.c:710
 msgid "No, I just want to see people online nearby for now"
 msgstr "No, por ahora sólo quiero ver la gente conectada cerca"
 
-#: ../src/empathy-account-assistant.c:633
+#: ../src/empathy-account-assistant.c:731
 msgid "Select the accounts you want to import:"
 msgstr "Seleccione las cuentas que quiere importar:"
 
-#: ../src/empathy-account-assistant.c:720
+#: ../src/empathy-account-assistant.c:815
 #: ../src/empathy-new-chatroom-dialog.c:541
 #: ../src/empathy-new-chatroom-dialog.c:542
 msgid "Yes"
 msgstr "Sí"
 
-#: ../src/empathy-account-assistant.c:727
+#: ../src/empathy-account-assistant.c:822
 msgid "No, that's all for now"
 msgstr "No, eso es todo por ahora"
 
-#: ../src/empathy-account-assistant.c:920
+#: ../src/empathy-account-assistant.c:1064
+msgid ""
+"Empathy can automatically discover and chat with the people connected on the "
+"same network as you. If you want to use this feature, please check that the "
+"details below are correct. You can easily change these details later or "
+"disable this feature by using the 'Accounts' dialog"
+msgstr ""
+
+#: ../src/empathy-account-assistant.c:1070
+#: ../src/empathy-account-assistant.c:1126
+#| msgid "Edit Account"
+msgid "Edit->Accounts"
+msgstr "Editar->Cuentas"
+
+#: ../src/empathy-account-assistant.c:1086
+#| msgid "No, I just want to see people online nearby for now"
+msgid "I don't want to enable this feature for now"
+msgstr "No quiero activar esta característica por ahora"
+
+#: ../src/empathy-account-assistant.c:1122
+msgid ""
+"You won't be able to chat with people connected to your local network, as "
+"telepathy-salut is not installed.\n"
+"If you want to enable this feature, please install the telepathy-salut "
+"package\n"
+"and create a People Nearby account from the Accounts dialog "
+msgstr ""
+
+#: ../src/empathy-account-assistant.c:1128
+msgid "telepathy-salut not installed"
+msgstr "telepathy-salut no está instalado"
+
+#: ../src/empathy-account-assistant.c:1205
 msgid "Welcome to Empathy"
 msgstr "Bienvenido a Empathy"
 
-#: ../src/empathy-account-assistant.c:929
+#: ../src/empathy-account-assistant.c:1214
 msgid "Import your existing accounts"
 msgstr "Importar sus cuentas existentes"
+
+#: ../src/empathy-account-assistant.c:1232
+msgid "Please enter personal details"
+msgstr "Introduzca los detalles personales"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
@@ -2243,33 +2286,33 @@ msgstr "Existen modificaciones sin guardar en su cuenta %s."
 msgid "Your new account has not been saved yet."
 msgstr "Aún no se ha guardado su cuenta nueva."
 
-#: ../src/empathy-accounts-dialog.c:258 ../src/empathy-call-window.c:729
+#: ../src/empathy-accounts-dialog.c:259 ../src/empathy-call-window.c:729
 msgid "Connecting…"
 msgstr "Conectando…"
 
-#: ../src/empathy-accounts-dialog.c:285
+#: ../src/empathy-accounts-dialog.c:286
 #, c-format
 msgid "Disconnected — %s"
 msgstr "Desconectado: %s"
 
-#: ../src/empathy-accounts-dialog.c:290
+#: ../src/empathy-accounts-dialog.c:291
 #, c-format
 msgid "Offline — %s"
 msgstr "Desconectado: %s"
 
-#: ../src/empathy-accounts-dialog.c:303
+#: ../src/empathy-accounts-dialog.c:304
 msgid "Offline — No Network Connection"
 msgstr "Desconectado: sin conexión de red"
 
-#: ../src/empathy-accounts-dialog.c:311
+#: ../src/empathy-accounts-dialog.c:312
 msgid "Unknown Status"
 msgstr "Estado desconocido"
 
-#: ../src/empathy-accounts-dialog.c:322
+#: ../src/empathy-accounts-dialog.c:323
 msgid "Offline — Account Disabled"
 msgstr "Desconectado: cuenta desactivada"
 
-#: ../src/empathy-accounts-dialog.c:717
+#: ../src/empathy-accounts-dialog.c:720
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2277,16 +2320,16 @@ msgstr ""
 "Va a crear una cuenta nueva que descartará sus cambios.\n"
 "¿Seguro que quiere continuar?"
 
-#: ../src/empathy-accounts-dialog.c:1053
+#: ../src/empathy-accounts-dialog.c:1054
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "¿Quiere quitar %s de su equipo?"
 
-#: ../src/empathy-accounts-dialog.c:1057
+#: ../src/empathy-accounts-dialog.c:1058
 msgid "This will not remove your account on the server."
 msgstr "Esto no quitará su cuenta del servidor."
 
-#: ../src/empathy-accounts-dialog.c:1248
+#: ../src/empathy-accounts-dialog.c:1286
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2294,7 +2337,7 @@ msgstr ""
 "Va a seleccionar otra cuenta lo que descartará sus cambios.\n"
 "¿Seguro que quiere continuar?"
 
-#: ../src/empathy-accounts-dialog.c:1790
+#: ../src/empathy-accounts-dialog.c:1828
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2303,7 +2346,7 @@ msgstr ""
 "¿Seguro que quiere continuar?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1911
+#: ../src/empathy-accounts-dialog.c:1955
 msgid "Accounts"
 msgstr "Cuentas"
 
@@ -2522,35 +2565,35 @@ msgstr "Vista preliminar del vídeo"
 msgid "_View"
 msgstr "_Ver"
 
-#: ../src/empathy-chat-window.c:436 ../src/empathy-chat-window.c:456
+#: ../src/empathy-chat-window.c:437 ../src/empathy-chat-window.c:457
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d sin leer)"
 msgstr[1] "%s (%d sin leer)"
 
-#: ../src/empathy-chat-window.c:448
+#: ../src/empathy-chat-window.c:449
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (y otro)"
 msgstr[1] "%s (y otros %u)"
 
-#: ../src/empathy-chat-window.c:464
+#: ../src/empathy-chat-window.c:465
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (%d sin leer de otros)"
 msgstr[1] "%s (%d sin leer de otros)"
 
-#: ../src/empathy-chat-window.c:473
+#: ../src/empathy-chat-window.c:474
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (%d sin leer de todos)"
 msgstr[1] "%s (%d sin leer de todos)"
 
-#: ../src/empathy-chat-window.c:684
+#: ../src/empathy-chat-window.c:685
 msgid "Typing a message."
 msgstr "Tecleando un mensaje."
 
@@ -3292,6 +3335,9 @@ msgstr "Invitar participante"
 #: ../src/empathy-invite-participant-dialog.c:35
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Elegir un contacto para invitar a la conversación:"
+
+#~ msgid "The error message was: <span style=\"italic\">%s</span>"
+#~ msgstr "El mensaje de error fue: <span style=\"italic\">%s</span>"
 
 #~ msgid "Hidden"
 #~ msgstr "Oculto"
