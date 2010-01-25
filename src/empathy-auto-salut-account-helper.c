@@ -98,8 +98,7 @@ create_salut_account_settings (void)
   /* Get self EContact from EDS */
   if (!e_book_get_self (&contact, &book, &error))
     {
-      DEBUG ("Failed to get self econtact: %s",
-          error ? error->message : "No error given");
+      DEBUG ("Failed to get self econtact: %s", error->message);
       g_error_free (error);
       return settings;
     }
