@@ -2,6 +2,7 @@ plugindir = $(libdir)/nautilus-sendto/plugins
 
 INCLUDES =					\
 	-I$(top_builddir)			\
+	-I$(top_srcdir)				\
 	-DLOCALEDIR=\""$(datadir)/locale"\"	\
 	$(NST_CFLAGS)				\
 	$(WARN_CFLAGS)				\
