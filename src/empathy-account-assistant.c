@@ -157,7 +157,8 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
     GError *error, gint page_num)
 {
   GtkWidget *main_vbox, *w;
-  const char *primary_message, *secondary_message;
+  const char *primary_message;
+  gchar *secondary_message, *markup;
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
   if (page_num == PAGE_IMPORT)
@@ -171,9 +172,9 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   else
     primary_message = _("There was an error.");
 
-  secondary_message = g_markup_printf_escaped
-    (_("The error message was: <span style=\"italic\">%s</span>"),
-        error->message);
+  markup = g_markup_printf_escaped ("<span style=\"italic\">%s</span>",
+      error->message);
+  secondary_message = g_strdup_printf (_("The error message was: %s"), markup);
 
   main_vbox = build_error_vbox (primary_message, secondary_message);
 
@@ -185,6 +186,8 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
   gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_widget_show (w);
 
+  g_free (markup);
+  g_free (secondary_message);
   return main_vbox;
 }
 
