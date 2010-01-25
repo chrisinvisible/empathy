@@ -1193,13 +1193,13 @@ do_constructed (GObject *object)
   gtk_assistant_set_page_title (assistant, page,
       _("Import your existing accounts"));
   gtk_assistant_set_page_complete (assistant, page, TRUE);
-  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_INTRO);
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONTENT);
   priv->import_page = page;
 
   /* third page (enter account details) */
   page = account_assistant_build_enter_or_create_page (self);
   gtk_assistant_append_page (assistant, page);
-  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_INTRO);
+  gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONTENT);
   priv->enter_or_create_page = page;
 
   /* fourth page (salut details) */
