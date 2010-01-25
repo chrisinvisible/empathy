@@ -385,7 +385,6 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *close_button;
 	GtkWidget *action_area;
 	GtkWidget *action_table;
-	GtkRcStyle *rc_style;
 	gchar     *str;
 	const gchar     *icon_name;
 
@@ -424,28 +423,21 @@ main_window_error_display (EmpathyMainWindow *window,
 	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (content_area), label, FALSE, FALSE, 0);
 
-	/* make small style for the buttons */
-	rc_style = gtk_rc_style_new ();
-	rc_style->xthickness = rc_style->ythickness = 4;
-
 	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
 	retry_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (retry_button), image);
-	gtk_widget_modify_style (retry_button, rc_style);
 	gtk_widget_set_tooltip_text (retry_button, _("Reconnect"));
 	gtk_widget_show (retry_button);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_EDIT, GTK_ICON_SIZE_BUTTON);
 	edit_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (edit_button), image);
-	gtk_widget_modify_style (edit_button, rc_style);
 	gtk_widget_set_tooltip_text (edit_button, _("Edit Account"));
 	gtk_widget_show (edit_button);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_CLOSE, GTK_ICON_SIZE_BUTTON);
 	close_button = gtk_button_new ();
 	gtk_button_set_image (GTK_BUTTON (close_button), image);
-	gtk_widget_modify_style (close_button, rc_style);
 	gtk_widget_set_tooltip_text (close_button, _("Close"));
 	gtk_widget_show (close_button);
 
@@ -492,7 +484,6 @@ main_window_error_display (EmpathyMainWindow *window,
 
 	gtk_widget_show (window->errors_vbox);
 
-	g_object_unref (rc_style);
 	g_hash_table_insert (window->errors, g_object_ref (account), info_bar);
 }
 
