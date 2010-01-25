@@ -416,12 +416,13 @@ main_window_error_display (EmpathyMainWindow *window,
 
 	label = gtk_label_new (str);
 	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+	gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
 	gtk_widget_show (label);
 	g_free (str);
 
 	content_area = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
 	gtk_box_pack_start (GTK_BOX (content_area), image, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (content_area), label, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (content_area), label, TRUE, TRUE, 0);
 
 	image = gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
 	retry_button = gtk_button_new ();
