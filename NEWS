@@ -1,3 +1,61 @@
+NEW in 2.29.6
+=============
+
+The "Riding on lions" release.
+
+The accounts dialog has been improved to display the status of all your
+accounts in the treeview. A new page has been added to the new accounts
+assistant to let users enter their personal details that are used to create
+the XMPP link-local account.
+
+Chat windows gained a very nice search bar allowing you to look for a specific
+string as you do in your web browser.
+
+Empathy now makes use of the new ContactCapabilities interface when available
+to check if your contacts support file transfer and audio/video calls.
+
+Finally, Empathy doesn't dispatch tube channels any more. All tubes applications
+should now implement the Handler interface to interact properly with
+mission-control 5.
+
+Bugs fixed:
+ - Fixed #603472, Rename "Hidden" to "Invisible" (G.Balaji)
+ - Fixed #606329, Buttons in GtkInfoBar are too big. (Felix Kaser)
+ - Fixed #573407, Empathy and telepathy-idle don't pass on server commands to server
+ - Fixed #585168, Scrollback search and jump-to-highlight would be nice. (Thomas Meire)
+ - Fixed #596575, Automatic salut account creation doesn't work (Guillaume Desmottes)
+ - Fixed #599159, Stop to handle tube channels (Guillaume Desmottes)
+ - Fixed #599163, Should use ContactCapability to get A/V caps (Guillaume Desmottes)
+ - Fixed #599164, Should use ContactCapability to get FT caps (Guillaume Desmottes)
+ - Fixed #600693, Empathy calls xmlCleanupParser() where it shouldn't (Guillaume Desmottes)
+ - Fixed #600949, Deleting accounts from the treeview is weird
+ - Fixed #603498, Escaped text displayed in notifications (Guillaume Desmottes)
+ - Fixed #606642, IRC account: "Connect" button is not sensitive when changing the IRC network (Guillaume Desmottes)
+ - Fixed #606753, Scrollback search is not case sensitive
+ - Fixed #607207, show protocol icons in compact view (Guillaume Desmottes)
+ - Fixed #607306, /join fails to work on the latest version of empathy (Thomas Meire)
+ - Fixed #607436, Salut account should only automatically created when the wizard is run (Guillaume Desmottes)
+ - Fixed #607455, Misc fixes regarding the accounts assistant (Guillaume Desmottes)
+ - Fixed #607463, Edit Custom Messages window is too narrow (Ken VanDine)
+ - Fixed #607868, Change Hidden to Invisible in docs
+ - Fixed #607925, edit account from infobar does not open the right account (Guillaume Desmottes)
+ - Fixed #608043, Should ellipsize text in connection error infobars (Will Thompson)
+ - Fixed #604700, (null) status infobar with IRC account (Guillaume Desmottes)
+ - Fixed #604706, infobar shows no icon if the presence is empty (Felix Kaser)
+ - Fixed #605309, Show the status of accounts in the treeview (Guillaume Desmottes)
+ - Fixed #605532, on account-creation some field should be persistent over a protocol change (Guillaume Desmottes)
+ - Fixed #606510, Unclear string meaning (Guillaume Desmottes)
+ - Fixed #585364, Get rid of shave with AM_SILENT_RULES automake option
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated es Translation (Jorge González)
+ - Updated fr Translation (Claude Paroz)
+ - Updated nb Translation (Kjartan Maraas)
+
+Documentation translations:
+ - Updated es Documentation translation (Jorge González)
+
 NEW in 2.29.5.1
 ===============
 
