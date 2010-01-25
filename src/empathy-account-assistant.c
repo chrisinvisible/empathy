@@ -112,7 +112,7 @@ static void account_assistant_finish_enter_or_create_page (
 static void do_constructed (GObject *object);
 
 static GtkWidget *
-build_error_page (const gchar *primary_message,
+build_error_vbox (const gchar *primary_message,
     const gchar *secondary_message)
 {
   GtkWidget *main_vbox, *w, *hbox;
@@ -175,7 +175,7 @@ account_assistant_build_error_page (EmpathyAccountAssistant *self,
     (_("The error message was: <span style=\"italic\">%s</span>"),
         error->message);
 
-  main_vbox = build_error_page (primary_message, secondary_message);
+  main_vbox = build_error_vbox (primary_message, secondary_message);
 
   w = gtk_label_new (_("You can either go back and try to enter your "
           "accounts' details again or quit this assistant and add accounts "
@@ -1107,7 +1107,7 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
 static GtkWidget *
 account_assistant_build_salut_error_page (EmpathyAccountAssistant *self)
 {
-  return build_error_page (
+  return build_error_vbox (
       _("telepathy-salut not installed"),
       _("Empathy won't be able to see the people connected on the same "
         "network as you because telepathy-salut is not installed.\n"
