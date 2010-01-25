@@ -1724,23 +1724,24 @@ accounts_dialog_set_selected_account (EmpathyAccountsDialog *dialog,
 }
 
 static void
-accounts_dialog_cms_ready_cb (EmpathyConnectionManagers *cms,
-    GParamSpec *pspec,
-    EmpathyAccountsDialog *dialog)
+accounts_dialog_cms_prepare_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
 {
+  EmpathyConnectionManagers *cms = EMPATHY_CONNECTION_MANAGERS (source);
+  EmpathyAccountsDialog *dialog = user_data;
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
-  if (empathy_connection_managers_is_ready (cms))
-    {
-      accounts_dialog_update_settings (dialog, NULL);
+  if (!empathy_connection_managers_prepare_finish (cms, result, NULL))
+    return;
 
-      if (priv->initial_selection != NULL)
-        {
-          accounts_dialog_set_selected_account
-              (dialog, priv->initial_selection);
-          g_object_unref (priv->initial_selection);
-          priv->initial_selection = NULL;
-        }
+  accounts_dialog_update_settings (dialog, NULL);
+
+  if (priv->initial_selection != NULL)
+    {
+      accounts_dialog_set_selected_account (dialog, priv->initial_selection);
+      g_object_unref (priv->initial_selection);
+      priv->initial_selection = NULL;
     }
 }
 
@@ -1777,9 +1778,9 @@ accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
   g_list_free (accounts);
 
   priv->cms = empathy_connection_managers_dup_singleton ();
-  if (!empathy_connection_managers_is_ready (priv->cms))
-    g_signal_connect (priv->cms, "notify::ready",
-        G_CALLBACK (accounts_dialog_cms_ready_cb), dialog);
+
+  empathy_connection_managers_prepare_async (priv->cms,
+      accounts_dialog_cms_prepare_cb, dialog);
 
   accounts_dialog_model_select_first (dialog);
 }
