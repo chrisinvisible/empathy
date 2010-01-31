@@ -1,24 +1,20 @@
 # translation of empathy-help.master.po to Español
-# Jorge González <jorgegonz@svn.gnome.org>, 2009, 2010.
+# Jorge González <jorgegonz@svn.gnome.org>, 2009, 2010, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-09 17:23+0000\n"
-"PO-Revision-Date: 2010-01-12 20:21+0100\n"
+"POT-Creation-Date: 2010-01-25 10:20+0000\n"
+"PO-Revision-Date: 2010-01-31 12:09+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: C/legal.xml:3(p)
-#| msgid ""
-#| "This work is licensed under a <link href=\"http://creativecommons.org/"
-#| "licenses/by-sa/3.0/us/\">Creative Commons Attribution-Share Alike 3.0 "
-#| "United States License</link>."
 msgid ""
 "This work is licensed under a <link href=\"http://creativecommons.org/"
 "licenses/by-sa/3.0/\">Creative Commons Attribution-Share Alike 3.0 Unported "
@@ -103,6 +99,10 @@ msgid ""
 "accounts, and it requires the other person to have an application that "
 "supports video calls."
 msgstr ""
+"Si tiene una cámara web puede llamar a sus contactos y tener conversaciones "
+"de vídeo con ellos. Esta característica sólo funciona con ciertos tipos de "
+"cuentas y requiere que la otra persona tenga una aplicación que soporte "
+"llamadas de vídeo."
 
 #: C/video-call.page:40(p)
 msgid ""
@@ -111,9 +111,13 @@ msgid ""
 "next to the name of the contact you wish to call. Alternatively, right click "
 "the contact and choose <gui>Video Call</gui>."
 msgstr ""
+"Desde la ventana <gui>Lista de contactos</gui> pulse el icono <media type="
+"\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">Vídeo llamada</"
+"media> junto al nombre del contacto al que desea llamar. Alternativamente, "
+"pulse con el botón derecho del ratón sobre el contacto y elija <gui>Llamada "
+"de vídeo</gui>."
 
 #: C/video-call.page:46(p) C/audio-call.page:48(p)
-#, fuzzy
 #| msgid ""
 #| "A new window will open. When the connection is established, you will see "
 #| "written, at the bottom of the window, <gui>Connected</gui> and the total "
@@ -209,6 +213,9 @@ msgid ""
 "Use the <em>Available</em> status when you are at your computer and able to "
 "chat with your contacts. You can set a custom message for this status."
 msgstr ""
+"Use el estado <em>Disponible</em> cuando está en su equipo y disponible para "
+"charlar con sus contactos. Puede establecer un mensaje personalizado para "
+"este estado."
 
 #: C/status-icons.page:42(media)
 msgid "Busy icon"
@@ -249,14 +256,14 @@ msgid "Offline icon"
 msgstr "Icono de desconectado"
 
 #: C/status-icons.page:60(gui)
-msgid "Hidden"
-msgstr "Oculto"
+msgid "Invisible"
+msgstr "Invisible"
 
 #: C/status-icons.page:61(p)
 msgid ""
-"When you set your status to <em>Hidden</em>, you will appear as offline to "
-"your contacts. You will still be connected to your accounts, and you still "
-"see your contacts’ statuses and start conversations with them."
+"When you set your status to <em>Invisible</em>, you will appear as offline "
+"to your contacts. You will still be connected to your accounts, and you "
+"still see your contacts’ statuses and start conversations with them."
 msgstr ""
 
 #: C/status-icons.page:67(gui)
@@ -676,11 +683,11 @@ msgstr "Entender el protocolo <em>Salut</em>."
 
 #: C/salut-protocol.page:30(title)
 msgid "What is People Nearby?"
-msgstr ""
+msgstr "¿Qué es Gente cerca?"
 
 #: C/salut-protocol.page:34(p)
 msgid "I'd like to see this played up a bit more."
-msgstr ""
+msgstr "Me gustaría ver esto explicado un poco más."
 
 #: C/salut-protocol.page:37(p)
 #, fuzzy
@@ -740,7 +747,6 @@ msgstr ""
 
 #: C/remove-account.page:38(p) C/irc-nick-password.page:47(p)
 #: C/disable-account.page:44(p) C/add-account.page:43(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
 #| "gui><gui>Join</gui></guiseq>."
@@ -748,11 +754,10 @@ msgid ""
 "From the <gui>Contact List</gui> window, choose <guiseq><gui>Edit</"
 "gui><gui>Accounts</gui></guiseq>, or press <key>F4</key>."
 msgstr ""
-"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
-"gui><gui>Unirse</gui></guiseq>."
+"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Editar</"
+"gui><gui>Cuentas</gui></guiseq> o pulse <key>F4</key>."
 
 #: C/remove-account.page:42(p)
-#, fuzzy
 #| msgid ""
 #| "Select the account you wish to remove from the box on the left of the "
 #| "dialog."
@@ -760,14 +765,14 @@ msgid ""
 "Select the account you wish to remove from the accounts list on the left "
 "side of the window."
 msgstr ""
-"Seleccione la cuenta que quiere quitar en la caja a la izquierda del diálogo."
+"Seleccione la cuenta que quiere quitar de la lista de cuentas en la parte "
+"izquierda de la ventana."
 
 #: C/remove-account.page:46(p)
 msgid "Click on the trash icon next to the account name to remove the account."
 msgstr ""
 
 #: C/remove-account.page:49(p)
-#, fuzzy
 #| msgid ""
 #| "A dialog will be shown asking for confirmation. Click on the <gui>Remove</"
 #| "gui> button to permanently remove the account."
@@ -1045,10 +1050,9 @@ msgid "Browse or search your previous conversations."
 msgstr "Icono para la conversación de sonido"
 
 #: C/prev-conv.page:32(title)
-#, fuzzy
 #| msgid "Group conversations"
 msgid "View previous conversations"
-msgstr "Conversaciones de grupos"
+msgstr "Ver conversaciones anteriores"
 
 #: C/prev-conv.page:36(p)
 msgid ""
@@ -2342,7 +2346,6 @@ msgstr ""
 "md5=8d89026b66a263a3bc5b1f0665948567"
 
 #: C/audio-video.page:8(desc)
-#| msgid "When it is possible to have an audio or video conversation."
 msgid ""
 "Information on when it is possible to have an audio or video conversation."
 msgstr ""
@@ -2350,7 +2353,6 @@ msgstr ""
 "sonido."
 
 #: C/audio-video.page:28(title)
-#| msgid "Audio and video conversations"
 msgid "Audio and Video Support"
 msgstr "Soporte de sonido y vídeo"
 
@@ -2375,7 +2377,6 @@ msgid "Icon for audio conversation"
 msgstr "Icono para la conversación de sonido"
 
 #: C/audio-video.page:60(p)
-#| msgid "When it is possible to have an audio or video conversation."
 msgid "The contact is able to have an audio conversation."
 msgstr "El contacto puede tener conversaciones de sonido."
 
@@ -2384,7 +2385,6 @@ msgid "Icon for video conversation"
 msgstr "Icono para la conversación de vídeo"
 
 #: C/audio-video.page:72(p)
-#| msgid "When it is possible to have an audio or video conversation."
 msgid "The contact is able to have a video conversation."
 msgstr "El contacto puede tener conversaciones de vídeo."
 
@@ -3006,3 +3006,6 @@ msgstr ""
 #: C/index.page:0(None)
 msgid "translator-credits"
 msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2008-2010"
+
+#~ msgid "Hidden"
+#~ msgstr "Oculto"
