@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-25 10:20+0000\n"
-"PO-Revision-Date: 2010-01-31 18:53+0100\n"
+"PO-Revision-Date: 2010-02-01 19:37+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -233,6 +233,11 @@ msgid ""
 "not use notification bubbles and sounds when you are busy. You can set a "
 "custom message for this status."
 msgstr ""
+"Use el estado <em>Ocupado</em> para hacer saber a sus contactos que no "
+"quiere charlar ahora. Aún podrán contactarle si, por ejemplo, tienen algo "
+"urgente que necesitan discutir. De forma predeterminada <app>Empathy</app> "
+"no usará las burbujas de notificación y sonidos cuando esté ocupado. Puede "
+"establecer un mensaje personalizado para este estado."
 
 #: C/status-icons.page:50(media)
 msgid "Away icon"
@@ -250,6 +255,12 @@ msgid ""
 "<app>Empathy</app> will not use notification bubbles and sounds when you are "
 "away. You can set a custom message for this status."
 msgstr ""
+"Use el estado <em>Ausente</em> cuando esté haciendo algo lejos del equipo. "
+"<app>Empathy</app> establece automáticamente su estado a Ausente si no usa "
+"su equipo durante un rato o si su salvapantallas está activado. De forma "
+"predeterminada <app>Empathy</app> no usará las burbujas de notificación y "
+"sonidos cuando esté ocupado. Puede establecer un mensaje personalizado para "
+"este estado."
 
 #: C/status-icons.page:59(media) C/status-icons.page:66(media)
 msgid "Offline icon"
@@ -265,6 +276,9 @@ msgid ""
 "to your contacts. You will still be connected to your accounts, and you "
 "still see your contacts’ statuses and start conversations with them."
 msgstr ""
+"Cuando su estado es <em>Invisible</em> aparecerá como desconectado para sus "
+"contactos. Aún estará conectado a sus cuentas, verá los estados de sus "
+"contactos y podrá iniciar conversaciones con ellos."
 
 #: C/status-icons.page:67(gui)
 msgid "Offline"
@@ -558,7 +572,6 @@ msgstr ""
 "conversación."
 
 #: C/send-message.page:43(p)
-#, fuzzy
 #| msgid ""
 #| "Right-click on the name of the contact you want to have a conversation "
 #| "with, and select <gui>Chat</gui>."
@@ -587,7 +600,6 @@ msgid "Send files"
 msgstr "Enviar archivos"
 
 #: C/send-file.page:42(p)
-#, fuzzy
 #| msgid ""
 #| "Right-click on the contact you want to send a file, and select <gui>Send "
 #| "file</gui>."
@@ -596,7 +608,7 @@ msgid ""
 "file</gui>."
 msgstr ""
 "Pulse con el botón derecho sobre el contacto al que quiere enviar un archivo "
-"y seleccione <gui>Enviar archivo</gui>.."
+"y seleccione <gui>Enviar archivo</gui>."
 
 #: C/send-file.page:47(p)
 msgid ""
@@ -616,7 +628,6 @@ msgid "The <gui>File Transfers</gui> window will appear."
 msgstr "Aparecerá la ventana <gui>Transferencias de archivos</gui>."
 
 #: C/send-file.page:63(p)
-#, fuzzy
 #| msgid ""
 #| "The <gui>File Transfers</gui> window will appear. Wait for your contact "
 #| "to accept the file transfer, or click <gui>Stop</gui> to halt the "
@@ -625,9 +636,8 @@ msgid ""
 "Wait for your contact to accept the file transfer, or click <gui>Stop</gui> "
 "to halt the transfer."
 msgstr ""
-"Aparecerá la ventana de <gui>Transferencias de archivos</gui>. Espere a que "
-"su contacto acepte la transferencia de archivo o pulse <gui>Detener</gui> "
-"para detener la transferencia."
+"Espere a que su contacto acepte la transferencia de archivo o pulse "
+"<gui>Detener</gui> para detener la transferencia."
 
 #: C/send-file.page:69(p)
 msgid ""
@@ -638,7 +648,6 @@ msgstr ""
 "<gui>Transferencias de archivos</gui>."
 
 #: C/send-file.page:77(p)
-#, fuzzy
 #| msgid ""
 #| "Once a transfer is finished, you can close the <gui>File Transfers</gui> "
 #| "window. If you have multiple finished transfers listed in the window, "
@@ -649,14 +658,11 @@ msgid ""
 "<gui>Clear</gui> to empty the list. This will only remove the files from the "
 "list and will not delete them from your computer."
 msgstr ""
-"Una vez que la transferencia ha finalizado puede cerrar la ventana de "
-"<gui>Transferencias de archivos</gui>. Si tiene múltiples transferencias "
-"finalizadas listas en la ventana pulse <gui>Limpiar</gui> para vaciar la "
-"lista. Esto sólo quitará los archivos de la lista y no los borrará de su "
-"equipo."
+"Si tiene múltiples transferencias finalizadas listas en la ventana pulse "
+"<gui>Limpiar</gui> para vaciar la lista. Esto sólo quitará los archivos de "
+"la lista y no los borrará de su equipo."
 
 #: C/send-file.page:84(p)
-#, fuzzy
 #| msgid ""
 #| "It is possible to send files only using the following services: "
 #| "<em>Jabber</em>, <em>Google Talk</em> and <em>Salut</em>."
@@ -665,7 +671,7 @@ msgid ""
 "em>, <em>Google Talk</em> and <em>People Nearby</em>."
 msgstr ""
 "Sólo es posible enviar archivos usando los siguientes servicios: <em>Jabber</"
-"em>, <em>Google Talk</em> y <em>Salut</em>."
+"em>, <em>Google Talk</em> y <em>Gente cerca</em>."
 
 #: C/send-file.page:90(p)
 msgid ""
@@ -744,6 +750,9 @@ msgid ""
 "<app>Empathy</app> again in the future, you will have to add your account "
 "details again."
 msgstr ""
+"Puede quitar completamente una cuenta de <app>Empathy</app> si no quiere "
+"seguir usándola. Si quiere usar de nuevo la cuenta en <app>Empathy</app> en "
+"el futuro, deberá añadir los detalles de la cuenta de nuevo."
 
 #: C/remove-account.page:38(p) C/irc-nick-password.page:47(p)
 #: C/disable-account.page:44(p) C/add-account.page:43(p)
@@ -771,6 +780,8 @@ msgstr ""
 #: C/remove-account.page:46(p)
 msgid "Click on the trash icon next to the account name to remove the account."
 msgstr ""
+"Para quitar la cuenta pulse el icono de la papelera junto al nombre de la "
+"cuenta."
 
 #: C/remove-account.page:49(p)
 #| msgid ""
