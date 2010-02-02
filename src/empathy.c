@@ -374,8 +374,12 @@ do_show_accounts_ui (GtkWindow *window,
     {
       EmpathyConnectionManagers *cm_mgr;
 
+      cm_mgr = empathy_connection_managers_dup_singleton ();
+
       empathy_connection_managers_prepare_async (cm_mgr,
           connection_managers_prepare_for_accounts, NULL);
+
+      g_object_unref (cm_mgr);
     }
 }
 
