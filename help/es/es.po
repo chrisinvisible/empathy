@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-25 10:20+0000\n"
-"PO-Revision-Date: 2010-02-03 08:06+0100\n"
+"PO-Revision-Date: 2010-02-04 08:01+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -868,7 +868,6 @@ msgid "Click on the <gui>Edit Account</gui> button in the error message."
 msgstr "Pulse el botón <gui>Editar cuenta</gui> en el mensaje de error."
 
 #: C/prob-conn-neterror.page:60(p) C/prob-conn-acctdisabled.page:56(p)
-#, fuzzy
 #| msgid ""
 #| "Expand the <gui>Advanced</gui> section and make sure that the details "
 #| "such as server address and port are correct. You should be able to find "
@@ -878,9 +877,9 @@ msgid ""
 "You should be able to find these details from the website of the messaging "
 "service."
 msgstr ""
-"Expanda la sección <gui>Avanzadas</gui> y asegúrese de que los detalles "
-"tales como la dirección y el puerto del servidor son correctos. Debería "
-"poder encontrar estos detalles en la página web del servicio de mensajería."
+"Expanda la sección <gui>Avanzadas</gui> y asegúrese de que los detalles son "
+"correctos. Debería poder encontrar estos detalles en la página web del "
+"servicio de mensajería."
 
 #: C/prob-conn-neterror.page:66(p)
 msgid ""
@@ -892,7 +891,6 @@ msgstr ""
 
 #: C/prob-conn-neterror.page:74(p) C/prob-conn-name.page:59(p)
 #: C/prob-conn-auth.page:63(p)
-#, fuzzy
 #| msgid ""
 #| "Uncheck the <gui>Enabled</gui> box next to the name of your account and "
 #| "then check it again to try to connect to the service again."
@@ -900,27 +898,28 @@ msgid ""
 "Deselect the <gui>Enabled</gui> check-box next to the name of your account, "
 "and then select it again to try to reconnect to the service."
 msgstr ""
-"Desmarque la caja <gui>Activada</gui> junto al nombre de su cuenta y después "
-"márquela de nuevo para intentar conectar con el servicio de nuevo."
+"Deseleccione la casilla de verificación <gui>Activada</gui> junto al nombre "
+"de su cuenta y después selecciónela de nuevo para intentar reconectar con el "
+"servicio."
 
 #: C/prob-conn-name.page:9(title)
 msgid "“Name in use”"
-msgstr ""
+msgstr "«Nombre en uso»"
 
 #: C/prob-conn-name.page:10(desc)
 msgid ""
 "An error message which says “<gui>Name in use</gui>” appears in the main "
 "window."
 msgstr ""
+"Aparecen en la ventana principal un mensaje de error que dice «<gui>Nombre en "
+"uso</gui>»."
 
 #: C/prob-conn-name.page:28(title)
-#, fuzzy
 #| msgid "I get a message that says \"Name in use\""
 msgid "I get a message that says “Name in use”"
 msgstr "Obtengo un mensaje de error que muestra «Nombre en uso»"
 
 #: C/prob-conn-name.page:30(p)
-#, fuzzy
 #| msgid ""
 #| "This kind of error happens when you try to connect to your IRC account "
 #| "and you are using a nickname that is being used by someone else on that "
@@ -935,13 +934,11 @@ msgstr ""
 "particular."
 
 #: C/prob-conn-name.page:45(p)
-#, fuzzy
 #| msgid "In the <gui>Alias</gui> text box, type their name."
 msgid "In the <gui>Nickname</gui> text box, type a new nickname."
-msgstr "En la caja de texto <gui>Apodo</gui> escriba su nombre."
+msgstr "En la caja de texto <gui>Apodo</gui> escriba un apodo nuevo."
 
 #: C/prob-conn-name.page:50(p)
-#, fuzzy
 #| msgid ""
 #| "Set the password for that nickname, if you have registered that nickname "
 #| "within the network you are using. For more information, see <link xref="
@@ -951,12 +948,11 @@ msgid ""
 "the password for that nickname. For more information, see <link xref=\"irc-"
 "nick-password\"/>."
 msgstr ""
-"Establezca la contraseña para ese apodo, si ha registrado ese apodo en la "
-"red que está usando. Para obtener más información consulte la <link xref="
-"\"irc-nick-password\"/>."
+"Si ha registrado ese apodo en la red que está usando, establezca la "
+"contraseña para ese apodo. Para obtener más información consulte la <link "
+"xref=\"irc-nick-password\"/>."
 
 #: C/prob-conn-auth.page:8(desc)
-#, fuzzy
 #| msgid ""
 #| "An error message appears in the main window saying that "
 #| "\"<gui>Authentication failed</gui>\"."
@@ -964,15 +960,14 @@ msgid ""
 "An error message which says \"<gui>Authentication failed</gui>\" appears in "
 "the main window."
 msgstr ""
-"Aparece un mensaje de error en la ventana principal y muestra «<gui>Falló la "
-"autenticación</gui>»."
+"Aparece un mensaje de error en la ventana principal que muestra «<gui>Falló "
+"la autenticación</gui>»."
 
 #: C/prob-conn-auth.page:32(title)
 msgid "I get a message that says \"Authentication failed\""
 msgstr "Obtengo un mensaje que dice «Falló la autenticación»"
 
 #: C/prob-conn-auth.page:34(p)
-#, fuzzy
 #| msgid ""
 #| "If you try to connect and you get a message saying <gui>Authentication "
 #| "failed</gui>, your instant messaging service is not allowing you to "
@@ -983,13 +978,11 @@ msgid ""
 "allowing you to connect because it does not recognize your username or "
 "password for some reason."
 msgstr ""
-"Si intenta conectarse y obtiene un mensaje diciendo <gui>Falló la "
-"autenticación</gui> su servicio de mensajería instantánea no le está "
-"permitiendo conectarse porque por algún motivo no reconoce su nombre de "
-"usuario o su contraseña."
+"Este tipo de error sucede cuando su servicio de mensajería instantánea no le "
+"está permitiendo conectar porque por alguna razón no reconoce su nombre de "
+"usuario o contraseña."
 
 #: C/prob-conn-auth.page:46(p)
-#, fuzzy
 #| msgid ""
 #| "Make sure that you have registered for an account with the service you "
 #| "are trying to connect to. If you do not have an account, most services "
@@ -1004,11 +997,12 @@ msgstr ""
 "le permitirán que se conecte."
 
 #: C/prob-conn-auth.page:58(p) C/prob-conn-acctdisabled.page:51(p)
-#, fuzzy
 #| msgid "Make sure that your username and password are correct."
 msgid ""
 "Type your username and password again to make sure that they are correct."
-msgstr "Asegúrese de que su nombre de usuario y contraseña son correctos."
+msgstr ""
+"Escriba su nombre de usuario y contraseña de nuevo y asegúrese de que son "
+"correctos."
 
 #: C/prob-conn-acctdisabled.page:7(desc)
 msgid ""
@@ -1109,6 +1103,8 @@ msgid ""
 "You can perform a full-text search through all of your previous "
 "conversations."
 msgstr ""
+"Puede realizar una búsqueda de texto completo sobre todas sus conversaciones "
+"anteriores."
 
 #: C/prev-conv.page:64(p) C/prev-conv.page:93(p)
 #, fuzzy
@@ -1134,6 +1130,8 @@ msgid ""
 "In the <gui>For</gui> field, type the text you want to search for. Click "
 "<gui>Find</gui> or press <key>Enter</key>."
 msgstr ""
+"En el campo <gui>Para</gui> escriba el texto que quiere buscar. Pulse "
+"<gui>Buscar</gui> o pulse <key>Intro</key>."
 
 #: C/prev-conv.page:75(p)
 msgid ""
@@ -1146,6 +1144,8 @@ msgid ""
 "Click on a conversation to view it. <app>Empathy</app> will select the text "
 "in the conversation that matched your search terms."
 msgstr ""
+"Pulse sobre una conversación para verla. <app>Empathy</app> seleccionará el "
+"texto en la conversación que coincida con sus términos de búsqueda."
 
 #: C/prev-conv.page:86(title)
 #, fuzzy
