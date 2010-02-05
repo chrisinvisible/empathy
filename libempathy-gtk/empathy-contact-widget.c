@@ -1271,9 +1271,12 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_ALIAS)
     {
       information->widget_alias = gtk_entry_new ();
-      g_signal_connect (information->widget_alias, "focus-out-event",
-            G_CALLBACK (contact_widget_entry_alias_focus_event_cb),
-            information);
+
+      if (!(information->flags & EMPATHY_CONTACT_WIDGET_NO_SET_ALIAS))
+        g_signal_connect (information->widget_alias, "focus-out-event",
+              G_CALLBACK (contact_widget_entry_alias_focus_event_cb),
+              information);
+
       /* Make return activate the window default (the Close button) */
       gtk_entry_set_activates_default (GTK_ENTRY (information->widget_alias),
           TRUE);
@@ -1412,6 +1415,20 @@ empathy_contact_widget_get_contact (GtkWidget *widget)
       return NULL;
 
   return information->contact;
+}
+
+const gchar *
+empathy_contact_widget_get_alias (GtkWidget *widget)
+{
+  EmpathyContactWidget *information;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+
+  information = g_object_get_data (G_OBJECT (widget), "EmpathyContactWidget");
+  if (!information)
+      return NULL;
+
+  return gtk_entry_get_text (GTK_ENTRY (information->widget_alias));
 }
 
 /**

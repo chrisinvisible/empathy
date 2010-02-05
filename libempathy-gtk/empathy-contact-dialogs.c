@@ -31,6 +31,7 @@
 
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-contact-list.h>
+#include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-contact-dialogs.h"
@@ -72,8 +73,17 @@ subscription_dialog_response_cb (GtkDialog *dialog,
 	contact = empathy_contact_widget_get_contact (contact_widget);
 
 	if (response == GTK_RESPONSE_YES) {
+		EmpathyTpContactFactory *factory;
+
+		factory = empathy_tp_contact_factory_dup_singleton (
+			empathy_contact_get_connection (contact));
+
 		empathy_contact_list_add (EMPATHY_CONTACT_LIST (manager),
 					  contact, "");
+		empathy_tp_contact_factory_set_alias (factory, contact,
+			empathy_contact_widget_get_alias (contact_widget));
+
+		g_object_unref (factory);
 	}
 	else if (response == GTK_RESPONSE_NO) {
 		empathy_contact_list_remove (EMPATHY_CONTACT_LIST (manager),
@@ -117,6 +127,7 @@ empathy_subscription_dialog_show (EmpathyContact *contact,
 
 	/* Contact info widget */
 	contact_widget = empathy_contact_widget_new (contact,
+						     EMPATHY_CONTACT_WIDGET_NO_SET_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
 	gtk_box_pack_end (GTK_BOX (hbox_subscription),

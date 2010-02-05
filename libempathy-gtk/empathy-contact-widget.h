@@ -60,6 +60,7 @@ typedef enum
   EMPATHY_CONTACT_WIDGET_EDIT_GROUPS  = 1 << 4,
   EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP  = 1 << 5,
   EMPATHY_CONTACT_WIDGET_SHOW_LOCATION  = 1 << 6,
+  EMPATHY_CONTACT_WIDGET_NO_SET_ALIAS = 1 << 7,
 } EmpathyContactWidgetFlags;
 
 GtkWidget * empathy_contact_widget_new (EmpathyContact *contact,
@@ -69,6 +70,7 @@ void empathy_contact_widget_set_contact (GtkWidget *widget,
     EmpathyContact *contact);
 void empathy_contact_widget_set_account_filter (GtkWidget *widget,
     EmpathyAccountChooserFilterFunc filter, gpointer user_data);
+const gchar *empathy_contact_widget_get_alias (GtkWidget *widget);
 
 G_END_DECLS
 
