@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-25 10:20+0000\n"
-"PO-Revision-Date: 2010-02-07 16:50+0100\n"
+"PO-Revision-Date: 2010-02-07 23:39+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1783,7 +1783,7 @@ msgstr ""
 
 #: C/geolocation-turn.page:30(title)
 msgid "Activate/Deactivate geolocation"
-msgstr ""
+msgstr "Activar y desactivar la geolocalización"
 
 #: C/geolocation-turn.page:34(p)
 #| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
@@ -1818,14 +1818,17 @@ msgid ""
 "position, select the appropriate option in the <gui>Geoclue Settings</gui> "
 "section."
 msgstr ""
+"Si tiene un dispositivo externo como un GPS y quiere enviar una posición más "
+"precisa, seleccione la opción apropiada en la sección <gui>Configuración de "
+"Geoclue</gui>."
 
 #: C/geolocation-supported.page:7(desc)
 msgid "Services that supports geolocation and compatibility."
-msgstr ""
+msgstr "Servicios que soportan geolocalización y compatibilidad."
 
 #: C/geolocation-supported.page:28(title)
 msgid "Supported services"
-msgstr ""
+msgstr "Servicios soportados"
 
 #: C/geolocation-supported.page:30(p)
 msgid ""
@@ -1833,6 +1836,9 @@ msgid ""
 "service. In order to use it, you and your contacts need to have a Jabber "
 "account."
 msgstr ""
+"Por el momento la característica de geolocalización sólo es compatible con "
+"el servicio Jabber. Para usarla usted y sus contactos deben tener una cuenta "
+"Jabber."
 
 #: C/geolocation-supported.page:36(p)
 msgid ""
@@ -1854,15 +1860,15 @@ msgstr ""
 
 #: C/geolocation-privacy.page:8(desc)
 msgid "What information are sent and to who."
-msgstr ""
+msgstr "Qué información se envía y a quién."
 
 #: C/geolocation-privacy.page:29(title)
 msgid "Geolocation Privacy"
-msgstr ""
+msgstr "Privacidad en la geolocalización"
 
 #: C/geolocation-privacy.page:32(title)
 msgid "What information is sent"
-msgstr ""
+msgstr "Qué información se envía"
 
 #: C/geolocation-privacy.page:33(p)
 msgid ""
@@ -1893,15 +1899,15 @@ msgstr ""
 
 #: C/geolocation-privacy.page:53(title)
 msgid "Who can see the information sent"
-msgstr ""
+msgstr "Quién puede ver la información enviada"
 
 #: C/geolocation-privacy.page:54(p)
 msgid "Only your contacts can see your geographical position."
-msgstr ""
+msgstr "Sólo sus contactos pueden ver su posición geográfica."
 
 #: C/geolocation-privacy.page:60(title)
 msgid "What is the privacy mode"
-msgstr ""
+msgstr "Cuál es el modo de privacidad"
 
 #: C/geolocation-privacy.page:61(p)
 msgid ""
@@ -1911,37 +1917,41 @@ msgstr ""
 
 #: C/geolocation-privacy.page:68(title)
 msgid "Privacy overview"
-msgstr ""
+msgstr "Visión general de la privacidad"
 
 #: C/geolocation-privacy.page:69(p)
 msgid ""
 "Overview of the various geolocation privacy settings in <app>Empathy</app>."
 msgstr ""
+"Visión general de los ajustes de privacidad en la geolocalización de "
+"<app>Empathy</app>."
 
 #: C/geolocation-privacy.page:74(p)
 msgid "Geolocation is not enabled by default."
-msgstr ""
+msgstr "De forma predeterminada la geolocalización no está activada."
 
 #: C/geolocation-privacy.page:79(p)
 msgid "Privacy mode is enabled by default."
-msgstr ""
+msgstr "De forma predeterminada está activado el modo de privacidad."
 
 #: C/geolocation-privacy.page:84(p)
 msgid ""
 "Privacy mode prevails even when using external and more precise devices."
 msgstr ""
+"El modo de privacidad prevalece incluso cuando se está usando dispositivos "
+"externos más precisos."
 
 #: C/geolocation-privacy.page:89(p)
 msgid "Only your contacts can see your position."
-msgstr ""
+msgstr "Sólo sus contactos pueden ver su posición."
 
 #: C/geolocation-not-showing.page:8(desc)
 msgid "<app>Empathy</app> does not publish my geographical position."
-msgstr ""
+msgstr "<app>Empathy</app> no publica mi posición geográfica."
 
 #: C/geolocation-not-showing.page:29(title)
 msgid "Geographical position not published"
-msgstr ""
+msgstr "Posición geográfica no publicada"
 
 #: C/geolocation-not-showing.page:31(p)
 msgid ""
@@ -2052,6 +2062,7 @@ msgstr ""
 #: C/favorite-rooms.page:78(p)
 msgid "Choose <gui>Room</gui>, and select the favorite room you want to join."
 msgstr ""
+"Elija <gui>Sala</gui> y seleccione la sala favorita a la que quiere unirse."
 
 #: C/favorite-rooms.page:86(p)
 #| msgid ""
@@ -2098,7 +2109,7 @@ msgstr "Pulse <gui>Todas</gui> para entrar en todas sus salas favoritas."
 
 #: C/favorite-rooms.page:112(p)
 msgid "Select the favorite room you want to manage:"
-msgstr ""
+msgstr "Seleccione la sala favorita que quiere gestionar:"
 
 #: C/favorite-rooms.page:117(p)
 msgid ""
@@ -2960,12 +2971,17 @@ msgid ""
 "another IRC network, you can add it to the list. You can also modify "
 "networks and remove them from the list."
 msgstr ""
+"<app>Empathy</app> incluye una lista de redes IRC populares. Si quiere usar "
+"otra red IRC puede añadirla a la lista. También puede modificar y quitar "
+"redes de la lista."
 
 #: C/account-irc.page:99(p)
 msgid ""
 "To add a network to the list, click <media type=\"image\" mime=\"image/png\" "
 "src=\"figures/gtk-add.png\" width=\"16\" height=\"16\">Add</media>."
 msgstr ""
+"Para añadir una red a la lista pulse <media type=\"image\" mime=\"image/png"
+"\" src=\"figures/gtk-add.png\" width=\"16\" height=\"16\">Añadir</media>."
 
 #: C/account-irc.page:102(p)
 msgid ""
@@ -2985,12 +3001,14 @@ msgstr ""
 msgid ""
 "When adding or modifying a network, you can enter the following information:"
 msgstr ""
+"Al añadir o modificar una red puede introducir la siguiente información:"
 
 #: C/account-irc.page:116(p)
 msgid ""
 "This is the name of the network as you want it to appear in the list of "
 "networks."
 msgstr ""
+"Este es el nombre de la red como quiere que aparezca en la lista de redes."
 
 #: C/account-irc.page:120(gui)
 msgid "Charset"
