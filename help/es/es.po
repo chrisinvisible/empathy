@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-01-25 10:20+0000\n"
-"PO-Revision-Date: 2010-02-07 13:05+0100\n"
+"PO-Revision-Date: 2010-02-07 16:50+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1428,7 +1428,6 @@ msgstr ""
 "corresponda con la red que quiere usar."
 
 #: C/irc-join-room.page:48(p)
-#, fuzzy
 #| msgid ""
 #| "In the <gui>Room</gui> text box, type the name of the channel you want to "
 #| "join. Prefix the name with the hash character (<sys>#</sys>)."
@@ -1436,8 +1435,9 @@ msgid ""
 "In the <gui>Room</gui> text box, type the name of the channel you want to "
 "join. IRC channel names start with the hash character (<sys>#</sys>)."
 msgstr ""
-"En la caja de texto <gui>Sala</gui>, escriba el nombre del canal al que "
-"quiere unirse. Preceda el nombre con el carácter almohadilla (<sys>#</sys>)."
+"En la caja de texto <gui>Sala</gui>, escriba el nombre del canal de IRC al "
+"que quiere unirse. Preceda el nombre con el carácter almohadilla (<sys>#</"
+"sys>)."
 
 #: C/irc-join-room.page:54(p)
 #| msgid "Click on <gui>Join</gui> to enter the room."
@@ -1456,6 +1456,8 @@ msgid ""
 "<app>Empathy</app> does not currently support password-protected IRC chat "
 "rooms."
 msgstr ""
+"Actualmente <app>Empathy</app> no soporta salas de chat de IRC protegidas "
+"por contraseña."
 
 #: C/irc-join-pwd.page:28(title)
 #| msgid "Join a protected room"
@@ -1501,6 +1503,8 @@ msgid ""
 "<app>Empathy</app> includes features that help you better collaborate while "
 "at work, and that let you easily keep in touch with your friends."
 msgstr ""
+"<app>Empathy</app> incluye características que le ayudarán a colaborar mejor "
+"en el trabajo y le permitirán mantener en contacto con sus amigos fácilmente."
 
 #: C/introduction.page:36(p)
 msgid ""
@@ -1547,7 +1551,7 @@ msgstr "Acciones avanzadas"
 
 #: C/import-account.page:10(desc)
 msgid "Import an account from another instant messaging application."
-msgstr ""
+msgstr "Importar una cuenta de otra aplicación de mensajería instantánea."
 
 #: C/import-account.page:19(name)
 msgid "Peter Haslam"
@@ -1573,44 +1577,55 @@ msgid ""
 "Run <app>Empathy</app> for the first time. An assistant will offer you a "
 "number of options to create new accounts."
 msgstr ""
+"Ejecute <app>Empathy</app> por primera vez. un asistente le ofrecerá un "
+"número de opciones para crear cuentas nuevas."
 
 #: C/import-account.page:51(p)
 msgid ""
 "Select <gui>Yes, import my account details from</gui> and click "
 "<gui>Forward</gui>."
 msgstr ""
+"Seleccione <gui>Sí, importar los detalles de mi cuenta desde</gui> y pulse "
+"<gui>Siguiente</gui>."
 
 #: C/import-account.page:55(p)
 msgid "Select the check box next to each account you wish to import."
 msgstr ""
+"Seleccione la casilla de verificación junto a cada cuenta que quiera "
+"importar."
 
 #: C/import-account.page:63(p)
 msgid ""
 "It is not currently possible to import accounts after you have completed the "
 "first-run assistant."
 msgstr ""
+"Actualmente no es posible importar cuentas después de haber completado el "
+"asistente de primera ejecución."
 
 #: C/group-conversations.page:8(desc)
-#, fuzzy
 #| msgid "Start a group conversation with your contacts."
 msgid "Start or join a group conversation with your contacts."
-msgstr "Iniciar una conversación en grupo con sus contactos."
+msgstr "Iniciar o unirse a un grupo de conversación con sus contactos."
 
 #: C/group-conversations.page:31(title)
 msgid "Group conversations"
-msgstr "Conversaciones de grupos"
+msgstr "Conversaciones en grupo"
 
 #: C/group-conversations.page:33(p)
 msgid ""
 "Group conversations permits you to have text conversations with more than "
 "one contact at the same time."
 msgstr ""
+"Las conversaciones en grupo le permite mantener conversaciones de texto con "
+"más de un contacto al mismo tiempo."
 
 #: C/group-conversations.page:37(p)
 msgid ""
 "To have a group conversation you need to have a registered account with "
 "either Jabber or Google Talk, or a People Nearby account."
 msgstr ""
+"Para tener una conversación en grupo debe haber registrado una cuenta en "
+"Jabber o Google Talk, o en Gente cerca."
 
 #: C/group-conversations.page:43(p)
 msgid ""
@@ -1619,13 +1634,11 @@ msgid ""
 msgstr ""
 
 #: C/group-conversations.page:51(title)
-#, fuzzy
 #| msgid "Start a video conversation"
 msgid "Start a group conversation"
-msgstr "Comenzar una conversación de vídeo"
+msgstr "Iniciar una conversación en grupo"
 
 #: C/group-conversations.page:60(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Account</gui> drop-down list, select the IRC account that "
 #| "corresponds to the network you want to use."
@@ -1633,11 +1646,10 @@ msgid ""
 "From the <gui>Account</gui> drop-down list, select the account you want to "
 "use for the group conversation."
 msgstr ""
-"Desde la lista desplegable <gui>Cuenta</gui> elija la cuenta IRC que "
-"corresponda con la red que quiere usar."
+"Desde la lista desplegable <gui>Cuenta</gui> seleccione la cuenta que quiera "
+"usar para la conversación en grupo."
 
 #: C/group-conversations.page:66(p)
-#, fuzzy
 #| msgid ""
 #| "In the <gui>Nickname</gui> text box, type the name that will identify "
 #| "yourself in the network you are creating the account."
@@ -1645,15 +1657,14 @@ msgid ""
 "In the <gui>Server</gui> text box, type the name of server in which the "
 "conversation will be hosted."
 msgstr ""
-"En la caja de texto <gui>Apodo</gui> escriba el nombre que le identificará "
-"en la red para la que está creando la cuenta."
+"En la caja de texto <gui>Servidor</gui> escriba el nombre del servidor en el "
+"que se hospedará la conversación."
 
 #: C/group-conversations.page:70(p)
 msgid "Leave it empty if it will be on the current server."
-msgstr ""
+msgstr "Déjelo vacío si será en el servidor actual."
 
 #: C/group-conversations.page:75(p)
-#, fuzzy
 #| msgid ""
 #| "In the <gui>Password</gui> text box, type the password you used to "
 #| "register your nikcname."
@@ -1661,8 +1672,8 @@ msgid ""
 "In the <gui>Room</gui> text box, type the name you want to give to the "
 "conversation."
 msgstr ""
-"En la caja de texto <gui>Contraseña</gui> escriba la contraseña que quiere "
-"usar para registrar su apodo."
+"En la caja de texto <gui>Sala</gui> escriba el nombre que quiere darle a la "
+"conversación."
 
 #: C/group-conversations.page:79(p)
 msgid ""
@@ -1679,22 +1690,22 @@ msgid ""
 msgstr ""
 
 #: C/group-conversations.page:94(p)
-#, fuzzy
 #| msgid ""
 #| "Right-click on the contact you want to send a file, and select <gui>Send "
 #| "file</gui>."
 msgid "Right-click on the contact and choose <gui>Invite to chatroom</gui>."
 msgstr ""
-"Pulse con el botón derecho sobre el contacto al que quiere enviar un archivo "
-"y seleccione <gui>Enviar archivo</gui>.."
+"Pulse con el botón derecho del ratón sobre el contacto y elija <gui>Invitar "
+"a la sala de chat</gui>."
 
 #: C/group-conversations.page:99(p)
-#, fuzzy
 #| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
 msgid ""
 "Choose <guiseq><gui>Edit</gui><gui>Contact</gui><gui>Invite to chatroom</"
 "gui></guiseq>."
-msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+msgstr ""
+"Elija <guiseq><gui>Editar</gui><gui>Contacto</gui><gui>Invitar a la sala de "
+"chat</gui></guiseq>."
 
 #: C/group-conversations.page:104(p)
 msgid ""
@@ -1703,23 +1714,22 @@ msgid ""
 msgstr ""
 
 #: C/group-conversations.page:115(title)
-#, fuzzy
 #| msgid "Group conversations"
 msgid "Join a group conversation"
-msgstr "Conversaciones de grupos"
+msgstr "Unirse a una conversación en grupo"
 
 #: C/group-conversations.page:125(p)
 msgid "Expand the <gui>Room List</gui> section to see all the existing rooms."
 msgstr ""
+"Expanda la sección <gui>Lista de salas</gui> para ver todas las salas "
+"existentes."
 
 #: C/group-conversations.page:130(p)
-#, fuzzy
 #| msgid ""
 #| "Double-click the name of the contact that you want to have a conversation "
 #| "with."
 msgid "Double-click on the name of a room to join it."
-msgstr ""
-"Pulse dos veces sobre el nombre del contacto con el que quiere conversar."
+msgstr "Pulse dos veces sobre el nombre de una sala a la que quiera unirse."
 
 #: C/group-conversations.page:136(p)
 msgid ""
@@ -1729,14 +1739,13 @@ msgid ""
 msgstr ""
 
 #: C/geolocation-what-is.page:9(desc)
-#, fuzzy
 #| msgid "Understanding the various status icons."
 msgid "Understanding geolocation."
-msgstr "Entender los diversos iconos de estado."
+msgstr "Entender la geolocalización"
 
 #: C/geolocation-what-is.page:30(title)
 msgid "What is geolocation"
-msgstr ""
+msgstr "¿Qué es la geolocalización?"
 
 #: C/geolocation-what-is.page:32(p)
 msgid ""
@@ -1746,7 +1755,7 @@ msgstr ""
 
 #: C/geolocation-what-is.page:34(p)
 msgid "With geolocation in <app>Empathy</app> you can:"
-msgstr ""
+msgstr "Con la geolocalización de <app>Empathy</app> puede:"
 
 #: C/geolocation-what-is.page:39(p)
 msgid "Publish your geographical location to your contacts."
@@ -1777,25 +1786,25 @@ msgid "Activate/Deactivate geolocation"
 msgstr ""
 
 #: C/geolocation-turn.page:34(p)
-#, fuzzy
 #| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
 msgid "Choose <guiseq><gui>Edit</gui><gui>Preferences</gui></guiseq>."
-msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+msgstr "Elija <guiseq><gui>Editar</gui><gui>Preferencias</gui></guiseq>."
 
 #: C/geolocation-turn.page:39(p)
-#, fuzzy
 #| msgid "Deselect the <gui>Enabled</gui> check-box."
 msgid "Select the <gui>Location</gui> tab."
-msgstr "Deseleccione la caja de verificación <gui>Activada</gui>."
+msgstr "Seleccione la solapa <gui>Ubicación geográfica</gui>."
 
 #: C/geolocation-turn.page:44(p)
 msgid ""
 "Select <gui>Publish location to my contacts</gui> to activate geolocation."
 msgstr ""
+"Seleccione <gui>Publicar mi ubicación a mis contactos</gui> para activar la "
+"geolocalización."
 
 #: C/geolocation-turn.page:47(p)
 msgid "To deactivate geolocation, deselect it."
-msgstr ""
+msgstr "Para desactivar la geolocalización, deselecciónela."
 
 #: C/geolocation-turn.page:52(p)
 msgid ""
@@ -1962,14 +1971,13 @@ msgid ""
 msgstr ""
 
 #: C/geolocation.page:8(desc)
-#, fuzzy
 #| msgid "Add a new account to <app>Empathy</app>."
 msgid "Use and understand geolocation in <app>Empathy</app>."
-msgstr "Añadir una cuenta nueva en <app>Empathy</app>."
+msgstr "Usar y entender la geolocalización en <app>Empathy</app>."
 
 #: C/geolocation.page:29(title)
 msgid "Geographical position"
-msgstr ""
+msgstr "Posición geográfica"
 
 #: C/geolocation.page:32(title)
 msgid "Geolocation"
@@ -2000,15 +2008,18 @@ msgid ""
 "See <link xref=\"irc-join-room\"/> for more information on how to join an "
 "IRC room."
 msgstr ""
+"Para obtener más información acerca de cómo unirse a una sala de chat IRC, "
+"consulte la <link xref=\"irc-join-room\"/>."
 
 #: C/favorite-rooms.page:42(p)
 msgid ""
 "See <link xref=\"group-conversations\"/> for more information on how to "
 "start or join a group conversation."
 msgstr ""
+"Para obtener más información acerca de cómo unirse a una conversación en "
+"grupo, consulte la <link xref=\"group-conversations\"/>."
 
 #: C/favorite-rooms.page:50(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
 #| "gui><gui>Join</gui></guiseq>."
@@ -2016,35 +2027,33 @@ msgid ""
 "From the conversation window, choose <guiseq><gui>Conversation</"
 "gui><gui>Favorite Chatroom</gui></guiseq>."
 msgstr ""
-"Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
-"gui><gui>Unirse</gui></guiseq>."
+"Desde la ventana de conversación, elija <guiseq><gui>Conversación</"
+"gui><gui>Sala de chat favorita</gui></guiseq>."
 
 #: C/favorite-rooms.page:59(title)
-#, fuzzy
 #| msgid "Join a room"
 msgid "Join favorite rooms"
-msgstr "Unirse a una sala"
+msgstr "Unirse a las salas favoritas"
 
 #: C/favorite-rooms.page:67(p)
-#, fuzzy
 #| msgid "Press <key>F4</key>."
 msgid "Press <key>F5</key>."
-msgstr "Pulse <key>F4</key>."
+msgstr "Pulse <key>F5</key>."
 
 #: C/favorite-rooms.page:72(p)
-#, fuzzy
 #| msgid "Choose <guiseq><gui>Edit</gui><gui>Accounts</gui></guiseq>."
 msgid ""
 "Choose <guiseq><gui>Room</gui><gui>Join Favorites</gui></guiseq>, to join "
 "all your favorite rooms."
-msgstr "Elija <guiseq><gui>Editar</gui><gui>Cuentas</gui></guiseq>."
+msgstr ""
+"Elija <guiseq><gui>Salas</gui><gui>Unirse a las favoritas</gui></guiseq> "
+"para unirse a todas sus salas favoritas."
 
 #: C/favorite-rooms.page:78(p)
 msgid "Choose <gui>Room</gui>, and select the favorite room you want to join."
 msgstr ""
 
 #: C/favorite-rooms.page:86(p)
-#, fuzzy
 #| msgid ""
 #| "To add a new person to your list of contacts, you need to be connected to "
 #| "the Internet and to your account."
@@ -2052,17 +2061,15 @@ msgid ""
 "To join a favorite room, you need to be connected to the Internet and to "
 "your account."
 msgstr ""
-"Para añadir una persona nueva a su lista de contactos necesita estar "
-"conectado a Internet y a su cuenta."
+"Para unirse a una sala favorita debe estar conectado a Internet y con la "
+"cuenta."
 
 #: C/favorite-rooms.page:94(title)
-#, fuzzy
 #| msgid "Manage accounts"
 msgid "Manage favorite rooms"
-msgstr "Gestionar las cuentas"
+msgstr "Gestionar las salas favoritas"
 
 #: C/favorite-rooms.page:97(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
 #| "gui><gui>Join</gui></guiseq>."
@@ -2071,10 +2078,9 @@ msgid ""
 "gui><gui>Manage Favorites</gui></guiseq>."
 msgstr ""
 "Desde la ventana <gui>Lista de contactos</gui> elija <guiseq><gui>Sala</"
-"gui><gui>Unirse</gui></guiseq>."
+"gui><gui>Gestionar salas favoritas</gui></guiseq>."
 
 #: C/favorite-rooms.page:103(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Account</gui> drop-down list, select the IRC account that "
 #| "corresponds to the network you want to use."
@@ -2082,14 +2088,13 @@ msgid ""
 "From the <gui>Account</gui> drop-down list, select the account you want to "
 "manage the favorite rooms of."
 msgstr ""
-"Desde la lista desplegable <gui>Cuenta</gui> elija la cuenta IRC que "
-"corresponda con la red que quiere usar."
+"Desde la lista desplegable <gui>Cuenta</gui> seleccione la cuenta de la que "
+"quiere gestionar las salas favoritas."
 
 #: C/favorite-rooms.page:107(p)
-#, fuzzy
 #| msgid "Click on <gui>Join</gui> to enter the room."
 msgid "Select <gui>All</gui> to see all you favorite rooms."
-msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+msgstr "Pulse <gui>Todas</gui> para entrar en todas sus salas favoritas."
 
 #: C/favorite-rooms.page:112(p)
 msgid "Select the favorite room you want to manage:"
@@ -2102,10 +2107,9 @@ msgid ""
 msgstr ""
 
 #: C/favorite-rooms.page:123(p)
-#, fuzzy
 #| msgid "Click on <gui>Join</gui> to enter the room."
 msgid "Click on <gui>Remove</gui> to remove the room from your favorites."
-msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+msgstr "Pulse <gui>Quitar</gui> para quitar la sala de sus favoritas."
 
 #: C/favorite-rooms.page:130(p)
 #| msgid "When finished, click on <gui>Close</gui>."
@@ -2130,7 +2134,6 @@ msgid ""
 msgstr ""
 
 #: C/disable-account.page:48(p)
-#, fuzzy
 #| msgid ""
 #| "Select the account you wish to disable from the box on the left of the "
 #| "dialog."
@@ -2138,8 +2141,8 @@ msgid ""
 "Select the account you wish to disable from the accounts list on the left "
 "side of the window."
 msgstr ""
-"Seleccione la cuenta que desea desactivar en la caja a la izquierda del "
-"diálogo."
+"Seleccione la cuenta que quiere desactivar desde la lista de cuentas en la "
+"parte izquierda de la ventana."
 
 #: C/disable-account.page:52(p)
 msgid ""
@@ -2338,6 +2341,8 @@ msgid ""
 "You can set your status to indicate your availability to your contacts. "
 "<app>Empathy</app> allows you to select from a list of defined statuses."
 msgstr ""
+"Puede establecer su estado para indicar su disponibilidad a sus contactos. "
+"<app>Empathy</app> le permite seleccionar una lista de estados predefinidos."
 
 #: C/change-status.page:38(p)
 msgid ""
@@ -2563,7 +2568,6 @@ msgid ""
 msgstr ""
 
 #: C/audio-call.page:57(p)
-#, fuzzy
 #| msgid ""
 #| "To turn an audio conversation into a video one, from the call window "
 #| "select <guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click on "
@@ -2576,7 +2580,8 @@ msgid ""
 msgstr ""
 "Para convertir una conversación de sonido en una de vídeo, desde la ventana "
 "de llamada seleccione <guiseq><gui>Llamar</gui><gui>Enviar vídeo</gui></"
-"guiseq> o pulse el icono de vídeo llamada."
+"guiseq> o pulse el icono de <media type=\"image\" mime=\"image/png\" src="
+"\"figures/camera-web.png\">vídeo llamada</media>."
 
 #: C/add-contact.page:9(desc)
 msgid "Add someone to the contact list."
@@ -2591,7 +2596,6 @@ msgid "Choose <guiseq><gui>Chat</gui><gui>Add Contact</gui></guiseq>."
 msgstr "Elija <guiseq><gui>Chat</gui><gui>Añadir contacto</gui></guiseq>."
 
 #: C/add-contact.page:37(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Account</gui> drop-down list, select the type of service "
 #| "the person you want to add to your contacts is using."
@@ -2600,8 +2604,9 @@ msgid ""
 "use to connect to your contact. Your contact will need to be using the same "
 "service as the account you select."
 msgstr ""
-"Desde la lista desplegable <gui>Cuenta</gui> seleccione el tipo de servicio "
-"que está usando la persona que quiere añadir a sus contactos."
+"Desde la lista desplegable <gui>Cuenta</gui> seleccione la cuenta que quiere "
+"usar para conectar con su contacto. Su contacto deberá usar el mismo "
+"servicio que la cuenta que esté seleccionando."
 
 #: C/add-contact.page:42(p)
 msgid ""
@@ -2649,7 +2654,6 @@ msgid "Click the <gui style=\"button\">Add</gui> button."
 msgstr "Pulse el botón <gui style=\"button\">Añadir</gui>."
 
 #: C/add-account.page:50(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Account</gui> drop-down list, select the type of service "
 #| "the person you want to add to your contacts is using."
@@ -2657,8 +2661,8 @@ msgid ""
 "From the <gui>Add new</gui> drop-down list, select the type of account you "
 "wish to add."
 msgstr ""
-"Desde la lista desplegable <gui>Cuenta</gui> seleccione el tipo de servicio "
-"que está usando la persona que quiere añadir a sus contactos."
+"Desde la lista desplegable <gui>Añadir nueva</gui> seleccione el tipo de "
+"cuenta que quiere añadir."
 
 #: C/add-account.page:54(p)
 msgid ""
@@ -2680,10 +2684,10 @@ msgid ""
 msgstr ""
 
 #: C/add-account.page:67(p)
-#, fuzzy
 #| msgid "Click on <gui>Join</gui> to enter the room."
 msgid "Click <gui style=\"button\">Connect</gui> to enable the new account."
-msgstr "Pulse <gui>Unirse</gui> para entrar en la sala."
+msgstr ""
+"Pulse <gui style=\"button\">Conectar</gui> para activar la nueva cuenta."
 
 #: C/add-account.page:73(p)
 msgid ""
@@ -2698,7 +2702,6 @@ msgid ""
 msgstr ""
 
 #: C/add-account.page:83(p)
-#, fuzzy
 #| msgid ""
 #| "If you want to change the name that identifies the account in the "
 #| "<gui>Accounts</gui> dialog, double-click on the name of the account in "
@@ -2709,9 +2712,10 @@ msgid ""
 "name or press the space bar. Edit the account name and press <key>Enter</"
 "key> when you’re finished."
 msgstr ""
-"Si quiere cambiar el nombre que identifica la cuenta en el diálogo "
-"<gui>Cuentas</gui>, pulse dos veces en el nombre de la cuenta en la caja a "
-"la izquierda del diálogo y estriba el nombre nuevo."
+"Para cambiar el nombre que identifica la cuenta en la ventana <gui>Cuentas</"
+"gui>, seleccione la cuenta de la lista a la izquierda y pulse en el nombre o "
+"la barra espaciadora. Edite el nombre de la cuenta y pulse <gui>Intro</gui> "
+"cuando haya acabado."
 
 #: C/accounts-window.page:11(desc)
 msgid "Add, modify, and delete accounts."
@@ -2746,7 +2750,7 @@ msgstr ""
 #.     </copyright>
 #: C/account-jabber.page:22(desc)
 msgid "Advanced options for Jabber and Google Talk accounts."
-msgstr ""
+msgstr "Opciones avanzadas para cuentas Jabber y Google Talk."
 
 #: C/account-jabber.page:26(title)
 msgid "Jabber Account Details"
