@@ -96,7 +96,7 @@ typedef struct {
 	GtkWidget         *info_bar_vbox;
 	GtkWidget         *search_bar;
 
-	GList             *pending_messages;
+	GSList            *pending_messages;
 	/* TRUE if the pending messages can be displayed. This is to avoid to show
 	 * pending messages *before* messages from logs. (#603980) */
 	gboolean           can_show_pending;
@@ -1116,7 +1116,7 @@ chat_message_received (EmpathyChat *chat, EmpathyMessage *message)
 			       TP_CHANNEL_CHAT_STATE_ACTIVE,
 			       chat);
 
-	priv->pending_messages = g_list_prepend (priv->pending_messages,
+	priv->pending_messages = g_slist_prepend (priv->pending_messages,
 			g_object_ref (message));
 
 	g_signal_emit (chat, signals[NEW_MESSAGE], 0, message);
@@ -2936,7 +2936,7 @@ empathy_chat_get_nb_unread_messages (EmpathyChat *self)
 
 	g_return_val_if_fail (EMPATHY_IS_CHAT (self), FALSE);
 
-	return g_list_length (priv->pending_messages);
+	return g_slist_length (priv->pending_messages);
 }
 
 /* called when the messages have been read by user */
@@ -2952,7 +2952,7 @@ empathy_chat_messages_read (EmpathyChat *self)
 
 	while (priv->pending_messages != NULL) {
 		g_object_unref (priv->pending_messages->data);
-		priv->pending_messages = g_list_delete_link (
+		priv->pending_messages = g_slist_delete_link (
 			priv->pending_messages, priv->pending_messages);
 	}
 }

@@ -1672,25 +1672,25 @@ out:
 
 void
 empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
-				      const GList *messages) {
+				      const GSList *messages) {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 	/* Copy messages as the messges list (probably is) our own */
-	GList *msgs = g_list_copy ((GList *) messages);
-	GList *l;
+	GSList *msgs = g_slist_copy ((GSList *) messages);
+	GSList *l;
 	guint length;
 	GArray *message_ids;
 
 	g_return_if_fail (EMPATHY_IS_TP_CHAT (chat));
 	g_return_if_fail (priv->ready);
 
-	length = g_list_length ((GList *) messages);
+	length = g_slist_length ((GSList *) messages);
 
 	if (length == 0)
 		return;
 
 	message_ids = g_array_sized_new (FALSE, FALSE, sizeof (guint), length);
 
-	for (l = msgs; l != NULL; l = g_list_next (l)) {
+	for (l = msgs; l != NULL; l = g_slist_next (l)) {
 		GList *m;
 
 		EmpathyMessage *message = EMPATHY_MESSAGE (l->data);
@@ -1710,7 +1710,7 @@ empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
 		acknowledge_messages (chat, message_ids);
 
 	g_array_free (message_ids, TRUE);
-	g_list_free (msgs);
+	g_slist_free (msgs);
 }
 
 gboolean

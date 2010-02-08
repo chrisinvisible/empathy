@@ -84,7 +84,7 @@ const GList *  empathy_tp_chat_get_pending_messages (EmpathyTpChat *chat);
 void           empathy_tp_chat_acknowledge_message (EmpathyTpChat *chat,
 						     EmpathyMessage *message);
 void           empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
-						     const GList *messages);
+						     const GSList *messages);
 
 gboolean       empathy_tp_chat_password_needed      (EmpathyTpChat *chat);
 
