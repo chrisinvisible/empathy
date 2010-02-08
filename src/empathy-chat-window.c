@@ -2021,6 +2021,7 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 	GtkWidget             *label;
 	GtkWidget             *popup_label;
 	GtkWidget             *child;
+	GValue                value = { 0, };
 
 	g_return_if_fail (window != NULL);
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
@@ -2068,8 +2069,13 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 	gtk_notebook_append_page_menu (GTK_NOTEBOOK (priv->notebook), child, label, popup_label);
 	gtk_notebook_set_tab_reorderable (GTK_NOTEBOOK (priv->notebook), child, TRUE);
 	gtk_notebook_set_tab_detachable (GTK_NOTEBOOK (priv->notebook), child, TRUE);
-	gtk_notebook_set_tab_label_packing (GTK_NOTEBOOK (priv->notebook), child,
-					    TRUE, TRUE, GTK_PACK_START);
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, TRUE);
+	gtk_container_child_set_property (GTK_CONTAINER (priv->notebook),
+					  child, "tab-expand" , &value);
+	gtk_container_child_set_property (GTK_CONTAINER (priv->notebook),
+					  child,  "tab-fill" , &value);
+	g_value_unset (&value);
 
 	DEBUG ("Chat added (%d references)", G_OBJECT (chat)->ref_count);
 }
