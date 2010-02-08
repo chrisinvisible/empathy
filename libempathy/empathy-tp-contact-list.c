@@ -990,8 +990,6 @@ tp_contact_list_remove (EmpathyContactList *list,
 	if (priv->stored != NULL) {
 		tp_cli_channel_interface_group_call_remove_members (priv->stored,
 			-1, &handles, message, NULL, NULL, NULL, NULL);
-		/* Contact will be removed from 'publish' and 'subscribe' too */
-		return;
 	}
 
 	if (priv->subscribe) {
