@@ -64,6 +64,7 @@ typedef struct {
 	guint           ext_away_timeout;
 
 	TpAccountManager *manager;
+	gulong idle_presence_changed_id;
 
 	/* pointer to a TpAccount --> glong of time of connection */
 	GHashTable *connect_times;
@@ -312,6 +313,12 @@ idle_finalize (GObject *object)
 				     priv->state_change_signal_id);
 	priv->state_change_signal_id = 0;
 
+	if (priv->manager != NULL) {
+		g_signal_handler_disconnect (priv->manager,
+			priv->idle_presence_changed_id);
+		g_object_unref (priv->manager);
+	}
+
 	g_object_unref (priv->connectivity);
 
 	g_hash_table_destroy (priv->connect_times);
@@ -478,14 +485,19 @@ account_manager_ready_cb (GObject *source_object,
 			  GAsyncResult *result,
 			  gpointer user_data)
 {
-	EmpathyIdle *idle = EMPATHY_IDLE (user_data);
+	EmpathyIdle *idle = user_data;
 	TpAccountManager *account_manager = TP_ACCOUNT_MANAGER (source_object);
-	EmpathyIdlePriv *priv = GET_PRIV (idle);
+	EmpathyIdlePriv *priv;
 	TpConnectionPresenceType state;
 	gchar *status, *status_message;
 	GList *accounts, *l;
 	GError *error = NULL;
 
+	/* In case we've been finalized before reading this callback */
+	if (idle_singleton == NULL)
+		return;
+
+	priv = GET_PRIV (idle);
 	priv->ready = TRUE;
 
 	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
@@ -526,7 +538,8 @@ empathy_idle_init (EmpathyIdle *idle)
 	tp_account_manager_prepare_async (priv->manager, NULL,
 	    account_manager_ready_cb, idle);
 
-	g_signal_connect (priv->manager, "most-available-presence-changed",
+	priv->idle_presence_changed_id = g_signal_connect (priv->manager,
+		"most-available-presence-changed",
 		G_CALLBACK (idle_presence_changed_cb), idle);
 
 	priv->gs_proxy = dbus_g_proxy_new_for_name (tp_get_bus (),
