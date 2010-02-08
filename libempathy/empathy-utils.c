@@ -392,8 +392,11 @@ gchar *
 empathy_protocol_icon_name (const gchar *protocol)
 {
   if (!tp_strdiff (protocol, "yahoojp"))
-    /* Yahoo Japan use the same icon as Yahoo */
+    /* Yahoo Japan uses the same icon as Yahoo */
     protocol = "yahoo";
+  else if (!tp_strdiff (protocol, "simple"))
+    /* SIMPLE uses the same icon as SIP */
+    protocol = "sip";
 
   return g_strdup_printf ("im-%s", protocol);
 }
