@@ -438,7 +438,9 @@ empathy_contact_edit_menu_item_new (EmpathyContact *contact)
 		g_object_unref (manager);
 	}
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("_Edit"));
+	item = gtk_image_menu_item_new_with_mnemonic (
+						     C_("Edit contact (contextual menu)",
+						        "_Edit"));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
