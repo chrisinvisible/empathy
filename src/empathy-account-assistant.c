@@ -275,6 +275,8 @@ account_assistant_account_enabled_cb (GObject *source,
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   const gchar *protocol;
   TpAccount *account = TP_ACCOUNT (source);
+  gint current_idx;
+  gboolean salut_created = FALSE;
 
   tp_account_set_enabled_finish (account, result, &error);
 
@@ -292,7 +294,15 @@ account_assistant_account_enabled_cb (GObject *source,
       empathy_conf_set_bool (empathy_conf_get (),
           EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
           TRUE);
+
+      salut_created = TRUE;
     }
+
+  current_idx = gtk_assistant_get_current_page (GTK_ASSISTANT (self));
+  if (current_idx == PAGE_SALUT && !salut_created)
+    /* We are on the Salut page and aren't creating the salut account so don't
+     * terminate the assistant. */
+    return;
 
   if (priv->create_enter_resp == RESPONSE_CREATE_STOP)
     g_signal_emit_by_name (self, "close");
@@ -884,9 +894,9 @@ impl_signal_prepare (GtkAssistant *assistant,
 
   current_idx = gtk_assistant_get_current_page (assistant);
 
-  if (current_idx >= PAGE_ENTER_CREATE && current_idx != PAGE_SALUT)
+  if (current_idx >= PAGE_ENTER_CREATE)
     {
-      if (!priv->enter_create_forward)
+      if (!priv->enter_create_forward && current_idx != PAGE_SALUT)
         {
           account_assistant_finish_enter_or_create_page (self,
               priv->first_resp == RESPONSE_ENTER_ACCOUNT ?
@@ -895,7 +905,14 @@ impl_signal_prepare (GtkAssistant *assistant,
       else
         {
           priv->enter_create_forward = FALSE;
+        }
+
+      if (priv->settings != NULL &&
+          empathy_account_settings_is_valid (priv->settings))
+        {
           account_assistant_apply_account_and_finish (self, priv->settings);
+          g_object_unref (priv->settings);
+          priv->settings = NULL;
         }
     }
 }
