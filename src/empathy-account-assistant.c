@@ -864,8 +864,6 @@ impl_signal_apply (GtkAssistant *assistant)
       return;
     }
 
-  if (current_page >= PAGE_ENTER_CREATE)
-    account_assistant_apply_account_and_finish (self, priv->settings);
   else if (current_page == PAGE_IMPORT)
     empathy_import_widget_add_selected_accounts (priv->iw);
 }
