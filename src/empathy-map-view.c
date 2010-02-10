@@ -175,6 +175,8 @@ marker_clicked_cb (ChamplainMarker *marker,
   gtk_widget_show (menu);
   gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
       event->button, event->time);
+  g_object_ref_sink (menu);
+  g_object_unref (menu);
 
   return FALSE;
 }
