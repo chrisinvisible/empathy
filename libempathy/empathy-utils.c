@@ -397,6 +397,8 @@ empathy_protocol_icon_name (const gchar *protocol)
   else if (!tp_strdiff (protocol, "simple"))
     /* SIMPLE uses the same icon as SIP */
     protocol = "sip";
+  else if (!tp_strdiff (protocol, "sms"))
+    return g_strdup ("phone");
 
   return g_strdup_printf ("im-%s", protocol);
 }
