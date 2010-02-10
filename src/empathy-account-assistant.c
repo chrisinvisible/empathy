@@ -75,6 +75,7 @@ typedef struct {
   gboolean enter_create_forward;
   TpAccountManager *account_mgr;
   EmpathyConnectionManagers *connection_mgrs;
+  gint current_page_id;
 
   /* enter or create page */
   GtkWidget *enter_or_create_page;
@@ -893,6 +894,7 @@ impl_signal_prepare (GtkAssistant *assistant,
   gint current_idx;
 
   current_idx = gtk_assistant_get_current_page (assistant);
+  priv->current_page_id = current_idx;
 
   if (current_idx >= PAGE_ENTER_CREATE)
     {
