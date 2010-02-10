@@ -842,6 +842,8 @@ theme_adium_context_menu_for_event (EmpathyThemeAdium *theme, GdkEventButton *ev
 	gtk_widget_show_all (menu);
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
 			event->button, event->time);
+	g_object_ref_sink (menu);
+	g_object_unref (menu);
 }
 
 static gboolean

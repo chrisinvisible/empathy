@@ -475,7 +475,6 @@ room_sub_menu_data_new (EmpathyContact *contact,
 static void
 room_sub_menu_data_free (RoomSubMenuData *data)
 {
-	/* FIXME: seems this is never called... */
 	g_object_unref (data->contact);
 	g_object_unref (data->chatroom);
 	g_slice_free (RoomSubMenuData, data);
