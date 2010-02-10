@@ -37,6 +37,7 @@ private_icons = \
 	hicolor_apps_16x16_im-groupwise.png \
 	hicolor_apps_16x16_im-qq.png \
 	hicolor_apps_16x16_im-meanwhile.png \
+	hicolor_apps_16x16_im-mxit.png \
 	hicolor_apps_16x16_im-myspace.png \
 	hicolor_apps_16x16_im-sametime.png \
 	hicolor_apps_16x16_im-zephyr.png \
@@ -56,6 +57,7 @@ private_icons = \
 	hicolor_apps_22x22_im-groupwise.png \
 	hicolor_apps_22x22_im-qq.png \
 	hicolor_apps_22x22_im-meanwhile.png \
+	hicolor_apps_22x22_im-mxit.png \
 	hicolor_apps_22x22_im-myspace.png \
 	hicolor_apps_22x22_im-sametime.png \
 	hicolor_apps_22x22_im-zephyr.png \
@@ -74,6 +76,7 @@ private_icons = \
 	hicolor_apps_24x24_im-groupwise.png \
 	hicolor_apps_24x24_im-qq.png \
 	hicolor_apps_24x24_im-meanwhile.png \
+	hicolor_apps_24x24_im-mxit.png \
 	hicolor_apps_24x24_im-myspace.png \
 	hicolor_apps_24x24_im-sametime.png \
 	hicolor_apps_24x24_im-zephyr.png \
@@ -92,6 +95,7 @@ private_icons = \
 	hicolor_apps_32x32_im-groupwise.png \
 	hicolor_apps_32x32_im-qq.png \
 	hicolor_apps_32x32_im-meanwhile.png \
+	hicolor_apps_32x32_im-mxit.png \
 	hicolor_apps_32x32_im-myspace.png \
 	hicolor_apps_32x32_im-sametime.png \
 	hicolor_apps_32x32_im-zephyr.png \
@@ -111,6 +115,7 @@ private_icons = \
 	hicolor_apps_48x48_im-groupwise.png \
 	hicolor_apps_48x48_im-qq.png \
 	hicolor_apps_48x48_im-meanwhile.png \
+	hicolor_apps_48x48_im-mxit.png \
 	hicolor_apps_48x48_im-myspace.png \
 	hicolor_apps_48x48_im-sametime.png \
 	hicolor_apps_48x48_im-zephyr.png \
@@ -129,6 +134,7 @@ private_icons = \
 	hicolor_apps_scalable_im-groupwise.svg \
 	hicolor_apps_scalable_im-qq.svg \
 	hicolor_apps_scalable_im-meanwhile.svg \
+	hicolor_apps_scalable_im-mxit.svg \
 	hicolor_apps_scalable_im-myspace.svg \
 	hicolor_apps_scalable_im-sametime.svg \
 	hicolor_apps_scalable_im-zephyr.svg \
