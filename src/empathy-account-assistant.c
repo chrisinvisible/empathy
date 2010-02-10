@@ -874,9 +874,6 @@ impl_signal_apply (GtkAssistant *assistant)
         account_assistant_apply_account_and_finish (self, priv->salut_settings);
       return;
     }
-
-  else if (current_page == PAGE_IMPORT)
-    empathy_import_widget_add_selected_accounts (priv->iw);
 }
 
 static void
@@ -892,6 +889,14 @@ impl_signal_prepare (GtkAssistant *assistant,
   EmpathyAccountAssistant *self = EMPATHY_ACCOUNT_ASSISTANT (assistant);
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
   gint current_idx;
+
+  /* check from which page we are coming from */
+  switch (priv->current_page_id)
+    {
+      case PAGE_IMPORT:
+        empathy_import_widget_add_selected_accounts (priv->iw);
+        break;
+    }
 
   current_idx = gtk_assistant_get_current_page (assistant);
   priv->current_page_id = current_idx;
