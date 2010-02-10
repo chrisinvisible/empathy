@@ -234,6 +234,16 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
              COL_PROTOCOL_NAME, proto->name,
              COL_IS_GTALK, TRUE,
              -1);
+
+          display_name = empathy_protocol_name_to_display_name ("facebook");
+          gtk_list_store_insert_with_values (priv->store,
+             NULL, 0,
+             COL_ICON, "im-facebook",
+             COL_LABEL, display_name,
+             COL_CM, cm,
+             COL_PROTOCOL_NAME, proto->name,
+             COL_IS_GTALK, FALSE,
+             -1);
         }
 
       g_free (icon_name);
