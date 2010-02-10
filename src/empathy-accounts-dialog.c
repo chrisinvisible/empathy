@@ -132,8 +132,8 @@ typedef struct {
 enum {
   COL_NAME,
   COL_STATUS,
-  COL_ACCOUNT_POINTER,
-  COL_ACCOUNT_SETTINGS_POINTER,
+  COL_ACCOUNT,
+  COL_ACCOUNT_SETTINGS,
   COL_COUNT
 };
 
@@ -213,8 +213,9 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
     return;
 
-  gtk_tree_model_get (model, &iter,
-      COL_ACCOUNT_POINTER, &selected_account, -1);
+  gtk_tree_model_get (model, &iter, COL_ACCOUNT, &selected_account, -1);
+  if (selected_account != NULL)
+    g_object_unref (selected_account);
 
   /* do not update the infobar when the account is not selected */
   if (account != selected_account)
@@ -362,8 +363,8 @@ empathy_account_dialog_widget_cancelled_cb (
     return;
 
   gtk_tree_model_get (model, &iter,
-      COL_ACCOUNT_SETTINGS_POINTER, &settings,
-      COL_ACCOUNT_POINTER, &account, -1);
+      COL_ACCOUNT_SETTINGS, &settings,
+      COL_ACCOUNT, &account, -1);
 
   empathy_account_widget_discard_pending_changes (priv->setting_widget_object);
 
@@ -516,7 +517,7 @@ accounts_dialog_has_pending_change (EmpathyAccountsDialog *dialog,
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
 
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
-    gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, account, -1);
+    gtk_tree_model_get (model, &iter, COL_ACCOUNT, account, -1);
 
   return priv->setting_widget_object != NULL
       && empathy_account_widget_contains_pending_changes (
@@ -734,6 +735,9 @@ accounts_dialog_button_add_clicked_cb (GtkWidget *button,
       gtk_widget_set_sensitive (priv->button_remove, FALSE);
       gtk_widget_set_sensitive (priv->button_import, FALSE);
     }
+
+  if (account != NULL)
+    g_object_unref (account);
 }
 
 static void
@@ -885,7 +889,7 @@ accounts_dialog_model_status_pixbuf_data_func (GtkTreeViewColumn *tree_column,
 {
   TpAccount *account;
 
-  gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
+  gtk_tree_model_get (model, iter, COL_ACCOUNT, &account, -1);
 
   g_object_set (cell,
       "icon-name", get_status_icon_for_account (dialog, account),
@@ -909,7 +913,7 @@ accounts_dialog_model_protocol_pixbuf_data_func (GtkTreeViewColumn *tree_column,
 
   gtk_tree_model_get (model, iter,
       COL_STATUS, &status,
-      COL_ACCOUNT_SETTINGS_POINTER, &settings,
+      COL_ACCOUNT_SETTINGS, &settings,
       -1);
 
   icon_name = empathy_account_settings_get_icon_name (settings);
@@ -980,7 +984,7 @@ accounts_dialog_name_edited_cb (GtkCellRendererText *renderer,
   treepath = gtk_tree_path_new_from_string (path);
   gtk_tree_model_get_iter (model, &iter, treepath);
   gtk_tree_model_get (model, &iter,
-      COL_ACCOUNT_SETTINGS_POINTER, &settings,
+      COL_ACCOUNT_SETTINGS, &settings,
       -1);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter,
       COL_NAME, new_text,
@@ -1012,7 +1016,7 @@ accounts_dialog_delete_account_response_cb (GtkDialog *message_dialog,
       if (!gtk_tree_selection_get_selected (selection, &model, &iter))
         return;
 
-      gtk_tree_model_get (model, &iter, COL_ACCOUNT_POINTER, &account, -1);
+      gtk_tree_model_get (model, &iter, COL_ACCOUNT, &account, -1);
 
       if (account != NULL)
         {
@@ -1039,7 +1043,7 @@ accounts_dialog_remove_account_iter (EmpathyAccountsDialog *dialog,
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 
-  gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
+  gtk_tree_model_get (model, iter, COL_ACCOUNT, &account, -1);
 
   if (account == NULL || !tp_account_is_valid (account))
     {
@@ -1062,6 +1066,7 @@ accounts_dialog_remove_account_iter (EmpathyAccountsDialog *dialog,
       GTK_STOCK_REMOVE, GTK_RESPONSE_YES, NULL);
 
   g_free (question_dialog_primary_text);
+  g_object_unref (account);
 }
 
 static void
@@ -1184,7 +1189,7 @@ accounts_dialog_model_get_selected_settings (EmpathyAccountsDialog *dialog)
     return NULL;
 
   gtk_tree_model_get (model, &iter,
-      COL_ACCOUNT_SETTINGS_POINTER, &settings, -1);
+      COL_ACCOUNT_SETTINGS, &settings, -1);
 
   return settings;
 }
@@ -1263,6 +1268,7 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
   TpAccount *account = NULL;
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (data);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  gboolean ret;
 
   if (priv->force_change_row)
     {
@@ -1291,13 +1297,17 @@ accounts_dialog_account_selection_change (GtkTreeSelection *selection,
           GTK_STOCK_DISCARD, GTK_RESPONSE_YES, NULL);
 
       g_free (question_dialog_primary_text);
+      ret = FALSE;
     }
   else
     {
-      return TRUE;
+      ret = TRUE;
     }
 
-  return FALSE;
+  if (account != NULL)
+    g_object_unref (account);
+
+  return ret;
 }
 
 static void
@@ -1357,7 +1367,7 @@ accounts_dialog_get_settings_iter (EmpathyAccountsDialog *dialog,
       gboolean   equal;
 
       gtk_tree_model_get (model, iter,
-          COL_ACCOUNT_SETTINGS_POINTER, &this_settings,
+          COL_ACCOUNT_SETTINGS, &this_settings,
           -1);
 
       equal = (this_settings == settings);
@@ -1394,7 +1404,7 @@ accounts_dialog_get_account_iter (EmpathyAccountsDialog *dialog,
       gboolean   equal;
 
       gtk_tree_model_get (model, iter,
-          COL_ACCOUNT_SETTINGS_POINTER, &settings,
+          COL_ACCOUNT_SETTINGS, &settings,
           -1);
 
       equal = empathy_account_settings_has_account (settings, account);
@@ -1436,7 +1446,7 @@ accounts_dialog_add (EmpathyAccountsDialog *dialog,
   gtk_list_store_set (GTK_LIST_STORE (model), &iter,
       COL_NAME, name,
       COL_STATUS, TP_CONNECTION_STATUS_DISCONNECTED,
-      COL_ACCOUNT_SETTINGS_POINTER, settings,
+      COL_ACCOUNT_SETTINGS, settings,
       -1);
 }
 
@@ -1578,8 +1588,8 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
   gtk_list_store_set (GTK_LIST_STORE (model), &iter,
       COL_NAME, name,
       COL_STATUS, status,
-      COL_ACCOUNT_POINTER, account,
-      COL_ACCOUNT_SETTINGS_POINTER, settings,
+      COL_ACCOUNT, account,
+      COL_ACCOUNT_SETTINGS, settings,
       -1);
 
   accounts_dialog_connection_changed_cb (account,
@@ -1839,6 +1849,9 @@ dialog_response_cb (GtkWidget *widget,
         {
           gtk_widget_destroy (widget);
         }
+
+      if (account != NULL)
+        g_object_unref (account);
     }
 }
 
