@@ -956,6 +956,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
 
   if (priv->simple && !is_gtalk)
     {
+      /* Simple widget for XMPP */
       self->ui_details->gui = empathy_builder_get_file (filename,
           "vbox_jabber_simple", &self->ui_details->widget,
           "label_id_simple", &label_id,
@@ -981,6 +982,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
     }
   else if (priv->simple && is_gtalk)
     {
+      /* Simple widget for Google Talk */
       self->ui_details->gui = empathy_builder_get_file (filename,
           "vbox_gtalk_simple", &self->ui_details->widget,
           NULL);
@@ -994,6 +996,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
     }
   else
     {
+      /* Full widget for XMPP and Google Talk */
       self->ui_details->gui = empathy_builder_get_file (filename,
           "table_common_settings", &priv->table_common_settings,
           "vbox_jabber_settings", &self->ui_details->widget,
