@@ -1098,6 +1098,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "label_username_f_example", &label_example_fb,
           "expander_advanced", &expander_advanced,
           "entry_id", &entry_id,
+          "label_id", &label_id,
           NULL);
 
       empathy_account_widget_handle_params (self,
@@ -1113,6 +1114,8 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
 
       if (is_facebook)
         {
+          gtk_label_set_label (GTK_LABEL (label_id), _("Username:"));
+
           /* Facebook special case the entry ID widget to hide the
            * "@chat.facebook.com" part */
           setup_facebook_id_widget (self, entry_id);
