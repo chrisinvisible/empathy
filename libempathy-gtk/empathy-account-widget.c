@@ -949,6 +949,69 @@ account_widget_is_facebook (EmpathyAccountWidget *self)
       "im-facebook");
 }
 
+#define FACEBOOK_SUFFIX "@chat.facebook.com"
+
+static void
+facebook_id_widget_changed_cb (GtkWidget *entry,
+    EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const gchar *account;
+
+  account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
+
+  account = empathy_account_settings_get_string (priv->settings, "account");
+  if (!EMP_STR_EMPTY (account) &&
+      !g_str_has_suffix (account, FACEBOOK_SUFFIX))
+    {
+      gchar *tmp;
+
+      tmp = g_strdup_printf ("%s%s", account, FACEBOOK_SUFFIX);
+
+      DEBUG ("Change account from '%s' to '%s'", account, tmp);
+
+      empathy_account_settings_set_string (priv->settings, "account", tmp);
+      g_free (tmp);
+    }
+
+  empathy_account_widget_changed (self);
+}
+
+static gchar *
+remove_facebook_suffix (const gchar *str)
+{
+  if (!g_str_has_suffix (str, FACEBOOK_SUFFIX))
+    return g_strdup (str);
+
+  return g_strndup (str, strlen (str) - strlen (FACEBOOK_SUFFIX));
+}
+
+static void
+setup_facebook_id_widget (EmpathyAccountWidget *self,
+    GtkWidget *widget)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const gchar *str = NULL;
+
+  g_object_set_data_full (G_OBJECT (widget), "param_name",
+      g_strdup ("account"), g_free);
+
+  str = empathy_account_settings_get_string (priv->settings, "account");
+  if (str != NULL)
+    {
+      gchar *tmp;
+
+      tmp = remove_facebook_suffix (str);
+      gtk_entry_set_text (GTK_ENTRY (widget), tmp);
+      g_free (tmp);
+    }
+
+  priv->param_account_widget = widget;
+
+  g_signal_connect (widget, "changed",
+      G_CALLBACK (facebook_id_widget_changed_cb), self);
+}
+
 static void
 account_widget_build_jabber (EmpathyAccountWidget *self,
     const char *filename)
@@ -961,6 +1024,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *label_example_gtalk, *label_example_jabber, *label_example_fb;
   gboolean is_gtalk, is_facebook;
   GtkWidget *expander_advanced;
+  GtkWidget *entry_id;
 
   is_gtalk = account_widget_is_gtalk (self);
   is_facebook = account_widget_is_facebook (self);
@@ -1018,10 +1082,10 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "label_username_g_example", &label_example_gtalk,
           "label_username_f_example", &label_example_fb,
           "expander_advanced", &expander_advanced,
+          "entry_id", &entry_id,
           NULL);
 
       empathy_account_widget_handle_params (self,
-          "entry_id", "account",
           "entry_password", "password",
           "entry_resource", "resource",
           "entry_server", "server",
@@ -1031,6 +1095,17 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "checkbutton_ignore_ssl_errors", "ignore-ssl-errors",
           "checkbutton_encryption", "require-encryption",
           NULL);
+
+      if (is_facebook)
+        {
+          /* Facebook special case the entry ID widget to hide the
+           * "@chat.facebook.com" part */
+          setup_facebook_id_widget (self, entry_id);
+        }
+      else
+        {
+          empathy_account_widget_setup_widget (self, entry_id, "account");
+        }
 
       self->ui_details->default_focus = g_strdup ("entry_id");
       self->ui_details->add_forget = TRUE;
