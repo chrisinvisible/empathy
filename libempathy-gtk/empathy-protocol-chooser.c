@@ -421,12 +421,13 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
   TpConnectionManager *cm = NULL;
   gchar *protocol_name = NULL;
   gboolean visible = FALSE;
-  gboolean is_gtalk;
+  gboolean is_gtalk, is_facebook;
 
   gtk_tree_model_get (model, iter,
       COL_CM, &cm,
       COL_PROTOCOL_NAME, &protocol_name,
       COL_IS_GTALK, &is_gtalk,
+      COL_IS_FACEBOOK, &is_facebook,
       -1);
 
   if (cm != NULL && protocol_name != NULL)
@@ -438,7 +439,7 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
 
       if (protocol != NULL)
         {
-          visible = priv->filter_func (cm, protocol, is_gtalk,
+          visible = priv->filter_func (cm, protocol, is_gtalk, is_facebook,
               priv->filter_user_data);
         }
     }

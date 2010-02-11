@@ -61,6 +61,7 @@ struct _EmpathyProtocolChooserClass
 typedef gboolean (*EmpathyProtocolChooserFilterFunc) (TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
     gboolean is_gtalk,
+    gboolean is_facebook,
     gpointer user_data);
 
 GType empathy_protocol_chooser_get_type (void) G_GNUC_CONST;

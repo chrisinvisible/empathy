@@ -459,6 +459,7 @@ account_assistant_chooser_enter_details_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
     gboolean is_gtalk,
+    gboolean is_facebook,
     gpointer user_data)
 {
   if (!tp_strdiff (protocol->name, "local-xmpp") ||
@@ -473,9 +474,10 @@ account_assistant_chooser_create_account_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
     gboolean is_gtalk,
+    gboolean is_facebook,
     gpointer user_data)
 {
-  if (is_gtalk)
+  if (is_gtalk || is_facebook)
     return FALSE;
 
   return tp_connection_manager_protocol_can_register (protocol);
