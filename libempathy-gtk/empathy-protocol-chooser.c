@@ -167,6 +167,12 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
          */
         continue;
 
+      if (!tp_strdiff (cm->name, "haze") &&
+          !tp_strdiff (proto->name, "facebook"))
+        /* Facebook now supports XMPP so drop the purple facebook plugin; user
+         * should use Gabble */
+        continue;
+
       if (tp_strdiff (cm->name, "haze") && !tp_strdiff (saved_cm_name, "haze"))
         {
           GtkTreeIter titer;
