@@ -960,6 +960,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *label_id_create, *label_password_create;
   GtkWidget *label_example_gtalk, *label_example_jabber, *label_example_fb;
   gboolean is_gtalk, is_facebook;
+  GtkWidget *expander_advanced;
 
   is_gtalk = account_widget_is_gtalk (self);
   is_facebook = account_widget_is_facebook (self);
@@ -1016,6 +1017,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "label_username_example", &label_example_jabber,
           "label_username_g_example", &label_example_gtalk,
           "label_username_f_example", &label_example_fb,
+          "expander_advanced", &expander_advanced,
           NULL);
 
       empathy_account_widget_handle_params (self,
@@ -1047,6 +1049,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
         {
           gtk_widget_hide (label_example_jabber);
           gtk_widget_show (label_example_fb);
+          gtk_widget_hide (expander_advanced);
         }
     }
 }
