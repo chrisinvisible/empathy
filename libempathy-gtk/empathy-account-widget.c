@@ -940,6 +940,15 @@ account_widget_is_gtalk (EmpathyAccountWidget *self)
       "im-google-talk");
 }
 
+static gboolean
+account_widget_is_facebook (EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  return !tp_strdiff (empathy_account_settings_get_icon_name (priv->settings),
+      "im-facebook");
+}
+
 static void
 account_widget_build_jabber (EmpathyAccountWidget *self,
     const char *filename)
@@ -949,12 +958,13 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   GtkWidget *checkbutton_ssl;
   GtkWidget *label_id, *label_password;
   GtkWidget *label_id_create, *label_password_create;
-  GtkWidget *label_example_gtalk, *label_example_jabber;
-  gboolean is_gtalk;
+  GtkWidget *label_example_gtalk, *label_example_jabber, *label_example_fb;
+  gboolean is_gtalk, is_facebook;
 
   is_gtalk = account_widget_is_gtalk (self);
+  is_facebook = account_widget_is_facebook (self);
 
-  if (priv->simple && !is_gtalk)
+  if (priv->simple && !is_gtalk && !is_facebook)
     {
       /* Simple widget for XMPP */
       self->ui_details->gui = empathy_builder_get_file (filename,
@@ -994,9 +1004,10 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
 
       self->ui_details->default_focus = g_strdup ("entry_id_g_simple");
     }
+  /* TODO: Simple widget for Facebook */
   else
     {
-      /* Full widget for XMPP and Google Talk */
+      /* Full widget for XMPP, Google Talk and Facebook*/
       self->ui_details->gui = empathy_builder_get_file (filename,
           "table_common_settings", &priv->table_common_settings,
           "vbox_jabber_settings", &self->ui_details->widget,
@@ -1004,6 +1015,7 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
           "checkbutton_ssl", &checkbutton_ssl,
           "label_username_example", &label_example_jabber,
           "label_username_g_example", &label_example_gtalk,
+          "label_username_f_example", &label_example_fb,
           NULL);
 
       empathy_account_widget_handle_params (self,
@@ -1030,6 +1042,11 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
         {
           gtk_widget_hide (label_example_jabber);
           gtk_widget_show (label_example_gtalk);
+        }
+      else if (is_facebook)
+        {
+          gtk_widget_hide (label_example_jabber);
+          gtk_widget_show (label_example_fb);
         }
     }
 }
