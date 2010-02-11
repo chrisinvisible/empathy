@@ -1482,7 +1482,7 @@ add_register_buttons (EmpathyAccountWidget *self,
   if (!tp_connection_manager_protocol_can_register (protocol))
     return;
 
-  if (account_widget_is_gtalk (self))
+  if (account_widget_is_gtalk (self) || account_widget_is_facebook (self))
     return;
 
   if (priv->simple)
