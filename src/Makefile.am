@@ -1,15 +1,20 @@
 include $(top_srcdir)/tools/flymake.mk
 
-AM_CPPFLAGS =						\
+CPPFLAGS_COMMON =					\
+	$(EMPATHY_CFLAGS)				\
 	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DG_LOG_DOMAIN=\"empathy\"			\
-	$(EMPATHY_CFLAGS)				\
+	$(DISABLE_DEPRECATED)				\
+	$(WARN_CFLAGS)					\
+	$(NULL)
+
+AM_CPPFLAGS =						\
+	$(CPPFLAGS_COMMON)				\
 	$(LIBNOTIFY_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
-	$(DISABLE_DEPRECATED)				\
 	$(WEBKIT_CFLAGS)				\
-	$(WARN_CFLAGS)
+	$(NULL)
 
 LDADD =								\
 	$(top_builddir)/libempathy-gtk/libempathy-gtk.la	\
@@ -20,16 +25,73 @@ LDADD =								\
 	$(LIBCHAMPLAIN_LIBS)					\
 	$(WEBKIT_LIBS)
 
-bin_PROGRAMS =			\
-	empathy
+noinst_LTLIBRARIES = libempathy-accounts-common.la
 
-BUILT_SOURCES=
-
-empathy_handwritten_source = \
-	empathy-about-dialog.c empathy-about-dialog.h			\
+libempathy_accounts_common_la_SOURCES =					\
+	empathy-accounts-common.c empathy-accounts-common.h		\
 	empathy-account-assistant.c empathy-account-assistant.h		\
 	empathy-accounts-dialog.c empathy-accounts-dialog.h		\
 	empathy-auto-salut-account-helper.c empathy-auto-salut-account-helper.h \
+	empathy-import-dialog.c empathy-import-dialog.h			\
+	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
+	empathy-import-pidgin.c empathy-import-pidgin.h			\
+	empathy-import-widget.c empathy-import-widget.h			\
+	empathy-import-utils.c empathy-import-utils.h			\
+	ephy-spinner.c ephy-spinner.h					\
+	$(NULL)
+
+libempathy_accounts_common_la_LIBADD =					\
+        $(top_builddir)/libempathy-gtk/libempathy-gtk.la		\
+        $(LIBNOTIFY_LIBS)						\
+        $(EMPATHY_LIBS)							\
+        $(LIBCHAMPLAIN_LIBS)						\
+        $(WEBKIT_LIBS)							\
+	$(NULL)
+
+if HAVE_CONTROL_CENTER_EMBEDDING
+ccmodulesdir = $(CONTROL_CENTER_EXTENSIONDIR)
+ccmodules_LTLIBRARIES = libempathy-accounts-panel.la
+
+libempathy_accounts_panel_la_SOURCES =				\
+	empathy-accounts-module.c				\
+	cc-empathy-accounts-page.c				\
+	cc-empathy-accounts-page.h				\
+	cc-empathy-accounts-panel.c				\
+	cc-empathy-accounts-panel.h				\
+	$(NULL)
+
+libempathy_accounts_panel_la_CPPFLAGS =				\
+	$(CPPFLAGS_COMMON)					\
+	$(CONTROL_CENTER_EMBEDDING_CFLAGS)			\
+	$(NULL)
+
+libempathy_accounts_panel_la_LDFLAGS = -export_dynamic -avoid-version -module -no-undefined -export-symbols-regex '^g_io_module_(load|unload)'
+
+libempathy_accounts_panel_la_LIBADD =				\
+	$(EMPATHY_LIBS)						\
+	$(CONTROL_CENTER_EMBEDDING_LIBS)			\
+	libempathy-accounts-common.la				\
+	$(NULL)
+endif
+
+bin_PROGRAMS =			\
+	empathy			\
+	empathy-accounts	\
+	$(NULL)
+
+BUILT_SOURCES=
+
+empathy_accounts_SOURCES =						\
+	empathy-accounts.c empathy-accounts.h				\
+	$(NULL)
+
+empathy_accounts_LDADD =						\
+	$(LDADD)							\
+	libempathy-accounts-common.la					\
+	$(NULL)
+
+empathy_handwritten_source = \
+	empathy-about-dialog.c empathy-about-dialog.h			\
 	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
 	empathy-call-window.c empathy-call-window.h			\
 	empathy-chat-window.c empathy-chat-window.h			\
@@ -37,11 +99,6 @@ empathy_handwritten_source = \
 	empathy-debug-window.c empathy-debug-window.h			\
 	empathy-event-manager.c empathy-event-manager.h			\
 	empathy-ft-manager.c empathy-ft-manager.h			\
-	empathy-import-dialog.c empathy-import-dialog.h			\
-	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
-	empathy-import-pidgin.c empathy-import-pidgin.h			\
-	empathy-import-utils.c empathy-import-utils.h			\
-	empathy-import-widget.c empathy-import-widget.h			\
 	empathy-invite-participant-dialog.c empathy-invite-participant-dialog.h \
 	empathy-main-window.c empathy-main-window.h			\
 	empathy-new-chatroom-dialog.c empathy-new-chatroom-dialog.h	\
@@ -52,13 +109,25 @@ empathy_handwritten_source = \
 
 empathy_SOURCES =							\
 	$(empathy_handwritten_source)					\
-	ephy-spinner.c ephy-spinner.h
+	$(NULL)
+
+empathy_LDADD =								\
+	libempathy-accounts-common.la					\
+        $(top_builddir)/libempathy-gtk/libempathy-gtk.la		\
+        $(top_builddir)/libempathy/libempathy.la			\
+        $(top_builddir)/extensions/libemp-extensions.la			\
+        $(LIBNOTIFY_LIBS)						\
+        $(EMPATHY_LIBS)							\
+        $(LIBCHAMPLAIN_LIBS)						\
+        $(WEBKIT_LIBS)							\
+	$(NULL)
 
 nodist_empathy_SOURCES = $(BUILT_SOURCES)
 
 check_c_sources = \
     $(empathy_handwritten_source) \
     $(empathy_logs_SOURCES)
+
 include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style
 
@@ -92,6 +161,12 @@ EXTRA_DIST +=					\
 	empathy-map-view.c			\
 	empathy-map-view.h			\
 	empathy-map-view.ui
+endif
+
+if !HAVE_CONTROL_CENTER_EMBEDDING
+EXTRA_DIST += $(libempathy_accounts_panel_la_SOURCES)
+else
+check_c_sources += $(libempathy_accounts_panel_la_SOURCES)
 endif
 
 dist_man_MANS =			\

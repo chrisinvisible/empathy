@@ -1,7 +1,10 @@
 SUBDIRS = icons
 
 desktopdir = $(datadir)/applications
-desktop_in_files = empathy.desktop.in
+desktop_in_files = \
+	empathy.desktop.in \
+	empathy-accounts.desktop.in \
+	$(NULL)
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 

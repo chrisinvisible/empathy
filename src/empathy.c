@@ -62,15 +62,12 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-location-manager.h>
 
-#include "empathy-account-assistant.h"
-#include "empathy-accounts-dialog.h"
 #include "empathy-main-window.h"
+#include "empathy-accounts-dialog.h"
 #include "empathy-status-icon.h"
 #include "empathy-call-window.h"
 #include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
-#include "empathy-import-mc4-accounts.h"
-#include "empathy-auto-salut-account-helper.h"
 
 #include "extensions/extensions.h"
 
@@ -166,108 +163,6 @@ use_conn_notify_cb (EmpathyConf *conf,
     }
 }
 
-static gboolean
-has_non_salut_accounts (TpAccountManager *manager)
-{
-  gboolean ret = FALSE;
-  GList *accounts, *l;
-
-  accounts = tp_account_manager_get_valid_accounts (manager);
-
-  for (l = accounts ; l != NULL; l = g_list_next (l))
-    {
-      if (tp_strdiff (tp_account_get_protocol (l->data), "local-xmpp"))
-        {
-          ret = TRUE;
-          break;
-        }
-    }
-
-  g_list_free (accounts);
-
-  return ret;
-}
-
-/* Try to import accounts from MC4 and returns TRUE if we should display the
- * accounts assistant. */
-static gboolean
-should_show_account_assistant (TpAccountManager *account_mgr,
-    EmpathyConnectionManagers *cm_mgr)
-{
-  g_return_val_if_fail (tp_account_manager_is_prepared (account_mgr,
-      TP_ACCOUNT_MANAGER_FEATURE_CORE), FALSE);
-  g_return_val_if_fail (empathy_connection_managers_is_ready (cm_mgr), FALSE);
-
-  if (empathy_import_mc4_has_imported ())
-    return FALSE;
-
-  if (empathy_import_mc4_accounts (cm_mgr))
-    return FALSE;
-
-  if (start_hidden)
-    return FALSE;
-
-  if (has_non_salut_accounts (account_mgr))
-    return FALSE;
-
-  if (!should_create_salut_account (account_mgr))
-    return FALSE;
-
-  return TRUE;
-}
-
-static void
-connection_managers_prepare_cb (GObject *source,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  EmpathyConnectionManagers *cm_mgr = EMPATHY_CONNECTION_MANAGERS (source);
-  TpAccountManager *account_mgr = user_data;
-
-  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
-    goto out;
-
-  if (should_show_account_assistant (account_mgr, cm_mgr))
-    empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()),
-          cm_mgr);
-
-out:
-  g_object_unref (cm_mgr);
-  g_object_unref (account_mgr);
-}
-
-static void
-account_manager_ready_for_show_assistant (GObject *source_object,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  TpAccountManager *account_mgr = TP_ACCOUNT_MANAGER (source_object);
-  GError *error = NULL;
-  EmpathyConnectionManagers *cm_mgr;
-
-  if (!tp_account_manager_prepare_finish (account_mgr, result, &error))
-    {
-      DEBUG ("Failed to prepare account manager: %s", error->message);
-      g_error_free (error);
-      g_object_unref (account_mgr);
-      return;
-    }
-
-  cm_mgr = empathy_connection_managers_dup_singleton ();
-
-  empathy_connection_managers_prepare_async (cm_mgr,
-      connection_managers_prepare_cb, account_mgr);
-}
-
-static void
-maybe_show_account_assistant (void)
-{
-  TpAccountManager *account_mgr = tp_account_manager_dup ();
-
-  tp_account_manager_prepare_async (account_mgr, NULL,
-      account_manager_ready_for_show_assistant, NULL);
-}
-
 static void
 migrate_config_to_xdg_dir (void)
 {
@@ -337,83 +232,26 @@ migrate_config_to_xdg_dir (void)
 }
 
 static void
-connection_managers_prepare_for_accounts (GObject *source,
-    GAsyncResult *result,
-    gpointer user_data)
+accounts_application_exited_cb (GPid pid,
+    gint status,
+    gpointer data)
 {
-  EmpathyConnectionManagers *cm_mgr = EMPATHY_CONNECTION_MANAGERS (source);
-  GtkWidget *ui;
-
-  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
-    goto out;
-
-  ui = empathy_account_assistant_show (GTK_WINDOW (empathy_main_window_get ()),
-          cm_mgr);
+  if (status)
+    {
+      g_warning ("accounts application exited with status %d: '%s'",
+          status, g_strerror (status));
+    }
 
   if (account_dialog_only)
-    g_signal_connect (ui, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-
-out:
-  g_object_unref (cm_mgr);
+    gtk_main_quit ();
 }
 
 static void
-do_show_accounts_ui (GtkWindow *window,
-    TpAccountManager *manager)
+show_accounts_ui (GdkScreen *screen,
+    gboolean try_import)
 {
-  if (has_non_salut_accounts (manager))
-    {
-      GtkWidget *ui;
-
-      ui = empathy_accounts_dialog_show (window, NULL);
-
-      if (account_dialog_only)
-        g_signal_connect (ui, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-    }
-  else
-    {
-      EmpathyConnectionManagers *cm_mgr;
-
-      cm_mgr = empathy_connection_managers_dup_singleton ();
-
-      empathy_connection_managers_prepare_async (cm_mgr,
-          connection_managers_prepare_for_accounts, NULL);
-    }
-}
-
-static void
-account_manager_ready_for_accounts_cb (GObject *source_object,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
-  GError *error = NULL;
-
-  if (!tp_account_manager_prepare_finish (manager, result, &error))
-    {
-      DEBUG ("Failed to prepare account manager: %s", error->message);
-      g_error_free (error);
-      return;
-    }
-
-  do_show_accounts_ui (user_data, manager);
-}
-
-static void
-show_accounts_ui (GtkWindow *window,
-    gboolean force)
-{
-  TpAccountManager *manager;
-
-  if (!force)
-    return;
-
-  manager = tp_account_manager_dup ();
-
-  tp_account_manager_prepare_async (manager, NULL,
-      account_manager_ready_for_accounts_cb, window);
-
-  g_object_unref (manager);
+  empathy_accounts_dialog_show_application (screen,
+      accounts_application_exited_cb, NULL, NULL, try_import, start_hidden);
 }
 
 static UniqueResponse
@@ -430,16 +268,17 @@ unique_app_message_cb (UniqueApp *unique_app,
 
   if (command == COMMAND_ACCOUNTS_DIALOG)
     {
-      show_accounts_ui (NULL, TRUE);
+      show_accounts_ui (gdk_screen_get_default (), TRUE);
     }
   else
     {
+      /* XXX: the standalone app somewhat breaks this case, since
+       * communicating it would be a pain */
+
       /* We're requested to show stuff again, disable the start hidden global
        * in case the accounts wizard wants to pop up.
        */
       start_hidden = FALSE;
-
-      show_accounts_ui (window, FALSE);
 
       gtk_window_set_screen (GTK_WINDOW (window),
           unique_message_data_get_screen (data));
@@ -563,7 +402,7 @@ account_manager_ready_cb (GObject *source_object,
       /* if current state is Offline, then put it online */
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
-  maybe_show_account_assistant ();
+  show_accounts_ui (gdk_screen_get_default (), TRUE);
 
   g_object_unref (idle);
   g_object_unref (connectivity);
@@ -845,7 +684,7 @@ main (int argc, char *argv[])
   if (account_dialog_only)
     {
       account_manager = tp_account_manager_dup ();
-      show_accounts_ui (NULL, TRUE);
+      show_accounts_ui (gdk_screen_get_default (), FALSE);
 
       gtk_main ();
 

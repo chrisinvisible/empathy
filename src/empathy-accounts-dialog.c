@@ -33,6 +33,7 @@
 #include <dbus/dbus-glib.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <telepathy-glib/defs.h>
 #include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
@@ -1890,6 +1891,8 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       NULL);
   g_free (filename);
 
+  gtk_widget_set_no_show_all (priv->frame_no_protocol, TRUE);
+
   empathy_builder_connect (gui, dialog,
       "button_add", "clicked", accounts_dialog_button_add_clicked_cb,
       "button_remove", "clicked", accounts_dialog_button_remove_clicked_cb,
@@ -2206,4 +2209,57 @@ empathy_accounts_dialog_show (GtkWindow *parent,
   gtk_window_present (GTK_WINDOW (dialog));
 
   return GTK_WIDGET (dialog);
+}
+
+void
+empathy_accounts_dialog_show_application (GdkScreen *screen,
+    GChildWatchFunc application_exit_cb,
+    gpointer user_data,
+    TpAccount *selected_account,
+    gboolean try_import,
+    gboolean hidden)
+{
+  gint command_pid;
+  GError *error = NULL;
+  gchar *argv[4] = { NULL, };
+  gint i = 0;
+  gchar *account_option = NULL;
+
+  g_return_if_fail (GDK_IS_SCREEN (screen));
+  g_return_if_fail (!selected_account || TP_IS_ACCOUNT (selected_account));
+
+  argv[i++] = "empathy-accounts";
+
+  if (selected_account)
+    {
+      const gchar *account_path;
+
+      account_path = tp_proxy_get_object_path (TP_PROXY (selected_account));
+      account_option = g_strdup_printf ("--select-account=%s",
+          &account_path[strlen (TP_ACCOUNT_OBJECT_PATH_BASE)]);
+
+      argv[i++] = account_option;
+    }
+
+  if (try_import)
+    argv[i++] = "--import";
+
+  if (hidden)
+    argv[i++] = "--hidden";
+
+  gdk_spawn_on_screen (screen, NULL, argv, NULL,
+      G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL,
+      &command_pid, &error);
+  if (error)
+    {
+      g_warning ("Failed to open accounts dialog: %s", error->message);
+      g_error_free (error);
+    }
+
+  /* XXX: unportable cast to GPid; then again, gdk_spawn_on_screen() seems
+   * unportable since it always takes a gint* for the PID */
+  if (application_exit_cb)
+    g_child_watch_add ((GPid) command_pid, application_exit_cb, NULL);
+
+  g_free (account_option);
 }

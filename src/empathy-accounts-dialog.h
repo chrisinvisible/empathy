@@ -56,6 +56,12 @@ typedef struct {
 GType empathy_accounts_dialog_get_type (void);
 GtkWidget *empathy_accounts_dialog_show (GtkWindow *parent,
     TpAccount *selected_account);
+void empathy_accounts_dialog_show_application (GdkScreen *screen,
+    GChildWatchFunc application_exit_cb,
+    gpointer user_data,
+    TpAccount *selected_account,
+    gboolean try_import,
+    gboolean hidden);
 
 G_END_DECLS
 

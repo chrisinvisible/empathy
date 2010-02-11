@@ -83,6 +83,8 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 AM_GCONF_SOURCE_2
 GLIB_GENMARSHAL=`$PKG_CONFIG glib-2.0 --variable=glib_genmarshal`
 AC_SUBST(GLIB_GENMARSHAL)
+CONTROL_CENTER_EXTENSIONDIR=`$PKG_CONFIG --variable=extensiondir libgnome-control-center-extension`
+AC_SUBST(CONTROL_CENTER_EXTENSIONDIR)
 
 AC_CHECK_PROGS([XSLTPROC], [xsltproc])
 if test -z "$XSLTPROC"; then
@@ -177,6 +179,20 @@ PKG_CHECK_MODULES(EMPATHY,
    telepathy-farsight
    farsight2-0.10
    gstreamer-0.10
+   unique-1.0
+   gnome-keyring-1 >= $KEYRING_REQUIRED
+])
+
+PKG_CHECK_MODULES(LIBEMPATHY_ACCOUNTS_PANEL,
+[
+   glib-2.0 >= $GLIB_REQUIRED
+   gobject-2.0
+   gio-2.0 >= $GLIB_REQUIRED
+   gdk-x11-2.0
+   gtk+-2.0 >= $GTK_REQUIRED
+   libebook-1.2
+   dbus-glib-1
+   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    unique-1.0
    gnome-keyring-1 >= $KEYRING_REQUIRED
 ])
@@ -438,6 +454,35 @@ fi
 AM_CONDITIONAL(HAVE_NST, test "x$have_nst" = "xyes")
 
 # -----------------------------------------------------------
+# new, single-window control center
+# -----------------------------------------------------------
+AC_ARG_ENABLE(control_center_embedding,
+              AS_HELP_STRING([--enable-control-center-embedding=@<:@no/yes/auto@:>@],
+                             [Enable support for single-window control center]),
+                             , enable_control_center_embedding=auto)
+
+if test "x$enable_control_center_embedding" != "xno"; then
+   PKG_CHECK_MODULES(CONTROL_CENTER_EMBEDDING,
+   [
+      libgnome-control-center-extension
+   ], have_control_center_embedding="yes", have_control_center_embedding="no")
+
+   if test "x$have_control_center_embedding" = "xyes"; then
+      AC_DEFINE(HAVE_CONTROL_CENTER_EMBEDDING, 1, [Define if you have the single-window control center])
+   fi
+else
+   have_control_center_embedding="no"
+fi
+
+if test "x$enable_control_center_embedding" = "xyes" -a "x$have_control_center_embedding" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find single-window control center dependencies.])
+fi
+
+AM_CONDITIONAL(HAVE_CONTROL_CENTER_EMBEDDING, test "x$have_control_center_embedding" = "xyes")
+AC_SUBST(CONTROL_CENTER_EMBEDDING_CFLAGS)
+AC_SUBST(CONTROL_CENTER_EMBEDDING_LIBS)
+
+# -----------------------------------------------------------
 # Coding style checks
 # -----------------------------------------------------------
 AC_ARG_ENABLE(coding-style-checks,
@@ -452,6 +497,7 @@ AC_OUTPUT([
    Makefile
    data/Makefile
    data/empathy.desktop.in
+   data/empathy-accounts.desktop.in
    data/icons/Makefile
    extensions/Makefile
    po/Makefile.in
@@ -480,6 +526,7 @@ Configure summary:
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
 	Moblin widgets .............:  ${have_moblin}
+	Control center embedding....:  ${have_control_center_embedding}
 
     Connectivity:
 	NetworkManager integration..:  ${have_nm}
