@@ -1956,6 +1956,14 @@ empathy_account_widget_get_default_display_name (EmpathyAccountWidget *self)
           default_display_name = g_strdup_printf (_("%1$s on %2$s"),
               login_id, server);
         }
+      else if (account_widget_is_facebook (self))
+        {
+          gchar *tmp;
+
+          tmp = remove_facebook_suffix (login_id);
+          default_display_name = g_strdup_printf ("Facebook (%s)", tmp);
+          g_free (tmp);
+        }
       else
         {
           default_display_name = g_strdup (login_id);
