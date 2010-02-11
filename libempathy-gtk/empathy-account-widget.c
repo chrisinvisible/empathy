@@ -1069,7 +1069,22 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
 
       self->ui_details->default_focus = g_strdup ("entry_id_g_simple");
     }
-  /* TODO: Simple widget for Facebook */
+  else if (priv->simple && is_facebook)
+    {
+      /* Simple widget for Facebook */
+      self->ui_details->gui = empathy_builder_get_file (filename,
+          "vbox_fb_simple", &self->ui_details->widget,
+          "entry_id_fb_simple", &entry_id,
+          NULL);
+
+      empathy_account_widget_handle_params (self,
+          "entry_password_fb_simple", "password",
+          NULL);
+
+      setup_facebook_id_widget (self, entry_id);
+
+      self->ui_details->default_focus = g_strdup ("entry_id_fb_simple");
+    }
   else
     {
       /* Full widget for XMPP, Google Talk and Facebook*/

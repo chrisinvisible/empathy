@@ -616,4 +616,97 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to def
       </packing>
     </child>
   </object>
+  <object class="GtkVBox" id="vbox_fb_simple">
+    <property name="visible">True</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkLabel" id="label_id_fb_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">What is your Facebook ID?</property>
+      </object>
+      <packing>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment_simple_fb_id">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.34999999403953552</property>
+        <property name="top_padding">6</property>
+        <property name="bottom_padding">3</property>
+        <property name="left_padding">12</property>
+        <child>
+          <object class="GtkVBox" id="vbox2">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">4</property>
+            <child>
+              <object class="GtkEntry" id="entry_id_fb_simple">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x2022;</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_fb_example">
+                <property name="visible">True</property>
+                <property name="xalign">0.10000000149011612</property>
+                <property name="label" translatable="yes">If you are http://facebook.com/badger, enter badger.
+Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to define your Facebook alias.</property>
+                <property name="use_markup">True</property>
+                <attributes>
+                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                </attributes>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label_password_fb_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="ypad">6</property>
+        <property name="label" translatable="yes">What is your Facebook password?</property>
+      </object>
+      <packing>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment3">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.5</property>
+        <property name="left_padding">12</property>
+        <child>
+          <object class="GtkEntry" id="entry_password_fb_simple">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="visibility">False</property>
+            <property name="invisible_char">&#x2022;</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="position">3</property>
+      </packing>
+    </child>
+  </object>
 </interface>
