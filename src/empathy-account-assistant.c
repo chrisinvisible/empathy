@@ -390,27 +390,37 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   char *str;
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object = NULL;
-  gboolean is_gtalk;
+  gboolean is_gtalk, is_facebook;
+  const gchar *name;
 
   priv = GET_PRIV (self);
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &is_gtalk);
+      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &is_gtalk, &is_facebook);
 
   if (cm == NULL || proto == NULL)
     /* we are not ready yet */
     return;
 
   /* Create account */
+  if (is_gtalk)
+    name = "gtalk";
+  else if (is_facebook)
+    name = "facebook";
+  else
+    name = proto->name;
+
   /* To translator: %s is the protocol name */
   str = g_strdup_printf (_("New %s account"),
-      empathy_protocol_name_to_display_name (
-          is_gtalk ? "gtalk" : proto->name));
+      empathy_protocol_name_to_display_name (name));
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 
   if (is_gtalk)
     empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+      NULL, NULL);
+  else if (is_facebook)
+    empathy_account_settings_set_icon_name_async (settings, "im-facebook",
       NULL, NULL);
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)

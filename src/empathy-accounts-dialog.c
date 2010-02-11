@@ -530,19 +530,25 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   EmpathyAccountSettings *settings;
   gchar *str;
-  const gchar *display_name;
+  const gchar *name, *display_name;
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
-  gboolean is_gtalk;
+  gboolean is_gtalk, is_facebook;
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk);
+      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk,
+      &is_facebook);
   if (cm == NULL)
     return;
 
-  display_name = empathy_protocol_name_to_display_name (
-      is_gtalk ? "gtalk" : proto->name);
+  if (is_gtalk)
+    name = "gtalk";
+  else if (is_facebook)
+    name ="facebook";
+  else
+    name = proto->name;
 
+  display_name = empathy_protocol_name_to_display_name (name);
   if (display_name == NULL)
     display_name = proto->name;
 
@@ -557,6 +563,9 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 
   if (is_gtalk)
     empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+        NULL, NULL);
+  else if (is_facebook)
+    empathy_account_settings_set_icon_name_async (settings, "im-facebook",
         NULL, NULL);
 
   accounts_dialog_add (dialog, settings);

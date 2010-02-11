@@ -464,7 +464,8 @@ TpConnectionManager *
 empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol,
-    gboolean *is_gtalk)
+    gboolean *is_gtalk,
+    gboolean *is_facebook)
 {
   GtkTreeIter iter;
   TpConnectionManager *cm = NULL;
@@ -501,6 +502,13 @@ empathy_protocol_chooser_dup_selected (
         {
           gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
               COL_IS_GTALK, is_gtalk,
+              -1);
+        }
+
+      if (is_facebook != NULL)
+        {
+          gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
+              COL_IS_FACEBOOK, is_facebook,
               -1);
         }
     }

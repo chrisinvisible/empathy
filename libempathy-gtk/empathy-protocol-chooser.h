@@ -68,7 +68,8 @@ GtkWidget * empathy_protocol_chooser_new (void);
 TpConnectionManager *empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol,
-    gboolean *is_gtalk);
+    gboolean *is_gtalk,
+    gboolean *is_facebook);
 
 void empathy_protocol_chooser_set_visible (
     EmpathyProtocolChooser *protocol_chooser,
