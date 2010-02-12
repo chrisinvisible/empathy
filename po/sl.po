@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-02-11 11:22+0000\n"
-"PO-Revision-Date: 2010-02-11 13:47+0100\n"
+"POT-Creation-Date: 2010-02-12 02:45+0000\n"
+"PO-Revision-Date: 2010-02-12 10:14+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -600,11 +600,15 @@ msgstr "Vse"
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1329
+#: ../libempathy-gtk/empathy-account-widget.c:1117
+msgid "Username:"
+msgstr "Uporabniško ime:"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1445
 msgid "L_og in"
 msgstr "_Prijava"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1396
+#: ../libempathy-gtk/empathy-account-widget.c:1512
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -612,15 +616,15 @@ msgstr "_Prijava"
 msgid "Account:"
 msgstr "Račun:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1407
+#: ../libempathy-gtk/empathy-account-widget.c:1523
 msgid "Enabled"
 msgstr "Omogočeno"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1472
+#: ../libempathy-gtk/empathy-account-widget.c:1588
 msgid "This account already exists on the server"
 msgstr "Ta račun na strežniku že obstaja"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1475
+#: ../libempathy-gtk/empathy-account-widget.c:1591
 msgid "Create a new account on the server"
 msgstr "_Ustvari nov račun na strežniku"
 
@@ -629,19 +633,19 @@ msgstr "_Ustvari nov račun na strežniku"
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:1858
+#: ../libempathy-gtk/empathy-account-widget.c:1974
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s na %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:1876
+#: ../libempathy-gtk/empathy-account-widget.c:2000
 #, c-format
 msgid "%s Account"
 msgstr "%s račun"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1880
+#: ../libempathy-gtk/empathy-account-widget.c:2004
 msgid "New account"
 msgstr "Nov račun"
 
@@ -686,7 +690,7 @@ msgstr "Kakšno je vaše AIM zaslonsko ime?"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
@@ -695,7 +699,7 @@ msgstr "_Vrata:"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:24
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
@@ -832,38 +836,56 @@ msgid "Reso_urce:"
 msgstr "_Vir:"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+msgid ""
+"This is your username, not your normal Facebook login.\n"
+"If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
+"Use <a href=\"http://www.facebook.com/username/\">this page</a> to choose a Facebook username if you don't have one."
+msgstr ""
+"To je uporabniško ime in ne običajna Facebook prijava.\n"
+"V primeru, da ste facebook.com/<b>badger</b>, vnesite <b>badger</b>.\n"
+"Uporabite <a href=\"http://www.facebook.com/username/\">to stran</a> za izbor uporabniškega imena, v kolikor ga še nimate."
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid "Use old SS_L"
 msgstr "Uporabi stari SS_L"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+msgid "What is your Facebook password?"
+msgstr "Kakšno je vaše Facebook geslo?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+msgid "What is your Facebook username?"
+msgstr "kakšno je vaše Facebook uporabniško ime?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your Google ID?"
 msgstr "Kakšen je vaš Google uporabniški ID?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "What is your Google password?"
 msgstr "Kakšno je vaše Google geslo?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "What is your Jabber ID?"
 msgstr "Kakšen je vaš Jabber uporabniški ID?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 msgid "What is your Jabber password?"
 msgstr "Kakšno je vaše Jabber geslo?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 msgid "What is your desired Jabber ID?"
 msgstr "Kakšen je vaš želeni Jabber uporabniški ID?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
 msgid "What is your desired Jabber password?"
 msgstr "Kakšno je vaše želeno Jabber geslo?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
 msgid "_Encryption required (TLS/SSL)"
 msgstr "_Zahtevano šifriranje (TLS/SSL)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
 msgid "_Ignore SSL certificate errors"
 msgstr "_Prezri napake potrdila SSL"
 
@@ -1399,7 +1421,7 @@ msgid "Select"
 msgstr "Izberi"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:244
-#: ../src/empathy-main-window.c:1042
+#: ../src/empathy-main-window.c:1045
 msgid "Group"
 msgstr "Skupina"
 
@@ -1972,19 +1994,19 @@ msgstr "Ni sporočil o napakah"
 msgid "Instant Message (Empathy)"
 msgstr "Trenutno sporočanje (Empathy)"
 
-#: ../src/empathy.c:764
+#: ../src/empathy.c:603
 msgid "Don't connect on startup"
 msgstr "Brez samodejne povezave ob zagonu"
 
-#: ../src/empathy.c:768
+#: ../src/empathy.c:607
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ne prikaži seznama stikov in drugih pogovornih oken ob zagonu"
 
-#: ../src/empathy.c:772
+#: ../src/empathy.c:611
 msgid "Show the accounts dialog"
 msgstr "Pokaži pogovorno okno računov"
 
-#: ../src/empathy.c:784
+#: ../src/empathy.c:623
 msgid "- Empathy IM Client"
 msgstr "- Empathy sporočilnik"
 
@@ -2034,98 +2056,97 @@ msgid "You can either go back and try to enter your accounts' details again or q
 msgstr "Lahko ponovno vnesete podatke računa ali pa končate pomočnika in dodate račune kasneje preko menija urejanja."
 
 #: ../src/empathy-account-assistant.c:219
-#: ../src/empathy-account-assistant.c:1263
+#: ../src/empathy-account-assistant.c:1275
 msgid "An error occurred"
 msgstr "Prišlo je do napake"
 
-#. Create account
 #. To translator: %s is the protocol name
 #. Create account
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:406
-#: ../src/empathy-accounts-dialog.c:553
+#: ../src/empathy-account-assistant.c:414
+#: ../src/empathy-accounts-dialog.c:560
 #, c-format
 msgid "New %s account"
 msgstr "Nov %s račun"
 
-#: ../src/empathy-account-assistant.c:483
+#: ../src/empathy-account-assistant.c:495
 msgid "What kind of chat account do you have?"
 msgstr "Kakšno vrsto klepetalnega računa imate?"
 
-#: ../src/empathy-account-assistant.c:489
+#: ../src/empathy-account-assistant.c:501
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "Ali želite nastaviti še kakšen drug račun?"
 
-#: ../src/empathy-account-assistant.c:495
+#: ../src/empathy-account-assistant.c:507
 msgid "Enter your account details"
 msgstr "Vnos podrobnosti računa"
 
-#: ../src/empathy-account-assistant.c:500
+#: ../src/empathy-account-assistant.c:512
 msgid "What kind of chat account do you want to create?"
 msgstr "Kateri klepetalni račun naj bo ustvarjen?"
 
-#: ../src/empathy-account-assistant.c:506
+#: ../src/empathy-account-assistant.c:518
 msgid "Do you want to create other chat accounts?"
 msgstr "Ali želite ustvariti drugi klepetalni račun?"
 
-#: ../src/empathy-account-assistant.c:513
+#: ../src/empathy-account-assistant.c:525
 msgid "Enter the details for the new account"
 msgstr "Vnos podrobnosti novega računa"
 
-#: ../src/empathy-account-assistant.c:628
+#: ../src/empathy-account-assistant.c:640
 msgid "With Empathy you can chat with people online nearby and with friends and colleagues who use Google Talk, AIM, Windows Live and many other chat programs. With a microphone or a webcam you can also have audio or video calls."
 msgstr "S programom Empathy lahko klepetate s posamezniki, ki uporabljajo Google Talk, AIM, Windows Live in mnogo drugih klepetalnih programov. S spletno kamero in mikrofonom lahko uporabljate tudi možnosti pogovora ali video konference."
 
-#: ../src/empathy-account-assistant.c:645
+#: ../src/empathy-account-assistant.c:657
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "Ali imate račun, ki ste ga uporabljali z drugim programom?"
 
-#: ../src/empathy-account-assistant.c:668
+#: ../src/empathy-account-assistant.c:680
 msgid "Yes, import my account details from "
 msgstr "Da, uvoziti želim podrobnosti računa iz"
 
-#: ../src/empathy-account-assistant.c:689
+#: ../src/empathy-account-assistant.c:701
 msgid "Yes, I'll enter my account details now"
 msgstr "Da, takoj želim vnesti podrobnosti računa"
 
-#: ../src/empathy-account-assistant.c:711
+#: ../src/empathy-account-assistant.c:723
 msgid "No, I want a new account"
 msgstr "Ne, ustvariti želim nov račun"
 
-#: ../src/empathy-account-assistant.c:721
+#: ../src/empathy-account-assistant.c:733
 msgid "No, I just want to see people online nearby for now"
 msgstr "Ne, želim le videti ljudi, ki so trenutno v mreži"
 
-#: ../src/empathy-account-assistant.c:742
+#: ../src/empathy-account-assistant.c:754
 msgid "Select the accounts you want to import:"
 msgstr "Izbor računov za uvoz:"
 
-#: ../src/empathy-account-assistant.c:826
+#: ../src/empathy-account-assistant.c:838
 #: ../src/empathy-new-chatroom-dialog.c:541
 #: ../src/empathy-new-chatroom-dialog.c:542
 msgid "Yes"
 msgstr "Da"
 
-#: ../src/empathy-account-assistant.c:833
+#: ../src/empathy-account-assistant.c:845
 msgid "No, that's all for now"
 msgstr "Ne, to je trenutno vse"
 
-#: ../src/empathy-account-assistant.c:1086
+#: ../src/empathy-account-assistant.c:1098
 msgid "Empathy can automatically discover and chat with the people connected on the same network as you. If you want to use this feature, please check that the details below are correct. You can easily change these details later or disable this feature by using the 'Accounts' dialog"
 msgstr "Program Empathy lahko samodejno odkrije in izmenjuje podatke z uporabniki istega omrežja. V primeru, da želite uporabljati to možnost, preverite spodnje podrobnosti. Možnosti je mogoče spreminjati tudi kasneje preko pogovornega okna 'računov'."
 
-#: ../src/empathy-account-assistant.c:1092
-#: ../src/empathy-account-assistant.c:1148
+#: ../src/empathy-account-assistant.c:1104
+#: ../src/empathy-account-assistant.c:1160
 msgid "Edit->Accounts"
 msgstr "Uredi->Računi"
 
-#: ../src/empathy-account-assistant.c:1108
+#: ../src/empathy-account-assistant.c:1120
 msgid "I don't want to enable this feature for now"
 msgstr "Ne želim omogočiti te možnosti"
 
-#: ../src/empathy-account-assistant.c:1144
+#: ../src/empathy-account-assistant.c:1156
 msgid ""
 "You won't be able to chat with people connected to your local network, as telepathy-salut is not installed.\n"
 "If you want to enable this feature, please install the telepathy-salut package\n"
@@ -2135,63 +2156,63 @@ msgstr ""
 "V primeru, da želite omogočiti to možnost, namestite salut paket\n"
 "in ustvarite račun bližnjih uporabnikov med možnostmi računa."
 
-#: ../src/empathy-account-assistant.c:1150
+#: ../src/empathy-account-assistant.c:1162
 msgid "telepathy-salut not installed"
 msgstr "telepathy-salut ni nameščen"
 
-#: ../src/empathy-account-assistant.c:1227
+#: ../src/empathy-account-assistant.c:1239
 msgid "Welcome to Empathy"
 msgstr "Dobrodošli v program Empathy"
 
-#: ../src/empathy-account-assistant.c:1236
+#: ../src/empathy-account-assistant.c:1248
 msgid "Import your existing accounts"
 msgstr "Uvoz obstoječih računov"
 
-#: ../src/empathy-account-assistant.c:1254
+#: ../src/empathy-account-assistant.c:1266
 msgid "Please enter personal details"
 msgstr "Vnesite osebne podrobnosti"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
-#: ../src/empathy-accounts-dialog.c:65
+#: ../src/empathy-accounts-dialog.c:66
 #, c-format
 msgid "There are unsaved modifications to your %s account."
 msgstr "Še vedno so odprte spremembe vašega %s računa."
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * an unsaved new account
-#: ../src/empathy-accounts-dialog.c:69
+#: ../src/empathy-accounts-dialog.c:70
 msgid "Your new account has not been saved yet."
 msgstr "Novi račun še ni shranjen."
 
-#: ../src/empathy-accounts-dialog.c:260
+#: ../src/empathy-accounts-dialog.c:261
 #: ../src/empathy-call-window.c:729
 msgid "Connecting…"
 msgstr "Povezovanje ..."
 
-#: ../src/empathy-accounts-dialog.c:287
+#: ../src/empathy-accounts-dialog.c:288
 #, c-format
 msgid "Disconnected — %s"
 msgstr "Prekinjena povezava - %s"
 
-#: ../src/empathy-accounts-dialog.c:292
+#: ../src/empathy-accounts-dialog.c:293
 #, c-format
 msgid "Offline — %s"
 msgstr "Brez povezave - %s"
 
-#: ../src/empathy-accounts-dialog.c:305
+#: ../src/empathy-accounts-dialog.c:306
 msgid "Offline — No Network Connection"
 msgstr "Brez povezave - ni omrežne povezave"
 
-#: ../src/empathy-accounts-dialog.c:313
+#: ../src/empathy-accounts-dialog.c:314
 msgid "Unknown Status"
 msgstr "Neznano stanje"
 
-#: ../src/empathy-accounts-dialog.c:324
+#: ../src/empathy-accounts-dialog.c:325
 msgid "Offline — Account Disabled"
 msgstr "Brez povezave - račun je onemogočen"
 
-#: ../src/empathy-accounts-dialog.c:721
+#: ../src/empathy-accounts-dialog.c:731
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2199,16 +2220,16 @@ msgstr ""
 "Ustvarjen bo nov račun, trenutne spremembe pa bodo izgubljene!\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:1058
+#: ../src/empathy-accounts-dialog.c:1068
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Ali želite odstraniti %s iz računalnika?"
 
-#: ../src/empathy-accounts-dialog.c:1062
+#: ../src/empathy-accounts-dialog.c:1072
 msgid "This will not remove your account on the server."
 msgstr "S tem bo odstranjen račun s strežnika."
 
-#: ../src/empathy-accounts-dialog.c:1292
+#: ../src/empathy-accounts-dialog.c:1302
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2216,7 +2237,7 @@ msgstr ""
 "Izbran bo nov račun, trenutne spremembe pa bodo izgubljene\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:1839
+#: ../src/empathy-accounts-dialog.c:1849
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2225,7 +2246,7 @@ msgstr ""
 "Ali ste prepričani, da želite nadaljevati?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1970
+#: ../src/empathy-accounts-dialog.c:1982
 msgid "Accounts"
 msgstr "Računi"
 
@@ -2776,23 +2797,23 @@ msgstr "Vir"
 msgid "%s account"
 msgstr "%s račun"
 
-#: ../src/empathy-main-window.c:430
+#: ../src/empathy-main-window.c:433
 msgid "Reconnect"
 msgstr "Ponovno poveži"
 
-#: ../src/empathy-main-window.c:436
+#: ../src/empathy-main-window.c:439
 msgid "Edit Account"
 msgstr "Uredi račun"
 
-#: ../src/empathy-main-window.c:442
+#: ../src/empathy-main-window.c:445
 msgid "Close"
 msgstr "Zapri"
 
-#: ../src/empathy-main-window.c:1025
+#: ../src/empathy-main-window.c:1028
 msgid "Contact"
 msgstr "Stik"
 
-#: ../src/empathy-main-window.c:1363
+#: ../src/empathy-main-window.c:1369
 msgid "Show and edit accounts"
 msgstr "Pokaži in uredi račune"
 
@@ -3210,8 +3231,6 @@ msgstr "Izbor stika za povabilo v pogovor:"
 #~ msgstr ""
 #~ "Prejeli ste vabilo za storitev %s, vendar pa ni nameščenega ustreznega "
 #~ "zunanjega programa."
-#~ msgid "What is your Windows Live user name?"
-#~ msgstr "kakšno je vaše Windows Live uporabniško ime?"
 #~ msgid "Email:"
 #~ msgstr "E-pošta:"
 #~ msgid "C_all"
