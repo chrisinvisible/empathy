@@ -786,13 +786,7 @@ account_chooser_set_account_foreach (GtkTreeModel   *model,
 
 	gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
-	/* Special case so we can make it possible to select the All option */
-	if ((data->account == NULL) != (account == NULL)) {
-		equal = FALSE;
-	}
-	else {
-		equal = (data->account == account);
-	}
+	equal = (data->account == account);
 
 	if (account) {
 		g_object_unref (account);
