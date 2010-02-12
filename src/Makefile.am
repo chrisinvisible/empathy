@@ -5,6 +5,7 @@ CPPFLAGS_COMMON =					\
 	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DG_LOG_DOMAIN=\"empathy\"			\
+	-DBIN_DIR=\"$(bindir)\"                         \
 	$(DISABLE_DEPRECATED)				\
 	$(WARN_CFLAGS)					\
 	$(NULL)

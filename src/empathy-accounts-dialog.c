@@ -2228,7 +2228,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
   g_return_if_fail (GDK_IS_SCREEN (screen));
   g_return_if_fail (!selected_account || TP_IS_ACCOUNT (selected_account));
 
-  argv[i++] = "empathy-accounts";
+  argv[i++] = BIN_DIR "/empathy-accounts";
 
   if (selected_account)
     {
