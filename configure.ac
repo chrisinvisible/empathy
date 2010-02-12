@@ -412,7 +412,7 @@ AC_ARG_ENABLE(moblin,
 if test "x$enable_moblin" != "xno"; then
     PKG_CHECK_MODULES(MOBLIN,
     [
-       nbtk-gtk-1.2
+       mx-gtk-1.0
     ], have_moblin="yes", have_moblin="no")
 
     if test "x$have_moblin" = "xyes"; then

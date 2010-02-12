@@ -31,7 +31,7 @@
 #include <glib/gi18n-lib.h>
 
 #ifdef HAVE_MOBLIN
-#include <nbtk/nbtk-gtk.h>
+#include <mx/mx-gtk.h>
 #endif
 
 #include <libempathy/empathy-utils.h>
@@ -746,8 +746,8 @@ account_widget_applied_cb (GObject *source_object,
 
           enabled_checked =
 #ifdef HAVE_MOBLIN
-            nbtk_gtk_light_switch_get_active (
-                NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox));
+            mx_gtk_light_switch_get_active (
+                MX_GTK_LIGHT_SWITCH (priv->enabled_checkbox));
 #else
             gtk_toggle_button_get_active (
                 GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
@@ -1331,8 +1331,8 @@ empathy_account_widget_enabled_cb (TpAccount *account,
   if (priv->enabled_checkbox != NULL)
     {
 #ifdef HAVE_MOBLIN
-      nbtk_gtk_light_switch_set_active (
-          NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
+      mx_gtk_light_switch_set_active (
+          MX_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
           enabled);
 #else
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
@@ -1343,7 +1343,7 @@ empathy_account_widget_enabled_cb (TpAccount *account,
 
 static void
 #ifdef HAVE_MOBLIN
-account_widget_switch_flipped_cb (NbtkGtkLightSwitch *sw,
+account_widget_switch_flipped_cb (MxGtkLightSwitch *sw,
     gboolean state,
     gpointer user_data)
 #else
@@ -1512,10 +1512,10 @@ add_enable_checkbox (EmpathyAccountWidget *self,
   w = gtk_label_new (_("Account:"));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
 
-  priv->enabled_checkbox = nbtk_gtk_light_switch_new ();
+  priv->enabled_checkbox = mx_gtk_light_switch_new ();
 
-  nbtk_gtk_light_switch_set_active (
-      NBTK_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
+  mx_gtk_light_switch_set_active (
+      MX_GTK_LIGHT_SWITCH (priv->enabled_checkbox), is_enabled);
 
   gtk_widget_show (w);
 #else
