@@ -2947,8 +2947,12 @@ empathy_chat_messages_read (EmpathyChat *self)
 
 	g_return_if_fail (EMPATHY_IS_CHAT (self));
 
-	empathy_tp_chat_acknowledge_messages (priv->tp_chat,
+	if (priv->tp_chat != NULL) {
+		empathy_tp_chat_acknowledge_messages (priv->tp_chat,
 			priv->pending_messages);
+	}
+	/* ...else, we can't do any acknowledging because the channel (or
+	 * indeed connection) has gone away. */
 
 	while (priv->pending_messages != NULL) {
 		g_object_unref (priv->pending_messages->data);
