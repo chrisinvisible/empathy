@@ -504,6 +504,8 @@ account_status_changed_cb (TpAccount *account,
   TpConnection *conn;
 
   conn = tp_account_get_connection (account);
+  if (conn == NULL)
+    return;
 
   empathy_dispatcher_join_muc (conn,
       empathy_chatroom_get_room (room), NULL, NULL);
