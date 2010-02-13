@@ -2954,9 +2954,7 @@ empathy_chat_messages_read (EmpathyChat *self)
 	/* ...else, we can't do any acknowledging because the channel (or
 	 * indeed connection) has gone away. */
 
-	while (priv->pending_messages != NULL) {
-		g_object_unref (priv->pending_messages->data);
-		priv->pending_messages = g_slist_delete_link (
-			priv->pending_messages, priv->pending_messages);
-	}
+	g_slist_foreach (priv->pending_messages, (GFunc) g_object_unref, NULL);
+	g_slist_free (priv->pending_messages);
+	priv->pending_messages = NULL;
 }
