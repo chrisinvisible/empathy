@@ -1,7 +1,6 @@
 include $(top_srcdir)/gnome-doc-utils.make
 
 DOC_ID = empathy
-DOC_INCLUDES = legal.xml
 DOC_FIGURES = \
 	figures/audio-input-microphone.png \
 	figures/available.png \
@@ -9,6 +8,7 @@ DOC_FIGURES = \
 	figures/busy.png \
 	figures/camera-web.png \
 	figures/empathy-main-window.png \
+	figures/empathy-logo.png \
 	figures/gtk-add.png \
 	figures/gtk-edit.png \
 	figures/gtk-remove.png \
@@ -36,12 +36,14 @@ DOC_PAGES = \
 	import-account.page \
 	index.page \
 	introduction.page \
+	irc-commands.page \
 	irc-join-pwd.page \
 	irc-join-room.page \
 	irc-manage.page \
 	irc-nick-password.page \
 	irc-send-file.page \
 	irc-start-conversation.page \
+	license.page \
 	offline-contacts.page \
 	prev-conv.page \
 	prob-conn-acctdisabled.page \
@@ -57,7 +59,6 @@ DOC_PAGES = \
 	share-desktop.page \
 	status-icons.page \
 	video-call.page
-
 
 DOC_LINGUAS = ca cs de el en_GB es fi fr it ru sv
 dist-hook: doc-dist-hook

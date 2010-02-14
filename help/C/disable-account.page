@@ -15,6 +15,7 @@
       <e:review by="shaunm@gnome.org" date="2009-08-31" status="done"/>
       -->
     </revision>
+    <revision pkgversion="2.30" version="0.5" date="2010-02-03" status="review"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
@@ -23,13 +24,16 @@
       <name>Shaun McCance</name>
       <email>shaunm@gnome.org</email>
     </credit>
+    <license>
+      <p>Creative Commons Share Alike 3.0</p>
+    </license>    
 <!--
     <copyright>
       <year>2009</year>
       <name>GNOME Documentation Project</name>
     </copyright>
--->
     <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+-->
   </info>
 
   <title>Disable an account</title>
@@ -50,17 +54,12 @@
     </item>
     <item>
       <p>Deselect <gui style="checkbox">Enabled</gui> on the right side of the
-      window.  This option is after your primary account details, but before
-      any advanced settings.</p>
-    </item>
-    <item>
-      <p>
-        Click <gui style="button">Apply</gui>.
+      window.
       </p>
     </item>
   </steps>
 
-  <p>To re-enable the account, simply select <gui style="checkbox">Enabled</gui>
-  and click <gui>Apply</gui>.</p>
-
+  <p>
+    To re-enable the account, simply select <gui style="checkbox">Enabled</gui>.
+  </p>
 </page>
