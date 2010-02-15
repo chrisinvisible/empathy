@@ -96,7 +96,7 @@ typedef struct {
 	GtkWidget         *info_bar_vbox;
 	GtkWidget         *search_bar;
 
-	GSList            *pending_messages;
+	guint              unread_messages;
 	/* TRUE if the pending messages can be displayed. This is to avoid to show
 	 * pending messages *before* messages from logs. (#603980) */
 	gboolean           can_show_pending;
@@ -1116,9 +1116,7 @@ chat_message_received (EmpathyChat *chat, EmpathyMessage *message)
 			       TP_CHANNEL_CHAT_STATE_ACTIVE,
 			       chat);
 
-	priv->pending_messages = g_slist_prepend (priv->pending_messages,
-			g_object_ref (message));
-
+	priv->unread_messages++;
 	g_signal_emit (chat, signals[NEW_MESSAGE], 0, message);
 }
 
@@ -2934,9 +2932,9 @@ empathy_chat_get_nb_unread_messages (EmpathyChat *self)
 {
 	EmpathyChatPriv *priv = GET_PRIV (self);
 
-	g_return_val_if_fail (EMPATHY_IS_CHAT (self), FALSE);
+	g_return_val_if_fail (EMPATHY_IS_CHAT (self), 0);
 
-	return g_slist_length (priv->pending_messages);
+	return priv->unread_messages;
 }
 
 /* called when the messages have been read by user */
@@ -2948,13 +2946,8 @@ empathy_chat_messages_read (EmpathyChat *self)
 	g_return_if_fail (EMPATHY_IS_CHAT (self));
 
 	if (priv->tp_chat != NULL) {
-		empathy_tp_chat_acknowledge_messages (priv->tp_chat,
-			priv->pending_messages);
+		empathy_tp_chat_acknowledge_all_messages (priv->tp_chat);
 	}
-	/* ...else, we can't do any acknowledging because the channel (or
-	 * indeed connection) has gone away. */
-
-	g_slist_foreach (priv->pending_messages, (GFunc) g_object_unref, NULL);
-	g_slist_free (priv->pending_messages);
-	priv->pending_messages = NULL;
+	
+	priv->unread_messages = 0;
 }
