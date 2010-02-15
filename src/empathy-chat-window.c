@@ -1531,6 +1531,28 @@ chat_window_focus_in_event_cb (GtkWidget        *widget,
 }
 
 static gboolean
+chat_window_drag_drop (GtkWidget        *widget,
+			 GdkDragContext   *context,
+			 int               x,
+			 int               y,
+			 guint             time_,
+			 gpointer          user_data)
+{
+	GdkAtom target, uri_target, contact_target;
+
+	target = gtk_drag_dest_find_target (widget, context, NULL);
+	uri_target = gdk_atom_intern_static_string ("text/uri-list");
+	contact_target = gdk_atom_intern_static_string ("text/contact-id");
+
+	if (target == uri_target || target == contact_target) {
+		gtk_drag_get_data (widget, context, target, time_);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean
 chat_window_drag_motion (GtkWidget        *widget,
 			 GdkDragContext   *context,
 			 int               x,
@@ -1587,9 +1609,7 @@ chat_window_drag_motion (GtkWidget        *widget,
 		return TRUE;
 	}
 
-	/* Otherwise, it must be a notebook tab drag.  Set to MOVE. */
-	gdk_drag_status (context, GDK_ACTION_MOVE, time_);
-	return TRUE;
+	return FALSE;
 }
 
 static void
@@ -1708,23 +1728,10 @@ chat_window_drag_data_received (GtkWidget        *widget,
 			EmpathyChatWindowPriv *priv;
 
 			priv = GET_PRIV (window);
-
-			if (old_window == window) {
-				DEBUG ("DND tab (within same window)");
-				priv->dnd_same_window = TRUE;
-				gtk_drag_finish (context, TRUE, FALSE, time_);
-				return;
-			}
-
-			priv->dnd_same_window = FALSE;
+			priv->dnd_same_window = (old_window == window);
+			DEBUG ("DND tab (within same window: %s)",
+				priv->dnd_same_window ? "Yes" : "No");
 		}
-
-		/* We should return TRUE to remove the data when doing
-		 * GDK_ACTION_MOVE, but we don't here otherwise it has
-		 * weird consequences, and we handle that internally
-		 * anyway with add_chat () and remove_chat ().
-		 */
-		gtk_drag_finish (context, TRUE, FALSE, time_);
 	} else {
 		DEBUG ("DND from unknown source");
 		gtk_drag_finish (context, FALSE, FALSE, time_);
@@ -1921,7 +1928,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 
 	/* Set up drag and drop */
 	gtk_drag_dest_set (GTK_WIDGET (priv->notebook),
-			   GTK_DEST_DEFAULT_ALL,
+			   GTK_DEST_DEFAULT_HIGHLIGHT,
 			   drag_types_dest,
 			   G_N_ELEMENTS (drag_types_dest),
 			   GDK_ACTION_MOVE | GDK_ACTION_COPY);
@@ -1934,6 +1941,10 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	g_signal_connect (priv->notebook,
 			  "drag-data-received",
 			  G_CALLBACK (chat_window_drag_data_received),
+			  window);
+	g_signal_connect (priv->notebook,
+			  "drag-drop",
+			  G_CALLBACK (chat_window_drag_drop),
 			  window);
 
 	chat_windows = g_list_prepend (chat_windows, window);
