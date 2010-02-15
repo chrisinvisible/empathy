@@ -73,10 +73,21 @@ typedef struct {
 	gboolean               set;
 } SetAccountData;
 
+/* Distinguishes between store entries which are actually accounts, and special
+ * items like the "All" entry and the separator below it, so they can be sorted
+ * correctly. Higher-numbered entries will sort earlier.
+ */
+typedef enum {
+	ROW_ACCOUNT = 0,
+	ROW_SEPARATOR,
+	ROW_ALL
+} RowType;
+
 enum {
 	COL_ACCOUNT_IMAGE,
 	COL_ACCOUNT_TEXT,
 	COL_ACCOUNT_ENABLED, /* Usually tied to connected state */
+	COL_ACCOUNT_ROW_TYPE,
 	COL_ACCOUNT_POINTER,
 	COL_ACCOUNT_COUNT
 };
@@ -443,6 +454,7 @@ empathy_account_chooser_set_has_all_option (EmpathyAccountChooser *chooser,
 				    COL_ACCOUNT_TEXT, NULL,
 				    COL_ACCOUNT_ENABLED, TRUE,
 				    COL_ACCOUNT_POINTER, NULL,
+				    COL_ACCOUNT_ROW_TYPE, ROW_SEPARATOR,
 				    -1);
 
 		gtk_list_store_prepend (store, &iter);
@@ -450,6 +462,7 @@ empathy_account_chooser_set_has_all_option (EmpathyAccountChooser *chooser,
 				    COL_ACCOUNT_TEXT, _("All"),
 				    COL_ACCOUNT_ENABLED, TRUE,
 				    COL_ACCOUNT_POINTER, NULL,
+				    COL_ACCOUNT_ROW_TYPE, ROW_ALL,
 				    -1);
 	} else {
 		if (gtk_tree_model_get_iter_first (model, &iter)) {
@@ -509,12 +522,25 @@ account_cmp (GtkTreeModel *model,
 	     GtkTreeIter *b,
 	     gpointer user_data)
 {
+	RowType a_type, b_type;
 	gboolean a_enabled, b_enabled;
 	gchar *a_text, *b_text;
 	gint result;
 
-	gtk_tree_model_get (model, a, COL_ACCOUNT_ENABLED, &a_enabled, -1);
-	gtk_tree_model_get (model, b, COL_ACCOUNT_ENABLED, &b_enabled, -1);
+	gtk_tree_model_get (model, a,
+		COL_ACCOUNT_ENABLED, &a_enabled,
+		COL_ACCOUNT_ROW_TYPE, &a_type,
+		-1);
+	gtk_tree_model_get (model, b,
+		COL_ACCOUNT_ENABLED, &b_enabled,
+		COL_ACCOUNT_ROW_TYPE, &b_type,
+		-1);
+
+	/* This assumes that we have at most one of each special row type. */
+	if (a_type != b_type) {
+		/* Display higher-numbered special row types first. */
+		return (b_type - a_type);
+	}
 
 	/* Enabled accounts are displayed first */
 	if (a_enabled != b_enabled)
@@ -557,6 +583,7 @@ account_chooser_setup (EmpathyAccountChooser *chooser)
 				    G_TYPE_STRING,    /* Image */
 				    G_TYPE_STRING,    /* Name */
 				    G_TYPE_BOOLEAN,   /* Enabled */
+				    G_TYPE_UINT,      /* Row type */
 				    TP_TYPE_ACCOUNT);
 
 	gtk_tree_sortable_set_default_sort_func (GTK_TREE_SORTABLE (store),
@@ -758,21 +785,10 @@ account_chooser_separator_func (GtkTreeModel         *model,
 				GtkTreeIter          *iter,
 				EmpathyAccountChooser *chooser)
 {
-	EmpathyAccountChooserPriv *priv;
-	gchar                    *text;
-	gboolean                  is_separator;
+	RowType row_type;
 
-	priv = GET_PRIV (chooser);
-
-	if (!priv->has_all_option) {
-		return FALSE;
-	}
-
-	gtk_tree_model_get (model, iter, COL_ACCOUNT_TEXT, &text, -1);
-	is_separator = text == NULL;
-	g_free (text);
-
-	return is_separator;
+	gtk_tree_model_get (model, iter, COL_ACCOUNT_ROW_TYPE, &row_type, -1);
+	return (row_type == ROW_SEPARATOR);
 }
 
 static gboolean
@@ -786,13 +802,7 @@ account_chooser_set_account_foreach (GtkTreeModel   *model,
 
 	gtk_tree_model_get (model, iter, COL_ACCOUNT_POINTER, &account, -1);
 
-	/* Special case so we can make it possible to select the All option */
-	if ((data->account == NULL) != (account == NULL)) {
-		equal = FALSE;
-	}
-	else {
-		equal = (data->account == account);
-	}
+	equal = (data->account == account);
 
 	if (account) {
 		g_object_unref (account);
