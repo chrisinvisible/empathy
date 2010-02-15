@@ -11,10 +11,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-12 10:22+0100\n"
-"PO-Revision-Date: 2010-02-11 19:33+0100\n"
+"POT-Creation-Date: 2010-02-15 14:45+0100\n"
+"PO-Revision-Date: 2010-02-12 21:41+0100\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
-"Language-Team: Gallician <proxecto@trasno.net>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -545,6 +545,15 @@ msgstr ""
 "ordenación polo nome do contacto co valor \"name\". Un valor de \"estado\" "
 "ordenará a lista de contactos por estado."
 
+#: ../data/empathy-accounts.desktop.in.in.h:1
+msgid "Manage Messaging and VoIP accounts"
+msgstr "Xestionar as contas de mensaxaría e VoIP"
+
+#: ../data/empathy-accounts.desktop.in.in.h:2
+#: ../src/cc-empathy-accounts-page.c:201 ../src/cc-empathy-accounts-panel.c:70
+msgid "Messaging and VoIP Accounts"
+msgstr "Contas de mensaxaría e VoIP"
+
 #: ../libempathy/empathy-ft-handler.c:840
 msgid "The hash of the received file and the sent one do not match"
 msgstr "O hash do ficheiro recibido e o do enviado non coinciden"
@@ -752,7 +761,7 @@ msgstr[1] "Hai %d meses"
 msgid "in the future"
 msgstr "no futuro"
 
-#: ../libempathy-gtk/empathy-account-chooser.c:450
+#: ../libempathy-gtk/empathy-account-chooser.c:462
 msgid "All"
 msgstr "Todo"
 
@@ -763,7 +772,6 @@ msgid "%s:"
 msgstr "%s:"
 
 #: ../libempathy-gtk/empathy-account-widget.c:1117
-#, fuzzy
 msgid "Username:"
 msgstr "Nome de _usuario:"
 
@@ -1013,6 +1021,10 @@ msgid ""
 "Use <a href=\"http://www.facebook.com/username/\">this page</a> to choose a "
 "Facebook username if you don't have one."
 msgstr ""
+"Este é o seu nome de usuario, non os datos de acceso de Facebook normais.\n"
+"Se vostede é facebook.com/<b>marca</b>, insira <b>marca</b>.\n"
+"Use <a href=\"http://www.facebook.com/username/\">esta páxina</a> para "
+"seleccioar o nome de usuario de Facebook se non ten ningún."
 
 # rever
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
@@ -1020,14 +1032,12 @@ msgid "Use old SS_L"
 msgstr "Usar o SS_L antigo"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
-#, fuzzy
 msgid "What is your Facebook password?"
-msgstr "Cal é o seu contrasinal para Yahoo!?"
+msgstr "Cal é o seu contrasinal para Facebook?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
-#, fuzzy
 msgid "What is your Facebook username?"
-msgstr "Cal é o seu nome de usuario para Windows Live?"
+msgstr "Cal é o seu nome de usuario para Facebook?"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your Google ID?"
@@ -2243,22 +2253,22 @@ msgid "Instant Message (Empathy)"
 msgstr "Mensaxe instantáneo (Empathy)"
 
 # rever
-#: ../src/empathy.c:603
+#: ../src/empathy.c:605
 msgid "Don't connect on startup"
 msgstr "Non conectarse ao inicio"
 
 # rever
-#: ../src/empathy.c:607
+#: ../src/empathy.c:609
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Non mostrar a lista de contactos nin outros diálogos no inicio"
 
 # rever
-#: ../src/empathy.c:611
+#: ../src/empathy.c:613
 msgid "Show the accounts dialog"
 msgstr "Mostra o diálogo de conta"
 
 # rever
-#: ../src/empathy.c:623
+#: ../src/empathy.c:625
 msgid "- Empathy IM Client"
 msgstr "- Cliente de mensaxaría instantánea Empathy"
 
@@ -3615,6 +3625,35 @@ msgstr "Invitar participante"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Seleccione o contacto que quere invitar á conversa:"
 
+#: ../src/empathy-accounts.c:196
+msgid ""
+"Try to import any recognized accounts and display an assistant if that fails"
+msgstr ""
+"Tenta importar calquera das contas recoñecidas e mostra un asistente se falla"
+
+#: ../src/empathy-accounts.c:201
+msgid "Don't display any dialogs; do any work (eg, importing) and exit"
+msgstr "Non mostra ningún diálogo, fai algún traballo (p.ex. importar) e sae"
+
+#: ../src/empathy-accounts.c:205
+msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
+msgstr ""
+"Conta fornecida seleccionada inicialmente (p.ex. gabble/jabber/"
+"foo_40exemplo_2eorg0)"
+
+#: ../src/empathy-accounts.c:207
+msgid "<account-id>"
+msgstr "<account-id>"
+
+# rever
+#: ../src/empathy-accounts.c:215
+msgid "- Empathy Accounts"
+msgstr "- Contas de Empathy"
+
+#: ../src/empathy-accounts.c:231
+msgid " Accounts"
+msgstr " Contas"
+
 #~ msgid "Hidden"
 #~ msgstr "Oculto"
 
@@ -3681,9 +3720,6 @@ msgstr "Seleccione o contacto que quere invitar á conversa:"
 
 #~ msgid "Cr_eate"
 #~ msgstr "Cr_ear"
-
-#~ msgid "account"
-#~ msgstr "conta"
 
 #~ msgid "C_all"
 #~ msgstr "Ch_amar"
