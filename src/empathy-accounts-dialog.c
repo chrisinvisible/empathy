@@ -175,6 +175,10 @@ static void accounts_dialog_presence_changed_cb (TpAccount *account,
     gchar *status_message,
     EmpathyAccountsDialog *dialog);
 
+static void accounts_dialog_model_selection_changed (
+    GtkTreeSelection *selection,
+    EmpathyAccountsDialog *dialog);
+
 static void
 accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
     const gchar *display_name)
@@ -1035,7 +1039,17 @@ accounts_dialog_delete_account_response_cb (GtkDialog *message_dialog,
           account = NULL;
         }
 
+      /* No need to call accounts_dialog_model_selection_changed while
+       * removing as we are going to call accounts_dialog_model_select_first
+       * right after which will update the selection. */
+      g_signal_handlers_block_by_func (selection,
+          accounts_dialog_model_selection_changed, account_dialog);
+
       gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+
+      g_signal_handlers_unblock_by_func (selection,
+          accounts_dialog_model_selection_changed, account_dialog);
+
       accounts_dialog_model_select_first (account_dialog);
     }
 
