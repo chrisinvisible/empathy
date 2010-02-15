@@ -1436,9 +1436,10 @@ presence_changed_cb (TpAccountManager *manager,
     /* This button doesn't exist in 'simple' mode */
     return;
 
-  if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+  if (state > TP_CONNECTION_PRESENCE_TYPE_OFFLINE &&
+      priv->creating_account)
     {
-      /* We are online, display a Login button */
+      /* We are online and creating a new account, display a Login button */
       GtkWidget *image;
 
       gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), FALSE);
@@ -1450,7 +1451,8 @@ presence_changed_cb (TpAccountManager *manager,
     }
   else
     {
-      /* We are offline, display a Save button */
+      /* We are offline or modifying an existing account, display
+       * a Save button */
       gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
       gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
       gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_SAVE);
