@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-02-15 10:40+0000\n"
-"PO-Revision-Date: 2010-02-15 11:49+0100\n"
+"PO-Revision-Date: 2010-02-15 12:14+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1214,11 +1214,11 @@ msgstr "Compartir"
 
 #: C/license.page:26(p)
 msgid "To copy, distribute and transmit the work."
-msgstr "Copiar, distribuir y transmitir el trabajo."
+msgstr "Copiar, distribuir y comunicar públicamente la obra"
 
 #: C/license.page:29(em)
 msgid "To remix"
-msgstr "Mezclar"
+msgstr "Hacer obras derivadas"
 
 #: C/license.page:30(p)
 msgid "To adapt the work."
@@ -1239,6 +1239,9 @@ msgid ""
 "licensor (but not in any way that suggests that they endorse you or your use "
 "of the work)."
 msgstr ""
+"Debe reconocer los créditos de la obra de la manera especificada por el "
+"autor o el licenciador (pero no de una manera que sugiera que tiene su apoyo "
+"o apoyan el uso que hace de su obra)."
 
 #: C/license.page:46(em)
 msgid "Share Alike"
@@ -1249,9 +1252,11 @@ msgid ""
 "If you alter, transform, or build upon this work, you may distribute the "
 "resulting work only under the same, similar or a compatible license."
 msgstr ""
+"Si transforma o modifica esta obra para crear una obra derivada, sólo puede "
+"distribuir la obra resultante bajo la misma licencia, una de similar o una "
+"de compatible."
 
 #: C/license.page:53(p)
-#, fuzzy
 #| msgid ""
 #| "This work is licensed under a <link href=\"http://creativecommons.org/"
 #| "licenses/by-sa/3.0/\">Creative Commons Attribution-Share Alike 3.0 "
@@ -1262,9 +1267,10 @@ msgid ""
 "link>, or read the full <link href=\"http://creativecommons.org/licenses/by-"
 "sa/3.0/\">Commons Deed</link>."
 msgstr ""
-"Este trabajo está licenciado bajo una <link href=\"http://creativecommons."
-"org/licenses/by-sa/3.0/us/\">Licencia Creative Commons atribución - "
-"compartir igual 3.0 sin soporte</link>."
+"Para ver el texto completo de la licencia consulte la <link href=\"http://"
+"creativecommons.org/licenses/by-sa/3.0/legalcode/\">página web de Creative "
+"Commons</link> o lea el<link href=\"http://creativecommons.org/licenses/by-"
+"sa/3.0/\">Escrito de Commons</link>."
 
 #: C/irc-start-conversation.page:8(desc)
 msgid "Start a conversation witn an IRC contact."
@@ -2133,7 +2139,6 @@ msgstr ""
 "grupo, consulte la <link xref=\"group-conversations\"/>."
 
 #: C/favorite-rooms.page:54(p)
-#, fuzzy
 #| msgid ""
 #| "From the conversation window, choose <guiseq><gui>Conversation</"
 #| "gui><gui>Favorite Chatroom</gui></guiseq>."
@@ -2248,7 +2253,6 @@ msgstr ""
 "parte izquierda de la ventana."
 
 #: C/disable-account.page:56(p)
-#, fuzzy
 #| msgid ""
 #| "Deselect <gui style=\"checkbox\">Enabled</gui> on the right side of the "
 #| "window. This option is after your primary account details, but before any "
@@ -2258,11 +2262,9 @@ msgid ""
 "window."
 msgstr ""
 "Deseleccione <gui style=\"checkbox\">Activada</gui> en la parte derecha de "
-"la ventana. Esta opción está después de sus detalles primarios de la cuenta, "
-"pero antes de cualquier ajuste avanzado."
+"la ventana."
 
 #: C/disable-account.page:62(p)
-#, fuzzy
 #| msgid ""
 #| "To re-enable the account, simply select <gui style=\"checkbox\">Enabled</"
 #| "gui> and click <gui>Apply</gui>."
@@ -2271,7 +2273,7 @@ msgid ""
 "gui>."
 msgstr ""
 "Para reactivar la cuenta simplemente seleccione <gui style=\"checkbox"
-"\">Activada</gui> y pulse <gui>Aplicar</gui>."
+"\">Activada</gui>."
 
 #: C/create-account.page:9(desc)
 msgid "Register for an account with one of the supported messaging services."
@@ -2664,7 +2666,7 @@ msgstr "No"
 
 #: C/audio-video.page:140(p)
 msgid "Facebook Chat"
-msgstr ""
+msgstr "Chat de Facebook"
 
 #: C/audio-video.page:145(p)
 msgid "gadugadu"
@@ -2721,7 +2723,6 @@ msgid ""
 msgstr ""
 
 #: C/audio-call.page:46(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Contact List</gui> window, click the <media type=\"image\" "
 #| "mime=\"image/png\" src=\"figures/audio-input-microphone.png\">audio call</"
@@ -2736,12 +2737,12 @@ msgid ""
 msgstr ""
 "Desde la ventana <gui>Lista de contactos</gui> pulse el icono de <media type="
 "\"image\" mime=\"image/png\" src=\"figures/audio-input-microphone.png"
-"\">llamada de sonido junto al nombre del contacto al que quiera llamar. "
+"\">llamada de sonido</media> junto al nombre del contacto al que quiera "
+"llamar y elija <gui style=\"menuitem\">Llamada de sonido<gui>. "
 "Alternativamente pulse con el botón derecho del ratón sobre el contacto y "
-"elija </media>Llamada de sonido<gui>."
+"elija <gui style=\"menuitem\">Llamada de sonido<gui>."
 
 #: C/audio-call.page:61(p)
-#, fuzzy
 #| msgid ""
 #| "To turn an audio conversation into a video conversation, choose "
 #| "<guiseq><gui>Call</gui><gui>Send video</gui></guiseq>, or click the "
@@ -2754,9 +2755,10 @@ msgid ""
 "web.png\">video call</media> toolbar button to select it."
 msgstr ""
 "Para convertir una conversación de sonido en una de vídeo, desde la ventana "
-"de llamada seleccione <guiseq><gui>Llamar</gui><gui>Enviar vídeo</gui></"
-"guiseq> o pulse el icono de <media type=\"image\" mime=\"image/png\" src="
-"\"figures/camera-web.png\">vídeo llamada</media>."
+"de llamada seleccione <guiseq><gui style=\"menu\">Llamar</gui><gui style="
+"\"menuitem\">Enviar vídeo</gui></guiseq> o pulse el icono de <media type="
+"\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">vídeo llamada</"
+"media>."
 
 #: C/add-contact.page:9(desc)
 msgid "Add someone to the contact list."
@@ -2827,13 +2829,11 @@ msgid ""
 msgstr ""
 
 #: C/add-account.page:51(p)
-#, fuzzy
 #| msgid "Click <gui style=\"button\">Apply</gui>."
 msgid "Click <gui style=\"button\">Add</gui>."
-msgstr "Pulse <gui style=\"button\">Aplicar</gui>."
+msgstr "Pulse <gui style=\"button\">Añadir</gui>."
 
 #: C/add-account.page:56(p)
-#, fuzzy
 #| msgid ""
 #| "From the <gui>Add new</gui> drop-down list, select the type of account "
 #| "you wish to add."
@@ -2841,8 +2841,8 @@ msgid ""
 "From the <gui>Protocol</gui> drop-down list, select the type of account you "
 "wish to add."
 msgstr ""
-"Desde la lista desplegable <gui>Añadir nueva</gui> seleccione el tipo de "
-"cuenta que quiere añadir."
+"Desde la lista desplegable <gui>Protocolo</gui> seleccione el tipo de cuenta "
+"que quiere añadir."
 
 #: C/add-account.page:60(p)
 msgid ""
@@ -2860,13 +2860,11 @@ msgid ""
 msgstr ""
 
 #: C/add-account.page:70(p)
-#, fuzzy
 #| msgid "Click <gui style=\"button\">Apply</gui>."
 msgid "Click <gui style=\"button\">Save</gui>."
-msgstr "Pulse <gui style=\"button\">Aplicar</gui>."
+msgstr "Pulse <gui style=\"button\">Guardar</gui>."
 
 #: C/add-account.page:77(p)
-#, fuzzy
 #| msgid ""
 #| "To change the name the identifies the account in the <gui>Accounts</gui> "
 #| "window, select the account from the list on the left and either click on "
@@ -2880,7 +2878,7 @@ msgid ""
 msgstr ""
 "Para cambiar el nombre que identifica la cuenta en la ventana <gui>Cuentas</"
 "gui>, seleccione la cuenta de la lista a la izquierda y pulse en el nombre o "
-"la barra espaciadora. Edite el nombre de la cuenta y pulse <gui>Intro</gui> "
+"la barra espaciadora. Edite el nombre de la cuenta y pulse <key>Intro</key> "
 "cuando haya acabado."
 
 #: C/accounts-window.page:11(desc)
@@ -2978,6 +2976,10 @@ msgid ""
 "uniquely identify each one. By default, <app>Empathy</app> will use "
 "<input>Telepathy</input> as the resource."
 msgstr ""
+"Si tiene múltiples aplicaciones (en equipos diferentes, por ejemplo) "
+"conectados a su cuenta al mismo tiempo, puede configurar un recurso para "
+"identificar unívocamente cada una. De forma predeterminada <app>Empathy</"
+"app> usará <input>Telepathy</input> como recurso."
 
 #: C/account-jabber.page:65(p)
 msgid ""
@@ -3019,7 +3021,7 @@ msgstr ""
 
 #: C/account-irc.page:7(desc)
 msgid "Additional information necessary for connecting to IRC networks."
-msgstr ""
+msgstr "Información adicional necesaria para conectarse a redes IRC."
 
 #: C/account-irc.page:29(title)
 msgid "IRC Account Details"
@@ -3038,6 +3040,8 @@ msgid ""
 "You must have the <sys>telepathy-idle</sys> package installed in order to "
 "use IRC in <app>Empathy</app>."
 msgstr ""
+"Debe tener instalado el paquete <sys>telepathy-idle</sys> para poder usar "
+"IRC en <app>Empathy</app>."
 
 #: C/account-irc.page:43(gui) C/account-irc.page:118(gui)
 msgid "Network"
