@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-02-12 02:45+0000\n"
-"PO-Revision-Date: 2010-02-12 10:14+0100\n"
+"POT-Creation-Date: 2010-02-14 21:52+0000\n"
+"PO-Revision-Date: 2010-02-15 08:32+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -388,6 +388,16 @@ msgstr "Ali naj se za klepetalnice uporablja tema."
 #: ../data/empathy.schemas.in.h:88
 msgid "Which criterion to use when sorting the contact list. Default is to sort by the contact's name with the value \"name\". A value of \"state\" will sort the contact list by state."
 msgstr "Kateri kriterij naj se uporabi za razvrščanje seznama stikov. Privzeto je razvrščanje po imenu stika z vrednostjo \"ime\". Vrednost \"stanje\" pa razvrsti seznam glede na stanje stika."
+
+#: ../data/empathy-accounts.desktop.in.in.h:1
+msgid "Manage Messaging and VoIP accounts"
+msgstr "Upravljanje s sporočanjem in VoIP računi"
+
+#: ../data/empathy-accounts.desktop.in.in.h:2
+#: ../src/cc-empathy-accounts-page.c:201
+#: ../src/cc-empathy-accounts-panel.c:70
+msgid "Messaging and VoIP Accounts"
+msgstr "Sporočanje in VoIP računi"
 
 #: ../libempathy/empathy-ft-handler.c:840
 msgid "The hash of the received file and the sent one do not match"
@@ -1994,19 +2004,19 @@ msgstr "Ni sporočil o napakah"
 msgid "Instant Message (Empathy)"
 msgstr "Trenutno sporočanje (Empathy)"
 
-#: ../src/empathy.c:603
+#: ../src/empathy.c:605
 msgid "Don't connect on startup"
 msgstr "Brez samodejne povezave ob zagonu"
 
-#: ../src/empathy.c:607
+#: ../src/empathy.c:609
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ne prikaži seznama stikov in drugih pogovornih oken ob zagonu"
 
-#: ../src/empathy.c:611
+#: ../src/empathy.c:613
 msgid "Show the accounts dialog"
 msgstr "Pokaži pogovorno okno računov"
 
-#: ../src/empathy.c:623
+#: ../src/empathy.c:625
 msgid "- Empathy IM Client"
 msgstr "- Empathy sporočilnik"
 
@@ -3205,6 +3215,30 @@ msgstr "Povabi udeležence"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Izbor stika za povabilo v pogovor:"
 
+#: ../src/empathy-accounts.c:196
+msgid "Try to import any recognized accounts and display an assistant if that fails"
+msgstr "Poskusite uvoziti prepoznane račune, v primeru težav pa uporabiti pomočnika"
+
+#: ../src/empathy-accounts.c:201
+msgid "Don't display any dialogs; do any work (eg, importing) and exit"
+msgstr "Ne pokaži pogovornih oken; opravi nalogo (na primer: uvažanje) in končaj"
+
+#: ../src/empathy-accounts.c:205
+msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
+msgstr "Predhodno izberite račun (na primer: gabble/jabber/foo_40primer_2eorg0)"
+
+#: ../src/empathy-accounts.c:207
+msgid "<account-id>"
+msgstr "<id-računa>"
+
+#: ../src/empathy-accounts.c:215
+msgid "- Empathy Accounts"
+msgstr "- Empathy računi"
+
+#: ../src/empathy-accounts.c:231
+msgid " Accounts"
+msgstr "Računi"
+
 #~ msgid "Hidden"
 #~ msgstr "Skrito"
 #~ msgid "User requested disconnect"
@@ -3253,8 +3287,6 @@ msgstr "Izbor stika za povabilo v pogovor:"
 #~ msgstr "_Uvozi ..."
 #~ msgid "_Reuse an existing account"
 #~ msgstr "Up_orabi obstoječi račun"
-#~ msgid "account"
-#~ msgstr "račun"
 #~ msgid "No error specified"
 #~ msgstr "Ni določene napake"
 #~ msgid "Unknown error"
