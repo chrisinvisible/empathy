@@ -1455,7 +1455,7 @@ presence_changed_cb (TpAccountManager *manager,
        * a Save button */
       gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
       gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
-      gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_SAVE);
+      gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_APPLY);
     }
 }
 
@@ -1703,21 +1703,13 @@ do_constructed (GObject *obj)
 
       priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
 
-      if (priv->creating_account)
-        {
-          /* Assumre we are offline, display a Save button. We'll update
-           * it once the account manager is ready if needed */
-          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_SAVE);
+      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
 
-          empathy_signal_connect_weak (priv->account_manager,
-              "most-available-presence-changed",
-              G_CALLBACK (presence_changed_cb), obj);
-        }
-      else
-        {
-          /* We are editing an existing account, display an Apply button */
-          priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
-        }
+      /* We'll change this button to a "Log in" one if we are creating a new
+       * account and are connected. */
+      empathy_signal_connect_weak (priv->account_manager,
+          "most-available-presence-changed",
+          G_CALLBACK (presence_changed_cb), obj);
 
       gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
           TRUE, 3);
