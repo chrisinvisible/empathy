@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-01-25 14:14+0000\n"
-"PO-Revision-Date: 2010-01-27 23:31+0700\n"
+"POT-Creation-Date: 2010-02-12 13:32+0000\n"
+"PO-Revision-Date: 2010-02-15 13:13+0700\n"
 "Last-Translator: Theppitak Karoonboonyanan <thep@linux.thai.net>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -407,6 +407,15 @@ msgstr ""
 "ข้อกำหนดการเรียงลำดับรายชื่อผู้ติดต่อ ค่าปริยายคือเรียงลำดับตามชื่อผู้ติดต่อ โดยใช้ค่า \"name\" "
 "ถ้าจะเรียงตามสถานะของผู้ติดต่อก็ใช้ \"state\""
 
+#: ../data/empathy-accounts.desktop.in.in.h:1
+msgid "Manage Messaging and VoIP accounts"
+msgstr "จัดการบัญชีข้อความทันใจและ VoIP"
+
+#: ../data/empathy-accounts.desktop.in.in.h:2
+#: ../src/cc-empathy-accounts-page.c:202 ../src/cc-empathy-accounts-panel.c:71
+msgid "Messaging and VoIP Accounts"
+msgstr "บัญชีข้อความทันใจและ VoIP"
+
 #: ../libempathy/empathy-ft-handler.c:840
 msgid "The hash of the received file and the sent one do not match"
 msgstr "ค่าแฮชของแฟ้มที่รับกับของแฟ้มที่ส่งไม่ตรงกัน"
@@ -536,15 +545,15 @@ msgstr "ใบรับรองเซ็นรับรองตัวเอง
 msgid "Certificate error"
 msgstr "ข้อผิดพลาดเกี่ยวกับใบรับรอง"
 
-#: ../libempathy/empathy-utils.c:424 ../src/empathy-import-mc4-accounts.c:104
+#: ../libempathy/empathy-utils.c:429 ../src/empathy-import-mc4-accounts.c:104
 msgid "People Nearby"
 msgstr "ผู้คนแถวนี้"
 
-#: ../libempathy/empathy-utils.c:429
+#: ../libempathy/empathy-utils.c:434
 msgid "Yahoo! Japan"
 msgstr "Yahoo! ญี่ปุ่น"
 
-#: ../libempathy/empathy-utils.c:430
+#: ../libempathy/empathy-utils.c:435
 msgid "Facebook Chat"
 msgstr "การสนทนา Facebook"
 
@@ -598,11 +607,15 @@ msgstr "ทั้งหมด"
 msgid "%s:"
 msgstr "%s:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1329
+#: ../libempathy-gtk/empathy-account-widget.c:1117
+msgid "Username:"
+msgstr "ชื่อผู้ใช้:"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1445
 msgid "L_og in"
 msgstr "เ_ข้าระบบ"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1396
+#: ../libempathy-gtk/empathy-account-widget.c:1512
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
@@ -610,15 +623,15 @@ msgstr "เ_ข้าระบบ"
 msgid "Account:"
 msgstr "บัญชี:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1407
+#: ../libempathy-gtk/empathy-account-widget.c:1523
 msgid "Enabled"
 msgstr "เปิดใช้"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1472
+#: ../libempathy-gtk/empathy-account-widget.c:1588
 msgid "This account already exists on the server"
 msgstr "บัญชีนี้มีอยู่แล้วที่เซิร์ฟเวอร์"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1475
+#: ../libempathy-gtk/empathy-account-widget.c:1591
 msgid "Create a new account on the server"
 msgstr "สร้างบัญชีใหม่ที่เซิร์ฟเวอร์"
 
@@ -627,19 +640,19 @@ msgstr "สร้างบัญชีใหม่ที่เซิร์ฟเ
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:1858
+#: ../libempathy-gtk/empathy-account-widget.c:1974
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s ที่ %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:1876
+#: ../libempathy-gtk/empathy-account-widget.c:2000
 #, c-format
 msgid "%s Account"
 msgstr "บัญชี %s"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1880
+#: ../libempathy-gtk/empathy-account-widget.c:2004
 msgid "New account"
 msgstr "บัญชีใหม่"
 
@@ -684,7 +697,7 @@ msgstr "ชื่อเรียกใน AIM ของคุณคืออะ�
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
@@ -693,7 +706,7 @@ msgstr "_พอร์ต:"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:24
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
@@ -830,38 +843,58 @@ msgid "Reso_urce:"
 msgstr "แห_ล่งข้อมูล:"
 
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+msgid ""
+"This is your username, not your normal Facebook login.\n"
+"If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
+"Use <a href=\"http://www.facebook.com/username/\">this page</a> to choose a "
+"Facebook username if you don't have one."
+msgstr ""
+"นี่เป็นชื่อผู้ใช้ของคุณ ไม่ใช่อีเมลที่ใช้เข้า Facebook ตามปกติ\n"
+"ถ้าคุณคือ facebook.com/<b>ชื่อผู้ใช้</b> ก็ให้ป้อน <b>ชื่อผู้ใช้</b>\n"
+"คุณสามารถใช้ <a href=\"http://www.facebook.com/username/\">หน้านี้</a> "
+"เพื่อสร้างชื่อผู้ใช้ Facebook ได้ถ้ายังไม่มี"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid "Use old SS_L"
 msgstr "ใช้ SSL แบบเ_ก่า"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+msgid "What is your Facebook password?"
+msgstr "รหัสผ่าน Facebook ของคุณคืออะไร?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+msgid "What is your Facebook username?"
+msgstr "ชื่อผู้ใช้ Facebook ของคุณคืออะไร?"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your Google ID?"
 msgstr "ชื่อผู้ใช้ Google ของคุณคืออะไร?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:11
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "What is your Google password?"
 msgstr "รหัสผ่าน Google ของคุณคืออะไร?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "What is your Jabber ID?"
 msgstr "ชื่อผู้ใช้ Jabber ของคุณคืออะไร?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 msgid "What is your Jabber password?"
 msgstr "รหัสผ่าน Jabber ของคุณคืออะไร?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 msgid "What is your desired Jabber ID?"
 msgstr "คุณต้องการใช้ชื่ออะไรสำหรับ Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
 msgid "What is your desired Jabber password?"
 msgstr "คุณต้องการใช้รหัสผ่านอะไรสำหรับ Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
 msgid "_Encryption required (TLS/SSL)"
 msgstr "ต้องเข้ารหัส_ลับ (TLS/SSL)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
 msgid "_Ignore SSL certificate errors"
 msgstr "ไ_ม่สนใจข้อผิดพลาดของใบรับรอง SSL"
 
@@ -1139,63 +1172,63 @@ msgstr "ไม่รู้จักคำสั่งนี้"
 msgid "Unknown command; see /help for the available commands"
 msgstr "ไม่รู้จักคำสั่งนี้ ดูคำสั่งที่ใช้ได้ได้จาก /help"
 
-#: ../libempathy-gtk/empathy-chat.c:1143
+#: ../libempathy-gtk/empathy-chat.c:1144
 msgid "offline"
 msgstr "ออฟไลน์"
 
-#: ../libempathy-gtk/empathy-chat.c:1146
+#: ../libempathy-gtk/empathy-chat.c:1147
 msgid "invalid contact"
 msgstr "ข้อมูลผู้ติดต่อผิดพลาด"
 
-#: ../libempathy-gtk/empathy-chat.c:1149
+#: ../libempathy-gtk/empathy-chat.c:1150
 msgid "permission denied"
 msgstr "ไม่ได้รับอนุญาต"
 
-#: ../libempathy-gtk/empathy-chat.c:1152
+#: ../libempathy-gtk/empathy-chat.c:1153
 msgid "too long message"
 msgstr "ข้อความยาวเกินไป"
 
-#: ../libempathy-gtk/empathy-chat.c:1155
+#: ../libempathy-gtk/empathy-chat.c:1156
 msgid "not implemented"
 msgstr "ยังไม่ทำ"
 
-#: ../libempathy-gtk/empathy-chat.c:1158
+#: ../libempathy-gtk/empathy-chat.c:1159
 msgid "unknown"
 msgstr "ไม่ทราบ"
 
-#: ../libempathy-gtk/empathy-chat.c:1162
+#: ../libempathy-gtk/empathy-chat.c:1163
 #, c-format
 msgid "Error sending message '%s': %s"
 msgstr "เกิดข้อผิดพลาดขณะส่งข้อความ '%s': %s"
 
-#: ../libempathy-gtk/empathy-chat.c:1192
+#: ../libempathy-gtk/empathy-chat.c:1193
 #, c-format
 msgid "Topic set to: %s"
 msgstr "หัวข้อถูกตั้งเป็น: %s"
 
-#: ../libempathy-gtk/empathy-chat.c:1194
+#: ../libempathy-gtk/empathy-chat.c:1195
 msgid "No topic defined"
 msgstr "ไม่มีการกำหนดหัวข้อ"
 
-#: ../libempathy-gtk/empathy-chat.c:1593
+#: ../libempathy-gtk/empathy-chat.c:1594
 msgid "(No Suggestions)"
 msgstr "(ไม่มีคำแนะนำ)"
 
-#: ../libempathy-gtk/empathy-chat.c:1647
+#: ../libempathy-gtk/empathy-chat.c:1648
 msgid "Insert Smiley"
 msgstr "แทรกรูปสีหน้า"
 
 #. send button
-#: ../libempathy-gtk/empathy-chat.c:1665
+#: ../libempathy-gtk/empathy-chat.c:1666
 #: ../libempathy-gtk/empathy-ui-utils.c:1658
 msgid "_Send"
 msgstr "_ส่ง"
 
-#: ../libempathy-gtk/empathy-chat.c:1699
+#: ../libempathy-gtk/empathy-chat.c:1700
 msgid "_Spelling Suggestions"
 msgstr "แ_นะนำตัวสะกด"
 
-#: ../libempathy-gtk/empathy-chat.c:1814
+#: ../libempathy-gtk/empathy-chat.c:1815
 #, c-format
 msgid "%s has disconnected"
 msgstr "%s ตัดการเชื่อมต่อแล้ว"
@@ -1203,12 +1236,12 @@ msgstr "%s ตัดการเชื่อมต่อแล้ว"
 #. translators: reverse the order of these arguments
 #. * if the kicked should come before the kicker in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1821
+#: ../libempathy-gtk/empathy-chat.c:1822
 #, c-format
 msgid "%1$s was kicked by %2$s"
 msgstr "%1$s ถูก %2$s เตะออก"
 
-#: ../libempathy-gtk/empathy-chat.c:1824
+#: ../libempathy-gtk/empathy-chat.c:1825
 #, c-format
 msgid "%s was kicked"
 msgstr "%s ถูกเตะออก"
@@ -1216,17 +1249,17 @@ msgstr "%s ถูกเตะออก"
 #. translators: reverse the order of these arguments
 #. * if the banned should come before the banner in your locale.
 #.
-#: ../libempathy-gtk/empathy-chat.c:1832
+#: ../libempathy-gtk/empathy-chat.c:1833
 #, c-format
 msgid "%1$s was banned by %2$s"
 msgstr "%1$s ถูก %2$s ห้ามไม่ให้เข้า"
 
-#: ../libempathy-gtk/empathy-chat.c:1835
+#: ../libempathy-gtk/empathy-chat.c:1836
 #, c-format
 msgid "%s was banned"
 msgstr "%s ถูกห้ามไม่ให้เข้า"
 
-#: ../libempathy-gtk/empathy-chat.c:1839
+#: ../libempathy-gtk/empathy-chat.c:1840
 #, c-format
 msgid "%s has left the room"
 msgstr "%s ออกจากห้อง"
@@ -1236,22 +1269,22 @@ msgstr "%s ออกจากห้อง"
 #. * given by the user living the room. If this poses a problem,
 #. * please let us know. :-)
 #.
-#: ../libempathy-gtk/empathy-chat.c:1848
+#: ../libempathy-gtk/empathy-chat.c:1849
 #, c-format
 msgid " (%s)"
 msgstr " (%s)"
 
-#: ../libempathy-gtk/empathy-chat.c:1873
+#: ../libempathy-gtk/empathy-chat.c:1874
 #, c-format
 msgid "%s has joined the room"
 msgstr "%s เข้ามาในห้อง"
 
-#: ../libempathy-gtk/empathy-chat.c:1898
+#: ../libempathy-gtk/empathy-chat.c:1899
 #, c-format
 msgid "%s is now known as %s"
 msgstr "%s เปลี่ยนชื่อเป็น %s"
 
-#: ../libempathy-gtk/empathy-chat.c:2033 ../src/empathy-call-window.c:1531
+#: ../libempathy-gtk/empathy-chat.c:2034 ../src/empathy-call-window.c:1531
 msgid "Disconnected"
 msgstr "ตัดการเชื่อมต่อแล้ว"
 
@@ -1302,15 +1335,15 @@ msgstr "_เปิดลิงก์"
 msgid "%A %B %d %Y"
 msgstr "%A %e %B %Ey"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:238
+#: ../libempathy-gtk/empathy-contact-dialogs.c:249
 msgid "Edit Contact Information"
 msgstr "แก้ไขข้อมูลผู้ติดต่อ"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:289
+#: ../libempathy-gtk/empathy-contact-dialogs.c:300
 msgid "Personal Information"
 msgstr "ข้อมูลส่วนบุคคล"
 
-#: ../libempathy-gtk/empathy-contact-dialogs.c:394
+#: ../libempathy-gtk/empathy-contact-dialogs.c:405
 msgid "New Contact"
 msgstr "ผู้ติดต่อใหม่"
 
@@ -1322,28 +1355,28 @@ msgstr "ตัดสินใจภายห_ลัง"
 msgid "Subscription Request"
 msgstr "ขอสมัคร"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1512
+#: ../libempathy-gtk/empathy-contact-list-view.c:1516
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "ยืนยันที่จะลบกลุ่ม '%s' หรือไม่?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1514
+#: ../libempathy-gtk/empathy-contact-list-view.c:1518
 msgid "Removing group"
 msgstr "กำลังจะลบกลุ่ม"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1561
-#: ../libempathy-gtk/empathy-contact-list-view.c:1638
+#: ../libempathy-gtk/empathy-contact-list-view.c:1565
+#: ../libempathy-gtk/empathy-contact-list-view.c:1642
 #: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "_ลบ"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1591
+#: ../libempathy-gtk/empathy-contact-list-view.c:1595
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "ยืนยันที่จะลบผู้ติดต่อ '%s' หรือไม่?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1593
+#: ../libempathy-gtk/empathy-contact-list-view.c:1597
 msgid "Removing contact"
 msgstr "กำลังจะลบผู้ติดต่อ"
 
@@ -1384,17 +1417,17 @@ msgstr "เปิดพื้นโต๊ะให้ใช้ร่วม"
 msgid "Infor_mation"
 msgstr "_ข้อมูล"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:441
-#: ../src/empathy-chat-window.ui.h:11 ../src/empathy-main-window.ui.h:19
+#: ../libempathy-gtk/empathy-contact-menu.c:443
+msgctxt "Edit contact (contextual menu)"
 msgid "_Edit"
 msgstr "แ_ก้ไข"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:496
+#: ../libempathy-gtk/empathy-contact-menu.c:497
 #: ../src/empathy-chat-window.c:866
 msgid "Inviting you to this room"
 msgstr "เชิญคุณเข้าห้องนี้"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:527
+#: ../libempathy-gtk/empathy-contact-menu.c:528
 msgid "_Invite to chat room"
 msgstr "เ_ชิญเข้าห้องสนทนา"
 
@@ -1407,7 +1440,7 @@ msgid "Select"
 msgstr "เลือก"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:244
-#: ../src/empathy-main-window.c:1053
+#: ../src/empathy-main-window.c:1045
 msgid "Group"
 msgstr "กลุ่ม"
 
@@ -1984,23 +2017,23 @@ msgstr "ไม่มีรายละเอียดข้อผิดพลา
 msgid "Instant Message (Empathy)"
 msgstr "ข้อความทันใจ (Empathy)"
 
-#: ../src/empathy.c:762
+#: ../src/empathy.c:603
 msgid "Don't connect on startup"
 msgstr "ไม่ต้องเชื่อมต่อขณะเริ่มทำงาน"
 
-#: ../src/empathy.c:766
+#: ../src/empathy.c:607
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "ไม่ต้องแสดงรายชื่อผู้ติดต่อหรือกล่องโต้ตอบอื่นใดขณะเริ่มทำงาน"
 
-#: ../src/empathy.c:770
+#: ../src/empathy.c:611
 msgid "Show the accounts dialog"
 msgstr "แสดงกล่องโต้ตอบบัญชี"
 
-#: ../src/empathy.c:782
+#: ../src/empathy.c:623
 msgid "- Empathy IM Client"
 msgstr "- ลูกข่าย IM Empathy"
 
-#: ../src/empathy-about-dialog.c:84
+#: ../src/empathy-about-dialog.c:85
 msgid ""
 "Empathy is free software; you can redistribute it and/or modify it under the "
 "terms of the GNU General Public License as published by the Free Software "
@@ -2011,7 +2044,7 @@ msgstr ""
 "GNU General Public License ที่เผยแพร่โดยมูลนิธิซอฟต์แวร์เสรี ไม่ว่าจะเป็นสัญญาอนุญาตรุ่นที่ 2 "
 "หรือรุ่นถัดมา (ตามแต่คุณจะเลือก)"
 
-#: ../src/empathy-about-dialog.c:88
+#: ../src/empathy-about-dialog.c:89
 msgid ""
 "Empathy is distributed in the hope that it will be useful, but WITHOUT ANY "
 "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS "
@@ -2023,7 +2056,7 @@ msgstr ""
 "*ความเหมาะสมสำหรับวัตถุประสงค์เฉพาะกิจใดๆ* กรุณาอ่าน GNU General Public License "
 "เพื่อดูรายละเอียดเพิ่มเติม"
 
-#: ../src/empathy-about-dialog.c:92
+#: ../src/empathy-about-dialog.c:93
 msgid ""
 "You should have received a copy of the GNU General Public License along with "
 "Empathy; if not, write to the Free Software Foundation, Inc., 51 Franklin "
@@ -2033,11 +2066,11 @@ msgstr ""
 "กรุณาติดต่อไปที่ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, "
 "Boston, MA 02110-1301 USA"
 
-#: ../src/empathy-about-dialog.c:120
+#: ../src/empathy-about-dialog.c:121
 msgid "An Instant Messaging client for GNOME"
 msgstr "โปรแกรมลูกข่ายข้อความทันใจสำหรับ GNOME"
 
-#: ../src/empathy-about-dialog.c:126
+#: ../src/empathy-about-dialog.c:127
 msgid "translator-credits"
 msgstr ""
 "เทพพิทักษ์ การุญบุญญานันท์\n"
@@ -2045,28 +2078,28 @@ msgstr ""
 "ถ้ามีเวลาโปรดมาช่วยกันแปล :-)\n"
 "http://gnome-th.sf.net"
 
-#: ../src/empathy-account-assistant.c:165
+#: ../src/empathy-account-assistant.c:166
 msgid "There was an error while importing the accounts."
 msgstr "เกิดข้อผิดพลาดขณะนำเข้าบัญชี"
 
-#: ../src/empathy-account-assistant.c:168
+#: ../src/empathy-account-assistant.c:169
 msgid "There was an error while parsing the account details."
 msgstr "เกิดข้อผิดพลาดขณะแจงรายละเอียดบัญชี"
 
-#: ../src/empathy-account-assistant.c:171
+#: ../src/empathy-account-assistant.c:172
 msgid "There was an error while creating the account."
 msgstr "เกิดข้อผิดพลาดขณะสร้างบัญชี"
 
-#: ../src/empathy-account-assistant.c:173
+#: ../src/empathy-account-assistant.c:174
 msgid "There was an error."
 msgstr "เกิดข้อผิดพลาด"
 
-#: ../src/empathy-account-assistant.c:177
+#: ../src/empathy-account-assistant.c:178
 #, c-format
 msgid "The error message was: %s"
 msgstr "รายละเอียดข้อผิดพลาดคือ: %s"
 
-#: ../src/empathy-account-assistant.c:181
+#: ../src/empathy-account-assistant.c:182
 msgid ""
 "You can either go back and try to enter your accounts' details again or quit "
 "this assistant and add accounts later from the Edit menu."
@@ -2074,47 +2107,46 @@ msgstr ""
 "คุณสามารถกลับไปป้อนรายละเอียดของบัญชีของคุณใหม่ หรือจะออกจากเครื่องมือช่วยนี้ "
 "แล้วเพิ่มบัญชีในภายหลังจากเมนู \"แก้ไข\" ก็ได้"
 
-#: ../src/empathy-account-assistant.c:218
-#: ../src/empathy-account-assistant.c:1241
+#: ../src/empathy-account-assistant.c:219
+#: ../src/empathy-account-assistant.c:1275
 msgid "An error occurred"
 msgstr "เกิดข้อผิดพลาด"
 
-#. Create account
 #. To translator: %s is the protocol name
 #. Create account
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:395 ../src/empathy-accounts-dialog.c:552
+#: ../src/empathy-account-assistant.c:414 ../src/empathy-accounts-dialog.c:560
 #, c-format
 msgid "New %s account"
 msgstr "บัญชี %s ใหม่"
 
-#: ../src/empathy-account-assistant.c:472
+#: ../src/empathy-account-assistant.c:495
 msgid "What kind of chat account do you have?"
 msgstr "คุณมีบัญชีสนทนาชนิดไหน?"
 
-#: ../src/empathy-account-assistant.c:478
+#: ../src/empathy-account-assistant.c:501
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "คุณมีบัญชีสนทนาอื่นที่ต้องการตั้งค่าอีกหรือไม่?"
 
-#: ../src/empathy-account-assistant.c:484
+#: ../src/empathy-account-assistant.c:507
 msgid "Enter your account details"
 msgstr "ป้อนรายละเอียดของบัญชีของคุณ"
 
-#: ../src/empathy-account-assistant.c:489
+#: ../src/empathy-account-assistant.c:512
 msgid "What kind of chat account do you want to create?"
 msgstr "คุณต้องการสร้างบัญชีสนทนาชนิดไหน?"
 
-#: ../src/empathy-account-assistant.c:495
+#: ../src/empathy-account-assistant.c:518
 msgid "Do you want to create other chat accounts?"
 msgstr "คุณต้องการเพิ่มบัญชีสนทนาอื่นอีกหรือไม่?"
 
-#: ../src/empathy-account-assistant.c:502
+#: ../src/empathy-account-assistant.c:525
 msgid "Enter the details for the new account"
 msgstr "ป้อนรายละเอียดของบัญชีใหม่ที่จะสร้าง"
 
-#: ../src/empathy-account-assistant.c:617
+#: ../src/empathy-account-assistant.c:640
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -2125,41 +2157,41 @@ msgstr ""
 "Talk, AIM, Windows Live และโปรแกรมสนทนาอื่นๆ อีกมากมาย และถ้าใช้ไมโครโฟนหรือเว็บแคม "
 "คุณก็ยังสามารถพูดคุยด้วยเสียงหรือภาพได้ด้วย"
 
-#: ../src/empathy-account-assistant.c:634
+#: ../src/empathy-account-assistant.c:657
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "คุณมีบัญชีที่ใช้กับโปรแกรมสนทนาอื่นอยู่หรือไม่?"
 
-#: ../src/empathy-account-assistant.c:657
+#: ../src/empathy-account-assistant.c:680
 msgid "Yes, import my account details from "
 msgstr "มี ช่วยนำเข้าข้อมูลบัญชีของข้าพเจ้าจาก "
 
-#: ../src/empathy-account-assistant.c:678
+#: ../src/empathy-account-assistant.c:701
 msgid "Yes, I'll enter my account details now"
 msgstr "มี ข้าพเจ้าจะป้อนข้อมูลบัญชีของข้าพเจ้าเดี๋ยวนี้"
 
-#: ../src/empathy-account-assistant.c:700
+#: ../src/empathy-account-assistant.c:723
 msgid "No, I want a new account"
 msgstr "ไม่มี ข้าพเจ้าต้องการสร้างบัญชีใหม่"
 
-#: ../src/empathy-account-assistant.c:710
+#: ../src/empathy-account-assistant.c:733
 msgid "No, I just want to see people online nearby for now"
 msgstr "ไม่มี ข้าพเจ้าแค่ต้องการดูผู้คนที่ออนไลน์อยู่ใกล้ๆ แค่นั้นในตอนนี้"
 
-#: ../src/empathy-account-assistant.c:731
+#: ../src/empathy-account-assistant.c:754
 msgid "Select the accounts you want to import:"
 msgstr "เลือกบัญชีที่คุณต้องการนำเข้า:"
 
-#: ../src/empathy-account-assistant.c:815
+#: ../src/empathy-account-assistant.c:838
 #: ../src/empathy-new-chatroom-dialog.c:541
 #: ../src/empathy-new-chatroom-dialog.c:542
 msgid "Yes"
 msgstr "ใช่"
 
-#: ../src/empathy-account-assistant.c:822
+#: ../src/empathy-account-assistant.c:845
 msgid "No, that's all for now"
 msgstr "ไม่ พอแค่นั้นก่อน"
 
-#: ../src/empathy-account-assistant.c:1064
+#: ../src/empathy-account-assistant.c:1098
 msgid ""
 "Empathy can automatically discover and chat with the people connected on the "
 "same network as you. If you want to use this feature, please check that the "
@@ -2170,16 +2202,16 @@ msgstr ""
 "ถ้าคุณต้องการใช้ความสามารถนี้ กรุณาตรวจสอบข้อมูลด้านล่างนี้ว่าถูกต้องหรือไม่ "
 "คุณสามารถเปลี่ยนข้อมูลนี้ในภายหลัง หรือปิดความสามารถนี้ได้โดยง่าย โดยใช้กล่องโต้ตอบ 'บัญชี'"
 
-#: ../src/empathy-account-assistant.c:1070
-#: ../src/empathy-account-assistant.c:1126
+#: ../src/empathy-account-assistant.c:1104
+#: ../src/empathy-account-assistant.c:1160
 msgid "Edit->Accounts"
 msgstr "แก้ไข->บัญชี"
 
-#: ../src/empathy-account-assistant.c:1086
+#: ../src/empathy-account-assistant.c:1120
 msgid "I don't want to enable this feature for now"
 msgstr "ข้าพเจ้ายังไม่ต้องการเปิดใช้ความสามารถนี้ในตอนนี้"
 
-#: ../src/empathy-account-assistant.c:1122
+#: ../src/empathy-account-assistant.c:1156
 msgid ""
 "You won't be able to chat with people connected to your local network, as "
 "telepathy-salut is not installed.\n"
@@ -2191,62 +2223,62 @@ msgstr ""
 "ถ้าคุณต้องการเปิดใช้ความสามารถนี้ กรุณาติดตั้งแพกเกจ telepathy-salut\n"
 "แล้วสร้างบัญชีชนิด 'ผู้คนแถวนี้' จากกล่องโต้ตอบ 'บัญชี'"
 
-#: ../src/empathy-account-assistant.c:1128
+#: ../src/empathy-account-assistant.c:1162
 msgid "telepathy-salut not installed"
 msgstr "ไม่ได้ติดตั้ง telepathy-salut"
 
-#: ../src/empathy-account-assistant.c:1205
+#: ../src/empathy-account-assistant.c:1239
 msgid "Welcome to Empathy"
 msgstr "ยินดีต้อนรับสู่ Empathy"
 
-#: ../src/empathy-account-assistant.c:1214
+#: ../src/empathy-account-assistant.c:1248
 msgid "Import your existing accounts"
 msgstr "นำเข้าบัญชีของคุณที่มี"
 
-#: ../src/empathy-account-assistant.c:1232
+#: ../src/empathy-account-assistant.c:1266
 msgid "Please enter personal details"
 msgstr "กรุณาป้อนข้อมูลส่วนตัว"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
-#: ../src/empathy-accounts-dialog.c:65
+#: ../src/empathy-accounts-dialog.c:66
 #, c-format
 msgid "There are unsaved modifications to your %s account."
 msgstr "มีการเปลี่ยนแปลงในบัญชี %s ของคุณยังไม่ได้บันทึก"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * an unsaved new account
-#: ../src/empathy-accounts-dialog.c:69
+#: ../src/empathy-accounts-dialog.c:70
 msgid "Your new account has not been saved yet."
 msgstr "บัญชีใหม่ของคุณยังไม่ได้บันทึก"
 
-#: ../src/empathy-accounts-dialog.c:259 ../src/empathy-call-window.c:729
+#: ../src/empathy-accounts-dialog.c:261 ../src/empathy-call-window.c:729
 msgid "Connecting…"
 msgstr "กำลังเชื่อมต่อ…"
 
-#: ../src/empathy-accounts-dialog.c:286
+#: ../src/empathy-accounts-dialog.c:288
 #, c-format
 msgid "Disconnected — %s"
 msgstr "ตัดการเชื่อมต่อแล้ว — %s"
 
-#: ../src/empathy-accounts-dialog.c:291
+#: ../src/empathy-accounts-dialog.c:293
 #, c-format
 msgid "Offline — %s"
 msgstr "ออฟไลน์ — %s"
 
-#: ../src/empathy-accounts-dialog.c:304
+#: ../src/empathy-accounts-dialog.c:306
 msgid "Offline — No Network Connection"
 msgstr "ออฟไลน์ — ไม่มีการเชื่อมต่อเครือข่าย"
 
-#: ../src/empathy-accounts-dialog.c:312
+#: ../src/empathy-accounts-dialog.c:314
 msgid "Unknown Status"
 msgstr "ไม่ทราบสถานะ"
 
-#: ../src/empathy-accounts-dialog.c:323
+#: ../src/empathy-accounts-dialog.c:325
 msgid "Offline — Account Disabled"
 msgstr "ออฟไลน์ — บัญชีถูกระงับ"
 
-#: ../src/empathy-accounts-dialog.c:720
+#: ../src/empathy-accounts-dialog.c:731
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2254,16 +2286,16 @@ msgstr ""
 "คุณกำลังจะสร้างบัญชีใหม่ ซึ่งจะละทิ้งการเปลี่ยนแปลงต่างๆ ที่คุณทำมา\n"
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:1054
+#: ../src/empathy-accounts-dialog.c:1068
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "คุณต้องการลบ %s ออกจากเครื่องของคุณหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:1058
+#: ../src/empathy-accounts-dialog.c:1072
 msgid "This will not remove your account on the server."
 msgstr "การลบนี้จะไม่ลบบัญชีของคุณที่เซิร์ฟเวอร์"
 
-#: ../src/empathy-accounts-dialog.c:1286
+#: ../src/empathy-accounts-dialog.c:1302
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2271,7 +2303,7 @@ msgstr ""
 "คุณกำลังจะเลือกบัญชีใหม่ ซึ่งจะละทิ้งการเปลี่ยนแปลงต่างๆ ที่คุณทำมา\n"
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
-#: ../src/empathy-accounts-dialog.c:1828
+#: ../src/empathy-accounts-dialog.c:1849
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2280,7 +2312,7 @@ msgstr ""
 "ยืนยันที่จะดำเนินการต่อหรือไม่?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1955
+#: ../src/empathy-accounts-dialog.c:1982
 msgid "Accounts"
 msgstr "บัญชี"
 
@@ -2557,6 +2589,10 @@ msgstr "การ_สนทนา"
 msgid "_Detach Tab"
 msgstr "_ดึงแท็บออก"
 
+#: ../src/empathy-chat-window.ui.h:11 ../src/empathy-main-window.ui.h:19
+msgid "_Edit"
+msgstr "แ_ก้ไข"
+
 #: ../src/empathy-chat-window.ui.h:12
 msgid "_Favorite Chat Room"
 msgstr "_ห้องสนทนาโปรด"
@@ -2826,23 +2862,23 @@ msgstr "แหล่งข้อมูล"
 msgid "%s account"
 msgstr "บัญชี %s"
 
-#: ../src/empathy-main-window.c:435
+#: ../src/empathy-main-window.c:433
 msgid "Reconnect"
 msgstr "เชื่อมต่อใหม่"
 
-#: ../src/empathy-main-window.c:442
+#: ../src/empathy-main-window.c:439
 msgid "Edit Account"
 msgstr "แก้ไขบัญชี"
 
-#: ../src/empathy-main-window.c:449
+#: ../src/empathy-main-window.c:445
 msgid "Close"
 msgstr "ปิด"
 
-#: ../src/empathy-main-window.c:1036
+#: ../src/empathy-main-window.c:1028
 msgid "Contact"
 msgstr "ผู้ติดต่อ"
 
-#: ../src/empathy-main-window.c:1374
+#: ../src/empathy-main-window.c:1369
 msgid "Show and edit accounts"
 msgstr "แสดงและแก้ไขบัญชีต่างๆ"
 
@@ -3172,63 +3208,63 @@ msgstr "_ออก"
 msgid "Contact Map View"
 msgstr "แผนที่ผู้ติดต่อ"
 
-#: ../src/empathy-debug-window.c:1063
+#: ../src/empathy-debug-window.c:1065
 msgid "Save"
 msgstr "บันทึก"
 
-#: ../src/empathy-debug-window.c:1185
+#: ../src/empathy-debug-window.c:1187
 msgid "Debug Window"
 msgstr "หน้าต่างดีบั๊ก"
 
-#: ../src/empathy-debug-window.c:1265
+#: ../src/empathy-debug-window.c:1267
 msgid "Pause"
 msgstr "พัก"
 
-#: ../src/empathy-debug-window.c:1277
+#: ../src/empathy-debug-window.c:1279
 msgid "Level "
 msgstr "ระดับ "
 
-#: ../src/empathy-debug-window.c:1297
+#: ../src/empathy-debug-window.c:1299
 msgid "Debug"
 msgstr "ดีบั๊ก"
 
-#: ../src/empathy-debug-window.c:1303
+#: ../src/empathy-debug-window.c:1305
 msgid "Info"
 msgstr "ข้อมูล"
 
-#: ../src/empathy-debug-window.c:1309 ../src/empathy-debug-window.c:1358
+#: ../src/empathy-debug-window.c:1311 ../src/empathy-debug-window.c:1360
 msgid "Message"
 msgstr "ข้อความ"
 
-#: ../src/empathy-debug-window.c:1315
+#: ../src/empathy-debug-window.c:1317
 msgid "Warning"
 msgstr "คำเตือน"
 
-#: ../src/empathy-debug-window.c:1321
+#: ../src/empathy-debug-window.c:1323
 msgid "Critical"
 msgstr "วิกฤติ"
 
-#: ../src/empathy-debug-window.c:1327
+#: ../src/empathy-debug-window.c:1329
 msgid "Error"
 msgstr "ข้อผิดพลาด"
 
-#: ../src/empathy-debug-window.c:1346
+#: ../src/empathy-debug-window.c:1348
 msgid "Time"
 msgstr "เวลา"
 
-#: ../src/empathy-debug-window.c:1349
+#: ../src/empathy-debug-window.c:1351
 msgid "Domain"
 msgstr "โดเมน"
 
-#: ../src/empathy-debug-window.c:1351
+#: ../src/empathy-debug-window.c:1353
 msgid "Category"
 msgstr "หมวด"
 
-#: ../src/empathy-debug-window.c:1353
+#: ../src/empathy-debug-window.c:1355
 msgid "Level"
 msgstr "ระดับ"
 
-#: ../src/empathy-debug-window.c:1385
+#: ../src/empathy-debug-window.c:1387
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
@@ -3243,14 +3279,37 @@ msgstr "เชิญผู้ร่วมสนทนา"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "เลือกผู้ติดต่อที่จะเชิญเข้าร่วมสนทนา:"
 
+#: ../src/empathy-accounts.c:196
+msgid ""
+"Try to import any recognized accounts and display an assistant if that fails"
+msgstr "พยายามนำเข้าบัญชีต่างๆ ที่รู้จัก และแสดงเครื่องมือช่วยแทนถ้าไม่สำเร็จ"
+
+#: ../src/empathy-accounts.c:201
+msgid "Don't display any dialogs; do any work (eg, importing) and exit"
+msgstr "ไม่ต้องแสดงกล่องโต้ตอบใดๆ ทำงานตามที่สั่ง (เช่น นำเข้า) แล้วจบโปรแกรม"
+
+#: ../src/empathy-accounts.c:205
+msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
+msgstr "เลือกบัญชีที่กำหนดเมื่อเริ่มทำงาน (เช่น gabble/jabber/foo_40example_2eorg0)"
+
+# This is part of "Add new <type> account" message
+#: ../src/empathy-accounts.c:207
+msgid "<account-id>"
+msgstr "<ชื่อบัญชี>"
+
+#: ../src/empathy-accounts.c:215
+msgid "- Empathy Accounts"
+msgstr "- บัญชี Empathy"
+
+#: ../src/empathy-accounts.c:231
+msgid " Accounts"
+msgstr " Accounts"
+
 #~ msgid "Hidden"
 #~ msgstr "ซ่อนตัว"
 
 #~ msgid "User requested disconnect"
 #~ msgstr "ผู้ใช้ขอตัดการเชื่อมต่อ"
-
-#~ msgid "What is your Windows Live user name?"
-#~ msgstr "ชื่อผู้ใช้ Windows Live ของคุณคืออะไร?"
 
 #~ msgid "<b>Location</b>"
 #~ msgstr "<b>ตำแหน่งที่ตั้ง</b>"
@@ -3279,10 +3338,6 @@ msgstr "เลือกผู้ติดต่อที่จะเชิญเ
 
 #~ msgid "_Import..."
 #~ msgstr "_นำเข้า..."
-
-# This is part of "Add new <type> account" message
-#~ msgid "account"
-#~ msgstr "ใหม่"
 
 #~ msgid "%s is offering you an invitation"
 #~ msgstr "%s ส่งคำเชิญถึงคุณ"
