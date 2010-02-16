@@ -2243,7 +2243,16 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
   g_return_if_fail (GDK_IS_SCREEN (screen));
   g_return_if_fail (!selected_account || TP_IS_ACCOUNT (selected_account));
 
-  path = g_build_filename (BIN_DIR, "empathy-accounts", NULL);
+  /* Try to run from source directory if possible */
+  path = g_build_filename (g_getenv ("EMPATHY_SRCDIR"), "src",
+      "empathy-accounts", NULL);
+
+  if (!g_file_test (path, G_FILE_TEST_EXISTS))
+    {
+      g_free (path);
+      path = g_build_filename (BIN_DIR, "empathy-accounts", NULL);
+    }
+
   argv[i++] = path;
 
   if (selected_account)
