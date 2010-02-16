@@ -1316,6 +1316,12 @@ dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
   EmpathyDispatchOperation *operation = NULL;
   ConnectionData *conn_data;
 
+  /* The DispatcherRequestData owns a ref on the self object. As the request
+   * data could be destroyed (when calling dispatcher_request_failed for
+   * example) we keep a ref on self to be sure it stays alive while we are
+   * executing this function. */
+  g_object_ref (self);
+
   conn_data = g_hash_table_lookup (priv->connections,
     request_data->connection);
 
@@ -1398,8 +1404,8 @@ dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
   g_object_unref (operation);
 
 out:
-  dispatcher_flush_outstanding_operations (request_data->dispatcher,
-    conn_data);
+  dispatcher_flush_outstanding_operations (self, conn_data);
+  g_object_unref (self);
 }
 
 static void
