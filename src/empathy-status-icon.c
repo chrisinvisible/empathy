@@ -169,7 +169,8 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 							 NOTIFY_EXPIRES_DEFAULT);
 
 			if (empathy_notify_manager_has_capability (priv->notify_mgr,
-			           EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS)) {
+			           EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS) &&
+			           priv->event->type != EMPATHY_EVENT_TYPE_PRESENCE) {
 				notify_notification_add_action (priv->notification,
 					"respond",
 					_("Respond"),
