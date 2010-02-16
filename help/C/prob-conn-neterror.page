@@ -5,10 +5,11 @@
   <info>
     <link type="guide" xref="prob-conn"/>
     <desc>
-        An error message which says "<gui>Network error</gui>" appears in the main window.
+        An error message which says “<gui>Network error</gui>” appears in the main window.
     </desc>
     <revision pkgversion="2.28" version="0.1" date="2009-06-17" status="draft"/>
     <revision pkgversion="2.28" version="0.2" date="2009-08-14" status="review"/>
+    <revision pkgversion="2.28" version="0.3" date="2010-02-16" status="review"/>
     <credit type="author">
       <name>Phil Bull</name>
       <email>philbull@gmail.com</email>
@@ -29,7 +30,7 @@
 -->
   </info>
 
-  <title>I get a message that says "Network error"</title>
+  <title>I get a message that says “Network error”</title>
 
   <comment>
     <cite date="2009-08-27">shaunm</cite>
@@ -54,7 +55,8 @@
     </item>
     <item>
       <p>
-        Click on the <gui>Edit Account</gui> button in the error message.
+        Click the <media type="image" mime="image/png" src="figures/gtk-edit.png">edit</media> 
+        icon in the error message.
       </p>
     </item>
     <item>
@@ -62,23 +64,34 @@
         <item>
           <p>
             Check in the <gui>Advanced</gui> section that all the details are correct.
-            You should be able to find these details from the website of the messaging service.
+            You should be able to find these details from the website of the messaging 
+            service.
           </p>
         </item>
+<!--
         <item>
           <p>
             In the case of an IRC account, type your nickname in the <gui>Nickname</gui>
             text box.
           </p>
         </item>
+-->        
       </list>
     </item>
     <item>
       <p>
-        Deselect the <gui>Enabled</gui> check-box next to the name of your account, 
-        and then select it again to try to reconnect to the service.
+        Deselect the <gui>Enabled</gui>, and then select it again to try to 
+        reconnect to the service.
       </p>
     </item>
   </steps>
+  
+  <section id="prob-conn-neterror-proxy">
+    <title>Proxy support</title>
+    <p>
+      At the moment <app>Empathy</app> can not be configured to work with a
+      proxy.  
+    </p>
+  </section>
 
 </page>

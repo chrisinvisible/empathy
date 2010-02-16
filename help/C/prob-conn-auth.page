@@ -6,12 +6,13 @@
     <link type="guide" xref="prob-conn"/>
     <link type="seealso" xref="create-account"/>
     <desc>
-        An error message which says "<gui>Authentication failed</gui>" appears
+        An error message which says “<gui>Authentication failed</gui>” appears
         in the main window.
     </desc>
     <revision pkgversion="2.28" version="0.1" date="2009-06-17" status="draft"/>
     <revision pkgversion="2.28" version="0.2" date="2009-07-23" status="draft"/>
     <revision pkgversion="2.28" version="0.3" date="2009-08-14" status="review"/>
+    <revision pkgversion="2.30" version="0.4" date="2010-02-16" status="review"/>
     <credit type="author">
       <name>Phil Bull</name>
       <email>philbull@gmail.com</email>
@@ -32,7 +33,7 @@
 -->
   </info>
 
-  <title>I get a message that says "Authentication failed"</title>
+  <title>I get a message that says “Authentication failed”</title>
 
   <p>
     This kind of error happens when your instant messaging service is not allowing
@@ -54,7 +55,8 @@
     </item>
     <item>
       <p>
-        Click on the <gui>Edit Account</gui> button in the error message.
+       Click the <media type="image" mime="image/png" src="figures/gtk-edit.png">edit</media> 
+        icon in the error message.
       </p>
     </item>
     <item>
@@ -64,8 +66,8 @@
     </item>
     <item>
       <p>
-        Deselect the <gui>Enabled</gui> check-box next to the name of your account, 
-        and then select it again to try to reconnect to the service.
+        Deselect the <gui>Enabled</gui>, and then select it again to try to 
+        reconnect to the service.
       </p>
     </item>
   </steps>
