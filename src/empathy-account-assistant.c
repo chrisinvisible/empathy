@@ -1155,9 +1155,9 @@ account_assistant_build_salut_error_page (EmpathyAccountAssistant *self)
 
   markup = g_strdup_printf ("%s (<span style=\"italic\">%s</span>).",
       _("You won't be able to chat with people connected to your local "
-        "network, as telepathy-salut is not installed.\nIf you want to enable "
-        "this feature, please install the telepathy-salut package\nand create "
-        "a People Nearby account from the Accounts dialog "),
+        "network, as telepathy-salut is not installed. If you want to enable "
+        "this feature, please install the telepathy-salut package and create "
+        "a People Nearby account from the Accounts dialog"),
         _("Edit->Accounts"));
 
   vbox = build_error_vbox (_("telepathy-salut not installed"), markup);
