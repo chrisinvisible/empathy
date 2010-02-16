@@ -39,6 +39,7 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/debug-sender.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/connection-manager.h>
 #include <telepathy-glib/interfaces.h>
@@ -50,7 +51,6 @@
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-connection-managers.h>
-#include <libempathy/empathy-debugger.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-dispatch-operation.h>
 #include <libempathy/empathy-log-manager.h>
@@ -341,32 +341,6 @@ new_call_handler_cb (EmpathyCallFactory *factory,
   gtk_widget_show (GTK_WIDGET (window));
 }
 
-#ifdef ENABLE_DEBUG
-static void
-default_log_handler (const gchar *log_domain,
-    GLogLevelFlags log_level,
-    const gchar *message,
-    gpointer user_data)
-{
-  g_log_default_handler (log_domain, log_level, message, NULL);
-
-  /* G_LOG_DOMAIN = "empathy". No need to send empathy messages to the
-   * debugger as they already have in empathy_debug. */
-  if (log_level != G_LOG_LEVEL_DEBUG
-      || tp_strdiff (log_domain, G_LOG_DOMAIN))
-    {
-        EmpathyDebugger *dbg;
-        GTimeVal now;
-
-        dbg = empathy_debugger_get_singleton ();
-        g_get_current_time (&now);
-
-        empathy_debugger_add_message (dbg, &now, log_domain,
-                                      log_level, message);
-    }
-}
-#endif /* ENABLE_DEBUG */
-
 static void
 account_manager_ready_cb (GObject *source_object,
     GAsyncResult *result,
@@ -598,6 +572,10 @@ main (int argc, char *argv[])
   UniqueApp *unique_app;
   gboolean chatroom_manager_ready;
 
+#ifdef ENABLE_DEBUG
+  TpDebugSender *debug_sender;
+#endif
+
   GOptionContext *optcontext;
   GOptionEntry options[] = {
       { "no-connect", 'n',
@@ -647,8 +625,9 @@ main (int argc, char *argv[])
   textdomain (GETTEXT_PACKAGE);
 
 #ifdef ENABLE_DEBUG
-  /* Set up debugger */
-  g_log_set_default_handler (default_log_handler, NULL);
+  /* Set up debug sender */
+  debug_sender = tp_debug_sender_dup ();
+  g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
 #endif
 
   unique_app = unique_app_new_with_commands ("org.gnome.Empathy",
@@ -762,6 +741,10 @@ main (int argc, char *argv[])
   gtk_main ();
 
   empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+
+#ifdef ENABLE_DEBUG
+  g_object_unref (debug_sender);
+#endif
 
   g_object_unref (idle);
   g_object_unref (connectivity);

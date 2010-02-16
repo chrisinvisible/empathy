@@ -30,10 +30,9 @@
 #include <glib/gstdio.h>
 
 #include <telepathy-glib/debug.h>
+#include <telepathy-glib/debug-sender.h>
 
 #include "empathy-debug.h"
-
-#include "empathy-debugger.h"
 
 #ifdef ENABLE_DEBUG
 
@@ -115,20 +114,23 @@ empathy_debug_free (void)
 }
 
 static void
-log_to_debugger (EmpathyDebugFlags flag,
+log_to_debug_sender (EmpathyDebugFlags flag,
     const gchar *message)
 {
-  EmpathyDebugger *dbg = empathy_debugger_get_singleton ();
+  TpDebugSender *sender;
   gchar *domain;
   GTimeVal now;
+
+  sender = tp_debug_sender_dup ();
 
   g_get_current_time (&now);
 
   domain = g_strdup_printf ("%s/%s", G_LOG_DOMAIN, debug_flag_to_key (flag));
 
-  empathy_debugger_add_message (dbg, &now, domain, G_LOG_LEVEL_DEBUG, message);
+  tp_debug_sender_add_message (sender, &now, domain, G_LOG_LEVEL_DEBUG, message);
 
   g_free (domain);
+  g_object_unref (sender);
 }
 
 void
@@ -143,7 +145,7 @@ empathy_debug (EmpathyDebugFlags flag,
   message = g_strdup_vprintf (format, args);
   va_end (args);
 
-  log_to_debugger (flag, message);
+  log_to_debug_sender (flag, message);
 
   if (flag & flags)
     g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", message);

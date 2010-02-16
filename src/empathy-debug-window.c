@@ -34,6 +34,7 @@
 #include <libempathy-gtk/empathy-geometry.h>
 
 #include <telepathy-glib/dbus.h>
+#include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/proxy-subclass.h>
 
@@ -115,22 +116,22 @@ log_level_to_string (guint level)
 {
   switch (level)
     {
-    case EMP_DEBUG_LEVEL_ERROR:
+    case TP_DEBUG_LEVEL_ERROR:
       return "Error";
       break;
-    case EMP_DEBUG_LEVEL_CRITICAL:
+    case TP_DEBUG_LEVEL_CRITICAL:
       return "Critical";
       break;
-    case EMP_DEBUG_LEVEL_WARNING:
+    case TP_DEBUG_LEVEL_WARNING:
       return "Warning";
       break;
-    case EMP_DEBUG_LEVEL_MESSAGE:
+    case TP_DEBUG_LEVEL_MESSAGE:
       return "Message";
       break;
-    case EMP_DEBUG_LEVEL_INFO:
+    case TP_DEBUG_LEVEL_INFO:
       return "Info";
       break;
-    case EMP_DEBUG_LEVEL_DEBUG:
+    case TP_DEBUG_LEVEL_DEBUG:
       return "Debug";
       break;
     default:
@@ -281,7 +282,7 @@ debug_window_set_enabled (EmpathyDebugWindow *debug_window,
 
   val = tp_g_value_slice_new_boolean (enabled);
 
-  tp_cli_dbus_properties_call_set (priv->proxy, -1, EMP_IFACE_DEBUG,
+  tp_cli_dbus_properties_call_set (priv->proxy, -1, TP_IFACE_DEBUG,
       "Enabled", val, NULL, NULL, NULL, NULL);
 
   tp_g_value_slice_free (val);
@@ -1297,37 +1298,37 @@ debug_window_constructor (GType type,
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Debug"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_DEBUG,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_DEBUG,
       -1);
 
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Info"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_INFO,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_INFO,
       -1);
 
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Message"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_MESSAGE,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_MESSAGE,
       -1);
 
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Warning"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_WARNING,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_WARNING,
       -1);
 
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Critical"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_CRITICAL,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_CRITICAL,
       -1);
 
   gtk_list_store_append (level_store, &iter);
   gtk_list_store_set (level_store, &iter,
       COL_LEVEL_NAME, _("Error"),
-      COL_LEVEL_VALUE, EMP_DEBUG_LEVEL_ERROR,
+      COL_LEVEL_VALUE, TP_DEBUG_LEVEL_ERROR,
       -1);
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (priv->level_filter), 0);

@@ -38,7 +38,6 @@ libempathy_headers =				\
 	empathy-contact-monitor.h		\
 	empathy-contact.h			\
 	empathy-debug.h				\
-	empathy-debugger.h			\
 	empathy-dispatch-operation.h		\
 	empathy-dispatcher.h			\
 	empathy-ft-factory.h			\
@@ -79,7 +78,6 @@ libempathy_la_SOURCES =					\
 	empathy-contact-monitor.c			\
 	empathy-contact.c				\
 	empathy-debug.c					\
-	empathy-debugger.c				\
 	empathy-dispatch-operation.c			\
 	empathy-dispatcher.c				\
 	empathy-ft-factory.c				\
