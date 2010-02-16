@@ -148,6 +148,7 @@ build_error_vbox (const gchar *primary_message,
   gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
   gtk_box_pack_start (GTK_BOX (main_vbox), w, FALSE, FALSE, 0);
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+  gtk_label_set_line_wrap (GTK_LABEL (w), TRUE);
   gtk_widget_show (w);
 
   return main_vbox;
