@@ -824,6 +824,7 @@ contact_list_store_setup (EmpathyContactListStore *store)
 		G_TYPE_BOOLEAN,       /* Can make audio calls */
 		G_TYPE_BOOLEAN,       /* Can make video calls */
 		EMPATHY_TYPE_CONTACT_LIST_FLAGS, /* Flags */
+		G_TYPE_BOOLEAN,       /* Is a favourite */
 	};
 
 	priv = GET_PRIV (store);
@@ -1095,6 +1096,17 @@ contact_list_store_remove_contact (EmpathyContactListStore *store,
 	g_list_free (iters);
 }
 
+static gboolean
+list_store_contact_is_favourite (EmpathyContactListStore *store,
+				 EmpathyContact          *contact)
+{
+	EmpathyContactListStorePriv *priv;
+
+	priv = GET_PRIV (store);
+
+	return empathy_contact_list_contact_is_favourite (priv->list, contact);
+}
+
 static void
 contact_list_store_contact_update (EmpathyContactListStore *store,
 				   EmpathyContact          *contact)
@@ -1210,6 +1222,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	pixbuf_status = contact_list_store_get_contact_status_icon (store, contact);
 	for (l = iters; l && set_model; l = l->next) {
 		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
+				    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, list_store_contact_is_favourite (store, contact),
 				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
@@ -1433,6 +1446,20 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, TRUE,
 				    -1);
 
+		/* add a second separator for the favourite contacts group, to
+		 * always be sorted at the end. This will provide a visual
+		 * distinction between the end of the favourites and the
+		 * beginning of the ungrouped contacts */
+		if (!g_strcmp0 (name, EMPATHY_GROUP_FAVOURITES)) {
+			gtk_tree_store_append (GTK_TREE_STORE (store),
+					&iter_separator,
+					&iter_group);
+			gtk_tree_store_set (GTK_TREE_STORE (store), &iter_separator,
+					EMPATHY_CONTACT_LIST_STORE_COL_NAME, EMPATHY_GROUP_FAVOURITES,
+					EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, TRUE,
+					-1);
+		}
+
 		if (iter_separator_to_set) {
 			*iter_separator_to_set = iter_separator;
 		}
@@ -1483,13 +1510,29 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_b,
 			    -1);
 
-	/* Separator or group? */
+	/* Separator, favourites group, or other group? */
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-			ret_val = -1;
+			/* sort the special favourites group 2nd separator at
+			 * the end */
+			if (!g_strcmp0 (name_a, EMPATHY_GROUP_FAVOURITES)) {
+				ret_val = 1;
+			} else {
+				ret_val = -1;
+			}
 		} else if (is_separator_b) {
-			ret_val = 1;
+			if (!g_strcmp0 (name_b, EMPATHY_GROUP_FAVOURITES)) {
+				ret_val = -1;
+			} else {
+				ret_val = 1;
+			}
 		}
+	} else if (!contact_a && !g_strcmp0 (name_a,
+				EMPATHY_GROUP_FAVOURITES)) {
+		ret_val = -1;
+	} else if (!contact_b && !g_strcmp0 (name_b,
+				EMPATHY_GROUP_FAVOURITES)) {
+		ret_val = 1;
 	} else if (!contact_a && contact_b) {
 		ret_val = 1;
 	} else if (contact_a && !contact_b) {
@@ -1556,10 +1599,26 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-			ret_val = -1;
+			/* sort the special favourites group 2nd separator at
+			 * the end */
+			if (!g_strcmp0 (name_a, EMPATHY_GROUP_FAVOURITES)) {
+				ret_val = 1;
+			} else {
+				ret_val = -1;
+			}
 		} else if (is_separator_b) {
-			ret_val = 1;
+			if (!g_strcmp0 (name_b, EMPATHY_GROUP_FAVOURITES)) {
+				ret_val = -1;
+			} else {
+				ret_val = 1;
+			}
 		}
+	} else if (!contact_a && !g_strcmp0 (name_a,
+				EMPATHY_GROUP_FAVOURITES)) {
+		ret_val = -1;
+	} else if (!contact_b && !g_strcmp0 (name_b,
+				EMPATHY_GROUP_FAVOURITES)) {
+		ret_val = 1;
 	} else if (!contact_a && contact_b) {
 		ret_val = 1;
 	} else if (contact_a && !contact_b) {

@@ -817,6 +817,41 @@ contact_list_view_call_activated_cb (
 }
 
 static void
+contact_list_view_favourite_toggled_cb (
+    EmpathyCellRendererActivatable *cell,
+    const gchar                    *path_string,
+    EmpathyContactListView         *view)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	EmpathyContact *contact;
+        EmpathyContactList *list;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+	if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
+		return;
+
+	gtk_tree_model_get (model, &iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    -1);
+	if (contact == NULL)
+		return;
+
+        list = empathy_contact_list_store_get_list_iface (priv->store);
+
+        if (empathy_contact_list_contact_is_favourite (list, contact)) {
+                empathy_contact_list_remove_from_group (list, contact,
+                                EMPATHY_GROUP_FAVOURITES);
+        } else {
+                empathy_contact_list_add_to_group (list, contact,
+                                EMPATHY_GROUP_FAVOURITES);
+        }
+
+	g_object_unref (contact);
+}
+
+static void
 contact_list_view_cell_set_background (EmpathyContactListView *view,
 				       GtkCellRenderer       *cell,
 				       gboolean               is_group,
@@ -955,6 +990,11 @@ contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
 			    -1);
 
+        if (is_group && !g_strcmp0 (name, EMPATHY_GROUP_FAVOURITES)) {
+                g_free (name);
+                name = g_strdup (_(EMPATHY_GROUP_FAVOURITES));
+        }
+
 	g_object_set (cell,
 		      "show-status", show_status,
 		      "text", name,
@@ -994,6 +1034,39 @@ contact_list_view_expander_cell_data_func (GtkTreeViewColumn     *column,
 	} else {
 		g_object_set (cell, "visible", FALSE, NULL);
 	}
+
+	contact_list_view_cell_set_background (view, cell, is_group, is_active);
+}
+
+static void
+contact_list_view_favourite_cell_data_func (
+				       GtkTreeViewColumn      *tree_column,
+				       GtkCellRenderer        *cell,
+				       GtkTreeModel           *model,
+				       GtkTreeIter            *iter,
+				       EmpathyContactListView *view)
+{
+	gboolean is_group;
+	gboolean is_active;
+	gboolean is_separator;
+	gboolean is_favourite;
+	const gchar *icon_name = NULL;
+
+	gtk_tree_model_get (model, iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_ACTIVE, &is_active,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite,
+			    -1);
+
+        if (!is_separator && !is_group)
+                icon_name = (is_favourite? EMPATHY_IMAGE_FAVOURITE :
+                                EMPATHY_IMAGE_UNFAVOURITE);
+
+	g_object_set (cell,
+		      "visible", (icon_name != NULL),
+		      "icon-name", icon_name,
+		      NULL);
 
 	contact_list_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -1100,6 +1173,22 @@ contact_list_view_setup (EmpathyContactListView *view)
 		      NULL);
 
 	col = gtk_tree_view_column_new ();
+
+	/* Favourite Icon */
+	cell = empathy_cell_renderer_activatable_new ();
+	gtk_tree_view_column_pack_start (col, cell, FALSE);
+	gtk_tree_view_column_set_cell_data_func (
+		col, cell,
+		(GtkTreeCellDataFunc) contact_list_view_favourite_cell_data_func,
+		view, NULL);
+
+	g_object_set (cell,
+		      "visible", FALSE,
+		      NULL);
+
+	g_signal_connect (cell, "path-activated",
+			  G_CALLBACK (contact_list_view_favourite_toggled_cb),
+			  view);
 
 	/* State */
 	cell = gtk_cell_renderer_pixbuf_new ();

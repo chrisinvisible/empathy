@@ -249,3 +249,20 @@ empathy_contact_list_get_flags (EmpathyContactList *list)
 		return 0;
 	}
 }
+
+/* XXX: this should be an EmpathyContact function, but it would likely require
+ * some awkward refactoring */
+gboolean
+empathy_contact_list_contact_is_favourite (EmpathyContactList *list,
+                                           EmpathyContact     *contact)
+{
+        GList *groups, *l;
+
+        groups = empathy_contact_list_get_groups (list, contact);
+        for (l = groups; l; l = l->next)
+                if (!g_strcmp0 (l->data, EMPATHY_GROUP_FAVOURITES))
+                        return TRUE;
+
+        return FALSE;
+}
+
