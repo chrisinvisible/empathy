@@ -1713,6 +1713,13 @@ empathy_tp_chat_acknowledge_messages (EmpathyTpChat *chat,
 	g_slist_free (msgs);
 }
 
+void
+empathy_tp_chat_acknowledge_all_messages (EmpathyTpChat *chat)
+{
+  empathy_tp_chat_acknowledge_messages (chat,
+    (GSList *) empathy_tp_chat_get_pending_messages (chat));
+}
+
 gboolean
 empathy_tp_chat_password_needed (EmpathyTpChat *self)
 {
