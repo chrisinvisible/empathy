@@ -407,7 +407,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	}
 
 	info_bar = gtk_info_bar_new ();
-	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_WARNING);
+	gtk_info_bar_set_message_type (GTK_INFO_BAR (info_bar), GTK_MESSAGE_ERROR);
 
 	gtk_widget_set_no_show_all (info_bar, TRUE);
 	gtk_box_pack_start (GTK_BOX (window->errors_vbox), info_bar, FALSE, TRUE, 0);
