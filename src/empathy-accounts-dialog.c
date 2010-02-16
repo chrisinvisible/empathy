@@ -2238,11 +2238,13 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
   gchar *argv[4] = { NULL, };
   gint i = 0;
   gchar *account_option = NULL;
+  gchar *path;
 
   g_return_if_fail (GDK_IS_SCREEN (screen));
   g_return_if_fail (!selected_account || TP_IS_ACCOUNT (selected_account));
 
-  argv[i++] = BIN_DIR "/empathy-accounts";
+  path = g_build_filename (BIN_DIR, "empathy-accounts", NULL);
+  argv[i++] = path;
 
   if (selected_account)
     {
@@ -2276,4 +2278,5 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
     g_child_watch_add ((GPid) command_pid, application_exit_cb, NULL);
 
   g_free (account_option);
+  g_free (path);
 }
