@@ -197,6 +197,9 @@ struct _EmpathyCallWindowPriv
   gboolean sidebar_was_visible_before_fs;
   gint original_width_before_fs;
   gint original_height_before_fs;
+
+  /* TRUE if the call should be started when the pipeline is playing */
+  gboolean start_call_when_playing;
 };
 
 #define GET_PRIV(o) \
@@ -1056,6 +1059,9 @@ empathy_call_window_init (EmpathyCallWindow *self)
   priv->fsnotifier = fs_element_added_notifier_new ();
   fs_element_added_notifier_add (priv->fsnotifier, GST_BIN (priv->pipeline));
 
+  /* The call will be started as soon the pipeline is playing */
+  priv->start_call_when_playing = TRUE;
+
   keyfile = g_key_file_new ();
   filename = empathy_file_lookup ("element-properties", "data");
   if (g_key_file_load_from_file (keyfile, filename, G_KEY_FILE_NONE, &error))
@@ -1545,6 +1551,9 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
       priv->funnel = NULL;
 
       create_pipeline (self);
+      /* Call will be started when user will hit the 'redial' button */
+      priv->start_call_when_playing = FALSE;
+      gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
 
       return TRUE;
     }
@@ -2318,7 +2327,6 @@ start_call (EmpathyCallWindow *self)
 
   priv->call_started = TRUE;
   empathy_call_handler_start_call (priv->handler);
-  gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
 
   if (empathy_call_handler_has_initial_video (priv->handler))
     {
@@ -2353,7 +2361,10 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
             gst_message_parse_state_changed (message, NULL, &newstate, NULL);
             if (newstate == GST_STATE_PAUSED)
               {
-                start_call (self);
+                gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+
+                if (priv->start_call_when_playing)
+                  start_call (self);
               }
           }
         break;
