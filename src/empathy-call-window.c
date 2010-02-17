@@ -651,33 +651,15 @@ create_audio_input (EmpathyCallWindow *self)
 }
 
 static void
-empathy_call_window_setup_video_preview (EmpathyCallWindow *window)
+add_video_preview_to_pipeline (EmpathyCallWindow *self)
 {
-  EmpathyCallWindowPriv *priv = GET_PRIV (window);
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GstElement *preview;
-  GstBus *bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
 
-  if (priv->video_preview != NULL)
-    {
-      /* Since the video preview and the video tee are initialized and freed
-         at the same time, if one is initialized, then the other one should
-         be too. */
-      g_assert (priv->video_tee != NULL);
-      return;
-    }
-
-  DEBUG ("Create video preview");
-  g_assert (priv->video_tee == NULL);
-
-  priv->video_tee = gst_element_factory_make ("tee", NULL);
-  gst_object_ref (priv->video_tee);
-  gst_object_sink (priv->video_tee);
-
-  priv->video_preview = empathy_video_widget_new_with_size (bus,
-      SELF_VIDEO_SECTION_WIDTH, SELF_VIDEO_SECTION_HEIGTH);
-  g_object_set (priv->video_preview, "sync", FALSE, "async", TRUE, NULL);
-  gtk_box_pack_start (GTK_BOX (priv->self_user_output_hbox),
-      priv->video_preview, TRUE, TRUE, 0);
+  g_assert (priv->video_preview != NULL);
+  g_assert (priv->pipeline != NULL);
+  g_assert (priv->video_input != NULL);
+  g_assert (priv->video_tee != NULL);
 
   preview = empathy_video_widget_get_element (
       EMPATHY_VIDEO_WIDGET (priv->video_preview));
@@ -685,12 +667,58 @@ empathy_call_window_setup_video_preview (EmpathyCallWindow *window)
       priv->video_tee, preview, NULL);
   gst_element_link_many (priv->video_input, priv->video_tee,
       preview, NULL);
+}
+
+static void
+create_video_preview (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GstBus *bus;
+
+  g_assert (priv->video_preview == NULL);
+  g_assert (priv->video_tee == NULL);
+
+  bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
+
+  priv->video_preview = empathy_video_widget_new_with_size (bus,
+      SELF_VIDEO_SECTION_WIDTH, SELF_VIDEO_SECTION_HEIGTH);
+  g_object_set (priv->video_preview, "sync", FALSE, "async", TRUE, NULL);
+
+  gtk_box_pack_start (GTK_BOX (priv->self_user_output_hbox),
+      priv->video_preview, TRUE, TRUE, 0);
+
+  priv->video_tee = gst_element_factory_make ("tee", NULL);
+  gst_object_ref (priv->video_tee);
+  gst_object_sink (priv->video_tee);
 
   g_object_unref (bus);
+}
 
-  gst_element_set_state (preview, GST_STATE_PLAYING);
-  gst_element_set_state (priv->video_input, GST_STATE_PLAYING);
-  gst_element_set_state (priv->video_tee, GST_STATE_PLAYING);
+static void
+play_camera (EmpathyCallWindow *window,
+    gboolean play)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (window);
+  GstElement *preview;
+  GstState state;
+
+  if (priv->video_preview == NULL)
+    {
+      create_video_preview (window);
+      add_video_preview_to_pipeline (window);
+    }
+
+  if (play)
+    state = GST_STATE_PLAYING;
+  else
+    state = GST_STATE_NULL;
+
+  preview = empathy_video_widget_get_element (
+      EMPATHY_VIDEO_WIDGET (priv->video_preview));
+
+  gst_element_set_state (preview, state);
+  gst_element_set_state (priv->video_input, state);
+  gst_element_set_state (priv->video_tee, state);
 }
 
 static void
@@ -704,8 +732,7 @@ display_video_preview (EmpathyCallWindow *self,
       /* Display the preview and hide the self avatar */
       DEBUG ("Show video preview");
 
-      if (priv->video_preview == NULL)
-        empathy_call_window_setup_video_preview (self);
+      play_camera (self, TRUE);
       gtk_widget_show (priv->video_preview);
       gtk_widget_hide (priv->self_user_avatar_widget);
     }
@@ -716,6 +743,7 @@ display_video_preview (EmpathyCallWindow *self,
 
       if (priv->video_preview != NULL)
         gtk_widget_hide (priv->video_preview);
+      play_camera (self, FALSE);
       gtk_widget_show (priv->self_user_avatar_widget);
     }
 }
