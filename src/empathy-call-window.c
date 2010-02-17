@@ -200,6 +200,8 @@ struct _EmpathyCallWindowPriv
 
   /* TRUE if the call should be started when the pipeline is playing */
   gboolean start_call_when_playing;
+  /* TRUE if we requested to set the pipeline in the playing state */
+  gboolean pipeline_playing;
 };
 
 #define GET_PRIV(o) \
@@ -955,6 +957,8 @@ create_pipeline (EmpathyCallWindow *self)
   g_assert (priv->pipeline == NULL);
 
   priv->pipeline = gst_pipeline_new (NULL);
+  priv->pipeline_playing = FALSE;
+
   bus = gst_pipeline_get_bus (GST_PIPELINE (priv->pipeline));
   priv->bus_message_source_id = gst_bus_add_watch (bus,
       empathy_call_window_bus_message, self);
@@ -2373,6 +2377,7 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
             if (newstate == GST_STATE_PAUSED)
               {
                 gst_element_set_state (priv->pipeline, GST_STATE_PLAYING);
+                priv->pipeline_playing = TRUE;
 
                 if (priv->start_call_when_playing)
                   start_call (self);
@@ -2756,7 +2761,13 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
   priv->outgoing = TRUE;
   empathy_call_window_set_state_connecting (window);
 
-  start_call (window);
+  if (priv->pipeline_playing)
+    start_call (window);
+  else
+    /* call will be started when the pipeline is ready */
+    priv->start_call_when_playing = TRUE;
+
+
   empathy_call_window_setup_avatars (window, priv->handler);
 
   gtk_action_set_sensitive (priv->redial, FALSE);
