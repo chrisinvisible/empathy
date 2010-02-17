@@ -1598,14 +1598,25 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       gtk_action_set_sensitive (priv->redial, TRUE);
       gtk_widget_set_sensitive (priv->redial_button, TRUE);
 
-      /* Reseting the send_video, camera_buton and mic_button to their
-         initial state */
+      /* Unsensitive the camera and mic button */
       gtk_widget_set_sensitive (priv->tool_button_camera_on, FALSE);
       gtk_widget_set_sensitive (priv->mic_button, FALSE);
-      gtk_toggle_tool_button_set_active (
-          GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_off), TRUE);
+
+      /* Be sure that the mic button is enabled */
       gtk_toggle_tool_button_set_active (
           GTK_TOGGLE_TOOL_BUTTON (priv->mic_button), TRUE);
+
+      if (priv->camera_state == CAMERA_STATE_ON)
+        {
+          /* Enable the 'preview' button as we are not sending atm. */
+          gtk_toggle_tool_button_set_active (
+              GTK_TOGGLE_TOOL_BUTTON (priv->tool_button_camera_preview), TRUE);
+        }
+      else if (priv->camera_state == CAMERA_STATE_PREVIEW)
+        {
+          /* Restart the preview with the new pipeline. */
+          display_video_preview (self, TRUE);
+        }
 
       gtk_progress_bar_set_fraction (
           GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
