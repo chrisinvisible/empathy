@@ -2742,8 +2742,6 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
    * been updated during that time. That's why we manually update it here */
   empathy_call_window_mic_volume_changed_cb (priv->audio_input_adj, window);
 
-  gtk_widget_show_all (priv->content_hbox);
-
   priv->outgoing = TRUE;
   empathy_call_window_set_state_connecting (window);
 
