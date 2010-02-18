@@ -30,9 +30,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
 #include <mx/mx-gtk.h>
-#endif
+#endif /* HAVE_MEEGO */
 
 #include <libempathy/empathy-utils.h>
 
@@ -745,13 +745,13 @@ account_widget_applied_cb (GObject *source_object,
           gboolean enabled_checked;
 
           enabled_checked =
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
             mx_gtk_light_switch_get_active (
                 MX_GTK_LIGHT_SWITCH (priv->enabled_checkbox));
 #else
             gtk_toggle_button_get_active (
                 GTK_TOGGLE_BUTTON (priv->enabled_checkbox));
-#endif
+#endif /* HAVE_MEEGO */
 
           if (tp_account_is_enabled (account) && enabled_checked)
             {
@@ -1330,34 +1330,34 @@ empathy_account_widget_enabled_cb (TpAccount *account,
 
   if (priv->enabled_checkbox != NULL)
     {
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
       mx_gtk_light_switch_set_active (
           MX_GTK_LIGHT_SWITCH (priv->enabled_checkbox),
           enabled);
 #else
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
           enabled);
-#endif /* HAVE_MOBLIN */
+#endif /* HAVE_MEEGO */
     }
 }
 
 static void
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
 account_widget_switch_flipped_cb (MxGtkLightSwitch *sw,
     gboolean state,
     gpointer user_data)
 #else
 account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
     gpointer user_data)
-#endif /* HAVE_MOBLIN */
+#endif /* HAVE_MEEGO */
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (user_data);
   TpAccount *account;
-#ifndef HAVE_MOBLIN
+#ifndef HAVE_MEEGO
   gboolean state;
 
   state = gtk_toggle_button_get_active (toggle_button);
-#endif
+#endif /* HAVE_MEEGO */
 
   account = empathy_account_settings_get_account (priv->settings);
 
@@ -1496,11 +1496,11 @@ add_enable_checkbox (EmpathyAccountWidget *self,
     TpAccount *account)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
   GtkWidget *w;
 #else
   GtkWidget *vbox = self->ui_details->widget;
-#endif
+#endif /* HAVE_MEEGO */
   guint nb_rows, nb_columns;
   gboolean is_enabled;
 
@@ -1510,7 +1510,7 @@ add_enable_checkbox (EmpathyAccountWidget *self,
 
   is_enabled = tp_account_is_enabled (account);
 
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
   w = gtk_label_new (_("Account:"));
   gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
 
@@ -1526,7 +1526,7 @@ add_enable_checkbox (EmpathyAccountWidget *self,
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
       is_enabled);
-#endif /* HAVE_MOBLIN */
+#endif /* HAVE_MEEGO */
 
   g_object_get (priv->table_common_settings, "n-rows", &nb_rows,
       "n-columns", &nb_columns, NULL);
@@ -1534,7 +1534,7 @@ add_enable_checkbox (EmpathyAccountWidget *self,
   gtk_table_resize (GTK_TABLE (priv->table_common_settings), ++nb_rows,
       nb_columns);
 
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
   gtk_table_attach (GTK_TABLE (priv->table_common_settings),
       w,
       0, 1, nb_rows - 1, nb_rows,
@@ -1546,21 +1546,21 @@ add_enable_checkbox (EmpathyAccountWidget *self,
 #else
   gtk_box_pack_start (GTK_BOX (vbox), priv->enabled_checkbox, FALSE, FALSE, 0);
   gtk_box_reorder_child (GTK_BOX (vbox), priv->enabled_checkbox, 0);
-#endif /* HAVE_MOBLIN */
+#endif /* HAVE_MEEGO */
 
   gtk_widget_show (priv->enabled_checkbox);
 
-#ifdef HAVE_MOBLIN
+#ifdef HAVE_MEEGO
   g_signal_connect (G_OBJECT (priv->enabled_checkbox), "switch-flipped",
       G_CALLBACK (account_widget_switch_flipped_cb), self);
 #else
   g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
       G_CALLBACK (account_widget_enabled_released_cb), self);
-#endif /* HAVE_MOBLIN */
+#endif /* HAVE_MEEGO */
 }
 
-#ifndef HAVE_MOBLIN
-/* Moblin doesn't support registration */
+#ifndef HAVE_MEEGO
+/* Meego doesn't support registration */
 static void
 add_register_buttons (EmpathyAccountWidget *self,
     TpAccount *account)
@@ -1599,7 +1599,7 @@ add_register_buttons (EmpathyAccountWidget *self,
   gtk_widget_show (priv->radiobutton_reuse);
   gtk_widget_show (radiobutton_register);
 }
-#endif
+#endif /* HAVE_MEEGO */
 
 static void
 do_constructed (GObject *obj)
@@ -1745,9 +1745,9 @@ do_constructed (GObject *obj)
           G_CALLBACK (empathy_account_widget_enabled_cb), self);
     }
 
-#ifndef HAVE_MOBLIN
+#ifndef HAVE_MEEGO
   add_register_buttons (self, account);
-#endif
+#endif /* HAVE_MEEGO */
   add_enable_checkbox (self, account);
 
   /* hook up to widget destruction to unref ourselves */

@@ -402,33 +402,33 @@ AC_SUBST(GEOCLUE_CFLAGS)
 AC_SUBST(GEOCLUE_LIBS)
 
 # -----------------------------------------------------------
-# moblin widgets support
+# meego widgets support
 # -----------------------------------------------------------
-AC_ARG_ENABLE(moblin,
-              AS_HELP_STRING([--enable-moblin=@<:no/yes@:>@],
-                             [Enable moblin widgets]), ,
-                             enable_moblin=no)
+AC_ARG_ENABLE(meego,
+              AS_HELP_STRING([--enable-meego=@<:no/yes@:>@],
+                             [Enable meego widgets]), ,
+                             enable_meego=no)
 
-if test "x$enable_moblin" != "xno"; then
-    PKG_CHECK_MODULES(MOBLIN,
+if test "x$enable_meego" != "xno"; then
+    PKG_CHECK_MODULES(MEEGO,
     [
        mx-gtk-1.0
-    ], have_moblin="yes", have_moblin="no")
+    ], have_meego="yes", have_meego="no")
 
-    if test "x$have_moblin" = "xyes"; then
-       AC_DEFINE(HAVE_MOBLIN, 1, [Define if you have moblin])
+    if test "x$have_meego" = "xyes"; then
+       AC_DEFINE(HAVE_MEEGO, 1, [Define if you have meego])
     fi
 else
-   have_moblin="no"
+   have_meego="no"
 fi
 
-if test "x$enable_moblin" = "xyes" -a "x$have_moblin" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find moblin dependencies.])
+if test "x$enable_meego" = "xyes" -a "x$have_meego" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find meego dependencies.])
 fi
 
-AM_CONDITIONAL(HAVE_MOBLIN, test "x$have_moblin" = "xyes")
-AC_SUBST(MOBLIN_CFLAGS)
-AC_SUBST(MOBLIN_LIBS)
+AM_CONDITIONAL(HAVE_MEEGO, test "x$have_meego" = "xyes")
+AC_SUBST(MEEGO_CFLAGS)
+AC_SUBST(MEEGO_LIBS)
 
 # -----------------------------------------------------------
 # nautilus-sendto
@@ -525,7 +525,7 @@ Configure summary:
 	Display maps (libchamplain).:  ${have_libchamplain}
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
-	Moblin widgets .............:  ${have_moblin}
+	Meego widgets ..............:  ${have_meego}
 	Control center embedding....:  ${have_control_center_embedding}
 
     Connectivity:
