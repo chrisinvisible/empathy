@@ -893,6 +893,12 @@ impl_signal_apply (GtkAssistant *assistant)
         account_assistant_apply_account_and_finish (self, priv->salut_settings);
       return;
     }
+  else if (current_page == PAGE_ENTER_CREATE &&
+      priv->settings != NULL &&
+      empathy_account_settings_is_valid (priv->settings))
+    {
+      account_assistant_apply_account_and_finish (self, priv->settings);
+    }
 }
 
 static void
