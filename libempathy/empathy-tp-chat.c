@@ -1805,8 +1805,42 @@ empathy_tp_chat_can_add_contact (EmpathyTpChat *self)
 			TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP);;
 }
 
+static void
+leave_remove_members_cb (TpChannel *proxy,
+			 const GError *error,
+			 gpointer user_data,
+			 GObject *weak_object)
+{
+	EmpathyTpChat *self = user_data;
+
+	if (error == NULL)
+		return;
+
+	DEBUG ("RemoveMembers failed (%s); closing the channel", error->message);
+	empathy_tp_chat_close (self);
+}
+
 void
 empathy_tp_chat_leave (EmpathyTpChat *self)
 {
-	empathy_tp_chat_close (self);
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+	TpHandle self_handle;
+	GArray *array;
+
+	if (!tp_proxy_has_interface_by_id (priv->channel,
+		TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+		empathy_tp_chat_close (self);
+
+	self_handle = tp_channel_group_get_self_handle (priv->channel);
+	if (self_handle == 0)
+		/* we are not member of the channel */
+		empathy_tp_chat_close (self);
+
+	array = g_array_sized_new (FALSE, FALSE, sizeof (TpHandle), 1);
+	g_array_insert_val (array, 0, self_handle);
+
+	tp_cli_channel_interface_group_call_remove_members (priv->channel, -1, array,
+		"", leave_remove_members_cb, self, NULL, G_OBJECT (self));
+
+	g_array_free (array, TRUE);
 }
