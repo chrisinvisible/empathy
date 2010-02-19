@@ -448,6 +448,12 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   g_signal_connect (priv->current_widget_object, "handle-apply",
       G_CALLBACK (account_assistant_handle_apply_cb), self);
 
+  if (empathy_account_settings_is_valid (settings))
+    {
+      gtk_assistant_set_page_complete (GTK_ASSISTANT (self),
+          priv->enter_or_create_page, TRUE);
+    }
+
   gtk_box_pack_start (GTK_BOX (priv->enter_or_create_page), account_widget,
       FALSE, FALSE, 0);
   gtk_widget_show (account_widget);
