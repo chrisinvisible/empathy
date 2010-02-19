@@ -1151,7 +1151,7 @@ tp_chat_got_remote_contact_cb (EmpathyTpContactFactory *factory,
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
-		empathy_tp_chat_close (EMPATHY_TP_CHAT (chat));
+		empathy_tp_chat_leave (EMPATHY_TP_CHAT (chat));
 		return;
 	}
 
@@ -1172,7 +1172,7 @@ tp_chat_got_self_contact_cb (EmpathyTpContactFactory *factory,
 
 	if (error) {
 		DEBUG ("Error: %s", error->message);
-		empathy_tp_chat_close (EMPATHY_TP_CHAT (chat));
+		empathy_tp_chat_leave (EMPATHY_TP_CHAT (chat));
 		return;
 	}
 
@@ -1505,7 +1505,7 @@ empathy_tp_chat_new (TpChannel *channel)
 			     NULL);
 }
 
-void
+static void
 empathy_tp_chat_close (EmpathyTpChat *chat) {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 
