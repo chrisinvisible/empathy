@@ -1804,3 +1804,9 @@ empathy_tp_chat_can_add_contact (EmpathyTpChat *self)
 		tp_proxy_has_interface_by_id (priv->channel,
 			TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP);;
 }
+
+void
+empathy_tp_chat_leave (EmpathyTpChat *self)
+{
+	empathy_tp_chat_close (self);
+}
