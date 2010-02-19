@@ -1268,6 +1268,12 @@ do_constructed (GObject *object)
       gtk_assistant_set_page_type (assistant, page, GTK_ASSISTANT_PAGE_CONFIRM);
 
       priv->create_salut_account = TRUE;
+
+      if (empathy_account_settings_is_valid (priv->salut_settings))
+        {
+          gtk_assistant_set_page_complete (GTK_ASSISTANT (self),
+              page, TRUE);
+        }
     }
   else
     {
