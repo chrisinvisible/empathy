@@ -1509,7 +1509,9 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
 {
   gboolean could_disconnect = FALSE;
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
-  gboolean could_reset_pipeline = empathy_call_window_reset_pipeline (self);
+  gboolean could_reset_pipeline;
+
+  could_reset_pipeline = empathy_call_window_reset_pipeline (self);
 
   if (priv->call_state == CONNECTING)
       empathy_sound_stop (EMPATHY_SOUND_PHONE_OUTGOING);
