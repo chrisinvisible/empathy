@@ -747,7 +747,7 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
   gtk_list_store_append (priv->cms, &iter);
   gtk_list_store_set (priv->cms, &iter,
       COL_CM_NAME, "empathy",
-      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Empathy",
+      COL_CM_UNIQUE_NAME, EMPATHY_CLIENT_NAME,
       -1);
   gtk_combo_box_set_active (GTK_COMBO_BOX (priv->cm_chooser), 0);
 
