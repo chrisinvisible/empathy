@@ -1,3 +1,67 @@
+NEW in 2.29.91
+==============
+
+The "A+++ would release again" release.
+
+Empathy now has a widget to easily configure Facebook accounts.
+The accounts dialog has been moved to its own application (empathy-accounts)
+which can be started from the GNOME preferences menu.
+
+Some crashes have been fixed, including the one when moving tabs between
+chat windows.
+
+Bugs fixed:
+ - Fixed #609737, "All" entry in room list dialog's account chooser mis-sorted (Will Thompson)
+ - Fixed #573194, FacebookChat (Guillaume Desmottes)
+ - Fixed #585089, Criticals when dropping the last tab from one window into another (Sjoerd Simons)
+ - Fixed #607330, Should use TpDebugSender (Jonny Lamb)
+ - Fixed #608053, gtk_notebook_set_tab_label_packing has been deprecated in GTK+ 2.20 (Reimundo Heluani)
+ - Fixed #608113, Strange behavior on account creation (Guillaume Desmottes)
+ - Fixed #608690, Edit needs context (Guillaume Desmottes)
+ - Fixed #608813, EmpathyIdle singleton can be referenced by async functions after being finalized (crasher) (Travis Reitter)
+ - Fixed #608863, Separate the Empathy Accounts dialog into its own program (Travis Reitter)
+ - Fixed #608974, decling subscription doesn't remove the user from publish/local-pending (Danielle Madeley)
+ - Fixed #608975, Empathy calls SetAlias on a contact pending subscription (Danielle Madeley)
+ - Fixed #608979, Once chat window is open Empathy acks messages immediately (Danielle Madeley)
+ - Fixed #609030, uninitialised variable access (Danielle Madeley)
+ - Fixed #609220, accounts are not created during initial setup (Guillaume Desmottes)
+ - Fixed #609319, Disable Empathy's "Contact goes online" and "Contact goes offline" sound notifications by default (Frédéric Péters)
+ - Fixed #609343, Zephyr protocol missing icon in create account dropdown menu (K.Vishnoo Charan Reddy)
+ - Fixed #609352, Replacement for 16px blurry silc icon (K.Vishnoo Charan Reddy)
+ - Fixed #609439, Importing accounts from the assistant seems broken (Guillaume Desmottes)
+ - Fixed #609519, Mxit protocol missing icon in create account dropdown menu (K.Vishnoo Charan Reddy)
+ - Fixed #609537, long avatar messages stretch account settings window out of screen (Guillaume Desmottes)
+ - Fixed #609567, Fix leaked contact menu in contact list view. (Xavier Claessens)
+ - Fixed #609574, Fix leaks, gtk_tree_model_get() returns a ref! (Xavier Claessens)
+ - Fixed #609575, cannot delete two accounts without closing accounts window. (Guillaume Desmottes)
+ - Fixed #609701, port nbtk widgets to mx (Danielle Madeley)
+ - Fixed #609822, use the same color in infobar (Guillaume Desmottes)
+ - Fixed #609843, Crashed when I closed one tab and hence switched to another tab for a disconnected account (Will Thompson)
+ - Fixed #609995, Failed to create account using assistant from empathy-accounts (Guillaume Desmottes)
+ - Fixed #610032, Do not show "respond" in "contact has gone offline" notification (Guillaume Desmottes)
+ - Fixed #610380, In first run, Link-local accounts require some typing before 'apply' becomes available (Guillaume Desmottes)
+ - Fixed #610461, Should call RemoveMembers when exiting room (Guillaume Desmottes)
+ - Fixed #608882, Typo in salut-protocol.page (Łukasz Jernaś)
+ - Fixed #609645, Typo in help/C/video-call.page (Łukasz Jernaś)
+ - Fixed #607908, error window too wide (Guillaume Desmottes)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated es Translation (Jorge González)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pt_BR Translation (Djavan Fagundes)
+ - Updated ro Translation (Lucian Adrian Grijincu)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated ta Translation (vasudeven)
+ - Updated th Translation (Theppitak Karoonboonyanan)
+ - Updated zh_HK Translation (Chao-Hsiung Liao)
+ - Updated zh_TW Translation (Chao-Hsiung Liao)
+
+Documentation translations:
+ - Updated es Documentation translation (Jorge González)
+ - Updated it Documentation translation (Milo Casagrande)
+
 NEW in 2.29.90
 ==============
 
