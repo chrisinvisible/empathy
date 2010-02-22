@@ -76,9 +76,6 @@
 
 #include <gst/gst.h>
 
-#define COMMAND_ACCOUNTS_DIALOG 1
-
-static gboolean account_dialog_only = FALSE;
 static gboolean start_hidden = FALSE;
 static gboolean no_connect = FALSE;
 
@@ -241,9 +238,6 @@ accounts_application_exited_cb (GPid pid,
       g_warning ("accounts application exited with status %d: '%s'",
           status, g_strerror (status));
     }
-
-  if (account_dialog_only)
-    gtk_main_quit ();
 }
 
 static void
@@ -266,26 +260,19 @@ unique_app_message_cb (UniqueApp *unique_app,
   DEBUG ("Other instance launched, presenting the main window. "
       "Command=%d, timestamp %u", command, timestamp);
 
-  if (command == COMMAND_ACCOUNTS_DIALOG)
-    {
-      show_accounts_ui (gdk_screen_get_default (), TRUE);
-    }
-  else
-    {
-      /* XXX: the standalone app somewhat breaks this case, since
-       * communicating it would be a pain */
+  /* XXX: the standalone app somewhat breaks this case, since
+   * communicating it would be a pain */
 
-      /* We're requested to show stuff again, disable the start hidden global
-       * in case the accounts wizard wants to pop up.
-       */
-      start_hidden = FALSE;
+  /* We're requested to show stuff again, disable the start hidden global
+   * in case the accounts wizard wants to pop up.
+   */
+  start_hidden = FALSE;
 
-      gtk_window_set_screen (GTK_WINDOW (window),
-          unique_message_data_get_screen (data));
-      gtk_window_set_startup_id (GTK_WINDOW (window),
-          unique_message_data_get_startup_id (data));
-      gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
-    }
+  gtk_window_set_screen (GTK_WINDOW (window),
+      unique_message_data_get_screen (data));
+  gtk_window_set_startup_id (GTK_WINDOW (window),
+      unique_message_data_get_startup_id (data));
+  gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
 
   return UNIQUE_RESPONSE_OK;
 }
@@ -585,10 +572,6 @@ main (int argc, char *argv[])
         0, G_OPTION_ARG_NONE, &start_hidden,
         N_("Don't display the contact list or any other dialogs on startup"),
         NULL },
-      { "accounts", 'a',
-        0, G_OPTION_ARG_NONE, &account_dialog_only,
-        N_("Show the accounts dialog"),
-        NULL },
       { "version", 'v',
         G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb,
         NULL, NULL },
@@ -629,27 +612,14 @@ main (int argc, char *argv[])
   g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
 #endif
 
-  unique_app = unique_app_new_with_commands (EMPATHY_CLIENT_NAME,
-      NULL, "accounts_dialog", COMMAND_ACCOUNTS_DIALOG, NULL);
+  unique_app = unique_app_new (EMPATHY_CLIENT_NAME, NULL);
 
   if (unique_app_is_running (unique_app))
     {
-      unique_app_send_message (unique_app, account_dialog_only ?
-          COMMAND_ACCOUNTS_DIALOG : UNIQUE_ACTIVATE, NULL);
+      unique_app_send_message (unique_app, UNIQUE_ACTIVATE, NULL);
 
       g_object_unref (unique_app);
       return EXIT_SUCCESS;
-    }
-
-  if (account_dialog_only)
-    {
-      account_manager = tp_account_manager_dup ();
-      show_accounts_ui (gdk_screen_get_default (), FALSE);
-
-      gtk_main ();
-
-      g_object_unref (account_manager);
-      return 0;
     }
 
   notify_init (_(PACKAGE_NAME));
