@@ -554,7 +554,7 @@ empathy_call_handler_stop_call (EmpathyCallHandler *handler)
 
   if (priv->call != NULL)
     {
-      empathy_tp_call_close (priv->call);
+      empathy_tp_call_leave (priv->call);
       g_object_unref (priv->call);
     }
 
