@@ -568,7 +568,6 @@ main (int argc, char *argv[])
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
   GError *error = NULL;
-  TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
   gboolean chatroom_manager_ready;
 
@@ -630,7 +629,8 @@ main (int argc, char *argv[])
   g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
 #endif
 
-  unique_app = unique_app_new_with_commands ("org.gnome.Empathy",
+  unique_app = unique_app_new_with_commands (
+      "org.freedesktop.Telepathy.Client.Empathy",
       NULL, "accounts_dialog", COMMAND_ACCOUNTS_DIALOG, NULL);
 
   if (unique_app_is_running (unique_app))
@@ -640,26 +640,6 @@ main (int argc, char *argv[])
 
       g_object_unref (unique_app);
       return EXIT_SUCCESS;
-    }
-
-  /* Take well-known name */
-  dbus_daemon = tp_dbus_daemon_dup (&error);
-  if (error == NULL)
-    {
-      if (!tp_dbus_daemon_request_name (dbus_daemon,
-          "org.gnome.Empathy", TRUE, &error))
-        {
-          DEBUG ("Failed to request well-known name: %s",
-                 error ? error->message : "no message");
-          g_clear_error (&error);
-        }
-      g_object_unref (dbus_daemon);
-    }
-  else
-    {
-      DEBUG ("Failed to dup dbus daemon: %s",
-             error ? error->message : "no message");
-      g_clear_error (&error);
     }
 
   if (account_dialog_only)
