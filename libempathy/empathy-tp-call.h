@@ -92,6 +92,8 @@ const gchar * empathy_tp_call_get_connection_manager (EmpathyTpCall *self);
 
 gboolean empathy_tp_call_has_initial_video (EmpathyTpCall *self);
 
+void empathy_tp_call_leave (EmpathyTpCall *self);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_TP_CALL_H__ */
