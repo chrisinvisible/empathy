@@ -1331,7 +1331,10 @@ empathy_call_window_dispose (GObject *object)
     }
 
   if (priv->handler != NULL)
-    g_object_unref (priv->handler);
+    {
+      empathy_call_handler_stop_call (priv->handler);
+      g_object_unref (priv->handler);
+    }
   priv->handler = NULL;
 
   if (priv->pipeline != NULL)
@@ -2667,6 +2670,10 @@ static void
 empathy_call_window_hangup_cb (gpointer object,
                                EmpathyCallWindow *window)
 {
+  EmpathyCallWindowPriv *priv = GET_PRIV (window);
+
+  empathy_call_handler_stop_call (priv->handler);
+
   if (empathy_call_window_disconnected (window))
     gtk_widget_destroy (GTK_WIDGET (window));
 }
