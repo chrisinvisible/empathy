@@ -442,6 +442,7 @@ if test "x$enable_meego" != "xno"; then
 
     if test "x$have_meego" = "xyes"; then
        AC_DEFINE(HAVE_MEEGO, 1, [Define if you have meego])
+       chain_enable_favourite_contacts="yes"
     fi
 else
    have_meego="no"
@@ -454,6 +455,36 @@ fi
 AM_CONDITIONAL(HAVE_MEEGO, test "x$have_meego" = "xyes")
 AC_SUBST(MEEGO_CFLAGS)
 AC_SUBST(MEEGO_LIBS)
+
+# -----------------------------------------------------------
+# favourite contacts support
+# -----------------------------------------------------------
+AC_ARG_ENABLE(favourite_contacts,
+              AS_HELP_STRING([--enable-favourite-contacts=@<:no/yes@:>@],
+                             [Enable favourite contacts]), ,
+                             enable_favourite_contacts=no)
+
+if test "x$enable_favourite_contacts" != "xno" -o "x$chain_enable_favourite_contacts" == "xyes"; then
+    PKG_CHECK_MODULES(TELEPATHY_LOGGER,
+    [
+       libtelepathy-logger
+    ], have_telepathy_logger="yes", have_telepathy_logger="no")
+
+    if test "x$have_telepathy_logger" = "xyes"; then
+       have_favourite_contacts="yes"
+       AC_DEFINE(HAVE_FAVOURITE_CONTACTS, 1, [Define if you want favourite contacts support])
+    fi
+else
+   have_favourite_contacts="no"
+fi
+
+if test "x$enable_favourite_contacts" = "xyes" -a "x$have_favourite_contacts" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find favourite contacts dependencies.])
+fi
+
+AM_CONDITIONAL(HAVE_FAVOURITE_CONTACTS, test "x$have_telepathy_logger" = "xyes")
+AC_SUBST(FAVOURITE_CONTACTS_CFLAGS)
+AC_SUBST(FAVOURITE_CONTACTS_LIBS)
 
 # -----------------------------------------------------------
 # nautilus-sendto
@@ -551,6 +582,7 @@ Configure summary:
 	Location awareness (Geoclue):  ${have_geoclue}
 	Adium themes (Webkit).......:  ${have_webkit}
 	Meego widgets ..............:  ${have_meego}
+	Favourite contacts .........:  ${have_favourite_contacts}
 	Control center embedding....:  ${have_control_center_embedding}
 
     Logging:
