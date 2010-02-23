@@ -232,7 +232,7 @@ contact_selector_constructor (GType type,
   renderer = gtk_cell_renderer_pixbuf_new ();
   gtk_cell_layout_pack_start (cell_layout, renderer, FALSE);
   gtk_cell_layout_set_attributes (cell_layout, renderer,
-      "icon-name", EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, NULL);
+      "pixbuf", EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, NULL);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (cell_layout, renderer, TRUE);
