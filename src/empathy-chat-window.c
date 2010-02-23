@@ -1315,6 +1315,8 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 
 	if (has_focus && priv->current_chat == chat) {
 		/* window and tab are focused so consider the message to be read */
+
+		/* FIXME: see Bug#610994 and coments about it in EmpathyChatPriv */
 		empathy_chat_messages_read (chat);
 		return;
 	}

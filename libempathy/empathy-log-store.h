@@ -23,6 +23,9 @@
 #ifndef __EMPATHY_LOG_STORE_H__
 #define __EMPATHY_LOG_STORE_H__
 
+#include <config.h>
+#ifndef ENABLE_TPL
+
 #include <glib-object.h>
 
 #include <telepathy-glib/account.h>
@@ -98,4 +101,5 @@ GList *empathy_log_store_get_filtered_messages (EmpathyLogStore *self,
 
 G_END_DECLS
 
+#endif /* ENABLE_TPL */
 #endif /* __EMPATHY_LOG_STORE_H__ */

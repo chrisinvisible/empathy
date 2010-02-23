@@ -24,6 +24,9 @@
 #ifndef __EMPATHY_LOG_MANAGER_H__
 #define __EMPATHY_LOG_MANAGER_H__
 
+#include <config.h>
+#ifndef ENABLE_TPL
+
 #include <glib-object.h>
 
 #include "empathy-message.h"
@@ -100,4 +103,5 @@ void empathy_log_manager_observe (EmpathyLogManager *log_manager,
 
 G_END_DECLS
 
+#endif /* ENABLE_TPL */
 #endif /* __EMPATHY_LOG_MANAGER_H__ */

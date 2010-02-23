@@ -27,6 +27,9 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
+#ifdef ENABEL_TPL
+#include <telepathy-logger/contact.h>
+#endif /* ENABLE_TPL */
 
 #include "empathy-contact.h"
 #include "empathy-utils.h"
@@ -407,6 +410,33 @@ empathy_contact_new (TpContact *tp_contact)
       "tp-contact", tp_contact,
       NULL);
 }
+
+#ifdef ENABLE_TPL
+EmpathyContact *
+empathy_contact_from_tpl_contact (TpAccount *account,
+    TplContact *tpl_contact)
+{
+  EmpathyContact *retval;
+  gboolean is_user;
+
+  g_return_val_if_fail (TPL_IS_CONTACT (tpl_contact), NULL);
+
+  is_user = (TPL_CONTACT_USER == tpl_contact_get_contact_type (tpl_contact));
+
+  retval = g_object_new (EMPATHY_TYPE_CONTACT,
+      "id", tpl_contact_get_alias (tpl_contact),
+      "name", tpl_contact_get_identifier (tpl_contact),
+      "account", account,
+      "is-user", is_user,
+      NULL);
+
+  if (!EMP_STR_EMPTY (tpl_contact_get_avatar_token (tpl_contact)))
+    empathy_contact_load_avatar_cache (retval,
+        tpl_contact_get_avatar_token (tpl_contact));
+
+  return retval;
+}
+#endif /* ENABLE_TPL */
 
 EmpathyContact *
 empathy_contact_new_for_log (TpAccount *account,

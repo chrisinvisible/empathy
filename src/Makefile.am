@@ -13,6 +13,7 @@ CPPFLAGS_COMMON =					\
 AM_LDFLAGS = -lm
 AM_CPPFLAGS =						\
 	$(CPPFLAGS_COMMON)				\
+	$(TPL_CFLAGS)					\
 	$(LIBNOTIFY_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\
@@ -22,6 +23,7 @@ LDADD =								\
 	$(top_builddir)/libempathy-gtk/libempathy-gtk.la	\
 	$(top_builddir)/libempathy/libempathy.la		\
 	$(top_builddir)/extensions/libemp-extensions.la		\
+	$(TPL_LIBS)						\
 	$(LIBNOTIFY_LIBS)					\
 	$(EMPATHY_LIBS)						\
 	$(LIBCHAMPLAIN_LIBS)					\

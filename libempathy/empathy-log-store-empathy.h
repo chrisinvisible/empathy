@@ -25,6 +25,9 @@
 #ifndef __EMPATHY_LOG_STORE_EMPATHY_H__
 #define __EMPATHY_LOG_STORE_EMPATHY_H__
 
+#include <config.h>
+#ifndef ENABLE_TPL
+
 #include <glib.h>
 
 G_BEGIN_DECLS
@@ -63,4 +66,5 @@ GType empathy_log_store_empathy_get_type (void);
 
 G_END_DECLS
 
+#endif /* ENABLE_TPL */
 #endif /* __EMPATHY_LOG_STORE_EMPATHY_H__ */
