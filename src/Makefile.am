@@ -10,6 +10,7 @@ CPPFLAGS_COMMON =					\
 	$(WARN_CFLAGS)					\
 	$(NULL)
 
+AM_LDFLAGS = -lm
 AM_CPPFLAGS =						\
 	$(CPPFLAGS_COMMON)				\
 	$(LIBNOTIFY_CFLAGS)				\
