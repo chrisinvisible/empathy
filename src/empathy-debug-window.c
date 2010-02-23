@@ -1165,6 +1165,37 @@ debug_window_key_press_event_cb (GtkWidget *widget,
   return FALSE;
 }
 
+static gboolean
+tree_view_search_equal_func_cb (GtkTreeModel *model,
+    gint column,
+    const gchar *key,
+    GtkTreeIter *iter,
+    gpointer search_data)
+{
+  gchar *str;
+  gint key_len;
+  gint len;
+  gint i;
+  gboolean ret = TRUE; /* The return value is counter-intuitive */
+
+  gtk_tree_model_get (model, iter, column, &str, -1);
+
+  key_len = strlen (key);
+  len = strlen (str) - key_len;
+
+  for (i = 0; i <= len; ++i)
+    {
+      if (!g_ascii_strncasecmp (key, str + i, key_len))
+        {
+          ret = FALSE;
+          break;
+        }
+    }
+
+  g_free (str);
+  return ret;
+}
+
 static GObject *
 debug_window_constructor (GType type,
     guint n_construct_params,
@@ -1372,6 +1403,11 @@ debug_window_constructor (GType type,
       debug_window_visible_func, object, NULL);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (priv->view), priv->store_filter);
+
+  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->view),
+      COL_DEBUG_MESSAGE);
+  gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (priv->view),
+      tree_view_search_equal_func_cb, NULL, NULL);
 
   /* Scrolled window */
   priv->scrolled_win = g_object_ref (gtk_scrolled_window_new (NULL, NULL));
