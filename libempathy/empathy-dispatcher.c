@@ -1717,6 +1717,8 @@ empathy_dispatcher_call_create_or_ensure_channel (
 
   account = empathy_get_account_for_connection (request_data->connection);
 
+  g_assert (account != NULL);
+
   if (request_data->cb)
     handler = empathy_handler_get_busname (priv->handler);
 
