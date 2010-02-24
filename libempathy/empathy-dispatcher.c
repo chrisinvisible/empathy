@@ -1666,11 +1666,11 @@ dispatcher_create_channel_cb (TpChannelDispatcher *proxy,
     gpointer user_data,
     GObject *weak_object)
 {
-  EmpathyDispatcher *self = EMPATHY_DISPATCHER (weak_object);
+  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
+  EmpathyDispatcher *self = EMPATHY_DISPATCHER (request_data->dispatcher);
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   TpChannelRequest *request;
   GError *err = NULL;
-  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
 
   request_data->pending_call = NULL;
 
@@ -1687,7 +1687,7 @@ dispatcher_create_channel_cb (TpChannelDispatcher *proxy,
       dispatcher_channel_request_failed_cb, request_data,
       NULL, G_OBJECT (self), &err) == NULL)
     {
-      dispatcher_request_failed (dispatcher, request_data, err);
+      dispatcher_request_failed (self, request_data, err);
       g_error_free (err);
       return;
     }
