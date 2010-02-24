@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2002-2007 Imendio AB
- * Copyright (C) 2007-2008 Collabora Ltd.
+ * Copyright (C) 2007-2010 Collabora Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -1095,7 +1095,35 @@ static void
 main_window_help_debug_cb (GtkAction         *action,
 			   EmpathyMainWindow *window)
 {
-	empathy_debug_window_new (NULL);
+	GdkScreen *screen = gdk_screen_get_default ();
+	GError *error = NULL;
+	gchar *argv[2] = { NULL, };
+	gint i = 0;
+	gchar *path;
+
+	g_return_if_fail (GDK_IS_SCREEN (screen));
+
+	/* Try to run from source directory if possible */
+	path = g_build_filename (g_getenv ("EMPATHY_SRCDIR"), "src",
+			"empathy-debugger", NULL);
+
+	if (!g_file_test (path, G_FILE_TEST_EXISTS)) {
+		g_free (path);
+		path = g_build_filename (BIN_DIR, "empathy-debugger", NULL);
+	}
+
+	argv[i++] = path;
+
+	gdk_spawn_on_screen (screen, NULL, argv, NULL,
+			G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+			NULL, NULL, NULL, &error);
+
+	if (error) {
+		g_warning ("Failed to open debug window: %s", error->message);
+		g_error_free (error);
+	}
+
+	g_free (path);
 }
 
 static void
