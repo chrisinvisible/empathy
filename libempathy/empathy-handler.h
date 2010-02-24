@@ -62,6 +62,8 @@ EmpathyHandler * empathy_handler_new (const gchar *name,
     GPtrArray *filters,
     GStrv capabilities);
 
+const gchar *empathy_handler_get_busname (EmpathyHandler *handler);
+
 typedef gboolean (EmpathyHandlerHandleChannelsFunc) (EmpathyHandler *handler,
     const gchar *account_path,
     const gchar *connection_path,

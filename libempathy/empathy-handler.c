@@ -102,12 +102,12 @@ handler_constructor (GType type,
 
   dbus = tp_dbus_daemon_dup (NULL);
 
+  DEBUG ("Registering at %s, %s", priv->busname, object_path);
   g_assert (tp_dbus_daemon_request_name (dbus,
     priv->busname, TRUE, NULL));
   dbus_g_connection_register_g_object (tp_get_bus (),
     object_path, obj);
 
-  DEBUG ("Registered at '%s'", object_path);
 
   g_free (object_path);
   g_object_unref (dbus);
@@ -167,8 +167,8 @@ handler_set_property (GObject *object,
     {
       case PROP_CHANNEL_FILTER:
         priv->filters = g_value_dup_boxed (value);
-	if (priv->filters == NULL)
-	  priv->filters = g_ptr_array_new ();
+        if (priv->filters == NULL)
+          priv->filters = g_ptr_array_new ();
         break;
       case PROP_CAPABILITIES:
         priv->capabilities = g_value_dup_boxed (value);
@@ -372,6 +372,14 @@ empathy_handler_handle_channels (TpSvcClientHandler *self,
 error:
   dbus_g_method_return_error (context, error);
   g_error_free (error);
+}
+
+const gchar *
+empathy_handler_get_busname (EmpathyHandler *handler)
+{
+  EmpathyHandlerPriv *priv = GET_PRIV (handler);
+
+  return priv->busname;
 }
 
 static void

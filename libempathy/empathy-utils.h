@@ -37,8 +37,6 @@
 #define EMPATHY_GET_PRIV(obj,type) ((type##Priv *) ((type *) obj)->priv)
 #define EMP_STR_EMPTY(x) ((x) == NULL || (x)[0] == '\0')
 
-#define EMPATHY_CLIENT_NAME "org.freedesktop.Telepathy.Client.Empathy"
-
 G_BEGIN_DECLS
 
 void         empathy_init                           (void);

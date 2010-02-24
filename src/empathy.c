@@ -612,7 +612,7 @@ main (int argc, char *argv[])
   g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
 #endif
 
-  unique_app = unique_app_new (EMPATHY_CLIENT_NAME, NULL);
+  unique_app = unique_app_new ("org.gnome."PACKAGE_NAME, NULL);
 
   if (unique_app_is_running (unique_app))
     {
