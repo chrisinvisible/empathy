@@ -1245,6 +1245,9 @@ empathy_account_settings_has_account (EmpathyAccountSettings *settings,
 
   priv = GET_PRIV (settings);
 
+  if (priv->account == NULL)
+    return FALSE;
+
   account_path = tp_proxy_get_object_path (TP_PROXY (account));
   priv_account_path = tp_proxy_get_object_path (TP_PROXY (priv->account));
 
