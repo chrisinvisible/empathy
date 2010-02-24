@@ -7,10 +7,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: empathy 2.29.90\n"
+"Project-Id-Version: empathy 2.29.91\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-21 19:42+0800\n"
-"PO-Revision-Date: 2010-02-20 17:24+0800\n"
+"POT-Creation-Date: 2010-02-24 22:38+0800\n"
+"PO-Revision-Date: 2010-02-21 22:23+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@lists.linux.org.tw>\n"
 "MIME-Version: 1.0\n"
@@ -223,7 +223,7 @@ msgstr "顯示協定"
 
 #: ../data/empathy.schemas.in.h:47
 msgid "Spell checking languages"
-msgstr "拼字檢查語言"
+msgstr "拼字檢查的語言"
 
 #: ../data/empathy.schemas.in.h:48
 msgid "The default folder to save file transfers in."
@@ -2021,19 +2021,15 @@ msgstr "沒有錯誤訊息"
 msgid "Instant Message (Empathy)"
 msgstr "即時通訊 (Empathy)"
 
-#: ../src/empathy.c:583
+#: ../src/empathy.c:569
 msgid "Don't connect on startup"
 msgstr "啟動時不要自動連線"
 
-#: ../src/empathy.c:587
+#: ../src/empathy.c:573
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "啟動時不顯示連絡人清單或任何其他對話窗"
 
-#: ../src/empathy.c:591
-msgid "Show the accounts dialog"
-msgstr "顯示帳號對話盒"
-
-#: ../src/empathy.c:603
+#: ../src/empathy.c:585
 msgid "- Empathy IM Client"
 msgstr "- Empathy 即時通客戶端"
 
@@ -3101,7 +3097,7 @@ msgstr "當聊天視窗失去焦點時啟用通知(_C)"
 
 #: ../src/empathy-preferences.ui.h:10
 msgid "Enable spell checking for languages:"
-msgstr "啟用拼字檢查程式語言："
+msgstr "為語言啟用拼字檢查："
 
 #: ../src/empathy-preferences.ui.h:11
 msgid "General"
@@ -3150,7 +3146,7 @@ msgstr "音效"
 
 #: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
-msgstr "拼字檢查程式"
+msgstr "拼字檢查"
 
 #: ../src/empathy-preferences.ui.h:23
 msgid ""
@@ -3306,6 +3302,9 @@ msgstr "- Empathy 帳號"
 #: ../src/empathy-accounts.c:231
 msgid " Accounts"
 msgstr "帳號"
+
+#~ msgid "Show the accounts dialog"
+#~ msgstr "顯示帳號對話盒"
 
 #~ msgid "The error message was: <span style=\"italic\">%s</span>"
 #~ msgstr "錯誤訊息為： <span style=\"italic\">%s</span>"
