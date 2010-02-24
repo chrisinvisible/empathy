@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gossip.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-20 22:27+0200\n"
-"PO-Revision-Date: 2010-02-20 22:26+0300\n"
+"POT-Creation-Date: 2010-02-24 20:36+0200\n"
+"PO-Revision-Date: 2010-02-24 20:36+0300\n"
 "Last-Translator: Khaled Hosny <khaledhosny@eglug.org>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
 "MIME-Version: 1.0\n"
@@ -367,57 +367,47 @@ msgid ""
 msgstr ""
 
 #: ../data/empathy.schemas.in.h:79
-#, fuzzy
 msgid "Whether to show a popup notification when receiving a new message."
-msgstr "فعّل التنبيهات المنبثقة للرسائل الجديدة"
+msgstr "ما إذا سيشغل صوت عند استلام نافذة جديدة."
 
 #: ../data/empathy.schemas.in.h:80
-#, fuzzy
 msgid ""
 "Whether to show avatars for contacts in the contact list and chat windows."
 msgstr "إظهار صور شخصية للمتراسلين في لائحة المتراسلين ونوافذ المحادثة."
 
 #: ../data/empathy.schemas.in.h:81
-#, fuzzy
 msgid "Whether to show contacts that are offline in the contact list."
 msgstr "عرض المرسلين غير المتصلين في لائحة المتراسلين."
 
 #: ../data/empathy.schemas.in.h:82
-#, fuzzy
 msgid "Whether to show popup notifications when away or busy."
-msgstr "عطل التنبيهات عندما أكون بعيدا أو مشغولا"
+msgstr "ما إذا ستظهر التنبيهات عندما أكون بعيدا أو مشغولا."
 
 #: ../data/empathy.schemas.in.h:83
-#, fuzzy
 msgid "Whether to show protocols for contacts in the contact list."
-msgstr "إظهار صور شخصية للمتراسلين في لائحة المتراسلين ونوافذ المحادثة."
+msgstr ""
 
 #: ../data/empathy.schemas.in.h:84
-#, fuzzy
 msgid "Whether to show the contact list in chat rooms."
-msgstr "عرض لائحة المتراسلين في شكلها المختصر."
+msgstr "عرض لائحة المتراسلين في غرف المحادثة."
 
 #: ../data/empathy.schemas.in.h:85
-#, fuzzy
 msgid "Whether to show the contact list in compact mode."
 msgstr "عرض لائحة المتراسلين في شكلها المختصر."
 
 #: ../data/empathy.schemas.in.h:86
-#, fuzzy
 msgid ""
 "Whether to show the message dialog about closing the main window with the "
 "'x' button in the title bar."
 msgstr ""
 "عرض حوار الرسائل حول إغلاق النافذة الرئيسية التي بها علامة الإغلاق في شريط "
-"العناوين. "
+"العناوين."
 
 #: ../data/empathy.schemas.in.h:87
-#, fuzzy
 msgid "Whether to use the theme for chat rooms."
 msgstr "استخدام سمة لغرف المحادثة."
 
 #: ../data/empathy.schemas.in.h:88
-#, fuzzy
 msgid ""
 "Which criterion to use when sorting the contact list. Default is to sort by "
 "the contact's name with the value \"name\". A value of \"state\" will sort "
@@ -2086,19 +2076,15 @@ msgstr "لا رسالة خطأ"
 msgid "Instant Message (Empathy)"
 msgstr "رسالة فورية (إمبَثي)"
 
-#: ../src/empathy.c:583
+#: ../src/empathy.c:569
 msgid "Don't connect on startup"
 msgstr "لا تتصل عند بدء التشغيل"
 
-#: ../src/empathy.c:587
+#: ../src/empathy.c:573
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "لا تعرض قائمة المتراسلين أو أي حوارات أخرى عند بدء التشغيل"
 
-#: ../src/empathy.c:591
-msgid "Show the accounts dialog"
-msgstr "أعرض مربع حوار الحسابات"
-
-#: ../src/empathy.c:603
+#: ../src/empathy.c:585
 msgid "- Empathy IM Client"
 msgstr "- المرسال إمبثي"
 
@@ -3376,15 +3362,15 @@ msgstr "اختر متراسلة لدعوته إلى المحادثة:"
 #: ../src/empathy-accounts.c:196
 msgid ""
 "Try to import any recognized accounts and display an assistant if that fails"
-msgstr ""
+msgstr "حاول استيراد الحسابات المتعرف عليها واعرض المساعد في حال الفشل"
 
 #: ../src/empathy-accounts.c:201
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
-msgstr ""
+msgstr "لا تعرض أي حوارات، قم بالعمل (مثلا: الاستيراد) ثم أغلق"
 
 #: ../src/empathy-accounts.c:205
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
-msgstr ""
+msgstr "حدد الحساب المعطى (مثلا gabble/jabber/foo_40example_2eorg0)"
 
 #: ../src/empathy-accounts.c:207
 msgid "<account-id>"
@@ -3397,6 +3383,9 @@ msgstr "- حسابات إمبثي"
 #: ../src/empathy-accounts.c:231
 msgid " Accounts"
 msgstr " حسابات"
+
+#~ msgid "Show the accounts dialog"
+#~ msgstr "أعرض مربع حوار الحسابات"
 
 #~ msgid "The error message was: <span style=\"italic\">%s</span>"
 #~ msgstr "رسالة الخطأ: <span style=\"italic\">%s</span>"
