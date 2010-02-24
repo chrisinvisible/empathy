@@ -1591,7 +1591,8 @@ empathy_dispatcher_join_muc (TpConnection *connection,
 
 static void
 dispatcher_channel_request_failed_cb (TpChannelRequest *request,
-  const gchar *error, const gchar *message,
+  const gchar *error,
+  const gchar *message,
   gpointer user_data,
   GObject *weak_object)
 {
