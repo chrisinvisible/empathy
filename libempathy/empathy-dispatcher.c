@@ -722,7 +722,6 @@ dispatcher_connection_got_all (TpProxy *proxy,
   EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GPtrArray *requestable_channels;
-  GPtrArray *existing_channels;
 
   if (error) {
     DEBUG ("Error: %s", error->message);
@@ -766,32 +765,6 @@ dispatcher_connection_got_all (TpProxy *proxy,
       g_list_free (requests);
 
       g_hash_table_remove (priv->outstanding_classes_requests, proxy);
-    }
-
-  existing_channels = tp_asv_get_boxed (properties,
-      "Channels", TP_ARRAY_TYPE_CHANNEL_DETAILS_LIST);
-
-  if (existing_channels != NULL)
-    {
-      guint idx;
-
-      for (idx = 0; idx < existing_channels->len; idx++)
-        {
-          GValueArray *values = g_ptr_array_index (existing_channels, idx);
-          const gchar *object_path;
-          GHashTable *props;
-
-          object_path = g_value_get_boxed (g_value_array_get_nth (values, 0));
-          props = g_value_get_boxed (g_value_array_get_nth (values, 1));
-
-          if (tp_strdiff (tp_asv_get_string (props,
-                      TP_IFACE_CHANNEL ".ChannelType"),
-                  TP_IFACE_CHANNEL_TYPE_TEXT))
-            continue;
-
-          dispatcher_connection_new_channel_with_properties (self,
-              TP_CONNECTION (proxy), object_path, properties, NULL);
-        }
     }
 }
 
