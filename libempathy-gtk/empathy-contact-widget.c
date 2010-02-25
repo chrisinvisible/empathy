@@ -702,7 +702,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
       gtk_container_add (GTK_CONTAINER (information->viewport_map),
           information->map_view_embed);
       g_object_set (G_OBJECT (information->map_view),
-          "show-license", FALSE,
+          "show-license", TRUE,
           "scroll-mode", CHAMPLAIN_SCROLL_MODE_KINETIC,
           "zoom-level", 10,
           NULL);
