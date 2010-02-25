@@ -273,6 +273,7 @@ unique_app_message_cb (UniqueApp *unique_app,
   gtk_window_set_startup_id (GTK_WINDOW (window),
       unique_message_data_get_startup_id (data));
   gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
+  gtk_window_set_skip_taskbar_hint (window, FALSE);
 
   return UNIQUE_RESPONSE_OK;
 }
