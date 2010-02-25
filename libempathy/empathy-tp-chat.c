@@ -1828,13 +1828,17 @@ empathy_tp_chat_leave (EmpathyTpChat *self)
 	GArray *array;
 
 	if (!tp_proxy_has_interface_by_id (priv->channel,
-		TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
+		TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP)) {
 		empathy_tp_chat_close (self);
+		return;
+	}
 
 	self_handle = tp_channel_group_get_self_handle (priv->channel);
-	if (self_handle == 0)
+	if (self_handle == 0) {
 		/* we are not member of the channel */
 		empathy_tp_chat_close (self);
+		return;
+	}
 
 	array = g_array_sized_new (FALSE, FALSE, sizeof (TpHandle), 1);
 	g_array_insert_val (array, 0, self_handle);
