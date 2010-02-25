@@ -552,6 +552,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
   };
   int i;
   const gchar *skey;
+  gboolean display_map = FALSE;
 
   if (!(information->flags & EMPATHY_CONTACT_WIDGET_SHOW_LOCATION))
     {
@@ -666,20 +667,30 @@ contact_widget_location_update (EmpathyContactWidget *information)
       row++;
     }
 
-  if (row == 0)
+#if HAVE_LIBCHAMPLAIN
+  if (has_position &&
+      !(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
     {
+      /* Cannot be displayed in tooltips until Clutter-Gtk can deal with such
+       * windows */
+      display_map = TRUE;
+    }
+#endif
+
+  if (row > 0)
+    {
+      /* We can display some fields */
+      gtk_widget_show (information->table_location);
+    }
+  else if (!display_map)
+    {
+      /* Can't display either fields or map */
       gtk_widget_hide (information->vbox_location);
       return;
     }
 
-  gtk_widget_show (information->table_location);
-
 #if HAVE_LIBCHAMPLAIN
-  /* Cannot be displayed in tooltips until Clutter-Gtk can deal with such
-   * windows
-   */
-  if (has_position &&
-      !(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
+  if (display_map)
     {
       ClutterActor *marker;
       ChamplainLayer *layer;
