@@ -1392,13 +1392,16 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
     }
   else
     {
-      request_data->pending_call = tp_cli_connection_call_request_channel (
+      TpProxyPendingCall *call = tp_cli_connection_call_request_channel (
         request_data->connection, -1,
         request_data->channel_type,
         request_data->handle_type,
         request_data->handle,
         TRUE, dispatcher_request_channel_cb,
         request_data, NULL, NULL);
+
+      if (call != NULL)
+        request_data->pending_call = call;
     }
 }
 
@@ -1535,6 +1538,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   DispatcherRequestData *request_data;
   ConnectionData *connection_data;
   const gchar *names[] = { roomname, NULL };
+  TpProxyPendingCall *call;
 
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (!EMP_STR_EMPTY (roomname));
@@ -1554,10 +1558,13 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
 
-  request_data->pending_call = tp_cli_connection_call_request_handles (
+  call = tp_cli_connection_call_request_handles (
     connection, -1,
     TP_HANDLE_TYPE_ROOM, names,
     dispatcher_request_handles_cb, request_data, NULL, NULL);
+
+  if (call != NULL)
+    request_data->pending_call = call;
 
   g_object_unref (self);
 }
@@ -1644,6 +1651,7 @@ dispatcher_create_channel_cb (TpChannelDispatcher *proxy,
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   TpChannelRequest *request;
   GError *err = NULL;
+  TpProxyPendingCall *call;
 
   request_data->pending_call = NULL;
 
@@ -1674,9 +1682,12 @@ dispatcher_create_channel_cb (TpChannelDispatcher *proxy,
       return;
     }
 
-  request_data->pending_call = tp_cli_channel_request_call_proceed (request,
+  call = tp_cli_channel_request_call_proceed (request,
     -1, dispatcher_channel_request_proceed_cb,
     request_data, NULL, G_OBJECT (self));
+
+  if (call != NULL)
+    request_data->pending_call = call;
 }
 
 static void
@@ -1687,6 +1698,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
   EmpathyDispatcherPriv *priv = GET_PRIV (dispatcher);
   TpAccount *account;
   const gchar *handler = "";
+  TpProxyPendingCall *call;
 
   account = empathy_get_account_for_connection (request_data->connection);
 
@@ -1697,23 +1709,24 @@ empathy_dispatcher_call_create_or_ensure_channel (
 
   if (request_data->should_ensure)
     {
-      request_data->pending_call =
-          tp_cli_channel_dispatcher_call_ensure_channel (
-              priv->channel_dispatcher,
-              -1, tp_proxy_get_object_path (TP_PROXY (account)),
-              request_data->request, 0, handler,
-              dispatcher_create_channel_cb, request_data, NULL, NULL);
+      call = tp_cli_channel_dispatcher_call_ensure_channel (
+          priv->channel_dispatcher,
+          -1, tp_proxy_get_object_path (TP_PROXY (account)),
+          request_data->request, 0, handler,
+          dispatcher_create_channel_cb, request_data, NULL, NULL);
     }
   else
     {
-      request_data->pending_call =
-          tp_cli_channel_dispatcher_call_create_channel (
-              priv->channel_dispatcher,
-              -1, tp_proxy_get_object_path (TP_PROXY (account)),
-              request_data->request, 0, handler,
-              dispatcher_create_channel_cb, request_data, NULL,
-              G_OBJECT (dispatcher));
+      call = tp_cli_channel_dispatcher_call_create_channel (
+          priv->channel_dispatcher,
+          -1, tp_proxy_get_object_path (TP_PROXY (account)),
+          request_data->request, 0, handler,
+          dispatcher_create_channel_cb, request_data, NULL,
+          G_OBJECT (dispatcher));
     }
+
+  if (call != NULL)
+    request_data->pending_call = call;
 }
 
 /**
