@@ -1838,13 +1838,13 @@ got_filtered_messages_cb (GObject *manager,
 	g_list_free (messages);
 
 out:
-	priv->retrieving_backlogs = FALSE;
 	/* in case of TPL error, skip backlog and show pending messages */
 	priv->can_show_pending = TRUE;
 	show_pending_messages (chat);
 
 	/* FIXME: See Bug#610994, we are forcing the ACK of the queue. See comments
 	 * about it in EmpathyChatPriv definition */
+	priv->retrieving_backlogs = FALSE;
 	empathy_chat_messages_read (chat);
 
 	/* Turn back on scrolling */
