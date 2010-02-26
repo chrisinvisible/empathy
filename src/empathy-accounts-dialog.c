@@ -1236,6 +1236,7 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
   GtkTreeModel *model;
   GtkTreeIter   iter;
   gboolean      is_selection;
+  gboolean creating = FALSE;
 
   is_selection = gtk_tree_selection_get_selected (selection, &model, &iter);
 
@@ -1245,8 +1246,14 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
   if (settings != NULL)
     g_object_unref (settings);
 
+  if (priv->setting_widget_object != NULL)
+    {
+      g_object_get (priv->setting_widget_object,
+          "creating-account", &creating, NULL);
+    }
+
   /* Update remove button sensitivity */
-  gtk_widget_set_sensitive (priv->button_remove, is_selection);
+  gtk_widget_set_sensitive (priv->button_remove, is_selection && !creating);
 }
 
 static void
