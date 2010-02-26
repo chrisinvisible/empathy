@@ -145,6 +145,10 @@ connection_managers_prepare_cb (
     {
       show_account_assistant (cm_mgr, assistant_destroy_cb);
     }
+  else if (!empathy_accounts_has_non_salut_accounts (account_mgr))
+    {
+      show_account_assistant (cm_mgr, assistant_destroy_cb);
+    }
   else
     {
       if (assistant_destroy_cb)
