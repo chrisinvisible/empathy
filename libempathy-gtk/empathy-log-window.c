@@ -365,7 +365,7 @@ got_messages_for_date_cb (GObject *manager,
 	gboolean       can_do_next;
 	GError        *error = NULL;
 
-	messages = tpl_log_manager_async_operation_finish (result, &error);
+	messages = tpl_log_manager_get_messages_for_date_async_finish (result, &error);
 
 	if (error != NULL) {
 			DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
@@ -520,7 +520,7 @@ log_manager_searched_new_cb (GObject *manager,
 	GtkListStore        *store = user_data;
 	GError              *error = NULL;
 
-	hits = tpl_log_manager_async_operation_finish (result, &error);
+	hits = tpl_log_manager_search_new_async_finish (result, &error);
 
 	if (error != NULL) {
 			DEBUG ("%s. Aborting", error->message);
@@ -832,7 +832,7 @@ log_manager_got_chats_cb (GObject *manager,
 	GtkTreeIter            iter;
 	GError                *error = NULL;
 
-	chats = tpl_log_manager_async_operation_finish (result, &error);
+	chats = tpl_log_manager_get_chats_async_finish (result, &error);
 
 	if (error != NULL) {
 			DEBUG ("%s. Aborting", error->message);
@@ -1130,7 +1130,7 @@ log_window_got_messages_for_date_cb (GObject *manager,
   GList *l;
   GError *error = NULL;
 
-  messages = tpl_log_manager_async_operation_finish (result, &error);
+  messages = tpl_log_manager_get_messages_for_date_async_finish (result, &error);
 
   if (error != NULL) {
       DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
@@ -1205,7 +1205,7 @@ log_manager_got_dates_cb (GObject *manager,
   const gchar   *date = NULL;
   GError        *error = NULL;
 
-  dates = tpl_log_manager_async_operation_finish (result, &error);
+  dates = tpl_log_manager_get_dates_async_finish (result, &error);
 
   if (error != NULL) {
     DEBUG ("Unable to retrieve messages' dates: %s. Aborting",
@@ -1507,7 +1507,7 @@ log_window_updating_calendar_month_cb (GObject *manager,
 	guint					 month_selected;
 	GError				*error = NULL;
 
-	dates = tpl_log_manager_async_operation_finish (result, &error);
+	dates = tpl_log_manager_get_dates_async_finish (result, &error);
 
 	if (error != NULL) {
 			DEBUG ("Unable to retrieve messages' dates: %s. Aborting",

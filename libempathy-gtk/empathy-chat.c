@@ -1815,7 +1815,7 @@ got_filtered_messages_cb (GObject *manager,
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	GError *error = NULL;
 
-	messages = tpl_log_manager_async_operation_finish (result, &error);
+	messages = tpl_log_manager_get_filtered_messages_async_finish (result, &error);
 
 	if (error != NULL) {
 		DEBUG ("%s. Aborting.", error->message);
