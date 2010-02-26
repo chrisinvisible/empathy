@@ -338,7 +338,7 @@ presence_chooser_set_favorite_icon (EmpathyPresenceChooser *self)
 			/* saved entries can be removed from the list */
 			gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry),
 				           GTK_ENTRY_ICON_SECONDARY,
-					   "empathy-starred");
+					   "emblem-favorite");
 			gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry),
 					 GTK_ENTRY_ICON_SECONDARY,
 					 _("Click to remove this status as a favorite"));
