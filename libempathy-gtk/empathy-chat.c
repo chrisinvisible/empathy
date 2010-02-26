@@ -36,8 +36,12 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
+#ifdef ENABLE_TPL
+#include <telepathy-logger/log-manager.h>
+#else
 
 #include <libempathy/empathy-log-manager.h>
+#endif /* ENABLE_TPL */
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -72,7 +76,11 @@ typedef struct {
 	EmpathyContact    *remote_contact;
 	gboolean           show_contacts;
 
+#ifdef ENABLE_TPL
+	TplLogManager     *log_manager;
+#else
 	EmpathyLogManager *log_manager;
+#endif /* ENABLE_TPL */
 	TpAccountManager  *account_manager;
 	GList             *input_history;
 	GList             *input_history_current;
@@ -100,6 +108,29 @@ typedef struct {
 	/* TRUE if the pending messages can be displayed. This is to avoid to show
 	 * pending messages *before* messages from logs. (#603980) */
 	gboolean           can_show_pending;
+
+	/* FIXME: retrieving_backlogs flag is a workaround for Bug#610994 and should
+	 * be differently handled since it introduces another race condition, which
+	 * is really hard to occur, but still possible.
+	 *
+	 * With the current workaround (which has the race above), we need to be
+	 * sure to ACK any pending messages only when the retrieval of backlogs is
+	 * finished, that's why using retrieving_backlogs flag.
+	 * empathy_chat_messages_read () will check this variable and not ACK
+	 * anything when TRUE. It will be set TRUE at chat_constructed () and set
+	 * back to FALSE when the backlog has been retrieved and the pending
+	 * messages actually showed to the user.
+	 *
+	 * Race condition introduced with this workaround:
+	 * Scenario: a message is pending, the user is notified and selects the tab.
+	 * the tab with a pending message is focused before the messages are properly
+	 * shown (since the preparation of the window is slower AND async WRT the
+	 * tab showing), which means the user won't see any new messages (rare but
+	 * possible), if he/she will change tab focus before the messages are
+	 * properly shown, the tab will be set as 'seen' and the user won't be
+	 * notified again about the already notified pending messages when the
+	 * messages in tab will be properly shown */
+	gboolean           retrieving_backlogs;
 } EmpathyChatPriv;
 
 typedef struct {
@@ -1708,31 +1739,128 @@ chat_input_populate_popup_cb (GtkTextView *view,
 	}
 }
 
+
+#ifdef ENABLE_TPL
+static gboolean
+chat_log_filter (TplLogEntry *log,
+		 gpointer user_data)
+#else
 static gboolean
 chat_log_filter (EmpathyMessage *message,
 		 gpointer user_data)
+#endif /* ENABLE_TPL */
 {
-	EmpathyChat *chat = (EmpathyChat *) user_data;
+	EmpathyChat *chat = user_data;
+#ifdef ENABLE_TPL
+	EmpathyMessage *message;
+#endif /* ENABLE_TPL */
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	const GList *pending;
 
+#ifdef ENABLE_TPL
+	g_return_val_if_fail (TPL_IS_LOG_ENTRY (log), FALSE);
+#else
+	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
+#endif /* ENABLE_TPL */
+	g_return_val_if_fail (EMPATHY_IS_CHAT (chat), FALSE);
+
 	pending = empathy_tp_chat_get_pending_messages (priv->tp_chat);
+#ifdef ENABLE_TPL
+	message = empathy_message_from_tpl_log_entry (log);
+#endif /* ENABLE_TPL */
 
 	for (; pending; pending = g_list_next (pending)) {
 		if (empathy_message_equal (message, pending->data)) {
 			return FALSE;
 		}
 	}
-
+#ifdef ENABLE_TPL
+	g_object_unref (message);
+#endif
 	return TRUE;
 }
+
+
+static void
+show_pending_messages (EmpathyChat *chat) {
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	const GList *messages, *l;
+
+	g_return_if_fail (EMPATHY_IS_CHAT (chat));
+
+	if (chat->view == NULL || priv->tp_chat == NULL)
+		return;
+
+	if (!priv->can_show_pending)
+		return;
+
+	messages = empathy_tp_chat_get_pending_messages (priv->tp_chat);
+
+	for (l = messages; l != NULL ; l = g_list_next (l)) {
+		EmpathyMessage *message = EMPATHY_MESSAGE (l->data);
+		chat_message_received (chat, message);
+	}
+}
+
+
+#ifdef ENABLE_TPL
+static void
+got_filtered_messages_cb (GObject *manager,
+		GAsyncResult *result,
+		gpointer user_data)
+{
+	GList *l;
+	GList *messages;
+	EmpathyChat *chat = EMPATHY_CHAT (user_data);
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	GError *error = NULL;
+
+	messages = tpl_log_manager_async_operation_finish (result, &error);
+
+	if (error != NULL) {
+		DEBUG ("%s. Aborting.", error->message);
+		empathy_chat_view_append_event (chat->view,
+			_("Failed to retrieve recent logs"));
+		g_error_free (error);
+		goto out;
+	}
+
+	for (l = messages; l; l = g_list_next (l)) {
+		EmpathyMessage *message;
+		g_assert (TPL_IS_LOG_ENTRY (l->data));
+
+		message = empathy_message_from_tpl_log_entry (l->data);
+		g_object_unref (l->data);
+
+		empathy_chat_view_append_message (chat->view, message);
+		g_object_unref (message);
+	}
+	g_list_free (messages);
+
+out:
+	/* in case of TPL error, skip backlog and show pending messages */
+	priv->can_show_pending = TRUE;
+	show_pending_messages (chat);
+
+	/* FIXME: See Bug#610994, we are forcing the ACK of the queue. See comments
+	 * about it in EmpathyChatPriv definition */
+	priv->retrieving_backlogs = FALSE;
+	empathy_chat_messages_read (chat);
+
+	/* Turn back on scrolling */
+	empathy_chat_view_scroll (chat->view, TRUE);
+}
+#endif /* ENABLE_TPL */
+
 
 static void
 chat_add_logs (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	gboolean         is_chatroom;
+#ifndef ENABLE_TPL
 	GList           *messages, *l;
+#endif /* ENABLE_TPL */
 
 	if (!priv->id) {
 		return;
@@ -1744,6 +1872,7 @@ chat_add_logs (EmpathyChat *chat)
 	/* Add messages from last conversation */
 	is_chatroom = priv->handle_type == TP_HANDLE_TYPE_ROOM;
 
+#ifndef ENABLE_TPL
 	messages = empathy_log_manager_get_filtered_messages (priv->log_manager,
 							      priv->account,
 							      priv->id,
@@ -1761,6 +1890,18 @@ chat_add_logs (EmpathyChat *chat)
 
 	/* Turn back on scrolling */
 	empathy_chat_view_scroll (chat->view, TRUE);
+#else
+	priv->retrieving_backlogs = TRUE;
+	tpl_log_manager_get_filtered_messages_async (priv->log_manager,
+							      priv->account,
+							      priv->id,
+							      is_chatroom,
+							      5,
+							      chat_log_filter,
+							      chat,
+							      got_filtered_messages_cb,
+							      (gpointer) chat);
+#endif /* ENABLE_TPL */
 }
 
 static gint
@@ -2046,26 +2187,6 @@ chat_hpaned_pos_changed_cb (GtkWidget* hpaned, gpointer user_data)
 	return TRUE;
 }
 
-
-static void
-show_pending_messages (EmpathyChat *chat) {
-	EmpathyChatPriv *priv = GET_PRIV (chat);
-	const GList *messages, *l;
-
-	if (chat->view == NULL || priv->tp_chat == NULL)
-		return;
-
-	if (!priv->can_show_pending)
-		return;
-
-	messages = empathy_tp_chat_get_pending_messages (priv->tp_chat);
-
-	for (l = messages; l != NULL ; l = g_list_next (l)) {
-		EmpathyMessage *message = EMPATHY_MESSAGE (l->data);
-		chat_message_received (chat, message);
-	}
-}
-
 static void
 chat_create_ui (EmpathyChat *chat)
 {
@@ -2293,8 +2414,12 @@ chat_constructed (GObject *object)
 
 	if (priv->handle_type != TP_HANDLE_TYPE_ROOM)
 		chat_add_logs (chat);
+#ifndef ENABLE_TPL
+	/* When async API are involved, pending message are shown at the end of the
+	 * callbacks' chain fired by chat_add_logs */
 	priv->can_show_pending = TRUE;
 	show_pending_messages (chat);
+#endif /* ENABLE_TPL */
 }
 
 static void
@@ -2437,7 +2562,11 @@ empathy_chat_init (EmpathyChat *chat)
 		EMPATHY_TYPE_CHAT, EmpathyChatPriv);
 
 	chat->priv = priv;
+#ifndef ENABLE_TPL
 	priv->log_manager = empathy_log_manager_dup_singleton ();
+#else
+	priv->log_manager = tpl_log_manager_dup_singleton ();
+#endif /* ENABLE_TPL */
 	priv->contacts_width = -1;
 	priv->input_history = NULL;
 	priv->input_history_current = NULL;
@@ -2945,9 +3074,13 @@ empathy_chat_messages_read (EmpathyChat *self)
 
 	g_return_if_fail (EMPATHY_IS_CHAT (self));
 
-	if (priv->tp_chat != NULL) {
-		empathy_tp_chat_acknowledge_all_messages (priv->tp_chat);
+	/* FIXME: See Bug#610994, See comments about it in EmpathyChatPriv
+	 * definition. If we are still retrieving the backlogs, do not ACK */
+	if (priv->retrieving_backlogs)
+		return;
+
+	if (priv->tp_chat != NULL ) {
+			empathy_tp_chat_acknowledge_all_messages (priv->tp_chat);
 	}
-	
 	priv->unread_messages = 0;
 }

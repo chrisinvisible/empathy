@@ -27,6 +27,14 @@
 #include <string.h>
 
 #include <telepathy-glib/util.h>
+#ifdef ENABLE_TPL
+#include <telepathy-glib/account.h>
+#include <telepathy-glib/account-manager.h>
+
+#include <telepathy-logger/contact.h>
+#include <telepathy-logger/log-entry.h>
+#include <telepathy-logger/log-entry-text.h>
+#endif /* ENABLE_TPL */
 
 #include "empathy-message.h"
 #include "empathy-utils.h"
@@ -251,6 +259,71 @@ empathy_message_new (const gchar *body)
 			     "body", body,
 			     NULL);
 }
+
+#ifdef ENABLE_TPL
+EmpathyMessage *
+empathy_message_from_tpl_log_entry (TplLogEntry *logentry)
+{
+	EmpathyMessage *retval = NULL;
+	TpAccountManager *acc_man = NULL;
+	TpAccount *account = NULL;
+	TplContact *receiver = NULL;
+	TplContact *sender = NULL;
+	gchar *body= NULL;
+
+	g_return_val_if_fail (TPL_IS_LOG_ENTRY (logentry), NULL);
+
+	acc_man = tp_account_manager_dup ();
+	/* FIXME Currently Empathy shows in the log viewer only valid accounts, so it
+	 * won't be selected any non-existing (ie removed) account.
+	 * When #610455 will be fixed, calling tp_account_manager_ensure_account ()
+	 * might add a not existing account to the AM. tp_account_new () probably
+	 * will be the best way to handle it.
+	 * Note: When creating an EmpathyContact from a TplContact instance, the
+	 * TpAccount is passed *only* to let EmpathyContact be able to retrieve the
+	 * avatar (contact_get_avatar_filename () need a TpAccount).
+	 * If the way EmpathyContact stores the avatar is changes, it might not be
+	 * needed anymore any TpAccount passing and the following call will be
+	 * useless */
+	account = tp_account_manager_ensure_account (acc_man,
+			tpl_log_entry_get_account_path (logentry));
+	g_object_unref (acc_man);
+
+	/* TODO Currently only TplLogEntryText exists as subclass of TplLogEntry, in
+	 * future more TplLogEntry will exist and EmpathyMessage should probably
+	 * be enhanced to support other types of log entries (ie TplLogEntryCall).
+	 *
+	 * For now we just check (simply) that we are dealing with the only supported type,
+	 * then there will be a if/then/else or switch handling all the supported
+	 * cases.
+	 */
+	if (!TPL_IS_LOG_ENTRY_TEXT (logentry))
+		return NULL;
+
+	body = g_strdup (tpl_log_entry_text_get_message (
+				TPL_LOG_ENTRY_TEXT (logentry)));
+	receiver = tpl_log_entry_text_get_receiver (TPL_LOG_ENTRY_TEXT (logentry));
+	sender = tpl_log_entry_text_get_sender (TPL_LOG_ENTRY_TEXT (logentry));
+
+	retval = empathy_message_new (body);
+	if (receiver != NULL)
+		empathy_message_set_receiver (retval,
+				empathy_contact_from_tpl_contact (account, receiver));
+	if (sender != NULL)
+		empathy_message_set_sender (retval,
+				empathy_contact_from_tpl_contact (account, sender));
+
+	empathy_message_set_timestamp (retval,
+			tpl_log_entry_get_timestamp (logentry));
+	empathy_message_set_id (retval,
+			tpl_log_entry_text_get_log_id (TPL_LOG_ENTRY_TEXT (logentry)));
+	empathy_message_set_is_backlog (retval, FALSE);
+
+	g_free (body);
+
+	return retval;
+}
+#endif /* ENABLE_TPL */
 
 TpChannelTextMessageType
 empathy_message_get_tptype (EmpathyMessage *message)
@@ -593,7 +666,12 @@ empathy_message_equal (EmpathyMessage *message1, EmpathyMessage *message2)
 	priv1 = GET_PRIV (message1);
 	priv2 = GET_PRIV (message2);
 
+#ifdef ENABLE_TPL
+	if (priv1->timestamp == priv2->timestamp &&
+			!tp_strdiff (priv1->body, priv2->body)) {
+#else
 	if (priv1->id == priv2->id && !tp_strdiff (priv1->body, priv2->body)) {
+#endif /* ENABLE_TPL */
 		return TRUE;
 	}
 
