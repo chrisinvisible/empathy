@@ -1685,9 +1685,8 @@ enable_or_disable_account (EmpathyAccountsDialog *dialog,
   /* Update the status in the model */
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
 
-  /* Update the status-infobar in the details view when disabling */
-  if (!enabled)
-    accounts_dialog_update_status_infobar (dialog, account);
+  /* Update the status-infobar in the details view */
+  accounts_dialog_update_status_infobar (dialog, account);
 
   DEBUG ("Account %s is now %s",
       tp_account_get_display_name (account),
