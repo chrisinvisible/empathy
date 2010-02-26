@@ -111,6 +111,7 @@ typedef struct {
 	PresenceChooserEntryType previous_type;
 
 	TpAccountManager *account_manager;
+	GdkPixbuf *not_favorite_pixbuf;
 } EmpathyPresenceChooserPriv;
 
 /* States to be listed in the menu.
@@ -327,6 +328,7 @@ presence_chooser_is_preset (EmpathyPresenceChooser *self)
 static void
 presence_chooser_set_favorite_icon (EmpathyPresenceChooser *self)
 {
+	EmpathyPresenceChooserPriv *priv = GET_PRIV (self);
 	GtkWidget *entry;
 	PresenceChooserEntryType type;
 
@@ -345,9 +347,9 @@ presence_chooser_set_favorite_icon (EmpathyPresenceChooser *self)
 		}
 		else {
 			/* custom entries can be favorited */
-			gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry),
+			gtk_entry_set_icon_from_pixbuf (GTK_ENTRY (entry),
 				           GTK_ENTRY_ICON_SECONDARY,
-					   "empathy-unstarred");
+					   priv->not_favorite_pixbuf);
 			gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry),
 					 GTK_ENTRY_ICON_SECONDARY,
 					 _("Click to make this status a favorite"));
@@ -807,6 +809,22 @@ presence_chooser_connectivity_state_change (EmpathyConnectivity *connectivity,
 	presence_chooser_update_sensitivity (chooser);
 }
 
+/* Create a greyed version of the 'favorite' icon */
+static GdkPixbuf *
+create_not_favorite_pixbuf (void)
+{
+	GdkPixbuf *favorite, *result;
+
+	favorite = empathy_pixbuf_from_icon_name ("emblem-favorite",
+						  GTK_ICON_SIZE_MENU);
+
+	result = gdk_pixbuf_copy (favorite);
+	gdk_pixbuf_saturate_and_pixelate (favorite, result, 1.0, TRUE);
+
+	g_object_unref (favorite);
+	return result;
+}
+
 static void
 empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 {
@@ -816,6 +834,10 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	GtkCellRenderer *renderer;
 
 	chooser->priv = priv;
+
+	/* Create the not-favorite icon */
+	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
+	g_assert (priv->not_favorite_pixbuf != NULL);
 
 	presence_chooser_create_model (chooser);
 
@@ -924,6 +946,7 @@ presence_chooser_finalize (GObject *object)
 	g_object_unref (priv->idle);
 
 	g_object_unref (priv->connectivity);
+	g_object_unref (priv->not_favorite_pixbuf);
 
 	G_OBJECT_CLASS (empathy_presence_chooser_parent_class)->finalize (object);
 }
