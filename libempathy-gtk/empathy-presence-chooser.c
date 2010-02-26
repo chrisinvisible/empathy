@@ -826,6 +826,20 @@ create_not_favorite_pixbuf (void)
 }
 
 static void
+icon_theme_changed_cb (GtkIconTheme *icon_theme,
+		       EmpathyPresenceChooser *self)
+{
+	EmpathyPresenceChooserPriv *priv = GET_PRIV (self);
+
+	/* Theme has changed, recreate the not-favorite icon */
+	g_object_unref (priv->not_favorite_pixbuf);
+	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
+
+	/* Update the icon */
+	presence_chooser_set_favorite_icon (self);
+}
+
+static void
 empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (chooser,
@@ -838,6 +852,10 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	/* Create the not-favorite icon */
 	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
 	g_assert (priv->not_favorite_pixbuf != NULL);
+
+	empathy_signal_connect_weak (gtk_icon_theme_get_default (), "changed",
+				     G_CALLBACK (icon_theme_changed_cb),
+				     G_OBJECT (chooser));
 
 	presence_chooser_create_model (chooser);
 
