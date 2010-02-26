@@ -625,7 +625,16 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
   /* We are creating a new widget to replace the current one, don't ask
    * confirmation to the user. */
   priv->force_change_row = TRUE;
+
+  /* We'll update the selection after we create the new account widgets;
+   * updating it right now causes problems for the # of accounts = zero case */
+  g_signal_handlers_block_by_func (selection,
+      accounts_dialog_model_selection_changed, dialog);
+
   gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+
+  g_signal_handlers_unblock_by_func (selection,
+      accounts_dialog_model_selection_changed, dialog);
 
   accounts_dialog_setup_ui_to_add_account (dialog);
 
