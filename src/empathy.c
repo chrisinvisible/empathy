@@ -72,6 +72,7 @@
 #include "empathy-import-mc4-accounts.h"
 #include "empathy-accounts-common.h"
 #include "empathy-accounts-dialog.h"
+#include "empathy-chat-manager.h"
 #include "empathy-status-icon.h"
 #include "empathy-call-window.h"
 #include "empathy-chat-window.h"
@@ -581,6 +582,7 @@ main (int argc, char *argv[])
   GtkWidget *window;
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
+  EmpathyChatManager *chat_manager;
   GError *error = NULL;
   UniqueApp *unique_app;
   gboolean chatroom_manager_ready;
@@ -677,6 +679,9 @@ main (int argc, char *argv[])
   window = empathy_main_window_show ();
   icon = empathy_status_icon_new (GTK_WINDOW (window), start_hidden);
 
+  /* Chat manager */
+  chat_manager = empathy_chat_manager_dup_singleton ();
+
   g_signal_connect (unique_app, "message-received",
       G_CALLBACK (unique_app_message_cb), window);
 
@@ -726,6 +731,7 @@ main (int argc, char *argv[])
   g_object_unref (debug_sender);
 #endif
 
+  g_object_unref (chat_manager);
   g_object_unref (idle);
   g_object_unref (connectivity);
   g_object_unref (icon);

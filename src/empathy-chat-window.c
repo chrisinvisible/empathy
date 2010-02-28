@@ -54,6 +54,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-notify-manager.h>
 
+#include "empathy-chat-manager.h"
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
 #include "empathy-invite-participant-dialog.h"
@@ -1059,6 +1060,19 @@ chat_window_tabs_previous_activate_cb (GtkAction         *action,
 }
 
 static void
+chat_window_tabs_undo_close_tab_activate_cb (GtkAction         *action,
+					     EmpathyChatWindow *window)
+{
+	EmpathyChatManager *chat_manager;
+
+	chat_manager = empathy_chat_manager_dup_singleton ();
+
+	empathy_chat_manager_undo_closed_chat (chat_manager);
+
+	g_object_unref (chat_manager);
+}
+
+static void
 chat_window_tabs_left_activate_cb (GtkAction         *action,
 				   EmpathyChatWindow *window)
 {
@@ -1850,6 +1864,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_edit_find", "activate", chat_window_find_activate_cb,
 			      "menu_tabs_next", "activate", chat_window_tabs_next_activate_cb,
 			      "menu_tabs_prev", "activate", chat_window_tabs_previous_activate_cb,
+			      "menu_tabs_undo_close_tab", "activate", chat_window_tabs_undo_close_tab_activate_cb,
 			      "menu_tabs_left", "activate", chat_window_tabs_left_activate_cb,
 			      "menu_tabs_right", "activate", chat_window_tabs_right_activate_cb,
 			      "menu_tabs_detach", "activate", chat_window_detach_activate_cb,
@@ -2099,6 +2114,7 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 	EmpathyChatWindowPriv *priv;
 	gint                   position;
 	EmpathyContact        *remote_contact;
+	EmpathyChatManager    *chat_manager;
 
 	g_return_if_fail (window != NULL);
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
@@ -2114,6 +2130,10 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 		g_signal_handlers_disconnect_by_func (remote_contact,
 						      chat_window_update_chat_tab,
 						      chat);
+
+		chat_manager = empathy_chat_manager_dup_singleton ();
+		empathy_chat_manager_closed_chat (chat_manager, remote_contact);
+		g_object_unref (chat_manager);
 	}
 
 	position = gtk_notebook_page_num (GTK_NOTEBOOK (priv->notebook),
