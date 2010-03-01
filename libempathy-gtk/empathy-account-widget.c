@@ -73,6 +73,11 @@ typedef struct {
    * modify it. When we are creating an account, this member is set to TRUE */
   gboolean creating_account;
 
+  /* whether there are any other real accounts. Necessary so we know whether
+   * it's safe to dismiss this widget in some cases (eg, whether the Cancel
+   * button should be sensitive) */
+  gboolean other_accounts_exist;
+
   /* if TRUE, the GTK+ destroy signal has been fired and so the widgets
    * embedded in this account widget can't be used any more
    * workaround because some async callbacks can be called after the
@@ -91,7 +96,8 @@ enum {
   PROP_PROTOCOL = 1,
   PROP_SETTINGS,
   PROP_SIMPLE,
-  PROP_CREATING_ACCOUNT
+  PROP_CREATING_ACCOUNT,
+  PROP_OTHER_ACCOUNTS_EXIST,
 };
 
 enum {
@@ -114,9 +120,14 @@ account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
 
   if (!priv->simple)
     {
+      /* we hit this case because of the 'other-accounts-exist' property handler
+       * being called during init (before constructed()) */
+      if (priv->apply_button == NULL || priv->cancel_button == NULL)
+        return;
+
       gtk_widget_set_sensitive (priv->apply_button, sensitive);
-      gtk_widget_set_sensitive (
-          priv->cancel_button, sensitive || priv->creating_account);
+      gtk_widget_set_sensitive (priv->cancel_button,
+          (sensitive || priv->creating_account) && priv->other_accounts_exist);
     }
 }
 
@@ -1368,6 +1379,18 @@ account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
       account_widget_account_enabled_cb, user_data);
 }
 
+void
+empathy_account_widget_set_other_accounts_exist (EmpathyAccountWidget *self,
+    gboolean others_exist)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  priv->other_accounts_exist = others_exist;
+
+  if (priv->creating_account)
+    account_widget_handle_control_buttons_sensitivity (self);
+}
+
 static void
 do_set_property (GObject *object,
     guint prop_id,
@@ -1386,6 +1409,10 @@ do_set_property (GObject *object,
       break;
     case PROP_CREATING_ACCOUNT:
       priv->creating_account = g_value_get_boolean (value);
+      break;
+    case PROP_OTHER_ACCOUNTS_EXIST:
+      empathy_account_widget_set_other_accounts_exist (
+          EMPATHY_ACCOUNT_WIDGET (object), g_value_get_boolean (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1414,6 +1441,9 @@ do_get_property (GObject *object,
       break;
     case PROP_CREATING_ACCOUNT:
       g_value_set_boolean (value, priv->creating_account);
+      break;
+    case PROP_OTHER_ACCOUNTS_EXIST:
+      g_value_set_boolean (value, priv->other_accounts_exist);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1845,6 +1875,14 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
       FALSE,
       G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
   g_object_class_install_property (oclass, PROP_CREATING_ACCOUNT, param_spec);
+
+  param_spec = g_param_spec_boolean ("other-accounts-exist",
+      "other-accounts-exist",
+      "TRUE if there are any other accounts (even if this isn't yet saved)",
+      FALSE,
+      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (oclass, PROP_OTHER_ACCOUNTS_EXIST,
+                  param_spec);
 
   signals[HANDLE_APPLY] =
     g_signal_new ("handle-apply", G_TYPE_FROM_CLASS (klass),

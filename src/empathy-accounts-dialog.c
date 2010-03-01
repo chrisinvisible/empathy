@@ -431,6 +431,28 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     g_object_unref (settings);
 }
 
+static gboolean
+accounts_dialog_has_valid_accounts (EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean creating;
+
+  g_object_get (priv->setting_widget_object,
+      "creating-account", &creating, NULL);
+
+  if (!creating)
+    return TRUE;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+
+  if (gtk_tree_model_get_iter_first (model, &iter))
+    return gtk_tree_model_iter_next (model, &iter);
+
+  return FALSE;
+}
+
 static void
 account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
@@ -441,6 +463,10 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 
   priv->setting_widget_object =
       empathy_account_widget_new_for_protocol (settings, FALSE);
+
+  if (accounts_dialog_has_valid_accounts (dialog))
+    empathy_account_widget_set_other_accounts_exist (
+        priv->setting_widget_object, TRUE);
 
   priv->settings_widget =
       empathy_account_widget_get_widget (priv->setting_widget_object);
@@ -1676,6 +1702,37 @@ accounts_dialog_account_validity_changed_cb (TpAccountManager *manager,
 }
 
 static void
+accounts_dialog_accounts_model_row_inserted_cb (GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkTreeIter *iter,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->setting_widget_object != NULL &&
+      accounts_dialog_has_valid_accounts (dialog))
+    {
+      empathy_account_widget_set_other_accounts_exist (
+          priv->setting_widget_object, TRUE);
+    }
+}
+
+static void
+accounts_dialog_accounts_model_row_deleted_cb (GtkTreeModel *model,
+    GtkTreePath *path,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->setting_widget_object != NULL &&
+      !accounts_dialog_has_valid_accounts (dialog))
+    {
+      empathy_account_widget_set_other_accounts_exist (
+          priv->setting_widget_object, FALSE);
+    }
+}
+
+static void
 accounts_dialog_account_removed_cb (TpAccountManager *manager,
     TpAccount *account,
     EmpathyAccountsDialog *dialog)
@@ -1686,7 +1743,7 @@ accounts_dialog_account_removed_cb (TpAccountManager *manager,
   if (accounts_dialog_get_account_iter (dialog, account, &iter))
     {
       gtk_list_store_remove (GTK_LIST_STORE (
-            gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview))), &iter);
+          gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview))), &iter);
     }
 }
 
@@ -2038,6 +2095,7 @@ do_dispose (GObject *obj)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeModel *model;
 
   if (priv->dispose_has_run)
     return;
@@ -2045,6 +2103,12 @@ do_dispose (GObject *obj)
   priv->dispose_has_run = TRUE;
 
   /* Disconnect signals */
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  g_signal_handlers_disconnect_by_func (model,
+      accounts_dialog_accounts_model_row_inserted_cb, dialog);
+  g_signal_handlers_disconnect_by_func (model,
+      accounts_dialog_accounts_model_row_deleted_cb, dialog);
+
   g_signal_handlers_disconnect_by_func (priv->account_manager,
       accounts_dialog_account_validity_changed_cb,
       dialog);
@@ -2149,9 +2213,16 @@ do_constructed (GObject *object)
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (object);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gboolean import_asked;
+  GtkTreeModel *model;
 
   accounts_dialog_build_ui (dialog);
   accounts_dialog_model_setup (dialog);
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  g_signal_connect (model, "row-inserted",
+      (GCallback) accounts_dialog_accounts_model_row_inserted_cb, dialog);
+  g_signal_connect (model, "row-deleted",
+      (GCallback) accounts_dialog_accounts_model_row_deleted_cb, dialog);
 
   /* Set up signalling */
   priv->account_manager = tp_account_manager_dup ();
