@@ -85,6 +85,10 @@
 static gboolean start_hidden = FALSE;
 static gboolean no_connect = FALSE;
 
+static void account_manager_ready_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data);
+
 static void
 dispatch_cb (EmpathyDispatcher *dispatcher,
     EmpathyDispatchOperation *operation,
@@ -262,6 +266,7 @@ unique_app_message_cb (UniqueApp *unique_app,
     gpointer user_data)
 {
   GtkWindow *window = user_data;
+  TpAccountManager *account_manager;
 
   DEBUG ("Other instance launched, presenting the main window. "
       "Command=%d, timestamp %u", command, timestamp);
@@ -280,6 +285,11 @@ unique_app_message_cb (UniqueApp *unique_app,
       unique_message_data_get_startup_id (data));
   gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
   gtk_window_set_skip_taskbar_hint (window, FALSE);
+
+  account_manager = tp_account_manager_dup ();
+  tp_account_manager_prepare_async (account_manager, NULL,
+      account_manager_ready_cb, NULL);
+  g_object_unref (account_manager);
 
   return UNIQUE_RESPONSE_OK;
 }
