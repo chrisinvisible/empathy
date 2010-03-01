@@ -89,7 +89,9 @@ connection_managers_prepare (GObject *source,
 
   page_pack_with_accounts_dialog (page);
 
-  if (empathy_accounts_import (account_mgr, cm_mgr))
+  empathy_accounts_import (account_mgr, cm_mgr);
+
+  if (!empathy_accounts_has_non_salut_accounts (account_mgr))
     empathy_account_assistant_show (NULL, cm_mgr);
 
 out:
