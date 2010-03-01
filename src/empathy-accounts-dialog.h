@@ -60,7 +60,7 @@ void empathy_accounts_dialog_show_application (GdkScreen *screen,
     GChildWatchFunc application_exit_cb,
     gpointer user_data,
     TpAccount *selected_account,
-    gboolean try_import,
+    gboolean if_needed,
     gboolean hidden);
 
 G_END_DECLS

@@ -254,10 +254,11 @@ accounts_application_exited_cb (GPid pid,
 
 static void
 show_accounts_ui (GdkScreen *screen,
-    gboolean try_import)
+    gboolean if_needed)
 {
+  g_debug ("launching accounts UI");
   empathy_accounts_dialog_show_application (screen,
-      accounts_application_exited_cb, NULL, NULL, try_import, start_hidden);
+      accounts_application_exited_cb, NULL, NULL, if_needed, start_hidden);
 }
 
 static UniqueResponse

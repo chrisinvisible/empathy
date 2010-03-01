@@ -28,10 +28,6 @@ void empathy_accounts_show_accounts_ui (TpAccountManager *manager,
     TpAccount *account,
     GCallback window_destroyed_cb);
 
-void empathy_accounts_manager_ready_for_show_assistant (
-    TpAccountManager *account_mgr,
-    gboolean hidden);
-
 gboolean empathy_accounts_import (TpAccountManager *account_mgr,
     EmpathyConnectionManagers *cm_mgr);
 

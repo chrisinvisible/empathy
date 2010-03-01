@@ -111,7 +111,7 @@ do_show_accounts_ui (TpAccountManager *manager,
   gtk_window_present (GTK_WINDOW (accounts_window));
 }
 
-static GtkWidget*
+static GtkWidget *
 show_account_assistant (EmpathyConnectionManagers *connection_mgrs,
     GCallback assistant_destroy_cb)
 {
@@ -122,60 +122,6 @@ show_account_assistant (EmpathyConnectionManagers *connection_mgrs,
     g_signal_connect (assistant, "destroy", assistant_destroy_cb, NULL);
 
   return assistant;
-}
-
-static void
-connection_managers_prepare_cb (
-    EmpathyConnectionManagers *cm_mgr,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  GCallback assistant_destroy_cb = g_object_get_data (G_OBJECT (cm_mgr),
-      "assistant-destroy-callback");
-  TpAccountManager *account_mgr = g_object_get_data (G_OBJECT (cm_mgr),
-      "account-manager");
-  gboolean hidden = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (cm_mgr),
-        "hidden"));
-
-  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
-    goto out;
-
-  if (empathy_accounts_import (account_mgr, cm_mgr) &&
-      !hidden)
-    {
-      show_account_assistant (cm_mgr, assistant_destroy_cb);
-    }
-  else if (!empathy_accounts_has_non_salut_accounts (account_mgr))
-    {
-      show_account_assistant (cm_mgr, assistant_destroy_cb);
-    }
-  else
-    {
-      if (assistant_destroy_cb)
-        assistant_destroy_cb ();
-    }
-
-out:
-  g_object_unref (cm_mgr);
-}
-
-void
-empathy_accounts_manager_ready_for_show_assistant (
-    TpAccountManager *account_mgr,
-    gboolean hidden)
-{
-  EmpathyConnectionManagers *cm_mgr;
-
-  cm_mgr = empathy_connection_managers_dup_singleton ();
-
-  g_object_set_data (G_OBJECT (cm_mgr), "assistant-destroy-callback",
-      g_object_get_data (G_OBJECT (account_mgr), "assistant-destroy-callback"));
-  g_object_set_data_full (G_OBJECT (cm_mgr), "account-manager",
-      g_object_ref (account_mgr), g_object_unref);
-  g_object_set_data (G_OBJECT (cm_mgr), "hidden", GUINT_TO_POINTER (hidden));
-
-  empathy_connection_managers_prepare_async (cm_mgr,
-      (GAsyncReadyCallback) connection_managers_prepare_cb, NULL);
 }
 
 static void

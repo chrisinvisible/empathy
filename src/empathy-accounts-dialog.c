@@ -2229,7 +2229,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
     GChildWatchFunc application_exit_cb,
     gpointer user_data,
     TpAccount *selected_account,
-    gboolean try_import,
+    gboolean if_needed,
     gboolean hidden)
 {
   gint command_pid;
@@ -2265,8 +2265,8 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
       argv[i++] = account_option;
     }
 
-  if (try_import)
-    argv[i++] = "--import";
+  if (if_needed)
+    argv[i++] = "--if-needed";
 
   if (hidden)
     argv[i++] = "--hidden";
