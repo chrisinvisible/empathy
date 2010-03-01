@@ -63,6 +63,7 @@ EmpathyChatManager *empathy_chat_manager_dup_singleton (void);
 void empathy_chat_manager_closed_chat (EmpathyChatManager *self,
     EmpathyContact *contact);
 void empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self);
+guint empathy_chat_manager_get_num_chats (EmpathyChatManager *self);
 
 G_END_DECLS
 

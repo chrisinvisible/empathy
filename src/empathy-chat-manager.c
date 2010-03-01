@@ -24,6 +24,13 @@
 
 #include "empathy-chat-manager.h"
 
+enum {
+  CHATS_CHANGED,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
+
 G_DEFINE_TYPE(EmpathyChatManager, empathy_chat_manager, G_TYPE_OBJECT)
 
 /* private structure */
@@ -96,6 +103,16 @@ empathy_chat_manager_class_init (
   object_class->finalize = empathy_chat_manager_finalize;
   object_class->constructor = empathy_chat_manager_constructor;
 
+  signals[CHATS_CHANGED] =
+    g_signal_new ("chats-changed",
+        G_TYPE_FROM_CLASS (object_class),
+        G_SIGNAL_RUN_LAST,
+        0,
+        NULL, NULL,
+        g_cclosure_marshal_VOID__UINT,
+        G_TYPE_NONE,
+        1, G_TYPE_UINT, NULL);
+
   g_type_class_add_private (empathy_chat_manager_class,
     sizeof (EmpathyChatManagerPriv));
 }
@@ -115,6 +132,9 @@ empathy_chat_manager_closed_chat (EmpathyChatManager *self,
   DEBUG ("Adding contact to queue: %s", empathy_contact_get_id (contact));
 
   g_queue_push_tail (priv->queue, g_object_ref (contact));
+
+  g_signal_emit (self, signals[CHATS_CHANGED], 0,
+      g_queue_get_length (priv->queue));
 }
 
 void
@@ -134,4 +154,15 @@ empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
   empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
 
   g_object_unref (contact);
+
+  g_signal_emit (self, signals[CHATS_CHANGED], 0,
+      g_queue_get_length (priv->queue));
+}
+
+guint
+empathy_chat_manager_get_num_chats (EmpathyChatManager *self)
+{
+  EmpathyChatManagerPriv *priv = GET_PRIV (self);
+
+  return g_queue_get_length (priv->queue);
 }
