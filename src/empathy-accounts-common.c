@@ -71,29 +71,16 @@ empathy_accounts_has_non_salut_accounts (TpAccountManager *manager)
   return ret;
 }
 
-/* Try to import accounts from MC4 and returns TRUE if we should display the
- * accounts assistant. */
-gboolean
+void
 empathy_accounts_import (TpAccountManager *account_mgr,
     EmpathyConnectionManagers *cm_mgr)
 {
-  g_return_val_if_fail (tp_account_manager_is_prepared (account_mgr,
-      TP_ACCOUNT_MANAGER_FEATURE_CORE), FALSE);
-  g_return_val_if_fail (empathy_connection_managers_is_ready (cm_mgr), FALSE);
+  g_return_if_fail (tp_account_manager_is_prepared (account_mgr,
+      TP_ACCOUNT_MANAGER_FEATURE_CORE));
+  g_return_if_fail (empathy_connection_managers_is_ready (cm_mgr));
 
-  if (empathy_import_mc4_has_imported ())
-    return FALSE;
-
-  if (empathy_import_mc4_accounts (cm_mgr))
-    return FALSE;
-
-  if (empathy_accounts_has_non_salut_accounts (account_mgr))
-    return FALSE;
-
-  if (!should_create_salut_account (account_mgr))
-    return FALSE;
-
-  return TRUE;
+  if (!empathy_import_mc4_has_imported ())
+    empathy_import_mc4_accounts (cm_mgr);
 }
 
 static void

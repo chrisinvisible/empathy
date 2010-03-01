@@ -28,7 +28,7 @@ void empathy_accounts_show_accounts_ui (TpAccountManager *manager,
     TpAccount *account,
     GCallback window_destroyed_cb);
 
-gboolean empathy_accounts_import (TpAccountManager *account_mgr,
+void empathy_accounts_import (TpAccountManager *account_mgr,
     EmpathyConnectionManagers *cm_mgr);
 
 
