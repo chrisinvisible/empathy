@@ -668,9 +668,6 @@ account_widget_account_enabled_cb (GObject *source_object,
   TpAccount *account = TP_ACCOUNT (source_object);
   EmpathyAccountWidget *widget = EMPATHY_ACCOUNT_WIDGET (user_data);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (widget);
-  TpConnectionPresenceType presence;
-  gchar *message = NULL;
-  gchar *status = NULL;
 
   tp_account_set_enabled_finish (account, res, &error);
 
@@ -681,34 +678,11 @@ account_widget_account_enabled_cb (GObject *source_object,
     }
   else
     {
-      /* only force presence if presence was offline, unknown or unset */
-      presence = tp_account_get_requested_presence (account, NULL, NULL);
-      switch (presence)
-        {
-        case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
-        case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:
-        case TP_CONNECTION_PRESENCE_TYPE_UNSET:
-          presence = tp_account_manager_get_most_available_presence (
-              priv->account_manager, &status, &message);
-
-          if (presence == TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
-            /* Global presence is offline; we force it so user doesn't have to
-             * manually change the presence to connect his new account. */
-            presence = TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
-
-          tp_account_request_presence_async (account, presence,
-              status, NULL, NULL, NULL);
-          break;
-        default:
-          /* do nothing if the presence is not offline */
-          break;
-        }
+      empathy_connect_new_account (account, priv->account_manager);
     }
 
   /* unref widget - part of the workaround */
   g_object_unref (widget);
-  g_free (message);
-  g_free (status);
 }
 
 static void

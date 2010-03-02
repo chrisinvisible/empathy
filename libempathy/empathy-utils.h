@@ -31,6 +31,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <telepathy-glib/account-manager.h>
 
 #include "empathy-contact.h"
 
@@ -89,6 +90,9 @@ void empathy_signal_connect_weak (gpointer instance,
 TpAccount * empathy_get_account_for_connection (TpConnection *connection);
 
 gboolean empathy_account_manager_get_accounts_connected (gboolean *connecting);
+
+void empathy_connect_new_account (TpAccount *account,
+    TpAccountManager *account_manager);
 
 G_END_DECLS
 
