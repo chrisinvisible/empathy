@@ -204,7 +204,6 @@ main (int argc, char *argv[])
 {
   TpAccountManager *account_manager;
   GError *error = NULL;
-  TpDBusDaemon *dbus_daemon;
   UniqueApp *unique_app;
 
   GOptionContext *optcontext;
