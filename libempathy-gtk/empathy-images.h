@@ -24,12 +24,12 @@
 
 G_BEGIN_DECLS
 
-#define EMPATHY_IMAGE_OFFLINE             "empathy-offline"
-#define EMPATHY_IMAGE_HIDDEN              "empathy-offline"
-#define EMPATHY_IMAGE_AVAILABLE           "empathy-available"
-#define EMPATHY_IMAGE_BUSY                "empathy-busy"
-#define EMPATHY_IMAGE_AWAY                "empathy-away"
-#define EMPATHY_IMAGE_EXT_AWAY            "empathy-extended-away"
+#define EMPATHY_IMAGE_OFFLINE             "user-offline"
+#define EMPATHY_IMAGE_HIDDEN              "user-offline"
+#define EMPATHY_IMAGE_AVAILABLE           "user-available"
+#define EMPATHY_IMAGE_BUSY                "user-busy"
+#define EMPATHY_IMAGE_AWAY                "user-away"
+#define EMPATHY_IMAGE_EXT_AWAY            "user-idle"
 #define EMPATHY_IMAGE_UNKNOWN             "empathy-pending"
 
 #define EMPATHY_IMAGE_MESSAGE             "im-message"
