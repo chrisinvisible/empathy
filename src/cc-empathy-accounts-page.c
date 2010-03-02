@@ -54,20 +54,24 @@ page_pack_with_accounts_dialog (CcEmpathyAccountsPage *page)
   GtkWidget *content;
   GtkWidget *action_area;
 
-  if (!page->priv->accounts_window)
+  if (page->priv->accounts_window != NULL)
     {
-      page->priv->accounts_window = empathy_accounts_dialog_show (NULL, NULL);
-      gtk_widget_hide (page->priv->accounts_window);
-
-      content = gtk_dialog_get_content_area (
-          GTK_DIALOG (page->priv->accounts_window));
-      action_area = gtk_dialog_get_action_area (
-          GTK_DIALOG (page->priv->accounts_window));
-      gtk_widget_set_no_show_all (action_area, TRUE);
-      gtk_widget_hide (action_area);
-
-      gtk_widget_reparent (content, GTK_WIDGET (page));
+      gtk_widget_destroy (page->priv->accounts_window);
+      gtk_container_remove (GTK_CONTAINER (page),
+          gtk_bin_get_child (GTK_BIN (page)));
     }
+
+    page->priv->accounts_window = empathy_accounts_dialog_show (NULL, NULL);
+    gtk_widget_hide (page->priv->accounts_window);
+
+    content = gtk_dialog_get_content_area (
+        GTK_DIALOG (page->priv->accounts_window));
+    action_area = gtk_dialog_get_action_area (
+        GTK_DIALOG (page->priv->accounts_window));
+    gtk_widget_set_no_show_all (action_area, TRUE);
+    gtk_widget_hide (action_area);
+
+    gtk_widget_reparent (content, GTK_WIDGET (page));
 }
 
 static void

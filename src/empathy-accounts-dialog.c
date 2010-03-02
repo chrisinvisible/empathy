@@ -72,8 +72,6 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, GTK_TYPE_DIALOG);
 
-static EmpathyAccountsDialog *dialog_singleton = NULL;
-
 typedef struct {
   GtkWidget *alignment_settings;
   GtkWidget *alignment_infobar;
@@ -2147,30 +2145,6 @@ do_dispose (GObject *obj)
   G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->dispose (obj);
 }
 
-static GObject *
-do_constructor (GType type,
-    guint n_props,
-    GObjectConstructParam *props)
-{
-  GObject *retval;
-
-  if (dialog_singleton)
-    {
-      retval = G_OBJECT (dialog_singleton);
-    }
-  else
-    {
-      retval =
-        G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->constructor
-            (type, n_props, props);
-
-      dialog_singleton = EMPATHY_ACCOUNTS_DIALOG (retval);
-      g_object_add_weak_pointer (retval, (gpointer) &dialog_singleton);
-    }
-
-  return retval;
-}
-
 static void
 do_get_property (GObject *object,
     guint property_id,
@@ -2256,7 +2230,6 @@ empathy_accounts_dialog_class_init (EmpathyAccountsDialogClass *klass)
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
   GParamSpec *param_spec;
 
-  oclass->constructor = do_constructor;
   oclass->dispose = do_dispose;
   oclass->constructed = do_constructed;
   oclass->set_property = do_set_property;
