@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-02-26 08:49+0000\n"
-"PO-Revision-Date: 2010-02-26 11:19+0100\n"
+"POT-Creation-Date: 2010-03-02 11:39+0000\n"
+"PO-Revision-Date: 2010-03-02 13:53+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -394,7 +394,7 @@ msgid "Manage Messaging and VoIP accounts"
 msgstr "Upravljanje s sporočanjem in VoIP računi"
 
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/cc-empathy-accounts-page.c:201
+#: ../src/cc-empathy-accounts-page.c:203
 #: ../src/cc-empathy-accounts-panel.c:70
 msgid "Messaging and VoIP Accounts"
 msgstr "Sporočanje in VoIP računi"
@@ -1698,34 +1698,34 @@ msgstr "Nov klic"
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
-#: ../libempathy-gtk/empathy-presence-chooser.c:167
-#: ../libempathy-gtk/empathy-presence-chooser.c:203
+#: ../libempathy-gtk/empathy-presence-chooser.c:168
+#: ../libempathy-gtk/empathy-presence-chooser.c:204
 msgid "Custom Message…"
 msgstr "Sporočilo po meri ..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:220
-#: ../libempathy-gtk/empathy-presence-chooser.c:222
+#: ../libempathy-gtk/empathy-presence-chooser.c:221
+#: ../libempathy-gtk/empathy-presence-chooser.c:223
 msgid "Edit Custom Messages…"
 msgstr "Uredi sporočilo po meri ..."
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:344
+#: ../libempathy-gtk/empathy-presence-chooser.c:346
 msgid "Click to remove this status as a favorite"
 msgstr "S klikom se odstrani oznaka stanja kot priljubljenega"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:353
+#: ../libempathy-gtk/empathy-presence-chooser.c:355
 msgid "Click to make this status a favorite"
 msgstr "S klikom se določi oznaka stanja kot priljubljenega"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:387
+#: ../libempathy-gtk/empathy-presence-chooser.c:389
 msgid "Set status"
 msgstr "Določitev stanja"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:896
+#: ../libempathy-gtk/empathy-presence-chooser.c:936
 msgid "Set your presence and current status"
 msgstr "Nastavitev navzočnosti in trenutnega stanja"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1083
+#: ../libempathy-gtk/empathy-presence-chooser.c:1124
 msgid "Custom messages…"
 msgstr "Sporočila po meri ..."
 
@@ -2008,15 +2008,15 @@ msgstr "Ni sporočil o napakah"
 msgid "Instant Message (Empathy)"
 msgstr "Hipno sporočanje (Empathy)"
 
-#: ../src/empathy.c:580
+#: ../src/empathy.c:596
 msgid "Don't connect on startup"
 msgstr "Brez samodejne povezave ob zagonu"
 
-#: ../src/empathy.c:584
+#: ../src/empathy.c:600
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ne prikaži seznama stikov in drugih pogovornih oken ob zagonu"
 
-#: ../src/empathy.c:596
+#: ../src/empathy.c:612
 msgid "- Empathy IM Client"
 msgstr "- Empathy sporočilnik"
 
@@ -2241,7 +2241,7 @@ msgstr ""
 "Izbran bo nov račun, trenutne spremembe pa bodo izgubljene\n"
 "Ali ste prepričani, da želite nadaljevati?"
 
-#: ../src/empathy-accounts-dialog.c:1863
+#: ../src/empathy-accounts-dialog.c:1862
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2250,7 +2250,7 @@ msgstr ""
 "Ali ste prepričani, da želite nadaljevati?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1996
+#: ../src/empathy-accounts-dialog.c:1995
 msgid "Accounts"
 msgstr "Računi"
 
@@ -3209,30 +3209,36 @@ msgstr "Povabi udeležence"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Izbor stika za povabilo v pogovor:"
 
-#: ../src/empathy-accounts.c:196
-msgid "Try to import any recognized accounts and display an assistant if that fails"
-msgstr "Poskusite uvoziti prepoznane račune, v primeru težav pa uporabiti pomočnika"
-
-#: ../src/empathy-accounts.c:201
+#: ../src/empathy-accounts.c:214
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr "Ne pokaži pogovornih oken; opravi nalogo (na primer: uvažanje) in končaj"
 
-#: ../src/empathy-accounts.c:205
+#: ../src/empathy-accounts.c:218
+msgid "Don't display any dialogs if there are any non-salut accounts"
+msgstr "Ne prikaži pogovornega okna, če so na voljo tudi ne-salut računi"
+
+#: ../src/empathy-accounts.c:222
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
 msgstr "Predhodno izberite račun (na primer: gabble/jabber/foo_40primer_2eorg0)"
 
-#: ../src/empathy-accounts.c:207
+#: ../src/empathy-accounts.c:224
 msgid "<account-id>"
 msgstr "<id-računa>"
 
-#: ../src/empathy-accounts.c:215
+#: ../src/empathy-accounts.c:232
 msgid "- Empathy Accounts"
 msgstr "- Empathy računi"
 
-#: ../src/empathy-accounts.c:231
+#: ../src/empathy-accounts.c:248
 msgid " Accounts"
 msgstr "Računi"
 
+#~ msgid ""
+#~ "Try to import any recognized accounts and display an assistant if that "
+#~ "fails"
+#~ msgstr ""
+#~ "Poskusite uvoziti prepoznane račune, v primeru težav pa uporabiti "
+#~ "pomočnika"
 #~ msgid "Show the accounts dialog"
 #~ msgstr "Pokaži pogovorno okno računov"
 #~ msgid "Hidden"
