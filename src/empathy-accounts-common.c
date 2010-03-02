@@ -71,29 +71,16 @@ empathy_accounts_has_non_salut_accounts (TpAccountManager *manager)
   return ret;
 }
 
-/* Try to import accounts from MC4 and returns TRUE if we should display the
- * accounts assistant. */
-gboolean
+void
 empathy_accounts_import (TpAccountManager *account_mgr,
     EmpathyConnectionManagers *cm_mgr)
 {
-  g_return_val_if_fail (tp_account_manager_is_prepared (account_mgr,
-      TP_ACCOUNT_MANAGER_FEATURE_CORE), FALSE);
-  g_return_val_if_fail (empathy_connection_managers_is_ready (cm_mgr), FALSE);
+  g_return_if_fail (tp_account_manager_is_prepared (account_mgr,
+      TP_ACCOUNT_MANAGER_FEATURE_CORE));
+  g_return_if_fail (empathy_connection_managers_is_ready (cm_mgr));
 
-  if (empathy_import_mc4_has_imported ())
-    return FALSE;
-
-  if (empathy_import_mc4_accounts (cm_mgr))
-    return FALSE;
-
-  if (empathy_accounts_has_non_salut_accounts (account_mgr))
-    return FALSE;
-
-  if (!should_create_salut_account (account_mgr))
-    return FALSE;
-
-  return TRUE;
+  if (!empathy_import_mc4_has_imported ())
+    empathy_import_mc4_accounts (cm_mgr);
 }
 
 static void
@@ -111,7 +98,7 @@ do_show_accounts_ui (TpAccountManager *manager,
   gtk_window_present (GTK_WINDOW (accounts_window));
 }
 
-static GtkWidget*
+static GtkWidget *
 show_account_assistant (EmpathyConnectionManagers *connection_mgrs,
     GCallback assistant_destroy_cb)
 {
@@ -122,60 +109,6 @@ show_account_assistant (EmpathyConnectionManagers *connection_mgrs,
     g_signal_connect (assistant, "destroy", assistant_destroy_cb, NULL);
 
   return assistant;
-}
-
-static void
-connection_managers_prepare_cb (
-    EmpathyConnectionManagers *cm_mgr,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  GCallback assistant_destroy_cb = g_object_get_data (G_OBJECT (cm_mgr),
-      "assistant-destroy-callback");
-  TpAccountManager *account_mgr = g_object_get_data (G_OBJECT (cm_mgr),
-      "account-manager");
-  gboolean hidden = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (cm_mgr),
-        "hidden"));
-
-  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
-    goto out;
-
-  if (empathy_accounts_import (account_mgr, cm_mgr) &&
-      !hidden)
-    {
-      show_account_assistant (cm_mgr, assistant_destroy_cb);
-    }
-  else if (!empathy_accounts_has_non_salut_accounts (account_mgr))
-    {
-      show_account_assistant (cm_mgr, assistant_destroy_cb);
-    }
-  else
-    {
-      if (assistant_destroy_cb)
-        assistant_destroy_cb ();
-    }
-
-out:
-  g_object_unref (cm_mgr);
-}
-
-void
-empathy_accounts_manager_ready_for_show_assistant (
-    TpAccountManager *account_mgr,
-    gboolean hidden)
-{
-  EmpathyConnectionManagers *cm_mgr;
-
-  cm_mgr = empathy_connection_managers_dup_singleton ();
-
-  g_object_set_data (G_OBJECT (cm_mgr), "assistant-destroy-callback",
-      g_object_get_data (G_OBJECT (account_mgr), "assistant-destroy-callback"));
-  g_object_set_data_full (G_OBJECT (cm_mgr), "account-manager",
-      g_object_ref (account_mgr), g_object_unref);
-  g_object_set_data (G_OBJECT (cm_mgr), "hidden", GUINT_TO_POINTER (hidden));
-
-  empathy_connection_managers_prepare_async (cm_mgr,
-      (GAsyncReadyCallback) connection_managers_prepare_cb, NULL);
 }
 
 static void
@@ -190,7 +123,7 @@ connection_managers_prepare_for_accounts (GObject *source,
     goto out;
 
   show_account_assistant (cm_mgr, assistant_destroy_cb);
-  g_debug ("would show the account assistant");
+  DEBUG ("would show the account assistant");
 
 out:
   g_object_unref (cm_mgr);

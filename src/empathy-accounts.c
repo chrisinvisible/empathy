@@ -53,30 +53,9 @@
 
 #define EMPATHY_ACCOUNTS_DBUS_NAME "org.gnome.EmpathyAccounts"
 
-static gboolean try_import = FALSE;
+static gboolean only_if_needed = FALSE;
 static gboolean hidden = FALSE;
 static gchar *selected_account_name = NULL;
-
-static void
-account_manager_ready_for_assistant_cb (GObject *source_object,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  TpAccountManager *account_mgr = TP_ACCOUNT_MANAGER (source_object);
-  GError *error = NULL;
-
-  if (!tp_account_manager_prepare_finish (account_mgr, result, &error))
-    {
-      DEBUG ("Failed to prepare account manager: %s", error->message);
-      g_error_free (error);
-      return;
-    }
-
-  g_object_set_data (G_OBJECT (account_mgr), "assistant-destroy-callback",
-      G_CALLBACK (gtk_main_quit));
-
-  empathy_accounts_manager_ready_for_show_assistant (account_mgr, hidden);
-}
 
 static void
 account_prepare_cb (GObject *source_object,
@@ -100,6 +79,35 @@ account_prepare_cb (GObject *source_object,
 }
 
 static void
+maybe_show_accounts_ui (TpAccountManager *manager)
+{
+  if (hidden ||
+      (only_if_needed && empathy_accounts_has_non_salut_accounts (manager)))
+    gtk_main_quit ();
+  else
+    empathy_accounts_show_accounts_ui (manager, NULL, gtk_main_quit);
+}
+
+static void
+cm_manager_prepared_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  if (!empathy_connection_managers_prepare_finish (
+      EMPATHY_CONNECTION_MANAGERS (source), result, NULL))
+    {
+      g_warning ("Failed to prepare connection managers singleton");
+      gtk_main_quit ();
+      return;
+    }
+
+  empathy_accounts_import (TP_ACCOUNT_MANAGER (user_data),
+    EMPATHY_CONNECTION_MANAGERS (source));
+
+  maybe_show_accounts_ui (TP_ACCOUNT_MANAGER (user_data));
+}
+
+static void
 account_manager_ready_for_accounts_cb (GObject *source_object,
     GAsyncResult *result,
     gpointer user_data)
@@ -115,7 +123,7 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
       return;
     }
 
-  if (account_id)
+  if (account_id != NULL)
     {
       gchar *account_path;
       TpAccount *account = NULL;
@@ -143,8 +151,18 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
     }
   else
     {
-      empathy_accounts_show_accounts_ui (manager, NULL,
-          G_CALLBACK (gtk_main_quit));
+      if (empathy_import_mc4_has_imported ())
+        {
+          maybe_show_accounts_ui (manager);
+        }
+      else
+        {
+          EmpathyConnectionManagers *cm_mgr =
+            empathy_connection_managers_dup_singleton ();
+
+          empathy_connection_managers_prepare_async (
+            cm_mgr, cm_manager_prepared_cb, manager);
+        }
     }
 }
 
@@ -191,14 +209,13 @@ main (int argc, char *argv[])
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
-      { "import", 'i',
-        G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_NONE, &try_import,
-        N_("Try to import any recognized accounts and display an assistant if "
-            "that fails"),
-        NULL },
       { "hidden", 'h',
         0, G_OPTION_ARG_NONE, &hidden,
         N_("Don't display any dialogs; do any work (eg, importing) and exit"),
+        NULL },
+      { "if-needed", 'n',
+        0, G_OPTION_ARG_NONE, &only_if_needed,
+        N_("Don't display any dialogs if there are any non-salut accounts"),
         NULL },
       { "select-account", 's',
         G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_STRING, &selected_account_name,
@@ -242,38 +259,10 @@ main (int argc, char *argv[])
       return EXIT_SUCCESS;
     }
 
-  /* Take well-known name */
-  dbus_daemon = tp_dbus_daemon_dup (&error);
-  if (error == NULL)
-    {
-      if (!tp_dbus_daemon_request_name (dbus_daemon,
-          EMPATHY_ACCOUNTS_DBUS_NAME, TRUE, &error))
-        {
-          DEBUG ("Failed to request well-known name: %s",
-                 error ? error->message : "no message");
-          g_clear_error (&error);
-        }
-      g_object_unref (dbus_daemon);
-    }
-  else
-    {
-      DEBUG ("Failed to dup dbus daemon: %s",
-             error ? error->message : "no message");
-      g_clear_error (&error);
-    }
-
   account_manager = tp_account_manager_dup ();
 
-  if (try_import)
-    {
-      tp_account_manager_prepare_async (account_manager, NULL,
-          account_manager_ready_for_assistant_cb, NULL);
-    }
-  else
-    {
-      tp_account_manager_prepare_async (account_manager, NULL,
-          account_manager_ready_for_accounts_cb, selected_account_name);
-    }
+  tp_account_manager_prepare_async (account_manager, NULL,
+    account_manager_ready_for_accounts_cb, selected_account_name);
 
   g_signal_connect (unique_app, "message-received",
       G_CALLBACK (unique_app_message_cb), NULL);
