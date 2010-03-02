@@ -656,6 +656,7 @@ main_window_destroy_cb (GtkWidget         *widget,
 			  		      window);
 	g_object_unref (window->event_manager);
 	g_object_unref (window->ui_manager);
+	g_object_unref (window->chatroom_manager);
 
 	g_free (window);
 }
