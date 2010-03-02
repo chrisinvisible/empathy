@@ -72,8 +72,6 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, GTK_TYPE_DIALOG);
 
-static EmpathyAccountsDialog *dialog_singleton = NULL;
-
 typedef struct {
   GtkWidget *alignment_settings;
   GtkWidget *alignment_infobar;
@@ -431,6 +429,28 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     g_object_unref (settings);
 }
 
+static gboolean
+accounts_dialog_has_valid_accounts (EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gboolean creating;
+
+  g_object_get (priv->setting_widget_object,
+      "creating-account", &creating, NULL);
+
+  if (!creating)
+    return TRUE;
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+
+  if (gtk_tree_model_get_iter_first (model, &iter))
+    return gtk_tree_model_iter_next (model, &iter);
+
+  return FALSE;
+}
+
 static void
 account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
@@ -441,6 +461,10 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
 
   priv->setting_widget_object =
       empathy_account_widget_new_for_protocol (settings, FALSE);
+
+  if (accounts_dialog_has_valid_accounts (dialog))
+    empathy_account_widget_set_other_accounts_exist (
+        priv->setting_widget_object, TRUE);
 
   priv->settings_widget =
       empathy_account_widget_get_widget (priv->setting_widget_object);
@@ -625,7 +649,16 @@ accounts_dialog_protocol_changed_cb (GtkWidget *widget,
   /* We are creating a new widget to replace the current one, don't ask
    * confirmation to the user. */
   priv->force_change_row = TRUE;
+
+  /* We'll update the selection after we create the new account widgets;
+   * updating it right now causes problems for the # of accounts = zero case */
+  g_signal_handlers_block_by_func (selection,
+      accounts_dialog_model_selection_changed, dialog);
+
   gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+
+  g_signal_handlers_unblock_by_func (selection,
+      accounts_dialog_model_selection_changed, dialog);
 
   accounts_dialog_setup_ui_to_add_account (dialog);
 
@@ -1227,6 +1260,7 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
   GtkTreeModel *model;
   GtkTreeIter   iter;
   gboolean      is_selection;
+  gboolean creating = FALSE;
 
   is_selection = gtk_tree_selection_get_selected (selection, &model, &iter);
 
@@ -1236,8 +1270,14 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
   if (settings != NULL)
     g_object_unref (settings);
 
+  if (priv->setting_widget_object != NULL)
+    {
+      g_object_get (priv->setting_widget_object,
+          "creating-account", &creating, NULL);
+    }
+
   /* Update remove button sensitivity */
-  gtk_widget_set_sensitive (priv->button_remove, is_selection);
+  gtk_widget_set_sensitive (priv->button_remove, is_selection && !creating);
 }
 
 static void
@@ -1660,6 +1700,37 @@ accounts_dialog_account_validity_changed_cb (TpAccountManager *manager,
 }
 
 static void
+accounts_dialog_accounts_model_row_inserted_cb (GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkTreeIter *iter,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->setting_widget_object != NULL &&
+      accounts_dialog_has_valid_accounts (dialog))
+    {
+      empathy_account_widget_set_other_accounts_exist (
+          priv->setting_widget_object, TRUE);
+    }
+}
+
+static void
+accounts_dialog_accounts_model_row_deleted_cb (GtkTreeModel *model,
+    GtkTreePath *path,
+    EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+
+  if (priv->setting_widget_object != NULL &&
+      !accounts_dialog_has_valid_accounts (dialog))
+    {
+      empathy_account_widget_set_other_accounts_exist (
+          priv->setting_widget_object, FALSE);
+    }
+}
+
+static void
 accounts_dialog_account_removed_cb (TpAccountManager *manager,
     TpAccount *account,
     EmpathyAccountsDialog *dialog)
@@ -1670,7 +1741,7 @@ accounts_dialog_account_removed_cb (TpAccountManager *manager,
   if (accounts_dialog_get_account_iter (dialog, account, &iter))
     {
       gtk_list_store_remove (GTK_LIST_STORE (
-            gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview))), &iter);
+          gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview))), &iter);
     }
 }
 
@@ -2021,6 +2092,7 @@ do_dispose (GObject *obj)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  GtkTreeModel *model;
 
   if (priv->dispose_has_run)
     return;
@@ -2028,6 +2100,12 @@ do_dispose (GObject *obj)
   priv->dispose_has_run = TRUE;
 
   /* Disconnect signals */
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  g_signal_handlers_disconnect_by_func (model,
+      accounts_dialog_accounts_model_row_inserted_cb, dialog);
+  g_signal_handlers_disconnect_by_func (model,
+      accounts_dialog_accounts_model_row_deleted_cb, dialog);
+
   g_signal_handlers_disconnect_by_func (priv->account_manager,
       accounts_dialog_account_validity_changed_cb,
       dialog);
@@ -2064,30 +2142,6 @@ do_dispose (GObject *obj)
   priv->initial_selection = NULL;
 
   G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->dispose (obj);
-}
-
-static GObject *
-do_constructor (GType type,
-    guint n_props,
-    GObjectConstructParam *props)
-{
-  GObject *retval;
-
-  if (dialog_singleton)
-    {
-      retval = G_OBJECT (dialog_singleton);
-    }
-  else
-    {
-      retval =
-        G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->constructor
-            (type, n_props, props);
-
-      dialog_singleton = EMPATHY_ACCOUNTS_DIALOG (retval);
-      g_object_add_weak_pointer (retval, (gpointer) &dialog_singleton);
-    }
-
-  return retval;
 }
 
 static void
@@ -2132,9 +2186,16 @@ do_constructed (GObject *object)
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (object);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gboolean import_asked;
+  GtkTreeModel *model;
 
   accounts_dialog_build_ui (dialog);
   accounts_dialog_model_setup (dialog);
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
+  g_signal_connect (model, "row-inserted",
+      (GCallback) accounts_dialog_accounts_model_row_inserted_cb, dialog);
+  g_signal_connect (model, "row-deleted",
+      (GCallback) accounts_dialog_accounts_model_row_deleted_cb, dialog);
 
   /* Set up signalling */
   priv->account_manager = tp_account_manager_dup ();
@@ -2168,7 +2229,6 @@ empathy_accounts_dialog_class_init (EmpathyAccountsDialogClass *klass)
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
   GParamSpec *param_spec;
 
-  oclass->constructor = do_constructor;
   oclass->dispose = do_dispose;
   oclass->constructed = do_constructed;
   oclass->set_property = do_set_property;
