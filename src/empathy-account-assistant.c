@@ -300,6 +300,8 @@ account_assistant_account_enabled_cb (GObject *source,
       salut_created = TRUE;
     }
 
+  empathy_connect_new_account (account, priv->account_mgr);
+
   current_idx = gtk_assistant_get_current_page (GTK_ASSISTANT (self));
   if (current_idx == PAGE_SALUT && !salut_created)
     /* We are on the Salut page and aren't creating the salut account so don't
