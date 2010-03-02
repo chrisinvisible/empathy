@@ -690,6 +690,12 @@ account_widget_account_enabled_cb (GObject *source_object,
         case TP_CONNECTION_PRESENCE_TYPE_UNSET:
           presence = tp_account_manager_get_most_available_presence (
               priv->account_manager, &status, &message);
+
+          if (presence == TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
+            /* Global presence is offline; we force it so user doesn't have to
+             * manually change the presence to connect his new account. */
+            presence = TP_CONNECTION_PRESENCE_TYPE_AVAILABLE;
+
           tp_account_request_presence_async (account, presence,
               status, NULL, NULL, NULL);
           break;
