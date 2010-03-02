@@ -2271,6 +2271,11 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
   if (hidden)
     argv[i++] = "--hidden";
 
+  DEBUG ("Launching empathy-accounts (if_needed: %d, hidden: %d, account: %s)",
+    if_needed, hidden,
+    selected_account == NULL ? "<none selected>" :
+      tp_proxy_get_object_path (TP_PROXY (selected_account)));
+
   gdk_spawn_on_screen (screen, NULL, argv, NULL,
       G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL,
       &command_pid, &error);

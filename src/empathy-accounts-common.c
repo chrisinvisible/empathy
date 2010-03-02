@@ -123,7 +123,7 @@ connection_managers_prepare_for_accounts (GObject *source,
     goto out;
 
   show_account_assistant (cm_mgr, assistant_destroy_cb);
-  g_debug ("would show the account assistant");
+  DEBUG ("would show the account assistant");
 
 out:
   g_object_unref (cm_mgr);
