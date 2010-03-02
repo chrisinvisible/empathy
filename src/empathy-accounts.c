@@ -259,26 +259,6 @@ main (int argc, char *argv[])
       return EXIT_SUCCESS;
     }
 
-  /* Take well-known name */
-  dbus_daemon = tp_dbus_daemon_dup (&error);
-  if (error == NULL)
-    {
-      if (!tp_dbus_daemon_request_name (dbus_daemon,
-          EMPATHY_ACCOUNTS_DBUS_NAME, TRUE, &error))
-        {
-          DEBUG ("Failed to request well-known name: %s",
-                 error ? error->message : "no message");
-          g_clear_error (&error);
-        }
-      g_object_unref (dbus_daemon);
-    }
-  else
-    {
-      DEBUG ("Failed to dup dbus daemon: %s",
-             error ? error->message : "no message");
-      g_clear_error (&error);
-    }
-
   account_manager = tp_account_manager_dup ();
 
   tp_account_manager_prepare_async (account_manager, NULL,
