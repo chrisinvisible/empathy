@@ -183,7 +183,13 @@ empathy_icon_name_for_presence (TpConnectionPresenceType presence)
 	case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
 		return EMPATHY_IMAGE_EXT_AWAY;
 	case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
-		return EMPATHY_IMAGE_HIDDEN;
+		if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
+					     EMPATHY_IMAGE_HIDDEN))
+			return EMPATHY_IMAGE_HIDDEN;
+
+		/* The 'hidden' icon is not an official one so we fallback to offline if
+		 * it's not implemented */
+		return EMPATHY_IMAGE_OFFLINE;
 	case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
 	case TP_CONNECTION_PRESENCE_TYPE_ERROR:
 	case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:

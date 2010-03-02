@@ -25,7 +25,9 @@
 G_BEGIN_DECLS
 
 #define EMPATHY_IMAGE_OFFLINE             "user-offline"
-#define EMPATHY_IMAGE_HIDDEN              "user-offline"
+/* user-invisible is not (yet?) in the naming spec but already implemented by
+ * some theme */
+#define EMPATHY_IMAGE_HIDDEN              "user-invisible"
 #define EMPATHY_IMAGE_AVAILABLE           "user-available"
 #define EMPATHY_IMAGE_BUSY                "user-busy"
 #define EMPATHY_IMAGE_AWAY                "user-away"
