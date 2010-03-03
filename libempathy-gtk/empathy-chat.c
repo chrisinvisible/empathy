@@ -92,6 +92,7 @@ typedef struct {
 	TpHandleType       handle_type;
 	gint               contacts_width;
 	gboolean           has_input_vscroll;
+	gint               topic_width;
 
 	GtkWidget         *widget;
 	GtkWidget         *hpaned;
@@ -100,6 +101,7 @@ typedef struct {
 	GtkWidget         *scrolled_window_input;
 	GtkWidget         *scrolled_window_contacts;
 	GtkWidget         *hbox_topic;
+	GtkWidget         *expander_topic;
 	GtkWidget         *label_topic;
 	GtkWidget         *contact_list_view;
 	GtkWidget         *info_bar_vbox;
@@ -1197,6 +1199,82 @@ chat_send_error_cb (EmpathyTpChat          *tp_chat,
 	g_free (str);
 }
 
+/* WARNING: EXPLICIT CONTENT, keep away childrens!
+ *
+ * When a GtkLabel is set to wrap, it assume and hardcoded width. To change
+ * that width we have to set a size request on the label... but that's not
+ * possible because we want the window to be able to shrink, so we MUST request
+ * width of 1. Note that the height of a wrapping label depends on its width.
+ *
+ * To work around that, here is what happens:
+ * 1) size-request is first called, an hardcoded small width is requested by
+ *    GtkLabel, which means also a too big height. We do nothing.
+ * 2) size-allocate is called with the full width available, that's the width
+ *    we really want to make wrap the label. We save that width and restart a
+ *    size-request/size-allocate round.
+ * 3) size-request is called a 2nd time, now we can tell the pango layout its
+ *    width (we can't do that in step 2 because GtkLabel::size-request recreate
+ *    the layout each time). When the layout has its width, we can know the
+ *    height of the label and set its requisition. The width request is set to
+ *    1px to make sure the window can shrink, the layout will fill all the
+ *    available width anyway.
+ */
+static void
+chat_topic_label_size_request_cb (GtkLabel *label,
+				   GtkRequisition *requisition,
+				   EmpathyChat *chat)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	if (gtk_label_get_line_wrap (label) && priv->topic_width > 0) {
+		PangoLayout *layout;
+		PangoRectangle rect;
+		gint ypad;
+
+		layout = gtk_label_get_layout (label);
+		pango_layout_set_width (layout, priv->topic_width * PANGO_SCALE);
+		pango_layout_get_extents (layout, NULL, &rect);
+		gtk_misc_get_padding (GTK_MISC (label), NULL, &ypad);
+
+		requisition->width = 1;
+		requisition->height = PANGO_PIXELS (rect.height) + ypad * 2;
+	}
+}
+
+static void
+chat_topic_label_size_allocate_cb (GtkLabel *label,
+				   GtkAllocation *allocation,
+				   EmpathyChat *chat)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	if (!gtk_label_get_line_wrap (label)) {
+		priv->topic_width = -1;
+		return;
+	}
+
+	if (priv->topic_width != allocation->width) {
+		priv->topic_width = allocation->width;
+		gtk_widget_queue_resize (GTK_WIDGET (label));
+	}
+}
+
+static void
+chat_topic_expander_activate_cb (GtkExpander *expander,
+				 GParamSpec *param_spec,
+				 EmpathyChat *chat)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+
+	if (gtk_expander_get_expanded (expander)) {
+		gtk_label_set_ellipsize (GTK_LABEL (priv->label_topic), PANGO_ELLIPSIZE_NONE);
+		gtk_label_set_line_wrap (GTK_LABEL (priv->label_topic), TRUE);
+	} else {
+		gtk_label_set_ellipsize (GTK_LABEL (priv->label_topic), PANGO_ELLIPSIZE_END);
+		gtk_label_set_line_wrap (GTK_LABEL (priv->label_topic), FALSE);
+	}
+}
+
 static void
 chat_property_changed_cb (EmpathyTpChat *tp_chat,
 			  const gchar   *name,
@@ -1213,11 +1291,16 @@ chat_property_changed_cb (EmpathyTpChat *tp_chat,
 		if (EMP_STR_EMPTY (priv->subject)) {
 			gtk_widget_hide (priv->hbox_topic);
 		} else {
+			gchar *markup_topic;
 			gchar *markup_text;
 
-			markup_text = empathy_add_link_markup (priv->subject);
+			markup_topic = empathy_add_link_markup (priv->subject);
+			markup_text = g_strdup_printf ("<span weight=\"bold\">%s</span> %s",
+				_("Topic:"), markup_topic);
+
 			gtk_label_set_markup (GTK_LABEL (priv->label_topic), markup_text);
 			g_free (markup_text);
+			g_free (markup_topic);
 
 			gtk_widget_show (priv->hbox_topic);
 		}
@@ -2213,10 +2296,18 @@ chat_create_ui (EmpathyChat *chat)
 					"scrolled_window_chat", &priv->scrolled_window_chat,
 					"scrolled_window_input", &priv->scrolled_window_input,
 					"hbox_topic", &priv->hbox_topic,
+					"expander_topic", &priv->expander_topic,
 					"label_topic", &priv->label_topic,
 					"scrolled_window_contacts", &priv->scrolled_window_contacts,
 					"info_bar_vbox", &priv->info_bar_vbox,
 					NULL);
+
+	empathy_builder_connect (gui, chat,
+		"expander_topic", "notify::expanded", chat_topic_expander_activate_cb,
+		"label_topic", "size-allocate", chat_topic_label_size_allocate_cb,
+		"label_topic", "size-request", chat_topic_label_size_request_cb,
+		NULL);
+
 	g_free (filename);
 
 	/* Add message view. */
