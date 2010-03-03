@@ -69,6 +69,19 @@ empathy_string_match_all (const gchar *text,
 			  EmpathyStringParser *sub_parsers,
 			  gpointer user_data);
 
+/* Replace functions assume user_data is a GString */
+void
+empathy_string_replace_link (const gchar *text,
+                             gssize len,
+                             gpointer match_data,
+                             gpointer user_data);
+
+void
+empathy_string_replace_escaped (const gchar *text,
+				gssize len,
+				gpointer match_data,
+				gpointer user_data);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_STRING_PARSER_H__ */

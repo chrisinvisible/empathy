@@ -24,6 +24,7 @@
 
 #include "empathy-string-parser.h"
 #include "empathy-smiley-manager.h"
+#include "empathy-ui-utils.h"
 
 #define SCHEMES           "([a-zA-Z\\+]+)"
 #define INVALID_CHARS     "\\s\"'"
@@ -150,5 +151,43 @@ empathy_string_match_all (const gchar *text,
 			  gpointer user_data)
 {
 	replace_func (text, len, NULL, user_data);
+}
+
+void
+empathy_string_replace_link (const gchar *text,
+                             gssize len,
+                             gpointer match_data,
+                             gpointer user_data)
+{
+	GString *string = user_data;
+	gchar *real_url;
+	gchar *escaped;
+
+	real_url = empathy_make_absolute_url_len (text, len);
+
+	/* The thing we are making a link of may contain
+	 * characters which need escaping */
+	escaped = g_markup_escape_text (text, len);
+
+	/* Append the link inside <a href=""></a> tag */
+	g_string_append_printf (string, "<a href=\"%s\">%s</a>",
+				real_url, escaped);
+
+	g_free (real_url);
+	g_free (escaped);
+}
+
+void
+empathy_string_replace_escaped (const gchar *text,
+				gssize len,
+				gpointer match_data,
+				gpointer user_data)
+{
+	GString *string = user_data;
+	gchar *escaped;
+
+	escaped = g_markup_escape_text (text, len);
+	g_string_append (string, escaped);
+	g_free (escaped);
 }
 
