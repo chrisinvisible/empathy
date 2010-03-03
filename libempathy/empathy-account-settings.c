@@ -950,6 +950,13 @@ empathy_account_settings_set_display_name_async (
   result = g_simple_async_result_new (G_OBJECT (settings),
       callback, user_data, empathy_account_settings_set_display_name_finish);
 
+  if (!tp_strdiff (name, priv->display_name))
+    {
+      /* Nothing to do */
+      g_simple_async_result_complete_in_idle (result);
+      return;
+    }
+
   if (priv->account == NULL)
     {
       if (priv->display_name != NULL)
