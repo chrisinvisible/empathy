@@ -1631,6 +1631,7 @@ do_constructed (GObject *obj)
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   TpAccount *account;
   const gchar *protocol, *cm_name;
+  const gchar *display_name, *default_display_name;
   guint i = 0;
   struct {
     const gchar *cm_name;
@@ -1780,6 +1781,16 @@ do_constructed (GObject *obj)
   empathy_builder_unref_and_keep_widget (self->ui_details->gui,
       self->ui_details->widget);
   self->ui_details->gui = NULL;
+
+  display_name = empathy_account_settings_get_display_name (priv->settings);
+  default_display_name = empathy_account_widget_get_default_display_name (self);
+
+  if (tp_strdiff (display_name, default_display_name))
+    {
+      /* The display name of the account is not the one that we'd assign by
+       * default; assume that the user changed it manually */
+      g_object_set (priv->settings, "display-name-overridden", TRUE, NULL);
+    }
 }
 
 static void
