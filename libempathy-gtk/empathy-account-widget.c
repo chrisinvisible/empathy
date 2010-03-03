@@ -768,6 +768,7 @@ account_widget_apply_clicked_cb (GtkWidget *button,
     EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  gboolean display_name_overridden;
 
   if (priv->radiobutton_reuse != NULL)
     {
@@ -778,11 +779,15 @@ account_widget_apply_clicked_cb (GtkWidget *button,
       empathy_account_settings_set_boolean (priv->settings, "register", !reuse);
     }
 
-  if (priv->creating_account)
+  g_object_get (priv->settings,
+      "display-name-overridden", &display_name_overridden, NULL);
+
+  if (priv->creating_account || !display_name_overridden)
     {
       gchar *display_name;
 
-      /* set default display name */
+      /* set default display name for new accounts or update if user didn't
+       * manually override it. */
       display_name = empathy_account_widget_get_default_display_name (self);
 
       empathy_account_settings_set_display_name_async (priv->settings,
