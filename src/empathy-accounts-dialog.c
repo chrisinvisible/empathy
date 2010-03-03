@@ -398,18 +398,9 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
     TpAccount *account,
     EmpathyAccountsDialog *dialog)
 {
-  gchar *display_name;
   EmpathyAccountSettings *settings =
       accounts_dialog_model_get_selected_settings (dialog);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-
-  display_name = empathy_account_widget_get_default_display_name (
-      widget_object);
-
-  empathy_account_settings_set_display_name_async (settings,
-      display_name, NULL, NULL);
-
-  g_free (display_name);
 
   accounts_dialog_update_settings (dialog, settings);
   accounts_dialog_update_status_infobar (dialog,

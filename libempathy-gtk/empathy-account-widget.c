@@ -778,6 +778,19 @@ account_widget_apply_clicked_cb (GtkWidget *button,
       empathy_account_settings_set_boolean (priv->settings, "register", !reuse);
     }
 
+  if (priv->creating_account)
+    {
+      gchar *display_name;
+
+      /* set default display name */
+      display_name = empathy_account_widget_get_default_display_name (self);
+
+      empathy_account_settings_set_display_name_async (priv->settings,
+          display_name, NULL, NULL);
+
+      g_free (display_name);
+    }
+
   /* workaround to keep widget alive during async call */
   g_object_ref (self);
   empathy_account_settings_apply_async (priv->settings,
