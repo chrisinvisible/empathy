@@ -768,6 +768,7 @@ account_widget_apply_clicked_cb (GtkWidget *button,
     EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  gboolean display_name_overridden;
 
   if (priv->radiobutton_reuse != NULL)
     {
@@ -778,11 +779,15 @@ account_widget_apply_clicked_cb (GtkWidget *button,
       empathy_account_settings_set_boolean (priv->settings, "register", !reuse);
     }
 
-  if (priv->creating_account)
+  g_object_get (priv->settings,
+      "display-name-overridden", &display_name_overridden, NULL);
+
+  if (priv->creating_account || !display_name_overridden)
     {
       gchar *display_name;
 
-      /* set default display name */
+      /* set default display name for new accounts or update if user didn't
+       * manually override it. */
       display_name = empathy_account_widget_get_default_display_name (self);
 
       empathy_account_settings_set_display_name_async (priv->settings,
@@ -1631,6 +1636,7 @@ do_constructed (GObject *obj)
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   TpAccount *account;
   const gchar *protocol, *cm_name;
+  const gchar *display_name, *default_display_name;
   guint i = 0;
   struct {
     const gchar *cm_name;
@@ -1780,6 +1786,16 @@ do_constructed (GObject *obj)
   empathy_builder_unref_and_keep_widget (self->ui_details->gui,
       self->ui_details->widget);
   self->ui_details->gui = NULL;
+
+  display_name = empathy_account_settings_get_display_name (priv->settings);
+  default_display_name = empathy_account_widget_get_default_display_name (self);
+
+  if (tp_strdiff (display_name, default_display_name))
+    {
+      /* The display name of the account is not the one that we'd assign by
+       * default; assume that the user changed it manually */
+      g_object_set (priv->settings, "display-name-overridden", TRUE, NULL);
+    }
 }
 
 static void
@@ -1792,8 +1808,6 @@ do_dispose (GObject *obj)
     return;
 
   priv->dispose_run = TRUE;
-
-  empathy_account_settings_is_ready (priv->settings);
 
   if (priv->settings != NULL)
     {
