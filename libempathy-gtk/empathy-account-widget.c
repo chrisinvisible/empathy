@@ -1902,7 +1902,7 @@ empathy_account_widget_class_init (EmpathyAccountWidgetClass *klass)
   signals[ACCOUNT_CREATED] =
       g_signal_new ("account-created", G_TYPE_FROM_CLASS (klass),
           G_SIGNAL_RUN_LAST, 0, NULL, NULL,
-          g_cclosure_marshal_VOID__POINTER,
+          g_cclosure_marshal_VOID__OBJECT,
           G_TYPE_NONE,
           1, G_TYPE_OBJECT);
 
