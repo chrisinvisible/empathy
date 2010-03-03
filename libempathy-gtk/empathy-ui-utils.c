@@ -1532,19 +1532,6 @@ empathy_link_button_new (const gchar *url,
 }
 
 void
-empathy_toggle_button_set_state_quietly (GtkWidget *widget,
-					GCallback  callback,
-					gpointer   user_data,
-					gboolean   active)
-{
-	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (widget));
-
-	g_signal_handlers_block_by_func (widget, callback, user_data);
-	g_object_set (widget, "active", active, NULL);
-	g_signal_handlers_unblock_by_func (widget, callback, user_data);
-}
-
-void
 empathy_send_file (EmpathyContact *contact, GFile *file)
 {
 	EmpathyFTFactory *factory;
@@ -1701,5 +1688,18 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 		G_CALLBACK (file_manager_receive_file_response_cb), handler);
 
 	gtk_widget_show (widget);
+}
+
+void
+empathy_toggle_button_set_state_quietly (GtkWidget *widget,
+					GCallback  callback,
+					gpointer   user_data,
+					gboolean   active)
+{
+	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (widget));
+
+	g_signal_handlers_block_by_func (widget, callback, user_data);
+	g_object_set (widget, "active", active, NULL);
+	g_signal_handlers_unblock_by_func (widget, callback, user_data);
 }
 

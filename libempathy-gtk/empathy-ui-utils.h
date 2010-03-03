@@ -109,15 +109,18 @@ void        empathy_window_present                      (GtkWindow        *windo
 void        empathy_window_iconify                      (GtkWindow        *window,
 							 GtkStatusIcon    *status_icon);
 GtkWindow * empathy_get_toplevel_window                 (GtkWidget        *widget);
+
+/* URL */
+gchar *     empathy_make_absolute_url                   (const gchar      *url);
+
+gchar *     empathy_make_absolute_url_len               (const gchar      *url,
+							 guint             len);
 void        empathy_url_show                            (GtkWidget        *parent,
 							 const char       *url);
-void        empathy_toggle_button_set_state_quietly     (GtkWidget        *widget,
-							 GCallback         callback,
-							 gpointer          user_data,
-							 gboolean          active);
 GtkWidget * empathy_link_button_new                     (const gchar      *url,
 							 const gchar      *title);
 
+/* File transfer */
 void        empathy_send_file                           (EmpathyContact   *contact,
 							 GFile            *file);
 void        empathy_send_file_from_uri_list             (EmpathyContact   *contact,
@@ -125,9 +128,11 @@ void        empathy_send_file_from_uri_list             (EmpathyContact   *conta
 void        empathy_send_file_with_file_chooser         (EmpathyContact   *contact);
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
 
-gchar *     empathy_make_absolute_url                   (const gchar *url);
-gchar *     empathy_make_absolute_url_len               (const gchar *url,
-							 guint len);
+/* Misc */
+void        empathy_toggle_button_set_state_quietly     (GtkWidget        *widget,
+							 GCallback         callback,
+							 gpointer          user_data,
+							 gboolean          active);
 
 G_END_DECLS
 
