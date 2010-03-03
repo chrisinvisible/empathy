@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-02-26 08:49+0000\n"
-"PO-Revision-Date: 2010-02-26 14:56+0100\n"
+"POT-Creation-Date: 2010-03-02 11:39+0000\n"
+"PO-Revision-Date: 2010-03-03 07:47+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -466,7 +466,7 @@ msgid "Manage Messaging and VoIP accounts"
 msgstr "Gestionar las cuentas de mensajería y Voz IP"
 
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/cc-empathy-accounts-page.c:201 ../src/cc-empathy-accounts-panel.c:70
+#: ../src/cc-empathy-accounts-page.c:203 ../src/cc-empathy-accounts-panel.c:70
 msgid "Messaging and VoIP Accounts"
 msgstr "Cuentas de mensajería y Voz IP"
 
@@ -1299,7 +1299,6 @@ msgid "_Spelling Suggestions"
 msgstr "_Sugerencias ortográficas"
 
 #: ../libempathy-gtk/empathy-chat.c:1823
-#| msgid "Failed to open private chat"
 msgid "Failed to retrieve recent logs"
 msgstr "Falló al recibir los registros recientes"
 
@@ -1782,34 +1781,34 @@ msgstr "Llamada nueva"
 #. COL_DISPLAY_MARKUP
 #. COL_STATUS_CUSTOMISABLE
 #. COL_TYPE
-#: ../libempathy-gtk/empathy-presence-chooser.c:167
-#: ../libempathy-gtk/empathy-presence-chooser.c:203
+#: ../libempathy-gtk/empathy-presence-chooser.c:168
+#: ../libempathy-gtk/empathy-presence-chooser.c:204
 msgid "Custom Message…"
 msgstr "Mensaje personalizado…"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:220
-#: ../libempathy-gtk/empathy-presence-chooser.c:222
+#: ../libempathy-gtk/empathy-presence-chooser.c:221
+#: ../libempathy-gtk/empathy-presence-chooser.c:223
 msgid "Edit Custom Messages…"
 msgstr "Editar mensajes personalizados…"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:344
+#: ../libempathy-gtk/empathy-presence-chooser.c:346
 msgid "Click to remove this status as a favorite"
 msgstr "Pulse pare eliminar este estado de los favoritos"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:353
+#: ../libempathy-gtk/empathy-presence-chooser.c:355
 msgid "Click to make this status a favorite"
 msgstr "Pulse para hacer este estado uno favorito"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:387
+#: ../libempathy-gtk/empathy-presence-chooser.c:389
 msgid "Set status"
 msgstr "Establecer estado"
 
-#: ../libempathy-gtk/empathy-presence-chooser.c:896
+#: ../libempathy-gtk/empathy-presence-chooser.c:936
 msgid "Set your presence and current status"
 msgstr "Establecer su presencia y estado actual"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1083
+#: ../libempathy-gtk/empathy-presence-chooser.c:1124
 msgid "Custom messages…"
 msgstr "Mensajes personalizados…"
 
@@ -2092,15 +2091,15 @@ msgstr "Sin mensaje de eeror"
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
-#: ../src/empathy.c:580
+#: ../src/empathy.c:596
 msgid "Don't connect on startup"
 msgstr "No conectarse automáticamente al inicio"
 
-#: ../src/empathy.c:584
+#: ../src/empathy.c:600
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "No mostrar la lista de contactos o cualquier otro diálogo al inicio"
 
-#: ../src/empathy.c:596
+#: ../src/empathy.c:612
 msgid "- Empathy IM Client"
 msgstr "- Cliente de mensajería instantánea Empathy"
 
@@ -2374,7 +2373,7 @@ msgstr ""
 "Va a seleccionar otra cuenta lo que descartará sus cambios.\n"
 "¿Seguro que quiere continuar?"
 
-#: ../src/empathy-accounts-dialog.c:1863
+#: ../src/empathy-accounts-dialog.c:1862
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2383,7 +2382,7 @@ msgstr ""
 "¿Seguro que quiere continuar?"
 
 #. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:1996
+#: ../src/empathy-accounts-dialog.c:1995
 msgid "Accounts"
 msgstr "Cuentas"
 
@@ -3377,33 +3376,38 @@ msgstr "Invitar participante"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Elegir un contacto para invitar a la conversación:"
 
-#: ../src/empathy-accounts.c:196
-msgid ""
-"Try to import any recognized accounts and display an assistant if that fails"
-msgstr ""
-"Intentar importar cualquier cuenta reconocida y mostrar un mensaje si falla"
-
-#: ../src/empathy-accounts.c:201
+#: ../src/empathy-accounts.c:214
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr ""
 "No mostrar ningún diálogo; realizar cualquier trabajo (ej. importar) y salir"
 
-#: ../src/empathy-accounts.c:205
+#: ../src/empathy-accounts.c:218
+msgid "Don't display any dialogs if there are any non-salut accounts"
+msgstr "No mostrar ningún diálogo si existe alguna cuenta diferente de salut"
+
+#: ../src/empathy-accounts.c:222
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
 msgstr ""
 "Cuenta proporcionada inicialmente seleccionada (ej. gabble/jabber/ejemplo)"
 
-#: ../src/empathy-accounts.c:207
+#: ../src/empathy-accounts.c:224
 msgid "<account-id>"
 msgstr "<id-de-cuenta>"
 
-#: ../src/empathy-accounts.c:215
+#: ../src/empathy-accounts.c:232
 msgid "- Empathy Accounts"
 msgstr ": Cuentas en Empathy"
 
-#: ../src/empathy-accounts.c:231
+#: ../src/empathy-accounts.c:248
 msgid " Accounts"
 msgstr " Cuentas"
+
+#~ msgid ""
+#~ "Try to import any recognized accounts and display an assistant if that "
+#~ "fails"
+#~ msgstr ""
+#~ "Intentar importar cualquier cuenta reconocida y mostrar un mensaje si "
+#~ "falla"
 
 #~ msgid "Show the accounts dialog"
 #~ msgstr "Mostrar el diálogo de las cuentas"
