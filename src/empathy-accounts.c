@@ -244,7 +244,7 @@ main (int argc, char *argv[])
 
   empathy_gtk_init ();
 
-  g_set_application_name (_(PACKAGE_NAME " Accounts"));
+  g_set_application_name (_("Empathy Accounts"));
 
   gtk_window_set_default_icon_name ("empathy");
 
