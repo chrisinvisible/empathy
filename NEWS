@@ -1,3 +1,51 @@
+NEW in 2.29.91.1
+================
+
+The "No Chatroulette on your phone!" release.
+
+This new version can optionally use the telepathy-logger for log
+management when built with --enable-tpl.
+We discourage distributions shipping GNOME from enabling this
+feature for now.
+
+This release also fixes lot of bugs in the accounts dialog and assistant.
+
+Bugs fixed:
+ - Fixed #598905, Should request channels via the channel dispatcher (Sjoerd Simons)
+ - Fixed #518414, Conversation logger should be a separated process (Cosimo Alfarano)
+ - Fixed #599189, Should fetch logs asynchronously (Cosimo Alfarano)
+ - Fixed #603463, the name in accounts-dialog does not change after creation (Guillaume Desmottes)
+ - Fixed #608111, If first-run wizard is cancelled, it is never seen again.
+ - Fixed #610751, [PATCH] Add missing libm linking (Brian Pepple)
+ - Fixed #610769, Add search support to the Debug window (Mike Ruprecht)
+ - Fixed #610847, Infobar message is unclear when presence is offline (Guillaume Desmottes)
+ - Fixed #610886, Remove inset framing from the main window (Sander Dijkhuis)
+ - Fixed #610942, Crash when adding new account using control-center module (Guillaume Desmottes)
+ - Fixed #611062, Map is not displayed if contact only publishes his lon/lat (Guillaume Desmottes)
+ - Fixed #611071, Calls Close() three times on IM channels. (Will Thompson)
+ - Fixed #611126, When the existing window is activated it is marked as skip task bar (Rob Bradford)
+ - Fixed #611131, account assistant does not appear when accounts list is Empathy until you run Edit->Accounts (Danielle Madeley)
+ - Fixed #611179, TPL 0.1.1 update: review needed (Cosimo Alfarano)
+ - Fixed #611309, Use emblem-favorite icon (Guillaume Desmottes)
+ - Fixed #611565, Doesn't set status to online when adding initial accounts (Guillaume Desmottes)
+ - Fixed #611675, Assistant: set better display name (Guillaume Desmottes)
+ - Fixed #611224, new account initially shows offline/disabled status (Sjoerd Simons)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated bg Translation (Alexander Shopov)
+ - Updated de Translation (Mario Blättermann)
+ - Updated el Translation (Jennie Petoumenou)
+ - Updated en_GB Translation (Bruce Cowan)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated he Translation (blueomega)
+ - Updated it Translation (Milo Casagrande)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
 NEW in 2.29.91
 ==============
 
