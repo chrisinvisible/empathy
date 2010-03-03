@@ -159,13 +159,23 @@ PKG_CHECK_MODULES(EMPATHY,
    gobject-2.0
    gstreamer-0.10
    gstreamer-interfaces-0.10
-   libebook-1.2
    libxml-2.0
    telepathy-farsight >= $TELEPATHY_FARSIGHT_REQUIRED
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-logger-0.1 >= $TELEPATHY_LOGGER
    x11
 ])
+
+# -----------------------------------------------------------
+# evolution-data-server (about-me)
+# -----------------------------------------------------------
+AC_ARG_WITH(eds,
+            AC_HELP_STRING([--with-eds], [build with evolution-data-server support]),,
+            [with_eds=yes])
+if test x"$with_eds" = x"yes" ; then
+   PKG_CHECK_MODULES(EDS, [libebook-1.2])
+   AC_DEFINE(HAVE_EDS, 1, [Define if we have libebook])
+fi
 
 # -----------------------------------------------------------
 # GTK+
@@ -568,4 +578,5 @@ Configure summary:
 
     Extras:
 	Nautilus-sendto plugin......:  ${have_nst}
+	Salut E-D-S support.........:  ${with_eds}
 "

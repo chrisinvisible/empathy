@@ -26,7 +26,10 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
+
+#if HAVE_EDS
 #include <libebook/e-book.h>
+#endif
 
 #include <libempathy/empathy-account-settings.h>
 
@@ -65,6 +68,7 @@ EmpathyAccountSettings *
 create_salut_account_settings (void)
 {
   EmpathyAccountSettings  *settings;
+#if HAVE_EDS
   EBook *book;
   EContact *contact;
   gchar *nickname = NULL;
@@ -73,10 +77,12 @@ create_salut_account_settings (void)
   gchar *email = NULL;
   gchar *jid = NULL;
   GError *error = NULL;
+#endif
 
   settings = empathy_account_settings_new ("salut", "local-xmpp",
       _("People nearby"));
 
+#if HAVE_EDS
   /* Get self EContact from EDS */
   if (!e_book_get_self (&contact, &book, &error))
     {
@@ -117,6 +123,7 @@ create_salut_account_settings (void)
   g_free (jid);
   g_object_unref (contact);
   g_object_unref (book);
+#endif
 
   return settings;
 }
