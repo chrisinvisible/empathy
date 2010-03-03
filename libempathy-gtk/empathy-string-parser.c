@@ -25,6 +25,29 @@
 #include "empathy-string-parser.h"
 #include "empathy-smiley-manager.h"
 
+#define SCHEMES           "([a-zA-Z\\+]+)"
+#define INVALID_CHARS     "\\s\"'"
+#define INVALID_CHARS_EXT INVALID_CHARS "\\[\\]<>(){},;:?"
+#define BODY              "([^"INVALID_CHARS"]+)"
+#define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_EXT".]"
+#define BODY_STRICT       "([^"INVALID_CHARS_EXT"]+)"
+#define URI_REGEX         "("SCHEMES"://"BODY_END")" \
+		          "|((www|ftp)\\."BODY_END")" \
+		          "|((mailto:)?"BODY_STRICT"@"BODY"\\."BODY_END")"
+
+static GRegex *
+uri_regex_dup_singleton (void)
+{
+	static GRegex *uri_regex = NULL;
+
+	/* We intentionally leak the regex so it's not recomputed */
+	if (!uri_regex) {
+		uri_regex = g_regex_new (URI_REGEX, 0, 0, NULL);
+	}
+
+	return g_regex_ref (uri_regex);
+}
+
 void
 empathy_string_parser_substr (const gchar *text,
 			      gssize len,
@@ -50,7 +73,7 @@ empathy_string_match_link (const gchar *text,
 	gboolean    match;
 	gint        last = 0;
 
-	uri_regex = empathy_uri_regex_dup_singleton ();
+	uri_regex = uri_regex_dup_singleton ();
 	match = g_regex_match_full (uri_regex, text, len, 0, 0, &match_info, NULL);
 	if (match) {
 		gint s = 0, e = 0;

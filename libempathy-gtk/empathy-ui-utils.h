@@ -47,7 +47,6 @@ G_BEGIN_DECLS
 					    (y) < gdk_screen_height ())
 
 void            empathy_gtk_init                        (void);
-GRegex *        empathy_uri_regex_dup_singleton         (void);
 
 /* Glade */
 GtkBuilder *    empathy_builder_get_file                (const gchar      *filename,
