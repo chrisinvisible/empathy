@@ -47,6 +47,7 @@
 #include "empathy-avatar-chooser.h"
 #include "empathy-avatar-image.h"
 #include "empathy-ui-utils.h"
+#include "empathy-string-parser.h"
 #include "empathy-kludge-label.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
@@ -948,8 +949,21 @@ contact_widget_name_notify_cb (EmpathyContactWidget *information)
 static void
 contact_widget_presence_notify_cb (EmpathyContactWidget *information)
 {
-  gtk_label_set_text (GTK_LABEL (information->label_status),
-      empathy_contact_get_status (information->contact));
+  const gchar *status;
+
+  status = empathy_contact_get_status (information->contact);
+  if (!(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
+    {
+      gchar *markup_text;
+
+      markup_text = empathy_add_link_markup (status);
+      gtk_label_set_markup (GTK_LABEL (information->label_status), markup_text);
+      g_free (markup_text);
+  }
+  else {
+    gtk_label_set_text (GTK_LABEL (information->label_status), status);
+  }
+
   gtk_image_set_from_icon_name (GTK_IMAGE (information->image_state),
       empathy_icon_name_for_contact (information->contact),
       GTK_ICON_SIZE_BUTTON);
