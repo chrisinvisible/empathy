@@ -128,12 +128,6 @@ void        empathy_send_file_from_uri_list             (EmpathyContact   *conta
 void        empathy_send_file_with_file_chooser         (EmpathyContact   *contact);
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
 
-/* Misc */
-void        empathy_toggle_button_set_state_quietly     (GtkWidget        *widget,
-							 GCallback         callback,
-							 gpointer          user_data,
-							 gboolean          active);
-
 G_END_DECLS
 
 #endif /*  __EMPATHY_UI_UTILS_H__ */
