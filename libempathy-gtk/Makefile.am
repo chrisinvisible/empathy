@@ -65,6 +65,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-sound.c				\
 	empathy-spell.c				\
 	empathy-status-preset-dialog.c		\
+	empathy-string-parser.c			\
 	empathy-theme-boxes.c			\
 	empathy-theme-irc.c			\
 	empathy-theme-manager.c			\
@@ -111,6 +112,7 @@ libempathy_gtk_headers =			\
 	empathy-sound.h				\
 	empathy-spell.h				\
 	empathy-status-preset-dialog.h		\
+	empathy-string-parser.h			\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\

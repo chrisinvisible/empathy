@@ -40,6 +40,7 @@
 #include "empathy-conf.h"
 #include "empathy-ui-utils.h"
 #include "empathy-plist.h"
+#include "empathy-string-parser.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
