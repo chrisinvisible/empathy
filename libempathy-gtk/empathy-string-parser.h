@@ -82,6 +82,9 @@ empathy_string_replace_escaped (const gchar *text,
 				gpointer match_data,
 				gpointer user_data);
 
+gchar *
+empathy_add_link_markup (const gchar *text);
+
 G_END_DECLS
 
 #endif /*  __EMPATHY_STRING_PARSER_H__ */

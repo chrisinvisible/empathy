@@ -191,3 +191,19 @@ empathy_string_replace_escaped (const gchar *text,
 	g_free (escaped);
 }
 
+gchar *
+empathy_add_link_markup (const gchar *text)
+{
+	static EmpathyStringParser parsers[] = {
+		{empathy_string_match_link, empathy_string_replace_link},
+		{empathy_string_match_all, empathy_string_replace_escaped},
+		{NULL, NULL}
+	};
+	GString *string;
+
+	string = g_string_sized_new (strlen (text));
+	empathy_string_parser_substr (text, -1, parsers, string);
+
+	return g_string_free (string, FALSE);
+}
+
