@@ -1793,8 +1793,6 @@ do_dispose (GObject *obj)
 
   priv->dispose_run = TRUE;
 
-  empathy_account_settings_is_ready (priv->settings);
-
   if (priv->settings != NULL)
     {
       TpAccount *account;
