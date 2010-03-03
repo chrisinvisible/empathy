@@ -37,7 +37,7 @@ main (int argc,
   gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
-  g_set_application_name (_(PACKAGE_NAME " Debugger"));
+  g_set_application_name (_("Empathy Debugger"));
 
   gtk_window_set_default_icon_name ("empathy");
 
