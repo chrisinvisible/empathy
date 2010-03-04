@@ -1563,14 +1563,11 @@ chat_window_drag_motion (GtkWidget        *widget,
 {
 	GdkAtom target;
 	EmpathyChatWindowPriv *priv;
-	GdkAtom dest_target;
 
 	priv = GET_PRIV (window);
 
-	target = gtk_drag_dest_find_target (widget, context, NULL);
-
-	dest_target = gdk_atom_intern_static_string ("text/uri-list");
-	if (target == dest_target) {
+	target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
+	if (target != GDK_NONE) {
 		/* This is a file drag.  Ensure the contact is online and set the
 		   drag type to COPY.  Note that it's possible that the tab will
 		   be switched by GTK+ after a timeout from drag_motion without
@@ -1599,8 +1596,8 @@ chat_window_drag_motion (GtkWidget        *widget,
 		return TRUE;
 	}
 
-	dest_target = gdk_atom_intern_static_string ("text/contact-id");
-	if (target == dest_target) {
+	target = gtk_drag_dest_find_target (widget, context, priv->contact_targets);
+	if (target != GDK_NONE) {
 		/* This is a drag of a contact from a contact list.  Set to COPY.
 		   FIXME: If this drag is to a MUC window, it invites the user.
 		   Otherwise, it opens a chat.  Should we use a different drag
