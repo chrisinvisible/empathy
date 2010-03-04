@@ -267,7 +267,7 @@ empathy_smiley_manager_load (EmpathySmileyManager *manager)
 	/* From fd.o icon-naming spec */
 	empathy_smiley_manager_add (manager, "face-angel",      "O:-)",  "O:)",  NULL);
 	empathy_smiley_manager_add (manager, "face-angry",      "X-(",   ":@",   NULL);
-	empathy_smiley_manager_add (manager, "face-cool",       "B-)",   "B)",   NULL);
+	empathy_smiley_manager_add (manager, "face-cool",       "B-)",   NULL);
 	empathy_smiley_manager_add (manager, "face-crying",     ":'(",           NULL);
 	empathy_smiley_manager_add (manager, "face-devilish",   ">:-)",  ">:)",  NULL);
 	empathy_smiley_manager_add (manager, "face-embarrassed",":-[",   ":[",   ":-$", ":$", NULL);
