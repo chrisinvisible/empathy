@@ -1373,7 +1373,8 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 
 	XChangeProperty (dpy,
 			 GDK_WINDOW_XID (gdk_window),
-			 gdk_x11_get_xatom_by_name_for_display (gdk_drawable_get_display (gdk_window),
+			 gdk_x11_get_xatom_by_name_for_display (
+				gdk_drawable_get_display (gdk_window),
 			 "_NET_WM_ICON_GEOMETRY"),
 			 XA_CARDINAL, 32, PropModeReplace,
 			 (guchar *)&data, 4);
@@ -1387,7 +1388,6 @@ void
 empathy_window_present (GtkWindow *window,
 			gboolean   steal_focus)
 {
-	guint32 timestamp;
 	GdkWindow *gdk_window;
 
 	g_return_if_fail (GTK_IS_WINDOW (window));
@@ -1410,8 +1410,7 @@ empathy_window_present (GtkWindow *window,
 			gtk_widget_hide (GTK_WIDGET (window));
 	}
 
-	timestamp = gtk_get_current_event_time ();
-	gtk_window_present_with_time (window, timestamp);
+	gtk_window_present_with_time (window, G_MAXINT32);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
 	gtk_window_deiconify (window);
 }
