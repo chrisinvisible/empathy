@@ -345,7 +345,7 @@ presence_chooser_set_favorite_icon (EmpathyPresenceChooser *self)
 					 GTK_ENTRY_ICON_SECONDARY,
 					 _("Click to remove this status as a favorite"));
 		}
-		else {
+		else if (priv->not_favorite_pixbuf != NULL) {
 			/* custom entries can be favorited */
 			gtk_entry_set_icon_from_pixbuf (GTK_ENTRY (entry),
 				           GTK_ENTRY_ICON_SECONDARY,
@@ -818,6 +818,9 @@ create_not_favorite_pixbuf (void)
 	favorite = empathy_pixbuf_from_icon_name ("emblem-favorite",
 						  GTK_ICON_SIZE_MENU);
 
+	if (favorite == NULL)
+		return NULL;
+
 	result = gdk_pixbuf_copy (favorite);
 	gdk_pixbuf_saturate_and_pixelate (favorite, result, 1.0, TRUE);
 
@@ -832,7 +835,8 @@ icon_theme_changed_cb (GtkIconTheme *icon_theme,
 	EmpathyPresenceChooserPriv *priv = GET_PRIV (self);
 
 	/* Theme has changed, recreate the not-favorite icon */
-	g_object_unref (priv->not_favorite_pixbuf);
+	if (priv->not_favorite_pixbuf != NULL)
+		g_object_unref (priv->not_favorite_pixbuf);
 	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
 
 	/* Update the icon */
@@ -851,7 +855,6 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 
 	/* Create the not-favorite icon */
 	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
-	g_assert (priv->not_favorite_pixbuf != NULL);
 
 	empathy_signal_connect_weak (gtk_icon_theme_get_default (), "changed",
 				     G_CALLBACK (icon_theme_changed_cb),
@@ -964,7 +967,8 @@ presence_chooser_finalize (GObject *object)
 	g_object_unref (priv->idle);
 
 	g_object_unref (priv->connectivity);
-	g_object_unref (priv->not_favorite_pixbuf);
+	if (priv->not_favorite_pixbuf != NULL)
+		g_object_unref (priv->not_favorite_pixbuf);
 
 	G_OBJECT_CLASS (empathy_presence_chooser_parent_class)->finalize (object);
 }

@@ -348,21 +348,26 @@ account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self,
     EmpathyAccountSettings *settings)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
-  gchar *display_name;
 
   if (settings == NULL)
     return;
 
   priv->is_creating = TRUE;
 
-  /* set default display name */
-  display_name = empathy_account_widget_get_default_display_name (
-      priv->current_widget_object);
+  /* set default display name, if there is no current widget then assume the
+   * display name was already set correctly. e.g. salut account creation */
+  if (priv->current_widget_object != NULL)
+    {
+      gchar *display_name;
 
-  empathy_account_settings_set_display_name_async (settings,
-      display_name, NULL, NULL);
+      display_name = empathy_account_widget_get_default_display_name (
+        priv->current_widget_object);
 
-  g_free (display_name);
+      empathy_account_settings_set_display_name_async (settings,
+        display_name, NULL, NULL);
+
+      g_free (display_name);
+    }
 
   empathy_account_settings_apply_async (settings,
       account_assistant_apply_account_cb, self);
