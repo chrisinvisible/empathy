@@ -2347,7 +2347,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
 }
 
 gboolean
-empathy_account_dialog_is_creating (EmpathyAccountsDialog *dialog)
+empathy_accounts_dialog_is_creating (EmpathyAccountsDialog *dialog)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   gboolean result = FALSE;
