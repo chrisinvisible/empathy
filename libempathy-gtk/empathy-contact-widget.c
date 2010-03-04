@@ -950,10 +950,11 @@ static void
 contact_widget_presence_notify_cb (EmpathyContactWidget *information)
 {
   const gchar *status;
-  gchar *markup_text;
+  gchar *markup_text = NULL;
 
   status = empathy_contact_get_status (information->contact);
-  markup_text = empathy_add_link_markup (status);
+  if (status != NULL)
+    markup_text = empathy_add_link_markup (status);
   gtk_label_set_markup (GTK_LABEL (information->label_status), markup_text);
   g_free (markup_text);
 

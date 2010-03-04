@@ -201,6 +201,8 @@ empathy_add_link_markup (const gchar *text)
 	};
 	GString *string;
 
+	g_return_val_if_fail (text != NULL, NULL);
+
 	string = g_string_sized_new (strlen (text));
 	empathy_string_parser_substr (text, -1, parsers, string);
 
