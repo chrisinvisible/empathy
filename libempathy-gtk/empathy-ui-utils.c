@@ -50,16 +50,6 @@
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-ft-factory.h>
 
-#define SCHEMES           "([a-zA-Z\\+]+)"
-#define INVALID_CHARS     "\\s\"'"
-#define INVALID_CHARS_EXT INVALID_CHARS "\\[\\]<>(){},;:?"
-#define BODY              "([^"INVALID_CHARS"]+)"
-#define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_EXT".]"
-#define BODY_STRICT       "([^"INVALID_CHARS_EXT"]+)"
-#define URI_REGEX         "("SCHEMES"://"BODY_END")" \
-		          "|((www|ftp)\\."BODY_END")" \
-		          "|((mailto:)?"BODY_STRICT"@"BODY"\\."BODY_END")"
-
 void
 empathy_gtk_init (void)
 {
@@ -73,19 +63,6 @@ empathy_gtk_init (void)
 					   PKGDATADIR G_DIR_SEPARATOR_S "icons");
 
 	initialized = TRUE;
-}
-
-GRegex *
-empathy_uri_regex_dup_singleton (void)
-{
-	static GRegex *uri_regex = NULL;
-
-	/* We intentionally leak the regex so it's not recomputed */
-	if (!uri_regex) {
-		uri_regex = g_regex_new (URI_REGEX, 0, 0, NULL);
-	}
-
-	return g_regex_ref (uri_regex);
 }
 
 static GtkBuilder *
@@ -1555,19 +1532,6 @@ empathy_link_button_new (const gchar *url,
 }
 
 void
-empathy_toggle_button_set_state_quietly (GtkWidget *widget,
-					GCallback  callback,
-					gpointer   user_data,
-					gboolean   active)
-{
-	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (widget));
-
-	g_signal_handlers_block_by_func (widget, callback, user_data);
-	g_object_set (widget, "active", active, NULL);
-	g_signal_handlers_unblock_by_func (widget, callback, user_data);
-}
-
-void
 empathy_send_file (EmpathyContact *contact, GFile *file)
 {
 	EmpathyFTFactory *factory;
@@ -1724,109 +1688,5 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 		G_CALLBACK (file_manager_receive_file_response_cb), handler);
 
 	gtk_widget_show (widget);
-}
-
-void
-empathy_string_parser_substr (const gchar *text,
-			      gssize len,
-			      EmpathyStringParser *parsers,
-			      gpointer user_data)
-{
-	if (parsers != NULL && parsers[0].match_func != NULL) {
-		parsers[0].match_func (text, len,
-				       parsers[0].replace_func, parsers + 1,
-				       user_data);
-	}
-}
-
-void
-empathy_string_match_link (const gchar *text,
-			   gssize len,
-			   EmpathyStringReplace replace_func,
-			   EmpathyStringParser *sub_parsers,
-			   gpointer user_data)
-{
-	GRegex     *uri_regex;
-	GMatchInfo *match_info;
-	gboolean    match;
-	gint        last = 0;
-
-	uri_regex = empathy_uri_regex_dup_singleton ();
-	match = g_regex_match_full (uri_regex, text, len, 0, 0, &match_info, NULL);
-	if (match) {
-		gint s = 0, e = 0;
-
-		do {
-			g_match_info_fetch_pos (match_info, 0, &s, &e);
-
-			if (s > last) {
-				/* Append the text between last link (or the
-				 * start of the message) and this link */
-				empathy_string_parser_substr (text + last,
-							      s - last,
-							      sub_parsers,
-							      user_data);
-			}
-
-			replace_func (text + s, e - s, NULL, user_data);
-
-			last = e;
-		} while (g_match_info_next (match_info, NULL));
-	}
-
-	empathy_string_parser_substr (text + last, len - last,
-				      sub_parsers, user_data);
-
-	g_match_info_free (match_info);
-	g_regex_unref (uri_regex);
-}
-
-void
-empathy_string_match_smiley (const gchar *text,
-			     gssize len,
-			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers,
-			     gpointer user_data)
-{
-	guint last = 0;
-	EmpathySmileyManager *smiley_manager;
-	GSList *hits, *l;
-
-	smiley_manager = empathy_smiley_manager_dup_singleton ();
-	hits = empathy_smiley_manager_parse_len (smiley_manager, text, len);
-
-	for (l = hits; l; l = l->next) {
-		EmpathySmileyHit *hit = l->data;
-
-		if (hit->start > last) {
-			/* Append the text between last smiley (or the
-			 * start of the message) and this smiley */
-			empathy_string_parser_substr (text + last,
-						      hit->start - last,
-						      sub_parsers, user_data);
-		}
-
-		replace_func (text + hit->start, hit->end - hit->start,
-			      hit, user_data);
-
-		last = hit->end;
-
-		empathy_smiley_hit_free (hit);
-	}
-	g_slist_free (hits);
-	g_object_unref (smiley_manager);
-
-	empathy_string_parser_substr (text + last, len - last,
-				      sub_parsers, user_data);
-}
-
-void
-empathy_string_match_all (const gchar *text,
-			  gssize len,
-			  EmpathyStringReplace replace_func,
-			  EmpathyStringParser *sub_parsers,
-			  gpointer user_data)
-{
-	replace_func (text, len, NULL, user_data);
 }
 

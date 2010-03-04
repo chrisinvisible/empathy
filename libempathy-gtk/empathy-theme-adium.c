@@ -40,6 +40,7 @@
 #include "empathy-conf.h"
 #include "empathy-ui-utils.h"
 #include "empathy-plist.h"
+#include "empathy-string-parser.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
@@ -221,30 +222,6 @@ theme_adium_match_newline (const gchar *text,
 }
 
 static void
-theme_adium_replace_link (const gchar *text,
-			  gssize len,
-			  gpointer match_data,
-			  gpointer user_data)
-{
-	GString *string = user_data;
-	gchar *real_url;
-	gchar *escaped;
-
-	real_url = empathy_make_absolute_url_len (text, len);
-
-	/* The thing we are making a link of may contain
-	 * characters which need escaping */
-	escaped = g_markup_escape_text (text, len);
-
-	/* Append the link inside <a href=""></a> tag */
-	g_string_append_printf (string, "<a href=\"%s\">%s</a>",
-				real_url, escaped);
-
-	g_free (real_url);
-	g_free (escaped);
-}
-
-static void
 theme_adium_replace_smiley (const gchar *text,
 			    gssize len,
 			    gpointer match_data,
@@ -259,32 +236,18 @@ theme_adium_replace_smiley (const gchar *text,
 				hit->path, (int)len, text, (int)len, text);
 }
 
-static void
-theme_adium_replace_escaped (const gchar *text,
-			     gssize len,
-			     gpointer match_data,
-			     gpointer user_data)
-{
-	GString *string = user_data;
-	gchar *escaped;
-
-	escaped = g_markup_escape_text (text, len);
-	g_string_append (string, escaped);
-	g_free (escaped);
-}
-
 static EmpathyStringParser string_parsers[] = {
-	{empathy_string_match_link, theme_adium_replace_link},
+	{empathy_string_match_link, empathy_string_replace_link},
 	{theme_adium_match_newline, NULL},
-	{empathy_string_match_all, theme_adium_replace_escaped},
+	{empathy_string_match_all, empathy_string_replace_escaped},
 	{NULL, NULL}
 };
 
 static EmpathyStringParser string_parsers_with_smiley[] = {
-	{empathy_string_match_link, theme_adium_replace_link},
+	{empathy_string_match_link, empathy_string_replace_link},
 	{empathy_string_match_smiley, theme_adium_replace_smiley},
 	{theme_adium_match_newline, NULL},
-	{empathy_string_match_all, theme_adium_replace_escaped},
+	{empathy_string_match_all, empathy_string_replace_escaped},
 	{NULL, NULL}
 };
 

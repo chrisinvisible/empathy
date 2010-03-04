@@ -47,7 +47,6 @@ G_BEGIN_DECLS
 					    (y) < gdk_screen_height ())
 
 void            empathy_gtk_init                        (void);
-GRegex *        empathy_uri_regex_dup_singleton         (void);
 
 /* Glade */
 GtkBuilder *    empathy_builder_get_file                (const gchar      *filename,
@@ -110,70 +109,24 @@ void        empathy_window_present                      (GtkWindow        *windo
 void        empathy_window_iconify                      (GtkWindow        *window,
 							 GtkStatusIcon    *status_icon);
 GtkWindow * empathy_get_toplevel_window                 (GtkWidget        *widget);
+
+/* URL */
+gchar *     empathy_make_absolute_url                   (const gchar      *url);
+
+gchar *     empathy_make_absolute_url_len               (const gchar      *url,
+							 guint             len);
 void        empathy_url_show                            (GtkWidget        *parent,
 							 const char       *url);
-void        empathy_toggle_button_set_state_quietly     (GtkWidget        *widget,
-							 GCallback         callback,
-							 gpointer          user_data,
-							 gboolean          active);
 GtkWidget * empathy_link_button_new                     (const gchar      *url,
 							 const gchar      *title);
 
+/* File transfer */
 void        empathy_send_file                           (EmpathyContact   *contact,
 							 GFile            *file);
 void        empathy_send_file_from_uri_list             (EmpathyContact   *contact,
 							 const gchar      *uri_list);
 void        empathy_send_file_with_file_chooser         (EmpathyContact   *contact);
 void        empathy_receive_file_with_file_chooser      (EmpathyFTHandler *handler);
-
-gchar *     empathy_make_absolute_url                   (const gchar *url);
-gchar *     empathy_make_absolute_url_len               (const gchar *url,
-							 guint len);
-
-/* String parser */
-typedef struct _EmpathyStringParser EmpathyStringParser;
-
-typedef void (*EmpathyStringReplace) (const gchar *text,
-				      gssize len,
-				      gpointer match_data,
-				      gpointer user_data);
-typedef void (*EmpathyStringMatch) (const gchar *text,
-				    gssize len,
-				    EmpathyStringReplace replace_func,
-				    EmpathyStringParser *sub_parsers,
-				    gpointer user_data);
-
-struct _EmpathyStringParser {
-	EmpathyStringMatch match_func;
-	EmpathyStringReplace replace_func;
-};
-
-void
-empathy_string_parser_substr (const gchar *text,
-			      gssize len,
-			      EmpathyStringParser *parsers,
-			      gpointer user_data);
-
-void
-empathy_string_match_link (const gchar *text,
-			   gssize len,
-			   EmpathyStringReplace replace_func,
-			   EmpathyStringParser *sub_parsers,
-			   gpointer user_data);
-
-void
-empathy_string_match_smiley (const gchar *text,
-			     gssize len,
-			     EmpathyStringReplace replace_func,
-			     EmpathyStringParser *sub_parsers,
-			     gpointer user_data);
-
-void
-empathy_string_match_all (const gchar *text,
-			  gssize len,
-			  EmpathyStringReplace replace_func,
-			  EmpathyStringParser *sub_parsers,
-			  gpointer user_data);
 
 G_END_DECLS
 

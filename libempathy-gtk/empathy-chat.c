@@ -56,6 +56,7 @@
 #include "empathy-theme-manager.h"
 #include "empathy-smiley-manager.h"
 #include "empathy-ui-utils.h"
+#include "empathy-string-parser.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
@@ -1212,7 +1213,12 @@ chat_property_changed_cb (EmpathyTpChat *tp_chat,
 		if (EMP_STR_EMPTY (priv->subject)) {
 			gtk_widget_hide (priv->hbox_topic);
 		} else {
-			gtk_label_set_text (GTK_LABEL (priv->label_topic), priv->subject);
+			gchar *markup_text;
+
+			markup_text = empathy_add_link_markup (priv->subject);
+			gtk_label_set_markup (GTK_LABEL (priv->label_topic), markup_text);
+			g_free (markup_text);
+
 			gtk_widget_show (priv->hbox_topic);
 		}
 		if (priv->block_events_timeout_id == 0) {
