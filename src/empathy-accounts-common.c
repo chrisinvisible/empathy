@@ -71,6 +71,19 @@ empathy_accounts_has_non_salut_accounts (TpAccountManager *manager)
   return ret;
 }
 
+gboolean
+empathy_accounts_has_accounts (TpAccountManager *manager)
+{
+  GList *accounts;
+  gboolean has_accounts;
+
+  accounts = tp_account_manager_get_valid_accounts (manager);
+  has_accounts = (accounts != NULL);
+  g_list_free (accounts);
+
+  return has_accounts;
+}
+
 void
 empathy_accounts_import (TpAccountManager *account_mgr,
     EmpathyConnectionManagers *cm_mgr)

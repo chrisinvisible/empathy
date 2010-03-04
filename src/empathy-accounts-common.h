@@ -24,6 +24,8 @@
 
 gboolean empathy_accounts_has_non_salut_accounts (TpAccountManager *manager);
 
+gboolean empathy_accounts_has_accounts (TpAccountManager *manager);
+
 void empathy_accounts_show_accounts_ui (TpAccountManager *manager,
     TpAccount *account,
     GCallback window_destroyed_cb);
