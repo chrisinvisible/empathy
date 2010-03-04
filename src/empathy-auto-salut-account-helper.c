@@ -42,17 +42,6 @@ should_create_salut_account (TpAccountManager *manager)
   gboolean salut_created = FALSE;
   GList *accounts, *l;
 
-  /* Check if we already created a salut account */
-  empathy_conf_get_bool (empathy_conf_get (),
-      EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-      &salut_created);
-
-  if (salut_created)
-    {
-      DEBUG ("Gconf says we already created a salut account once");
-      return FALSE;
-    }
-
   accounts = tp_account_manager_get_valid_accounts (manager);
 
   for (l = accounts; l != NULL;  l = g_list_next (l))
@@ -67,14 +56,6 @@ should_create_salut_account (TpAccountManager *manager)
     }
 
   g_list_free (accounts);
-
-  if (salut_created)
-    {
-      DEBUG ("Existing salut account already exists, flagging so in gconf");
-      empathy_conf_set_bool (empathy_conf_get (),
-          EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-          TRUE);
-    }
 
   return !salut_created;
 }

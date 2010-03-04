@@ -291,12 +291,6 @@ account_assistant_account_enabled_cb (GObject *source,
   protocol = tp_account_get_protocol (account);
   if (!tp_strdiff (protocol, "local-xmpp"))
     {
-      DEBUG ("Salut account has been created; update gconf key");
-
-      empathy_conf_set_bool (empathy_conf_get (),
-          EMPATHY_PREFS_SALUT_ACCOUNT_CREATED,
-          TRUE);
-
       salut_created = TRUE;
     }
 
