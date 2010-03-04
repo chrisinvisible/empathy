@@ -416,11 +416,19 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 
   if (is_gtalk)
-    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
-      NULL, NULL);
+    {
+      empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+        NULL, NULL);
+      /* We should not have to set the server but that may cause issue with
+       * buggy router. */
+      empathy_account_settings_set_string (settings, "server",
+          "talk.google.com");
+    }
   else if (is_facebook)
-    empathy_account_settings_set_icon_name_async (settings, "im-facebook",
-      NULL, NULL);
+    {
+      empathy_account_settings_set_icon_name_async (settings, "im-facebook",
+        NULL, NULL);
+    }
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     empathy_account_settings_set_boolean (settings, "register", TRUE);

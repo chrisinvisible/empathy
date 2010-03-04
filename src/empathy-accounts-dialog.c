@@ -583,11 +583,19 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   g_free (str);
 
   if (is_gtalk)
-    empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
-        NULL, NULL);
+    {
+      empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+          NULL, NULL);
+      /* We should not have to set the server but that may cause issue with
+       * buggy router. */
+      empathy_account_settings_set_string (settings, "server",
+          "talk.google.com");
+    }
   else if (is_facebook)
-    empathy_account_settings_set_icon_name_async (settings, "im-facebook",
-        NULL, NULL);
+    {
+      empathy_account_settings_set_icon_name_async (settings, "im-facebook",
+          NULL, NULL);
+    }
 
   accounts_dialog_add (dialog, settings);
   accounts_dialog_model_set_selected (dialog, settings);
