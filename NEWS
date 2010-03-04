@@ -1,3 +1,29 @@
+NEW in 2.29.91.2
+================
+
+The "No pony in this release" release.
+
+Some issues regarding the account assistant have been fixed,
+including a crash introduced in yesterday's release.
+
+Empathy should now cope better with buggy routers that prevent connecting
+to Google Talk. If you have experienced this issue, please see the Empathy FAQ
+for details: http://live.gnome.org/Empathy/FAQ
+
+Links in contacts status messages are now clickable.
+
+Bugs fixed:
+ - Fixed #525576, URL in contact's status are not clickable (Xavier Claessens)
+ - Fixed #601089, "Network Error" on any new Google Talk account (Guillaume Desmottes)
+ - Fixed #611753, "B)" and "B-)" both present the face-cool, not following the Icon Naming Spec (Guillaume Desmottes)
+ - Fixed #611792, Crash through empathy-accounts wizard (Sjoerd Simons)
+ - Fixed #611794, Empathy asserts if icon not available (Sjoerd Simons)
+ - Fixed #611817, Remove salut_created gconf key (Guillaume Desmottes)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated de Translation (Mario Blättermann)
+
 NEW in 2.29.91.1
 ================
 
