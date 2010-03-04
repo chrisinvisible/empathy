@@ -417,11 +417,6 @@ empathy_account_dialog_account_created_cb (EmpathyAccountWidget *widget_object,
   gtk_widget_set_sensitive (priv->button_remove, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
 
-  empathy_signal_connect_weak (account, "status-changed",
-      G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
-  empathy_signal_connect_weak (account, "presence-changed",
-      G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
-
   if (settings)
     g_object_unref (settings);
 }
@@ -1665,6 +1660,11 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
       G_CALLBACK (accounts_dialog_account_display_name_changed_cb),
       G_OBJECT (dialog));
 
+  empathy_signal_connect_weak (account, "status-changed",
+      G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
+  empathy_signal_connect_weak (account, "presence-changed",
+      G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
+
   g_object_unref (settings);
 }
 
@@ -1870,11 +1870,6 @@ accounts_dialog_accounts_setup (EmpathyAccountsDialog *dialog)
   for (l = accounts; l; l = l->next)
     {
       accounts_dialog_add_account (dialog, l->data);
-
-      empathy_signal_connect_weak (l->data, "status-changed",
-          G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
-      empathy_signal_connect_weak (l->data, "presence-changed",
-          G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
     }
   g_list_free (accounts);
 
