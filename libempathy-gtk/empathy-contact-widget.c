@@ -950,19 +950,12 @@ static void
 contact_widget_presence_notify_cb (EmpathyContactWidget *information)
 {
   const gchar *status;
+  gchar *markup_text;
 
   status = empathy_contact_get_status (information->contact);
-  if (!(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
-    {
-      gchar *markup_text;
-
-      markup_text = empathy_add_link_markup (status);
-      gtk_label_set_markup (GTK_LABEL (information->label_status), markup_text);
-      g_free (markup_text);
-  }
-  else {
-    gtk_label_set_text (GTK_LABEL (information->label_status), status);
-  }
+  markup_text = empathy_add_link_markup (status);
+  gtk_label_set_markup (GTK_LABEL (information->label_status), markup_text);
+  g_free (markup_text);
 
   gtk_image_set_from_icon_name (GTK_IMAGE (information->image_state),
       empathy_icon_name_for_contact (information->contact),
