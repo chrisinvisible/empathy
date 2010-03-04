@@ -27,8 +27,8 @@ TEST_PROGS =                                     \
      empathy-irc-network-test                    \
      empathy-irc-network-manager-test            \
      empathy-chatroom-test                       \
-     empathy-chatroom-manager-test               \
-     empathy-parser-test
+     empathy-chatroom-manager-test
+#empathy-parser-test
 
 empathy_utils_test_SOURCES = empathy-utils-test.c \
      test-helper.c test-helper.h
