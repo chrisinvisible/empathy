@@ -383,8 +383,8 @@ account_manager_ready_cb (GObject *source_object,
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
   /* Pop up the accounts dialog if it's needed (either when we don't have any
-   * non-salut accounts yet or when we haven't imported mc4 accounts yet */
-  if (!empathy_accounts_has_non_salut_accounts (manager)
+   * accounts yet or when we haven't imported mc4 accounts yet */
+  if (!empathy_accounts_has_accounts (manager)
       || !empathy_import_mc4_has_imported ())
     show_accounts_ui (gdk_screen_get_default (), TRUE);
 
