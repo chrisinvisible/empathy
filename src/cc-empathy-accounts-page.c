@@ -28,6 +28,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
@@ -75,6 +76,20 @@ page_pack_with_accounts_dialog (CcEmpathyAccountsPage *page)
 }
 
 static void
+account_assistant_closed_cb (GtkWidget *widget,
+    gpointer user_data)
+{
+  CcEmpathyAccountsPage *page = CC_EMPATHY_ACCOUNTS_PAGE (user_data);
+
+  if (empathy_accounts_dialog_is_creating (
+      EMPATHY_ACCOUNTS_DIALOG (page->priv->accounts_window)))
+    {
+      empathy_account_dialog_cancel (
+        EMPATHY_ACCOUNTS_DIALOG (page->priv->accounts_window));
+    }
+}
+
+static void
 connection_managers_prepare (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
@@ -96,7 +111,14 @@ connection_managers_prepare (GObject *source,
   empathy_accounts_import (account_mgr, cm_mgr);
 
   if (!empathy_accounts_has_non_salut_accounts (account_mgr))
-    empathy_account_assistant_show (NULL, cm_mgr);
+    {
+      GtkWidget *w;
+      w = empathy_account_assistant_show (NULL, cm_mgr);
+
+      empathy_signal_connect_weak (w, "hide",
+        G_CALLBACK (account_assistant_closed_cb),
+        G_OBJECT (page));
+    }
 
 out:
   /* remove ref from active_changed() */

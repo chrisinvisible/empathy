@@ -346,10 +346,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   g_free (message_markup);
 }
 
-static void
-empathy_account_dialog_widget_cancelled_cb (
-    EmpathyAccountWidget *widget_object,
-    EmpathyAccountsDialog *dialog)
+void
+empathy_account_dialog_cancel (EmpathyAccountsDialog *dialog)
 {
   GtkTreeView *view;
   GtkTreeModel *model;
@@ -391,6 +389,14 @@ empathy_account_dialog_widget_cancelled_cb (
 
   if (settings != NULL)
     g_object_unref (settings);
+}
+
+static void
+empathy_account_dialog_widget_cancelled_cb (
+    EmpathyAccountWidget *widget_object,
+    EmpathyAccountsDialog *dialog)
+{
+  empathy_account_dialog_cancel (dialog);
 }
 
 static void
@@ -2343,4 +2349,20 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
 
   g_free (account_option);
   g_free (path);
+}
+
+gboolean
+empathy_account_dialog_is_creating (EmpathyAccountsDialog *dialog)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  gboolean result = FALSE;
+
+  if (priv->setting_widget_object == NULL)
+    goto out;
+
+  g_object_get (priv->setting_widget_object,
+      "creating-account", &result, NULL);
+
+out:
+  return result;
 }
