@@ -1250,6 +1250,12 @@ chat_topic_label_size_allocate_cb (GtkLabel *label,
 
 	if (!gtk_label_get_line_wrap (label)) {
 		priv->topic_width = -1;
+
+		if (pango_layout_is_ellipsized (gtk_label_get_layout (label)))
+			gtk_widget_show (priv->expander_topic);
+		else
+			gtk_widget_hide (priv->expander_topic);
+
 		return;
 	}
 
