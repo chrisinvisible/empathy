@@ -194,7 +194,7 @@ empathy_string_replace_escaped (const gchar *text,
 gchar *
 empathy_add_link_markup (const gchar *text)
 {
-	static EmpathyStringParser parsers[] = {
+	EmpathyStringParser parsers[] = {
 		{empathy_string_match_link, empathy_string_replace_link},
 		{empathy_string_match_all, empathy_string_replace_escaped},
 		{NULL, NULL}

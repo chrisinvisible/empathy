@@ -82,6 +82,8 @@ empathy_string_replace_escaped (const gchar *text,
 				gpointer match_data,
 				gpointer user_data);
 
+/* Returns a new string with <a> html tag around links, and escape the rest.
+ * To be used with gtk_label_set_markup() for example */
 gchar *
 empathy_add_link_markup (const gchar *text);
 
