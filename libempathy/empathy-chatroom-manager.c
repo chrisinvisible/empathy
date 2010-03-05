@@ -32,6 +32,7 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/util.h>
 
 #include "empathy-tp-chat.h"
 #include "empathy-chatroom-manager.h"
@@ -118,6 +119,9 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 		xmlNewTextChild (node, NULL, (const xmlChar *) "auto_connect",
 			empathy_chatroom_get_auto_connect (chatroom) ?
 			(const xmlChar *) "yes" : (const xmlChar *) "no");
+		xmlNewTextChild (node, NULL, (const xmlChar *) "always_urgent",
+			empathy_chatroom_is_always_urgent (chatroom) ?
+			(const xmlChar *) "yes" : (const xmlChar *) "no");
 	}
 
 	/* Make sure the XML is indented properly */
@@ -190,6 +194,7 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 	gchar                     *room;
 	gchar                     *account_id;
 	gboolean                   auto_connect;
+	gboolean                   always_urgent;
 
 	priv = GET_PRIV (manager);
 
@@ -197,6 +202,7 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 	name = NULL;
 	room = NULL;
 	auto_connect = TRUE;
+	always_urgent = FALSE;
 	account_id = NULL;
 
 	for (child = node->children; child; child = child->next) {
@@ -222,6 +228,13 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 				auto_connect = FALSE;
 			}
 		}
+		else if (!tp_strdiff (tag, "always_urgent")) {
+			if (strcmp (str, "yes") == 0) {
+				always_urgent = TRUE;
+			} else {
+				always_urgent = FALSE;
+			}
+		}
 		else if (strcmp (tag, "account") == 0) {
 			account_id = g_strdup (str);
 		}
@@ -240,6 +253,7 @@ chatroom_manager_parse_chatroom (EmpathyChatroomManager *manager,
 
 	chatroom = empathy_chatroom_new_full (account, room, name, auto_connect);
 	empathy_chatroom_set_favorite (chatroom, TRUE);
+	empathy_chatroom_set_always_urgent (chatroom, always_urgent);
 	add_chatroom (manager, chatroom);
 	g_signal_emit (manager, signals[CHATROOM_ADDED], 0, chatroom);
 
