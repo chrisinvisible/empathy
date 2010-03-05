@@ -62,6 +62,10 @@ void                   empathy_chatroom_manager_remove        (EmpathyChatroomMa
 EmpathyChatroom *       empathy_chatroom_manager_find          (EmpathyChatroomManager *manager,
 							      TpAccount               *account,
 							      const gchar             *room);
+EmpathyChatroom *      empathy_chatroom_manager_ensure_chatroom (EmpathyChatroomManager *manager,
+							      TpAccount               *account,
+							      const gchar             *room,
+							      const gchar             *name);
 GList *                empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
 							      TpAccount               *account);
 guint                  empathy_chatroom_manager_get_count     (EmpathyChatroomManager *manager,

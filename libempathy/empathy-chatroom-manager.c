@@ -632,6 +632,28 @@ empathy_chatroom_manager_find (EmpathyChatroomManager *manager,
 	return NULL;
 }
 
+EmpathyChatroom *
+empathy_chatroom_manager_ensure_chatroom (EmpathyChatroomManager *manager,
+					  TpAccount *account,
+					  const gchar *room,
+					  const gchar *name)
+{
+	EmpathyChatroom *chatroom;
+
+	chatroom = empathy_chatroom_manager_find (manager, account, room);
+
+	if (chatroom) {
+		return g_object_ref(chatroom);
+	} else {
+		chatroom = empathy_chatroom_new_full (account,
+			room,
+			name,
+			FALSE);
+		empathy_chatroom_manager_add (manager, chatroom);
+		return chatroom;
+	}
+}
+
 GList *
 empathy_chatroom_manager_get_chatrooms (EmpathyChatroomManager *manager,
 				       TpAccount *account)
