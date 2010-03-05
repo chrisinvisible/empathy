@@ -32,6 +32,12 @@
           </object>
         </child>
         <child>
+          <object class="GtkToggleAction" id="menu_conv_always_urgent">
+            <property name="name">menu_conv_always_urgent</property>
+            <property name="label" translatable="yes">_Notify Always</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkToggleAction" id="menu_conv_toggle_contacts">
             <property name="name">menu_conv_toggle_contacts</property>
             <property name="active">TRUE</property>
@@ -166,6 +172,7 @@
           <menuitem action="menu_conv_clear"/>
           <menuitem action="menu_conv_insert_smiley"/>
           <menuitem action="menu_conv_favorite"/>
+          <menuitem action="menu_conv_always_urgent"/>
           <menuitem action="menu_conv_toggle_contacts"/>
           <menuitem action="menu_conv_invite_participant"/>
           <separator/>

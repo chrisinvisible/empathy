@@ -41,6 +41,7 @@ typedef struct {
 	guint members_count;
 	gboolean invite_only;
 	gboolean need_password;
+	gboolean always_urgent;
 } EmpathyChatroomPriv;
 
 
@@ -65,7 +66,8 @@ enum {
 	PROP_SUBJECT,
 	PROP_MEMBERS_COUNT,
 	PROP_NEED_PASSWORD,
-	PROP_INVITE_ONLY
+	PROP_INVITE_ONLY,
+	PROP_ALWAYS_URGENT,
 };
 
 G_DEFINE_TYPE (EmpathyChatroom, empathy_chatroom, G_TYPE_OBJECT);
@@ -119,6 +121,14 @@ empathy_chatroom_class_init (EmpathyChatroomClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE |
 							       G_PARAM_CONSTRUCT));
+
+	g_object_class_install_property (object_class,
+					 PROP_ALWAYS_URGENT,
+					 g_param_spec_boolean ("always_urgent",
+							       "Always Urgent",
+							       "TRUE if every message should be considered urgent",
+							       FALSE,
+							       G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_TP_CHAT,
@@ -233,6 +243,9 @@ chatroom_get_property (GObject    *object,
 	case PROP_FAVORITE:
 		g_value_set_boolean (value, priv->favorite);
 		break;
+	case PROP_ALWAYS_URGENT:
+		g_value_set_boolean (value, priv->always_urgent);
+		break;
 	case PROP_TP_CHAT:
 		g_value_set_object (value, priv->tp_chat);
 		break;
@@ -283,6 +296,10 @@ chatroom_set_property (GObject      *object,
 		break;
 	case PROP_FAVORITE:
 		empathy_chatroom_set_favorite (EMPATHY_CHATROOM (object),
+					       g_value_get_boolean (value));
+		break;
+	case PROP_ALWAYS_URGENT:
+		empathy_chatroom_set_always_urgent (EMPATHY_CHATROOM (object),
 					       g_value_get_boolean (value));
 		break;
 	case PROP_TP_CHAT:
@@ -661,5 +678,34 @@ empathy_chatroom_set_favorite (EmpathyChatroom *chatroom,
 		empathy_chatroom_set_auto_connect (chatroom, FALSE);
 	}
 	g_object_notify (G_OBJECT (chatroom), "favorite");
+}
+
+gboolean
+empathy_chatroom_is_always_urgent (EmpathyChatroom *chatroom)
+{
+	EmpathyChatroomPriv *priv;
+
+	g_return_val_if_fail (EMPATHY_IS_CHATROOM (chatroom), FALSE);
+
+	priv = GET_PRIV (chatroom);
+
+	return priv->always_urgent;
+}
+
+void
+empathy_chatroom_set_always_urgent (EmpathyChatroom *chatroom,
+			       gboolean         always_urgent)
+{
+	EmpathyChatroomPriv *priv;
+
+	g_return_if_fail (EMPATHY_IS_CHATROOM (chatroom));
+
+	priv = GET_PRIV (chatroom);
+
+	if (priv->always_urgent == always_urgent)
+		return;
+
+	priv->always_urgent = always_urgent;
+	g_object_notify (G_OBJECT (chatroom), "always_urgent");
 }
 

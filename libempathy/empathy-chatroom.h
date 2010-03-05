@@ -89,6 +89,9 @@ void            empathy_chatroom_set_tp_chat      (EmpathyChatroom *chatroom,
 gboolean        empathy_chatroom_is_favorite      (EmpathyChatroom *chatroom);
 void            empathy_chatroom_set_favorite     (EmpathyChatroom *chatroom,
 						   gboolean         favorite);
+gboolean        empathy_chatroom_is_always_urgent (EmpathyChatroom *chatroom);
+void            empathy_chatroom_set_always_urgent (EmpathyChatroom *chatroom,
+						    gboolean         always_urgent);
 
 G_END_DECLS
 

@@ -94,6 +94,7 @@ typedef struct {
 	GtkUIManager *ui_manager;
 	GtkAction   *menu_conv_insert_smiley;
 	GtkAction   *menu_conv_favorite;
+	GtkAction   *menu_conv_always_urgent;
 	GtkAction   *menu_conv_toggle_contacts;
 
 	GtkAction   *menu_edit_cut;
@@ -785,6 +786,13 @@ chat_window_conv_activate_cb (GtkAction         *action,
 		DEBUG ("This room %s favorite", found ? "is" : "is not");
 		gtk_toggle_action_set_active (
 			GTK_TOGGLE_ACTION (priv->menu_conv_favorite), found);
+
+		if (chatroom != NULL)
+			found = empathy_chatroom_is_always_urgent (chatroom);
+
+		gtk_toggle_action_set_active (
+			GTK_TOGGLE_ACTION (priv->menu_conv_always_urgent),
+			found);
 	}
 	gtk_action_set_visible (priv->menu_conv_favorite, is_room);
 
@@ -835,6 +843,30 @@ chat_window_favorite_toggled_cb (GtkToggleAction   *toggle_action,
 		     empathy_chat_get_name (priv->current_chat));
 
 	empathy_chatroom_set_favorite (chatroom, active);
+	g_object_unref(chatroom);
+}
+
+static void
+chat_window_always_urgent_toggled_cb (GtkToggleAction   *toggle_action,
+				 EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv = GET_PRIV (window);
+	gboolean               active;
+	TpAccount             *account;
+	const gchar           *room;
+	EmpathyChatroom       *chatroom;
+
+	active = gtk_toggle_action_get_active (toggle_action);
+	account = empathy_chat_get_account (priv->current_chat);
+	room = empathy_chat_get_id (priv->current_chat);
+
+	chatroom = empathy_chatroom_manager_ensure_chatroom (
+		     priv->chatroom_manager,
+		     account,
+		     room,
+		     empathy_chat_get_name (priv->current_chat));
+
+	empathy_chatroom_set_always_urgent (chatroom, active);
 	g_object_unref(chatroom);
 }
 
@@ -1350,11 +1382,27 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 	/* If empathy_chat_is_room () returns TRUE, that means it's a named MUC.
 	 * If empathy_chat_get_remote_contact () returns NULL, that means it's
 	 * an unamed MUC (msn-like).
-	 * In case of a MUC, we set urgency only if the message contains our
-	 * alias. */
+	 * In case of a MUC, we set urgency if either:
+	 *   a) the chatroom's always_urgent property is TRUE
+	 *   b) the message contains our alias
+	 */
 	if (empathy_chat_is_room (chat) ||
 	    empathy_chat_get_remote_contact (chat) == NULL) {
-		needs_urgency = empathy_message_should_highlight (message);
+		TpAccount             *account;
+		const gchar           *room;
+		EmpathyChatroom       *chatroom;
+
+		account = empathy_chat_get_account (chat);
+		room = empathy_chat_get_id (chat);
+
+		chatroom = empathy_chatroom_manager_find (priv->chatroom_manager,
+							  account, room);
+
+		if (empathy_chatroom_is_always_urgent (chatroom)) {
+			needs_urgency = TRUE;
+		} else {
+			needs_urgency = empathy_message_should_highlight (message);
+		}
 	} else {
 		needs_urgency = TRUE;
 	}
@@ -1855,6 +1903,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 				       "ui_manager", &priv->ui_manager,
 				       "menu_conv_insert_smiley", &priv->menu_conv_insert_smiley,
 				       "menu_conv_favorite", &priv->menu_conv_favorite,
+				       "menu_conv_always_urgent", &priv->menu_conv_always_urgent,
 				       "menu_conv_toggle_contacts", &priv->menu_conv_toggle_contacts,
 				       "menu_edit_cut", &priv->menu_edit_cut,
 				       "menu_edit_copy", &priv->menu_edit_copy,
@@ -1873,6 +1922,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_conv", "activate", chat_window_conv_activate_cb,
 			      "menu_conv_clear", "activate", chat_window_clear_activate_cb,
 			      "menu_conv_favorite", "toggled", chat_window_favorite_toggled_cb,
+			      "menu_conv_always_urgent", "toggled", chat_window_always_urgent_toggled_cb,
 			      "menu_conv_toggle_contacts", "toggled", chat_window_contacts_toggled_cb,
 			      "menu_conv_invite_participant", "activate", chat_window_invite_participant_activate_cb,
 			      "menu_conv_close", "activate", chat_window_close_activate_cb,
