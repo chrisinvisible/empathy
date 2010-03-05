@@ -23,10 +23,12 @@ private_icons = \
 	hicolor_actions_24x24_im-message-new.png \
 	hicolor_status_16x16_im-message.png \
 	hicolor_status_16x16_user-typing.png \
+	hicolor_apps_16x16_im-aim.png \
 	hicolor_apps_16x16_im-ekiga.png \
 	hicolor_apps_16x16_im-facebook.png \
 	hicolor_apps_16x16_im-gizmo.png \
 	hicolor_apps_16x16_im-google-talk.png \
+	hicolor_apps_16x16_im-icq.png \
 	hicolor_apps_16x16_im-irc.png \
 	hicolor_apps_16x16_im-xmpp.png \
 	hicolor_apps_16x16_im-msn.png \
@@ -40,11 +42,14 @@ private_icons = \
 	hicolor_apps_16x16_im-mxit.png \
 	hicolor_apps_16x16_im-myspace.png \
 	hicolor_apps_16x16_im-sametime.png \
+	hicolor_apps_16x16_im-yahoo.png \
 	hicolor_apps_16x16_im-zephyr.png \
+	hicolor_apps_22x22_im-aim.png \
 	hicolor_apps_22x22_im-ekiga.png \
 	hicolor_apps_22x22_im-facebook.png \
 	hicolor_apps_22x22_im-gizmo.png \
 	hicolor_apps_22x22_im-google-talk.png \
+	hicolor_apps_22x22_im-icq.png \
 	hicolor_apps_22x22_im-irc.png \
 	hicolor_apps_22x22_im-xmpp.png \
 	hicolor_apps_22x22_im-msn.png \
@@ -58,10 +63,13 @@ private_icons = \
 	hicolor_apps_22x22_im-mxit.png \
 	hicolor_apps_22x22_im-myspace.png \
 	hicolor_apps_22x22_im-sametime.png \
+	hicolor_apps_22x22_im-yahoo.png \
 	hicolor_apps_22x22_im-zephyr.png \
+	hicolor_apps_24x24_im-aim.png \
 	hicolor_apps_24x24_im-ekiga.png \
 	hicolor_apps_24x24_im-gizmo.png \
 	hicolor_apps_24x24_im-google-talk.png \
+	hicolor_apps_24x24_im-icq.png \
 	hicolor_apps_24x24_im-irc.png \
 	hicolor_apps_24x24_im-xmpp.png \
 	hicolor_apps_24x24_im-msn.png \
@@ -75,10 +83,13 @@ private_icons = \
 	hicolor_apps_24x24_im-mxit.png \
 	hicolor_apps_24x24_im-myspace.png \
 	hicolor_apps_24x24_im-sametime.png \
+	hicolor_apps_24x24_im-yahoo.png \
 	hicolor_apps_24x24_im-zephyr.png \
+	hicolor_apps_32x32_im-aim.png \
 	hicolor_apps_32x32_im-ekiga.png \
 	hicolor_apps_32x32_im-gizmo.png \
 	hicolor_apps_32x32_im-google-talk.png \
+	hicolor_apps_32x32_im-icq.png \
 	hicolor_apps_32x32_im-irc.png \
 	hicolor_apps_32x32_im-xmpp.png \
 	hicolor_apps_32x32_im-msn.png \
@@ -92,11 +103,14 @@ private_icons = \
 	hicolor_apps_32x32_im-mxit.png \
 	hicolor_apps_32x32_im-myspace.png \
 	hicolor_apps_32x32_im-sametime.png \
+	hicolor_apps_32x32_im-yahoo.png \
 	hicolor_apps_32x32_im-zephyr.png \
+	hicolor_apps_48x48_im-aim.png \
 	hicolor_apps_48x48_im-ekiga.png \
 	hicolor_apps_48x48_im-facebook.png \
 	hicolor_apps_48x48_im-gizmo.png \
 	hicolor_apps_48x48_im-google-talk.png \
+	hicolor_apps_48x48_im-icq.png \
 	hicolor_apps_48x48_im-irc.png \
 	hicolor_apps_48x48_im-xmpp.png \
 	hicolor_apps_48x48_im-msn.png \
@@ -110,10 +124,13 @@ private_icons = \
 	hicolor_apps_48x48_im-mxit.png \
 	hicolor_apps_48x48_im-myspace.png \
 	hicolor_apps_48x48_im-sametime.png \
+	hicolor_apps_48x48_im-yahoo.png \
 	hicolor_apps_48x48_im-zephyr.png \
+	hicolor_apps_scalable_im-aim.svg \
 	hicolor_apps_scalable_im-ekiga.svg \
 	hicolor_apps_scalable_im-gizmo.svg \
 	hicolor_apps_scalable_im-google-talk.svg \
+	hicolor_apps_scalable_im-icq.svg \
 	hicolor_apps_scalable_im-irc.svg \
 	hicolor_apps_scalable_im-xmpp.svg \
 	hicolor_apps_scalable_im-msn.svg \
@@ -127,6 +144,7 @@ private_icons = \
 	hicolor_apps_scalable_im-mxit.svg \
 	hicolor_apps_scalable_im-myspace.svg \
 	hicolor_apps_scalable_im-sametime.svg \
+	hicolor_apps_scalable_im-yahoo.svg \
 	hicolor_apps_scalable_im-zephyr.svg \
 	hicolor_status_16x16_empathy-available.png \
 	hicolor_status_16x16_empathy-away.png \
