@@ -1667,18 +1667,66 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
     {
       priv->liveadder = gst_element_factory_make ("liveadder", NULL);
 
-      gst_bin_add (GST_BIN (priv->pipeline), priv->liveadder);
-      gst_bin_add (GST_BIN (priv->pipeline), priv->audio_output);
+      if (!gst_bin_add (GST_BIN (priv->pipeline), priv->liveadder))
+        {
+          g_warning ("Could not add liveadder to the pipeline");
+          goto error_add_liveadder;
+        }
+      if (!gst_bin_add (GST_BIN (priv->pipeline), priv->audio_output))
+        {
+          g_warning ("Could not add audio sink to pipeline");
+          goto error_add_output;
+        }
 
-      gst_element_link (priv->liveadder, priv->audio_output);
+      if (gst_element_set_state (priv->liveadder, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+        {
+          g_warning ("Could not start liveadder");
+          goto error;
+        }
 
-      gst_element_set_state (priv->liveadder, GST_STATE_PLAYING);
-      gst_element_set_state (priv->audio_output, GST_STATE_PLAYING);
+      if (gst_element_set_state (priv->audio_output, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+        {
+          g_warning ("Could not start audio sink");
+          goto error;
+        }
+
+      if (GST_PAD_LINK_FAILED (
+              gst_element_link (priv->liveadder, priv->audio_output)))
+        {
+          g_warning ("Could not link liveadder to audio output");
+          goto error;
+        }
     }
 
   pad = gst_element_get_request_pad (priv->liveadder, "sink%d");
 
   return pad;
+
+ error:
+
+  gst_element_set_locked_state (priv->liveadder, TRUE);
+  gst_element_set_locked_state (priv->audio_output, TRUE);
+
+  gst_element_set_state (priv->liveadder, GST_STATE_NULL);
+  gst_element_set_state (priv->audio_output, GST_STATE_NULL);
+
+  gst_bin_remove (GST_BIN (priv->pipeline), priv->audio_output);
+
+ error_add_output:
+
+  gst_bin_remove (GST_BIN (priv->pipeline), priv->liveadder);
+
+  gst_element_set_locked_state (priv->liveadder, FALSE);
+  gst_element_set_locked_state (priv->audio_output, FALSE);
+
+ error_add_liveadder:
+
+  if (priv->liveadder)
+    {
+      gst_object_unref (priv->liveadder);
+      priv->liveadder = NULL;
+    }
+  return NULL;
 }
 
 static gboolean
