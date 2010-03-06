@@ -8,9 +8,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-04 21:40+0100\n"
-"PO-Revision-Date: 2010-03-04 23:03+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
+"POT-Creation-Date: 2010-03-04 21:59+0000\n"
+"PO-Revision-Date: 2010-03-06 11:12+0100\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -371,7 +371,8 @@ msgid ""
 "the chat is already opened, but not focused."
 msgstr ""
 "Mezu berri bat jasotzean jakinarazpen-leihoa erakutsiko den ala ez "
-"adierazten du (nahiz eta berriketa jadanik irekita, baina fokurik gabe, egon)."
+"adierazten du (nahiz eta berriketa jadanik irekita, baina fokurik gabe, "
+"egon)."
 
 #: ../data/empathy.schemas.in.h:77
 msgid "Whether to show a popup notification when receiving a new message."
@@ -430,8 +431,8 @@ msgid ""
 "the contact list by state."
 msgstr ""
 "Zein irizpide erabiliko den kontaktu-zerrenda ordenatzean. Lehenetsia "
-"kontaktuen izenen arabera ordenatzea da \"name\" (izena) balioarekin. \"state\" (egoera)"
-"balioak kontaktu-zerrenda egoeraren arabera ordenatuko du."
+"kontaktuen izenen arabera ordenatzea da \"name\" (izena) balioarekin. \"state"
+"\" (egoera)balioak kontaktu-zerrenda egoeraren arabera ordenatuko du."
 
 #: ../data/empathy-accounts.desktop.in.in.h:1
 msgid "Manage Messaging and VoIP accounts"
@@ -882,7 +883,8 @@ msgid ""
 "Facebook username if you don't have one."
 msgstr ""
 "Hau zure erabiltzaile-izena da, ez da Facebook-eko zure saio-hasiera.\n"
-"Zu bazara facebook.com/<b>sugegorribeltza</b>, sartu <b>sugegorribeltza</b>.\n"
+"Zu bazara facebook.com/<b>sugegorribeltza</b>, sartu <b>sugegorribeltza</"
+"b>.\n"
 "Erabili <a href=\"http://www.facebook.com/username/\">orrialde hau</a> "
 "Facebook-eko erabiltzaile bat aukeratzeko aurrez ez badaukazu bat."
 
@@ -1055,16 +1057,16 @@ msgid ""
 "Update the registration binding if the external address for the client is "
 "discovered to be different from the local binding."
 msgstr ""
-"Eguneratu erregistroaren lotura bezeroaren kanpoko helbidea "
-"lokaleko loturaren desberdina dela atzematen bada."
+"Eguneratu erregistroaren lotura bezeroaren kanpoko helbidea lokaleko "
+"loturaren desberdina dela atzematen bada."
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:24
 msgid ""
 "Use the loose routing behavior and the Route header as recommended in RFC "
 "3261."
 msgstr ""
-"Erabili bideraketa ez zehatzaren portaera eta bideraketaren goiburukoa "
-"RFC 3261-ek gomendatuta bezala."
+"Erabili bideraketa ez zehatzaren portaera eta bideraketaren goiburukoa RFC "
+"3261-ek gomendatuta bezala."
 
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:25
 msgid "What is your SIP account password?"
@@ -1189,17 +1191,17 @@ msgid ""
 "send a message starting with a '/'. For example: \"/say /join is used to "
 "join a new chat room\""
 msgstr ""
-"/say <mezua>: bidali <mezua> uneko berriketara. Normalean "
-"'/' karakterearekin hasten diren mezuak bidaltzeko erabiltzen da. "
-"Adibidez, \"/say /join berriket-gela berri batekin elkartzeko erabiltzen da\""
+"/say <mezua>: bidali <mezua> uneko berriketara. Normalean '/' "
+"karakterearekin hasten diren mezuak bidaltzeko erabiltzen da. Adibidez, \"/"
+"say /join berriket-gela berri batekin elkartzeko erabiltzen da\""
 
 #: ../libempathy-gtk/empathy-chat.c:876
 msgid ""
 "/help [<command>]: show all supported commands. If <command> is defined, "
 "show its usage."
 msgstr ""
-"/help [<komandoa>]: erakutsi onartutako komando guztiak. "
-"<komandoa> definitzen bada, nola erabiltzen den erakusten du."
+"/help [<komandoa>]: erakutsi onartutako komando guztiak. <komandoa> "
+"definitzen bada, nola erabiltzen den erakusten du."
 
 #: ../libempathy-gtk/empathy-chat.c:886
 #, c-format
@@ -1436,6 +1438,18 @@ msgstr "Gehitu _kontaktua..."
 msgid "_Chat"
 msgstr "_Berriketa"
 
+#: ../libempathy-gtk/empathy-contact-menu.c:257
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Audio Call"
+msgstr "_Audio-deia"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:289
+#| msgid "New Call"
+msgctxt "menu item"
+msgid "_Video Call"
+msgstr "_Bideo-deia"
+
 #: ../libempathy-gtk/empathy-contact-menu.c:340
 #: ../src/empathy-main-window.ui.h:26
 msgid "_Previous Conversations"
@@ -1452,6 +1466,12 @@ msgstr "Partekatu nire mahaigaina"
 #: ../libempathy-gtk/empathy-contact-menu.c:413
 msgid "Infor_mation"
 msgstr "_Informazioa"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:459
+#| msgid "_Edit"
+msgctxt "Edit contact (contextual menu)"
+msgid "_Edit"
+msgstr "_Editatu"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:513
 #: ../src/empathy-chat-window.c:865
@@ -2180,7 +2200,7 @@ msgid ""
 msgstr ""
 "Google Talk, AIM, Windows Live eta beste berriketako programak darabilten "
 "inguruko jendearekin, lagunekin eta lankideekin berriketan egin dezakezu "
-"Empathy-rekin. Mikrofono edo web kamera batekin audio edo bideo-deiak egin "
+"Empathy-rekin. Mikrofono edo web kamera batekin audio- edo bideo-deiak egin "
 "ditzakezu."
 
 #: ../src/empathy-account-assistant.c:670
@@ -2227,8 +2247,8 @@ msgstr ""
 "Zu zauden sarean konektatutako beste erabiltzaileekin automatikoki aurkitu "
 "eta berriketan egin dezake Empathy-k. Eginbide hau erabiltzea nahi baduzu, "
 "egiaztatu azpiko xehetasunak zuzenak direla. Xehetasun hauek beranduago "
-"erraz alda ditzakezu (edo eginbide hau desgaitu) 'Kontuak' elkarrizketa-koadroa "
-"erabiliz."
+"erraz alda ditzakezu (edo eginbide hau desgaitu) 'Kontuak' elkarrizketa-"
+"koadroa erabiliz."
 
 #: ../src/empathy-account-assistant.c:1123
 #: ../src/empathy-account-assistant.c:1179
@@ -2247,9 +2267,9 @@ msgid ""
 "the Accounts dialog"
 msgstr ""
 "Ezin izango duzu berriketan egin zure sare lokaleko beste erabiltzaileekin, "
-"telepathy-salut ez baitago instalatuta. Eginbide hau gaitzea nahi izanez gero, "
-"instalatu telepathy-salut paketea eta sortu 'Inguruko jendea' kontu bat "
-"'Kontuak' elkarrizketa-koadroan."
+"telepathy-salut ez baitago instalatuta. Eginbide hau gaitzea nahi izanez "
+"gero, instalatu telepathy-salut paketea eta sortu 'Inguruko jendea' kontu "
+"bat 'Kontuak' elkarrizketa-koadroan."
 
 #: ../src/empathy-account-assistant.c:1181
 msgid "telepathy-salut not installed"
@@ -2428,14 +2448,18 @@ msgstr "Xehetasun teknikoak"
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
 "computer"
-msgstr "%s(r)en softwareak ez du ulertzen zure ordenagailuak onartzen dituen audio formatuak"
+msgstr ""
+"%s(r)en softwareak ez du ulertzen zure ordenagailuak onartzen dituen "
+"audio-formatuak"
 
 #: ../src/empathy-call-window.c:1798
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
 "computer"
-msgstr "%s(r)en softwareak ez du ulertzen zure ordenagailuak onartzen dituen bideo formatuak"
+msgstr ""
+"%s(r)en softwareak ez du ulertzen zure ordenagailuak onartzen dituen "
+"bideo-formatuak"
 
 #: ../src/empathy-call-window.c:1804
 #, c-format
@@ -2443,8 +2467,8 @@ msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
 "does not allow direct connections."
 msgstr ""
-"Ezin da konexiorik ezarri %s(r)ekin. Zuetako bat zuzeneko konexioak baimentzen ez dituen "
-"sare batean dago."
+"Ezin da konexiorik ezarri %s(r)ekin. Zuetako bat zuzeneko konexioak "
+"baimentzen ez dituen sare batean dago."
 
 #: ../src/empathy-call-window.c:1810
 msgid "There was a failure on the network"
@@ -2452,11 +2476,15 @@ msgstr "Hutsegite bat egon da sarean"
 
 #: ../src/empathy-call-window.c:1814
 msgid "The audio formats necessary for this call are not installed on your computer"
-msgstr "Dei hau egiteko beharrezkoak diren audio formatuak instalatu gabe daude ordenagailuan"
+msgstr ""
+"Dei hau egiteko beharrezkoak diren audio-formatuak instalatu gabe daude "
+"ordenagailuan"
 
 #: ../src/empathy-call-window.c:1817
 msgid "The video formats necessary for this call are not installed on your computer"
-msgstr "Dei hau egiteko beharrezkoak diren bideo formatuak instalatu gabe daude ordenagailuan"
+msgstr ""
+"Dei hau egiteko beharrezkoak diren bideo-formatuak instalatu gabe daude "
+"ordenagailuan"
 
 #: ../src/empathy-call-window.c:1827
 #, c-format
@@ -2465,9 +2493,9 @@ msgid ""
 "\">report this bug</a> and attach logs gathered from the 'Debug' window in "
 "the Help menu."
 msgstr ""
-"Ustekabeko zerbait gertatu da Telepathy osagaian. Mesedez, eskertuko genizuke "
-"<a href=\"%s\">akats honen berri emango bazenu</a> eta Laguntza menuko "
-"'Araztu' leihotik eskuratutako erregistroak erantsiko bazenio."
+"Ustekabeko zerbait gertatu da Telepathy osagaian. Mesedez, eskertuko "
+"genizuke <a href=\"%s\">akats honen berri emango bazenu</a> eta Laguntza "
+"menuko 'Araztu' leihotik eskuratutako erregistroak erantsiko bazenio."
 
 #: ../src/empathy-call-window.c:1835
 msgid "There was a failure in the call engine"
@@ -2766,6 +2794,12 @@ msgstr "%u:%02u.%02u"
 #, c-format
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
+
+#: ../src/empathy-ft-manager.c:179
+#| msgid "unknown"
+msgctxt "file transfer percent"
+msgid "Unknown"
+msgstr "Ezezaguna"
 
 #: ../src/empathy-ft-manager.c:274
 #, c-format
@@ -3317,12 +3351,14 @@ msgstr "Aukeratu kontaktua berriketara gonbidatzeko:"
 #: ../src/empathy-accounts.c:213
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr ""
-"Ez bistaratu inolako elkarrizketa-koadrorik. Landu eginbeharrekoak "
-"(adib. inportatzea) eta irten"
+"Ez bistaratu inolako elkarrizketa-koadrorik. Landu eginbeharrekoak (adib. "
+"inportatzea) eta irten"
 
 #: ../src/empathy-accounts.c:217
 msgid "Don't display any dialogs if there are any non-salut accounts"
-msgstr "Ez bistaratu inolako elkarrizketa-koadrorik 'salut' ez den kontuak egonez gero"
+msgstr ""
+"Ez bistaratu inolako elkarrizketa-koadrorik 'salut' ez den kontuak egonez "
+"gero"
 
 #: ../src/empathy-accounts.c:221
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
