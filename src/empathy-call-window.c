@@ -2039,6 +2039,36 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
 
  out:
 
+  /* If no sink could be linked, try to add fakesink to prevent the whole call
+   * aborting */
+
+  if (!retval)
+    {
+      GstElement *fakesink = gst_element_factory_make ("fakesink", NULL);
+
+      if (gst_bin_add (GST_BIN (priv->pipeline), fakesink))
+        {
+          GstPad *sinkpad = gst_element_get_static_pad (fakesink, "sink");
+          if (gst_element_set_state (fakesink, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE ||
+              GST_PAD_LINK_FAILED (gst_pad_link (src, sinkpad)))
+            {
+              gst_element_set_locked_state (fakesink, TRUE);
+              gst_element_set_state (fakesink, GST_STATE_NULL);
+              gst_bin_remove (GST_BIN (priv->pipeline), fakesink);
+            }
+          else
+            {
+              g_debug ("Could not link real sink, linked fakesink instead");
+            }
+          gst_object_unref (sinkpad);
+        }
+      else
+        {
+          gst_object_unref (fakesink);
+        }
+    }
+
+
   g_mutex_unlock (priv->lock);
 
   return TRUE;
