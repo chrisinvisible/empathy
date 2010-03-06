@@ -2116,7 +2116,6 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
   return TRUE;
 }
 
-/* Called from the streaming thread */
 static void
 empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
   GstPad *sink, guint media_type, gpointer user_data)
