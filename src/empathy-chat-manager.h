@@ -22,7 +22,7 @@
 
 #include <glib-object.h>
 
-#include <libempathy/empathy-contact.h>
+#include <libempathy-gtk/empathy-chat.h>
 
 G_BEGIN_DECLS
 
@@ -61,7 +61,7 @@ GType empathy_chat_manager_get_type (void);
 EmpathyChatManager *empathy_chat_manager_dup_singleton (void);
 
 void empathy_chat_manager_closed_chat (EmpathyChatManager *self,
-    EmpathyContact *contact);
+    EmpathyChat *chat);
 void empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self);
 guint empathy_chat_manager_get_num_chats (EmpathyChatManager *self);
 

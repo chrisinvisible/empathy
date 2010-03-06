@@ -2158,11 +2158,11 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 		g_signal_handlers_disconnect_by_func (remote_contact,
 						      chat_window_update_chat_tab,
 						      chat);
-
-		chat_manager = empathy_chat_manager_dup_singleton ();
-		empathy_chat_manager_closed_chat (chat_manager, remote_contact);
-		g_object_unref (chat_manager);
 	}
+
+	chat_manager = empathy_chat_manager_dup_singleton ();
+	empathy_chat_manager_closed_chat (chat_manager, chat);
+	g_object_unref (chat_manager);
 
 	position = gtk_notebook_page_num (GTK_NOTEBOOK (priv->notebook),
 					  GTK_WIDGET (chat));

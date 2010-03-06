@@ -47,6 +47,45 @@ struct _EmpathyChatManagerPriv
 
 static EmpathyChatManager *chat_manager_singleton = NULL;
 
+typedef struct
+{
+  TpAccount *account;
+  gchar *id;
+  gboolean room;
+} ChatData;
+
+static ChatData *
+chat_data_new (EmpathyChat *chat)
+{
+  ChatData *data = NULL;
+
+  data = g_slice_new0 (ChatData);
+
+  data->account = g_object_ref (empathy_chat_get_account (chat));
+  data->id = g_strdup (empathy_chat_get_id (chat));
+  data->room = empathy_chat_is_room (chat);
+
+  return data;
+}
+
+static void
+chat_data_free (ChatData *data)
+{
+  if (data->account != NULL)
+    {
+      g_object_unref (data->account);
+      data->account = NULL;
+    }
+
+  if (data->id != NULL)
+    {
+      g_free (data->id);
+      data->id = NULL;
+    }
+
+  g_slice_free (ChatData, data);
+}
+
 static void
 empathy_chat_manager_init (EmpathyChatManager *self)
 {
@@ -63,7 +102,7 @@ empathy_chat_manager_finalize (GObject *object)
 
   if (priv->queue != NULL)
     {
-      g_queue_foreach (priv->queue, (GFunc) g_object_unref, NULL);
+      g_queue_foreach (priv->queue, (GFunc) chat_data_free, NULL);
       g_queue_free (priv->queue);
       priv->queue = NULL;
     }
@@ -125,38 +164,84 @@ empathy_chat_manager_dup_singleton (void)
 
 void
 empathy_chat_manager_closed_chat (EmpathyChatManager *self,
-    EmpathyContact *contact)
+    EmpathyChat *chat)
 {
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
+  ChatData *data;
 
-  DEBUG ("Adding contact to queue: %s", empathy_contact_get_id (contact));
+  data = chat_data_new (chat);
 
-  g_queue_push_tail (priv->queue, g_object_ref (contact));
+  DEBUG ("Adding %s to queue: %s", data->room ? "room" : "contact", data->id);
+
+  g_queue_push_tail (priv->queue, data);
 
   g_signal_emit (self, signals[CHATS_CHANGED], 0,
       g_queue_get_length (priv->queue));
+}
+
+static void
+connection_ready_cb (TpConnection *connection,
+    const GError *error,
+    gpointer user_data)
+{
+  ChatData *data = user_data;
+  EmpathyChatManager *self = chat_manager_singleton;
+  EmpathyChatManagerPriv *priv;
+
+  /* Extremely unlikely to happen, but I don't really want to keep refs to the
+   * chat manager in the ChatData structs as it'll then prevent the manager
+   * from being finalized. */
+  if (G_UNLIKELY (self == NULL))
+    goto out;
+
+  priv = GET_PRIV (self);
+
+  if (error == NULL)
+    {
+      if (data->room)
+        empathy_dispatcher_join_muc (connection, data->id, NULL, NULL);
+      else
+        empathy_dispatcher_chat_with_contact_id (connection, data->id,
+            NULL, NULL);
+
+      g_signal_emit (self, signals[CHATS_CHANGED], 0,
+          g_queue_get_length (priv->queue));
+    }
+  else
+    {
+      DEBUG ("Error readying connection, no chat: %s", error->message);
+    }
+
+out:
+  chat_data_free (data);
 }
 
 void
 empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
 {
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
-  EmpathyContact *contact;
+  ChatData *data;
+  TpConnection *connection;
 
-  contact = g_queue_pop_tail (priv->queue);
+  data = g_queue_pop_tail (priv->queue);
 
-  if (contact == NULL)
+  if (data == NULL)
     return;
 
-  DEBUG ("Removing contact from queue and starting a chat with them: %s",
-      empathy_contact_get_id (contact));
+  DEBUG ("Removing %s from queue and starting a chat with: %s",
+      data->room ? "room" : "contact", data->id);
 
-  empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
+  connection = tp_account_get_connection (data->account);
 
-  g_object_unref (contact);
-
-  g_signal_emit (self, signals[CHATS_CHANGED], 0,
-      g_queue_get_length (priv->queue));
+  if (connection != NULL)
+    {
+      tp_connection_call_when_ready (connection, connection_ready_cb, data);
+    }
+  else
+    {
+      DEBUG ("No connection, no chat.");
+      chat_data_free (data);
+    }
 }
 
 guint
