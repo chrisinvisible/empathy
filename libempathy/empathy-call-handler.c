@@ -231,8 +231,8 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
   signals[SRC_PAD_ADDED] =
     g_signal_new ("src-pad-added", G_TYPE_FROM_CLASS (klass),
       G_SIGNAL_RUN_LAST, 0, NULL, NULL,
-      _empathy_marshal_VOID__OBJECT_UINT,
-      G_TYPE_NONE,
+      _empathy_marshal_BOOLEAN__OBJECT_UINT,
+      G_TYPE_BOOLEAN,
       2, GST_TYPE_PAD, G_TYPE_UINT);
 
   signals[SINK_PAD_ADDED] =
@@ -334,11 +334,16 @@ empathy_call_handler_tf_stream_src_pad_added_cb (TfStream *stream,
   GstPad *pad, FsCodec *codec, EmpathyCallHandler  *handler)
 {
   guint media_type;
+  gboolean retval;
 
   g_object_get (stream, "media-type", &media_type, NULL);
 
   g_signal_emit (G_OBJECT (handler), signals[SRC_PAD_ADDED], 0,
-    pad, media_type);
+      pad, media_type, &retval);
+
+  if (!retval)
+      tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
+          "Could not link sink");
 }
 
 

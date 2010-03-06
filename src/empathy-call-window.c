@@ -1993,7 +1993,7 @@ empathy_call_window_connected (gpointer user_data)
 
 
 /* Called from the streaming thread */
-static void
+static gboolean
 empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
   GstPad *src, guint media_type, gpointer user_data)
 {
@@ -2029,6 +2029,8 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
   gst_object_unref (pad);
 
   g_mutex_unlock (priv->lock);
+
+  return TRUE;
 }
 
 /* Called from the streaming thread */
