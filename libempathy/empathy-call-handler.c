@@ -238,8 +238,8 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
   signals[SINK_PAD_ADDED] =
     g_signal_new ("sink-pad-added", G_TYPE_FROM_CLASS (klass),
       G_SIGNAL_RUN_LAST, 0, NULL, NULL,
-      _empathy_marshal_VOID__OBJECT_UINT,
-      G_TYPE_NONE,
+      _empathy_marshal_BOOLEAN__OBJECT_UINT,
+      G_TYPE_BOOLEAN,
       2, GST_TYPE_PAD, G_TYPE_UINT);
 
   signals[REQUEST_RESOURCE] =
@@ -375,6 +375,7 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
 {
   guint media_type;
   GstPad *spad;
+  gboolean retval;
 
   g_signal_connect (stream, "src-pad-added",
       G_CALLBACK (empathy_call_handler_tf_stream_src_pad_added_cb), handler);
@@ -388,7 +389,11 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
     "sink-pad", &spad, NULL);
 
   g_signal_emit (G_OBJECT (handler), signals[SINK_PAD_ADDED], 0,
-    spad, media_type);
+      spad, media_type, &retval);
+
+ if (!retval)
+      tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
+          "Could not link source");
 
   gst_object_unref (spad);
 }
