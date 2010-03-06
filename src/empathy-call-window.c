@@ -1999,6 +1999,7 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  gboolean retval = FALSE;
 
   GstPad *pad;
 
@@ -2025,8 +2026,18 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
         g_assert_not_reached ();
     }
 
-  gst_pad_link (src, pad);
+  if (!pad)
+    goto out;
+
+  if (GST_PAD_LINK_FAILED (gst_pad_link (src, pad)))
+      g_warning ("Could not link %s sink pad",
+          media_type == TP_MEDIA_STREAM_TYPE_AUDIO ? "audio" : "video");
+  else
+      retval = TRUE;
+
   gst_object_unref (pad);
+
+ out:
 
   g_mutex_unlock (priv->lock);
 
