@@ -105,6 +105,10 @@ static void             contact_list_store_members_changed_cb        (EmpathyCon
 								      gchar                         *message,
 								      gboolean                       is_member,
 								      EmpathyContactListStore       *store);
+static void             contact_list_store_favourites_changed_cb     (EmpathyContactList            *list_iface,
+								      EmpathyContact                *contact,
+								      gboolean                       is_favourite,
+								      EmpathyContactListStore       *store);
 static void             contact_list_store_member_renamed_cb         (EmpathyContactList            *list_iface,
 								      EmpathyContact                *old_contact,
 								      EmpathyContact                *new_contact,
@@ -190,6 +194,10 @@ contact_list_store_iface_setup (gpointer user_data)
 	g_signal_connect (priv->list,
 			  "members-changed",
 			  G_CALLBACK (contact_list_store_members_changed_cb),
+			  store);
+	g_signal_connect (priv->list,
+			  "favourites-changed",
+			  G_CALLBACK (contact_list_store_favourites_changed_cb),
 			  store);
 	g_signal_connect (priv->list,
 			  "groups-changed",
@@ -336,6 +344,9 @@ contact_list_store_dispose (GObject *object)
 					      object);
 	g_signal_handlers_disconnect_by_func (priv->list,
 					      G_CALLBACK (contact_list_store_members_changed_cb),
+					      object);
+	g_signal_handlers_disconnect_by_func (priv->list,
+					      G_CALLBACK (contact_list_store_favourites_changed_cb),
 					      object);
 	g_signal_handlers_disconnect_by_func (priv->list,
 					      G_CALLBACK (contact_list_store_groups_changed_cb),
@@ -918,6 +929,43 @@ contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 }
 
 static void
+contact_list_store_change_contact_favourite_status (EmpathyContactListStore *store,
+                                                    EmpathyContact          *contact,
+                                                    gboolean                 is_favourite)
+{
+        GList *iters, *l;
+
+	iters = contact_list_store_find_contact (store, contact);
+        for (l = iters; l; l = l->next) {
+		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
+                                    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE,
+                                    is_favourite,
+                                    -1);
+        }
+
+	g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
+	g_list_free (iters);
+}
+
+static void
+contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
+                                          EmpathyContact          *contact,
+                                          gboolean                 is_favourite,
+                                          EmpathyContactListStore *store)
+{
+	EmpathyContactListStorePriv *priv;
+
+	priv = GET_PRIV (store);
+
+	DEBUG ("Contact %s (%d) is %s a favourite",
+		empathy_contact_get_id (contact),
+		empathy_contact_get_handle (contact),
+		is_favourite ? "now" : "no longer");
+
+        contact_list_store_change_contact_favourite_status (store, contact, is_favourite);
+}
+
+static void
 contact_list_store_member_renamed_cb (EmpathyContactList      *list_iface,
 				      EmpathyContact          *old_contact,
 				      EmpathyContact          *new_contact,
@@ -1104,7 +1152,7 @@ list_store_contact_is_favourite (EmpathyContactListStore *store,
 
 	priv = GET_PRIV (store);
 
-	return empathy_contact_list_contact_is_favourite (priv->list, contact);
+	return empathy_contact_list_is_favourite (priv->list, contact);
 }
 
 static void
@@ -1483,17 +1531,20 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 	gint            ret_val = 0;
 	gchar          *name_a, *name_b;
 	gboolean        is_separator_a, is_separator_b;
+	gboolean        is_favourite_a, is_favourite_b;
 	EmpathyContact *contact_a, *contact_b;
 
 	gtk_tree_model_get (model, iter_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_a,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_a,
 			    -1);
 	gtk_tree_model_get (model, iter_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_b,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_b,
 			    -1);
 
 	/* Separator, favourites group, or other group? */
@@ -1503,14 +1554,10 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 		} else if (is_separator_b) {
                         ret_val = 1;
 		}
-#if HAVE_FAVOURITE_CONTACTS
-	} else if (!contact_a && !g_strcmp0 (name_a,
-				EMPATHY_GROUP_FAVOURITES)) {
+	} else if (is_favourite_a && !is_favourite_b) {
 		ret_val = -1;
-	} else if (!contact_b && !g_strcmp0 (name_b,
-				EMPATHY_GROUP_FAVOURITES)) {
+	} else if (!is_favourite_a && is_favourite_b) {
 		ret_val = 1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 	} else if (!contact_a && contact_b) {
 		ret_val = 1;
 	} else if (contact_a && !contact_b) {
@@ -1559,18 +1606,21 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 {
 	gchar         *name_a, *name_b;
 	EmpathyContact *contact_a, *contact_b;
-	gboolean       is_separator_a, is_separator_b;
+	gboolean       is_separator_a = FALSE, is_separator_b = FALSE;
+	gboolean       is_favourite_a, is_favourite_b;
 	gint           ret_val;
 
 	gtk_tree_model_get (model, iter_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_a,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_a,
 			    -1);
 	gtk_tree_model_get (model, iter_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_b,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_b,
 			    -1);
 
 	/* If contact is NULL it means it's a group. */

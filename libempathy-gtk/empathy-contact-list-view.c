@@ -34,6 +34,7 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
+#include <extensions/extensions.h>
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-list.h>
@@ -840,13 +841,10 @@ contact_list_view_favourite_toggled_cb (
 		return;
 
         list = empathy_contact_list_store_get_list_iface (priv->store);
-
-        if (empathy_contact_list_contact_is_favourite (list, contact)) {
-                empathy_contact_list_remove_from_group (list, contact,
-                                EMPATHY_GROUP_FAVOURITES);
+        if (empathy_contact_list_is_favourite (list, contact)) {
+                empathy_contact_list_remove_from_favourites (list, contact);
         } else {
-                empathy_contact_list_add_to_group (list, contact,
-                                EMPATHY_GROUP_FAVOURITES);
+                empathy_contact_list_add_to_favourites (list, contact);
         }
 
 	g_object_unref (contact);

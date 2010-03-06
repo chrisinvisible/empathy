@@ -13,7 +13,9 @@ EXTRA_DIST = \
     generic-types.xml \
     misc.xml \
     Debug.xml \
-    Channel_Interface_Conference.xml
+    Channel_Interface_Conference.xml \
+    Logger.xml \
+    $(NULL)
 
 noinst_LTLIBRARIES = libemp-extensions.la
 
@@ -114,7 +116,7 @@ _gen/cli-misc-body.h _gen/cli-misc.h: _gen/misc.xml \
 		--subclass=TpProxy \
 		--subclass-assert=TP_IS_PROXY \
 		--iface-quark-prefix=EMP_IFACE_QUARK \
-		--tp-proxy-api=0.7.6 \
+		--tp-proxy-api=0.10.0 \
 		$< Emp_Cli _gen/cli-misc
 
 _gen/svc-misc.c _gen/svc-misc.h: _gen/misc.xml \

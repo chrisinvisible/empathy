@@ -73,6 +73,15 @@ contact_list_base_init (gpointer klass)
 			      5, EMPATHY_TYPE_CONTACT, EMPATHY_TYPE_CONTACT,
 			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
+		g_signal_new ("favourites-changed",
+			      G_TYPE_FROM_CLASS (klass),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      _empathy_marshal_VOID__OBJECT_BOOLEAN,
+			      G_TYPE_NONE,
+			      2, EMPATHY_TYPE_CONTACT, G_TYPE_BOOLEAN);
+
 		g_signal_new ("pendings-changed",
 			      G_TYPE_FROM_CLASS (klass),
 			      G_SIGNAL_RUN_LAST,
@@ -287,5 +296,3 @@ empathy_contact_list_remove_from_favourites (EmpathyContactList *list,
 	}
 #endif /* HAVE_FAVOURITE_CONTACTS */
 }
-
-
