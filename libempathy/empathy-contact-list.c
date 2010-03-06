@@ -250,21 +250,42 @@ empathy_contact_list_get_flags (EmpathyContactList *list)
 	}
 }
 
-/* XXX: this should be an EmpathyContact function, but it would likely require
- * some awkward refactoring */
 gboolean
-empathy_contact_list_contact_is_favourite (EmpathyContactList *list,
-                                           EmpathyContact     *contact)
+empathy_contact_list_is_favourite (EmpathyContactList *list,
+                                   EmpathyContact     *contact)
 {
 #if HAVE_FAVOURITE_CONTACTS
-        GList *groups, *l;
-
-        groups = empathy_contact_list_get_groups (list, contact);
-        for (l = groups; l; l = l->next)
-                if (!g_strcmp0 (l->data, EMPATHY_GROUP_FAVOURITES))
-                        return TRUE;
+	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->is_favourite) {
+		return EMPATHY_CONTACT_LIST_GET_IFACE (list)->is_favourite (
+                                list, contact);
+	}
 #endif /* HAVE_FAVOURITE_CONTACTS */
 
         return FALSE;
 }
+
+void
+empathy_contact_list_add_to_favourites (EmpathyContactList *list,
+                                        EmpathyContact     *contact)
+{
+#if HAVE_FAVOURITE_CONTACTS
+	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->add_favourite) {
+                EMPATHY_CONTACT_LIST_GET_IFACE (list)->add_favourite (list,
+                                contact);
+	}
+#endif /* HAVE_FAVOURITE_CONTACTS */
+}
+
+void
+empathy_contact_list_remove_from_favourites (EmpathyContactList *list,
+                                             EmpathyContact     *contact)
+{
+#if HAVE_FAVOURITE_CONTACTS
+	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->remove_favourite) {
+                EMPATHY_CONTACT_LIST_GET_IFACE (list)->remove_favourite (list,
+                                contact);
+	}
+#endif /* HAVE_FAVOURITE_CONTACTS */
+}
+
 

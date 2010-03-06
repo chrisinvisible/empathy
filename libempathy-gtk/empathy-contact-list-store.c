@@ -1446,22 +1446,6 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, TRUE,
 				    -1);
 
-#if HAVE_FAVOURITE_CONTACTS
-		/* add a second separator for the favourite contacts group, to
-		 * always be sorted at the end. This will provide a visual
-		 * distinction between the end of the favourites and the
-		 * beginning of the ungrouped contacts */
-		if (!g_strcmp0 (name, EMPATHY_GROUP_FAVOURITES)) {
-			gtk_tree_store_append (GTK_TREE_STORE (store),
-					&iter_separator,
-					&iter_group);
-			gtk_tree_store_set (GTK_TREE_STORE (store), &iter_separator,
-					EMPATHY_CONTACT_LIST_STORE_COL_NAME, EMPATHY_GROUP_FAVOURITES,
-					EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, TRUE,
-					-1);
-		}
-#endif /* HAVE_FAVOURITE_CONTACTS */
-
 		if (iter_separator_to_set) {
 			*iter_separator_to_set = iter_separator;
 		}
@@ -1515,27 +1499,9 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 	/* Separator, favourites group, or other group? */
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-#if HAVE_FAVOURITE_CONTACTS
-			/* sort the special favourites group 2nd separator at
-			 * the end */
-			if (!g_strcmp0 (name_a, EMPATHY_GROUP_FAVOURITES)) {
-				ret_val = 1;
-			} else {
-				ret_val = -1;
-			}
-#else
                         ret_val = -1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 		} else if (is_separator_b) {
-#if HAVE_FAVOURITE_CONTACTS
-			if (!g_strcmp0 (name_b, EMPATHY_GROUP_FAVOURITES)) {
-				ret_val = -1;
-			} else {
-				ret_val = 1;
-			}
-#else
                         ret_val = 1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 		}
 #if HAVE_FAVOURITE_CONTACTS
 	} else if (!contact_a && !g_strcmp0 (name_a,
@@ -1611,36 +1577,14 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-#if HAVE_FAVOURITE_CONTACTS
-			/* sort the special favourites group 2nd separator at
-			 * the end */
-			if (!g_strcmp0 (name_a, EMPATHY_GROUP_FAVOURITES)) {
-				ret_val = 1;
-			} else {
-				ret_val = -1;
-			}
-#else
                         ret_val = -1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 		} else if (is_separator_b) {
-#if HAVE_FAVOURITE_CONTACTS
-			if (!g_strcmp0 (name_b, EMPATHY_GROUP_FAVOURITES)) {
-				ret_val = -1;
-			} else {
-				ret_val = 1;
-			}
-#else
                         ret_val = 1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 		}
-#if HAVE_FAVOURITE_CONTACTS
-	} else if (!contact_a && !g_strcmp0 (name_a,
-				EMPATHY_GROUP_FAVOURITES)) {
+	} else if (is_favourite_a && !is_favourite_b) {
 		ret_val = -1;
-	} else if (!contact_b && !g_strcmp0 (name_b,
-				EMPATHY_GROUP_FAVOURITES)) {
+	} else if (!is_favourite_a && is_favourite_b) {
 		ret_val = 1;
-#endif /* HAVE_FAVOURITE_CONTACTS */
 	} else if (!contact_a && contact_b) {
 		ret_val = 1;
 	} else if (contact_a && !contact_b) {

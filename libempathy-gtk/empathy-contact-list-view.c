@@ -992,13 +992,6 @@ contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
 			    -1);
 
-#if HAVE_FAVOURITE_CONTACTS
-        if (is_group && !g_strcmp0 (name, EMPATHY_GROUP_FAVOURITES)) {
-                g_free (name);
-                name = g_strdup (_(EMPATHY_GROUP_FAVOURITES));
-        }
-#endif /* HAVE_FAVOURITE_CONTACTS */
-
 	g_object_set (cell,
 		      "show-status", show_status,
 		      "text", name,
