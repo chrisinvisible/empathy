@@ -2165,7 +2165,11 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
             if (priv->video_tee != NULL)
               {
                 pad = gst_element_get_request_pad (priv->video_tee, "src%d");
-                gst_pad_link (pad, sink);
+                if (GST_PAD_LINK_FAILED (gst_pad_link (pad, sink)))
+                  {
+                    g_warning ("Could not link videp soure input pipeline");
+                    break;
+                  }
               }
 
             retval = TRUE;
