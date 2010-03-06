@@ -1662,6 +1662,8 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GstPad *pad;
+  GstElement *filter;
+  GError *gerror = NULL;
 
   if (priv->liveadder == NULL)
     {
@@ -1698,9 +1700,49 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
         }
     }
 
-  pad = gst_element_get_request_pad (priv->liveadder, "sink%d");
+  filter = gst_parse_bin_from_description (
+      "audioconvert ! audioresample ! audioconvert", TRUE, &gerror);
+  if (!filter)
+    {
+      g_warning ("Could not make audio conversion filter: %s", gerror->message);
+      g_clear_error (&gerror);
+      goto error;
+    }
+
+  if (!gst_bin_add (GST_BIN (priv->pipeline), filter))
+    {
+      g_warning ("Could not add audio conversion filter to pipeline");
+      gst_object_unref (filter);
+      goto error;
+    }
+
+  if (gst_element_set_state (filter, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+    {
+      g_warning ("Could not start audio conversion filter");
+      goto error_filter;
+    }
+
+  if (!gst_element_link (filter, priv->liveadder))
+    {
+      g_warning ("Could not link audio conversion filter to liveadder");
+      goto error_filter;
+    }
+
+  pad = gst_element_get_static_pad (filter, "sink");
+
+  if (!pad)
+    {
+      g_warning ("Could not get sink pad from filter");
+      goto error_filter;
+    }
 
   return pad;
+
+ error_filter:
+
+  gst_element_set_locked_state (filter, TRUE);
+  gst_element_set_state (filter, GST_STATE_NULL);
+  gst_bin_remove (GST_BIN (priv->pipeline), filter);
 
  error:
 
