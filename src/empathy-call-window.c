@@ -2123,16 +2123,41 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GstPad *pad;
+  gboolean retval = FALSE;
 
   switch (media_type)
     {
       case TP_MEDIA_STREAM_TYPE_AUDIO:
-        gst_bin_add (GST_BIN (priv->pipeline), priv->audio_input);
+        if (!gst_bin_add (GST_BIN (priv->pipeline), priv->audio_input))
+          {
+            g_warning ("Could not add audio source to pipeline");
+            break;
+          }
 
         pad = gst_element_get_static_pad (priv->audio_input, "src");
-        gst_pad_link (pad, sink);
+        if (!pad)
+          {
+            gst_bin_remove (GST_BIN (priv->pipeline), priv->audio_input);
+            g_warning ("Could not get source pad from audio source");
+            break;
+          }
 
-        gst_element_set_state (priv->audio_input, GST_STATE_PLAYING);
+        if (GST_PAD_LINK_FAILED (gst_pad_link (pad, sink)))
+          {
+            gst_bin_remove (GST_BIN (priv->pipeline), priv->audio_input);
+            g_warning ("Could not link audio source to farsight");
+            break;
+          }
+
+        if (gst_element_set_state (priv->audio_input, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+          {
+            g_warning ("Could not start audio source");
+            gst_element_set_state (priv->audio_input, GST_STATE_NULL);
+            gst_bin_remove (GST_BIN (priv->pipeline), priv->audio_input);
+            break;
+          }
+
+        retval = TRUE;
         break;
       case TP_MEDIA_STREAM_TYPE_VIDEO:
         if (priv->video_input != NULL)
@@ -2142,13 +2167,15 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
                 pad = gst_element_get_request_pad (priv->video_tee, "src%d");
                 gst_pad_link (pad, sink);
               }
+
+            retval = TRUE;
           }
         break;
       default:
         g_assert_not_reached ();
     }
 
-  return TRUE;
+  return retval;
 }
 
 static void
