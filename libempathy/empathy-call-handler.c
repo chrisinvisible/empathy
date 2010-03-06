@@ -329,6 +329,18 @@ empathy_call_handler_tf_channel_session_created_cb (TfChannel *tfchannel,
     GST_ELEMENT (conference));
 }
 
+static gboolean
+src_pad_added_error_idle (gpointer data)
+{
+  TfStream *stream = data;
+
+  tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
+      "Could not link sink");
+  g_object_unref (stream);
+
+  return FALSE;
+}
+
 static void
 empathy_call_handler_tf_stream_src_pad_added_cb (TfStream *stream,
   GstPad *pad, FsCodec *codec, EmpathyCallHandler  *handler)
@@ -342,8 +354,7 @@ empathy_call_handler_tf_stream_src_pad_added_cb (TfStream *stream,
       pad, media_type, &retval);
 
   if (!retval)
-      tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
-          "Could not link sink");
+    g_idle_add (src_pad_added_error_idle, g_object_ref (stream));
 }
 
 
