@@ -1632,28 +1632,81 @@ empathy_call_window_get_video_sink_pad (EmpathyCallWindow *self)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GstPad *pad;
+  GstElement *output;
 
   if (priv->funnel == NULL)
     {
-      GstElement *output;
-
       output = empathy_video_widget_get_element (EMPATHY_VIDEO_WIDGET
         (priv->video_output));
 
       priv->funnel = gst_element_factory_make ("fsfunnel", NULL);
 
-      gst_bin_add (GST_BIN (priv->pipeline), priv->funnel);
-      gst_bin_add (GST_BIN (priv->pipeline), output);
+      if (!priv->funnel)
+        {
+          g_warning ("Could not create fsfunnel");
+          return NULL;
+        }
 
-      gst_element_link (priv->funnel, output);
+      if (!gst_bin_add (GST_BIN (priv->pipeline), priv->funnel))
+        {
+          gst_object_unref (priv->funnel);
+          priv->funnel = NULL;
+          g_warning ("Could  not add funnel to pipeline");
+          return NULL;
+        }
 
-      gst_element_set_state (priv->funnel, GST_STATE_PLAYING);
-      gst_element_set_state (output, GST_STATE_PLAYING);
+      if (!gst_bin_add (GST_BIN (priv->pipeline), output))
+        {
+          g_warning ("Could not add the video output widget to the pipeline");
+          goto error;
+        }
+
+      if (!gst_element_link (priv->funnel, output))
+        {
+          g_warning ("Could not link output sink to funnel");
+          goto error_output_added;
+        }
+
+      if (gst_element_set_state (output, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+        {
+          g_warning ("Could not start video sink");
+          goto error_output_added;
+        }
+
+      if (gst_element_set_state (priv->funnel, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
+        {
+          g_warning ("Could not start funnel");
+          goto error_output_added;
+        }
     }
 
   pad = gst_element_get_request_pad (priv->funnel, "sink%d");
 
+  if (!pad)
+    g_warning ("Could not get request pad from funnel");
+
   return pad;
+
+
+ error_output_added:
+
+  gst_element_set_locked_state (priv->funnel, TRUE);
+  gst_element_set_locked_state (output, TRUE);
+
+  gst_element_set_state (priv->funnel, GST_STATE_NULL);
+  gst_element_set_state (output, GST_STATE_NULL);
+
+  gst_bin_remove (GST_BIN (priv->pipeline), output);
+  gst_element_set_locked_state (output, FALSE);
+
+ error:
+
+  gst_bin_remove (GST_BIN (priv->pipeline), priv->funnel);
+  priv->funnel = NULL;
+
+  return NULL;
+
+
 }
 
 /* Called with global lock held */
