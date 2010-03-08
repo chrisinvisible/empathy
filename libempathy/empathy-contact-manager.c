@@ -375,7 +375,8 @@ contact_manager_finalize (GObject *object)
 
 	tp_proxy_signal_connection_disconnect (priv->favourite_contacts_changed_signal);
 
-	g_object_unref (priv->logger);
+	if (priv->logger != NULL)
+		g_object_unref (priv->logger);
 
 	g_hash_table_foreach (priv->lists,
 			      contact_manager_disconnect_foreach,
