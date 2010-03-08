@@ -490,8 +490,9 @@ contact_manager_lookup_contact (EmpathyContactManager *manager,
 		if (!tp_strdiff (contact_id, id_cur) &&
 			!tp_strdiff (account_name, name_cur)) {
 			retval = contact;
-			break;
 		}
+
+		g_object_unref (contact);
 	}
 
 	g_list_free (members);
