@@ -112,7 +112,7 @@ chatroom_manager_file_save (EmpathyChatroomManager *manager)
 		xmlNewTextChild (node, NULL, (const xmlChar *) "name",
 			(const xmlChar *) empathy_chatroom_get_name (chatroom));
 		xmlNewTextChild (node, NULL, (const xmlChar *) "room",
-			(const xmlChar *) empathy_chatroom_get_name (chatroom));
+			(const xmlChar *) empathy_chatroom_get_room (chatroom));
 		xmlNewTextChild (node, NULL, (const xmlChar *) "account",
 			(const xmlChar *) account_id);
 		xmlNewTextChild (node, NULL, (const xmlChar *) "auto_connect",
