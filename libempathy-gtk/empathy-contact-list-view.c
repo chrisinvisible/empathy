@@ -828,7 +828,7 @@ contact_list_view_favourite_toggled_cb (
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	EmpathyContact *contact;
-        EmpathyContactList *list;
+	EmpathyContactList *list;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
 	if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
@@ -840,12 +840,12 @@ contact_list_view_favourite_toggled_cb (
 	if (contact == NULL)
 		return;
 
-        list = empathy_contact_list_store_get_list_iface (priv->store);
-        if (empathy_contact_list_is_favourite (list, contact)) {
-                empathy_contact_list_remove_from_favourites (list, contact);
-        } else {
-                empathy_contact_list_add_to_favourites (list, contact);
-        }
+	list = empathy_contact_list_store_get_list_iface (priv->store);
+	if (empathy_contact_list_is_favourite (list, contact)) {
+		empathy_contact_list_remove_from_favourites (list, contact);
+	} else {
+		empathy_contact_list_add_to_favourites (list, contact);
+	}
 
 	g_object_unref (contact);
 }
@@ -1055,9 +1055,9 @@ contact_list_view_favourite_cell_data_func (
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite,
 			    -1);
 
-        if (!is_separator && !is_group)
-                icon_name = (is_favourite? EMPATHY_IMAGE_FAVOURITE :
-                                EMPATHY_IMAGE_UNFAVOURITE);
+	if (!is_separator && !is_group)
+		icon_name = (is_favourite? EMPATHY_IMAGE_FAVOURITE :
+			     EMPATHY_IMAGE_UNFAVOURITE);
 
 	g_object_set (cell,
 		      "visible", (icon_name != NULL),

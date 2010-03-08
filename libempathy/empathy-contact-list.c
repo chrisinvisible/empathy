@@ -266,11 +266,11 @@ empathy_contact_list_is_favourite (EmpathyContactList *list,
 #if HAVE_FAVOURITE_CONTACTS
 	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->is_favourite) {
 		return EMPATHY_CONTACT_LIST_GET_IFACE (list)->is_favourite (
-                                list, contact);
+			list, contact);
 	}
 #endif /* HAVE_FAVOURITE_CONTACTS */
 
-        return FALSE;
+	return FALSE;
 }
 
 void
@@ -279,8 +279,8 @@ empathy_contact_list_add_to_favourites (EmpathyContactList *list,
 {
 #if HAVE_FAVOURITE_CONTACTS
 	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->add_favourite) {
-                EMPATHY_CONTACT_LIST_GET_IFACE (list)->add_favourite (list,
-                                contact);
+		EMPATHY_CONTACT_LIST_GET_IFACE (list)->add_favourite (list,
+			contact);
 	}
 #endif /* HAVE_FAVOURITE_CONTACTS */
 }
@@ -291,8 +291,8 @@ empathy_contact_list_remove_from_favourites (EmpathyContactList *list,
 {
 #if HAVE_FAVOURITE_CONTACTS
 	if (EMPATHY_CONTACT_LIST_GET_IFACE (list)->remove_favourite) {
-                EMPATHY_CONTACT_LIST_GET_IFACE (list)->remove_favourite (list,
-                                contact);
+		EMPATHY_CONTACT_LIST_GET_IFACE (list)->remove_favourite (list,
+			contact);
 	}
 #endif /* HAVE_FAVOURITE_CONTACTS */
 }

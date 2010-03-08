@@ -225,7 +225,7 @@ contact_manager_is_favourite (EmpathyContactList *manager,
 
 static void
 contact_manager_add_favourite (EmpathyContactList *manager,
-                EmpathyContact *contact)
+			       EmpathyContact *contact)
 {
 	EmpathyContactManagerPriv *priv;
 	TpAccount *account;
@@ -247,7 +247,7 @@ contact_manager_add_favourite (EmpathyContactList *manager,
 
 static void
 contact_manager_remove_favourite (EmpathyContactList *manager,
-                EmpathyContact *contact)
+				  EmpathyContact *contact)
 {
 	EmpathyContactManagerPriv *priv;
 	TpAccount *account;
@@ -269,7 +269,7 @@ contact_manager_remove_favourite (EmpathyContactList *manager,
 
 static void
 logger_favourite_contacts_add_from_value_array (GValueArray           *va,
-                                                EmpathyContactManager *manager)
+						EmpathyContactManager *manager)
 {
 	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
 	guint i;
@@ -316,7 +316,7 @@ logger_favourite_contacts_get_cb (TpProxy         *proxy,
 	EmpathyContactManager *manager = EMPATHY_CONTACT_MANAGER (user_data);
 
 	if (error == NULL) {
-		g_ptr_array_foreach ((GPtrArray*) result,
+		g_ptr_array_foreach ((GPtrArray *) result,
 				(GFunc)
 				logger_favourite_contacts_add_from_value_array,
 				manager);
@@ -446,8 +446,8 @@ account_manager_prepared_cb (GObject *source_object,
 
 static EmpathyContact *
 contact_manager_lookup_contact (EmpathyContactManager *manager,
-                                const gchar           *account_name,
-                                const gchar           *contact_id)
+				const gchar           *account_name,
+				const gchar           *contact_id)
 {
 	EmpathyContact *retval = NULL;
 	GList *members, *l;
@@ -479,11 +479,11 @@ contact_manager_lookup_contact (EmpathyContactManager *manager,
 
 static void
 logger_favourite_contacts_changed_cb (TpProxy      *proxy,
-                                      const gchar  *account_name,
-                                      const gchar **added,
-                                      const gchar **removed,
-                                      gpointer      user_data,
-                                      GObject      *weak_object)
+				      const gchar  *account_name,
+				      const gchar **added,
+				      const gchar **removed,
+				      gpointer      user_data,
+				      GObject      *weak_object)
 {
 	EmpathyContactManagerPriv *priv;
 	EmpathyContactManager *manager = EMPATHY_CONTACT_MANAGER (weak_object);
@@ -559,10 +559,12 @@ empathy_contact_manager_init (EmpathyContactManager *manager)
 					     empathy_proxy_equal,
 					     (GDestroyNotify) g_object_unref,
 					     (GDestroyNotify) g_object_unref);
-        priv->favourites = g_hash_table_new_full (g_str_hash, g_str_equal,
-                                                  (GDestroyNotify) g_free,
-                                                  (GDestroyNotify)
-                                                        g_hash_table_unref);
+
+	priv->favourites = g_hash_table_new_full (g_str_hash, g_str_equal,
+						  (GDestroyNotify) g_free,
+						  (GDestroyNotify)
+						  g_hash_table_unref);
+
 	priv->account_manager = tp_account_manager_dup ();
 	priv->contact_monitor = NULL;
 

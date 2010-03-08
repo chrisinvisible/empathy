@@ -930,18 +930,18 @@ contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 
 static void
 contact_list_store_change_contact_favourite_status (EmpathyContactListStore *store,
-                                                    EmpathyContact          *contact,
-                                                    gboolean                 is_favourite)
+						    EmpathyContact          *contact,
+						    gboolean                 is_favourite)
 {
-        GList *iters, *l;
+	GList *iters, *l;
 
 	iters = contact_list_store_find_contact (store, contact);
-        for (l = iters; l; l = l->next) {
+	for (l = iters; l; l = l->next) {
 		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
-                                    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE,
-                                    is_favourite,
-                                    -1);
-        }
+			EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE,
+			is_favourite,
+			-1);
+	}
 
 	g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
 	g_list_free (iters);
@@ -949,9 +949,9 @@ contact_list_store_change_contact_favourite_status (EmpathyContactListStore *sto
 
 static void
 contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
-                                          EmpathyContact          *contact,
-                                          gboolean                 is_favourite,
-                                          EmpathyContactListStore *store)
+					  EmpathyContact          *contact,
+					  gboolean                 is_favourite,
+					  EmpathyContactListStore *store)
 {
 	EmpathyContactListStorePriv *priv;
 
@@ -962,7 +962,8 @@ contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
 		empathy_contact_get_handle (contact),
 		is_favourite ? "now" : "no longer");
 
-        contact_list_store_change_contact_favourite_status (store, contact, is_favourite);
+	contact_list_store_change_contact_favourite_status (store, contact,
+																								      is_favourite);
 }
 
 static void
@@ -1550,9 +1551,9 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 	/* Separator, favourites group, or other group? */
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-                        ret_val = -1;
+			ret_val = -1;
 		} else if (is_separator_b) {
-                        ret_val = 1;
+			ret_val = 1;
 		}
 	} else if (is_favourite_a && !is_favourite_b) {
 		ret_val = -1;
@@ -1627,9 +1628,9 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 
 	if (is_separator_a || is_separator_b) {
 		if (is_separator_a) {
-                        ret_val = -1;
+			ret_val = -1;
 		} else if (is_separator_b) {
-                        ret_val = 1;
+			ret_val = 1;
 		}
 	} else if (is_favourite_a && !is_favourite_b) {
 		ret_val = -1;

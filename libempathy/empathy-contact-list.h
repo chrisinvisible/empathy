@@ -78,7 +78,7 @@ struct _EmpathyContactListIface {
 	void             (*add_favourite)     (EmpathyContactList *list,
 					       EmpathyContact     *contact);
 	void             (*remove_favourite)  (EmpathyContactList *list,
-                                               EmpathyContact     *contact);
+					       EmpathyContact     *contact);
 };
 
 GType    empathy_contact_list_get_type          (void) G_GNUC_CONST;
@@ -111,14 +111,14 @@ EmpathyContactListFlags
          empathy_contact_list_get_flags		(EmpathyContactList *list);
 
 gboolean empathy_contact_list_is_favourite      (EmpathyContactList *list,
-                                                 EmpathyContact     *contact);
+						 EmpathyContact     *contact);
 
 void     empathy_contact_list_add_to_favourites (EmpathyContactList *list,
-                                                 EmpathyContact     *contact);
+						 EmpathyContact     *contact);
 
 void     empathy_contact_list_remove_from_favourites
                                                 (EmpathyContactList *list,
-                                                 EmpathyContact     *contact);
+						 EmpathyContact     *contact);
 
 
 G_END_DECLS
