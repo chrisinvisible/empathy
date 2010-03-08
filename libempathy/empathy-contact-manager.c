@@ -290,19 +290,42 @@ contact_manager_remove_favourite (EmpathyContactList *manager,
 }
 
 static void
+add_contacts_to_favourites (EmpathyContactManager *self,
+			    const gchar *account,
+			    const gchar **contacts)
+{
+	EmpathyContactManagerPriv *priv = GET_PRIV (self);
+	guint j;
+	GHashTable *contact_hash;
+
+	contact_hash = g_hash_table_lookup (priv->favourites, account);
+	if (contact_hash == NULL) {
+		contact_hash = g_hash_table_new_full (g_str_hash,
+						      g_str_equal,
+						      g_free, NULL);
+		g_hash_table_insert (priv->favourites,
+				     g_strdup (account),
+				     g_hash_table_ref (contact_hash));
+	}
+
+	for (j = 0; contacts && contacts[j] != NULL; j++) {
+		g_hash_table_insert (contact_hash,
+				     g_strdup (contacts[j]),
+				     GINT_TO_POINTER (1));
+	}
+}
+
+static void
 logger_favourite_contacts_add_from_value_array (GValueArray           *va,
 						EmpathyContactManager *manager)
 {
-	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
 	guint i;
 
 	for (i = 0; i < va->n_values; i++) {
 		GValue *account_value;
 		const gchar *account;
 		GValue *contacts_value;
-		gchar **contacts;
-		guint j;
-		GHashTable *contact_hash;
+		const gchar **contacts;
 
 		account_value = g_value_array_get_nth (va, 0);
 		contacts_value = g_value_array_get_nth (va, 1);
@@ -310,21 +333,7 @@ logger_favourite_contacts_add_from_value_array (GValueArray           *va,
 		account = g_value_get_boxed (account_value);
 		contacts = g_value_get_boxed (contacts_value);
 
-		contact_hash = g_hash_table_lookup (priv->favourites, account);
-		if (contact_hash == NULL) {
-			contact_hash = g_hash_table_new_full (g_str_hash,
-							      g_str_equal,
-							      g_free, NULL);
-			g_hash_table_insert (priv->favourites,
-					     g_strdup (account),
-					     g_hash_table_ref (contact_hash));
-		}
-
-		for (j = 0; contacts && contacts[j] != NULL; j++) {
-			g_hash_table_insert (contact_hash,
-					     g_strdup (contacts[j]),
-					     GINT_TO_POINTER (1));
-		}
+		add_contacts_to_favourites (manager, account, contacts);
 	}
 }
 
@@ -522,19 +531,9 @@ logger_favourite_contacts_changed_cb (TpProxy      *proxy,
 	 * exactly one contact amongst added and removed, so the linear lookup
 	 * of each contact isn't as painful as it appears */
 
+	add_contacts_to_favourites (manager, account_name, added);
+
 	for (i = 0; added && added[i]; i++) {
-		if (contact_hash == NULL) {
-			contact_hash = g_hash_table_new_full (g_str_hash,
-							      g_str_equal,
-							      g_free, NULL);
-			g_hash_table_insert (priv->favourites,
-					     g_strdup (account_name),
-					     g_hash_table_ref (contact_hash));
-		}
-
-		g_hash_table_insert (contact_hash, g_strdup (added[i]),
-				     GINT_TO_POINTER (1));
-
 		contact = contact_manager_lookup_contact (manager, account_name,
 							  added[i]);
 		if (contact != NULL)
