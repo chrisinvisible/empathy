@@ -155,6 +155,11 @@ contact_list_view_query_tooltip_cb (EmpathyContactListView *view,
 	}
 	running++;
 
+	/* Don't show the tooltip if there's already a popup menu */
+	if (gtk_menu_get_for_attach_widget (GTK_WIDGET (view)) != NULL) {
+		goto OUT;
+	}
+
 	if (!gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (view), &x, &y,
 						keyboard_mode,
 						&model, &path, &iter)) {
@@ -679,6 +684,10 @@ contact_list_view_popup_menu_idle_cb (gpointer user_data)
 	}
 
 	if (menu) {
+		g_signal_connect (menu, "deactivate",
+				  G_CALLBACK (gtk_menu_detach), NULL);
+		gtk_menu_attach_to_widget (GTK_MENU (menu),
+					   GTK_WIDGET (data->view), NULL);
 		gtk_widget_show (menu);
 		gtk_menu_popup (GTK_MENU (menu),
 				NULL, NULL, NULL, NULL,
@@ -794,6 +803,10 @@ contact_list_view_call_activated_cb (
 	gtk_menu_shell_append (shell, item);
 	gtk_widget_show (item);
 
+	g_signal_connect (menu, "deactivate",
+			  G_CALLBACK (gtk_menu_detach), NULL);
+	gtk_menu_attach_to_widget (GTK_MENU (menu),
+				   GTK_WIDGET (view), NULL);
 	gtk_widget_show (menu);
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
 			event->button, event->time);
