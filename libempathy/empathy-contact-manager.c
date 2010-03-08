@@ -303,9 +303,10 @@ add_contacts_to_favourites (EmpathyContactManager *self,
 		contact_hash = g_hash_table_new_full (g_str_hash,
 						      g_str_equal,
 						      g_free, NULL);
+
 		g_hash_table_insert (priv->favourites,
 				     g_strdup (account),
-				     g_hash_table_ref (contact_hash));
+				     contact_hash);
 	}
 
 	for (j = 0; contacts && contacts[j] != NULL; j++) {
