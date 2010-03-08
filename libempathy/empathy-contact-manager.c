@@ -44,6 +44,8 @@ typedef struct {
 	TpAccountManager *account_manager;
 	EmpathyContactMonitor *contact_monitor;
 	TpProxy *logger;
+	/* account object path (gchar *) => GHashTable containing favorite contacts
+	 * (contact ID (gchar *) => TRUE) */
 	GHashTable *favourites;
 	TpProxySignalConnection *favourite_contacts_changed_signal;
 } EmpathyContactManagerPriv;
