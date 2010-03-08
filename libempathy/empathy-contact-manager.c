@@ -226,6 +226,16 @@ contact_manager_is_favourite (EmpathyContactList *manager,
 }
 
 static void
+add_favourite_contact_cb (TpProxy *proxy,
+			  const GError *error,
+			  gpointer user_data,
+			  GObject *weak_object)
+{
+	if (error != NULL)
+		DEBUG ("AddFavouriteContact failed: %s", error->message);
+}
+
+static void
 contact_manager_add_favourite (EmpathyContactList *manager,
 			       EmpathyContact *contact)
 {
@@ -244,7 +254,17 @@ contact_manager_add_favourite (EmpathyContactList *manager,
 	emp_cli_logger_call_add_favourite_contact (priv->logger, -1,
 						   account_name,
 						   empathy_contact_get_id (contact),
-						   NULL, NULL, NULL, NULL);
+						   add_favourite_contact_cb, NULL, NULL, G_OBJECT (manager));
+}
+
+static void
+remove_favourite_contact_cb (TpProxy *proxy,
+			     const GError *error,
+			     gpointer user_data,
+			     GObject *weak_object)
+{
+	if (error != NULL)
+		DEBUG ("RemoveFavouriteContact failed: %s", error->message);
 }
 
 static void
@@ -266,7 +286,7 @@ contact_manager_remove_favourite (EmpathyContactList *manager,
 	emp_cli_logger_call_remove_favourite_contact (priv->logger, -1,
 						      account_name,
 						      empathy_contact_get_id (contact),
-						      NULL, NULL, NULL, NULL);
+						      remove_favourite_contact_cb, NULL, NULL, G_OBJECT (manager));
 }
 
 static void
