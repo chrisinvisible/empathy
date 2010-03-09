@@ -1561,7 +1561,9 @@ compare_separator_and_groups (gboolean is_separator_a,
 			      const gchar *name_a,
 			      const gchar *name_b,
 			      EmpathyContact *contact_a,
-			      EmpathyContact *contact_b)
+			      EmpathyContact *contact_b,
+			      gboolean fake_group_a,
+			      gboolean fake_group_b)
 {
 	if (is_separator_a || is_separator_b) {
 		/* We have at least one separator */
@@ -1580,13 +1582,13 @@ compare_separator_and_groups (gboolean is_separator_a,
 	} else if (!contact_a && !contact_b) {
 		/* Two groups. The 'Ungrouped' fake group is display at the bottom of the
 		 * contact list and the 'Favorites' at the top. */
-		if (!tp_strdiff (name_a, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
+		if (fake_group_a && !tp_strdiff (name_a, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
 			return 1;
-		else if (!tp_strdiff (name_b, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
+		else if (fake_group_b && !tp_strdiff (name_b, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
 			return -1;
-		else if (!tp_strdiff (name_a, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		else if (fake_group_a && !tp_strdiff (name_a, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
 			return -1;
-		else if (!tp_strdiff (name_b, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		else if (fake_group_b && !tp_strdiff (name_b, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
 			return 1;
 		else
 			return g_utf8_collate (name_a, name_b);
@@ -1605,24 +1607,24 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 	gint            ret_val;
 	gchar          *name_a, *name_b;
 	gboolean        is_separator_a, is_separator_b;
-	gboolean        is_favourite_a, is_favourite_b;
 	EmpathyContact *contact_a, *contact_b;
+	gboolean       fake_group_a, fake_group_b;
 
 	gtk_tree_model_get (model, iter_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_a,
-			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_a,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_a,
 			    -1);
 	gtk_tree_model_get (model, iter_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_b,
-			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_b,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_b,
 			    -1);
 
 	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		name_a, name_b, contact_a, contact_b);
+		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
 
 	if (ret_val != 0) {
 		goto free_and_out;
@@ -1664,24 +1666,24 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 	gchar         *name_a, *name_b;
 	EmpathyContact *contact_a, *contact_b;
 	gboolean       is_separator_a = FALSE, is_separator_b = FALSE;
-	gboolean       is_favourite_a, is_favourite_b;
 	gint           ret_val;
+	gboolean       fake_group_a, fake_group_b;
 
 	gtk_tree_model_get (model, iter_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_a,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_a,
-			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_a,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_a,
 			    -1);
 	gtk_tree_model_get (model, iter_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact_b,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator_b,
-			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, &is_favourite_b,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_b,
 			    -1);
 
 	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		name_a, name_b, contact_a, contact_b);
+		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
 
 	if (ret_val == 0)
 		ret_val = g_utf8_collate (name_a, name_b);
