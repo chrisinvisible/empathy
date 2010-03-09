@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include <glib.h>
+#include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
 #include <telepathy-glib/util.h>
@@ -1044,8 +1045,18 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		flags = empathy_contact_manager_get_flags_for_connection (
 			EMPATHY_CONTACT_MANAGER (priv->list), connection);
 	}
-	/* If no groups just add it at the top level. */
 	if (!groups) {
+#if HAVE_FAVOURITE_CONTACTS
+		GtkTreeIter iter_group;
+
+		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_UNGROUPED,
+			&iter_group, NULL, NULL);
+
+		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
+					     &iter_group, NULL);
+#else
+		/* FIXME: remove this in 2.31.x */
+		/* If no groups just add it at the top level. */
 		GtkTreeModel *model = GTK_TREE_MODEL (store);
 
 		if (gtk_tree_model_get_iter_first (model, &iter)) do {
@@ -1064,6 +1075,8 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		} while (gtk_tree_model_iter_next (model, &iter));
 
 		gtk_tree_store_append (GTK_TREE_STORE (store), &iter, NULL);
+#endif
+
 		gtk_tree_store_set (GTK_TREE_STORE (store), &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
 				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,

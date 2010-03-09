@@ -67,6 +67,8 @@ typedef enum {
 	EMPATHY_CONTACT_LIST_STORE_COL_COUNT,
 } EmpathyContactListStoreCol;
 
+#define EMPATHY_CONTACT_LIST_STORE_UNGROUPED _("Ungrouped")
+
 struct _EmpathyContactListStore {
 	GtkTreeStore parent;
 	gpointer priv;
