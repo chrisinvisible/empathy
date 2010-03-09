@@ -147,7 +147,8 @@ static void             contact_list_store_get_group                 (EmpathyCon
 								      const gchar                   *name,
 								      GtkTreeIter                   *iter_group_to_set,
 								      GtkTreeIter                   *iter_separator_to_set,
-								      gboolean                      *created);
+								      gboolean                      *created,
+								      gboolean                      is_fake_group);
 static gint             contact_list_store_state_sort_func           (GtkTreeModel                  *model,
 								      GtkTreeIter                   *iter_a,
 								      GtkTreeIter                   *iter_b,
@@ -837,6 +838,7 @@ contact_list_store_setup (EmpathyContactListStore *store)
 		G_TYPE_BOOLEAN,       /* Can make video calls */
 		EMPATHY_TYPE_CONTACT_LIST_FLAGS, /* Flags */
 		G_TYPE_BOOLEAN,       /* Is a favourite */
+		G_TYPE_BOOLEAN,       /* Is a fake group */
 	};
 
 	priv = GET_PRIV (store);
@@ -1074,7 +1076,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		GtkTreeIter iter_group;
 
 		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_UNGROUPED,
-			&iter_group, NULL, NULL);
+			&iter_group, NULL, NULL, TRUE);
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
@@ -1108,7 +1110,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	for (l = groups; l; l = l->next) {
 		GtkTreeIter iter_group;
 
-		contact_list_store_get_group (store, l->data, &iter_group, NULL, NULL);
+		contact_list_store_get_group (store, l->data, &iter_group, NULL, NULL, FALSE);
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
@@ -1124,7 +1126,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		GtkTreeIter iter_group;
 
 		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_FAVORITE,
-			&iter_group, NULL, NULL);
+			&iter_group, NULL, NULL, TRUE);
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
@@ -1479,7 +1481,8 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 			      const gchar            *name,
 			      GtkTreeIter            *iter_group_to_set,
 			      GtkTreeIter            *iter_separator_to_set,
-			      gboolean               *created)
+			      gboolean               *created,
+			      gboolean               is_fake_group)
 {
 	EmpathyContactListStorePriv *priv;
 	GtkTreeModel                *model;
@@ -1510,6 +1513,7 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, TRUE,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_ACTIVE, FALSE,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
+				    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, is_fake_group,
 				    -1);
 
 		if (iter_group_to_set) {
