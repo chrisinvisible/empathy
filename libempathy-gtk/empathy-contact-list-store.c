@@ -965,6 +965,9 @@ contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
 
 	contact_list_store_change_contact_favourite_status (store, contact,
 																								      is_favourite);
+
+	contact_list_store_remove_contact (store, contact);
+	contact_list_store_add_contact (store, contact);
 }
 
 static void
@@ -1115,8 +1118,22 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 	g_list_free (groups);
 
-	contact_list_store_contact_update (store, contact);
+#ifdef HAVE_FAVOURITE_CONTACTS
+	if (empathy_contact_list_is_favourite (priv->list, contact)) {
+	/* Add contact to the fake 'Favorites' group */
+		GtkTreeIter iter_group;
 
+		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_FAVORITE,
+			&iter_group, NULL, NULL);
+
+		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
+					     &iter_group, NULL);
+
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
+	}
+#endif
+
+	contact_list_store_contact_update (store, contact);
 }
 
 static void
