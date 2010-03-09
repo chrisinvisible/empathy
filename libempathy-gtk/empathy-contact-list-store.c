@@ -1020,6 +1020,27 @@ contact_list_store_groups_changed_cb (EmpathyContactList      *list_iface,
 }
 
 static void
+add_contact_to_store (GtkTreeStore *store,
+		      GtkTreeIter *iter,
+		      EmpathyContact *contact,
+		      EmpathyContactListFlags flags)
+{
+	gtk_tree_store_set (store, iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
+			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CAN_AUDIO_CALL,
+			      empathy_contact_get_capabilities (contact) &
+			        EMPATHY_CAPABILITIES_AUDIO,
+			    EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL,
+			      empathy_contact_get_capabilities (contact) &
+			        EMPATHY_CAPABILITIES_VIDEO,
+			    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, flags,
+			    -1);
+}
+
+static void
 contact_list_store_add_contact (EmpathyContactListStore *store,
 				EmpathyContact          *contact)
 {
@@ -1077,19 +1098,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		gtk_tree_store_append (GTK_TREE_STORE (store), &iter, NULL);
 #endif
 
-		gtk_tree_store_set (GTK_TREE_STORE (store), &iter,
-				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
-				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,
-				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
-				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
-				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_AUDIO_CALL,
-				      empathy_contact_get_capabilities (contact) &
-				        EMPATHY_CAPABILITIES_AUDIO,
-				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL,
-				      empathy_contact_get_capabilities (contact) &
-				        EMPATHY_CAPABILITIES_VIDEO,
-				    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, flags,
-				    -1);
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
 	}
 
 	/* Else add to each group. */
@@ -1100,19 +1109,8 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
-		gtk_tree_store_set (GTK_TREE_STORE (store), &iter,
-				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
-				    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,
-				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
-				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
-				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_AUDIO_CALL,
-				      empathy_contact_get_capabilities (contact) &
-				        EMPATHY_CAPABILITIES_AUDIO,
-				    EMPATHY_CONTACT_LIST_STORE_COL_CAN_VIDEO_CALL,
-				      empathy_contact_get_capabilities (contact) &
-				        EMPATHY_CAPABILITIES_VIDEO,
-				    EMPATHY_CONTACT_LIST_STORE_COL_FLAGS, flags,
-				    -1);
+
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
 		g_free (l->data);
 	}
 	g_list_free (groups);
