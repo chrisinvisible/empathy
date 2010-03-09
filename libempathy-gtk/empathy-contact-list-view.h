@@ -73,7 +73,8 @@ EmpathyContactListView *   empathy_contact_list_view_new                (Empathy
 								         EmpathyContactFeatureFlags      contact_features);
 EmpathyContact *           empathy_contact_list_view_dup_selected       (EmpathyContactListView         *view);
 EmpathyContactListFlags    empathy_contact_list_view_get_flags          (EmpathyContactListView         *view);
-gchar *                    empathy_contact_list_view_get_selected_group (EmpathyContactListView         *view);
+gchar *                    empathy_contact_list_view_get_selected_group (EmpathyContactListView         *view,
+									 gboolean *is_fake_group);
 GtkWidget *                empathy_contact_list_view_get_contact_menu   (EmpathyContactListView         *view);
 GtkWidget *                empathy_contact_list_view_get_group_menu     (EmpathyContactListView         *view);
 

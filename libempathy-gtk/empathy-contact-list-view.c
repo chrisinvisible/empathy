@@ -1510,7 +1510,8 @@ empathy_contact_list_view_get_flags (EmpathyContactListView *view)
 }
 
 gchar *
-empathy_contact_list_view_get_selected_group (EmpathyContactListView *view)
+empathy_contact_list_view_get_selected_group (EmpathyContactListView *view,
+					      gboolean *is_fake_group)
 {
 	EmpathyContactListViewPriv *priv;
 	GtkTreeSelection          *selection;
@@ -1518,6 +1519,7 @@ empathy_contact_list_view_get_selected_group (EmpathyContactListView *view)
 	GtkTreeModel              *model;
 	gboolean                   is_group;
 	gchar                     *name;
+	gboolean                   fake;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT_LIST_VIEW (view), NULL);
 
@@ -1531,12 +1533,16 @@ empathy_contact_list_view_get_selected_group (EmpathyContactListView *view)
 	gtk_tree_model_get (model, &iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake,
 			    -1);
 
 	if (!is_group) {
 		g_free (name);
 		return NULL;
 	}
+
+	if (is_fake_group != NULL)
+		*is_fake_group = fake;
 
 	return name;
 }
@@ -1574,7 +1580,7 @@ contact_list_view_group_remove_activate_cb (GtkMenuItem            *menuitem,
 	EmpathyContactListViewPriv *priv = GET_PRIV (view);
 	gchar                      *group;
 
-	group = empathy_contact_list_view_get_selected_group (view);
+	group = empathy_contact_list_view_get_selected_group (view, NULL);
 	if (group) {
 		gchar     *text;
 		GtkWindow *parent;
@@ -1602,6 +1608,7 @@ empathy_contact_list_view_get_group_menu (EmpathyContactListView *view)
 	GtkWidget                  *menu;
 	GtkWidget                  *item;
 	GtkWidget                  *image;
+	gboolean                   is_fake_group;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT_LIST_VIEW (view), NULL);
 
@@ -1610,8 +1617,9 @@ empathy_contact_list_view_get_group_menu (EmpathyContactListView *view)
 		return NULL;
 	}
 
-	group = empathy_contact_list_view_get_selected_group (view);
-	if (!group) {
+	group = empathy_contact_list_view_get_selected_group (view, &is_fake_group);
+	if (!group || is_fake_group) {
+		/* We can't alter fake groups */
 		return NULL;
 	}
 
