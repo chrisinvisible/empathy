@@ -879,6 +879,43 @@ contact_list_view_pixbuf_cell_data_func (GtkTreeViewColumn     *tree_column,
 }
 
 static void
+contact_list_view_group_icon_cell_data_func (GtkTreeViewColumn     *tree_column,
+					     GtkCellRenderer       *cell,
+					     GtkTreeModel          *model,
+					     GtkTreeIter           *iter,
+					     EmpathyContactListView *view)
+{
+	GdkPixbuf *pixbuf = NULL;
+	gboolean is_group;
+	gchar *name;
+
+	gtk_tree_model_get (model, iter,
+			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
+			    -1);
+
+	if (!is_group)
+		goto out;;
+
+	if (tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		goto out;;
+
+	pixbuf = empathy_pixbuf_from_icon_name ("emblem-favorite",
+		GTK_ICON_SIZE_MENU);
+
+out:
+	g_object_set (cell,
+		      "visible", pixbuf != NULL,
+		      "pixbuf", pixbuf,
+		      NULL);
+
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
+
+	g_free (name);
+}
+
+static void
 contact_list_view_audio_call_cell_data_func (
 				       GtkTreeViewColumn      *tree_column,
 				       GtkCellRenderer        *cell,
@@ -1113,6 +1150,22 @@ contact_list_view_setup (EmpathyContactListView *view)
 		      "xpad", 5,
 		      "ypad", 1,
 		      "visible", FALSE,
+		      NULL);
+
+	/* Group icon */
+	cell = gtk_cell_renderer_pixbuf_new ();
+	gtk_tree_view_column_pack_start (col, cell, FALSE);
+	gtk_tree_view_column_set_cell_data_func (
+		col, cell,
+		(GtkTreeCellDataFunc) contact_list_view_group_icon_cell_data_func,
+		view, NULL);
+
+	g_object_set (cell,
+		      "xpad", 0,
+		      "ypad", 0,
+		      "visible", FALSE,
+		      "width", 16,
+		      "height", 16,
 		      NULL);
 
 	/* Name */
