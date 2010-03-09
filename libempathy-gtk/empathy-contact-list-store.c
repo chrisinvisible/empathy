@@ -1566,8 +1566,14 @@ compare_separator_and_groups (gboolean is_separator_a,
 	} else if (contact_a && !contact_b) {
 		return -1;
 	} else if (!contact_a && !contact_b) {
-		/* Two groups */
-		return g_utf8_collate (name_a, name_b);
+		/* Two groups. The 'Ungrouped' fake group is display at the bottom of the
+		 * contact list. */
+		if (!tp_strdiff (name_a, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
+			return 1;
+		else if (!tp_strdiff (name_b, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
+			return -1;
+		else
+			return g_utf8_collate (name_a, name_b);
 	}
 
 	/* Two contacts, ordering depends of the sorting policy */
