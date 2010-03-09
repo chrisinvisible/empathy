@@ -1554,8 +1554,6 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 static gint
 compare_separator_and_groups (gboolean is_separator_a,
 			      gboolean is_separator_b,
-			      gboolean is_favourite_a,
-			      gboolean is_favourite_b,
 			      const gchar *name_a,
 			      const gchar *name_b,
 			      EmpathyContact *contact_a,
@@ -1570,13 +1568,8 @@ compare_separator_and_groups (gboolean is_separator_a,
 		}
 	}
 
-	/* Favorites are displayed first */
-	if (is_favourite_a && !is_favourite_b) {
-		return -1;
-	} else if (!is_favourite_a && is_favourite_b) {
-		return 1;
 	/* One group and one contact */
-	} else if (!contact_a && contact_b) {
+	if (!contact_a && contact_b) {
 		return 1;
 	} else if (contact_a && !contact_b) {
 		return -1;
@@ -1625,7 +1618,7 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 			    -1);
 
 	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		is_favourite_a, is_favourite_b, name_a, name_b, contact_a, contact_b);
+		name_a, name_b, contact_a, contact_b);
 
 	if (ret_val != 0) {
 		goto free_and_out;
@@ -1684,7 +1677,7 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 			    -1);
 
 	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		is_favourite_a, is_favourite_b, name_a, name_b, contact_a, contact_b);
+		name_a, name_b, contact_a, contact_b);
 
 	if (ret_val == 0)
 		ret_val = g_utf8_collate (name_a, name_b);
