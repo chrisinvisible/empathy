@@ -41,8 +41,6 @@ G_BEGIN_DECLS
 #define EMPATHY_IMAGE_VIDEO_CALL          "camera-web"
 #define EMPATHY_IMAGE_LOG                 "document-open-recent"
 #define EMPATHY_IMAGE_DOCUMENT_SEND       "document-send"
-#define EMPATHY_IMAGE_FAVOURITE           "empathy-starred"
-#define EMPATHY_IMAGE_UNFAVOURITE         "empathy-unstarred"
 
 G_END_DECLS
 
