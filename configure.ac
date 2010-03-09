@@ -467,7 +467,7 @@ AC_ARG_ENABLE(favourite_contacts,
 if test "x$enable_favourite_contacts" != "xno" -o "x$chain_enable_favourite_contacts" == "xyes"; then
     PKG_CHECK_MODULES(TELEPATHY_LOGGER,
     [
-       libtelepathy-logger
+       telepathy-logger
     ], have_telepathy_logger="yes", have_telepathy_logger="no")
 
     if test "x$have_telepathy_logger" = "xyes"; then
