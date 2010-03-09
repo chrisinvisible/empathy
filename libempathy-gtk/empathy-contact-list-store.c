@@ -837,7 +837,6 @@ contact_list_store_setup (EmpathyContactListStore *store)
 		G_TYPE_BOOLEAN,       /* Can make audio calls */
 		G_TYPE_BOOLEAN,       /* Can make video calls */
 		EMPATHY_TYPE_CONTACT_LIST_FLAGS, /* Flags */
-		G_TYPE_BOOLEAN,       /* Is a favourite */
 		G_TYPE_BOOLEAN,       /* Is a fake group */
 	};
 
@@ -932,25 +931,6 @@ contact_list_store_members_changed_cb (EmpathyContactList      *list_iface,
 }
 
 static void
-contact_list_store_change_contact_favourite_status (EmpathyContactListStore *store,
-						    EmpathyContact          *contact,
-						    gboolean                 is_favourite)
-{
-	GList *iters, *l;
-
-	iters = contact_list_store_find_contact (store, contact);
-	for (l = iters; l; l = l->next) {
-		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
-			EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE,
-			is_favourite,
-			-1);
-	}
-
-	g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
-	g_list_free (iters);
-}
-
-static void
 contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
 					  EmpathyContact          *contact,
 					  gboolean                 is_favourite,
@@ -964,9 +944,6 @@ contact_list_store_favourites_changed_cb (EmpathyContactList      *list_iface,
 		empathy_contact_get_id (contact),
 		empathy_contact_get_handle (contact),
 		is_favourite ? "now" : "no longer");
-
-	contact_list_store_change_contact_favourite_status (store, contact,
-																								      is_favourite);
 
 	contact_list_store_remove_contact (store, contact);
 	contact_list_store_add_contact (store, contact);
@@ -1175,17 +1152,6 @@ contact_list_store_remove_contact (EmpathyContactListStore *store,
 	g_list_free (iters);
 }
 
-static gboolean
-list_store_contact_is_favourite (EmpathyContactListStore *store,
-				 EmpathyContact          *contact)
-{
-	EmpathyContactListStorePriv *priv;
-
-	priv = GET_PRIV (store);
-
-	return empathy_contact_list_is_favourite (priv->list, contact);
-}
-
 static void
 contact_list_store_contact_update (EmpathyContactListStore *store,
 				   EmpathyContact          *contact)
@@ -1301,7 +1267,6 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	pixbuf_status = contact_list_store_get_contact_status_icon (store, contact);
 	for (l = iters; l && set_model; l = l->next) {
 		gtk_tree_store_set (GTK_TREE_STORE (store), l->data,
-				    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAVOURITE, list_store_contact_is_favourite (store, contact),
 				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
