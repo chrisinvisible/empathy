@@ -112,13 +112,6 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 	gtk_menu_shell_append (shell, item);
 	gtk_widget_show (item);
 
-#if HAVE_FAVOURITE_CONTACTS
-	/* Favorite checkbox */
-	item = empathy_contact_favourite_menu_item_new (contact);
-	gtk_menu_shell_append (shell, item);
-	gtk_widget_show (item);
-#endif
-
 	/* Separator */
 	if (features & (EMPATHY_CONTACT_FEATURE_EDIT |
 			EMPATHY_CONTACT_FEATURE_INFO)) {
@@ -140,6 +133,13 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 		gtk_menu_shell_append (shell, item);
 		gtk_widget_show (item);
 	}
+
+#if HAVE_FAVOURITE_CONTACTS
+	/* Favorite checkbox */
+	item = empathy_contact_favourite_menu_item_new (contact);
+	gtk_menu_shell_append (shell, item);
+	gtk_widget_show (item);
+#endif
 
 	return menu;
 }
