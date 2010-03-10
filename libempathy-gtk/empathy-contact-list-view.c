@@ -254,6 +254,22 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 }
 
 static gboolean
+group_can_be_modified (const gchar *name,
+		       gboolean is_fake_group)
+{
+	/* Real groups can always be modified */
+	if (!is_fake_group)
+		return TRUE;
+
+	/* Only the favorite fake group can be modified so users can
+	 * add/remove favorites using DnD */
+	if (!tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		return TRUE;
+
+	return FALSE;
+}
+
+static gboolean
 contact_list_view_contact_drag_received (GtkWidget         *view,
 					 GdkDragContext    *context,
 					 GtkTreeModel      *model,
@@ -273,18 +289,15 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	gchar         *new_group = NULL;
 	gchar         *old_group = NULL;
 	gboolean       success = TRUE;
-	gboolean       is_fake_group;
+	gboolean       new_group_is_fake;
 
 	priv = GET_PRIV (view);
 
 	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
 	new_group = empathy_contact_list_store_get_parent_group (model,
-								 path, NULL, &is_fake_group);
+								 path, NULL, &new_group_is_fake);
 
-	if (is_fake_group &&
-			tp_strdiff (new_group, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
-		/* Fake groups can't be modified. We allow to drag to the favorite fake
-		 * group tough so user can mark contact as favorite using DnD */
+	if (!group_can_be_modified (new_group, new_group_is_fake))
 		return FALSE;
 
 	/* Get source group information. */
