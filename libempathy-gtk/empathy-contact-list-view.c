@@ -245,6 +245,14 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 		return;
 	}
 
+	if (!tp_strdiff (data->old_group, EMPATHY_CONTACT_LIST_STORE_FAVORITE)) {
+		/* Remove contact as favourite */
+		empathy_contact_list_remove_from_favourites (list, contact);
+		/* Don't try to remove it */
+		g_free (data->old_group);
+		data->old_group = NULL;
+	}
+
 	if (data->new_group) {
 		empathy_contact_list_add_to_group (list, contact, data->new_group);
 	}
@@ -294,7 +302,7 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	gchar         *new_group = NULL;
 	gchar         *old_group = NULL;
 	gboolean       success = TRUE;
-	gboolean       new_group_is_fake;
+	gboolean       new_group_is_fake, old_group_is_fake = TRUE;
 
 	priv = GET_PRIV (view);
 
@@ -310,10 +318,13 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 		source_path = gtk_tree_row_reference_get_path (priv->drag_row);
 		if (source_path) {
 			old_group = empathy_contact_list_store_get_parent_group (
-										 model, source_path, NULL, NULL);
+										 model, source_path, NULL, &old_group_is_fake);
 			gtk_tree_path_free (source_path);
 		}
 	}
+
+	if (!group_can_be_modified (old_group, old_group_is_fake, FALSE))
+		return FALSE;
 
 	if (!tp_strdiff (old_group, new_group)) {
 		g_free (new_group);
