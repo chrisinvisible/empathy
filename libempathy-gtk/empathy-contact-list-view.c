@@ -238,6 +238,13 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 		data->old_group, data->new_group);
 
 	list = empathy_contact_list_store_get_list_iface (priv->store);
+
+	if (!tp_strdiff (data->new_group, EMPATHY_CONTACT_LIST_STORE_FAVORITE)) {
+		/* Mark contact as favourite */
+		empathy_contact_list_add_to_favourites (list, contact);
+		return;
+	}
+
 	if (data->new_group) {
 		empathy_contact_list_add_to_group (list, contact, data->new_group);
 	}
@@ -274,8 +281,10 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	new_group = empathy_contact_list_store_get_parent_group (model,
 								 path, NULL, &is_fake_group);
 
-	if (is_fake_group)
-		/* Fake groups can't be modified */
+	if (is_fake_group &&
+			tp_strdiff (new_group, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		/* Fake groups can't be modified. We allow to drag to the favorite fake
+		 * group tough so user can mark contact as favorite using DnD */
 		return FALSE;
 
 	/* Get source group information. */
