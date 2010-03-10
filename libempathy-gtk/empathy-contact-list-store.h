@@ -105,7 +105,8 @@ gboolean                   empathy_contact_list_store_row_separator_func (GtkTre
 									 gpointer                    data);
 gchar *                    empathy_contact_list_store_get_parent_group   (GtkTreeModel               *model,
 									 GtkTreePath                *path,
-									 gboolean                   *path_is_group);
+									 gboolean                   *path_is_group,
+									 gboolean                   *is_fake_group);
 gboolean                   empathy_contact_list_store_search_equal_func  (GtkTreeModel               *model,
 									 gint                        column,
 									 const gchar                *key,

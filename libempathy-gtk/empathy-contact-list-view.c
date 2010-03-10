@@ -266,19 +266,24 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	gchar         *new_group = NULL;
 	gchar         *old_group = NULL;
 	gboolean       success = TRUE;
+	gboolean       is_fake_group;
 
 	priv = GET_PRIV (view);
 
 	sel_data = (const gchar *) gtk_selection_data_get_data (selection);
 	new_group = empathy_contact_list_store_get_parent_group (model,
-								 path, NULL);
+								 path, NULL, &is_fake_group);
+
+	if (is_fake_group)
+		/* Fake groups can't be modified */
+		return FALSE;
 
 	/* Get source group information. */
 	if (priv->drag_row) {
 		source_path = gtk_tree_row_reference_get_path (priv->drag_row);
 		if (source_path) {
 			old_group = empathy_contact_list_store_get_parent_group (
-										 model, source_path, NULL);
+										 model, source_path, NULL, NULL);
 			gtk_tree_path_free (source_path);
 		}
 	}

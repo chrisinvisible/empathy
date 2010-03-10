@@ -728,11 +728,13 @@ empathy_contact_list_store_row_separator_func (GtkTreeModel *model,
 gchar *
 empathy_contact_list_store_get_parent_group (GtkTreeModel *model,
 					    GtkTreePath  *path,
-					    gboolean     *path_is_group)
+					    gboolean     *path_is_group,
+					    gboolean     *is_fake_group)
 {
 	GtkTreeIter  parent_iter, iter;
 	gchar       *name = NULL;
 	gboolean     is_group;
+	gboolean     fake;
 
 	g_return_val_if_fail (GTK_IS_TREE_MODEL (model), NULL);
 
@@ -762,6 +764,7 @@ empathy_contact_list_store_get_parent_group (GtkTreeModel *model,
 		gtk_tree_model_get (model, &iter,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
+				    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake,
 				    -1);
 		if (!is_group) {
 			g_free (name);
@@ -772,6 +775,9 @@ empathy_contact_list_store_get_parent_group (GtkTreeModel *model,
 	if (path_is_group) {
 		*path_is_group = TRUE;
 	}
+
+	if (is_fake_group != NULL)
+		*is_fake_group = fake;
 
 	return name;
 }
