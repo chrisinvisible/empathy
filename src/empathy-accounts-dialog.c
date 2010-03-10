@@ -2063,7 +2063,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_box_pack_start (GTK_BOX (hbox), priv->label_status, TRUE, TRUE, 0);
 
   /* Tweak the dialog */
-  gtk_window_set_title (GTK_WINDOW (dialog), _("Accounts"));
+  gtk_window_set_title (GTK_WINDOW (dialog), _("Messaging and VoIP Accounts"));
   gtk_window_set_role (GTK_WINDOW (dialog), "accounts");
 
   gtk_window_set_default_size (GTK_WINDOW (dialog), 640, -1);
