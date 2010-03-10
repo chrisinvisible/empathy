@@ -82,6 +82,7 @@ typedef struct
   EmpathyContact *contact;
   EmpathyContactWidgetFlags flags;
   guint widget_id_timeout;
+  gulong fav_sig_id;
 
   GtkWidget *vbox_contact_widget;
 
@@ -100,6 +101,7 @@ typedef struct
   GtkWidget *label_status;
   GtkWidget *table_contact;
   GtkWidget *vbox_avatar;
+  GtkWidget *favourite_checkbox;
 
   /* Location */
   GtkWidget *vbox_location;
@@ -448,7 +450,6 @@ contact_widget_groups_setup (EmpathyContactWidget *information)
 {
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_GROUPS)
     {
-      information->manager = empathy_contact_manager_dup_singleton ();
       contact_widget_model_setup (information);
     }
 }
@@ -964,6 +965,21 @@ contact_widget_presence_notify_cb (EmpathyContactWidget *information)
   gtk_widget_show (information->image_state);
 }
 
+#if HAVE_FAVOURITE_CONTACTS
+static void
+contact_widget_favourites_changed_cb (EmpathyContactManager *manager,
+    EmpathyContact *contact,
+    gboolean is_favourite,
+    EmpathyContactWidget *information)
+{
+  if (contact != information->contact)
+    return;
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (
+            information->favourite_checkbox), is_favourite);
+}
+#endif
+
 static void
 contact_widget_remove_contact (EmpathyContactWidget *information)
 {
@@ -1051,6 +1067,18 @@ contact_widget_contact_update (EmpathyContactWidget *information)
       contact_widget_name_notify_cb (information);
       contact_widget_presence_notify_cb (information);
       contact_widget_avatar_notify_cb (information);
+
+      if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
+        {
+          gboolean is_favourite;
+
+          is_favourite = empathy_contact_list_is_favourite (
+              EMPATHY_CONTACT_LIST (information->manager),
+              information->contact);
+
+          contact_widget_favourites_changed_cb (information->manager,
+              information->contact, is_favourite, information);
+        }
 
       gtk_widget_show (information->label_alias);
       gtk_widget_show (information->widget_alias);
@@ -1180,6 +1208,28 @@ contact_widget_id_focus_out_cb (GtkWidget *widget,
   contact_widget_change_contact (information);
   return FALSE;
 }
+
+#if HAVE_FAVOURITE_CONTACTS
+static void
+favourite_toggled_cb (GtkToggleButton *button,
+    EmpathyContactWidget *information)
+{
+  gboolean active;
+
+  active = gtk_toggle_button_get_active (button);
+
+  if (active)
+    {
+      empathy_contact_list_add_to_favourites (
+          EMPATHY_CONTACT_LIST (information->manager), information->contact);
+    }
+  else
+    {
+      empathy_contact_list_remove_from_favourites (
+          EMPATHY_CONTACT_LIST (information->manager), information->contact);
+    }
+}
+#endif
 
 static void
 contact_widget_contact_setup (EmpathyContactWidget *information)
@@ -1318,6 +1368,27 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
     gtk_label_set_selectable (GTK_LABEL (information->label_status), FALSE);
   }
   gtk_widget_show (information->widget_alias);
+
+#if HAVE_FAVOURITE_CONTACTS
+  /* Favorite */
+  if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
+    {
+      information->favourite_checkbox = gtk_check_button_new_with_label (
+          _("Favorite"));
+
+      g_signal_connect (information->favourite_checkbox, "toggled",
+          G_CALLBACK (favourite_toggled_cb), information);
+
+      gtk_table_attach_defaults (GTK_TABLE (information->table_contact),
+           information->favourite_checkbox, 0, 2, 3, 4);
+
+      information->fav_sig_id = g_signal_connect (information->manager,
+          "favourites-changed",
+          G_CALLBACK (contact_widget_favourites_changed_cb), information);
+
+      gtk_widget_show (information->favourite_checkbox);
+    }
+#endif
 }
 
 static void
@@ -1330,10 +1401,11 @@ contact_widget_destroy_cb (GtkWidget *widget,
     {
       g_source_remove (information->widget_id_timeout);
     }
-  if (information->manager)
-    {
-      g_object_unref (information->manager);
-    }
+
+  if (information->fav_sig_id != 0)
+    g_signal_handler_disconnect (information->manager, information->fav_sig_id);
+
+  g_object_unref (information->manager);
 
   g_slice_free (EmpathyContactWidget, information);
 }
@@ -1400,6 +1472,8 @@ empathy_contact_widget_new (EmpathyContact *contact,
   g_object_set_data (G_OBJECT (information->vbox_contact_widget),
       "EmpathyContactWidget",
       information);
+
+  information->manager = empathy_contact_manager_dup_singleton ();
 
   /* Create widgets */
   contact_widget_contact_setup (information);

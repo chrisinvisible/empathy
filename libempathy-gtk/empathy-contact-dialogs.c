@@ -261,7 +261,8 @@ empathy_contact_edit_dialog_show (EmpathyContact *contact,
 	/* Contact info widget */
 	contact_widget = empathy_contact_widget_new (contact,
 		EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
-		EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
+		EMPATHY_CONTACT_WIDGET_EDIT_GROUPS |
+		EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE);
 	gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
 	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
 			    contact_widget,
