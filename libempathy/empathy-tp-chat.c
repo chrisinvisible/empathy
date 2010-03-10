@@ -1280,7 +1280,7 @@ tp_chat_constructor (GType                  type,
 		list = empathy_dispatcher_find_requestable_channel_classes (
 			dispatcher, connection,
 			tp_channel_get_channel_type (priv->channel),
-			TP_HANDLE_TYPE_ROOM, NULL);
+			TP_UNKNOWN_HANDLE_TYPE, NULL);
 
 		for (ptr = list; ptr; ptr = ptr->next) {
 			GValueArray *array = ptr->data;
