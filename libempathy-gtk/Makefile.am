@@ -11,7 +11,6 @@ AM_CPPFLAGS =                                           \
 	$(LIBNOTIFY_CFLAGS)				\
 	$(ENCHANT_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
-	$(FAVOURITE_CONTACTS_CFLAGS)			\
 	$(GEOCLUE_CFLAGS)				\
 	$(MEEGO_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\
@@ -136,7 +135,6 @@ libempathy_gtk_la_LIBADD =			\
 	$(TPL_LIBS)				\
 	$(ENCHANT_LIBS)				\
 	$(LIBCHAMPLAIN_LIBS)			\
-	$(FAVOURITE_CONTACTS_LIBS)		\
 	$(GEOCLUE_LIBS)				\
 	$(MEEGO_LIBS)				\
 	$(WEBKIT_LIBS)				\

@@ -10,7 +10,6 @@ AM_CPPFLAGS =                                           \
 	-DG_LOG_DOMAIN=\"empathy\"			\
 	$(TPL_CFLAGS)					\
 	$(LIBEMPATHY_CFLAGS)				\
-	$(FAVOURITE_CONTACTS_CFLAGS)			\
 	$(GEOCLUE_CFLAGS)				\
 	$(NETWORK_MANAGER_CFLAGS)			\
 	$(CONNMAN_CFLAGS)				\
@@ -120,7 +119,6 @@ nodist_libempathy_la_SOURCES =\
 libempathy_la_LIBADD =		\
 	$(top_builddir)/extensions/libemp-extensions.la \
 	$(LIBEMPATHY_LIBS) \
-	$(FAVOURITE_CONTACTS_LIBS) \
 	$(GEOCLUE_LIBS) \
 	$(TPL_LIBS) \
 	$(NETWORK_MANAGER_LIBS) \

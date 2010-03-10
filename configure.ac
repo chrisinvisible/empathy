@@ -483,8 +483,6 @@ if test "x$enable_favourite_contacts" = "xyes" -a "x$have_favourite_contacts" !=
 fi
 
 AM_CONDITIONAL(HAVE_FAVOURITE_CONTACTS, test "x$have_telepathy_logger" = "xyes")
-AC_SUBST(FAVOURITE_CONTACTS_CFLAGS)
-AC_SUBST(FAVOURITE_CONTACTS_LIBS)
 
 # -----------------------------------------------------------
 # nautilus-sendto
