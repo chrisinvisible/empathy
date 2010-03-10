@@ -28,6 +28,9 @@
 
 #include <gconf/gconf-client.h>
 
+#define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
+#include <libempathy/empathy-debug.h>
+
 #include "cc-empathy-accounts-panel.h"
 #include "cc-empathy-accounts-page.h"
 
@@ -53,6 +56,24 @@ setup_panel (CcEmpathyAccountsPanel *panel)
   g_object_set (panel,
       "current-page", panel->priv->empathy_accounts_page,
       NULL);
+}
+
+static void
+cc_empathy_accounts_panel_active_changed (CcPanel *self,
+    gboolean is_active)
+{
+  DEBUG ("%s: active = %i", G_STRLOC, is_active);
+
+  if (!is_active)
+    {
+      /* why doesn't control-center call active-changed on the Page? */
+      cc_empathy_accounts_page_destroy_dialogs (
+          CC_EMPATHY_ACCOUNTS_PAGE (
+            CC_EMPATHY_ACCOUNTS_PANEL (self)->priv->empathy_accounts_page));
+    }
+
+  CC_PANEL_CLASS (cc_empathy_accounts_panel_parent_class)->active_changed (
+      self, is_active);
 }
 
 static GObject *
@@ -96,7 +117,10 @@ cc_empathy_accounts_panel_finalize (GObject *object)
 static void
 cc_empathy_accounts_panel_class_init (CcEmpathyAccountsPanelClass *klass)
 {
-  GObjectClass  *object_class = G_OBJECT_CLASS (klass);
+  CcPanelClass *panel_class = CC_PANEL_CLASS (klass);
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  panel_class->active_changed = cc_empathy_accounts_panel_active_changed;
 
   object_class->constructor = cc_empathy_accounts_panel_constructor;
   object_class->finalize = cc_empathy_accounts_panel_finalize;

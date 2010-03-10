@@ -32,6 +32,9 @@
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
+#define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
+#include <libempathy/empathy-debug.h>
+
 #include "cc-empathy-accounts-page.h"
 #include "empathy-accounts-common.h"
 #include "empathy-account-assistant.h"
@@ -45,6 +48,8 @@ struct CcEmpathyAccountsPagePrivate
    * destroyed in our finalize(), since it invalidates its children (even if
    * they've already been reparented by the time it is destroyed) */
   GtkWidget *accounts_window;
+
+  GtkWidget *assistant;
 };
 
 G_DEFINE_TYPE (CcEmpathyAccountsPage, cc_empathy_accounts_page, CC_TYPE_PAGE)
@@ -87,6 +92,9 @@ account_assistant_closed_cb (GtkWidget *widget,
       empathy_account_dialog_cancel (
         EMPATHY_ACCOUNTS_DIALOG (page->priv->accounts_window));
     }
+
+  gtk_widget_set_sensitive (GTK_WIDGET (page), TRUE);
+  page->priv->assistant = NULL;
 }
 
 static void
@@ -112,10 +120,14 @@ connection_managers_prepare (GObject *source,
 
   if (!empathy_accounts_has_non_salut_accounts (account_mgr))
     {
-      GtkWidget *w;
-      w = empathy_account_assistant_show (NULL, cm_mgr);
+      GtkWindow *parent;
 
-      empathy_signal_connect_weak (w, "hide",
+      parent = empathy_get_toplevel_window (GTK_WIDGET (page));
+      page->priv->assistant = empathy_account_assistant_show (parent, cm_mgr);
+
+      gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
+
+      empathy_signal_connect_weak (page->priv->assistant, "hide",
         G_CALLBACK (account_assistant_closed_cb),
         G_OBJECT (page));
     }
@@ -171,6 +183,8 @@ active_changed (CcPage *base_page,
 {
   CcEmpathyAccountsPage *page = CC_EMPATHY_ACCOUNTS_PAGE (base_page);
   TpAccountManager *account_manager;
+
+  DEBUG ("%s: active = %i", G_STRLOC, is_active);
 
   if (is_active)
     {
@@ -231,4 +245,19 @@ cc_empathy_accounts_page_new (void)
       NULL);
 
   return CC_PAGE (object);
+}
+
+void
+cc_empathy_accounts_page_destroy_dialogs (CcEmpathyAccountsPage *self)
+{
+  /* This function is really kludgey, it is called by the AccountPanel to
+   * remove any child dialogs (i.e. this assistant). I personally feel this
+   * would be better in active_changed, but the Page doesn't seem to receive
+   * that signal when the panel does. */
+
+  if (self->priv->assistant != NULL)
+    {
+      DEBUG ("Destroying assistant");
+      gtk_widget_destroy (self->priv->assistant);
+    }
 }

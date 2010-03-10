@@ -1320,7 +1320,7 @@ empathy_account_assistant_show (GtkWindow *window,
 
   if (dialog == NULL)
     {
-      dialog =  g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT,
+      dialog = g_object_new (EMPATHY_TYPE_ACCOUNT_ASSISTANT,
           "parent-window", window,
           "connection-managers", connection_mgrs,
           NULL);

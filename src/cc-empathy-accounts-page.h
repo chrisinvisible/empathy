@@ -48,6 +48,7 @@ typedef struct
 
 GType   cc_empathy_accounts_page_get_type   (void);
 CcPage* cc_empathy_accounts_page_new        (void);
+void    cc_empathy_accounts_page_destroy_dialogs (CcEmpathyAccountsPage *self);
 
 G_END_DECLS
 
