@@ -895,10 +895,10 @@ contact_list_view_group_icon_cell_data_func (GtkTreeViewColumn     *tree_column,
 			    -1);
 
 	if (!is_group)
-		goto out;;
+		goto out;
 
 	if (tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
-		goto out;;
+		goto out;
 
 	pixbuf = empathy_pixbuf_from_icon_name ("emblem-favorite",
 		GTK_ICON_SIZE_MENU);
