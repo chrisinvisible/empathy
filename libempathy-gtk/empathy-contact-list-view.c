@@ -255,15 +255,20 @@ contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
 
 static gboolean
 group_can_be_modified (const gchar *name,
-		       gboolean is_fake_group)
+		       gboolean is_fake_group,
+		       gboolean adding)
 {
 	/* Real groups can always be modified */
 	if (!is_fake_group)
 		return TRUE;
 
-	/* Only the favorite fake group can be modified so users can
+	/* The favorite fake group can be modified so users can
 	 * add/remove favorites using DnD */
 	if (!tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
+		return TRUE;
+
+	/* We can remove contacts from the 'ungrouped' fake group */
+	if (!adding && !tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_UNGROUPED))
 		return TRUE;
 
 	return FALSE;
@@ -297,7 +302,7 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	new_group = empathy_contact_list_store_get_parent_group (model,
 								 path, NULL, &new_group_is_fake);
 
-	if (!group_can_be_modified (new_group, new_group_is_fake))
+	if (!group_can_be_modified (new_group, new_group_is_fake, TRUE))
 		return FALSE;
 
 	/* Get source group information. */
