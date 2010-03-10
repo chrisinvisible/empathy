@@ -203,6 +203,14 @@ empathy_add_link_markup (const gchar *text)
 
 	g_return_val_if_fail (text != NULL, NULL);
 
+	/* GtkLabel with links could make infinite loop because of
+	 * GNOME bug #612066. It is fixed in GTK >= 2.18.8 and GTK >= 2.19.7.
+	 * FIXME: Remove this check once we have an hard dep on GTK 2.20 */
+	if (!gtk_check_version (2, 18, 8) ||
+	    (gtk_minor_version == 19 && gtk_micro_version < 7)) {
+		return g_markup_escape_text (text, -1);
+	}
+
 	string = g_string_sized_new (strlen (text));
 	empathy_string_parser_substr (text, -1, parsers, string);
 
