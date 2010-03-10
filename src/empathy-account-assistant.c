@@ -1223,6 +1223,9 @@ empathy_account_assistant_init (EmpathyAccountAssistant *self)
       EmpathyAccountAssistantPriv);
   self->priv = priv;
 
+  gtk_window_set_title (GTK_WINDOW (self),
+      _("Messaging and VoIP Accounts Assistant"));
+
   priv->account_mgr = tp_account_manager_dup ();
 }
 
