@@ -1068,6 +1068,7 @@ contact_widget_contact_update (EmpathyContactWidget *information)
       contact_widget_presence_notify_cb (information);
       contact_widget_avatar_notify_cb (information);
 
+#if HAVE_FAVOURITE_CONTACTS
       if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
         {
           gboolean is_favourite;
@@ -1079,6 +1080,7 @@ contact_widget_contact_update (EmpathyContactWidget *information)
           contact_widget_favourites_changed_cb (information->manager,
               information->contact, is_favourite, information);
         }
+#endif
 
       gtk_widget_show (information->label_alias);
       gtk_widget_show (information->widget_alias);
