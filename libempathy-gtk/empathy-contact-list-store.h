@@ -68,7 +68,7 @@ typedef enum {
 } EmpathyContactListStoreCol;
 
 #define EMPATHY_CONTACT_LIST_STORE_UNGROUPED _("Ungrouped")
-#define EMPATHY_CONTACT_LIST_STORE_FAVORITE  _("Favorites People")
+#define EMPATHY_CONTACT_LIST_STORE_FAVORITE  _("Favorite People")
 
 struct _EmpathyContactListStore {
 	GtkTreeStore parent;
