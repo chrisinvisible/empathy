@@ -1808,7 +1808,7 @@ channel_class_matches (GValueArray *class,
   h_type = tp_asv_get_uint32 (fprops,
                               TP_IFACE_CHANNEL ".TargetHandleType", &valid);
 
-  if (!valid || handle_type != h_type)
+  if (!valid || (handle_type != h_type && handle_type != TP_UNKNOWN_HANDLE_TYPE))
     return FALSE;
 
   if (fixed_properties != NULL)
@@ -1978,7 +1978,8 @@ setup_varargs (va_list var_args,
  * @dispatcher: an #EmpathyDispatcher
  * @connection: a #TpConnection
  * @channel_type: a string identifying the type of the channel to lookup
- * @handle_type: the handle type for the channel
+ * @handle_type: the handle type for the channel, or %TP_UNKNOWN_HANDLE_TYPE
+ *               if you don't care about the channel's target handle type
  * @first_property_name: %NULL, or the name of the first fixed property,
  * followed optionally by more names, followed by %NULL.
  *

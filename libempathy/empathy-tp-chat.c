@@ -885,6 +885,14 @@ tp_chat_update_remote_contact (EmpathyTpChat *chat)
 		return;
 	}
 
+	/* This is an MSN chat, but it's the new style where 1-1 chats don't
+	 * have the group interface. If it has the conference interface, then
+	 * it is indeed a MUC. */
+	if (tp_proxy_has_interface_by_id (priv->channel,
+					  EMP_IFACE_QUARK_CHANNEL_INTERFACE_CONFERENCE)) {
+		return;
+	}
+
 	/* This is an MSN-like chat where anyone can join the chat at anytime.
 	 * If there is only one non-self contact member, we are in a private
 	 * chat and we set the "remote-contact" property to that contact. If
@@ -1280,7 +1288,7 @@ tp_chat_constructor (GType                  type,
 		list = empathy_dispatcher_find_requestable_channel_classes (
 			dispatcher, connection,
 			tp_channel_get_channel_type (priv->channel),
-			TP_HANDLE_TYPE_ROOM, NULL);
+			TP_UNKNOWN_HANDLE_TYPE, NULL);
 
 		for (ptr = list; ptr; ptr = ptr->next) {
 			GValueArray *array = ptr->data;
