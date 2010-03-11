@@ -37,6 +37,7 @@
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/proxy-subclass.h>
+#include <telepathy-glib/account-manager.h>
 
 #include "extensions/extensions.h"
 
@@ -109,6 +110,7 @@ typedef struct
 
   /* Misc. */
   gboolean dispose_run;
+  TpAccountManager *am;
 } EmpathyDebugWindowPriv;
 
 static const gchar *
@@ -568,6 +570,62 @@ debug_window_cm_is_in_model (EmpathyDebugWindow *debug_window,
   return found;
 }
 
+static gchar *
+get_cm_display_name (EmpathyDebugWindow *self,
+    const char *cm_name)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (self);
+  GHashTable *protocols = g_hash_table_new (g_str_hash, g_str_equal);
+  GList *accounts, *ptr;
+  char *retval;
+
+  accounts = tp_account_manager_get_valid_accounts (priv->am);
+
+  for (ptr = accounts; ptr != NULL; ptr = ptr->next)
+    {
+      TpAccount *account = TP_ACCOUNT (ptr->data);
+
+      if (!tp_strdiff (tp_account_get_connection_manager (account), cm_name))
+        {
+          g_hash_table_insert (protocols,
+              (char *) tp_account_get_protocol (account),
+              GUINT_TO_POINTER (TRUE));
+        }
+    }
+
+  g_list_free (accounts);
+
+  if (g_hash_table_size (protocols) > 0)
+    {
+      GHashTableIter iter;
+      char **protocolsv;
+      char *key, *str;
+      guint i;
+
+      protocolsv = g_new0 (char *, g_hash_table_size (protocols) + 1);
+
+      g_hash_table_iter_init (&iter, protocols);
+      for (i = 0; g_hash_table_iter_next (&iter, (gpointer) &key, NULL); i++)
+        {
+          protocolsv[i] = key;
+        }
+
+      str = g_strjoinv (", ", protocolsv);
+      retval = g_strdup_printf ("%s (%s)", cm_name, str);
+
+      g_free (protocolsv);
+      g_free (str);
+    }
+  else
+    {
+      retval = g_strdup (cm_name);
+    }
+
+  g_hash_table_destroy (protocols);
+
+  return retval;
+}
+
 typedef struct
 {
   EmpathyDebugWindow *debug_window;
@@ -582,6 +640,7 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
     GObject *weak_object)
 {
   FillCmChooserData *data = (FillCmChooserData *) user_data;
+  EmpathyDebugWindow *self = EMPATHY_DEBUG_WINDOW (data->debug_window);
   EmpathyDebugWindowPriv *priv = GET_PRIV (data->debug_window);
 
   if (error != NULL)
@@ -593,15 +652,20 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
   if (!debug_window_cm_is_in_model (data->debug_window, out, NULL, FALSE))
     {
       GtkTreeIter iter;
+      char *name;
 
       DEBUG ("Adding CM to list: %s at unique name: %s",
           data->cm_name, out);
 
+      name = get_cm_display_name (self, data->cm_name);
+
       gtk_list_store_append (priv->cms, &iter);
       gtk_list_store_set (priv->cms, &iter,
-          COL_CM_NAME, data->cm_name,
+          COL_CM_NAME, name,
           COL_CM_UNIQUE_NAME, out,
           -1);
+
+      g_free (name);
     }
 
 OUT:
@@ -665,6 +729,7 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
     gpointer user_data,
     GObject *weak_object)
 {
+  EmpathyDebugWindow *self = EMPATHY_DEBUG_WINDOW (user_data);
   EmpathyDebugWindowPriv *priv = GET_PRIV (user_data);
 
   /* Wow, I hate all of this code... */
@@ -683,13 +748,19 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
       if (!g_hash_table_lookup (priv->all_cms, name))
         {
           GtkTreeIter iter;
+          char *str;
+
           DEBUG ("Adding new CM '%s' at %s.", name, arg2);
+
+          str = get_cm_display_name (self, name);
 
           gtk_list_store_append (priv->cms, &iter);
           gtk_list_store_set (priv->cms, &iter,
-              COL_CM_NAME, name,
+              COL_CM_NAME, str,
               COL_CM_UNIQUE_NAME, arg2,
               -1);
+
+          g_free (str);
         }
       else
         {
@@ -700,14 +771,19 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 
           if (debug_window_cm_is_in_model (user_data, name, &iter, TRUE))
             {
+              char *str;
+
               DEBUG ("Refreshing CM '%s' at '%s'.", name, arg2);
 
+              str = get_cm_display_name (self, name);
+
               gtk_list_store_set (priv->cms, iter,
-                  COL_CM_NAME, name,
+                  COL_CM_NAME, str,
                   COL_CM_UNIQUE_NAME, arg2,
                   COL_CM_GONE, FALSE,
                   -1);
               gtk_tree_iter_free (iter);
+              g_free (str);
 
               debug_window_cm_chooser_changed_cb
                 (GTK_COMBO_BOX (priv->cm_chooser), user_data);
@@ -1228,13 +1304,13 @@ tree_view_search_equal_func_cb (GtkTreeModel *model,
   return ret;
 }
 
-static GObject *
-debug_window_constructor (GType type,
-    guint n_construct_params,
-    GObjectConstructParam *construct_params)
+static void
+am_prepared_cb (GObject *am,
+    GAsyncResult *res,
+    gpointer user_data)
 {
-  GObject *object;
-  EmpathyDebugWindowPriv *priv;
+  GObject *object = user_data;
+  EmpathyDebugWindowPriv *priv = GET_PRIV (object);
   GtkWidget *vbox;
   GtkWidget *toolbar;
   GtkWidget *image;
@@ -1243,10 +1319,13 @@ debug_window_constructor (GType type,
   GtkCellRenderer *renderer;
   GtkListStore *level_store;
   GtkTreeIter iter;
+  GError *error = NULL;
 
-  object = G_OBJECT_CLASS (empathy_debug_window_parent_class)->constructor
-    (type, n_construct_params, construct_params);
-  priv = GET_PRIV (object);
+  if (!tp_proxy_prepare_finish (am, res, &error))
+    {
+      g_warning ("Failed to prepare AM: %s", error->message);
+      g_clear_error (&error);
+    }
 
   gtk_window_set_title (GTK_WINDOW (object), _("Debug Window"));
   gtk_window_set_default_size (GTK_WINDOW (object), 800, 400);
@@ -1464,8 +1543,15 @@ debug_window_constructor (GType type,
   debug_window_set_toolbar_sensitivity (EMPATHY_DEBUG_WINDOW (object), FALSE);
   debug_window_fill_cm_chooser (EMPATHY_DEBUG_WINDOW (object));
   gtk_widget_show (GTK_WIDGET (object));
+}
 
-  return object;
+static void
+debug_window_constructed (GObject *object)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (object);
+
+  priv->am = tp_account_manager_dup ();
+  tp_proxy_prepare_async (priv->am, NULL, am_prepared_cb, object);
 }
 
 static void
@@ -1564,6 +1650,12 @@ debug_window_dispose (GObject *object)
   if (priv->dbus != NULL)
     g_object_unref (priv->dbus);
 
+  if (priv->am != NULL)
+    {
+      g_object_unref (priv->am);
+      priv->am = NULL;
+    }
+
   (G_OBJECT_CLASS (empathy_debug_window_parent_class)->dispose) (object);
 }
 
@@ -1571,7 +1663,7 @@ static void
 empathy_debug_window_class_init (EmpathyDebugWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  object_class->constructor = debug_window_constructor;
+  object_class->constructed = debug_window_constructed;
   object_class->dispose = debug_window_dispose;
   object_class->finalize = debug_window_finalize;
   object_class->set_property = debug_window_set_property;
