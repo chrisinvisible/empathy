@@ -351,7 +351,7 @@ empathy_map_view_show (void)
 
   if (window)
     {
-      empathy_window_present (GTK_WINDOW (window->window), TRUE);
+      empathy_window_present (GTK_WINDOW (window->window));
       return window->window;
     }
 
@@ -415,7 +415,7 @@ empathy_map_view_show (void)
   model = GTK_TREE_MODEL (window->list_store);
   gtk_tree_model_foreach (model, map_view_contacts_foreach, window);
 
-  empathy_window_present (GTK_WINDOW (window->window), TRUE);
+  empathy_window_present (GTK_WINDOW (window->window));
 
   /* Set up time updating loop */
   window->timeout_id = g_timeout_add_seconds (5,

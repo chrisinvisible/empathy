@@ -1385,8 +1385,7 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 
 /* Takes care of moving the window to the current workspace. */
 void
-empathy_window_present (GtkWindow *window,
-			gboolean   steal_focus)
+empathy_window_present (GtkWindow *window)
 {
 	GdkWindow *gdk_window;
 

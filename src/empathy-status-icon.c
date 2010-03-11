@@ -362,7 +362,7 @@ status_icon_set_visibility (EmpathyStatusIcon *icon,
 	if (!visible) {
 		empathy_window_iconify (priv->window, priv->icon);
 	} else {
-		empathy_window_present (GTK_WINDOW (priv->window), TRUE);
+		empathy_window_present (GTK_WINDOW (priv->window));
 	}
 }
 

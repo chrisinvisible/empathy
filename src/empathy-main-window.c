@@ -1306,7 +1306,7 @@ empathy_main_window_show (void)
 	GSList                   *l;
 
 	if (main_window) {
-		empathy_window_present (GTK_WINDOW (main_window->window), TRUE);
+		empathy_window_present (GTK_WINDOW (main_window->window));
 		return main_window->window;
 	}
 

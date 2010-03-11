@@ -104,8 +104,7 @@ gboolean    empathy_text_iter_backward_search           (const GtkTextIter*iter,
 							 const GtkTextIter*limit);
 /* Windows */
 gboolean    empathy_window_get_is_visible               (GtkWindow        *window);
-void        empathy_window_present                      (GtkWindow        *window,
-							 gboolean          steal_focus);
+void        empathy_window_present                      (GtkWindow        *window);
 void        empathy_window_iconify                      (GtkWindow        *window,
 							 GtkStatusIcon    *status_icon);
 GtkWindow * empathy_get_toplevel_window                 (GtkWidget        *widget);

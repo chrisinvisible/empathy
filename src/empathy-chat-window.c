@@ -2242,7 +2242,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat)
 
 	priv = GET_PRIV (window);
 	empathy_chat_window_switch_to_chat (window, chat);
-	empathy_window_present (GTK_WINDOW (priv->dialog), TRUE);
+	empathy_window_present (GTK_WINDOW (priv->dialog));
 
  	gtk_widget_grab_focus (chat->input_text_view);
 }
