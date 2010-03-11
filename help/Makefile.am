@@ -33,6 +33,7 @@ DOC_PAGES = \
 	geolocation-turn.page \
 	geolocation-what-is.page \
 	group-conversations.page \
+	hide-contacts.page \
 	import-account.page \
 	index.page \
 	introduction.page \
@@ -44,7 +45,6 @@ DOC_PAGES = \
 	irc-send-file.page \
 	irc-start-conversation.page \
 	license.page \
-	offline-contacts.page \
 	prev-conv.page \
 	prob-conn-acctdisabled.page \
 	prob-conn-auth.page \
