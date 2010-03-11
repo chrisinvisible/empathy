@@ -1037,12 +1037,6 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "show", G_CALLBACK (empathy_call_window_sidebar_shown_cb), self);
   gtk_paned_pack2 (GTK_PANED (priv->pane), priv->sidebar, FALSE, FALSE);
 
-  priv->dtmf_panel = empathy_call_window_create_dtmf (self);
-  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Dialpad"),
-    priv->dtmf_panel);
-
-  gtk_widget_set_sensitive (priv->dtmf_panel, FALSE);
-
   page = empathy_call_window_create_audio_input (self);
   empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Audio input"),
     page);
@@ -1050,6 +1044,13 @@ empathy_call_window_init (EmpathyCallWindow *self)
   page = empathy_call_window_create_video_input (self);
   empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Video input"),
     page);
+
+  priv->dtmf_panel = empathy_call_window_create_dtmf (self);
+  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Dialpad"),
+    priv->dtmf_panel);
+
+  gtk_widget_set_sensitive (priv->dtmf_panel, FALSE);
+
 
   gtk_widget_show_all (top_vbox);
 
