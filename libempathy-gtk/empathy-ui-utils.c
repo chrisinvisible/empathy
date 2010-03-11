@@ -1410,7 +1410,11 @@ empathy_window_present (GtkWindow *window)
 			gtk_widget_hide (GTK_WIDGET (window));
 	}
 
-	timestamp = gdk_x11_display_get_user_time (gdk_display_get_default ());
+	timestamp = gtk_get_current_event_time ();
+	if (timestamp == 0)
+		/* No event, fallback to _NET_WM_USER_TIME */
+		timestamp = gdk_x11_display_get_user_time (gdk_display_get_default ());
+
 	gtk_window_present_with_time (window, timestamp);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
 	gtk_window_deiconify (window);
