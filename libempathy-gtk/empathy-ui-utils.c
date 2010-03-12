@@ -1669,6 +1669,7 @@ void
 empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 {
 	GtkWidget *widget;
+	const gchar *dir;
 
 	widget = gtk_file_chooser_dialog_new (_("Select a destination"),
 					      NULL,
@@ -1682,6 +1683,13 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 		empathy_ft_handler_get_filename (handler));
 	gtk_file_chooser_set_do_overwrite_confirmation
 		(GTK_FILE_CHOOSER (widget), TRUE);
+
+	dir = g_get_user_special_dir (G_USER_DIRECTORY_DOWNLOAD);
+	if (dir == NULL)
+		/* Fallback to $HOME if $XDG_DOWNLOAD_DIR is not set */
+		dir = g_get_home_dir ();
+
+	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget), dir);
 
 	g_signal_connect (widget, "response",
 		G_CALLBACK (file_manager_receive_file_response_cb), handler);
