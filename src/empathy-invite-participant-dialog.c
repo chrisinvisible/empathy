@@ -52,9 +52,12 @@ empathy_invite_participant_dialog_init (EmpathyInviteParticipantDialog *self)
 }
 
 GtkWidget *
-empathy_invite_participant_dialog_new (GtkWindow *parent)
+empathy_invite_participant_dialog_new (GtkWindow *parent,
+    TpAccount *account)
 {
-  GtkWidget *self = g_object_new (EMPATHY_TYPE_INVITE_PARTICIPANT_DIALOG, NULL);
+  GtkWidget *self = g_object_new (EMPATHY_TYPE_INVITE_PARTICIPANT_DIALOG,
+      "filter-account", account,
+      NULL);
 
   if (parent != NULL)
     {

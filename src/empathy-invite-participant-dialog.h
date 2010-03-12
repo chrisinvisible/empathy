@@ -39,7 +39,8 @@ struct _EmpathyInviteParticipantDialogClass
 };
 
 GType empathy_invite_participant_dialog_get_type (void);
-GtkWidget *empathy_invite_participant_dialog_new (GtkWindow *parent);
+GtkWidget *empathy_invite_participant_dialog_new (GtkWindow *parent,
+    TpAccount *account);
 
 G_END_DECLS
 
