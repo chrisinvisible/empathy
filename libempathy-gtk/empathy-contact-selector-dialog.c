@@ -55,6 +55,7 @@ struct _EmpathyContactSelectorDialogPriv {
   GtkWidget *account_chooser;
   GtkWidget *entry_id;
   EmpathyContactManager *contact_manager;
+  TpAccount *filter_account;
 
   gboolean show_account_chooser;
 };
@@ -65,7 +66,8 @@ struct _EmpathyContactSelectorDialogPriv {
 
 enum {
   PROP_0,
-  PROP_SHOW_ACCOUNT_CHOOSER
+  PROP_SHOW_ACCOUNT_CHOOSER,
+  PROP_FILTER_ACCOUNT
 };
 
 enum {
@@ -103,8 +105,22 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
     }
   else
     {
-      members = empathy_contact_list_get_members (
-          EMPATHY_CONTACT_LIST (priv->contact_manager));
+      if (priv->filter_account != NULL)
+        {
+          EmpathyTpContactList *contact_list;
+
+          connection = tp_account_get_connection (priv->filter_account);
+          contact_list = empathy_contact_manager_get_list (
+              priv->contact_manager, connection);
+
+          members = empathy_contact_list_get_members (
+              EMPATHY_CONTACT_LIST (contact_list));
+        }
+      else
+        {
+          members = empathy_contact_list_get_members (
+              EMPATHY_CONTACT_LIST (priv->contact_manager));
+        }
     }
 
   /* Add members to the completion */
@@ -361,6 +377,11 @@ empathy_contact_selector_dialog_get_property (GObject *self,
           empathy_contact_selector_dialog_get_show_account_chooser (dialog));
         break;
 
+      case PROP_FILTER_ACCOUNT:
+        g_value_set_object (value,
+            empathy_contact_selector_dialog_get_filter_account (dialog));
+        break;
+
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
         break;
@@ -380,6 +401,11 @@ empathy_contact_selector_dialog_set_property (GObject *self,
       case PROP_SHOW_ACCOUNT_CHOOSER:
         empathy_contact_selector_dialog_set_show_account_chooser (dialog,
             g_value_get_boolean (value));
+        break;
+
+      case PROP_FILTER_ACCOUNT:
+        empathy_contact_selector_dialog_set_filter_account (dialog,
+            g_value_get_object (value));
         break;
 
       default:
@@ -445,6 +471,14 @@ empathy_contact_selector_dialog_class_init (
         "Whether or not this dialog should show an account chooser",
         TRUE,
         G_PARAM_READWRITE));
+
+  g_object_class_install_property (object_class, PROP_FILTER_ACCOUNT,
+      g_param_spec_object ("filter-account",
+        "Account to filter contacts",
+        "if 'show-account-chooser' is unset, only the contacts from this "
+        "account are displayed",
+        TP_TYPE_ACCOUNT,
+        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 }
 
 const gchar *
@@ -501,4 +535,32 @@ empathy_contact_selector_dialog_get_show_account_chooser (
 
   priv = GET_PRIV (self);
   return priv->show_account_chooser;
+}
+
+void
+empathy_contact_selector_dialog_set_filter_account (
+    EmpathyContactSelectorDialog *self,
+    TpAccount *account)
+{
+  EmpathyContactSelectorDialogPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self));
+
+  priv = GET_PRIV (self);
+  priv->filter_account = g_object_ref (account);
+
+  g_object_notify (G_OBJECT (self), "filter-account");
+}
+
+TpAccount *
+empathy_contact_selector_dialog_get_filter_account (
+    EmpathyContactSelectorDialog *self)
+{
+  EmpathyContactSelectorDialogPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self), FALSE);
+
+  priv = GET_PRIV (self);
+  return priv->filter_account;
+
 }

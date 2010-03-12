@@ -62,6 +62,13 @@ void empathy_contact_selector_dialog_set_show_account_chooser (
 gboolean empathy_contact_selector_dialog_get_show_account_chooser (
     EmpathyContactSelectorDialog *self);
 
+void empathy_contact_selector_dialog_set_filter_account (
+    EmpathyContactSelectorDialog *self,
+    TpAccount *account);
+
+TpAccount * empathy_contact_selector_dialog_get_filter_account (
+    EmpathyContactSelectorDialog *self);
+
 /* TYPE MACROS */
 #define EMPATHY_TYPE_CONTACT_SELECTOR_DIALOG \
   (empathy_contact_selector_dialog_get_type ())
