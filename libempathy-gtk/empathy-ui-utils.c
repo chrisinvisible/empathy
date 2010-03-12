@@ -1631,6 +1631,9 @@ empathy_send_file_with_file_chooser (EmpathyContact *contact)
 
 	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (widget), FALSE);
 
+	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
+		g_get_home_dir ());
+
 	g_signal_connect (widget, "response",
 			  G_CALLBACK (file_manager_send_file_response_cb),
 			  contact);
