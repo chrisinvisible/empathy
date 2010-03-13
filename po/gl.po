@@ -1,22 +1,22 @@
-# translation of empathy-master-po-gl-57278_.merged.po to Galego
+# translation of empathy to Galego
 # This file is distributed under the same license as the EMPATHY package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 #
 # Mancomún - Centro de Referencia e Servizos de Software Libre <g11n@mancomun.org>, 2009.
 # Antón Méixome <meixome@mancomun.org>, 2009.
 # Fran Dieguez <fran.dieguez@glug.es>, 2009.
-# Francisco Diéguez <frandieguez@ubuntu.com>, 2010.
 # Fran Diéguez <frandieguez@ubuntu.com>,2009, 2010.
 # Antón Méixome <meixome@certima.net>, 2010.
+# Francisco Diéguez <frandieguez@ubuntu.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-03-04 18:12+0000\n"
-"PO-Revision-Date: 2010-03-02 15:32+0100\n"
-"Last-Translator: Antón Méixome <meixome@certima.net>\n"
-"Language-Team: Galego <gnome@g11n.net>\n"
+"POT-Creation-Date: 2010-03-12 13:32+0000\n"
+"PO-Revision-Date: 2010-03-06 22:40+0100\n"
+"Last-Translator: Francisco Diéguez <frandieguez@ubuntu.com>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -30,7 +30,7 @@ msgstr "Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy IM Client"
-msgstr "Cliente de mensaxaría Empathy"
+msgstr "Cliente de mensaxería Empathy"
 
 #: ../data/empathy.desktop.in.in.h:3
 msgid "IM Client"
@@ -181,7 +181,7 @@ msgstr "Carácter de completado de alcume"
 # rever
 #: ../data/empathy.schemas.in.h:28
 msgid "Open new chats in separate windows"
-msgstr "Abrir as conversas novas en xanelas separadas"
+msgstr "Abrir as novas conversas en xanelas separadas"
 
 #: ../data/empathy.schemas.in.h:29
 msgid "Path of the Adium theme to use"
@@ -537,12 +537,14 @@ msgstr ""
 
 #: ../data/empathy-accounts.desktop.in.in.h:1
 msgid "Manage Messaging and VoIP accounts"
-msgstr "Xestionar as contas de mensaxaría e VoIP"
+msgstr "Xestionar as contas de mensaxería e VoIP"
 
+#. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/cc-empathy-accounts-page.c:229 ../src/cc-empathy-accounts-panel.c:70
+#: ../src/empathy-accounts-dialog.c:2066 ../src/cc-empathy-accounts-page.c:243
+#: ../src/cc-empathy-accounts-panel.c:91
 msgid "Messaging and VoIP Accounts"
-msgstr "Contas de mensaxaría e VoIP"
+msgstr "Contas de mensaxería e VoIP"
 
 #: ../libempathy/empathy-ft-handler.c:842
 msgid "The hash of the received file and the sent one do not match"
@@ -753,7 +755,7 @@ msgstr "no futuro"
 
 #: ../libempathy-gtk/empathy-account-chooser.c:462
 msgid "All"
-msgstr "Todo"
+msgstr "Todas"
 
 #: ../libempathy-gtk/empathy-account-widget.c:538
 #: ../libempathy-gtk/empathy-account-widget.c:594
@@ -1554,30 +1556,30 @@ msgid "Subscription Request"
 msgstr "Solicitude de subscrición"
 
 # rever
-#: ../libempathy-gtk/empathy-contact-list-view.c:1516
+#: ../libempathy-gtk/empathy-contact-list-view.c:1529
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Está seguro de que quere eliminar o grupo '%s'?"
 
 # rever
-#: ../libempathy-gtk/empathy-contact-list-view.c:1518
+#: ../libempathy-gtk/empathy-contact-list-view.c:1531
 msgid "Removing group"
 msgstr "Eliminando o grupo"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1565
-#: ../libempathy-gtk/empathy-contact-list-view.c:1642
+#: ../libempathy-gtk/empathy-contact-list-view.c:1578
+#: ../libempathy-gtk/empathy-contact-list-view.c:1655
 #: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "_Eliminar"
 
 # rever
-#: ../libempathy-gtk/empathy-contact-list-view.c:1595
+#: ../libempathy-gtk/empathy-contact-list-view.c:1608
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Está seguro de quere eliminar o contacto '%s'?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1597
+#: ../libempathy-gtk/empathy-contact-list-view.c:1610
 msgid "Removing contact"
 msgstr "Eliminando o contacto"
 
@@ -2057,7 +2059,7 @@ msgid "Select a file"
 msgstr "Seleccione un ficheiro"
 
 # rever
-#: ../libempathy-gtk/empathy-ui-utils.c:1673
+#: ../libempathy-gtk/empathy-ui-utils.c:1677
 msgid "Select a destination"
 msgstr "Seleccione un destinatario"
 
@@ -2259,7 +2261,7 @@ msgstr "Non mostrar a lista de contactos nin outros diálogos no inicio"
 # rever
 #: ../src/empathy.c:612
 msgid "- Empathy IM Client"
-msgstr "- Cliente de mensaxaría instantánea Empathy"
+msgstr "- Cliente de mensaxería instantánea Empathy"
 
 # rever
 #: ../src/empathy-about-dialog.c:85
@@ -2552,11 +2554,6 @@ msgid ""
 msgstr ""
 "Vai cerrar a xanela, e descartaranse os cambios que realizou.\n"
 "Está seguro de que quere proceder?"
-
-#. Tweak the dialog
-#: ../src/empathy-accounts-dialog.c:2066
-msgid "Accounts"
-msgstr "Contas"
 
 # rever
 #: ../src/empathy-accounts-dialog.ui.h:1
@@ -3198,7 +3195,7 @@ msgstr "Unirse a pre_feridos"
 
 #: ../src/empathy-main-window.ui.h:5
 msgid "Manage Favorites"
-msgstr "Xestionar os preferidos"
+msgstr "Xestionar as preferidas"
 
 #: ../src/empathy-main-window.ui.h:6
 msgid "N_ormal Size"
@@ -3481,8 +3478,8 @@ msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
 msgstr ""
-"A lista de idiomas reflicte só aqueles idiomas para os que ten un dicionario "
-"instalado."
+"A lista de idiomas reflicte só naqueles idiomas para os que ten un "
+"dicionario instalado."
 
 #: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
@@ -3562,7 +3559,7 @@ msgstr "Depuración"
 
 #: ../src/empathy-debug-window.c:1337
 msgid "Info"
-msgstr "Info"
+msgstr "Información"
 
 #: ../src/empathy-debug-window.c:1343 ../src/empathy-debug-window.c:1392
 msgid "Message"
@@ -3639,14 +3636,4 @@ msgstr "- Contas de Empathy"
 #: ../src/empathy-accounts.c:247
 msgid " Accounts"
 msgstr " Contas"
-
-# rever
-#~ msgid "Salut account is created"
-#~ msgstr "A conta Salut foi creada"
-
-# rever
-#~ msgid "Whether the Salut account has been created on the first Empathy run."
-#~ msgstr ""
-#~ "Indica se a conta Salut debería ser creada na primeira execución do "
-#~ "Empathy ou non."
 
