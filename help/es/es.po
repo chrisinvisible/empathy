@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-help.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-11 17:25+0000\n"
-"PO-Revision-Date: 2010-03-11 18:41+0100\n"
+"POT-Creation-Date: 2010-03-12 21:03+0000\n"
+"PO-Revision-Date: 2010-03-14 23:17+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,7 @@ msgstr "Iniciar una conversación de vídeo con uno de sus contactos."
 #: C/prob-conn-acctdisabled.page:18(name) C/prev-conv.page:16(name)
 #: C/irc-start-conversation.page:15(name) C/irc-send-file.page:16(name)
 #: C/irc-nick-password.page:18(name) C/irc-manage.page:18(name)
-#: C/irc-join-room.page:16(name) C/irc-join-pwd.page:16(name)
+#: C/irc-join-room.page:16(name) C/irc-join-pwd.page:17(name)
 #: C/irc-commands.page:10(name) C/introduction.page:13(name)
 #: C/index.page:18(name) C/import-account.page:23(name)
 #: C/hide-contacts.page:11(name) C/group-conversations.page:19(name)
@@ -55,7 +55,7 @@ msgstr "Milo Casagrande"
 #: C/prob-conn-acctdisabled.page:19(email) C/prev-conv.page:17(email)
 #: C/irc-start-conversation.page:16(email) C/irc-send-file.page:17(email)
 #: C/irc-nick-password.page:19(email) C/irc-manage.page:19(email)
-#: C/irc-join-room.page:17(email) C/irc-join-pwd.page:17(email)
+#: C/irc-join-room.page:17(email) C/irc-join-pwd.page:18(email)
 #: C/irc-commands.page:11(email) C/introduction.page:14(email)
 #: C/index.page:19(email) C/import-account.page:24(email)
 #: C/hide-contacts.page:12(email) C/group-conversations.page:20(email)
@@ -77,7 +77,7 @@ msgstr "milo@ubuntu.com"
 #: C/prob-conn-acctdisabled.page:22(p) C/prev-conv.page:24(p)
 #: C/irc-start-conversation.page:19(p) C/irc-send-file.page:20(p)
 #: C/irc-nick-password.page:22(p) C/irc-manage.page:22(p)
-#: C/irc-join-room.page:20(p) C/irc-join-pwd.page:20(p)
+#: C/irc-join-room.page:20(p) C/irc-join-pwd.page:21(p)
 #: C/irc-commands.page:14(p) C/introduction.page:17(p) C/index.page:22(p)
 #: C/import-account.page:31(p) C/hide-contacts.page:15(p)
 #: C/group-conversations.page:23(p) C/geolocation-what-is.page:22(p)
@@ -1445,22 +1445,37 @@ msgstr ""
 "sala."
 
 #: C/irc-join-pwd.page:9(desc)
-msgid ""
-"<app>Empathy</app> does not currently support password-protected IRC chat "
-"rooms."
-msgstr ""
-"Actualmente <app>Empathy</app> no soporta salas de chat de IRC protegidas "
-"por contraseña."
+#| msgid "Join a protected IRC chat room"
+msgid "Enter password-protected IRC chat rooms."
+msgstr "Introduzca la contraseña para salas de chat IRC protegidas."
 
-#: C/irc-join-pwd.page:31(title)
+#: C/irc-join-pwd.page:25(title)
 msgid "Join a protected IRC chat room"
 msgstr "Unirse a una sala de chat protegida en el IRC"
 
-#: C/irc-join-pwd.page:33(p)
+#: C/irc-join-pwd.page:27(p)
 msgid ""
-"It is not currently possible to join a password-protected IRC chat room."
+"On some IRC networks, private IRC rooms may be protected with a password."
 msgstr ""
-"Actualmente no es posible unirse a salas protegidas por contraseña en el IRC."
+"En algunas redes IRC las salas privadas de IRC pueden estar protegidas por "
+"contraseña."
+
+#: C/irc-join-pwd.page:30(p)
+msgid "To join such a room, if you know the password:"
+msgstr "Para unirse a una sala así, si sabe la contraseña:"
+
+#: C/irc-join-pwd.page:35(p)
+msgid "<link xref=\"irc-join-room\">Join the room</link>."
+msgstr "<link xref=\"irc-join-room\">Unirse a la sala</link>."
+
+#: C/irc-join-pwd.page:40(p)
+msgid ""
+"In the <gui>This room is protected by a password</gui> text box, type the "
+"IRC room password, and click on <gui style=\"button\">Join</gui>."
+msgstr ""
+"Escriba la contraseña para la sala de chat IRC en la caja de texto <gui>Esta "
+"sala está protegida por contraseña</gui> y pulse <gui style=\"button"
+"\">Unirse</gui>."
 
 #: C/irc-commands.page:7(desc)
 msgid "The supported IRC commands."
@@ -1647,15 +1662,10 @@ msgstr ""
 "Ocultar los contactos desconectados de su <gui>Lista de contactos</gui>."
 
 #: C/hide-contacts.page:19(title)
-#| msgid "Show offline contacts"
 msgid "Hide offline contacts"
 msgstr "Ocultar contactos desconectados"
 
 #: C/hide-contacts.page:21(p)
-#| msgid ""
-#| "Normally, <app>Empathy</app> only shows your contacts that are currently "
-#| "online. You can show all of your contacts instead, including those that "
-#| "are offline."
 msgid ""
 "Normally, <app>Empathy</app> shows all your contacts: those that are online, "
 "with which you can have a conversation, and also those that are offline."
@@ -1679,7 +1689,6 @@ msgstr ""
 "key><key>H</key></keyseq>."
 
 #: C/hide-contacts.page:36(p)
-#| msgid "To hide the offline contacts again, repeat the same procedure above."
 msgid "To show the offline contacts again, repeat the same procedure above."
 msgstr ""
 "Para mostrar los contactos desconectados de nuevo, repita el mismo "
@@ -3289,6 +3298,19 @@ msgstr ""
 #: C/index.page:0(None)
 msgid "translator-credits"
 msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2008-2010"
+
+#~ msgid ""
+#~ "<app>Empathy</app> does not currently support password-protected IRC chat "
+#~ "rooms."
+#~ msgstr ""
+#~ "Actualmente <app>Empathy</app> no soporta salas de chat de IRC protegidas "
+#~ "por contraseña."
+
+#~ msgid ""
+#~ "It is not currently possible to join a password-protected IRC chat room."
+#~ msgstr ""
+#~ "Actualmente no es posible unirse a salas protegidas por contraseña en el "
+#~ "IRC."
 
 #~ msgid "See all of your contacts, even those that are not online."
 #~ msgstr "Vea todos sus contactos, incluso aquellos que no están conectados."
