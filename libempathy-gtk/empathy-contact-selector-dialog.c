@@ -448,6 +448,11 @@ empathy_contact_selector_dialog_dispose (GObject *object)
     priv->contact_manager = NULL;
   }
 
+  if (priv->filter_account != NULL) {
+    g_object_unref (priv->filter_account);
+    priv->filter_account = NULL;
+  }
+
   if (G_OBJECT_CLASS (empathy_contact_selector_dialog_parent_class)->dispose)
     G_OBJECT_CLASS (empathy_contact_selector_dialog_parent_class)->dispose (
         object);
