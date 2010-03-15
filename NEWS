@@ -1,3 +1,47 @@
+NEW in 2.29.93
+==============
+
+The "6 amps limitation" release.
+
+Empathy now supports marking contacts as favourite. This feature has to be
+turned on by passing --enable-favourite-contacts during configure and depends
+on the telepathy-logger. We discourage distributions shipping GNOME from
+enabling this feature for now. It will be enabled by default in 2.31.x.
+
+Empathy no longer removes a manually-set Away status when the screen is unlocked.
+It is now able to invite contacts to MSN multi-user chats if you have
+telepathy-butterfly 0.5.6 installed.
+
+Bugs fixed:
+ - Fixed #566832, Don't reset status to available unlocking the screen (Brian Curtis)
+ - Fixed #609001, Clicking on the tray icon should close roster when open (Guillaume Desmottes)
+ - Fixed #611525, Separate the debug window into its own process. (Mike Ruprecht)
+ - Fixed #611972, Support marking contacts as favorites (Travis Reitter, Guillaume Desmottes)
+ - Fixed #611998, Do not use constant in gettext expressions (Guillaume Desmottes)
+ - Fixed #612381, accounts pane is still twiddleable underneath assistant (Danielle Madeley)
+ - Fixed #612433, Window title for the accounts dialog should match the name in the launcher (Ken VanDine)
+ - Fixed #612448, Display offline contacts and sort by status by default (Guillaume Desmottes)
+ - Fixed #612450, Side bar should display the audio input page by default (Guillaume Desmottes)
+ - Fixed #612461, Deal with new butterfly using the conference interface (Jonny Lamb)
+ - Fixed #612519, Handle a butterfly network ID migration (Jonny Lamb)
+ - Fixed #612672, Wrong folder used for saving received files (Guillaume Desmottes)
+ - Fixed #612718, Invite participant dialog show contact on all network (Guillaume Desmottes)
+ - Fixed #612946, Receive note path via DnD from tomboy (Olivier Le Thanh Duong)
+
+Translations:
+ - Updated br Translation (deniarnuad)
+ - Updated es Translation (Jorge González)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated it Translation (Luca Ferretti)
+ - Updated ru Translation (Leonid Kanter)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated es Documentation translation (Jorge González)
+ - Updated it Documentation translation (Milo Casagrande)
+
 NEW in 2.29.92
 ==============
 
