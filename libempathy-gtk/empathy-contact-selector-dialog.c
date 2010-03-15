@@ -110,6 +110,9 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
           EmpathyTpContactList *contact_list;
 
           connection = tp_account_get_connection (priv->filter_account);
+          if (connection == NULL)
+            return;
+
           contact_list = empathy_contact_manager_get_list (
               priv->contact_manager, connection);
 
