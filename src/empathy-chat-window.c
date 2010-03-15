@@ -119,6 +119,7 @@ static const GtkTargetEntry drag_types_dest[] = {
 	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
 	{ "GTK_NOTEBOOK_TAB", GTK_TARGET_SAME_APP, DND_DRAG_TYPE_TAB },
 	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
+	{ "text/path-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
 static const GtkTargetEntry drag_types_dest_contact[] = {
@@ -126,6 +127,9 @@ static const GtkTargetEntry drag_types_dest_contact[] = {
 };
 
 static const GtkTargetEntry drag_types_dest_file[] = {
+	/* must be first to be prioritized, in order to receive the
+	 * note's file path from Tomboy instead of an URI */
+	{ "text/path-list", 0, DND_DRAG_TYPE_URI_LIST },
 	{ "text/uri-list", 0, DND_DRAG_TYPE_URI_LIST },
 };
 
@@ -1539,15 +1543,18 @@ chat_window_drag_drop (GtkWidget        *widget,
 			 int               x,
 			 int               y,
 			 guint             time_,
-			 gpointer          user_data)
+			 EmpathyChatWindow *window)
 {
-	GdkAtom target, uri_target, contact_target;
+	GdkAtom target;
+	EmpathyChatWindowPriv *priv;
 
-	target = gtk_drag_dest_find_target (widget, context, NULL);
-	uri_target = gdk_atom_intern_static_string ("text/uri-list");
-	contact_target = gdk_atom_intern_static_string ("text/contact-id");
+	priv = GET_PRIV (window);
 
-	if (target == uri_target || target == contact_target) {
+	target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
+	if (target == GDK_NONE)
+		target = gtk_drag_dest_find_target (widget, context, priv->contact_targets);
+
+	if (target != GDK_NONE) {
 		gtk_drag_get_data (widget, context, target, time_);
 		return TRUE;
 	}
@@ -1565,14 +1572,11 @@ chat_window_drag_motion (GtkWidget        *widget,
 {
 	GdkAtom target;
 	EmpathyChatWindowPriv *priv;
-	GdkAtom dest_target;
 
 	priv = GET_PRIV (window);
 
-	target = gtk_drag_dest_find_target (widget, context, NULL);
-
-	dest_target = gdk_atom_intern_static_string ("text/uri-list");
-	if (target == dest_target) {
+	target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
+	if (target != GDK_NONE) {
 		/* This is a file drag.  Ensure the contact is online and set the
 		   drag type to COPY.  Note that it's possible that the tab will
 		   be switched by GTK+ after a timeout from drag_motion without
@@ -1601,8 +1605,8 @@ chat_window_drag_motion (GtkWidget        *widget,
 		return TRUE;
 	}
 
-	dest_target = gdk_atom_intern_static_string ("text/contact-id");
-	if (target == dest_target) {
+	target = gtk_drag_dest_find_target (widget, context, priv->contact_targets);
+	if (target != GDK_NONE) {
 		/* This is a drag of a contact from a contact list.  Set to COPY.
 		   FIXME: If this drag is to a MUC window, it invites the user.
 		   Otherwise, it opens a chat.  Should we use a different drag

@@ -94,6 +94,7 @@ enum DndDragType {
 };
 
 static const GtkTargetEntry drag_types_dest[] = {
+	{ "text/path-list",  0, DND_DRAG_TYPE_URI_LIST },
 	{ "text/uri-list",   0, DND_DRAG_TYPE_URI_LIST },
 	{ "text/contact-id", 0, DND_DRAG_TYPE_CONTACT_ID },
 	{ "text/plain",      0, DND_DRAG_TYPE_STRING },
@@ -101,6 +102,7 @@ static const GtkTargetEntry drag_types_dest[] = {
 };
 
 static const GtkTargetEntry drag_types_dest_file[] = {
+	{ "text/path-list",  0, DND_DRAG_TYPE_URI_LIST },
 	{ "text/uri-list",   0, DND_DRAG_TYPE_URI_LIST },
 };
 
