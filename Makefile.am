@@ -11,11 +11,15 @@ DISTCHECK_CONFIGURE_FLAGS =		\
 	--disable-schemas-install
 
 EXTRA_DIST = 			\
-        ChangeLog               \
-        ChangeLog.old           \
-        README                  \
-	CONTRIBUTORS		\
-	autogen.sh
+        CONTRIBUTORS \
+        COPYING-DOCS \
+        COPYING.LGPL \
+        COPYING.SHARE-ALIKE \
+        ChangeLog \
+        ChangeLog.old \
+        README \
+        autogen.sh \
+        $(NULL)
 
 DISTCLEANFILES = 		\
         ChangeLog
