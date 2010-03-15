@@ -815,3 +815,10 @@ log_store_iface_init (gpointer g_iface,
   iface->ack_message = NULL;
   iface->get_filtered_messages = log_store_empathy_get_filtered_messages;
 }
+
+gchar *
+empathy_log_store_empathy_get_dir (EmpathyLogStoreEmpathy *store,
+                                   TpAccount *account)
+{
+  return log_store_empathy_get_dir (EMPATHY_LOG_STORE (store), account, NULL, FALSE);
+}

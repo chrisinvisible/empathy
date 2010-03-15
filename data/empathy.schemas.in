@@ -536,6 +536,20 @@
     </schema>
 
     <schema>
+      <key>/schemas/apps/empathy/butterfly_logs_migrated</key>
+      <applyto>/apps/empathy/butterfly_logs_migrated</applyto>
+      <owner>empathy</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Empathy has migrated butterfly logs</short>
+        <long>
+        Whether Empathy has migrated butterfly logs.
+        </long>
+      </locale>
+    </schema>
+
+    <schema>
       <key>/schemas/apps/empathy/file_transfer/default_folder</key>
       <applyto>/apps/empathy/file_transfer_default_folder</applyto>
       <owner>empathy</owner>

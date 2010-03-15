@@ -105,6 +105,7 @@ empathy_handwritten_source = \
 	empathy-ft-manager.c empathy-ft-manager.h			\
 	empathy-invite-participant-dialog.c empathy-invite-participant-dialog.h \
 	empathy-main-window.c empathy-main-window.h			\
+	empathy-migrate-butterfly-logs.c empathy-migrate-butterfly-logs.h \
 	empathy-new-chatroom-dialog.c empathy-new-chatroom-dialog.h	\
 	empathy-preferences.c empathy-preferences.h			\
 	empathy-sidebar.c empathy-sidebar.h				\

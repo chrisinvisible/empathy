@@ -63,6 +63,7 @@
 #include "empathy-chatrooms-window.h"
 #include "empathy-event-manager.h"
 #include "empathy-ft-manager.h"
+#include "empathy-migrate-butterfly-logs.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -119,6 +120,9 @@ typedef struct {
 
 	/* Actions that are enabled when there are connected accounts */
 	GList                  *actions_connected;
+
+	/* The idle event source to migrate butterfly's logs */
+	guint butterfly_log_migration_contact_added_id;
 } EmpathyMainWindow;
 
 static EmpathyMainWindow *main_window = NULL;
@@ -1243,6 +1247,18 @@ account_manager_prepared_cb (GObject *source_object,
 	g_list_free (accounts);
 }
 
+static void
+main_window_contact_added_cb (EmpathyContactMonitor	*monitor,
+			      EmpathyContact		*contact,
+			      EmpathyMainWindow		*window)
+{
+	if (!empathy_migrate_butterfly_logs (contact)) {
+		g_signal_handler_disconnect (monitor,
+					     window->butterfly_log_migration_contact_added_id);
+		window->butterfly_log_migration_contact_added_id = 0;
+	}
+}
+
 GtkWidget *
 empathy_main_window_show (void)
 {
@@ -1391,6 +1407,8 @@ empathy_main_window_show (void)
 							   EMPATHY_CONTACT_FEATURE_ALL);
 	g_signal_connect (monitor, "contact-presence-changed",
 			  G_CALLBACK (main_window_contact_presence_changed_cb), window);
+	window->butterfly_log_migration_contact_added_id =  g_signal_connect (monitor, "contact-added",
+			  G_CALLBACK (main_window_contact_added_cb), window);
 	g_object_unref (list_iface);
 
 	gtk_widget_show (GTK_WIDGET (window->list_view));
