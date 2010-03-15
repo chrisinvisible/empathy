@@ -566,7 +566,7 @@ empathy_contact_selector_dialog_get_filter_account (
 {
   EmpathyContactSelectorDialogPriv *priv;
 
-  g_return_val_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self), FALSE);
+  g_return_val_if_fail (EMPATHY_IS_CONTACT_SELECTOR_DIALOG (self), NULL);
 
   priv = GET_PRIV (self);
   return priv->filter_account;
