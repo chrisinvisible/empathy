@@ -1027,14 +1027,18 @@ chat_window_tabs_next_activate_cb (GtkAction         *action,
 	EmpathyChatWindowPriv *priv;
 	EmpathyChat           *chat;
 	gint                  index_, numPages;
+	gboolean              wrap_around;
 
 	priv = GET_PRIV (window);
+
+	g_object_get (gtk_settings_get_default (), "gtk-keynav-wrap-around",
+                      &wrap_around, NULL);
 
 	chat = priv->current_chat;
 	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
 	numPages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
 
-	if (index_ == (numPages - 1)) {
+	if (index_ == (numPages - 1) && wrap_around) {
 		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), 0);
 		return;
 	}
@@ -1049,14 +1053,18 @@ chat_window_tabs_previous_activate_cb (GtkAction         *action,
 	EmpathyChatWindowPriv *priv;
 	EmpathyChat           *chat;
 	gint                  index_, numPages;
+	gboolean              wrap_around;
 
 	priv = GET_PRIV (window);
+
+	g_object_get (gtk_settings_get_default (), "gtk-keynav-wrap-around",
+                      &wrap_around, NULL);
 
 	chat = priv->current_chat;
 	index_ = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
 	numPages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
 
-	if (index_ <= 0) {
+	if (index_ <= 0 && wrap_around) {
 		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), numPages - 1);
 		return;
 	}
