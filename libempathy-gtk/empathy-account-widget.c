@@ -355,6 +355,36 @@ account_widget_combobox_changed_cb (GtkWidget *widget,
   empathy_account_widget_changed (self);
 }
 
+static void
+clear_icon_released_cb (GtkEntry *entry,
+    GtkEntryIconPosition icon_pos,
+    GdkEvent *event,
+    EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const gchar *param_name;
+
+  param_name = g_object_get_data (G_OBJECT (entry), "param_name");
+
+  DEBUG ("Unset %s", param_name);
+  empathy_account_settings_unset (priv->settings, param_name);
+  gtk_entry_set_text (entry, "");
+
+  empathy_account_widget_changed (self);
+}
+
+static void
+password_entry_changed_cb (GtkEditable *entry,
+    EmpathyAccountWidget *self)
+{
+  const gchar *str;
+
+  str = gtk_entry_get_text (GTK_ENTRY (entry));
+
+  gtk_entry_set_icon_sensitive (GTK_ENTRY (entry),
+      GTK_ENTRY_ICON_SECONDARY, !EMP_STR_EMPTY (str));
+}
+
 void
 empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
@@ -419,6 +449,18 @@ empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
       if (strstr (param_name, "password"))
         {
           gtk_entry_set_visibility (GTK_ENTRY (widget), FALSE);
+
+          /* Add 'clear' icon */
+          gtk_entry_set_icon_from_stock (GTK_ENTRY (widget),
+              GTK_ENTRY_ICON_SECONDARY, GTK_STOCK_CLEAR);
+
+          gtk_entry_set_icon_sensitive (GTK_ENTRY (widget),
+              GTK_ENTRY_ICON_SECONDARY, !EMP_STR_EMPTY (str));
+
+          g_signal_connect (widget, "icon-release",
+              G_CALLBACK (clear_icon_released_cb), self);
+          g_signal_connect (widget, "changed",
+              G_CALLBACK (password_entry_changed_cb), self);
         }
 
       g_signal_connect (widget, "changed",
