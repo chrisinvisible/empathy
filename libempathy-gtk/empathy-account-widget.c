@@ -60,7 +60,6 @@ typedef struct {
   GtkWidget *apply_button;
   GtkWidget *cancel_button;
   GtkWidget *entry_password;
-  GtkWidget *button_forget;
   GtkWidget *spinbutton_port;
   GtkWidget *enabled_checkbox;
   GtkWidget *radiobutton_reuse;
@@ -257,36 +256,6 @@ account_widget_checkbutton_toggled_cb (GtkWidget *widget,
     }
 
   empathy_account_widget_changed (self);
-}
-
-static void
-account_widget_forget_clicked_cb (GtkWidget *button,
-    EmpathyAccountWidget *self)
-{
-  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  const gchar *param_name;
-
-  param_name = g_object_get_data (G_OBJECT (priv->entry_password),
-      "param_name");
-
-  DEBUG ("Unset %s", param_name);
-  empathy_account_settings_unset (priv->settings, param_name);
-  gtk_entry_set_text (GTK_ENTRY (priv->entry_password), "");
-
-  empathy_account_widget_changed (self);
-}
-
-static void
-account_widget_password_changed_cb (GtkWidget *entry,
-    EmpathyAccountWidget *self)
-{
-  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  const gchar *str;
-
-  str = gtk_entry_get_text (GTK_ENTRY (entry));
-  gtk_widget_set_sensitive (priv->button_forget, !EMP_STR_EMPTY (str));
-
-  priv->contains_pending_changes = TRUE;
 }
 
 static void
@@ -978,7 +947,6 @@ account_widget_build_msn (EmpathyAccountWidget *self,
           NULL);
 
       self->ui_details->default_focus = g_strdup ("entry_id");
-      self->ui_details->add_forget = TRUE;
     }
 }
 
@@ -1177,7 +1145,6 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
         }
 
       self->ui_details->default_focus = g_strdup ("entry_id");
-      self->ui_details->add_forget = TRUE;
       priv->spinbutton_port = spinbutton_port;
 
       g_signal_connect (checkbutton_ssl, "toggled",
@@ -1235,7 +1202,6 @@ account_widget_build_icq (EmpathyAccountWidget *self,
           NULL);
 
       self->ui_details->default_focus = g_strdup ("entry_uin");
-      self->ui_details->add_forget = TRUE;
     }
 }
 
@@ -1275,7 +1241,6 @@ account_widget_build_aim (EmpathyAccountWidget *self,
           NULL);
 
       self->ui_details->default_focus = g_strdup ("entry_screenname");
-      self->ui_details->add_forget = TRUE;
     }
 }
 
@@ -1317,7 +1282,6 @@ account_widget_build_yahoo (EmpathyAccountWidget *self,
           NULL);
 
       self->ui_details->default_focus = g_strdup ("entry_id");
-      self->ui_details->add_forget = TRUE;
     }
 }
 
@@ -1355,7 +1319,6 @@ account_widget_build_groupwise (EmpathyAccountWidget *self,
           NULL);
 
       self->ui_details->default_focus = g_strdup ("entry_id");
-      self->ui_details->add_forget = TRUE;
     }
 }
 
@@ -1735,29 +1698,6 @@ do_constructed (GObject *obj)
       g_signal_connect (default_focus_entry, "realize",
           G_CALLBACK (gtk_widget_grab_focus),
           NULL);
-    }
-
-  /* handle forget button */
-  if (self->ui_details->add_forget)
-    {
-      const gchar *password = NULL;
-
-      priv->button_forget = GTK_WIDGET (gtk_builder_get_object
-          (self->ui_details->gui, "button_forget"));
-      priv->entry_password = GTK_WIDGET (gtk_builder_get_object
-          (self->ui_details->gui, "entry_password"));
-
-      password = empathy_account_settings_get_string (priv->settings,
-          "password");
-      gtk_widget_set_sensitive (priv->button_forget,
-          !EMP_STR_EMPTY (password));
-
-      g_signal_connect (priv->button_forget, "clicked",
-          G_CALLBACK (account_widget_forget_clicked_cb),
-          self);
-      g_signal_connect (priv->entry_password, "changed",
-          G_CALLBACK (account_widget_password_changed_cb),
-          self);
     }
 
   /* dup and init the account-manager */

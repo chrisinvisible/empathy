@@ -165,7 +165,6 @@ empathy_account_widget_sip_build (EmpathyAccountWidget *self,
           account_widget_sip_discover_stun_toggled_cb,
           NULL);
 
-      self->ui_details->add_forget = TRUE;
       self->ui_details->default_focus = g_strdup ("entry_userid");
 
       /* Create the 'transport' combo box. The first column has to contain the

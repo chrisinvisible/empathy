@@ -34,7 +34,6 @@ struct _EmpathyAccountWidgetUIDetails {
   GtkBuilder *gui;
 
   char *default_focus;
-  gboolean add_forget;
 };
 
 
