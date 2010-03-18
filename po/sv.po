@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-15 17:09+0100\n"
-"PO-Revision-Date: 2010-03-15 18:40+0100\n"
+"POT-Creation-Date: 2010-03-19 00:10+0100\n"
+"PO-Revision-Date: 2010-03-19 00:10+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -1300,7 +1300,7 @@ msgid "Conversation"
 msgstr "Samtal"
 
 #: ../libempathy-gtk/empathy-chat.ui.h:1
-#: ../src/empathy-chat-window.c:680
+#: ../src/empathy-chat-window.c:684
 msgid "Topic:"
 msgstr "Ämne:"
 
@@ -1342,28 +1342,28 @@ msgstr "Bestäm _senare"
 msgid "Subscription Request"
 msgstr "Prenumerationsbegäran"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1631
+#: ../libempathy-gtk/empathy-contact-list-view.c:1633
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Vill du verkligen ta bort gruppen \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1633
+#: ../libempathy-gtk/empathy-contact-list-view.c:1635
 msgid "Removing group"
 msgstr "Tar bort grupp"
 
 #. Remove
-#: ../libempathy-gtk/empathy-contact-list-view.c:1682
-#: ../libempathy-gtk/empathy-contact-list-view.c:1759
+#: ../libempathy-gtk/empathy-contact-list-view.c:1684
+#: ../libempathy-gtk/empathy-contact-list-view.c:1761
 #: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "_Ta bort"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1712
+#: ../libempathy-gtk/empathy-contact-list-view.c:1714
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Vill du verkligen ta bort kontakten \"%s\"?"
 
-#: ../libempathy-gtk/empathy-contact-list-view.c:1714
+#: ../libempathy-gtk/empathy-contact-list-view.c:1716
 msgid "Removing contact"
 msgstr "Tar bort kontakt"
 
@@ -1415,7 +1415,7 @@ msgid "_Edit"
 msgstr "R_edigera"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:562
-#: ../src/empathy-chat-window.c:865
+#: ../src/empathy-chat-window.c:869
 msgid "Inviting you to this room"
 msgstr "Bjuder in dig till detta rum"
 
@@ -1595,8 +1595,8 @@ msgid "Identifier:"
 msgstr "Identifierare:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:13
-msgid "Information requested&#x2026;"
-msgstr "Information begärd&#x2026;"
+msgid "Information requested…"
+msgstr "Information begärd..."
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
 msgid "OS:"
@@ -2271,12 +2271,12 @@ msgid "To add a new account, you first have to install a backend for each protoc
 msgstr "För att lägga till ett nytt konto måste du först installera en bakände för varje protokoll som du vill använda."
 
 #: ../src/empathy-accounts-dialog.ui.h:4
-msgid "_Add&#x2026;"
-msgstr "_Lägg till&#x2026;"
+msgid "_Add…"
+msgstr "_Lägg till…"
 
 #: ../src/empathy-accounts-dialog.ui.h:5
-msgid "_Import&#x2026;"
-msgstr "_Importera&#x2026;"
+msgid "_Import…"
+msgstr "_Importera…"
 
 #: ../src/empathy-call-window.c:453
 msgid "Contrast"
@@ -2446,36 +2446,36 @@ msgstr "Videoförhandsvisning"
 msgid "_View"
 msgstr "_Visa"
 
-#: ../src/empathy-chat-window.c:436
-#: ../src/empathy-chat-window.c:456
+#: ../src/empathy-chat-window.c:440
+#: ../src/empathy-chat-window.c:460
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d oläst)"
 msgstr[1] "%s (%d olästa)"
 
-#: ../src/empathy-chat-window.c:448
+#: ../src/empathy-chat-window.c:452
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (och %u annat)"
 msgstr[1] "%s (och %u andra)"
 
-#: ../src/empathy-chat-window.c:464
+#: ../src/empathy-chat-window.c:468
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (%d oläst från andra)"
 msgstr[1] "%s (%d olästa från andra)"
 
-#: ../src/empathy-chat-window.c:473
+#: ../src/empathy-chat-window.c:477
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (%d oläst från alla)"
 msgstr[1] "%s (%d olästa från alla)"
 
-#: ../src/empathy-chat-window.c:684
+#: ../src/empathy-chat-window.c:688
 msgid "Typing a message."
 msgstr "Skriver ett meddelande."
 
@@ -3234,6 +3234,10 @@ msgstr "Empathy-konton"
 msgid "Empathy Debugger"
 msgstr "Empathy-felsökare"
 
+#~ msgid "_Add&#x2026;"
+#~ msgstr "_Lägg till&#x2026;"
+#~ msgid "_Import&#x2026;"
+#~ msgstr "_Importera&#x2026;"
 #~ msgid "Salut account is created"
 #~ msgstr "Salut-konto har skapats"
 #~ msgid "Whether the Salut account has been created on the first Empathy run."
@@ -3252,10 +3256,6 @@ msgstr "Empathy-felsökare"
 #~ msgstr "%s har kopplat från"
 #~ msgid "The error message was: <span style=\"italic\">%s</span>"
 #~ msgstr "Felmeddelandet var: <span style=\"italic\">%s</span>"
-#~ msgid "_Add…"
-#~ msgstr "_Lägg till…"
-#~ msgid "_Import…"
-#~ msgstr "_Importera…"
 #~ msgid "%s is offering you an invitation"
 #~ msgstr "%s erbjuder dig en inbjudan"
 #~ msgid "An external application will be started to handle it."
