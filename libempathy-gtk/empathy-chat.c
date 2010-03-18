@@ -1244,12 +1244,9 @@ static void
 chat_input_text_buffer_changed_cb (GtkTextBuffer *buffer,
                                    EmpathyChat    *chat)
 {
-	EmpathyChatPriv *priv;
 	GtkTextIter     start, end;
 	gchar          *str;
 	gboolean        spell_checker = FALSE;
-
-	priv = GET_PRIV (chat);
 
 	if (gtk_text_buffer_get_char_count (buffer) == 0) {
 		chat_composing_stop (chat);
