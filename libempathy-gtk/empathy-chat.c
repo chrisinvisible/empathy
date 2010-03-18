@@ -2252,9 +2252,9 @@ chat_create_ui (EmpathyChat *chat)
 			  G_CALLBACK (chat_input_populate_popup_cb),
 			  chat);
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
-	g_signal_connect (buffer, "changed",
+	empathy_signal_connect_weak  (buffer, "changed",
 			  G_CALLBACK (chat_input_text_buffer_changed_cb),
-			  chat);
+			  G_OBJECT (chat));
 	gtk_text_buffer_create_tag (buffer, "misspelled",
 				    "underline", PANGO_UNDERLINE_ERROR,
 				    NULL);
