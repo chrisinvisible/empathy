@@ -1383,6 +1383,55 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 	gtk_window_iconify (window);
 }
 
+/* Code from Thomas Thurman
+ * http://people.collabora.co.uk/~tthurman/pingwindow.c.txt
+ */
+static guint32
+get_server_time (void)
+{
+  Display *display;
+  Window pingingWindow;
+  XEvent propertyEvent;
+  XSetWindowAttributes attrs;
+
+  display = XOpenDisplay (NULL);
+
+  attrs.override_redirect = True;
+  attrs.event_mask = PropertyChangeMask;
+
+  pingingWindow = XCreateWindow (display,
+      XRootWindow (display, 0), /* parent */
+      -100, -100, 1, 1, /* off-screen */
+      0,
+      CopyFromParent,
+      CopyFromParent,
+      (Visual *)CopyFromParent,
+      CWOverrideRedirect | CWEventMask,
+      &attrs);
+
+  /* Change a property. XA_PRIMARY is never really
+   * used for properties, so it's safe.
+   */
+  XChangeProperty (display,
+      pingingWindow,
+      XA_PRIMARY, XA_STRING, 8,
+      PropModeAppend, NULL, 0);
+
+  /* Pick up the event. */
+  XWindowEvent (display,
+      pingingWindow,
+      PropertyChangeMask,
+      &propertyEvent);
+
+  /* If you want to do this often,
+   * just keep the window around and
+   * don't destroy it.
+   */
+  XDestroyWindow (display, pingingWindow);
+
+  return ((XPropertyEvent*)&propertyEvent)->time;
+}
+
 /* Takes care of moving the window to the current workspace. */
 void
 empathy_window_present (GtkWindow *window)
@@ -1412,8 +1461,8 @@ empathy_window_present (GtkWindow *window)
 
 	timestamp = gtk_get_current_event_time ();
 	if (timestamp == 0)
-		/* No event, fallback to _NET_WM_USER_TIME */
-		timestamp = gdk_x11_display_get_user_time (gdk_display_get_default ());
+		/* No event, fallback to X server time */
+		timestamp = get_server_time ();
 
 	gtk_window_present_with_time (window, timestamp);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
