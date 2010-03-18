@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: empathy MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-02-26 08:49+0000\n"
-"PO-Revision-Date: 2010-02-26 13:21+0300\n"
+"POT-Creation-Date: 2010-03-18 07:49+0000\n"
+"PO-Revision-Date: 2010-03-18 16:54+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -88,6 +88,9 @@ msgstr "Empathy vaikimisi allalaadimiste kataloog"
 msgid "Empathy has asked about importing accounts"
 msgstr "Empathylt küsiti kontode importimise kohta"
 
+msgid "Empathy has migrated butterfly logs"
+msgstr "Empathy on üle kandnud butterfly logid"
+
 msgid "Empathy should auto-connect on startup"
 msgstr "Empathy peaks käivitumisel ise ühenduma"
 
@@ -160,9 +163,6 @@ msgstr "Kui kontakt siseneb, kuvatakse hüpikteade"
 msgid "Pop up notifications when a contact logs out"
 msgstr "Kui kontakt väljub, kuvatakse hüpikteade"
 
-msgid "Salut account is created"
-msgstr "Salut-i konto on loodud"
-
 msgid "Show avatars"
 msgstr "Näidatakse avatare"
 
@@ -215,6 +215,9 @@ msgid "Whether Empathy has asked about importing accounts from other programs."
 msgstr ""
 "Kas Empathy on küsinud kontode importimise kohta teistest rakendustest."
 
+msgid "Whether Empathy has migrated butterfly logs."
+msgstr "Kas Empathy on üle kandnud butterfly logid."
+
 msgid "Whether Empathy should automatically log into your accounts on startup."
 msgstr "Kas Empathy peaks käivitumisel ise kontodesse sisse logima."
 
@@ -236,9 +239,6 @@ msgid ""
 msgstr ""
 "Kas automaatseks lahti- või taasühendumiseks tuleks kasutada ühenduste "
 "haldurit või mitte."
-
-msgid "Whether the Salut account has been created on the first Empathy run."
-msgstr "Kas Salut konto loodi Empathy esimesel käivitumisel."
 
 msgid ""
 "Whether to check words typed against the languages you want to check with."
@@ -332,6 +332,7 @@ msgstr ""
 msgid "Manage Messaging and VoIP accounts"
 msgstr "Sõnumi- ja VoIP kontode haldamine"
 
+#. Tweak the dialog
 msgid "Messaging and VoIP Accounts"
 msgstr "Sõnumite ja VoIP kontod"
 
@@ -717,7 +718,6 @@ msgstr "<b>Näide:</b> kasutaja@minu.sip.server"
 msgid "Authentication username:"
 msgstr "Autentimise kasutajanimi:"
 
-#, fuzzy
 msgid "Discover Binding"
 msgstr "Seonduse avastamine"
 
@@ -1087,6 +1087,9 @@ msgstr "Saada fail"
 msgid "Share my desktop"
 msgstr "Minu töölauda jagatakse"
 
+msgid "Favorite"
+msgstr "Lemmik"
+
 msgid "Infor_mation"
 msgstr "_Andmed"
 
@@ -1227,8 +1230,8 @@ msgstr "Grupid"
 msgid "Identifier:"
 msgstr "Kasutajanimi:"
 
-msgid "Information requested&#x2026;"
-msgstr "Andmepäring&#x2026;"
+msgid "Information requested…"
+msgstr "Päriti andmeid…"
 
 msgid "OS:"
 msgstr "OS:"
@@ -1676,6 +1679,9 @@ msgstr ""
 msgid "telepathy-salut not installed"
 msgstr "telepathy-salut pole paigaldatud"
 
+msgid "Messaging and VoIP Accounts Assistant"
+msgstr "Sõnumite ja VoIP kontode abiline"
+
 msgid "Welcome to Empathy"
 msgstr "Tere tulemast Empathy kasutajaks"
 
@@ -1744,10 +1750,6 @@ msgstr ""
 "Sa oled akent sulgemas ja see tühistab tehtud muudatused\n"
 "Kas sa soovid seda teha?"
 
-#. Tweak the dialog
-msgid "Accounts"
-msgstr "Kontod"
-
 msgid "No protocol installed"
 msgstr "Ühtegi protokolli pole paigaldatud"
 
@@ -1761,11 +1763,11 @@ msgstr ""
 "Uue konto lisamiseks pead paigaldama tugiprogrammi iga protokolli jaoks, "
 "mida tahad kasutada."
 
-msgid "_Add&#x2026;"
-msgstr "_Lisa&#x2026;"
+msgid "_Add…"
+msgstr "_Lisa…"
 
-msgid "_Import&#x2026;"
-msgstr "_Impordi&#x2026;"
+msgid "_Import…"
+msgstr "_Impordi…"
 
 msgid "Contrast"
 msgstr "Kontrastsus"
@@ -1782,14 +1784,14 @@ msgstr "Valjus"
 msgid "_Sidebar"
 msgstr "_Külgriba"
 
-msgid "Dialpad"
-msgstr "Sõrmlaud"
-
 msgid "Audio input"
 msgstr "Helisisend"
 
 msgid "Video input"
 msgstr "Videosisend"
+
+msgid "Dialpad"
+msgstr "Sõrmlaud"
 
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
@@ -2514,25 +2516,26 @@ msgstr "Osalise kutsumine"
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Vali kontakt, keda vestlusesse kutsuda:"
 
-msgid ""
-"Try to import any recognized accounts and display an assistant if that fails"
-msgstr ""
-"Proovitakse importida kõik tuntud kontod ning selle nurjumisel kuvatakse "
-"abiline"
-
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr ""
 "Ei kuvata mingeid dialooge; sooritatakse ülesanne (nt. importimine) ja "
 "väljutakse"
 
+msgid "Don't display any dialogs if there are any non-salut accounts"
+msgstr "Kui on mõni mitte-salut konto, ei kuvata mingeid dialoogiaknaid"
+
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
 msgstr "Alguses vali antud konto (nt. gabble/jabber/mingi_40näidis_2eorg0)"
 
 msgid "<account-id>"
-msgstr ""
+msgstr "<konto-id>"
 
 msgid "- Empathy Accounts"
 msgstr "- Empathy kontod"
 
-msgid " Accounts"
-msgstr "Kontod"
+msgid "Empathy Accounts"
+msgstr "Empathy kontod"
+
+msgid "Empathy Debugger"
+msgstr "Empathy siluja"
+
