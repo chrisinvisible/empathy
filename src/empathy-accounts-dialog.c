@@ -2066,7 +2066,9 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_window_set_title (GTK_WINDOW (dialog), _("Messaging and VoIP Accounts"));
   gtk_window_set_role (GTK_WINDOW (dialog), "accounts");
 
-  gtk_window_set_default_size (GTK_WINDOW (dialog), 640, -1);
+  /* this suggested height is so that it doesn't display the vertical scroll bar
+   * in the right scrolled window unless it really needs to */
+  gtk_window_set_default_size (GTK_WINDOW (dialog), 780, 400);
 
   gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
 
