@@ -1705,8 +1705,6 @@ empathy_call_window_get_video_sink_pad (EmpathyCallWindow *self)
   priv->funnel = NULL;
 
   return NULL;
-
-
 }
 
 /* Called with global lock held */
@@ -1755,7 +1753,7 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
 
   filter = gst_parse_bin_from_description (
       "audioconvert ! audioresample ! audioconvert", TRUE, &gerror);
-  if (!filter)
+  if (filter == NULL)
     {
       g_warning ("Could not make audio conversion filter: %s", gerror->message);
       g_clear_error (&gerror);
@@ -1783,7 +1781,7 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
 
   pad = gst_element_get_static_pad (filter, "sink");
 
-  if (!pad)
+  if (pad == NULL)
     {
       g_warning ("Could not get sink pad from filter");
       goto error_filter;
@@ -1816,11 +1814,12 @@ empathy_call_window_get_audio_sink_pad (EmpathyCallWindow *self)
 
  error_add_liveadder:
 
-  if (priv->liveadder)
+  if (priv->liveadder != NULL)
     {
       gst_object_unref (priv->liveadder);
       priv->liveadder = NULL;
     }
+
   return NULL;
 }
 
@@ -2121,7 +2120,7 @@ empathy_call_window_src_added_cb (EmpathyCallHandler *handler,
         g_assert_not_reached ();
     }
 
-  if (!pad)
+  if (pad == NULL)
     goto out;
 
   if (GST_PAD_LINK_FAILED (gst_pad_link (src, pad)))
