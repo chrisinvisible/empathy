@@ -694,8 +694,8 @@ account_manager_prepared_cb (GObject *source_object,
     {
       TpAccount *account = TP_ACCOUNT (l->data);
 
-      empathy_signal_connect_weak (account, "status-changed",
-          G_CALLBACK (new_connection_cb), G_OBJECT (self));
+      tp_g_signal_connect_object (account, "status-changed",
+          G_CALLBACK (new_connection_cb), self, 0);
     }
   g_list_free (accounts);
 }
