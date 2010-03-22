@@ -942,11 +942,14 @@ contact_list_view_group_icon_cell_data_func (GtkTreeViewColumn     *tree_column,
 	if (!is_group)
 		goto out;
 
-	if (tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE))
-		goto out;
-
-	pixbuf = empathy_pixbuf_from_icon_name ("emblem-favorite",
-		GTK_ICON_SIZE_MENU);
+	if (!tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_FAVORITE)) {
+		pixbuf = empathy_pixbuf_from_icon_name ("emblem-favorite",
+			GTK_ICON_SIZE_MENU);
+	}
+	else if (!tp_strdiff (name, EMPATHY_CONTACT_LIST_STORE_PEOPLE_NEARBY)) {
+		pixbuf = empathy_pixbuf_from_icon_name ("im-local-xmpp",
+			GTK_ICON_SIZE_MENU);
+	}
 
 out:
 	g_object_set (cell,
