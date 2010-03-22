@@ -394,10 +394,10 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
 		gtk_widget_show (menu);
 	} else {
-		empathy_signal_connect_weak (orig_submenu,
+		tp_g_signal_connect_object (orig_submenu,
 					     "notify::visible",
 					     (GCallback)_submenu_notify_visible_changed_cb,
-					     G_OBJECT (window));
+					     window, 0);
 	}
 }
 
