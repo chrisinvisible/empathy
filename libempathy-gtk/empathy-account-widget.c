@@ -1718,9 +1718,9 @@ do_constructed (GObject *obj)
 
       /* We'll change this button to a "Log in" one if we are creating a new
        * account and are connected. */
-      empathy_signal_connect_weak (priv->account_manager,
+      tp_g_signal_connect_object (priv->account_manager,
           "most-available-presence-changed",
-          G_CALLBACK (presence_changed_cb), obj);
+          G_CALLBACK (presence_changed_cb), obj, 0);
 
       gtk_box_pack_end (GTK_BOX (hbox), priv->apply_button, TRUE,
           TRUE, 3);
