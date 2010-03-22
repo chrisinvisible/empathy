@@ -127,9 +127,9 @@ connection_managers_prepare (GObject *source,
 
       gtk_widget_set_sensitive (GTK_WIDGET (page), FALSE);
 
-      empathy_signal_connect_weak (page->priv->assistant, "hide",
+      tp_g_signal_connect_object (page->priv->assistant, "hide",
         G_CALLBACK (account_assistant_closed_cb),
-        G_OBJECT (page));
+        page, 0);
     }
 
 out:
