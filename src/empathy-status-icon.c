@@ -601,9 +601,9 @@ account_manager_prepared_cb (GObject *source_object,
 
 	list = tp_account_manager_get_valid_accounts (account_manager);
 	for (l = list; l != NULL; l = l->next) {
-		empathy_signal_connect_weak (l->data, "status-changed",
+		tp_g_signal_connect_object (l->data, "status-changed",
 					     G_CALLBACK (status_icon_status_changed_cb),
-					     G_OBJECT (icon));
+					     icon, 0);
 	}
 	g_list_free (list);
 
