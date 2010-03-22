@@ -856,9 +856,9 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 	/* Create the not-favorite icon */
 	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
 
-	empathy_signal_connect_weak (gtk_icon_theme_get_default (), "changed",
+	tp_g_signal_connect_object (gtk_icon_theme_get_default (), "changed",
 				     G_CALLBACK (icon_theme_changed_cb),
-				     G_OBJECT (chooser));
+				     chooser, 0);
 
 	presence_chooser_create_model (chooser);
 
@@ -921,28 +921,28 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 		G_CALLBACK (presence_chooser_presence_changed_cb),
 		chooser);
 
-	empathy_signal_connect_weak (priv->account_manager, "account-validity-changed",
+	tp_g_signal_connect_object (priv->account_manager, "account-validity-changed",
 		G_CALLBACK (presence_chooser_account_manager_account_validity_changed_cb),
-		G_OBJECT (chooser));
-	empathy_signal_connect_weak (priv->account_manager, "account-removed",
+		chooser, 0);
+	tp_g_signal_connect_object (priv->account_manager, "account-removed",
 		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
-		G_OBJECT (chooser));
-	empathy_signal_connect_weak (priv->account_manager, "account-enabled",
+		chooser, 0);
+	tp_g_signal_connect_object (priv->account_manager, "account-enabled",
 		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
-		G_OBJECT (chooser));
-	empathy_signal_connect_weak (priv->account_manager, "account-disabled",
+		chooser, 0);
+	tp_g_signal_connect_object (priv->account_manager, "account-disabled",
 		G_CALLBACK (presence_chooser_account_manager_account_changed_cb),
-		G_OBJECT (chooser));
+		chooser, 0);
 
 	/* FIXME: this string sucks */
 	gtk_widget_set_tooltip_text (GTK_WIDGET (chooser),
 		_("Set your presence and current status"));
 
 	priv->connectivity = empathy_connectivity_dup_singleton ();
-	empathy_signal_connect_weak (priv->connectivity,
+	tp_g_signal_connect_object (priv->connectivity,
 		"state-change",
 		G_CALLBACK (presence_chooser_connectivity_state_change),
-		G_OBJECT (chooser));
+		chooser, 0);
 
 	presence_chooser_update_sensitivity (chooser);
 }
