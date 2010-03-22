@@ -1196,9 +1196,9 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
   tp_account_manager_prepare_async (priv->account_manager, NULL,
       account_manager_prepared_cb, self);
 
-  empathy_signal_connect_weak (priv->account_manager,
+  tp_g_signal_connect_object (priv->account_manager,
       "account-validity-changed", G_CALLBACK (account_validity_changed_cb),
-      G_OBJECT (self));
+      self, 0);
 
   priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
     g_direct_equal);
