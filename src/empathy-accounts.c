@@ -247,6 +247,7 @@ main (int argc, char *argv[])
   g_set_application_name (_("Empathy Accounts"));
 
   gtk_window_set_default_icon_name ("empathy");
+  textdomain (GETTEXT_PACKAGE);
 
   unique_app = unique_app_new (EMPATHY_ACCOUNTS_DBUS_NAME, NULL);
 
