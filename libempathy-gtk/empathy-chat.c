@@ -2353,9 +2353,9 @@ chat_create_ui (EmpathyChat *chat)
 			  G_CALLBACK (chat_input_populate_popup_cb),
 			  chat);
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
-	empathy_signal_connect_weak  (buffer, "changed",
+	tp_g_signal_connect_object  (buffer, "changed",
 			  G_CALLBACK (chat_input_text_buffer_changed_cb),
-			  G_OBJECT (chat));
+			  chat, 0);
 	gtk_text_buffer_create_tag (buffer, "misspelled",
 				    "underline", PANGO_UNDERLINE_ERROR,
 				    NULL);
@@ -2651,9 +2651,9 @@ account_manager_prepared_cb (GObject *source_object,
 
 	for (l = accounts; l != NULL; l = l->next) {
 		TpAccount *account = l->data;
-		empathy_signal_connect_weak (account, "status-changed",
+		tp_g_signal_connect_object (account, "status-changed",
 					     G_CALLBACK (chat_new_connection_cb),
-					     G_OBJECT (chat));
+					     chat, 0);
 	}
 
 	g_list_free (accounts);
