@@ -341,8 +341,6 @@ chat_window_menu_context_update (EmpathyChatWindowPriv *priv,
 	last_page = (page_num == (num_pages - 1));
 	is_connected = empathy_chat_get_tp_chat (priv->current_chat) != NULL;
 
-	DEBUG ("Update window : Menu Contexts (Tabs & Conv)");
-
 	gtk_action_set_sensitive (priv->menu_tabs_next, TRUE);
 	gtk_action_set_sensitive (priv->menu_tabs_prev, TRUE);
 	gtk_action_set_sensitive (priv->menu_tabs_detach, num_pages > 1);
@@ -386,8 +384,6 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 	menu = gtk_ui_manager_get_widget (priv->ui_manager,
 		"/chats_menubar/menu_contact");
 	orig_submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (menu));
-
-	DEBUG ("Update window : Contact Menu");
 
 	if (orig_submenu == NULL || !GTK_WIDGET_VISIBLE (orig_submenu)) {
 		submenu = empathy_chat_get_contact_menu (priv->current_chat);
@@ -487,8 +483,6 @@ chat_window_title_update (EmpathyChatWindowPriv *priv)
 {
 	gchar *name;
 
-	DEBUG ("Update window : Title");
-
 	name = get_window_title_name (priv);
 	gtk_window_set_title (GTK_WINDOW (priv->dialog), name);
 	g_free (name);
@@ -503,8 +497,6 @@ chat_window_icon_update (EmpathyChatWindowPriv *priv)
 	guint           n_chats;
 
 	n_chats = g_list_length (priv->chats);
-
-	DEBUG ("Update window : Icon");
 
 	/* Update window icon */
 	if (priv->chats_new_msg) {
@@ -537,8 +529,6 @@ chat_window_close_button_update (EmpathyChatWindowPriv *priv,
 	GtkWidget *chat_close_button;
 	gint       i;
 
-	DEBUG ("Update window : Close Button");
-
 	if (num_pages == 1) {
 		chat = gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), 0);
 		chat_close_button = g_object_get_data (G_OBJECT (chat),
@@ -561,8 +551,6 @@ chat_window_update (EmpathyChatWindow *window)
 	gint                   num_pages;
 
 	num_pages = gtk_notebook_get_n_pages (GTK_NOTEBOOK (priv->notebook));
-
-	DEBUG ("Update window");
 
 	/* Update Tab menu */
 	chat_window_menu_context_update (priv,
@@ -1192,7 +1180,6 @@ chat_window_set_urgency_hint (EmpathyChatWindow *window,
 
 	priv = GET_PRIV (window);
 
-	DEBUG ("Turning %s urgency hint", urgent ? "on" : "off");
 	gtk_window_set_urgency_hint (GTK_WINDOW (priv->dialog), urgent);
 }
 
@@ -1529,8 +1516,6 @@ chat_window_focus_in_event_cb (GtkWidget        *widget,
 			       EmpathyChatWindow *window)
 {
 	EmpathyChatWindowPriv *priv;
-
-	DEBUG ("Focus in event, updating title");
 
 	priv = GET_PRIV (window);
 
