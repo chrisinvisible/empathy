@@ -1037,6 +1037,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	GList                      *groups = NULL, *l;
 	TpConnection               *connection;
 	EmpathyContactListFlags     flags = 0;
+	char                       *protocol_name;
 
 	priv = GET_PRIV (store);
 
@@ -1054,12 +1055,23 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		flags = empathy_contact_manager_get_flags_for_connection (
 			EMPATHY_CONTACT_MANAGER (priv->list), connection);
 	}
+
+	tp_connection_parse_object_path (connection, &protocol_name, NULL);
+
 	if (!groups) {
 #if HAVE_FAVOURITE_CONTACTS
 		GtkTreeIter iter_group;
 
-		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_UNGROUPED,
-			&iter_group, NULL, NULL, TRUE);
+		if (!tp_strdiff (protocol_name, "local-xmpp")) {
+			/* these are People Nearby */
+			contact_list_store_get_group (store,
+				EMPATHY_CONTACT_LIST_STORE_PEOPLE_NEARBY,
+				&iter_group, NULL, NULL, TRUE);
+		} else {
+			contact_list_store_get_group (store,
+				EMPATHY_CONTACT_LIST_STORE_UNGROUPED,
+				&iter_group, NULL, NULL, TRUE);
+		}
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
@@ -1088,6 +1100,8 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
 	}
+
+	g_free (protocol_name);
 
 	/* Else add to each group. */
 	for (l = groups; l; l = l->next) {
