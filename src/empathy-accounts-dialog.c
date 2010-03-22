@@ -1664,14 +1664,14 @@ accounts_dialog_add_account (EmpathyAccountsDialog *dialog,
       NULL,
       dialog);
 
-  empathy_signal_connect_weak (account, "notify::display-name",
+  tp_g_signal_connect_object (account, "notify::display-name",
       G_CALLBACK (accounts_dialog_account_display_name_changed_cb),
-      G_OBJECT (dialog));
+      dialog, 0);
 
-  empathy_signal_connect_weak (account, "status-changed",
-      G_CALLBACK (accounts_dialog_connection_changed_cb), G_OBJECT (dialog));
-  empathy_signal_connect_weak (account, "presence-changed",
-      G_CALLBACK (accounts_dialog_presence_changed_cb), G_OBJECT (dialog));
+  tp_g_signal_connect_object (account, "status-changed",
+      G_CALLBACK (accounts_dialog_connection_changed_cb), dialog, 0);
+  tp_g_signal_connect_object (account, "presence-changed",
+      G_CALLBACK (accounts_dialog_presence_changed_cb), dialog, 0);
 
   g_object_unref (settings);
 }
