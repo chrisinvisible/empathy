@@ -201,8 +201,8 @@ empathy_account_settings_constructed (GObject *object)
     {
       tp_account_prepare_async (priv->account, NULL,
           empathy_account_settings_account_ready_cb, self);
-      empathy_signal_connect_weak (priv->managers, "notify::ready",
-        G_CALLBACK (empathy_account_settings_managers_ready_cb), object);
+      tp_g_signal_connect_object (priv->managers, "notify::ready",
+        G_CALLBACK (empathy_account_settings_managers_ready_cb), object, 0);
     }
 
   if (G_OBJECT_CLASS (
