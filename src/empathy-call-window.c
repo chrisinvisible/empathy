@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include <telepathy-glib/util.h>
 #include <telepathy-farsight/channel.h>
 #include <telepathy-glib/util.h>
 
@@ -651,9 +652,9 @@ create_audio_input (EmpathyCallWindow *self)
   gst_object_ref (priv->audio_input);
   gst_object_sink (priv->audio_input);
 
-  empathy_signal_connect_weak (priv->audio_input, "peak-level-changed",
+  tp_g_signal_connect_object (priv->audio_input, "peak-level-changed",
     G_CALLBACK (empathy_call_window_audio_input_level_changed_cb),
-    G_OBJECT (self));
+    self, 0);
 }
 
 static void
@@ -2162,7 +2163,7 @@ empathy_call_window_connected (gpointer user_data)
 
   tp_g_signal_connect_object (call, "notify::video-stream",
     G_CALLBACK (empathy_call_window_video_stream_changed_cb),
-    G_OBJECT (self), 0);
+    self, 0);
 
   if (empathy_tp_call_has_dtmf (call))
     gtk_widget_set_sensitive (priv->dtmf_panel, TRUE);
@@ -2492,10 +2493,10 @@ call_handler_notify_tp_call_cb (EmpathyCallHandler *handler,
   if (call == NULL)
     return;
 
-  empathy_signal_connect_weak (call, "audio-stream-error",
-      G_CALLBACK (empathy_call_window_audio_stream_error), G_OBJECT (self));
-  empathy_signal_connect_weak (call, "video-stream-error",
-      G_CALLBACK (empathy_call_window_video_stream_error), G_OBJECT (self));
+  tp_g_signal_connect_object (call, "audio-stream-error",
+      G_CALLBACK (empathy_call_window_audio_stream_error), self, 0);
+  tp_g_signal_connect_object (call, "video-stream-error",
+      G_CALLBACK (empathy_call_window_video_stream_error), self, 0);
 
   g_object_unref (call);
 }
@@ -2522,10 +2523,12 @@ empathy_call_window_realized_cb (GtkWidget *widget, EmpathyCallWindow *window)
   g_object_get (priv->handler, "tp-call", &call, NULL);
   if (call != NULL)
     {
-      empathy_signal_connect_weak (call, "audio-stream-error",
-        G_CALLBACK (empathy_call_window_audio_stream_error), G_OBJECT (window));
-      empathy_signal_connect_weak (call, "video-stream-error",
-        G_CALLBACK (empathy_call_window_video_stream_error), G_OBJECT (window));
+      tp_g_signal_connect_object (call, "audio-stream-error",
+        G_CALLBACK (empathy_call_window_audio_stream_error), window,
+        0);
+      tp_g_signal_connect_object (call, "video-stream-error",
+        G_CALLBACK (empathy_call_window_video_stream_error), window,
+        0);
 
       g_object_unref (call);
     }
