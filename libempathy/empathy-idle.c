@@ -503,9 +503,9 @@ account_manager_ready_cb (GObject *source_object,
 
 	accounts = tp_account_manager_get_valid_accounts (priv->manager);
 	for (l = accounts; l != NULL; l = l->next) {
-		empathy_signal_connect_weak (l->data, "status-changed",
+		tp_g_signal_connect_object (l->data, "status-changed",
 					     G_CALLBACK (account_status_changed_cb),
-					     G_OBJECT (idle));
+					     idle, 0);
 	}
 	g_list_free (accounts);
 
