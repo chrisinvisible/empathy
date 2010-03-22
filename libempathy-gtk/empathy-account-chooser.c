@@ -30,6 +30,7 @@
 #include <gtk/gtk.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <telepathy-glib/util.h>
 
 #include <libempathy/empathy-utils.h>
 
@@ -505,9 +506,9 @@ account_manager_prepared_cb (GObject *source_object,
 
 		account_chooser_account_add_foreach (account, chooser);
 
-		empathy_signal_connect_weak (account, "status-changed",
+		tp_g_signal_connect_object (account, "status-changed",
 					     G_CALLBACK (account_chooser_status_changed_cb),
-					     G_OBJECT (chooser));
+					     chooser, 0);
 	}
 
 	g_list_free (accounts);
