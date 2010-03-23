@@ -40,6 +40,7 @@ main (int argc,
   g_set_application_name (_("Empathy Debugger"));
 
   gtk_window_set_default_icon_name ("empathy");
+  textdomain (GETTEXT_PACKAGE);
 
   window = empathy_debug_window_new (NULL);
   g_signal_connect (window, "destroy", gtk_main_quit, NULL);
