@@ -66,9 +66,6 @@ struct _EmpathyLogStoreEmpathyClass
 
 GType empathy_log_store_empathy_get_type (void);
 
-gchar * empathy_log_store_empathy_get_dir (EmpathyLogStoreEmpathy *store,
-    TpAccount *account);
-
 G_END_DECLS
 
 #endif /* ENABLE_TPL */
