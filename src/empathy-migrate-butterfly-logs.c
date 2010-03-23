@@ -22,12 +22,12 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
-#include <libempathy/empathy-log-store-empathy.h>
 
 #include <libempathy-gtk/empathy-conf.h>
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/defs.h>
 
 #include "empathy-migrate-butterfly-logs.h"
 
@@ -101,6 +101,36 @@ migrate_log_files_in_dir (const gchar *dirname)
   g_dir_close (dir);
 }
 
+/* This is copied from empathy-log-store-empathy.c (see #613437) */
+static gchar *
+log_store_account_to_dirname (TpAccount *account)
+{
+  const gchar *name;
+
+  name = tp_proxy_get_object_path (account);
+  if (g_str_has_prefix (name, TP_ACCOUNT_OBJECT_PATH_BASE))
+    name += strlen (TP_ACCOUNT_OBJECT_PATH_BASE);
+
+  return g_strdelimit (g_strdup (name), "/", '_');
+}
+
+static gchar *
+get_log_dir_for_account (TpAccount *account)
+{
+  gchar *basedir;
+  gchar *escaped;
+
+  escaped = log_store_account_to_dirname (account);
+
+  basedir = g_build_path (G_DIR_SEPARATOR_S, g_get_user_data_dir (),
+    PACKAGE_NAME, "logs", escaped, NULL);
+
+  g_free (escaped);
+
+  return basedir;
+}
+
+
 static void
 migration_account_manager_prepared_cb (GObject *source_object,
     GAsyncResult *result,
@@ -109,7 +139,6 @@ migration_account_manager_prepared_cb (GObject *source_object,
   TpAccountManager *am = TP_ACCOUNT_MANAGER (source_object);
   GError *error = NULL;
   GList *accounts, *l;
-  EmpathyLogStoreEmpathy *log_store;
   EmpathyConf *conf;
 
   if (!tp_account_manager_prepare_finish (am, result, &error))
@@ -119,7 +148,6 @@ migration_account_manager_prepared_cb (GObject *source_object,
       return;
     }
 
-  log_store = g_object_new (EMPATHY_TYPE_LOG_STORE_EMPATHY, NULL);
   accounts = tp_account_manager_get_valid_accounts (am);
 
   for (l = accounts; l != NULL; l = l->next)
@@ -136,7 +164,7 @@ migration_account_manager_prepared_cb (GObject *source_object,
           continue;
         }
 
-      dir = empathy_log_store_empathy_get_dir (log_store, account);
+      dir = get_log_dir_for_account (account);
       DEBUG ("Migrating all logs from dir: %s", dir);
 
       migrate_log_files_in_dir (dir);
@@ -151,7 +179,6 @@ migration_account_manager_prepared_cb (GObject *source_object,
   empathy_conf_set_bool (conf, EMPATHY_PREFS_BUTTERFLY_LOGS_MIGRATED, TRUE);
 
   g_list_free (accounts);
-  g_object_unref (log_store);
 }
 
 static gboolean
