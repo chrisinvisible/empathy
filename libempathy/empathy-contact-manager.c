@@ -336,7 +336,7 @@ logger_favourite_contacts_get_cb (TpProxy         *proxy,
 				  gpointer         user_data,
 				  GObject         *weak_object)
 {
-	EmpathyContactManager *manager = EMPATHY_CONTACT_MANAGER (user_data);
+	EmpathyContactManager *manager = EMPATHY_CONTACT_MANAGER (weak_object);
 
 	if (error == NULL) {
 		g_ptr_array_foreach ((GPtrArray *) result,
@@ -355,7 +355,7 @@ logger_favourite_contacts_setup (EmpathyContactManager *manager)
 	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
 
 	emp_cli_logger_call_get_favourite_contacts (priv->logger, -1,
-			logger_favourite_contacts_get_cb, manager, NULL,
+			logger_favourite_contacts_get_cb, NULL, NULL,
 			G_OBJECT (manager));
 }
 
