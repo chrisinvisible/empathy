@@ -698,6 +698,35 @@ tp_contact_list_finalize (GObject *object)
 }
 
 static void
+got_list_channel (EmpathyTpContactList *list,
+		  TpChannel *channel)
+{
+	EmpathyTpContactListPriv *priv = GET_PRIV (list);
+	const gchar *id;
+
+	/* We requested that channel by providing TargetID property, so it's
+	 * guaranteed that tp_channel_get_identifier will return it. */
+	id = tp_channel_get_identifier (channel);
+
+	/* TpChannel emits initial set of members just before being ready */
+	if (!tp_strdiff (id, "stored")) {
+		priv->stored = g_object_ref (channel);
+	} else if (!tp_strdiff (id, "publish")) {
+		priv->publish = g_object_ref (channel);
+		g_signal_connect (priv->publish, "group-members-changed",
+				  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
+				  list);
+	} else if (!tp_strdiff (id, "subscribe")) {
+		priv->subscribe = g_object_ref (channel);
+		g_signal_connect (priv->subscribe, "group-members-changed",
+				  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
+				  list);
+	} else {
+		g_warn_if_reached ();
+	}
+}
+
+static void
 list_ensure_channel_cb (TpConnection *conn,
 			gboolean yours,
 			const gchar *path,
@@ -707,8 +736,6 @@ list_ensure_channel_cb (TpConnection *conn,
 			GObject *weak_object)
 {
 	EmpathyTpContactList *list = user_data;
-	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-	const gchar *id;
 	TpChannel *channel;
 
 	if (error != NULL) {
@@ -716,28 +743,9 @@ list_ensure_channel_cb (TpConnection *conn,
 		return;
 	}
 
-	/* We requested that channel by providing TargetID property, so it's
-	 * guaranteed that tp_channel_get_identifier will return it. */
 	channel = tp_channel_new_from_properties (conn, path, properties, NULL);
-	id = tp_channel_get_identifier (channel);
-
-	/* TpChannel emits initial set of members just before being ready */
-	if (!tp_strdiff (id, "stored")) {
-		priv->stored = channel;
-	} else if (!tp_strdiff (id, "publish")) {
-		priv->publish = channel;
-		g_signal_connect (priv->publish, "group-members-changed",
-				  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
-				  list);
-	} else if (!tp_strdiff (id, "subscribe")) {
-		priv->subscribe = channel;
-		g_signal_connect (priv->subscribe, "group-members-changed",
-				  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
-				  list);
-	} else {
-		g_warn_if_reached ();
-		g_object_unref (channel);
-	}
+	got_list_channel (list, channel);
+	g_object_unref (channel);
 }
 
 static void
