@@ -753,6 +753,47 @@ list_ensure_channel_cb (TpConnection *conn,
 }
 
 static void
+new_channels_cb (TpConnection *conn,
+		 const GPtrArray *channels,
+		 gpointer user_data,
+		 GObject *weak_object)
+{
+	EmpathyTpContactList *list = EMPATHY_TP_CONTACT_LIST (weak_object);
+	guint i;
+
+	for (i = 0; i < channels->len ; i++) {
+		GValueArray *arr = g_ptr_array_index (channels, i);
+		const gchar *path;
+		GHashTable *properties;
+		const gchar *id;
+		TpChannel *channel;
+
+		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
+		properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
+
+		if (tp_strdiff (tp_asv_get_string (properties,
+				TP_IFACE_CHANNEL ".ChannelType"),
+		    TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
+			return;
+
+		if (tp_asv_get_uint32 (properties,
+				       TP_IFACE_CHANNEL ".TargetHandleType", NULL)
+		    != TP_HANDLE_TYPE_LIST)
+			return;
+
+		id = tp_asv_get_string (properties,
+					TP_IFACE_CHANNEL ".TargetID");
+		if (id == NULL)
+			return;
+
+		channel = tp_channel_new_from_properties (conn, path,
+							  properties, NULL);
+		got_list_channel (list, channel);
+		g_object_unref (channel);
+	}
+}
+
+static void
 conn_ready_cb (TpConnection *connection,
 	       const GError *error,
 	       gpointer data)
@@ -770,6 +811,12 @@ conn_ready_cb (TpConnection *connection,
 		TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
 		TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT, TP_HANDLE_TYPE_LIST,
 		NULL);
+
+	/* Watch the NewChannels signal so if ensuring list channels fails (for
+	 * example because the server is slow and the D-Bus call timeouts before CM
+	 * fetches the roster), we have a chance to get them later. */
+	tp_cli_connection_interface_requests_connect_to_new_channels (
+		priv->connection, new_channels_cb, NULL, NULL, G_OBJECT (list), NULL);
 
 	/* Request the 'stored' list. */
 	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "stored");
