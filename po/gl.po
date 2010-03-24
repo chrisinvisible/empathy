@@ -13,10 +13,10 @@ msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-03-17 10:38+0000\n"
-"PO-Revision-Date: 2010-03-15 11:01+0100\n"
+"POT-Creation-Date: 2010-03-24 11:28+0000\n"
+"PO-Revision-Date: 2010-03-20 23:47+0100\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
-"Language-Team: Galician <gnome@g11n.net>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1421,7 +1421,7 @@ msgstr "Inserir unha emoticona"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1701
-#: ../libempathy-gtk/empathy-ui-utils.c:1626
+#: ../libempathy-gtk/empathy-ui-utils.c:1675
 msgid "_Send"
 msgstr "_Enviar"
 
@@ -1520,7 +1520,7 @@ msgstr "Conectado"
 msgid "Conversation"
 msgstr "Conversa"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:684
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:672
 msgid "Topic:"
 msgstr "Asunto:"
 
@@ -1644,7 +1644,7 @@ msgstr "_Editar"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:562
-#: ../src/empathy-chat-window.c:869
+#: ../src/empathy-chat-window.c:857
 msgid "Inviting you to this room"
 msgstr "Invítao a vostede a esta sala"
 
@@ -1831,10 +1831,8 @@ msgid "Identifier:"
 msgstr "Identificador:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:13
-#, fuzzy
-#| msgid "Information requested&#x2026;"
 msgid "Information requested…"
-msgstr "Solicitude de información&#x2026;"
+msgstr "Información solicitada..."
 
 # rever
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
@@ -2067,16 +2065,16 @@ msgstr "Limpo"
 msgid "Blue"
 msgstr "Azul"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1501
+#: ../libempathy-gtk/empathy-ui-utils.c:1550
 msgid "Unable to open URI"
 msgstr "Non foi posíbel abrir o URI"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1618
+#: ../libempathy-gtk/empathy-ui-utils.c:1667
 msgid "Select a file"
 msgstr "Seleccione un ficheiro"
 
 # rever
-#: ../libempathy-gtk/empathy-ui-utils.c:1682
+#: ../libempathy-gtk/empathy-ui-utils.c:1731
 msgid "Select a destination"
 msgstr "Seleccione un destinatario"
 
@@ -2266,17 +2264,17 @@ msgid "Instant Message (Empathy)"
 msgstr "Mensaxe instantáneo (Empathy)"
 
 # rever
-#: ../src/empathy.c:596
+#: ../src/empathy.c:584
 msgid "Don't connect on startup"
 msgstr "Non conectarse ao inicio"
 
 # rever
-#: ../src/empathy.c:600
+#: ../src/empathy.c:588
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Non mostrar a lista de contactos nin outros diálogos no inicio"
 
 # rever
-#: ../src/empathy.c:612
+#: ../src/empathy.c:600
 msgid "- Empathy IM Client"
 msgstr "- Cliente de mensaxería instantánea Empathy"
 
@@ -2596,16 +2594,12 @@ msgstr ""
 
 # rever
 #: ../src/empathy-accounts-dialog.ui.h:4
-#, fuzzy
-#| msgid "_Add Contact…"
 msgid "_Add…"
-msgstr "Eng_adir un contacto..."
+msgstr "Eng_adir..."
 
 #: ../src/empathy-accounts-dialog.ui.h:5
-#, fuzzy
-#| msgid "Import"
 msgid "_Import…"
-msgstr "Importar"
+msgstr "_Importar..."
 
 #: ../src/empathy-call-window.c:453
 msgid "Contrast"
@@ -2802,28 +2796,28 @@ msgstr "Previsualizar o vídeo"
 msgid "_View"
 msgstr "_Ver"
 
-#: ../src/empathy-chat-window.c:440 ../src/empathy-chat-window.c:460
+#: ../src/empathy-chat-window.c:436 ../src/empathy-chat-window.c:456
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d non lido)"
 msgstr[1] "%s (%d non lidos)"
 
-#: ../src/empathy-chat-window.c:452
+#: ../src/empathy-chat-window.c:448
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (e outro %u)"
 msgstr[1] "%s (e outros %u)"
 
-#: ../src/empathy-chat-window.c:468
+#: ../src/empathy-chat-window.c:464
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (%d non lido de outros)"
 msgstr[1] "%s (%d non lidos de outros)"
 
-#: ../src/empathy-chat-window.c:477
+#: ../src/empathy-chat-window.c:473
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
@@ -2831,7 +2825,7 @@ msgstr[0] "%s (%d non lido de todos)"
 msgstr[1] "%s (%d non lidos de todos)"
 
 # rever
-#: ../src/empathy-chat-window.c:688
+#: ../src/empathy-chat-window.c:676
 msgid "Typing a message."
 msgstr "Escribindo unha mensaxe."
 
