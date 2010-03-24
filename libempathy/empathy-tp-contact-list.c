@@ -710,19 +710,23 @@ got_list_channel (EmpathyTpContactList *list,
 
 	/* TpChannel emits initial set of members just before being ready */
 	if (!tp_strdiff (id, "stored")) {
+		if (priv->stored != NULL)
+			return;
 		priv->stored = g_object_ref (channel);
 	} else if (!tp_strdiff (id, "publish")) {
+		if (priv->publish != NULL)
+			return;
 		priv->publish = g_object_ref (channel);
 		g_signal_connect (priv->publish, "group-members-changed",
 				  G_CALLBACK (tp_contact_list_publish_group_members_changed_cb),
 				  list);
 	} else if (!tp_strdiff (id, "subscribe")) {
+		if (priv->subscribe != NULL)
+			return;
 		priv->subscribe = g_object_ref (channel);
 		g_signal_connect (priv->subscribe, "group-members-changed",
 				  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
 				  list);
-	} else {
-		g_warn_if_reached ();
 	}
 }
 
