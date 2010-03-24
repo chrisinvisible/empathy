@@ -26,7 +26,6 @@
 G_BEGIN_DECLS
 
 #define EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS             "actions"
-#define EMPATHY_NOTIFY_MANAGER_CAP_APPEND              "append"
 #define EMPATHY_NOTIFY_MANAGER_CAP_BODY                "body"
 #define EMPATHY_NOTIFY_MANAGER_CAP_BODY_HYPERLINKS     "body-hyperlinks"
 #define EMPATHY_NOTIFY_MANAGER_CAP_BODY_IMAGES         "body-images"
@@ -34,10 +33,7 @@ G_BEGIN_DECLS
 #define EMPATHY_NOTIFY_MANAGER_CAP_ICON_MULTI          "icon-multi"
 #define EMPATHY_NOTIFY_MANAGER_CAP_ICON_STATIC         "icon-static"
 #define EMPATHY_NOTIFY_MANAGER_CAP_IMAGE_SVG_XML       "image/svg+xml"
-#define EMPATHY_NOTIFY_MANAGER_CAP_PRIVATE_ICON_ONLY   "private-icon-only"
-#define EMPATHY_NOTIFY_MANAGER_CAP_PRIVATE_SYNCHRONOUS "private-synchronous"
 #define EMPATHY_NOTIFY_MANAGER_CAP_SOUND                "sound"
-#define EMPATHY_NOTIFY_MANAGER_CAP_TRUNCATION           "truncation"
 /* notify-osd specific */
 #define EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_APPEND              "x-canonical-append"
 #define EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_PRIVATE_ICON_ONLY   "x-canonical-private-icon-only"
