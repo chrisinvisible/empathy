@@ -320,22 +320,13 @@ static void
 logger_favourite_contacts_add_from_value_array (GValueArray           *va,
 						EmpathyContactManager *manager)
 {
-	guint i;
+	const gchar *account;
+	const gchar **contacts;
 
-	for (i = 0; i < va->n_values; i++) {
-		GValue *account_value;
-		const gchar *account;
-		GValue *contacts_value;
-		const gchar **contacts;
+	account = g_value_get_boxed (g_value_array_get_nth (va, 0));
+	contacts = g_value_get_boxed (g_value_array_get_nth (va, 1));
 
-		account_value = g_value_array_get_nth (va, 0);
-		contacts_value = g_value_array_get_nth (va, 1);
-
-		account = g_value_get_boxed (account_value);
-		contacts = g_value_get_boxed (contacts_value);
-
-		add_contacts_to_favourites (manager, account, contacts);
-	}
+	add_contacts_to_favourites (manager, account, contacts);
 }
 
 static void
