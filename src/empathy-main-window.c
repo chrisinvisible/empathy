@@ -1116,7 +1116,7 @@ main_window_help_debug_cb (GtkAction         *action,
 	argv[i++] = path;
 
 	gdk_spawn_on_screen (screen, NULL, argv, NULL,
-			G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+			G_SPAWN_SEARCH_PATH,
 			NULL, NULL, NULL, &error);
 
 	if (error) {
