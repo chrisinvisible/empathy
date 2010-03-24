@@ -2286,13 +2286,10 @@ empathy_accounts_dialog_show (GtkWindow *parent,
 
 void
 empathy_accounts_dialog_show_application (GdkScreen *screen,
-    GChildWatchFunc application_exit_cb,
-    gpointer user_data,
     TpAccount *selected_account,
     gboolean if_needed,
     gboolean hidden)
 {
-  gint command_pid;
   GError *error = NULL;
   gchar *argv[4] = { NULL, };
   gint i = 0;
@@ -2314,7 +2311,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
 
   argv[i++] = path;
 
-  if (selected_account)
+  if (selected_account != NULL)
     {
       const gchar *account_path;
 
@@ -2336,19 +2333,13 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
     selected_account == NULL ? "<none selected>" :
       tp_proxy_get_object_path (TP_PROXY (selected_account)));
 
-  gdk_spawn_on_screen (screen, NULL, argv, NULL,
-      G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL,
-      &command_pid, &error);
-  if (error)
+  gdk_spawn_on_screen (screen, NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
+      NULL, NULL, NULL, &error);
+  if (error != NULL)
     {
       g_warning ("Failed to open accounts dialog: %s", error->message);
       g_error_free (error);
     }
-
-  /* XXX: unportable cast to GPid; then again, gdk_spawn_on_screen() seems
-   * unportable since it always takes a gint* for the PID */
-  if (application_exit_cb)
-    g_child_watch_add ((GPid) command_pid, application_exit_cb, NULL);
 
   g_free (account_option);
   g_free (path);

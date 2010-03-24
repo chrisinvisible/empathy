@@ -61,8 +61,6 @@ void empathy_account_dialog_cancel (EmpathyAccountsDialog *dialog);
 gboolean empathy_accounts_dialog_is_creating (EmpathyAccountsDialog *dialog);
 
 void empathy_accounts_dialog_show_application (GdkScreen *screen,
-    GChildWatchFunc application_exit_cb,
-    gpointer user_data,
     TpAccount *selected_account,
     gboolean if_needed,
     gboolean hidden);

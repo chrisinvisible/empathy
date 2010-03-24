@@ -241,23 +241,11 @@ migrate_config_to_xdg_dir (void)
 }
 
 static void
-accounts_application_exited_cb (GPid pid,
-    gint status,
-    gpointer data)
-{
-  if (status)
-    {
-      g_warning ("accounts application exited with status %d: '%s'",
-          status, g_strerror (status));
-    }
-}
-
-static void
 show_accounts_ui (GdkScreen *screen,
     gboolean if_needed)
 {
   empathy_accounts_dialog_show_application (screen,
-      accounts_application_exited_cb, NULL, NULL, if_needed, start_hidden);
+      NULL, if_needed, start_hidden);
 }
 
 static UniqueResponse
