@@ -146,41 +146,41 @@ private_icons = \
 	hicolor_apps_scalable_im-sametime.svg \
 	hicolor_apps_scalable_im-yahoo.svg \
 	hicolor_apps_scalable_im-zephyr.svg \
-	hicolor_status_16x16_empathy-available.png \
-	hicolor_status_16x16_empathy-away.png \
-	hicolor_status_16x16_empathy-busy.png \
-	hicolor_status_16x16_empathy-extended-away.png \
-	hicolor_status_16x16_empathy-offline.png \
+	hicolor_status_16x16_user-available.png \
+	hicolor_status_16x16_user-away.png \
+	hicolor_status_16x16_user-busy.png \
+	hicolor_status_16x16_user-idle.png \
+	hicolor_status_16x16_user-offline.png \
 	hicolor_status_16x16_empathy-pending.png \
-	hicolor_status_22x22_empathy-available.png \
-	hicolor_status_22x22_empathy-away.png \
-	hicolor_status_22x22_empathy-busy.png \
-	hicolor_status_22x22_empathy-extended-away.png \
-	hicolor_status_22x22_empathy-offline.png \
+	hicolor_status_22x22_user-available.png \
+	hicolor_status_22x22_user-away.png \
+	hicolor_status_22x22_user-busy.png \
+	hicolor_status_22x22_user-idle.png \
+	hicolor_status_22x22_user-offline.png \
 	hicolor_status_22x22_empathy-pending.png \
-	hicolor_status_24x24_empathy-available.png \
-	hicolor_status_24x24_empathy-away.png \
-	hicolor_status_24x24_empathy-busy.png \
-	hicolor_status_24x24_empathy-extended-away.png \
-	hicolor_status_24x24_empathy-offline.png \
+	hicolor_status_24x24_user-available.png \
+	hicolor_status_24x24_user-away.png \
+	hicolor_status_24x24_user-busy.png \
+	hicolor_status_24x24_user-idle.png \
+	hicolor_status_24x24_user-offline.png \
 	hicolor_status_24x24_empathy-pending.png \
-	hicolor_status_32x32_empathy-available.png \
-	hicolor_status_32x32_empathy-away.png \
-	hicolor_status_32x32_empathy-busy.png \
-	hicolor_status_32x32_empathy-extended-away.png \
-	hicolor_status_32x32_empathy-offline.png \
+	hicolor_status_32x32_user-available.png \
+	hicolor_status_32x32_user-away.png \
+	hicolor_status_32x32_user-busy.png \
+	hicolor_status_32x32_user-idle.png \
+	hicolor_status_32x32_user-offline.png \
 	hicolor_status_32x32_empathy-pending.png \
-	hicolor_status_48x48_empathy-available.png \
-	hicolor_status_48x48_empathy-away.png \
-	hicolor_status_48x48_empathy-busy.png \
-	hicolor_status_48x48_empathy-extended-away.png \
-	hicolor_status_48x48_empathy-offline.png \
+	hicolor_status_48x48_user-available.png \
+	hicolor_status_48x48_user-away.png \
+	hicolor_status_48x48_user-busy.png \
+	hicolor_status_48x48_user-idle.png \
+	hicolor_status_48x48_user-offline.png \
 	hicolor_status_48x48_empathy-pending.png \
-	hicolor_status_scalable_empathy-available.svg \
-	hicolor_status_scalable_empathy-away.svg \
-	hicolor_status_scalable_empathy-busy.svg \
-	hicolor_status_scalable_empathy-extended-away.svg \
-	hicolor_status_scalable_empathy-offline.svg \
+	hicolor_status_scalable_user-available.svg \
+	hicolor_status_scalable_user-away.svg \
+	hicolor_status_scalable_user-busy.svg \
+	hicolor_status_scalable_user-extended-away.svg \
+	hicolor_status_scalable_user-offline.svg \
 	hicolor_status_scalable_empathy-pending.svg \
 	$(NULL)
 
