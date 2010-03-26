@@ -229,29 +229,13 @@ map_view_contacts_update_label (ChamplainMarker *marker)
   g_free (label);
 }
 
-static gboolean
-map_view_contacts_foreach (GtkTreeModel *model,
-    GtkTreePath *path,
-    GtkTreeIter *iter,
-    gpointer user_data)
+static ChamplainMarker *
+create_marker (EmpathyMapView *window,
+    EmpathyContact *contact)
 {
-  EmpathyMapView *window = (EmpathyMapView *) user_data;
-  EmpathyContact *contact;
   ClutterActor *marker;
   ClutterActor *texture;
-  GHashTable *location;
   GdkPixbuf *avatar;
-
-  gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
-     &contact, -1);
-
-  if (contact == NULL)
-    return FALSE;
-
-  location = empathy_contact_get_location (contact);
-
-  if (location == NULL || g_hash_table_size (location) == 0)
-    return FALSE;
 
   marker = champlain_marker_new ();
 
@@ -280,9 +264,34 @@ map_view_contacts_foreach (GtkTreeModel *model,
 
   clutter_container_add (CLUTTER_CONTAINER (window->layer), marker, NULL);
 
+  return CHAMPLAIN_MARKER (marker);
+}
+
+static gboolean
+map_view_contacts_foreach (GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkTreeIter *iter,
+    gpointer user_data)
+{
+  EmpathyMapView *window = (EmpathyMapView *) user_data;
+  EmpathyContact *contact;
+  GHashTable *location;
+
+  gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
+     &contact, -1);
+
+  if (contact == NULL)
+    return FALSE;
+
+  location = empathy_contact_get_location (contact);
+
+  if (location == NULL || g_hash_table_size (location) == 0)
+    return FALSE;
+
   g_signal_connect (contact, "notify::location",
       G_CALLBACK (map_view_contact_location_notify), window);
 
+  create_marker (window, contact);
   map_view_update_contact_position (window, contact);
 
   g_object_unref (contact);
