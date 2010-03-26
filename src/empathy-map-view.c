@@ -309,7 +309,6 @@ map_view_contacts_foreach (GtkTreeModel *model,
   g_signal_connect (contact, "notify::location",
       G_CALLBACK (map_view_contact_location_notify), window);
 
-  create_marker (window, contact);
   map_view_update_contact_position (window, contact);
 
   g_object_unref (contact);
