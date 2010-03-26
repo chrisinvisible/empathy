@@ -833,8 +833,9 @@ contact_list_store_setup (EmpathyContactListStore *store)
 		GDK_TYPE_PIXBUF,      /* Avatar pixbuf */
 		G_TYPE_BOOLEAN,       /* Avatar pixbuf visible */
 		G_TYPE_STRING,        /* Name */
+		G_TYPE_UINT,          /* Presence type */
 		G_TYPE_STRING,        /* Status string */
-		G_TYPE_BOOLEAN,       /* Show status */
+		G_TYPE_BOOLEAN,       /* Compact view */
 		EMPATHY_TYPE_CONTACT, /* Contact type */
 		G_TYPE_BOOLEAN,       /* Is group */
 		G_TYPE_BOOLEAN,       /* Is active */
@@ -1277,8 +1278,11 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
-				    EMPATHY_CONTACT_LIST_STORE_COL_STATUS, empathy_contact_get_status (contact),
-				    EMPATHY_CONTACT_LIST_STORE_COL_STATUS_VISIBLE, !priv->is_compact,
+				    EMPATHY_CONTACT_LIST_STORE_COL_PRESENCE_TYPE,
+				      empathy_contact_get_presence (contact),
+				    EMPATHY_CONTACT_LIST_STORE_COL_STATUS,
+				      empathy_contact_get_presence_message (contact),
+				    EMPATHY_CONTACT_LIST_STORE_COL_COMPACT, priv->is_compact,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_ONLINE, now_online,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
@@ -1751,7 +1755,7 @@ contact_list_store_update_list_mode_foreach (GtkTreeModel           *model,
 	gtk_tree_store_set (GTK_TREE_STORE (store), iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 			    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
-			    EMPATHY_CONTACT_LIST_STORE_COL_STATUS_VISIBLE, !priv->is_compact,
+			    EMPATHY_CONTACT_LIST_STORE_COL_COMPACT, priv->is_compact,
 			    -1);
 
 	return FALSE;

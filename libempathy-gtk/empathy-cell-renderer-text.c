@@ -31,13 +31,14 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCellRendererText)
 typedef struct {
 	gchar    *name;
+	TpConnectionPresenceType presence_type;
 	gchar    *status;
 	gboolean  is_group;
 
 	gboolean  is_valid;
 	gboolean  is_selected;
 
-	gboolean  show_status;
+	gboolean  compact;
 } EmpathyCellRendererTextPriv;
 
 static void cell_renderer_text_finalize          (GObject                     *object);
@@ -71,9 +72,10 @@ static void cell_renderer_text_update_text       (EmpathyCellRendererText      *
 enum {
 	PROP_0,
 	PROP_NAME,
+	PROP_PRESENCE_TYPE,
 	PROP_STATUS,
 	PROP_IS_GROUP,
-	PROP_SHOW_STATUS,
+	PROP_COMPACT
 };
 
 G_DEFINE_TYPE (EmpathyCellRendererText, empathy_cell_renderer_text, GTK_TYPE_CELL_RENDERER_TEXT);
@@ -100,17 +102,27 @@ empathy_cell_renderer_text_class_init (EmpathyCellRendererTextClass *klass)
 		G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_NAME, spec);
 
-	spec = g_param_spec_string ("status", "Status",
-		"Contact status string", NULL, G_PARAM_READWRITE);
+	spec = g_param_spec_uint ("presence-type", "TpConnectionPresenceType",
+		"The contact's presence type",
+		0, G_MAXUINT, /* Telepathy enum, can be extended */
+		TP_CONNECTION_PRESENCE_TYPE_UNKNOWN,
+		G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PRESENCE_TYPE,
+		spec);
+
+	spec = g_param_spec_string ("status", "Status message",
+		"Contact's custom status message", NULL, G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_STATUS, spec);
 
 	spec = g_param_spec_boolean ("is_group", "Is group",
 		"Whether this cell is a group", FALSE, G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_IS_GROUP, spec);
 
-	spec = g_param_spec_boolean ("show-status", "Show status",
-		"Whether to show the status line", TRUE, G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_SHOW_STATUS, spec);
+	spec = g_param_spec_boolean ("compact", "Compact",
+		"TRUE to show the status alongside the contact name;"
+		"FALSE to show it on its own line",
+		FALSE, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_COMPACT, spec);
 
 	g_type_class_add_private (object_class, sizeof (EmpathyCellRendererTextPriv));
 }
@@ -128,7 +140,7 @@ empathy_cell_renderer_text_init (EmpathyCellRendererText *cell)
 
 	priv->name = g_strdup ("");
 	priv->status = g_strdup ("");
-	priv->show_status = TRUE;
+	priv->compact = FALSE;
 }
 
 static void
@@ -162,14 +174,17 @@ cell_renderer_text_get_property (GObject    *object,
 	case PROP_NAME:
 		g_value_set_string (value, priv->name);
 		break;
+	case PROP_PRESENCE_TYPE:
+		g_value_set_uint (value, priv->presence_type);
+		break;
 	case PROP_STATUS:
 		g_value_set_string (value, priv->status);
 		break;
 	case PROP_IS_GROUP:
 		g_value_set_boolean (value, priv->is_group);
 		break;
-	case PROP_SHOW_STATUS:
-		g_value_set_boolean (value, priv->show_status);
+	case PROP_COMPACT:
+		g_value_set_boolean (value, priv->compact);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -198,6 +213,10 @@ cell_renderer_text_set_property (GObject      *object,
 		g_strdelimit (priv->name, "\n\r\t", ' ');
 		priv->is_valid = FALSE;
 		break;
+	case PROP_PRESENCE_TYPE:
+		priv->presence_type = g_value_get_uint (value);
+		priv->is_valid = FALSE;
+		break;
 	case PROP_STATUS:
 		g_free (priv->status);
 		str = g_value_get_string (value);
@@ -209,8 +228,8 @@ cell_renderer_text_set_property (GObject      *object,
 		priv->is_group = g_value_get_boolean (value);
 		priv->is_valid = FALSE;
 		break;
-	case PROP_SHOW_STATUS:
-		priv->show_status = g_value_get_boolean (value);
+	case PROP_COMPACT:
+		priv->compact = g_value_get_boolean (value);
 		priv->is_valid = FALSE;
 		break;
 	default:
@@ -320,10 +339,20 @@ cell_renderer_text_update_text (EmpathyCellRendererText *cell,
 		pango_attr_list_insert (attr_list, attr_color);
 	}
 
-	if (!priv->status || !priv->status[0] || !priv->show_status) {
-		str = g_strdup (priv->name);
+	if (priv->compact) {
+		if (EMP_STR_EMPTY (priv->status)) {
+			str = g_strdup (priv->name);
+		} else {
+			str = g_strdup_printf ("%s %s", priv->name, priv->status);
+		}
 	} else {
-		str = g_strdup_printf ("%s\n%s", priv->name, priv->status);
+		const gchar *status = priv->status;
+
+		if (EMP_STR_EMPTY (priv->status)) {
+			status = empathy_presence_get_default_message (priv->presence_type);
+		}
+
+		str = g_strdup_printf ("%s\n%s", priv->name, status);
 	}
 
 	g_object_set (cell,

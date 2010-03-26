@@ -1027,21 +1027,11 @@ contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
 {
 	gboolean is_group;
 	gboolean is_active;
-	gboolean show_status;
-	gchar *name;
 
 	gtk_tree_model_get (model, iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_ACTIVE, &is_active,
-			    EMPATHY_CONTACT_LIST_STORE_COL_STATUS_VISIBLE, &show_status,
-			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
 			    -1);
-
-	g_object_set (cell,
-		      "show-status", show_status,
-		      "text", name,
-		      NULL);
-	g_free (name);
 
 	contact_list_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -1224,9 +1214,15 @@ contact_list_view_setup (EmpathyContactListView *view)
 	gtk_tree_view_column_add_attribute (col, cell,
 					    "name", EMPATHY_CONTACT_LIST_STORE_COL_NAME);
 	gtk_tree_view_column_add_attribute (col, cell,
+					    "text", EMPATHY_CONTACT_LIST_STORE_COL_NAME);
+	gtk_tree_view_column_add_attribute (col, cell,
+					    "presence-type", EMPATHY_CONTACT_LIST_STORE_COL_PRESENCE_TYPE);
+	gtk_tree_view_column_add_attribute (col, cell,
 					    "status", EMPATHY_CONTACT_LIST_STORE_COL_STATUS);
 	gtk_tree_view_column_add_attribute (col, cell,
 					    "is_group", EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP);
+	gtk_tree_view_column_add_attribute (col, cell,
+					    "compact", EMPATHY_CONTACT_LIST_STORE_COL_COMPACT);
 
 	/* Audio Call Icon */
 	cell = empathy_cell_renderer_activatable_new ();
