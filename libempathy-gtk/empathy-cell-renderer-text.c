@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2004-2007 Imendio AB
+ * Copyright (C) 2010 Collabora Ltd
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -82,6 +83,7 @@ empathy_cell_renderer_text_class_init (EmpathyCellRendererTextClass *klass)
 {
 	GObjectClass         *object_class;
 	GtkCellRendererClass *cell_class;
+	GParamSpec           *spec;
 
 	object_class = G_OBJECT_CLASS (klass);
 	cell_class = GTK_CELL_RENDERER_CLASS (klass);
@@ -94,34 +96,21 @@ empathy_cell_renderer_text_class_init (EmpathyCellRendererTextClass *klass)
 	cell_class->get_size = cell_renderer_text_get_size;
 	cell_class->render = cell_renderer_text_render;
 
-	g_object_class_install_property (object_class,
-					 PROP_NAME,
-					 g_param_spec_string ("name",
-							      "Name",
-							      "Contact name",
-							      NULL,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_STATUS,
-					 g_param_spec_string ("status",
-							      "Status",
-							      "Contact status string",
-							      NULL,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_IS_GROUP,
-					 g_param_spec_boolean ("is_group",
-							       "Is group",
-							       "Whether this cell is a group",
-							       FALSE,
-							       G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_SHOW_STATUS,
-					 g_param_spec_boolean ("show-status",
-							       "Show status",
-							       "Whether to show the status line",
-							       TRUE,
-							       G_PARAM_READWRITE));
+	spec = g_param_spec_string ("name", "Name", "Contact name", NULL,
+		G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_NAME, spec);
+
+	spec = g_param_spec_string ("status", "Status",
+		"Contact status string", NULL, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_STATUS, spec);
+
+	spec = g_param_spec_boolean ("is_group", "Is group",
+		"Whether this cell is a group", FALSE, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_IS_GROUP, spec);
+
+	spec = g_param_spec_boolean ("show-status", "Show status",
+		"Whether to show the status line", TRUE, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_SHOW_STATUS, spec);
 
 	g_type_class_add_private (object_class, sizeof (EmpathyCellRendererTextPriv));
 }
