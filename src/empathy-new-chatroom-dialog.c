@@ -549,6 +549,8 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 		}
 	}
 
+	gtk_widget_set_sensitive (dialog->expander_browse, dialog->room_list != NULL);
+
 out:
 	new_chatroom_dialog_update_widgets (dialog);
 }
