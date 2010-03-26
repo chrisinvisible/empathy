@@ -290,6 +290,16 @@ create_marker (EmpathyMapView *window,
   return CHAMPLAIN_MARKER (marker);
 }
 
+static void
+contact_added (EmpathyMapView *window,
+    EmpathyContact *contact)
+{
+  g_signal_connect (contact, "notify::location",
+      G_CALLBACK (map_view_contact_location_notify), window);
+
+  map_view_update_contact_position (window, contact);
+}
+
 static gboolean
 map_view_contacts_foreach (GtkTreeModel *model,
     GtkTreePath *path,
@@ -305,10 +315,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
   if (contact == NULL)
     return FALSE;
 
-  g_signal_connect (contact, "notify::location",
-      G_CALLBACK (map_view_contact_location_notify), window);
-
-  map_view_update_contact_position (window, contact);
+  contact_added (window, contact);
 
   g_object_unref (contact);
   return FALSE;
