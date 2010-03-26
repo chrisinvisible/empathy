@@ -482,6 +482,8 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 	EmpathyAccountChooser *account_chooser;
 	gboolean               listing = FALSE;
 	gboolean               expanded = FALSE;
+	TpConnection          *connection;
+	EmpathyDispatcher     *dispatcher;
 
 	if (dialog->room_list) {
 		g_object_unref (dialog->room_list);
@@ -498,13 +500,24 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser);
 	dialog->account = empathy_account_chooser_dup_account (account_chooser);
+	connection = empathy_account_chooser_get_connection (account_chooser);
 	if (dialog->account == NULL)
 		goto out;
 
 	dialog->status_changed_id = g_signal_connect (dialog->account,
 		      "status-changed", G_CALLBACK (account_status_changed_cb), dialog);
 
-	dialog->room_list = empathy_tp_roomlist_new (dialog->account);
+	dispatcher = empathy_dispatcher_dup_singleton ();
+
+	if (connection != NULL &&
+	    empathy_dispatcher_find_requestable_channel_classes (dispatcher,
+		connection, TP_IFACE_CHANNEL_TYPE_ROOM_LIST,
+		TP_HANDLE_TYPE_NONE, NULL) != NULL) {
+		/* Roomlist channels are supported */
+		dialog->room_list = empathy_tp_roomlist_new (dialog->account);
+	}
+
+	g_object_unref (dispatcher);
 
 	if (dialog->room_list) {
 		g_signal_connect (dialog->room_list, "destroy",
