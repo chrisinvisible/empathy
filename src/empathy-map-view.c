@@ -75,12 +75,16 @@ map_view_state_changed (ChamplainView *view,
 }
 
 static void
-map_view_marker_update_position (ChamplainMarker *marker,
+map_view_update_contact_position (EmpathyMapView *self,
     EmpathyContact *contact)
 {
   gdouble lon, lat;
   GValue *value;
   GHashTable *location;
+  ChamplainMarker *marker;
+
+  marker = g_hash_table_lookup (self->markers, contact);
+  g_assert (marker != NULL);
 
   location = empathy_contact_get_location (contact);
 
@@ -114,9 +118,9 @@ map_view_marker_update_position (ChamplainMarker *marker,
 static void
 map_view_contact_location_notify (EmpathyContact *contact,
     GParamSpec *arg1,
-    ChamplainMarker *marker)
+    EmpathyMapView *self)
 {
-  map_view_marker_update_position (marker, contact);
+  map_view_update_contact_position (self, contact);
 }
 
 static void
@@ -277,9 +281,9 @@ map_view_contacts_foreach (GtkTreeModel *model,
   clutter_container_add (CLUTTER_CONTAINER (window->layer), marker, NULL);
 
   g_signal_connect (contact, "notify::location",
-      G_CALLBACK (map_view_contact_location_notify), marker);
+      G_CALLBACK (map_view_contact_location_notify), window);
 
-  map_view_marker_update_position (CHAMPLAIN_MARKER (marker), contact);
+  map_view_update_contact_position (window, contact);
 
   g_object_unref (contact);
   return FALSE;
@@ -289,23 +293,15 @@ static void
 map_view_destroy_cb (GtkWidget *widget,
     EmpathyMapView *window)
 {
-  GList *item;
+  GHashTableIter iter;
+  gpointer contact;
 
   g_source_remove (window->timeout_id);
 
-  item = clutter_container_get_children (CLUTTER_CONTAINER (window->layer));
-  while (item != NULL)
-  {
-    EmpathyContact *contact;
-    ChamplainMarker *marker;
-
-    marker = CHAMPLAIN_MARKER (item->data);
-    contact = g_object_get_data (G_OBJECT (marker), "contact");
+  g_hash_table_iter_init (&iter, window->markers);
+  while (g_hash_table_iter_next (&iter, &contact, NULL))
     g_signal_handlers_disconnect_by_func (contact,
-        map_view_contact_location_notify, marker);
-
-    item = g_list_next (item);
-  }
+        map_view_contact_location_notify, window);
 
   g_hash_table_destroy (window->markers);
   g_object_unref (window->list_store);
