@@ -58,6 +58,7 @@ typedef struct {
   guint timeout_id;
   /* reffed (EmpathyContact *) => borrowed (ChamplainMarker *) */
   GHashTable *markers;
+  gulong members_changed_id;
 } EmpathyMapView;
 
 static void
@@ -327,6 +328,7 @@ map_view_destroy_cb (GtkWidget *widget,
 {
   GHashTableIter iter;
   gpointer contact;
+  EmpathyContactList *list_iface;
 
   g_source_remove (window->timeout_id);
 
@@ -334,6 +336,9 @@ map_view_destroy_cb (GtkWidget *widget,
   while (g_hash_table_iter_next (&iter, &contact, NULL))
     g_signal_handlers_disconnect_by_func (contact,
         map_view_contact_location_notify, window);
+
+  list_iface = empathy_contact_list_store_get_list_iface (window->list_store);
+  g_signal_handler_disconnect (list_iface, window->members_changed_id);
 
   g_hash_table_destroy (window->markers);
   g_object_unref (window->list_store);
@@ -367,6 +372,39 @@ map_view_tick (EmpathyMapView *window)
     map_view_contacts_update_label (marker->data);
 
   return TRUE;
+}
+
+static void
+contact_removed (EmpathyMapView *self,
+    EmpathyContact *contact)
+{
+  ClutterActor *marker;
+
+  marker = g_hash_table_lookup (self->markers, contact);
+  if (marker == NULL)
+    return;
+
+  clutter_actor_destroy (marker);
+  g_hash_table_remove (self->markers, contact);
+}
+
+static void
+members_changed_cb (EmpathyContactList *list,
+    EmpathyContact *contact,
+    EmpathyContact *actor,
+    guint reason,
+    gchar *message,
+    gboolean is_member,
+    EmpathyMapView *self)
+{
+  if (is_member)
+    {
+      contact_added (self, contact);
+    }
+  else
+    {
+      contact_removed (self, contact);
+    }
 }
 
 GtkWidget *
@@ -419,6 +457,9 @@ empathy_map_view_show (void)
   empathy_contact_list_store_set_show_groups (list_store, FALSE);
   empathy_contact_list_store_set_show_avatars (list_store, TRUE);
   g_object_unref (list_iface);
+
+  window->members_changed_id = g_signal_connect (list_iface, "members-changed",
+      G_CALLBACK (members_changed_cb), window);
 
   window->throbber = ephy_spinner_new ();
   ephy_spinner_set_size (EPHY_SPINNER (window->throbber),
