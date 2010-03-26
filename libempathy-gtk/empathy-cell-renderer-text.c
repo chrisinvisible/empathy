@@ -99,29 +99,31 @@ empathy_cell_renderer_text_class_init (EmpathyCellRendererTextClass *klass)
 	cell_class->render = cell_renderer_text_render;
 
 	spec = g_param_spec_string ("name", "Name", "Contact name", NULL,
-		G_PARAM_READWRITE);
+		G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property (object_class, PROP_NAME, spec);
 
 	spec = g_param_spec_uint ("presence-type", "TpConnectionPresenceType",
 		"The contact's presence type",
 		0, G_MAXUINT, /* Telepathy enum, can be extended */
 		TP_CONNECTION_PRESENCE_TYPE_UNKNOWN,
-		G_PARAM_READWRITE);
+		G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property (object_class, PROP_PRESENCE_TYPE,
 		spec);
 
 	spec = g_param_spec_string ("status", "Status message",
-		"Contact's custom status message", NULL, G_PARAM_READWRITE);
+		"Contact's custom status message", NULL,
+		G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property (object_class, PROP_STATUS, spec);
 
-	spec = g_param_spec_boolean ("is_group", "Is group",
-		"Whether this cell is a group", FALSE, G_PARAM_READWRITE);
+	spec = g_param_spec_boolean ("is-group", "Is group",
+		"Whether this cell is a group", FALSE,
+		G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property (object_class, PROP_IS_GROUP, spec);
 
 	spec = g_param_spec_boolean ("compact", "Compact",
 		"TRUE to show the status alongside the contact name;"
 		"FALSE to show it on its own line",
-		FALSE, G_PARAM_READWRITE);
+		FALSE, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 	g_object_class_install_property (object_class, PROP_COMPACT, spec);
 
 	g_type_class_add_private (object_class, sizeof (EmpathyCellRendererTextPriv));
