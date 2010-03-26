@@ -56,6 +56,8 @@ typedef struct {
   ChamplainView *map_view;
   ChamplainLayer *layer;
   guint timeout_id;
+  /* reffed (EmpathyContact *) => borrowed (ChamplainMarker *) */
+  GHashTable *markers;
 } EmpathyMapView;
 
 static void
@@ -264,6 +266,8 @@ map_view_contacts_foreach (GtkTreeModel *model,
   g_object_set_data_full (G_OBJECT (marker), "contact",
       g_object_ref (contact), g_object_unref);
 
+  g_hash_table_insert (window->markers, g_object_ref (contact), marker);
+
   map_view_contacts_update_label (CHAMPLAIN_MARKER (marker));
 
   clutter_actor_set_reactive (CLUTTER_ACTOR (marker), TRUE);
@@ -303,6 +307,7 @@ map_view_destroy_cb (GtkWidget *widget,
     item = g_list_next (item);
   }
 
+  g_hash_table_destroy (window->markers);
   g_object_unref (window->list_store);
   g_object_unref (window->layer);
   g_slice_free (EmpathyMapView, window);
@@ -412,6 +417,9 @@ empathy_map_view_show (void)
       G_CALLBACK (map_view_state_changed), window);
 
   /* Set up contact list. */
+  window->markers = g_hash_table_new_full (NULL, NULL,
+      (GDestroyNotify) g_object_unref, NULL);
+
   model = GTK_TREE_MODEL (window->list_store);
   gtk_tree_model_foreach (model, map_view_contacts_foreach, window);
 
