@@ -87,6 +87,9 @@ contact_has_location (EmpathyContact *contact)
   return TRUE;
 }
 
+static ChamplainMarker * create_marker (EmpathyMapView *window,
+    EmpathyContact *contact);
+
 static void
 map_view_update_contact_position (EmpathyMapView *self,
     EmpathyContact *contact)
@@ -97,7 +100,13 @@ map_view_update_contact_position (EmpathyMapView *self,
   ChamplainMarker *marker;
 
   marker = g_hash_table_lookup (self->markers, contact);
-  g_assert (marker != NULL);
+  if (marker == NULL)
+    {
+      if (!contact_has_location (contact))
+        return;
+
+      marker = create_marker (self, contact);
+    }
 
   location = empathy_contact_get_location (contact);
 
