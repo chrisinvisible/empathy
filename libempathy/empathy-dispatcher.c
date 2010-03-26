@@ -1879,7 +1879,6 @@ empathy_dispatcher_find_channel_classes (EmpathyDispatcher *self,
   ConnectionData *cd;
 
   g_return_val_if_fail (channel_type != NULL, NULL);
-  g_return_val_if_fail (handle_type != 0, NULL);
 
   cd = g_hash_table_lookup (priv->connections, connection);
 
@@ -2023,7 +2022,6 @@ empathy_dispatcher_find_requestable_channel_classes
   g_return_val_if_fail (EMPATHY_IS_DISPATCHER (self), NULL);
   g_return_val_if_fail (TP_IS_CONNECTION (connection), NULL);
   g_return_val_if_fail (channel_type != NULL, NULL);
-  g_return_val_if_fail (handle_type != 0, NULL);
 
   priv = GET_PRIV (self);
 
