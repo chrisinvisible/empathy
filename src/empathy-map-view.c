@@ -74,6 +74,19 @@ map_view_state_changed (ChamplainView *view,
     ephy_spinner_stop (EPHY_SPINNER (window->throbber));
 }
 
+static gboolean
+contact_has_location (EmpathyContact *contact)
+{
+  GHashTable *location;
+
+  location = empathy_contact_get_location (contact);
+
+  if (location == NULL || g_hash_table_size (location) == 0)
+    return FALSE;
+
+  return TRUE;
+}
+
 static void
 map_view_update_contact_position (EmpathyMapView *self,
     EmpathyContact *contact)
@@ -88,12 +101,11 @@ map_view_update_contact_position (EmpathyMapView *self,
 
   location = empathy_contact_get_location (contact);
 
-  if (location == NULL ||
-      g_hash_table_size (location) == 0)
-  {
-    champlain_base_marker_animate_out (CHAMPLAIN_BASE_MARKER (marker));
-    return;
-  }
+  if (!contact_has_location (contact))
+    {
+      champlain_base_marker_animate_out (CHAMPLAIN_BASE_MARKER (marker));
+      return;
+    }
 
   value = g_hash_table_lookup (location, EMPATHY_LOCATION_LAT);
   if (value == NULL)
@@ -275,7 +287,6 @@ map_view_contacts_foreach (GtkTreeModel *model,
 {
   EmpathyMapView *window = (EmpathyMapView *) user_data;
   EmpathyContact *contact;
-  GHashTable *location;
 
   gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
      &contact, -1);
@@ -283,9 +294,7 @@ map_view_contacts_foreach (GtkTreeModel *model,
   if (contact == NULL)
     return FALSE;
 
-  location = empathy_contact_get_location (contact);
-
-  if (location == NULL || g_hash_table_size (location) == 0)
+  if (!contact_has_location (contact))
     return FALSE;
 
   g_signal_connect (contact, "notify::location",
