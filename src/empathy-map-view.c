@@ -303,9 +303,6 @@ map_view_contacts_foreach (GtkTreeModel *model,
   if (contact == NULL)
     return FALSE;
 
-  if (!contact_has_location (contact))
-    return FALSE;
-
   g_signal_connect (contact, "notify::location",
       G_CALLBACK (map_view_contact_location_notify), window);
 
