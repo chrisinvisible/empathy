@@ -98,23 +98,25 @@ map_view_update_contact_position (EmpathyMapView *self,
   GValue *value;
   GHashTable *location;
   ChamplainMarker *marker;
+  gboolean has_location;
+
+  has_location = contact_has_location (contact);
 
   marker = g_hash_table_lookup (self->markers, contact);
   if (marker == NULL)
     {
-      if (!contact_has_location (contact))
+      if (!has_location)
         return;
 
       marker = create_marker (self, contact);
     }
-
-  location = empathy_contact_get_location (contact);
-
-  if (!contact_has_location (contact))
+  else if (!has_location)
     {
       champlain_base_marker_animate_out (CHAMPLAIN_BASE_MARKER (marker));
       return;
     }
+
+  location = empathy_contact_get_location (contact);
 
   value = g_hash_table_lookup (location, EMPATHY_LOCATION_LAT);
   if (value == NULL)
