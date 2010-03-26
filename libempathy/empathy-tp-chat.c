@@ -1069,6 +1069,12 @@ tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
 		}
 	}
 
+	if (priv->user == old) {
+		/* We change our nick */
+		g_object_unref (priv->user);
+		priv->user = g_object_ref (new);
+	}
+
 	tp_chat_update_remote_contact (EMPATHY_TP_CHAT (chat));
 	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
 }
