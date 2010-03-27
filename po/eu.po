@@ -8,9 +8,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-17 15:14+0100\n"
-"PO-Revision-Date: 2010-03-22 17:22+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
+"POT-Creation-Date: 2010-03-23 02:43+0000\n"
+"PO-Revision-Date: 2010-03-27 15:30+0100\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,7 +45,7 @@ msgid ""
 "chat."
 msgstr ""
 "Karakterea goitizenaren atzean gehitzeko, taldeko berriketan goitizena "
-"osatzea (tabulatzailea) erabiltzean."
+"osatzea (tabuladorea) erabiltzean."
 
 #: ../data/empathy.schemas.in.h:3
 msgid "Chat window theme"
@@ -1274,7 +1274,7 @@ msgstr "Txertatu aurpegiera"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1701
-#: ../libempathy-gtk/empathy-ui-utils.c:1626
+#: ../libempathy-gtk/empathy-ui-utils.c:1675
 msgid "_Send"
 msgstr "_Bidali"
 
@@ -1371,7 +1371,7 @@ msgstr "Konektatuta"
 msgid "Conversation"
 msgstr "Berriketa"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:684
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:672
 msgid "Topic:"
 msgstr "Gaia:"
 
@@ -1448,6 +1448,18 @@ msgstr "Gehitu _kontaktua..."
 msgid "_Chat"
 msgstr "_Berriketa"
 
+#: ../libempathy-gtk/empathy-contact-menu.c:264
+#| msgid "_Call"
+msgctxt "menu item"
+msgid "_Audio Call"
+msgstr "_Audio-deia"
+
+#: ../libempathy-gtk/empathy-contact-menu.c:296
+#| msgid "New Call"
+msgctxt "menu item"
+msgid "_Video Call"
+msgstr "_Bideo-deia"
+
 #: ../libempathy-gtk/empathy-contact-menu.c:347
 #: ../src/empathy-main-window.ui.h:26
 msgid "_Previous Conversations"
@@ -1470,8 +1482,14 @@ msgstr "Gogokoa"
 msgid "Infor_mation"
 msgstr "_Informazioa"
 
+#: ../libempathy-gtk/empathy-contact-menu.c:508
+#| msgid "_Edit"
+msgctxt "Edit contact (contextual menu)"
+msgid "_Edit"
+msgstr "_Editatu"
+
 #: ../libempathy-gtk/empathy-contact-menu.c:562
-#: ../src/empathy-chat-window.c:869
+#: ../src/empathy-chat-window.c:857
 msgid "Inviting you to this room"
 msgstr "Gela honetara gonbidatzen zaituzte"
 
@@ -1870,15 +1888,15 @@ msgstr "Garbia"
 msgid "Blue"
 msgstr "Urdina"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1501
+#: ../libempathy-gtk/empathy-ui-utils.c:1550
 msgid "Unable to open URI"
 msgstr "Ezin da URIa ireki"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1618
+#: ../libempathy-gtk/empathy-ui-utils.c:1667
 msgid "Select a file"
 msgstr "Hautatu fitxategia"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1682
+#: ../libempathy-gtk/empathy-ui-utils.c:1731
 msgid "Select a destination"
 msgstr "Hautatu helburua"
 
@@ -2573,35 +2591,35 @@ msgstr "Bideoaren aurrebista"
 msgid "_View"
 msgstr "_Ikusi"
 
-#: ../src/empathy-chat-window.c:440 ../src/empathy-chat-window.c:460
+#: ../src/empathy-chat-window.c:436 ../src/empathy-chat-window.c:456
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d irakurri gabe)"
 msgstr[1] "%s (%d irakurri gabe)"
 
-#: ../src/empathy-chat-window.c:452
+#: ../src/empathy-chat-window.c:448
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (eta beste %u)"
 msgstr[1] "%s (eta beste %u)"
 
-#: ../src/empathy-chat-window.c:468
+#: ../src/empathy-chat-window.c:464
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (%d irakurri gabe besteengandik)"
 msgstr[1] "%s (%d irakurri gabe besteengandik)"
 
-#: ../src/empathy-chat-window.c:477
+#: ../src/empathy-chat-window.c:473
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (%d irakurri gabe guztietatik)"
 msgstr[1] "%s (%d irakurri gabe guztietatik)"
 
-#: ../src/empathy-chat-window.c:688
+#: ../src/empathy-chat-window.c:676
 msgid "Typing a message."
 msgstr "Mezua idazten."
 
@@ -2790,6 +2808,12 @@ msgstr "%u:%02u.%02u"
 #, c-format
 msgid "%02u.%02u"
 msgstr "%02u.%02u"
+
+#: ../src/empathy-ft-manager.c:179
+#| msgid "unknown"
+msgctxt "file transfer percent"
+msgid "Unknown"
+msgstr "Ezezaguna"
 
 #: ../src/empathy-ft-manager.c:274
 #, c-format
