@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy 2.29.93\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-20 20:26+0800\n"
-"PO-Revision-Date: 2010-03-20 20:26+0800\n"
+"POT-Creation-Date: 2010-03-27 20:39+0800\n"
+"PO-Revision-Date: 2010-03-27 20:40+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Hong Kong) <community@linuxhall.org>\n"
 "MIME-Version: 1.0\n"
@@ -696,7 +696,7 @@ msgstr "你的 AIM 螢幕名稱是？"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:24
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Port:"
@@ -705,7 +705,7 @@ msgstr "連接埠(_P):"
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:24
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:25
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
@@ -841,7 +841,8 @@ msgstr "優先權(_O):"
 msgid "Reso_urce:"
 msgstr "資源(_U):"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+#. This string is not wrapped in the dialog so you may have to add some '\n' to make it look nice.
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
 msgid ""
 "This is your username, not your normal Facebook login.\n"
 "If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
@@ -852,47 +853,47 @@ msgstr ""
 "如果你是 facebook.com/<b>badger</b> 的話，請輸入 <b>badger</b>。\n"
 "如果你還沒有 Facebook 使用者名稱，請使用 <a href=\"http://www.facebook.com/username/\">此網頁</a> 來選用一個。"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
 msgid "Use old SS_L"
 msgstr "使用舊的 SS_L"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
 msgid "What is your Facebook password?"
 msgstr "你的 Facebook 密碼是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "What is your Facebook username?"
 msgstr "你的 Facebook 使用者名稱是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "What is your Google ID?"
 msgstr "你的 Google ID 是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "What is your Google password?"
 msgstr "你的 Google 密碼是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 msgid "What is your Jabber ID?"
 msgstr "你的 Jabber ID 是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 msgid "What is your Jabber password?"
 msgstr "你的 Jabber 密碼是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
 msgid "What is your desired Jabber ID?"
 msgstr "你想要的 Jabber ID 是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
 msgid "What is your desired Jabber password?"
 msgstr "你想要的 Jabber 密碼是？"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
 msgid "_Encryption required (TLS/SSL)"
 msgstr "要求加密[TLS/SSL](_E)"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
 msgid "_Ignore SSL certificate errors"
 msgstr "忽略 SSL 證書錯誤(_I)"
 
@@ -1217,7 +1218,7 @@ msgstr "插入表情符號"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1701
-#: ../libempathy-gtk/empathy-ui-utils.c:1626
+#: ../libempathy-gtk/empathy-ui-utils.c:1675
 msgid "_Send"
 msgstr "傳送(_S)"
 
@@ -1314,7 +1315,7 @@ msgstr "成功連線"
 msgid "Conversation"
 msgstr "談話"
 
-#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:684
+#: ../libempathy-gtk/empathy-chat.ui.h:1 ../src/empathy-chat-window.c:672
 msgid "Topic:"
 msgstr "主題:"
 
@@ -1429,7 +1430,7 @@ msgid "_Edit"
 msgstr "編輯(_E)"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:562
-#: ../src/empathy-chat-window.c:869
+#: ../src/empathy-chat-window.c:857
 msgid "Inviting you to this room"
 msgstr "邀請你到這個聊天室"
 
@@ -1609,10 +1610,8 @@ msgid "Identifier:"
 msgstr "識別器:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:13
-#, fuzzy
-#| msgid "Information requested&#x2026;"
 msgid "Information requested…"
-msgstr "要求資訊&#x2026;"
+msgstr "資訊已請求…"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:14
 msgid "OS:"
@@ -1828,15 +1827,15 @@ msgstr "清爽"
 msgid "Blue"
 msgstr "藍色"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1501
+#: ../libempathy-gtk/empathy-ui-utils.c:1550
 msgid "Unable to open URI"
 msgstr "無法開啓 URI"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1618
+#: ../libempathy-gtk/empathy-ui-utils.c:1667
 msgid "Select a file"
 msgstr "選擇一個檔案"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1682
+#: ../libempathy-gtk/empathy-ui-utils.c:1731
 msgid "Select a destination"
 msgstr "選取目的地"
 
@@ -2023,15 +2022,15 @@ msgstr "沒有錯誤訊息"
 msgid "Instant Message (Empathy)"
 msgstr "即時通訊 (Empathy)"
 
-#: ../src/empathy.c:596
+#: ../src/empathy.c:584
 msgid "Don't connect on startup"
 msgstr "啟動時不要自動連線"
 
-#: ../src/empathy.c:600
+#: ../src/empathy.c:588
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "啟動時不顯示聯絡人清單或任何其他對話窗"
 
-#: ../src/empathy.c:612
+#: ../src/empathy.c:600
 msgid "- Empathy IM Client"
 msgstr "- Empathy 即時通客戶端"
 
@@ -2314,15 +2313,12 @@ msgid ""
 msgstr "要加入新的帳號，你必須先安裝每個會用到的通訊協定後端程式。"
 
 #: ../src/empathy-accounts-dialog.ui.h:4
-#, fuzzy
 msgid "_Add…"
-msgstr "加入(_A)..."
+msgstr "加入(_A)…"
 
 #: ../src/empathy-accounts-dialog.ui.h:5
-#, fuzzy
-#| msgid "Import"
 msgid "_Import…"
-msgstr "匯入"
+msgstr "匯入(_I)…"
 
 #: ../src/empathy-call-window.c:453
 msgid "Contrast"
@@ -2502,31 +2498,31 @@ msgstr "視像預覽"
 msgid "_View"
 msgstr "檢視(_V)"
 
-#: ../src/empathy-chat-window.c:440 ../src/empathy-chat-window.c:460
+#: ../src/empathy-chat-window.c:436 ../src/empathy-chat-window.c:456
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d 個未讀)"
 
-#: ../src/empathy-chat-window.c:452
+#: ../src/empathy-chat-window.c:448
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (與 %u 其他的)"
 
-#: ../src/empathy-chat-window.c:468
+#: ../src/empathy-chat-window.c:464
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (來自其他人的 %d 個未讀)"
 
-#: ../src/empathy-chat-window.c:477
+#: ../src/empathy-chat-window.c:473
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (來自所有人的 %d 個未讀)"
 
-#: ../src/empathy-chat-window.c:688
+#: ../src/empathy-chat-window.c:676
 msgid "Typing a message."
 msgstr "正在輸入訊息。"
 
@@ -3153,7 +3149,7 @@ msgstr "啟用音效通知(_E)"
 
 #: ../src/empathy-preferences.ui.h:28
 msgid "_GPS"
-msgstr "GPS(_G)"
+msgstr "_GPS"
 
 #: ../src/empathy-preferences.ui.h:29
 msgid "_Network (IP, Wi-Fi)"
