@@ -513,18 +513,21 @@ const gchar *
 empathy_contact_get_name (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv;
+  const gchar        *alias;
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
   priv = GET_PRIV (contact);
 
   if (priv->tp_contact != NULL)
-    return tp_contact_get_alias (priv->tp_contact);
+    alias = tp_contact_get_alias (priv->tp_contact);
+  else
+    alias = priv->name;
 
-  if (EMP_STR_EMPTY (priv->name))
-      return empathy_contact_get_id (contact);
-
-  return priv->name;
+  if (!EMP_STR_EMPTY (alias))
+    return alias;
+  else
+    return empathy_contact_get_id (contact);
 }
 
 void
