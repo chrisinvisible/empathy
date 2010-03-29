@@ -424,6 +424,7 @@ main_window_error_display (EmpathyMainWindow *window,
 	label = gtk_label_new (str);
 	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
 	gtk_widget_show (label);
 	g_free (str);
 
