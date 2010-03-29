@@ -219,7 +219,9 @@ class Project:
 			" - Updated %s Documentation translation (%s)\n")
 		bugs = self.get_bugs()
 
-		news = 'NEW in '+ self.package_version + '\n==============\n'
+		news = 'NEW in '+ self.package_version
+		line = '=' * len(news)
+		news += '\n%s\n' % line
 		if bugs != '':
 			news += 'Bugs fixed:\n' + bugs + '\n'
 		if translations != '':
