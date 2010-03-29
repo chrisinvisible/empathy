@@ -1,3 +1,74 @@
+NEW in 2.30.0 (29/03/2010)
+=============
+
+The "The Petri net cake" release.
+
+This is the first release in the new 2.30 stable branch. We strongly advise
+distributions to ship this version.
+
+Changes since 2.29.93 include a fix ensuring that the accounts dialog and
+debug windows are properly translated. We also fixed the accounts dialog to
+fit better on smaller screens.
+
+This release includes loads of translation updates from the GNOME translation
+team; many thanks to them!
+
+Bugs fixed:
+ - Fixed #613596, Account Assistant translations are not loaded (Guillaume Desmottes)
+ - Fixed #601693, Shouldn't cycle tab if gtk-keynav-wrap-around is 0 (Aaron Brown)
+ - Fixed #612557, empathy_sidebar_menu_position_under: assertion `gtk_widget_get_has_window (user_data)' failed (Guillaume Desmottes)
+ - Fixed #613117, Please fix escaping of UTF-chars in ui file (Gabor Kelemen)
+ - Fixed #613272, im settings capplet goes offscreen when advanced is expanded (Travis Reitter)
+ - Fixed #613437, Empathy fails to build (Guillaume Desmottes)
+ - Fixed #613793, remove non-standard notification capabilities (Nicolò Chieffo)
+ - Fixed #613892, Should start hidden when activated (Guillaume Desmottes)
+ - Fixed #614155, Move Tab Left/Right should have accelerator (Aaron Brown)
+ - Fixed #613772, Minor typo in Empathy documentation (Marios Zindilis)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated bg Translation (Alexander Shopov)
+ - Updated bn Translation (Jamil Ahmed)
+ - Updated ca Translation (Gil Forcada)
+ - Updated crh Translation (Reşat SABIQ)
+ - Updated cs Translation (Petr Kovar, Jiri Eischmann)
+ - Updated da Translation (Ask H. Larsen)
+ - Updated de Translation (Christian Kirbach, Christian.Kirbach)
+ - Updated el Translation (Simos Xenitellis, Kostas Papadimas)
+ - Updated en_GB Translation (Bruce Cowan)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin, Mattias Põldaru)
+ - Updated eu Translation (Inaki Larranaga Murgoitio)
+ - Updated fi Translation (Timo Jyrinki)
+ - Updated fr Translation (Bruno Brouard, Claude Paroz)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande, Francesco Marlatta)
+ - Updated ko Translation (Changwoo Ryu)
+ - Updated ku Translation (Sîmurg56, simurg56)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated pl Translation (Piotr Drąg)
+ - Updated pt_BR Translation (Djavan Fagundes)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated ro Translation (Adi Roiban)
+ - Updated ru Translation (Leonid Kanter)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sr@latin Translation (Branko Kokanović)
+ - Updated sr Translation (Branko Kokanović)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+ - Updated zh_CN Translation (Aron Xu)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated el Documentation translation (Marios Zindilis, Μάριος Ζηντίλης)
+ - Updated es Documentation translation (Jorge González)
+ - Updated fr Documentation translation (Bruno Brouard)
+
 NEW in 2.29.93
 ==============
 
