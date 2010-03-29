@@ -1405,7 +1405,7 @@ get_server_time (void)
       0,
       CopyFromParent,
       CopyFromParent,
-      (Visual *)CopyFromParent,
+      (Visual *) CopyFromParent,
       CWOverrideRedirect | CWEventMask,
       &attrs);
 
@@ -1429,7 +1429,7 @@ get_server_time (void)
    */
   XDestroyWindow (display, pingingWindow);
 
-  return ((XPropertyEvent*)&propertyEvent)->time;
+  return ((XPropertyEvent *) &propertyEvent)->time;
 }
 
 /* Takes care of moving the window to the current workspace. */
