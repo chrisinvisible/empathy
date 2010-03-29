@@ -221,7 +221,8 @@ class Project:
 
 		news = 'NEW in '+ self.package_version
 		line = '=' * len(news)
-		news += '\n%s\n' % line
+		today = datetime.date.today()
+		news += ' (%s)\n%s\n' % (today.strftime('%d/%m/%Y'),line)
 		if bugs != '':
 			news += 'Bugs fixed:\n' + bugs + '\n'
 		if translations != '':
