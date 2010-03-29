@@ -32,6 +32,8 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
+#include <telepathy-glib/interfaces.h>
+
 #include <libempathy/empathy-tp-roomlist.h>
 #include <libempathy/empathy-chatroom.h>
 #include <libempathy/empathy-utils.h>
@@ -131,6 +133,48 @@ static void	new_chatroom_dialog_button_close_error_clicked_cb   (GtkButton      
 
 static EmpathyNewChatroomDialog *dialog_p = NULL;
 
+/**
+ * empathy_account_chooser_filter_supports_multichat:
+ * @account: a #TpAccount
+ * @user_data: user data or %NULL
+ *
+ * An #EmpathyAccountChooserFilterFunc that returns accounts that both
+ * support multiuser text chat and are connected.
+ *
+ * Return value: TRUE if @account both supports muc and is connected
+ */
+static gboolean
+empathy_account_chooser_filter_supports_multichat (TpAccount *account,
+						   gpointer   user_data)
+{
+	TpConnection *connection;
+	EmpathyDispatcher *dispatcher;
+	GList *classes;
+
+	if (tp_account_get_connection_status (account, NULL) !=
+	    TP_CONNECTION_STATUS_CONNECTED)
+	return FALSE;
+
+	/* check if CM supports multiuser text chat */
+	connection = tp_account_get_connection (account);
+	if (connection == NULL)
+		return FALSE;
+
+	dispatcher = empathy_dispatcher_dup_singleton ();
+
+	classes = empathy_dispatcher_find_requestable_channel_classes
+		(dispatcher, connection, TP_IFACE_CHANNEL_TYPE_TEXT,
+		TP_HANDLE_TYPE_ROOM, NULL);
+
+	g_object_unref (dispatcher);
+
+	if (classes == NULL)
+		return FALSE;
+
+	g_list_free (classes);
+	return TRUE;
+}
+
 void
 empathy_new_chatroom_dialog_show (GtkWindow *parent)
 {
@@ -202,7 +246,7 @@ empathy_new_chatroom_dialog_show (GtkWindow *parent)
 	/* Account chooser for custom */
 	dialog->account_chooser = empathy_account_chooser_new ();
 	empathy_account_chooser_set_filter (EMPATHY_ACCOUNT_CHOOSER (dialog->account_chooser),
-					    empathy_account_chooser_filter_is_connected,
+					    empathy_account_chooser_filter_supports_multichat,
 					    NULL);
 	gtk_table_attach_defaults (GTK_TABLE (dialog->table_info),
 				   dialog->account_chooser,
