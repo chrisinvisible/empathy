@@ -116,11 +116,13 @@
             <property name="name">menu_tabs_left</property>
             <property name="label" translatable="yes">Move Tab _Left</property>
           </object>
+          <accelerator key="Page_Down" modifiers="GDK_CONTROL_MASK|GDK_SHIFT_MASK"/>
         </child>
         <child>
           <object class="GtkAction" id="menu_tabs_right">
             <property name="name">menu_tabs_right</property>
             <property name="label" translatable="yes">Move Tab _Right</property>
+          <accelerator key="Page_Up" modifiers="GDK_CONTROL_MASK|GDK_SHIFT_MASK"/>
           </object>
         </child>
         <child>
