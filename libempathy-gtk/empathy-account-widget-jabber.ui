@@ -115,7 +115,7 @@
                 <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@jabber.org</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
@@ -129,7 +129,7 @@
                 <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@gmail.com</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
@@ -145,7 +145,7 @@ If you are facebook.com/&lt;b&gt;badger&lt;/b&gt;, enter &lt;b&gt;badger&lt;/b&g
 Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to choose a Facebook username if you don't have one.</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
@@ -155,13 +155,10 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
+            <property name="right_attach">3</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
         </child>
         <child>
           <placeholder/>
@@ -178,163 +175,61 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <child>
-          <object class="GtkVBox" id="vbox_advanced">
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
+            <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <property name="vscrollbar_policy">automatic</property>
             <child>
-              <object class="GtkTable" id="table_advanced_settings">
+              <object class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
-                <property name="n_rows">4</property>
-                <property name="n_columns">3</property>
-                <property name="column_spacing">12</property>
-                <property name="row_spacing">6</property>
-                <child>
-                  <object class="GtkEntry" id="entry_resource">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="spinbutton_priority">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="invisible_char">&#x25CF;</property>
-                    <property name="adjustment">adjustment1</property>
-                    <property name="climb_rate">1</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="checkbutton_ignore_ssl_errors">
-                    <property name="label" translatable="yes">_Ignore SSL certificate errors</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="right_attach">3</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_priority">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Pri_ority:</property>
-                    <property name="use_underline">True</property>
-                    <property name="mnemonic_widget">spinbutton_priority</property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_resource">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Reso_urce:</property>
-                    <property name="use_underline">True</property>
-                    <property name="mnemonic_widget">entry_resource</property>
-                  </object>
-                  <packing>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="checkbutton_encryption">
-                    <property name="label" translatable="yes">_Encryption required (TLS/SSL)</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="right_attach">3</property>
-                    <property name="x_options">GTK_FILL</property>
-                    <property name="y_options"></property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkFrame" id="frame1">
-                <property name="visible">True</property>
-                <property name="label_xalign">0</property>
+                <property name="resize_mode">queue</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <object class="GtkAlignment" id="alignment_server_settings">
+                  <object class="GtkVBox" id="vbox_advanced">
                     <property name="visible">True</property>
-                    <property name="top_padding">6</property>
-                    <property name="left_padding">12</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <child>
-                      <object class="GtkTable" id="table1">
+                      <object class="GtkTable" id="table_advanced_settings">
                         <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">2</property>
-                        <property name="column_spacing">6</property>
+                        <property name="n_rows">4</property>
+                        <property name="n_columns">3</property>
+                        <property name="column_spacing">12</property>
                         <property name="row_spacing">6</property>
                         <child>
-                          <object class="GtkSpinButton" id="spinbutton_port">
+                          <object class="GtkEntry" id="entry_resource">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="invisible_char">&#x25CF;</property>
-                            <property name="adjustment">adjustment2</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">3</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSpinButton" id="spinbutton_priority">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="adjustment">adjustment1</property>
                             <property name="climb_rate">1</property>
-                            <property name="numeric">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
+                            <property name="right_attach">3</property>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry_server">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                          </object>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_ssl">
-                            <property name="label" translatable="yes">Use old SS_L</property>
+                          <object class="GtkCheckButton" id="checkbutton_ignore_ssl_errors">
+                            <property name="label" translatable="yes">_Ignore SSL certificate errors</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
@@ -342,22 +237,7 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
                             <property name="draw_indicator">True</property>
                           </object>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options"></property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label_port">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">_Port:</property>
-                            <property name="use_underline">True</property>
-                            <property name="mnemonic_widget">spinbutton_port</property>
-                          </object>
-                          <packing>
+                            <property name="right_attach">3</property>
                             <property name="top_attach">1</property>
                             <property name="bottom_attach">2</property>
                             <property name="x_options">GTK_FILL</property>
@@ -365,35 +245,167 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="label_server">
+                          <object class="GtkLabel" id="label_priority">
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
-                            <property name="label" translatable="yes">_Server:</property>
+                            <property name="label" translatable="yes">Pri_ority:</property>
                             <property name="use_underline">True</property>
-                            <property name="mnemonic_widget">entry_server</property>
+                            <property name="mnemonic_widget">spinbutton_priority</property>
                           </object>
                           <packing>
+                            <property name="top_attach">3</property>
+                            <property name="bottom_attach">4</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label_resource">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Reso_urce:</property>
+                            <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">entry_resource</property>
+                          </object>
+                          <packing>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                            <property name="x_options">GTK_FILL</property>
+                            <property name="y_options"></property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="checkbutton_encryption">
+                            <property name="label" translatable="yes">_Encryption required (TLS/SSL)</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="use_underline">True</property>
+                            <property name="draw_indicator">True</property>
+                          </object>
+                          <packing>
+                            <property name="right_attach">3</property>
                             <property name="x_options">GTK_FILL</property>
                             <property name="y_options"></property>
                           </packing>
                         </child>
                       </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frame1">
+                        <property name="visible">True</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment_server_settings">
+                            <property name="visible">True</property>
+                            <property name="top_padding">6</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkTable" id="table1">
+                                <property name="visible">True</property>
+                                <property name="n_rows">3</property>
+                                <property name="n_columns">2</property>
+                                <property name="column_spacing">6</property>
+                                <property name="row_spacing">6</property>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_port">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="invisible_char">&#x25CF;</property>
+                                    <property name="adjustment">adjustment2</property>
+                                    <property name="climb_rate">1</property>
+                                    <property name="numeric">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkEntry" id="entry_server">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="invisible_char">&#x25CF;</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton_ssl">
+                                    <property name="label" translatable="yes">Use old SS_L</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">2</property>
+                                    <property name="bottom_attach">3</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label_port">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Port:</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="mnemonic_widget">spinbutton_port</property>
+                                  </object>
+                                  <packing>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label_server">
+                                    <property name="visible">True</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Server:</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="mnemonic_widget">entry_server</property>
+                                  </object>
+                                  <packing>
+                                    <property name="x_options">GTK_FILL</property>
+                                    <property name="y_options"></property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label2">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Override server settings</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </object>
                 </child>
-                <child type="label">
-                  <object class="GtkLabel" id="label2">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Override server settings</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                    </attributes>
-                  </object>
-                </child>
               </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
             </child>
           </object>
         </child>
@@ -408,8 +420,6 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="fill">False</property>
         <property name="position">1</property>
       </packing>
     </child>
@@ -468,7 +478,7 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
                 <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@jabber.org</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
@@ -570,7 +580,7 @@ Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to cho
                 <property name="label" translatable="yes">&lt;b&gt;Example:&lt;/b&gt; user@gmail.com</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
@@ -664,7 +674,7 @@ If you are facebook.com/&lt;b&gt;badger&lt;/b&gt;, enter &lt;b&gt;badger&lt;/b&g
 Use &lt;a href="http://www.facebook.com/username/"&gt;this page&lt;/a&gt; to choose a Facebook username if you don't have one.</property>
                 <property name="use_markup">True</property>
                 <attributes>
-                  <attribute name="scale" value="0.8"/><!-- PANGO_SCALE_SMALL -->
+                  <attribute name="scale" value="0.800000"/>
                 </attributes>
               </object>
               <packing>
