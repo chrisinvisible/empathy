@@ -700,21 +700,6 @@ tp_contact_list_store_group_members_changed_cb (TpChannel     *channel,
 }
 
 static void
-tp_contact_list_new_channel_cb (TpConnection *proxy,
-				const gchar  *object_path,
-				const gchar  *channel_type,
-				guint         handle_type,
-				guint         handle,
-				gboolean      suppress_handler,
-				gpointer      user_data,
-				GObject      *list)
-{
-	tp_contact_list_group_add_channel (EMPATHY_TP_CONTACT_LIST (list),
-					   object_path, channel_type,
-					   handle_type, handle);
-}
-
-static void
 tp_contact_list_list_channels_cb (TpConnection    *connection,
 				  const GPtrArray *channels,
 				  const GError    *error,
@@ -886,6 +871,18 @@ new_channels_cb (TpConnection *conn,
 			got_list_channel (list, channel);
 			g_object_unref (channel);
 		}
+		else if (handle_type == TP_HANDLE_TYPE_GROUP) {
+				TpHandle handle;
+
+				handle = tp_asv_get_uint32 (properties,
+					TP_IFACE_CHANNEL ".TargetHandle", NULL);
+				if (handle == 0)
+					return;
+
+				tp_contact_list_group_add_channel (list,
+						   path, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
+						   TP_HANDLE_TYPE_GROUP, handle);
+		}
 	}
 }
 
@@ -974,11 +971,6 @@ tp_contact_list_constructed (GObject *list)
 					      tp_contact_list_list_channels_cb,
 					      NULL, NULL,
 					      list);
-
-	tp_cli_connection_connect_to_new_channel (priv->connection,
-						  tp_contact_list_new_channel_cb,
-						  NULL, NULL,
-						  list, NULL);
 }
 
 static void
