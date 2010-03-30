@@ -549,6 +549,18 @@ chatroom_manager_ready_cb (EmpathyChatroomManager *chatroom_manager,
       account_manager_chatroom_ready_cb, chatroom_manager);
 }
 
+static void
+empathy_idle_set_auto_away_cb (EmpathyConf *conf,
+				const gchar *key,
+				gpointer user_data)
+{
+	gboolean autoaway;
+	EmpathyIdle *idle = user_data;
+
+	empathy_conf_get_bool (conf, key, &autoaway);
+	empathy_idle_set_auto_away (idle, autoaway);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -572,7 +584,7 @@ main (int argc, char *argv[])
   GError *error = NULL;
   UniqueApp *unique_app;
   gboolean chatroom_manager_ready;
-
+  gboolean autoaway = TRUE;
 #ifdef ENABLE_DEBUG
   TpDebugSender *debug_sender;
 #endif /* ENABLE_TPL */
@@ -641,7 +653,16 @@ main (int argc, char *argv[])
 
   /* Setting up Idle */
   idle = empathy_idle_dup_singleton ();
-  empathy_idle_set_auto_away (idle, TRUE);
+
+  empathy_conf_get_bool (empathy_conf_get (),
+      EMPATHY_PREFS_AUTOAWAY, &autoaway);
+
+  empathy_conf_notify_add (empathy_conf_get (),
+			   EMPATHY_PREFS_AUTOAWAY,
+			   empathy_idle_set_auto_away_cb,
+			   idle);
+
+  empathy_idle_set_auto_away (idle, autoaway);
 
   /* Setting up Connectivity */
   connectivity = empathy_connectivity_dup_singleton ();

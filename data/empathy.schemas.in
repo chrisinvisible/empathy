@@ -522,6 +522,20 @@
     </schema>
 
     <schema>
+      <key>/schemas/apps/empathy/autoaway</key>
+      <applyto>/apps/empathy/autoaway</applyto>
+      <owner>empathy</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Empathy should auto-away when idle</short>
+        <long>
+        Whether Empathy should go into away mode automatically if user is idle.
+        </long>
+      </locale>
+    </schema>
+
+    <schema>
       <key>/schemas/apps/empathy/import_asked</key>
       <applyto>/apps/empathy/import_asked</applyto>
       <owner>empathy</owner>
