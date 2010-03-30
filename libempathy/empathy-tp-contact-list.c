@@ -277,22 +277,19 @@ tp_contact_list_group_ready_cb (TpChannel *channel,
 static void
 tp_contact_list_group_add_channel (EmpathyTpContactList *list,
 				   const gchar          *object_path,
-				   const gchar          *channel_type,
-				   TpHandleType          handle_type,
-				   guint                 handle)
+				   GHashTable           *properties)
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
 	TpChannel                *channel;
+	GError *error = NULL;
 
-	/* Only accept server-side contact groups */
-	if (tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST) ||
-	    handle_type != TP_HANDLE_TYPE_GROUP) {
+	channel = tp_channel_new_from_properties (priv->connection,
+				  object_path, properties, &error);
+	if (channel == NULL) {
+		DEBUG ("Failed to create group channel: %s", error->message);
+		g_error_free (error);
 		return;
 	}
-
-	channel = tp_channel_new (priv->connection,
-				  object_path, channel_type,
-				  handle_type, handle, NULL);
 
 	/* Give the ref to the callback */
 	tp_channel_call_when_ready (channel,
@@ -839,16 +836,7 @@ new_channels_cb (TpConnection *conn,
 			g_object_unref (channel);
 		}
 		else if (handle_type == TP_HANDLE_TYPE_GROUP) {
-				TpHandle handle;
-
-				handle = tp_asv_get_uint32 (properties,
-					TP_IFACE_CHANNEL ".TargetHandle", NULL);
-				if (handle == 0)
-					return;
-
-				tp_contact_list_group_add_channel (list,
-						   path, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-						   TP_HANDLE_TYPE_GROUP, handle);
+				tp_contact_list_group_add_channel (list, path, properties);
 		}
 	}
 }
@@ -874,7 +862,6 @@ got_channels_cb (TpProxy *conn,
 		GValueArray *arr = g_ptr_array_index (channels, i);
 		const gchar *path;
 		GHashTable *properties;
-		TpHandle handle;
 
 		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
 		properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
@@ -888,14 +875,7 @@ got_channels_cb (TpProxy *conn,
 		    TP_IFACE_CHANNEL ".TargetHandleType", NULL) != TP_HANDLE_TYPE_GROUP)
 		    continue;
 
-		handle = tp_asv_get_uint32 (properties, TP_IFACE_CHANNEL ".TargetHandle",
-			NULL);
-		if (handle == 0)
-			continue;
-
-		tp_contact_list_group_add_channel (list,
-			path, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
-			TP_HANDLE_TYPE_GROUP, handle);
+		tp_contact_list_group_add_channel (list, path, properties);
 	}
 }
 
