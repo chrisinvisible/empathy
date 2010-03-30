@@ -333,16 +333,21 @@ chat_window_menu_context_update (EmpathyChatWindowPriv *priv,
 {
 	gboolean first_page;
 	gboolean last_page;
+	gboolean wrap_around;
 	gboolean is_connected;
 	gint     page_num;
 
 	page_num = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
 	first_page = (page_num == 0);
 	last_page = (page_num == (num_pages - 1));
+	g_object_get (gtk_settings_get_default (), "gtk-keynav-wrap-around",
+		      &wrap_around, NULL);
 	is_connected = empathy_chat_get_tp_chat (priv->current_chat) != NULL;
 
-	gtk_action_set_sensitive (priv->menu_tabs_next, TRUE);
-	gtk_action_set_sensitive (priv->menu_tabs_prev, TRUE);
+	gtk_action_set_sensitive (priv->menu_tabs_next, (!last_page ||
+							 wrap_around));
+	gtk_action_set_sensitive (priv->menu_tabs_prev, (!first_page ||
+							 wrap_around));
 	gtk_action_set_sensitive (priv->menu_tabs_detach, num_pages > 1);
 	gtk_action_set_sensitive (priv->menu_tabs_left, !first_page);
 	gtk_action_set_sensitive (priv->menu_tabs_right, !last_page);
