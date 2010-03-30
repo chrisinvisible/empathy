@@ -863,8 +863,8 @@ new_channels_cb (TpConnection *conn,
 		GValueArray *arr = g_ptr_array_index (channels, i);
 		const gchar *path;
 		GHashTable *properties;
-		const gchar *id;
 		TpChannel *channel;
+		TpHandleType handle_type;
 
 		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
 		properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
@@ -874,20 +874,18 @@ new_channels_cb (TpConnection *conn,
 		    TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
 			return;
 
-		if (tp_asv_get_uint32 (properties,
-				       TP_IFACE_CHANNEL ".TargetHandleType", NULL)
-		    != TP_HANDLE_TYPE_LIST)
+		if (tp_asv_get_string (properties, TP_IFACE_CHANNEL ".TargetID") == NULL)
 			return;
 
-		id = tp_asv_get_string (properties,
-					TP_IFACE_CHANNEL ".TargetID");
-		if (id == NULL)
-			return;
+		handle_type = tp_asv_get_uint32 (properties,
+			TP_IFACE_CHANNEL ".TargetHandleType", NULL);
 
-		channel = tp_channel_new_from_properties (conn, path,
-							  properties, NULL);
-		got_list_channel (list, channel);
-		g_object_unref (channel);
+		if (handle_type == TP_HANDLE_TYPE_LIST) {
+			channel = tp_channel_new_from_properties (conn, path,
+								  properties, NULL);
+			got_list_channel (list, channel);
+			g_object_unref (channel);
+		}
 	}
 }
 
