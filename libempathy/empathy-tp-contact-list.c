@@ -70,8 +70,6 @@ typedef struct {
 	GHashTable     *add_to_group;
 
 	EmpathyContactListFlags flags;
-
-	TpProxySignalConnection *new_channels_sig;
 } EmpathyTpContactListPriv;
 
 typedef enum {
@@ -794,15 +792,6 @@ tp_contact_list_finalize (GObject *object)
 	G_OBJECT_CLASS (empathy_tp_contact_list_parent_class)->finalize (object);
 }
 
-static gboolean
-received_all_list_channels (EmpathyTpContactList *self)
-{
-	EmpathyTpContactListPriv *priv = GET_PRIV (self);
-
-	return (priv->stored != NULL && priv->publish != NULL &&
-		priv->subscribe != NULL);
-}
-
 static void
 got_list_channel (EmpathyTpContactList *list,
 		  TpChannel *channel)
@@ -836,12 +825,6 @@ got_list_channel (EmpathyTpContactList *list,
 		g_signal_connect (priv->subscribe, "group-members-changed",
 				  G_CALLBACK (tp_contact_list_subscribe_group_members_changed_cb),
 				  list);
-	}
-
-	if (received_all_list_channels (list) && priv->new_channels_sig != NULL) {
-		/* We don't need to watch NewChannels anymore */
-		tp_proxy_signal_connection_disconnect (priv->new_channels_sig);
-		priv->new_channels_sig = NULL;
 	}
 }
 
@@ -930,8 +913,7 @@ conn_ready_cb (TpConnection *connection,
 	/* Watch the NewChannels signal so if ensuring list channels fails (for
 	 * example because the server is slow and the D-Bus call timeouts before CM
 	 * fetches the roster), we have a chance to get them later. */
-	priv->new_channels_sig =
-	  tp_cli_connection_interface_requests_connect_to_new_channels (
+	tp_cli_connection_interface_requests_connect_to_new_channels (
 		priv->connection, new_channels_cb, NULL, NULL, G_OBJECT (list), NULL);
 
 	/* Request the 'stored' list. */
