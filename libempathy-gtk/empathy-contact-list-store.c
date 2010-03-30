@@ -1568,7 +1568,6 @@ compare_separator_and_groups (gboolean is_separator_a,
 	 * top and bottom of the roster */
 	const char *top_groups[] = {
 		EMPATHY_CONTACT_LIST_STORE_FAVORITE,
-		EMPATHY_CONTACT_LIST_STORE_PEOPLE_NEARBY,
 		NULL
 	};
 
