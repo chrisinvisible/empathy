@@ -812,7 +812,6 @@ new_channels_cb (TpConnection *conn,
 		GValueArray *arr = g_ptr_array_index (channels, i);
 		const gchar *path;
 		GHashTable *properties;
-		TpChannel *channel;
 		TpHandleType handle_type;
 
 		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
@@ -829,13 +828,7 @@ new_channels_cb (TpConnection *conn,
 		handle_type = tp_asv_get_uint32 (properties,
 			TP_IFACE_CHANNEL ".TargetHandleType", NULL);
 
-		if (handle_type == TP_HANDLE_TYPE_LIST) {
-			channel = tp_channel_new_from_properties (conn, path,
-								  properties, NULL);
-			got_list_channel (list, channel);
-			g_object_unref (channel);
-		}
-		else if (handle_type == TP_HANDLE_TYPE_GROUP) {
+		if (handle_type == TP_HANDLE_TYPE_GROUP) {
 				tp_contact_list_group_add_channel (list, path, properties);
 		}
 	}
@@ -912,17 +905,17 @@ conn_ready_cb (TpConnection *connection,
 	/* Request the 'stored' list. */
 	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "stored");
 	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
-		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
+		G_MAXINT, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
 
 	/* Request the 'publish' list. */
 	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "publish");
 	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
-		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
+		G_MAXINT, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
 
 	/* Request the 'subscribe' list. */
 	tp_asv_set_static_string (request, TP_IFACE_CHANNEL ".TargetID", "subscribe");
 	tp_cli_connection_interface_requests_call_ensure_channel (priv->connection,
-		-1, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
+		G_MAXINT, request, list_ensure_channel_cb, list, NULL, G_OBJECT (list));
 
 	g_hash_table_unref (request);
 out:
