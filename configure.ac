@@ -3,7 +3,7 @@ m4_define(empathy_released, 0)
 
 m4_define([empathy_major_version], [2])
 m4_define([empathy_minor_version], [30])
-m4_define([empathy_micro_version], [0])
+m4_define([empathy_micro_version], [1])
 m4_define([empathy_nano_version], [0])
 
 dnl Display the nano_version only if it's not '0'
