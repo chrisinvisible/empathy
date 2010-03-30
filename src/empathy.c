@@ -587,7 +587,7 @@ main (int argc, char *argv[])
   gboolean autoaway = TRUE;
 #ifdef ENABLE_DEBUG
   TpDebugSender *debug_sender;
-#endif /* ENABLE_TPL */
+#endif
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
