@@ -112,6 +112,13 @@
           <accelerator key="Page_Down" modifiers="GDK_CONTROL_MASK"/>
         </child>
         <child>
+          <object class="GtkAction" id="menu_tabs_undo_close_tab">
+            <property name="name">menu_tabs_undo_close_tab</property>
+            <property name="label" translatable="yes">_Undo Close Tab</property>
+          </object>
+          <accelerator key="t" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
+        </child>
+        <child>
           <object class="GtkAction" id="menu_tabs_left">
             <property name="name">menu_tabs_left</property>
             <property name="label" translatable="yes">Move Tab _Left</property>
@@ -175,6 +182,7 @@
         <menu action="menu_tabs">
           <menuitem action="menu_tabs_prev"/>
           <menuitem action="menu_tabs_next"/>
+          <menuitem action="menu_tabs_undo_close_tab"/>
           <separator/>
           <menuitem action="menu_tabs_left"/>
           <menuitem action="menu_tabs_right"/>

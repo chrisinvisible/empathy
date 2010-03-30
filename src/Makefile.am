@@ -115,6 +115,7 @@ empathy_handwritten_source = \
 	empathy-preferences.c empathy-preferences.h			\
 	empathy-sidebar.c empathy-sidebar.h				\
 	empathy-status-icon.c empathy-status-icon.h			\
+	empathy-chat-manager.c empathy-chat-manager.h			\
 	empathy.c
 
 empathy_SOURCES =							\

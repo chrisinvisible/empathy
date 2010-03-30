@@ -54,6 +54,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-notify-manager.h>
 
+#include "empathy-chat-manager.h"
 #include "empathy-chat-window.h"
 #include "empathy-about-dialog.h"
 #include "empathy-invite-participant-dialog.h"
@@ -84,6 +85,9 @@ typedef struct {
 	GtkTargetList *contact_targets;
 	GtkTargetList *file_targets;
 
+	EmpathyChatManager *chat_manager;
+	gulong chat_manager_chats_changed_id;
+
 	/* Menu items. */
 	GtkUIManager *ui_manager;
 	GtkAction   *menu_conv_insert_smiley;
@@ -97,6 +101,7 @@ typedef struct {
 
 	GtkAction   *menu_tabs_next;
 	GtkAction   *menu_tabs_prev;
+	GtkAction   *menu_tabs_undo_close_tab;
 	GtkAction   *menu_tabs_left;
 	GtkAction   *menu_tabs_right;
 	GtkAction   *menu_tabs_detach;
@@ -1066,6 +1071,14 @@ chat_window_tabs_previous_activate_cb (GtkAction         *action,
 }
 
 static void
+chat_window_tabs_undo_close_tab_activate_cb (GtkAction         *action,
+					     EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv = GET_PRIV (window);
+	empathy_chat_manager_undo_closed_chat (priv->chat_manager);
+}
+
+static void
 chat_window_tabs_left_activate_cb (GtkAction         *action,
 				   EmpathyChatWindow *window)
 {
@@ -1744,6 +1757,17 @@ chat_window_drag_data_received (GtkWidget        *widget,
 }
 
 static void
+chat_window_chat_manager_chats_changed_cb (EmpathyChatManager *chat_manager,
+					   guint num_chats_in_manager,
+					   EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv = GET_PRIV (window);
+
+	gtk_action_set_sensitive (priv->menu_tabs_undo_close_tab,
+				  num_chats_in_manager > 0);
+}
+
+static void
 chat_window_finalize (GObject *object)
 {
 	EmpathyChatWindow     *window;
@@ -1774,6 +1798,13 @@ chat_window_finalize (GObject *object)
 	}
 	if (priv->file_targets) {
 		gtk_target_list_unref (priv->file_targets);
+	}
+
+	if (priv->chat_manager) {
+		g_signal_handler_disconnect (priv->chat_manager,
+					     priv->chat_manager_chats_changed_id);
+		g_object_unref (priv->chat_manager);
+		priv->chat_manager = NULL;
 	}
 
 	chat_windows = g_list_remove (chat_windows, window);
@@ -1834,6 +1865,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 				       "menu_edit_find", &priv->menu_edit_find,
 				       "menu_tabs_next", &priv->menu_tabs_next,
 				       "menu_tabs_prev", &priv->menu_tabs_prev,
+				       "menu_tabs_undo_close_tab", &priv->menu_tabs_undo_close_tab,
 				       "menu_tabs_left", &priv->menu_tabs_left,
 				       "menu_tabs_right", &priv->menu_tabs_right,
 				       "menu_tabs_detach", &priv->menu_tabs_detach,
@@ -1854,6 +1886,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 			      "menu_edit_find", "activate", chat_window_find_activate_cb,
 			      "menu_tabs_next", "activate", chat_window_tabs_next_activate_cb,
 			      "menu_tabs_prev", "activate", chat_window_tabs_previous_activate_cb,
+			      "menu_tabs_undo_close_tab", "activate", chat_window_tabs_undo_close_tab_activate_cb,
 			      "menu_tabs_left", "activate", chat_window_tabs_left_activate_cb,
 			      "menu_tabs_right", "activate", chat_window_tabs_right_activate_cb,
 			      "menu_tabs_detach", "activate", chat_window_detach_activate_cb,
@@ -1961,6 +1994,16 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	priv->current_chat = NULL;
 
 	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
+
+	priv->chat_manager = empathy_chat_manager_dup_singleton ();
+	priv->chat_manager_chats_changed_id =
+		g_signal_connect (priv->chat_manager, "chats-changed",
+				  G_CALLBACK (chat_window_chat_manager_chats_changed_cb),
+				  window);
+
+	chat_window_chat_manager_chats_changed_cb (priv->chat_manager,
+						   empathy_chat_manager_get_num_chats (priv->chat_manager),
+						   window);
 }
 
 EmpathyChatWindow *
@@ -2103,6 +2146,7 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 	EmpathyChatWindowPriv *priv;
 	gint                   position;
 	EmpathyContact        *remote_contact;
+	EmpathyChatManager    *chat_manager;
 
 	g_return_if_fail (window != NULL);
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
@@ -2119,6 +2163,10 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 						      chat_window_update_chat_tab,
 						      chat);
 	}
+
+	chat_manager = empathy_chat_manager_dup_singleton ();
+	empathy_chat_manager_closed_chat (chat_manager, chat);
+	g_object_unref (chat_manager);
 
 	position = gtk_notebook_page_num (GTK_NOTEBOOK (priv->notebook),
 					  GTK_WIDGET (chat));

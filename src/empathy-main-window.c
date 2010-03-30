@@ -25,6 +25,7 @@
 
 #include <sys/stat.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <glib/gi18n.h>
 
 #include <telepathy-glib/account-manager.h>
@@ -53,6 +54,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "empathy-accounts-dialog.h"
+#include "empathy-chat-manager.h"
 #include "empathy-main-window.h"
 #include "ephy-spinner.h"
 #include "empathy-preferences.h"
@@ -660,6 +662,23 @@ main_window_destroy_cb (GtkWidget         *widget,
 	g_object_unref (window->chatroom_manager);
 
 	g_free (window);
+}
+
+static gboolean
+main_window_key_press_event_cb  (GtkWidget *window,
+				 GdkEventKey *event,
+				 gpointer user_data)
+{
+	EmpathyChatManager *chat_manager;
+
+	if (event->keyval == GDK_T
+	    && event->state & GDK_SHIFT_MASK
+	    && event->state & GDK_CONTROL_MASK) {
+		chat_manager = empathy_chat_manager_dup_singleton ();
+		empathy_chat_manager_undo_closed_chat (chat_manager);
+		g_object_unref (chat_manager);
+	}
+	return FALSE;
 }
 
 static void
@@ -1338,6 +1357,7 @@ empathy_main_window_show (void)
 
 	empathy_builder_connect (gui, window,
 			      "main_window", "destroy", main_window_destroy_cb,
+			      "main_window", "key-press-event", main_window_key_press_event_cb,
 			      "chat_quit", "activate", main_window_chat_quit_cb,
 			      "chat_new_message", "activate", main_window_chat_new_message_cb,
 			      "chat_new_call", "activate", main_window_chat_new_call_cb,
