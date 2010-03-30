@@ -700,39 +700,6 @@ tp_contact_list_store_group_members_changed_cb (TpChannel     *channel,
 }
 
 static void
-tp_contact_list_list_channels_cb (TpConnection    *connection,
-				  const GPtrArray *channels,
-				  const GError    *error,
-				  gpointer         user_data,
-				  GObject         *list)
-{
-	guint i;
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	for (i = 0; i < channels->len; i++) {
-		GValueArray  *chan_struct;
-		const gchar  *object_path;
-		const gchar  *channel_type;
-		TpHandleType  handle_type;
-		guint         handle;
-
-		chan_struct = g_ptr_array_index (channels, i);
-		object_path = g_value_get_boxed (g_value_array_get_nth (chan_struct, 0));
-		channel_type = g_value_get_string (g_value_array_get_nth (chan_struct, 1));
-		handle_type = g_value_get_uint (g_value_array_get_nth (chan_struct, 2));
-		handle = g_value_get_uint (g_value_array_get_nth (chan_struct, 3));
-
-		tp_contact_list_group_add_channel (EMPATHY_TP_CONTACT_LIST (list),
-						   object_path, channel_type,
-						   handle_type, handle);
-	}
-}
-
-static void
 tp_contact_list_finalize (GObject *object)
 {
 	EmpathyTpContactListPriv *priv;
@@ -887,6 +854,52 @@ new_channels_cb (TpConnection *conn,
 }
 
 static void
+got_channels_cb (TpProxy *conn,
+		 const GValue *out,
+		 const GError *error,
+		 gpointer user_data,
+		 GObject *weak_object)
+{
+	EmpathyTpContactList *list = EMPATHY_TP_CONTACT_LIST (weak_object);
+	guint i;
+	const GPtrArray *channels;
+
+	if (error != NULL) {
+		DEBUG ("Get Channels property failed: %s", error->message);
+		return;
+	}
+
+	channels = g_value_get_boxed (out);
+	for (i = 0; i < channels->len ; i++) {
+		GValueArray *arr = g_ptr_array_index (channels, i);
+		const gchar *path;
+		GHashTable *properties;
+		TpHandle handle;
+
+		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
+		properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
+
+		if (tp_strdiff (tp_asv_get_string (properties,
+				TP_IFACE_CHANNEL ".ChannelType"),
+		    TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
+			continue;
+
+		if (tp_asv_get_uint32 (properties,
+		    TP_IFACE_CHANNEL ".TargetHandleType", NULL) != TP_HANDLE_TYPE_GROUP)
+		    continue;
+
+		handle = tp_asv_get_uint32 (properties, TP_IFACE_CHANNEL ".TargetHandle",
+			NULL);
+		if (handle == 0)
+			continue;
+
+		tp_contact_list_group_add_channel (list,
+			path, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
+			TP_HANDLE_TYPE_GROUP, handle);
+	}
+}
+
+static void
 conn_ready_cb (TpConnection *connection,
 	       const GError *error,
 	       gpointer data)
@@ -899,6 +912,11 @@ conn_ready_cb (TpConnection *connection,
 		DEBUG ("failed: %s", error->message);
 		goto out;
 	}
+
+	/* Look for existing group channels */
+	tp_cli_dbus_properties_call_get (connection, -1,
+		TP_IFACE_CONNECTION_INTERFACE_REQUESTS, "Channels", got_channels_cb,
+		NULL, NULL, G_OBJECT (list));
 
 	request = tp_asv_new (
 		TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_CONTACT_LIST,
@@ -966,11 +984,6 @@ tp_contact_list_constructed (GObject *list)
 
 	tp_connection_call_when_ready (priv->connection, conn_ready_cb,
 		g_object_ref (list));
-
-	tp_cli_connection_call_list_channels (priv->connection, -1,
-					      tp_contact_list_list_channels_cb,
-					      NULL, NULL,
-					      list);
 }
 
 static void
