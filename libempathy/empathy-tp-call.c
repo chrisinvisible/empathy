@@ -837,7 +837,7 @@ empathy_tp_call_leave (EmpathyTpCall *self)
 {
   EmpathyTpCallPriv *priv = GET_PRIV (self);
   TpHandle self_handle;
-  GArray *array;
+  GArray array = { &self_handle, 1 };
 
   if (!tp_proxy_has_interface_by_id (priv->channel,
         TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
@@ -854,11 +854,6 @@ empathy_tp_call_leave (EmpathyTpCall *self)
       return;
     }
 
-  array = g_array_sized_new (FALSE, FALSE, sizeof (TpHandle), 1);
-  g_array_insert_val (array, 0, self_handle);
-
-  tp_cli_channel_interface_group_call_remove_members (priv->channel, -1, array,
+  tp_cli_channel_interface_group_call_remove_members (priv->channel, -1, &array,
       "", leave_remove_members_cb, self, NULL, G_OBJECT (self));
-
-  g_array_free (array, TRUE);
 }
