@@ -43,7 +43,6 @@
 typedef struct {
 	EmpathyTpContactFactory *factory;
 	TpConnection   *connection;
-	const gchar    *protocol_group;
 
 	TpChannel      *publish;
 	TpChannel      *subscribe;
@@ -860,7 +859,6 @@ static void
 tp_contact_list_constructed (GObject *list)
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-	gchar                    *protocol_name = NULL;
 
 	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
 
@@ -902,15 +900,6 @@ tp_contact_list_constructed (GObject *list)
 						  tp_contact_list_new_channel_cb,
 						  NULL, NULL,
 						  list, NULL);
-
-	/* Check for protocols that does not support contact groups. We can
-	 * put all contacts into a special group in that case.
-	 * FIXME: Default group should be an information in the profile */
-	tp_connection_parse_object_path (priv->connection, &protocol_name, NULL);
-	if (!tp_strdiff (protocol_name, "local-xmpp")) {
-		priv->protocol_group = _("People nearby");
-	}
-	g_free (protocol_name);
 }
 
 static void
@@ -1112,10 +1101,6 @@ tp_contact_list_get_all_groups (EmpathyContactList *list)
 		l->data = g_strdup (l->data);
 	}
 
-	if (priv->protocol_group) {
-		ret = g_list_prepend (ret, g_strdup (priv->protocol_group));
-	}
-
 	return ret;
 }
 
@@ -1139,10 +1124,6 @@ tp_contact_list_get_groups (EmpathyContactList *list,
 		if (tp_intset_is_member (members, handle)) {
 			ret = g_list_prepend (ret, g_strdup (group_name));
 		}
-	}
-
-	if (priv->protocol_group) {
-		ret = g_list_prepend (ret, g_strdup (priv->protocol_group));
 	}
 
 	return ret;
