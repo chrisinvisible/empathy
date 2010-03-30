@@ -837,7 +837,7 @@ empathy_tp_call_leave (EmpathyTpCall *self)
 {
   EmpathyTpCallPriv *priv = GET_PRIV (self);
   TpHandle self_handle;
-  GArray array = { &self_handle, 1 };
+  GArray array = { (gchar *) &self_handle, 1 };
 
   if (!tp_proxy_has_interface_by_id (priv->channel,
         TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP))
