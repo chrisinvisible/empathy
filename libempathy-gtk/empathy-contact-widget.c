@@ -886,6 +886,29 @@ contact_widget_avatar_changed_cb (EmpathyAvatarChooser *chooser,
       data, size, mime_type);
 }
 
+static void
+set_nickname_cb (GObject *source,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  if (!tp_account_set_nickname_finish (TP_ACCOUNT (source), res, &error))
+    {
+      DEBUG ("Failed to set Account.Nickname: %s", error->message);
+      g_error_free (error);
+    }
+}
+
+static void
+set_alias_on_account (TpAccount *account,
+    const gchar *alias)
+{
+  DEBUG ("Set Account.Nickname to %s", alias);
+
+  tp_account_set_nickname_async (account, alias, set_nickname_cb, NULL);
+}
+
 static gboolean
 contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
                                            GdkEventFocus *event,
@@ -896,8 +919,19 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
       const gchar *alias;
 
       alias = gtk_entry_get_text (GTK_ENTRY (editable));
-      empathy_tp_contact_factory_set_alias (information->factory,
-          information->contact, alias);
+
+      if (empathy_contact_is_user (information->contact))
+        {
+          TpAccount * account;
+
+          account = empathy_contact_get_account (information->contact);
+          set_alias_on_account (account, alias);
+        }
+      else
+        {
+          empathy_tp_contact_factory_set_alias (information->factory,
+              information->contact, alias);
+        }
     }
 
   return FALSE;
