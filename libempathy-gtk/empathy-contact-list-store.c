@@ -1578,7 +1578,7 @@ compare_separator_and_groups (gboolean is_separator_a,
 			tp_strv_contains (top_groups, name_a);
 		b_in_top = fake_group_b &&
 			tp_strv_contains (top_groups, name_b);
-		a_in_bottom = fake_group_b &&
+		a_in_bottom = fake_group_a &&
 			tp_strv_contains (bottom_groups, name_a);
 		b_in_bottom = fake_group_b &&
 			tp_strv_contains (bottom_groups, name_b);
