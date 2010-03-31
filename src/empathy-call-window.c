@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 
 #include <telepathy-farsight/channel.h>
+#include <telepathy-glib/util.h>
 
 #include <gst/farsight/fs-element-added-notifier.h>
 
@@ -1395,8 +1396,6 @@ empathy_call_window_dispose (GObject *object)
 
   if (call != NULL)
     {
-      g_signal_handlers_disconnect_by_func (call,
-        empathy_call_window_video_stream_changed_cb, object);
       g_object_unref (call);
     }
 
@@ -2117,8 +2116,9 @@ empathy_call_window_connected (gpointer user_data)
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
 
-  g_signal_connect (call, "notify::video-stream",
-    G_CALLBACK (empathy_call_window_video_stream_changed_cb), self);
+  tp_g_signal_connect_object (call, "notify::video-stream",
+    G_CALLBACK (empathy_call_window_video_stream_changed_cb),
+    G_OBJECT (self), 0);
 
   if (empathy_tp_call_has_dtmf (call))
     gtk_widget_set_sensitive (priv->dtmf_panel, TRUE);
