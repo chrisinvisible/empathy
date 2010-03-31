@@ -1603,7 +1603,8 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
 }
 
 static gboolean
-empathy_call_window_disconnected (EmpathyCallWindow *self)
+empathy_call_window_disconnected (EmpathyCallWindow *self,
+    gboolean restart)
 {
   gboolean could_disconnect = FALSE;
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
@@ -1628,6 +1629,11 @@ empathy_call_window_disconnected (EmpathyCallWindow *self)
       priv->timer_id = 0;
 
       g_mutex_unlock (priv->lock);
+
+      if (!restart)
+        /* We are about to destroy the window, no need to update it or create
+         * a video preview */
+        return TRUE;
 
       empathy_call_window_status_message (self, _("Disconnected"));
 
@@ -1683,7 +1689,8 @@ empathy_call_window_channel_closed_cb (EmpathyCallHandler *handler,
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (user_data);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
-  if (empathy_call_window_disconnected (self) && priv->call_state == REDIALING)
+  if (empathy_call_window_disconnected (self, TRUE) &&
+      priv->call_state == REDIALING)
       empathy_call_window_restart_call (self);
 }
 
@@ -2438,7 +2445,7 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
             }
           else
             {
-              empathy_call_window_disconnected (self);
+              empathy_call_window_disconnected (self, TRUE);
             }
           g_error_free (error);
           g_free (debug);
@@ -2772,7 +2779,7 @@ empathy_call_window_hangup_cb (gpointer object,
 
   empathy_call_handler_stop_call (priv->handler);
 
-  if (empathy_call_window_disconnected (window))
+  if (empathy_call_window_disconnected (window, FALSE))
     gtk_widget_destroy (GTK_WIDGET (window));
 }
 
