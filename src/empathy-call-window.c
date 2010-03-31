@@ -1455,6 +1455,10 @@ empathy_call_window_dispose (GObject *object)
     g_object_unref (priv->video_tee);
   priv->video_tee = NULL;
 
+  if (priv->liveadder != NULL)
+    gst_object_unref (priv->liveadder);
+  priv->liveadder = NULL;
+
   if (priv->fsnotifier != NULL)
     g_object_unref (priv->fsnotifier);
   priv->fsnotifier = NULL;
