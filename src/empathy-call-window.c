@@ -1467,6 +1467,10 @@ empathy_call_window_dispose (GObject *object)
     g_object_unref (priv->ui_manager);
   priv->ui_manager = NULL;
 
+  if (priv->fullscreen != NULL)
+    g_object_unref (priv->fullscreen);
+  priv->fullscreen = NULL;
+
   if (priv->contact != NULL)
     {
       g_signal_handlers_disconnect_by_func (priv->contact,
