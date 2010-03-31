@@ -1060,7 +1060,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	tp_connection_parse_object_path (connection, &protocol_name, NULL);
 
 	if (!groups) {
-#if HAVE_FAVOURITE_CONTACTS
 		GtkTreeIter iter_group;
 
 		if (!tp_strdiff (protocol_name, "local-xmpp")) {
@@ -1076,28 +1075,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
 					     &iter_group, NULL);
-#else
-		/* FIXME: remove this in 2.31.x */
-		/* If no groups just add it at the top level. */
-		GtkTreeModel *model = GTK_TREE_MODEL (store);
-
-		if (gtk_tree_model_get_iter_first (model, &iter)) do {
-			EmpathyContact *c;
-
-			gtk_tree_model_get (model, &iter,
-				EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &c,
-				-1);
-
-			if (c == contact) {
-				g_object_unref (c);
-				return;
-			}
-			if (c != NULL)
-				g_object_unref (c);
-		} while (gtk_tree_model_iter_next (model, &iter));
-
-		gtk_tree_store_append (GTK_TREE_STORE (store), &iter, NULL);
-#endif
 
 		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
 	}
