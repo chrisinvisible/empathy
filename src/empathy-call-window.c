@@ -1201,6 +1201,9 @@ init_contact_avatar_with_size (EmpathyContact *contact,
     }
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (image_widget), pixbuf_avatar);
+
+  if (pixbuf_avatar != NULL)
+    g_object_unref (pixbuf_avatar);
 }
 
 static void
