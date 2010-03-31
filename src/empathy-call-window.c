@@ -2336,6 +2336,7 @@ empathy_call_window_sink_added_cb (EmpathyCallHandler *handler,
                     g_warning ("Could not link videp soure input pipeline");
                     break;
                   }
+                gst_object_unref (pad);
               }
 
             retval = TRUE;
