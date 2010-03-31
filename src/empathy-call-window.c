@@ -669,10 +669,36 @@ add_video_preview_to_pipeline (EmpathyCallWindow *self)
 
   preview = empathy_video_widget_get_element (
       EMPATHY_VIDEO_WIDGET (priv->video_preview));
-  gst_bin_add_many (GST_BIN (priv->pipeline), priv->video_input,
-      priv->video_tee, preview, NULL);
-  gst_element_link_many (priv->video_input, priv->video_tee,
-      preview, NULL);
+
+  if (!gst_bin_add (GST_BIN (priv->pipeline), priv->video_input))
+    {
+      g_warning ("Could not add video input to pipeline");
+      return;
+    }
+
+  if (!gst_bin_add (GST_BIN (priv->pipeline), priv->video_tee))
+    {
+      g_warning ("Could not add video tee to pipeline");
+      return;
+    }
+
+  if (!gst_bin_add (GST_BIN (priv->pipeline), preview))
+    {
+      g_warning ("Could not add video preview to pipeline");
+      return;
+    }
+
+  if (!gst_element_link (priv->video_input, priv->video_tee))
+    {
+      g_warning ("Could not link video input to video tee");
+      return;
+    }
+
+  if (!gst_element_link (priv->video_tee, preview))
+    {
+      g_warning ("Could not link video tee to video preview");
+      return;
+    }
 }
 
 static void
