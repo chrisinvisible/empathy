@@ -518,6 +518,7 @@ empathy_idle_init (EmpathyIdle *idle)
 {
 	EmpathyIdlePriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (idle,
 		EMPATHY_TYPE_IDLE, EmpathyIdlePriv);
+	TpDBusDaemon *dbus;
 
 	idle->priv = priv;
 	priv->is_idle = FALSE;
@@ -531,7 +532,10 @@ empathy_idle_init (EmpathyIdle *idle)
 		"most-available-presence-changed",
 		G_CALLBACK (idle_presence_changed_cb), idle);
 
-	priv->gs_proxy = dbus_g_proxy_new_for_name (tp_get_bus (),
+	dbus = tp_dbus_daemon_dup (NULL);
+
+	priv->gs_proxy = dbus_g_proxy_new_for_name (
+						    tp_proxy_get_dbus_connection (dbus),
 						    "org.gnome.SessionManager",
 						    "/org/gnome/SessionManager/Presence",
 						    "org.gnome.SessionManager.Presence");
@@ -544,6 +548,8 @@ empathy_idle_init (EmpathyIdle *idle)
 	} else {
 		DEBUG ("Failed to get gs proxy");
 	}
+
+	g_object_unref (dbus);
 
 	priv->connectivity = empathy_connectivity_dup_singleton ();
 	priv->state_change_signal_id = g_signal_connect (priv->connectivity,
