@@ -1223,9 +1223,12 @@ chat_window_notification_closed_cb (NotifyNotification *notify,
 	}
 
 	g_object_unref (notify);
-	priv->notification = NULL;
 	free_notification_data (cb_data);
-	priv->notification_data = NULL;
+
+	if (priv->notification == notify) {
+		priv->notification = NULL;
+		priv->notification_data = NULL;
+	}
 }
 
 static void
@@ -1239,7 +1242,8 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	const char *body;
 	GdkPixbuf *pixbuf;
 	EmpathyChatWindowPriv *priv = GET_PRIV (window);
-	gboolean res;
+	gboolean res, has_x_canonical_append;
+	NotifyNotification *notification = priv->notification;
 
 	if (!empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		return;
@@ -1255,9 +1259,14 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	header = empathy_contact_get_name (sender);
 	body = empathy_message_get_body (message);
 	escaped = g_markup_escape_text (body, -1);
+	has_x_canonical_append = empathy_notify_manager_has_capability (
+		priv->notify_mgr, EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_APPEND);
 
-	if (priv->notification != NULL) {
-		notify_notification_update (priv->notification,
+	if (notification != NULL && !has_x_canonical_append) {
+		/* if the notification server supports x-canonical-append, it is
+		   better to not use notify_notification_update to avoid
+		   overwriting the current notification message */
+		notify_notification_update (notification,
 					    header, escaped, NULL);
 	} else {
 		NotificationData *cb_data = cb_data = g_slice_new0 (NotificationData);
@@ -1265,23 +1274,39 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		cb_data->chat = g_object_ref (chat);
 		cb_data->window = window;
 
-		priv->notification_data = cb_data;
-		priv->notification = notify_notification_new (header, escaped, NULL, NULL);
-		notify_notification_set_timeout (priv->notification, NOTIFY_EXPIRES_DEFAULT);
+		/* if the notification server supports x-canonical-append,
+		   the hint will be added, so that the message from the
+		   just created notification will be automatically appended
+		   to an existing notification with the same title.
+		   In this way the previous message will not be lost: the new
+		   message will appear below it, in the same notification */
+		notification = notify_notification_new (header, escaped, NULL, NULL);
 
-		g_signal_connect (priv->notification, "closed",
+		if (priv->notification == NULL) {
+			priv->notification = notification;
+			priv->notification_data = cb_data;
+		}
+
+		notify_notification_set_timeout (notification, NOTIFY_EXPIRES_DEFAULT);
+
+		g_signal_connect (notification, "closed",
 				  G_CALLBACK (chat_window_notification_closed_cb), cb_data);
+
+		if (has_x_canonical_append) {
+			notify_notification_set_hint_string (notification,
+				EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_APPEND, "");
+		}
 	}
 
 	pixbuf = empathy_notify_manager_get_pixbuf_for_notification (priv->notify_mgr,
 		sender, EMPATHY_IMAGE_NEW_MESSAGE);
 
 	if (pixbuf != NULL) {
-		notify_notification_set_icon_from_pixbuf (priv->notification, pixbuf);
+		notify_notification_set_icon_from_pixbuf (notification, pixbuf);
 		g_object_unref (pixbuf);
 	}
 
-	notify_notification_show (priv->notification, NULL);
+	notify_notification_show (notification, NULL);
 
 	g_free (escaped);
 }
@@ -1784,13 +1809,9 @@ chat_window_finalize (GObject *object)
 
 	if (priv->notification != NULL) {
 		notify_notification_close (priv->notification, NULL);
-		g_object_unref (priv->notification);
 		priv->notification = NULL;
-		if (priv->notification_data != NULL)
-			{
-				free_notification_data (priv->notification_data);
-				priv->notification_data = NULL;
-			}
+		free_notification_data (priv->notification_data);
+		priv->notification_data = NULL;
 	}
 
 	if (priv->contact_targets) {
@@ -1992,6 +2013,7 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	priv->chats_new_msg = NULL;
 	priv->chats_composing = NULL;
 	priv->current_chat = NULL;
+	priv->notification = NULL;
 
 	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
 

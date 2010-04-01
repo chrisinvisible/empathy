@@ -95,8 +95,10 @@ status_icon_notification_closed_cb (NotifyNotification *notification,
 #ifdef notify_notification_get_closed_reason
 	reason = notify_notification_get_closed_reason (notification);
 #endif
-	if (priv->notification) {
-		g_object_unref (priv->notification);
+
+	g_object_unref (notification);
+
+	if (priv->notification == notification) {
 		priv->notification = NULL;
 	}
 
@@ -122,9 +124,8 @@ status_icon_notification_closed_cb (NotifyNotification *notification,
 static void
 notification_close_helper (EmpathyStatusIconPriv *priv)
 {
-	if (priv->notification) {
+	if (priv->notification != NULL) {
 		notify_notification_close (priv->notification, NULL);
-		g_object_unref (priv->notification);
 		priv->notification = NULL;
 	}
 }
@@ -154,24 +155,49 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 
 	if (priv->event) {
 		gchar *message_esc = NULL;
+		gboolean has_x_canonical_append;
+		NotifyNotification *notification = priv->notification;
 
 		if (priv->event->message != NULL)
 			message_esc = g_markup_escape_text (priv->event->message, -1);
 
-		if (priv->notification) {
-			notify_notification_update (priv->notification,
+		has_x_canonical_append =
+				empathy_notify_manager_has_capability (priv->notify_mgr,
+					EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_APPEND);
+
+		if (notification != NULL && ! has_x_canonical_append) {
+			/* if the notification server supports x-canonical-append, it is
+			   better to not use notify_notification_update to avoid
+			   overwriting the current notification message */
+			notify_notification_update (notification,
 						    priv->event->header, message_esc,
 						    NULL);
 		} else {
-			priv->notification = notify_notification_new_with_status_icon
+			/* if the notification server supports x-canonical-append,
+			   the hint will be added, so that the message from the
+			   just created notification will be automatically appended
+			   to an existing notification with the same title.
+			   In this way the previous message will not be lost: the new
+			   message will appear below it, in the same notification */
+			notification = notify_notification_new_with_status_icon
 				(priv->event->header, message_esc, NULL, priv->icon);
-			notify_notification_set_timeout (priv->notification,
+
+			if (priv->notification == NULL) {
+				priv->notification = notification;
+			}
+
+			notify_notification_set_timeout (notification,
 							 NOTIFY_EXPIRES_DEFAULT);
+
+			if (has_x_canonical_append) {
+				notify_notification_set_hint_string (notification,
+					EMPATHY_NOTIFY_MANAGER_CAP_X_CANONICAL_APPEND, "");
+			}
 
 			if (empathy_notify_manager_has_capability (priv->notify_mgr,
 			           EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS) &&
 			           priv->event->type != EMPATHY_EVENT_TYPE_PRESENCE) {
-				notify_notification_add_action (priv->notification,
+				notify_notification_add_action (notification,
 					"respond",
 					_("Respond"),
 					(NotifyActionCallback) notification_action_cb,
@@ -179,7 +205,7 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 					NULL);
 			}
 
-			g_signal_connect (priv->notification, "closed",
+			g_signal_connect (notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
 		}
 
@@ -188,12 +214,11 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 								   priv->event->icon_name);
 
 		if (pixbuf != NULL) {
-			notify_notification_set_icon_from_pixbuf (priv->notification,
-							  pixbuf);
+			notify_notification_set_icon_from_pixbuf (notification, pixbuf);
 			g_object_unref (pixbuf);
 		}
 
-		notify_notification_show (priv->notification, NULL);
+		notify_notification_show (notification, NULL);
 
 		g_free (message_esc);
 	} else {
@@ -402,7 +427,6 @@ status_icon_presence_changed_cb (EmpathyStatusIcon *icon)
 
 		if (priv->notification) {
 			notify_notification_close (priv->notification, NULL);
-			g_object_unref (priv->notification);
 			priv->notification = NULL;
 		}
 	}
@@ -652,6 +676,7 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 			  G_CALLBACK (status_icon_popup_menu_cb),
 			  icon);
 
+	priv->notification = NULL;
 	priv->notify_mgr = empathy_notify_manager_dup_singleton ();
 }
 
