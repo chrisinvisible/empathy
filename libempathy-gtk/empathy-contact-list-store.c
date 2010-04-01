@@ -604,7 +604,6 @@ empathy_contact_list_store_set_show_groups (EmpathyContactListStore *store,
 					    gboolean                 show_groups)
 {
 	EmpathyContactListStorePriv *priv;
-	GList                       *contacts, *l;
 
 	g_return_if_fail (EMPATHY_IS_CONTACT_LIST_STORE (store));
 
@@ -616,19 +615,28 @@ empathy_contact_list_store_set_show_groups (EmpathyContactListStore *store,
 
 	priv->show_groups = show_groups;
 
-	/* Remove all contacts and add them back, not optimized but that's the
-	 * easy way :) */
-	gtk_tree_store_clear (GTK_TREE_STORE (store));
-	contacts = empathy_contact_list_get_members (priv->list);
-	for (l = contacts; l; l = l->next) {
-		contact_list_store_members_changed_cb (priv->list, l->data,
-						       NULL, 0, NULL,
-						       TRUE,
-						       store);
+	if (priv->setup_idle_id == 0) {
+		/* Remove all contacts and add them back, not optimized but
+		 * that's the easy way :)
+		 *
+		 * This is only done if there's not a pending setup idle
+		 * callback, otherwise it will race and the contacts will get
+		 * added twice */
+		GList *contacts, *l;
 
-		g_object_unref (l->data);
+		gtk_tree_store_clear (GTK_TREE_STORE (store));
+		contacts = empathy_contact_list_get_members (priv->list);
+		for (l = contacts; l; l = l->next) {
+			contact_list_store_members_changed_cb (priv->list,
+							       l->data,
+							       NULL, 0, NULL,
+							       TRUE,
+							       store);
+
+			g_object_unref (l->data);
+		}
+		g_list_free (contacts);
 	}
-	g_list_free (contacts);
 
 	g_object_notify (G_OBJECT (store), "show-groups");
 }
@@ -1060,9 +1068,13 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	tp_connection_parse_object_path (connection, &protocol_name, NULL);
 
 	if (!groups) {
-		GtkTreeIter iter_group;
+		GtkTreeIter iter_group, *parent;
 
-		if (!tp_strdiff (protocol_name, "local-xmpp")) {
+		parent = &iter_group;
+
+		if (!priv->show_groups) {
+			parent = NULL;
+		} else if (!tp_strdiff (protocol_name, "local-xmpp")) {
 			/* these are People Nearby */
 			contact_list_store_get_group (store,
 				EMPATHY_CONTACT_LIST_STORE_PEOPLE_NEARBY,
@@ -1074,9 +1086,10 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		}
 
 		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
-					     &iter_group, NULL);
+					     parent, NULL);
 
-		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
+		add_contact_to_store (GTK_TREE_STORE (store), &iter,
+				      contact, flags);
 	}
 
 	g_free (protocol_name);
@@ -1096,7 +1109,8 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	g_list_free (groups);
 
 #ifdef HAVE_FAVOURITE_CONTACTS
-	if (empathy_contact_list_is_favourite (priv->list, contact)) {
+	if (priv->show_groups &&
+	    empathy_contact_list_is_favourite (priv->list, contact)) {
 	/* Add contact to the fake 'Favorites' group */
 		GtkTreeIter iter_group;
 

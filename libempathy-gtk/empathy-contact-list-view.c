@@ -1437,7 +1437,7 @@ empathy_contact_list_view_class_init (EmpathyContactListViewClass *klass)
 					 PROP_LIST_FEATURES,
 					 g_param_spec_flags ("list-features",
 							     "Features of the view",
-							     "Falgs for all enabled features",
+							     "Flags for all enabled features",
 							      EMPATHY_TYPE_CONTACT_LIST_FEATURE_FLAGS,
 							      EMPATHY_CONTACT_LIST_FEATURE_NONE,
 							      G_PARAM_READWRITE));
@@ -1445,7 +1445,7 @@ empathy_contact_list_view_class_init (EmpathyContactListViewClass *klass)
 					 PROP_CONTACT_FEATURES,
 					 g_param_spec_flags ("contact-features",
 							     "Features of the contact menu",
-							     "Falgs for all enabled features for the menu",
+							     "Flags for all enabled features for the menu",
 							      EMPATHY_TYPE_CONTACT_FEATURE_FLAGS,
 							      EMPATHY_CONTACT_FEATURE_NONE,
 							      G_PARAM_READWRITE));
