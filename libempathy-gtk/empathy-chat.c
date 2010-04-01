@@ -2090,7 +2090,11 @@ chat_update_contacts_visibility (EmpathyChat *chat,
 						priv->contacts_width);
 		}
 
-		store = empathy_contact_list_store_new (EMPATHY_CONTACT_LIST (priv->tp_chat));
+		store = empathy_contact_list_store_new (
+				EMPATHY_CONTACT_LIST (priv->tp_chat));
+		empathy_contact_list_store_set_show_groups (
+				EMPATHY_CONTACT_LIST_STORE (store), FALSE);
+
 		priv->contact_list_view = GTK_WIDGET (empathy_contact_list_view_new (store,
 			EMPATHY_CONTACT_LIST_FEATURE_CONTACT_TOOLTIP,
 			EMPATHY_CONTACT_FEATURE_CHAT |
