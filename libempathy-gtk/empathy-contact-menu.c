@@ -114,7 +114,8 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 
 	/* Separator */
 	if (features & (EMPATHY_CONTACT_FEATURE_EDIT |
-			EMPATHY_CONTACT_FEATURE_INFO)) {
+			EMPATHY_CONTACT_FEATURE_INFO |
+			EMPATHY_CONTACT_FEATURE_FAVOURITE)) {
 		item = gtk_separator_menu_item_new ();
 		gtk_menu_shell_append (shell, item);
 		gtk_widget_show (item);
@@ -136,9 +137,11 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 
 #if HAVE_FAVOURITE_CONTACTS
 	/* Favorite checkbox */
-	item = empathy_contact_favourite_menu_item_new (contact);
-	gtk_menu_shell_append (shell, item);
-	gtk_widget_show (item);
+	if (features & EMPATHY_CONTACT_FEATURE_FAVOURITE) {
+		item = empathy_contact_favourite_menu_item_new (contact);
+		gtk_menu_shell_append (shell, item);
+		gtk_widget_show (item);
+	}
 #endif
 
 	return menu;
