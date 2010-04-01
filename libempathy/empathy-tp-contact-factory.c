@@ -146,29 +146,6 @@ tp_contact_factory_set_location_cb (TpConnection *tp_conn,
 }
 
 static void
-tp_contact_factory_set_avatar_cb (TpConnection *connection,
-				  const gchar  *token,
-				  const GError *error,
-				  gpointer      user_data,
-				  GObject      *tp_factory)
-{
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-	}
-}
-
-static void
-tp_contact_factory_clear_avatar_cb (TpConnection *connection,
-				    const GError *error,
-				    gpointer      user_data,
-				    GObject      *tp_factory)
-{
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-	}
-}
-
-static void
 tp_contact_factory_avatar_retrieved_cb (TpConnection *connection,
 					guint         handle,
 					const gchar  *token,
@@ -1275,44 +1252,6 @@ empathy_tp_contact_factory_set_alias (EmpathyTpContactFactory *tp_factory,
 							       G_OBJECT (tp_factory));
 
 	g_hash_table_destroy (new_alias);
-}
-
-void
-empathy_tp_contact_factory_set_avatar (EmpathyTpContactFactory *tp_factory,
-				       const gchar             *data,
-				       gsize                    size,
-				       const gchar             *mime_type)
-{
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-
-	g_return_if_fail (EMPATHY_IS_TP_CONTACT_FACTORY (tp_factory));
-
-	if (data && size > 0 && size < G_MAXUINT) {
-		GArray avatar;
-
-		avatar.data = (gchar *) data;
-		avatar.len = size;
-
-		DEBUG ("Setting avatar on connection %s",
-			tp_proxy_get_object_path (TP_PROXY (priv->connection)));
-
-		tp_cli_connection_interface_avatars_call_set_avatar (priv->connection,
-								     -1,
-								     &avatar,
-								     mime_type,
-								     tp_contact_factory_set_avatar_cb,
-								     NULL, NULL,
-								     G_OBJECT (tp_factory));
-	} else {
-		DEBUG ("Clearing avatar on connection %s",
-			tp_proxy_get_object_path (TP_PROXY (priv->connection)));
-
-		tp_cli_connection_interface_avatars_call_clear_avatar (priv->connection,
-								       -1,
-								       tp_contact_factory_clear_avatar_cb,
-								       NULL, NULL,
-								       G_OBJECT (tp_factory));
-	}
 }
 
 void
