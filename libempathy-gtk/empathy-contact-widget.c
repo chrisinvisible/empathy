@@ -872,18 +872,46 @@ widget_avatar_button_press_event_cb (GtkWidget *widget,
 }
 
 static void
+set_avatar_cb (GObject *source,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  if (!tp_account_set_avatar_finish (TP_ACCOUNT (source), res, &error)) {
+      DEBUG ("Failed to set Account.Avatar: %s", error->message);
+      g_error_free (error);
+  }
+}
+
+static void
+set_avatar_on_account (TpAccount *account,
+    const gchar *data,
+    gsize size,
+    const gchar *mime_type)
+{
+  DEBUG ("%s Account.Avatar on %s", size > 0 ? "Set": "Clear",
+      tp_proxy_get_object_path (account));
+
+  tp_account_set_avatar_async (account, (const guchar *) data, size,
+      mime_type, set_avatar_cb, NULL);
+}
+
+static void
 contact_widget_avatar_changed_cb (EmpathyAvatarChooser *chooser,
                                   EmpathyContactWidget *information)
 {
   const gchar *data;
   gsize size;
   const gchar *mime_type;
+  TpAccount *account;
 
   empathy_avatar_chooser_get_image_data (
       EMPATHY_AVATAR_CHOOSER (information->widget_avatar),
       &data, &size, &mime_type);
-  empathy_tp_contact_factory_set_avatar (information->factory,
-      data, size, mime_type);
+
+  account = empathy_contact_get_account (information->contact);
+  set_avatar_on_account (account, data, size, mime_type);
 }
 
 static void
