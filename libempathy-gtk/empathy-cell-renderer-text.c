@@ -354,7 +354,10 @@ cell_renderer_text_update_text (EmpathyCellRendererText *cell,
 			status = empathy_presence_get_default_message (priv->presence_type);
 		}
 
-		str = g_strdup_printf ("%s\n%s", priv->name, status);
+		if (status == NULL)
+			str = g_strdup (priv->name);
+		else
+			str = g_strdup_printf ("%s\n%s", priv->name, status);
 	}
 
 	g_object_set (cell,
