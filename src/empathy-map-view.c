@@ -47,7 +47,7 @@
 #include <libempathy/empathy-debug.h>
 
 typedef struct {
-  EmpathyContactListStore *list_store;
+  EmpathyContactList *contact_list;
 
   GtkWidget *window;
   GtkWidget *zoom_in;
@@ -301,34 +301,12 @@ contact_added (EmpathyMapView *window,
   map_view_update_contact_position (window, contact);
 }
 
-static gboolean
-map_view_contacts_foreach (GtkTreeModel *model,
-    GtkTreePath *path,
-    GtkTreeIter *iter,
-    gpointer user_data)
-{
-  EmpathyMapView *window = (EmpathyMapView *) user_data;
-  EmpathyContact *contact;
-
-  gtk_tree_model_get (model, iter, EMPATHY_CONTACT_LIST_STORE_COL_CONTACT,
-     &contact, -1);
-
-  if (contact == NULL)
-    return FALSE;
-
-  contact_added (window, contact);
-
-  g_object_unref (contact);
-  return FALSE;
-}
-
 static void
 map_view_destroy_cb (GtkWidget *widget,
     EmpathyMapView *window)
 {
   GHashTableIter iter;
   gpointer contact;
-  EmpathyContactList *list_iface;
 
   g_source_remove (window->timeout_id);
 
@@ -337,11 +315,11 @@ map_view_destroy_cb (GtkWidget *widget,
     g_signal_handlers_disconnect_by_func (contact,
         map_view_contact_location_notify, window);
 
-  list_iface = empathy_contact_list_store_get_list_iface (window->list_store);
-  g_signal_handler_disconnect (list_iface, window->members_changed_id);
+  g_signal_handler_disconnect (window->contact_list,
+      window->members_changed_id);
 
   g_hash_table_destroy (window->markers);
-  g_object_unref (window->list_store);
+  g_object_unref (window->contact_list);
   g_object_unref (window->layer);
   g_slice_free (EmpathyMapView, window);
 }
@@ -416,9 +394,7 @@ empathy_map_view_show (void)
   GtkWidget *embed;
   GtkWidget *throbber_holder;
   gchar *filename;
-  GtkTreeModel *model;
-  EmpathyContactList *list_iface;
-  EmpathyContactListStore *list_store;
+  GList *members, *l;
 
   if (window)
     {
@@ -452,22 +428,17 @@ empathy_map_view_show (void)
   /* Clear the static pointer to window if the dialog is destroyed */
   g_object_add_weak_pointer (G_OBJECT (window->window), (gpointer *) &window);
 
-  list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
-  list_store = empathy_contact_list_store_new (list_iface);
-  empathy_contact_list_store_set_show_groups (list_store, FALSE);
-  empathy_contact_list_store_set_show_avatars (list_store, TRUE);
-  g_object_unref (list_iface);
+  window->contact_list = EMPATHY_CONTACT_LIST (
+      empathy_contact_manager_dup_singleton ());
 
-  window->members_changed_id = g_signal_connect (list_iface, "members-changed",
-      G_CALLBACK (members_changed_cb), window);
+  window->members_changed_id = g_signal_connect (window->contact_list,
+      "members-changed", G_CALLBACK (members_changed_cb), window);
 
   window->throbber = ephy_spinner_new ();
   ephy_spinner_set_size (EPHY_SPINNER (window->throbber),
       GTK_ICON_SIZE_LARGE_TOOLBAR);
   gtk_widget_show (window->throbber);
   gtk_container_add (GTK_CONTAINER (throbber_holder), window->throbber);
-
-  window->list_store = list_store;
 
   /* Set up map view */
   embed = gtk_champlain_embed_new ();
@@ -489,8 +460,14 @@ empathy_map_view_show (void)
   window->markers = g_hash_table_new_full (NULL, NULL,
       (GDestroyNotify) g_object_unref, NULL);
 
-  model = GTK_TREE_MODEL (window->list_store);
-  gtk_tree_model_foreach (model, map_view_contacts_foreach, window);
+  members = empathy_contact_list_get_members (
+      window->contact_list);
+  for (l = members; l != NULL; l = g_list_next (l))
+    {
+      contact_added (window, l->data);
+      g_object_unref (l->data);
+    }
+  g_list_free (members);
 
   empathy_window_present (GTK_WINDOW (window->window));
 
@@ -500,4 +477,3 @@ empathy_map_view_show (void)
 
   return window->window;
 }
-
