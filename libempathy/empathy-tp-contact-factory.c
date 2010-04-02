@@ -32,7 +32,6 @@
 
 #include "empathy-tp-contact-factory.h"
 #include "empathy-utils.h"
-#include "empathy-location.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_TP | EMPATHY_DEBUG_CONTACT
 #include "empathy-debug.h"
@@ -370,53 +369,6 @@ tp_contact_factory_got_capabilities (TpConnection    *connection,
 }
 
 static void
-tp_contact_factory_update_location (EmpathyTpContactFactory *tp_factory,
-				    guint handle,
-				    GHashTable *location)
-{
-	EmpathyContact *contact;
-	GHashTable     *new_location;
-
-	contact = tp_contact_factory_find_by_handle (tp_factory, handle);
-
-	if (contact == NULL)
-		return;
-
-	new_location = g_hash_table_new_full (g_str_hash, g_str_equal,
-		(GDestroyNotify) g_free, (GDestroyNotify) tp_g_value_slice_free);
-	tp_g_hash_table_update (new_location, location, (GBoxedCopyFunc) g_strdup,
-		(GBoxedCopyFunc) tp_g_value_slice_dup);
-	empathy_contact_set_location (contact, new_location);
-	g_hash_table_unref (new_location);
-}
-
-static void
-tp_contact_factory_got_locations (TpConnection                 *tp_conn,
-				  GHashTable              *locations,
-				  const GError            *error,
-				  gpointer                 user_data,
-				  GObject                 *weak_object)
-{
-	GHashTableIter iter;
-	gpointer key, value;
-	EmpathyTpContactFactory *tp_factory;
-
-	tp_factory = EMPATHY_TP_CONTACT_FACTORY (user_data);
-	if (error != NULL) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	g_hash_table_iter_init (&iter, locations);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		guint           handle = GPOINTER_TO_INT (key);
-		GHashTable     *location = value;
-
-		tp_contact_factory_update_location (tp_factory, handle, location);
-	}
-}
-
-static void
 tp_contact_factory_capabilities_changed_cb (TpConnection    *connection,
 					    const GPtrArray *capabilities,
 					    gpointer         user_data,
@@ -444,17 +396,6 @@ tp_contact_factory_capabilities_changed_cb (TpConnection    *connection,
 							generic,
 							specific);
 	}
-}
-
-static void
-tp_contact_factory_location_updated_cb (TpConnection      *tp_conn,
-					guint         handle,
-					GHashTable   *location,
-					gpointer      user_data,
-					GObject      *weak_object)
-{
-	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (weak_object);
-	tp_contact_factory_update_location (tp_factory, handle, location);
 }
 
 static EmpathyCapabilities
@@ -708,17 +649,6 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 			priv->connection, -1, &handles,
 			tp_contact_factory_got_capabilities, NULL, NULL,
 			G_OBJECT (tp_factory));
-	}
-
-	if (tp_proxy_has_interface_by_id (TP_PROXY (priv->connection),
-		TP_IFACE_QUARK_CONNECTION_INTERFACE_LOCATION)) {
-		tp_cli_connection_interface_location_call_get_locations (priv->connection,
-									 -1,
-									 &handles,
-									 tp_contact_factory_got_locations,
-									 tp_factory,
-									 NULL,
-									 NULL);
 	}
 
 	DEBUG ("Contact added: %s (%d)",
@@ -1245,12 +1175,6 @@ connection_ready_cb (TpConnection *connection,
 											  G_OBJECT (tp_factory),
 											  NULL);
 	}
-
-	tp_cli_connection_interface_location_connect_to_location_updated (priv->connection,
-									   tp_contact_factory_location_updated_cb,
-									   NULL, NULL,
-									   G_OBJECT (tp_factory),
-									   NULL);
 
 	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
 									  -1,
