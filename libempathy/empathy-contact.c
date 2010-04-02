@@ -60,6 +60,9 @@ typedef struct {
   /* Location is composed of string keys and GValues.
    * Example: a "city" key would have "Helsinki" as string GValue,
    *          a "latitude" would have 65.0 as double GValue.
+   *
+   * This is a super set of the location stored in TpContact as we can try add
+   * more fields by searching the address using geoclue.
    */
   GHashTable *location;
 } EmpathyContactPriv;
@@ -71,6 +74,9 @@ static void contact_set_property (GObject *object, guint param_id,
     const GValue *value, GParamSpec *pspec);
 
 static void update_geocode (EmpathyContact *contact);
+
+static void empathy_contact_set_location (EmpathyContact *contact,
+    GHashTable *location);
 
 G_DEFINE_TYPE (EmpathyContact, empathy_contact, G_TYPE_OBJECT);
 
@@ -122,6 +128,14 @@ tp_contact_notify_cb (TpContact *tp_contact,
     g_object_notify (contact, "id");
   else if (!tp_strdiff (param->name, "handle"))
     g_object_notify (contact, "handle");
+  else if (!tp_strdiff (param->name, "location"))
+    {
+      GHashTable *location;
+
+      location = tp_contact_get_location (tp_contact);
+      /* This will start a geoclue search to find the address if needed */
+      empathy_contact_set_location (EMPATHY_CONTACT (contact), location);
+    }
 }
 
 static void
@@ -302,6 +316,7 @@ set_tp_contact (EmpathyContact *contact,
                 TpContact *tp_contact)
 {
   EmpathyContactPriv *priv = GET_PRIV (contact);
+  GHashTable *location;
 
   if (tp_contact == NULL)
     return;
@@ -309,6 +324,10 @@ set_tp_contact (EmpathyContact *contact,
   g_assert (priv->tp_contact == NULL);
   priv->tp_contact = g_object_ref (tp_contact);
   priv->presence = empathy_contact_get_presence (contact);
+
+  location = tp_contact_get_location (tp_contact);
+  if (location != NULL)
+    empathy_contact_set_location (contact, location);
 
   g_signal_connect (priv->tp_contact, "notify",
     G_CALLBACK (tp_contact_notify_cb), contact);
@@ -1128,9 +1147,9 @@ empathy_contact_get_location (EmpathyContact *contact)
  * Example: a "city" key would have "Helsinki" as string GValue,
  *          a "latitude" would have 65.0 as double GValue.
  */
-void
+static void
 empathy_contact_set_location (EmpathyContact *contact,
-                              GHashTable *location)
+    GHashTable *location)
 {
   EmpathyContactPriv *priv;
 
