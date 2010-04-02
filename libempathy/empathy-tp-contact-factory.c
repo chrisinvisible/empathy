@@ -78,6 +78,7 @@ enum {
 static TpContactFeature contact_features[] = {
 	TP_CONTACT_FEATURE_ALIAS,
 	TP_CONTACT_FEATURE_PRESENCE,
+	TP_CONTACT_FEATURE_LOCATION,
 };
 
 static EmpathyContact *
