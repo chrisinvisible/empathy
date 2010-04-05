@@ -742,6 +742,10 @@ account_chooser_update_iter (EmpathyAccountChooser *chooser,
 			    COL_ACCOUNT_POINTER, &account,
 			    -1);
 
+	/* Skip rows without account associated */
+	if (account == NULL)
+		return;
+
 	icon_name = tp_account_get_icon_name (account);
 	if (priv->filter) {
 		is_enabled = priv->filter (account, priv->filter_data);
