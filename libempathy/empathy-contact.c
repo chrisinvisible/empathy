@@ -73,7 +73,9 @@ static void contact_get_property (GObject *object, guint param_id,
 static void contact_set_property (GObject *object, guint param_id,
     const GValue *value, GParamSpec *pspec);
 
+#if HAVE_GEOCLUE
 static void update_geocode (EmpathyContact *contact);
+#endif
 
 static void empathy_contact_set_location (EmpathyContact *contact,
     GHashTable *location);
@@ -1162,7 +1164,9 @@ empathy_contact_set_location (EmpathyContact *contact,
     g_hash_table_unref (priv->location);
 
   priv->location = g_hash_table_ref (location);
+#if HAVE_GEOCLUE
   update_geocode (contact);
+#endif
   g_object_notify (G_OBJECT (contact), "location");
 }
 
@@ -1257,9 +1261,7 @@ geocode_cb (GeoclueGeocode *geocode,
 	g_object_unref (geocode);
 	g_object_unref (contact);
 }
-#endif
 
-#if HAVE_GEOCLUE
 static gchar *
 get_dup_string (GHashTable *location,
     gchar *key)
@@ -1272,12 +1274,10 @@ get_dup_string (GHashTable *location,
 
   return NULL;
 }
-#endif
 
 static void
 update_geocode (EmpathyContact *contact)
 {
-#if HAVE_GEOCLUE
 	static GeoclueGeocode *geocode;
 	gchar *str;
 	GHashTable *address;
@@ -1348,5 +1348,5 @@ update_geocode (EmpathyContact *contact)
 		geocode_cb, contact);
 
 	g_hash_table_unref (address);
-#endif
 }
+#endif
