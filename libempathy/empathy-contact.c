@@ -1217,49 +1217,55 @@ empathy_contact_equal (gconstpointer contact1,
  */
 static void
 geocode_cb (GeoclueGeocode *geocode,
-	    GeocluePositionFields fields,
-	    double latitude,
-	    double longitude,
-	    double altitude,
-	    GeoclueAccuracy *accuracy,
-	    GError *error,
-	    gpointer contact)
+    GeocluePositionFields fields,
+    double latitude,
+    double longitude,
+    double altitude,
+    GeoclueAccuracy *accuracy,
+    GError *error,
+    gpointer contact)
 {
-	GValue *new_value;
-	GHashTable *location;
+  GValue *new_value;
+  GHashTable *location;
 
-	location = empathy_contact_get_location (EMPATHY_CONTACT (contact));
+  location = empathy_contact_get_location (EMPATHY_CONTACT (contact));
 
-	if (error != NULL) {
-		DEBUG ("Error geocoding location : %s", error->message);
-		g_object_unref (geocode);
-		g_object_unref (contact);
-		return;
-	}
+  if (error != NULL)
+    {
+      DEBUG ("Error geocoding location : %s", error->message);
+      g_object_unref (geocode);
+      g_object_unref (contact);
+      return;
+    }
 
-	if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE) {
-		new_value = tp_g_value_slice_new_double (latitude);
-		g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LAT),
-			new_value);
-		DEBUG ("\t - Latitude: %f", latitude);
-	}
-	if (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE) {
-		new_value = tp_g_value_slice_new_double (longitude);
-		g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LON),
-			new_value);
-		DEBUG ("\t - Longitude: %f", longitude);
-	}
-	if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE) {
-		new_value = tp_g_value_slice_new_double (altitude);
-		g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_ALT),
-			new_value);
-		DEBUG ("\t - Altitude: %f", altitude);
-	}
+  if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE)
+    {
+      new_value = tp_g_value_slice_new_double (latitude);
+      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LAT),
+        new_value);
+      DEBUG ("\t - Latitude: %f", latitude);
+    }
 
-	/* Don't change the accuracy as we used an address to get this position */
-	g_object_notify (contact, "location");
-	g_object_unref (geocode);
-	g_object_unref (contact);
+  if (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE)
+    {
+      new_value = tp_g_value_slice_new_double (longitude);
+      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LON),
+        new_value);
+      DEBUG ("\t - Longitude: %f", longitude);
+    }
+
+  if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE)
+    {
+      new_value = tp_g_value_slice_new_double (altitude);
+      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_ALT),
+        new_value);
+      DEBUG ("\t - Altitude: %f", altitude);
+    }
+
+  /* Don't change the accuracy as we used an address to get this position */
+  g_object_notify (contact, "location");
+  g_object_unref (geocode);
+  g_object_unref (contact);
 }
 
 static gchar *
@@ -1278,75 +1284,84 @@ get_dup_string (GHashTable *location,
 static void
 update_geocode (EmpathyContact *contact)
 {
-	static GeoclueGeocode *geocode;
-	gchar *str;
-	GHashTable *address;
-	GValue* value;
-	GHashTable *location;
+  static GeoclueGeocode *geocode;
+  gchar *str;
+  GHashTable *address;
+  GValue* value;
+  GHashTable *location;
 
-	location = empathy_contact_get_location (contact);
-	if (location == NULL)
-		return;
+  location = empathy_contact_get_location (contact);
+  if (location == NULL)
+    return;
 
-	value = g_hash_table_lookup (location, EMPATHY_LOCATION_LAT);
-	if (value != NULL)
-		return;
+  value = g_hash_table_lookup (location, EMPATHY_LOCATION_LAT);
+  if (value != NULL)
+    return;
 
-	if (geocode == NULL) {
-		geocode = geoclue_geocode_new (GEOCODE_SERVICE, GEOCODE_PATH);
-		g_object_add_weak_pointer (G_OBJECT (geocode), (gpointer *) &geocode);
-	}
-	else
-		g_object_ref (geocode);
+  if (geocode == NULL)
+    {
+      geocode = geoclue_geocode_new (GEOCODE_SERVICE, GEOCODE_PATH);
+      g_object_add_weak_pointer (G_OBJECT (geocode), (gpointer *) &geocode);
+    }
+  else
+    {
+      g_object_ref (geocode);
+    }
 
-	address = geoclue_address_details_new ();
+  address = geoclue_address_details_new ();
 
-	str = get_dup_string (location, EMPATHY_LOCATION_COUNTRY_CODE);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRYCODE), str);
-		DEBUG ("\t - countrycode: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_COUNTRY_CODE);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRYCODE), str);
+      DEBUG ("\t - countrycode: %s", str);
+    }
 
-	str = get_dup_string (location, EMPATHY_LOCATION_COUNTRY);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRY), str);
-		DEBUG ("\t - country: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_COUNTRY);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_COUNTRY), str);
+      DEBUG ("\t - country: %s", str);
+    }
 
-	str = get_dup_string (location, EMPATHY_LOCATION_POSTAL_CODE);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_POSTALCODE), str);
-		DEBUG ("\t - postalcode: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_POSTAL_CODE);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_POSTALCODE), str);
+      DEBUG ("\t - postalcode: %s", str);
+    }
 
-	str = get_dup_string (location, EMPATHY_LOCATION_REGION);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_REGION), str);
-		DEBUG ("\t - region: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_REGION);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_REGION), str);
+      DEBUG ("\t - region: %s", str);
+    }
 
-	str = get_dup_string (location, EMPATHY_LOCATION_LOCALITY);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_LOCALITY), str);
-		DEBUG ("\t - locality: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_LOCALITY);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_LOCALITY), str);
+      DEBUG ("\t - locality: %s", str);
+    }
 
-	str = get_dup_string (location, EMPATHY_LOCATION_STREET);
-	if (str != NULL) {
-		g_hash_table_insert (address,
-			g_strdup (GEOCLUE_ADDRESS_KEY_STREET), str);
-		DEBUG ("\t - street: %s", str);
-	}
+  str = get_dup_string (location, EMPATHY_LOCATION_STREET);
+  if (str != NULL)
+    {
+      g_hash_table_insert (address,
+        g_strdup (GEOCLUE_ADDRESS_KEY_STREET), str);
+      DEBUG ("\t - street: %s", str);
+    }
 
-	g_object_ref (contact);
-	geoclue_geocode_address_to_position_async (geocode, address,
-		geocode_cb, contact);
+  g_object_ref (contact);
+  geoclue_geocode_address_to_position_async (geocode, address,
+    geocode_cb, contact);
 
-	g_hash_table_unref (address);
+  g_hash_table_unref (address);
 }
 #endif
