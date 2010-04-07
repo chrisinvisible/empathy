@@ -442,8 +442,6 @@ chat_text_view_append_timestamp (EmpathyChatTextView *view,
 						  EMPATHY_CHAT_TEXT_VIEW_TAG_TIME,
 						  NULL);
 
-	priv->last_timestamp = timestamp;
-
 	g_string_free (str, TRUE);
 }
 
@@ -744,6 +742,8 @@ chat_text_view_append_message (EmpathyChatView *view,
 	}
 	priv->last_contact = g_object_ref (empathy_message_get_sender (msg));
 	g_object_notify (G_OBJECT (view), "last-contact");
+
+	priv->last_timestamp = timestamp;
 }
 
 static void
