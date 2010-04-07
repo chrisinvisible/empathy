@@ -1070,7 +1070,10 @@ debug_window_save_clicked_cb (GtkToolButton *tool_button,
     EmpathyDebugWindow *debug_window)
 {
   GtkWidget *file_chooser;
-  gchar *name, *tmp;
+  gchar *name, *tmp = NULL;
+  char time_str[32];
+  time_t t;
+  struct tm *tm_s;
 
   file_chooser = gtk_file_chooser_dialog_new (_("Save"),
       GTK_WINDOW (debug_window), GTK_FILE_CHOOSER_ACTION_SAVE,
@@ -1086,7 +1089,17 @@ debug_window_save_clicked_cb (GtkToolButton *tool_button,
       g_get_tmp_dir ());
 
   name = get_active_cm_name (debug_window);
-  tmp = g_strdup_printf ("%s.log", name);
+
+  t = time (NULL);
+  tm_s = localtime (&t);
+  if (tm_s != NULL)
+    {
+      if (strftime(time_str, sizeof (time_str), "%d-%m-%y_%H-%M-%S", tm_s))
+        tmp = g_strdup_printf ("%s-%s.log", name, time_str);
+    }
+
+  if (tmp == NULL)
+    tmp = g_strdup_printf ("%s.log", name);
   g_free (name);
 
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (file_chooser), tmp);
