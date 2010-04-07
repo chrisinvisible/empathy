@@ -98,6 +98,8 @@ static void
 location_manager_dispose (GObject *object)
 {
   EmpathyLocationManagerPriv *priv = GET_PRIV (object);
+  void (*dispose) (GObject *) =
+    G_OBJECT_CLASS (empathy_location_manager_parent_class)->dispose;
 
   if (priv->account_manager != NULL)
   {
@@ -129,7 +131,8 @@ location_manager_dispose (GObject *object)
     priv->location = NULL;
   }
 
-  G_OBJECT_CLASS (empathy_location_manager_parent_class)->finalize (object);
+  if (dispose != NULL)
+    dispose (object);
 }
 
 static void
