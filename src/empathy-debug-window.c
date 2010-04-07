@@ -1073,6 +1073,9 @@ debug_window_save_clicked_cb (GtkToolButton *tool_button,
   gtk_file_chooser_set_do_overwrite_confirmation (
       GTK_FILE_CHOOSER (file_chooser), TRUE);
 
+  gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (file_chooser),
+      g_get_tmp_dir ());
+
   g_signal_connect (file_chooser, "response",
       G_CALLBACK (debug_window_save_file_chooser_response_cb),
       debug_window);
