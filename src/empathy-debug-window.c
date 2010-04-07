@@ -182,6 +182,22 @@ debug_message_list_free (gpointer data)
   g_list_free (list);
 }
 
+static gchar *
+get_active_cm_name (EmpathyDebugWindow *self)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (self);
+  GtkTreeIter iter;
+  gchar *name;
+
+  if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter))
+    return NULL;
+
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
+      COL_CM_NAME, &name, -1);
+
+  return name;
+}
+
 static void
 debug_window_cache_new_message (EmpathyDebugWindow *debug_window,
     gdouble timestamp,
@@ -190,15 +206,11 @@ debug_window_cache_new_message (EmpathyDebugWindow *debug_window,
     const gchar *message)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
-  GtkTreeIter iter;
   GList *messages;
   DebugMessage *dm;
   char *name;
 
-  gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
-
-  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
-      COL_CM_NAME, &name, -1);
+  name = get_active_cm_name (debug_window);
   messages = g_hash_table_lookup (priv->all_cms, name);
 
   dm = debug_message_new (timestamp, domain, level, message);
@@ -329,7 +341,6 @@ debug_window_get_messages_cb (TpProxy *proxy,
 {
   EmpathyDebugWindow *debug_window = (EmpathyDebugWindow *) user_data;
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
-  GtkTreeIter iter;
   gchar *name;
   GList *old_messages;
   guint i;
@@ -343,10 +354,7 @@ debug_window_get_messages_cb (TpProxy *proxy,
 
   debug_window_set_toolbar_sensitivity (debug_window, TRUE);
 
-  gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
-
-  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
-      COL_CM_NAME, &name, -1);
+  name = get_active_cm_name (debug_window);
   old_messages = g_hash_table_lookup (priv->all_cms, name);
 
   /* we call get_messages either when a new CM is added or
