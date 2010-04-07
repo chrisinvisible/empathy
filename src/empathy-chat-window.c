@@ -1212,15 +1212,7 @@ static void
 chat_window_notification_closed_cb (NotifyNotification *notify,
 				    NotificationData *cb_data)
 {
-	EmpathyNotificationClosedReason reason = 0;
 	EmpathyChatWindowPriv *priv = GET_PRIV (cb_data->window);
-
-#ifdef notify_notification_get_closed_reason
-	reason = notify_notification_get_closed_reason (notify);
-#endif
-	if (reason == EMPATHY_NOTIFICATION_CLOSED_DISMISSED) {
-		empathy_chat_window_present_chat (cb_data->chat);
-	}
 
 	g_object_unref (notify);
 	free_notification_data (cb_data);
