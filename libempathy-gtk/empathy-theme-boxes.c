@@ -41,6 +41,9 @@
 #define MARGIN 4
 #define HEADER_PADDING 2
 
+/* "Join" consecutive messages with timestamps within five minutes */
+#define MESSAGE_JOIN_PERIOD 5*60
+
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyThemeBoxes)
 typedef struct {
 	gboolean show_avatars;
@@ -200,18 +203,23 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	GtkTextTagTable      *table;
 	GtkTextTag           *tag;
 	GString              *str_obj;
+	gboolean              consecutive;
 
 	contact = empathy_message_get_sender (msg);
 	name = empathy_contact_get_name (contact);
 	last_contact = empathy_chat_text_view_get_last_contact (view);
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (theme));
+	time_ = empathy_message_get_timestamp (msg);
+	consecutive = (time_ - empathy_chat_text_view_get_last_timestamp (view)
+		< MESSAGE_JOIN_PERIOD);
 
 	DEBUG ("Maybe add fancy header");
 
-	/* Only insert a header if the previously inserted block is not the same
-	 * as this one.
+	/* Only insert a header if
+	 *   - the previously inserted block is not the same as this one.
+	 *   - the delay between two messages is lower then MESSAGE_JOIN_PERIOD
 	 */
-	if (empathy_contact_equal (last_contact, contact)) {
+	if (empathy_contact_equal (last_contact, contact) && consecutive) {
 		return;
 	}
 
@@ -259,7 +267,6 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	g_free (str);
 
 	/* Add the message receive time */
-	time_ = empathy_message_get_timestamp (msg);
 	tmp = empathy_time_to_string_local (time_,
 					   EMPATHY_TIME_FORMAT_DISPLAY_SHORT);
 	str = g_strdup_printf ("<i>%s</i>", tmp);

@@ -1308,6 +1308,16 @@ empathy_chat_text_view_get_last_contact (EmpathyChatTextView *view)
 	return priv->last_contact;
 }
 
+time_t
+empathy_chat_text_view_get_last_timestamp (EmpathyChatTextView *view)
+{
+	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
+
+	g_return_val_if_fail (EMPATHY_IS_CHAT_TEXT_VIEW (view), 0);
+
+	return priv->last_timestamp;
+}
+
 void
 empathy_chat_text_view_set_only_if_date (EmpathyChatTextView *view,
 					 gboolean             only_if_date)

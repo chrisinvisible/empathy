@@ -68,18 +68,19 @@ struct _EmpathyChatTextViewClass {
 #define EMPATHY_CHAT_TEXT_VIEW_TAG_EVENT "event"
 #define EMPATHY_CHAT_TEXT_VIEW_TAG_LINK "link"
 
-GType                empathy_chat_text_view_get_type         (void) G_GNUC_CONST;
-EmpathyContact *     empathy_chat_text_view_get_last_contact (EmpathyChatTextView *view);
-void                 empathy_chat_text_view_set_only_if_date (EmpathyChatTextView *view,
-							      gboolean             only_if_date);
-void                 empathy_chat_text_view_append_body      (EmpathyChatTextView *view,
-							      const gchar         *body,
-							      const gchar         *tag);
-void                 empathy_chat_text_view_append_spacing   (EmpathyChatTextView *view);
-GtkTextTag *         empathy_chat_text_view_tag_set          (EmpathyChatTextView *view,
-							      const gchar         *tag_name,
-							      const gchar         *first_property_name,
-							      ...);
+GType                empathy_chat_text_view_get_type           (void) G_GNUC_CONST;
+EmpathyContact *     empathy_chat_text_view_get_last_contact   (EmpathyChatTextView *view);
+time_t               empathy_chat_text_view_get_last_timestamp (EmpathyChatTextView *view);
+void                 empathy_chat_text_view_set_only_if_date   (EmpathyChatTextView *view,
+							        gboolean             only_if_date);
+void                 empathy_chat_text_view_append_body        (EmpathyChatTextView *view,
+							        const gchar         *body,
+							        const gchar         *tag);
+void                 empathy_chat_text_view_append_spacing     (EmpathyChatTextView *view);
+GtkTextTag *         empathy_chat_text_view_tag_set            (EmpathyChatTextView *view,
+							        const gchar         *tag_name,
+							        const gchar         *first_property_name,
+							        ...);
 
 G_END_DECLS
 
