@@ -62,11 +62,6 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
 
-typedef struct {
-	EmpathyChatWindow *window;
-	EmpathyChat *chat;
-} NotificationData;
-
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChatWindow)
 typedef struct {
 	EmpathyChat *current_chat;
@@ -80,7 +75,6 @@ typedef struct {
 	GtkWidget   *dialog;
 	GtkWidget   *notebook;
 	NotifyNotification *notification;
-	NotificationData *notification_data;
 
 	GtkTargetList *contact_targets;
 	GtkTargetList *file_targets;
@@ -1202,24 +1196,14 @@ chat_window_set_urgency_hint (EmpathyChatWindow *window,
 }
 
 static void
-free_notification_data (NotificationData *data)
-{
-	g_object_unref (data->chat);
-	g_slice_free (NotificationData, data);
-}
-
-static void
 chat_window_notification_closed_cb (NotifyNotification *notify,
-				    NotificationData *cb_data)
+				    EmpathyChatWindow *self)
 {
-	EmpathyChatWindowPriv *priv = GET_PRIV (cb_data->window);
+	EmpathyChatWindowPriv *priv = GET_PRIV (self);
 
 	g_object_unref (notify);
-	free_notification_data (cb_data);
-
 	if (priv->notification == notify) {
 		priv->notification = NULL;
-		priv->notification_data = NULL;
 	}
 }
 
@@ -1261,11 +1245,6 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		notify_notification_update (notification,
 					    header, escaped, NULL);
 	} else {
-		NotificationData *cb_data = cb_data = g_slice_new0 (NotificationData);
-
-		cb_data->chat = g_object_ref (chat);
-		cb_data->window = window;
-
 		/* if the notification server supports x-canonical-append,
 		   the hint will be added, so that the message from the
 		   just created notification will be automatically appended
@@ -1276,13 +1255,12 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 
 		if (priv->notification == NULL) {
 			priv->notification = notification;
-			priv->notification_data = cb_data;
 		}
 
 		notify_notification_set_timeout (notification, NOTIFY_EXPIRES_DEFAULT);
 
 		g_signal_connect (notification, "closed",
-				  G_CALLBACK (chat_window_notification_closed_cb), cb_data);
+				  G_CALLBACK (chat_window_notification_closed_cb), window);
 
 		if (has_x_canonical_append) {
 			notify_notification_set_hint_string (notification,
@@ -1802,8 +1780,6 @@ chat_window_finalize (GObject *object)
 	if (priv->notification != NULL) {
 		notify_notification_close (priv->notification, NULL);
 		priv->notification = NULL;
-		free_notification_data (priv->notification_data);
-		priv->notification_data = NULL;
 	}
 
 	if (priv->contact_targets) {
