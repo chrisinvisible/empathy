@@ -800,12 +800,9 @@ list_ensure_channel_cb (TpConnection *conn,
 }
 
 static void
-new_channels_cb (TpConnection *conn,
-		 const GPtrArray *channels,
-		 gpointer user_data,
-		 GObject *weak_object)
+iterate_on_channels (EmpathyTpContactList *list,
+		     const GPtrArray *channels)
 {
-	EmpathyTpContactList *list = EMPATHY_TP_CONTACT_LIST (weak_object);
 	guint i;
 
 	for (i = 0; i < channels->len ; i++) {
@@ -828,10 +825,22 @@ new_channels_cb (TpConnection *conn,
 		handle_type = tp_asv_get_uint32 (properties,
 			TP_IFACE_CHANNEL ".TargetHandleType", NULL);
 
-		if (handle_type == TP_HANDLE_TYPE_GROUP) {
-				tp_contact_list_group_add_channel (list, path, properties);
-		}
+		if (handle_type != TP_HANDLE_TYPE_GROUP)
+			return;
+
+		tp_contact_list_group_add_channel (list, path, properties);
 	}
+}
+
+static void
+new_channels_cb (TpConnection *conn,
+		 const GPtrArray *channels,
+		 gpointer user_data,
+		 GObject *weak_object)
+{
+	EmpathyTpContactList *list = EMPATHY_TP_CONTACT_LIST (weak_object);
+
+	iterate_on_channels (list, channels);
 }
 
 static void
@@ -842,7 +851,6 @@ got_channels_cb (TpProxy *conn,
 		 GObject *weak_object)
 {
 	EmpathyTpContactList *list = EMPATHY_TP_CONTACT_LIST (weak_object);
-	guint i;
 	const GPtrArray *channels;
 
 	if (error != NULL) {
@@ -851,25 +859,7 @@ got_channels_cb (TpProxy *conn,
 	}
 
 	channels = g_value_get_boxed (out);
-	for (i = 0; i < channels->len ; i++) {
-		GValueArray *arr = g_ptr_array_index (channels, i);
-		const gchar *path;
-		GHashTable *properties;
-
-		path = g_value_get_boxed (g_value_array_get_nth (arr, 0));
-		properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
-
-		if (tp_strdiff (tp_asv_get_string (properties,
-				TP_IFACE_CHANNEL ".ChannelType"),
-		    TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
-			continue;
-
-		if (tp_asv_get_uint32 (properties,
-		    TP_IFACE_CHANNEL ".TargetHandleType", NULL) != TP_HANDLE_TYPE_GROUP)
-		    continue;
-
-		tp_contact_list_group_add_channel (list, path, properties);
-	}
+	iterate_on_channels (list, channels);
 }
 
 static void
