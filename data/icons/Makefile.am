@@ -30,7 +30,7 @@ private_icons = \
 	hicolor_apps_16x16_im-google-talk.png \
 	hicolor_apps_16x16_im-icq.png \
 	hicolor_apps_16x16_im-irc.png \
-	hicolor_apps_16x16_im-xmpp.png \
+	hicolor_apps_16x16_im-jabber.png \
 	hicolor_apps_16x16_im-msn.png \
 	hicolor_apps_16x16_im-silc.png \
 	hicolor_apps_16x16_im-sip.png \
@@ -51,7 +51,7 @@ private_icons = \
 	hicolor_apps_22x22_im-google-talk.png \
 	hicolor_apps_22x22_im-icq.png \
 	hicolor_apps_22x22_im-irc.png \
-	hicolor_apps_22x22_im-xmpp.png \
+	hicolor_apps_22x22_im-jabber.png \
 	hicolor_apps_22x22_im-msn.png \
 	hicolor_apps_22x22_im-silc.png \
 	hicolor_apps_22x22_im-sip.png \
@@ -71,7 +71,7 @@ private_icons = \
 	hicolor_apps_24x24_im-google-talk.png \
 	hicolor_apps_24x24_im-icq.png \
 	hicolor_apps_24x24_im-irc.png \
-	hicolor_apps_24x24_im-xmpp.png \
+	hicolor_apps_24x24_im-jabber.png \
 	hicolor_apps_24x24_im-msn.png \
 	hicolor_apps_24x24_im-silc.png \
 	hicolor_apps_24x24_im-sip.png \
@@ -91,7 +91,7 @@ private_icons = \
 	hicolor_apps_32x32_im-google-talk.png \
 	hicolor_apps_32x32_im-icq.png \
 	hicolor_apps_32x32_im-irc.png \
-	hicolor_apps_32x32_im-xmpp.png \
+	hicolor_apps_32x32_im-jabber.png \
 	hicolor_apps_32x32_im-msn.png \
 	hicolor_apps_32x32_im-silc.png \
 	hicolor_apps_32x32_im-sip.png \
@@ -112,7 +112,7 @@ private_icons = \
 	hicolor_apps_48x48_im-google-talk.png \
 	hicolor_apps_48x48_im-icq.png \
 	hicolor_apps_48x48_im-irc.png \
-	hicolor_apps_48x48_im-xmpp.png \
+	hicolor_apps_48x48_im-jabber.png \
 	hicolor_apps_48x48_im-msn.png \
 	hicolor_apps_48x48_im-silc.png \
 	hicolor_apps_48x48_im-sip.png \
@@ -132,7 +132,7 @@ private_icons = \
 	hicolor_apps_scalable_im-google-talk.svg \
 	hicolor_apps_scalable_im-icq.svg \
 	hicolor_apps_scalable_im-irc.svg \
-	hicolor_apps_scalable_im-xmpp.svg \
+	hicolor_apps_scalable_im-jabber.svg \
 	hicolor_apps_scalable_im-msn.svg \
 	hicolor_apps_scalable_im-silc.svg \
 	hicolor_apps_scalable_im-sip.svg \
