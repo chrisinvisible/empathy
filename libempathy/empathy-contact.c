@@ -1267,8 +1267,8 @@ geocode_cb (GeoclueGeocode *geocode,
   if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE &&
       g_hash_table_lookup (new_location, EMPATHY_LOCATION_LAT) == NULL)
     {
-      g_hash_table_insert (new_location, g_strdup (EMPATHY_LOCATION_ALT),
-          tp_g_value_slice_new_double (altitude));
+      tp_asv_set_double (new_location, g_strdup (EMPATHY_LOCATION_ALT),
+          altitude);
       DEBUG ("\t - Altitude: %f", altitude);
     }
 
