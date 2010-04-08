@@ -1293,15 +1293,15 @@ update_geocode (EmpathyContact *contact)
   static GeoclueGeocode *geocode;
   gchar *str;
   GHashTable *address;
-  GValue* value;
   GHashTable *location;
 
   location = empathy_contact_get_location (contact);
   if (location == NULL)
     return;
 
-  value = g_hash_table_lookup (location, EMPATHY_LOCATION_LAT);
-  if (value != NULL)
+  /* No need to search for position if contact published it */
+  if (g_hash_table_lookup (location, EMPATHY_LOCATION_LAT) != NULL ||
+      g_hash_table_lookup (location, EMPATHY_LOCATION_LON) != NULL)
     return;
 
   if (geocode == NULL)
