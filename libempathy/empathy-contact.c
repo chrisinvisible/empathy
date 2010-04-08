@@ -1239,26 +1239,23 @@ geocode_cb (GeoclueGeocode *geocode,
   if (error != NULL)
     {
       DEBUG ("Error geocoding location : %s", error->message);
-      g_object_unref (geocode);
-      g_object_unref (contact);
-      return;
+      goto out;
     }
 
-  if (fields & GEOCLUE_POSITION_FIELDS_LATITUDE)
-    {
-      new_value = tp_g_value_slice_new_double (latitude);
-      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LAT),
-        new_value);
-      DEBUG ("\t - Latitude: %f", latitude);
-    }
+  /* No need to change location if we didn't find the position */
+  if (!(fields & GEOCLUE_POSITION_FIELDS_LATITUDE))
+    goto out;
 
-  if (fields & GEOCLUE_POSITION_FIELDS_LONGITUDE)
-    {
-      new_value = tp_g_value_slice_new_double (longitude);
-      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_LON),
-        new_value);
-      DEBUG ("\t - Longitude: %f", longitude);
-    }
+  if (!(fields & GEOCLUE_POSITION_FIELDS_LONGITUDE))
+    goto out;
+
+  g_hash_table_insert (location, g_strdup (EMPATHY_LOCATION_LAT),
+      tp_g_value_slice_new_double (latitude));
+  DEBUG ("\t - Latitude: %f", latitude);
+
+  g_hash_table_insert (location, g_strdup (EMPATHY_LOCATION_LON),
+    tp_g_value_slice_new_double (longitude));
+  DEBUG ("\t - Longitude: %f", longitude);
 
   if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE)
     {
@@ -1270,6 +1267,7 @@ geocode_cb (GeoclueGeocode *geocode,
 
   /* Don't change the accuracy as we used an address to get this position */
   g_object_notify (contact, "location");
+out:
   g_object_unref (geocode);
   g_object_unref (contact);
 }
