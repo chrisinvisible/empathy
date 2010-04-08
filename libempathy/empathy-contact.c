@@ -1364,9 +1364,13 @@ update_geocode (EmpathyContact *contact)
       DEBUG ("\t - street: %s", str);
     }
 
-  g_object_ref (contact);
-  geoclue_geocode_address_to_position_async (geocode, address,
-    geocode_cb, contact);
+  if (g_hash_table_size (address) > 0)
+    {
+      g_object_ref (contact);
+
+      geoclue_geocode_address_to_position_async (geocode, address,
+          geocode_cb, contact);
+    }
 
   g_hash_table_unref (address);
 }
