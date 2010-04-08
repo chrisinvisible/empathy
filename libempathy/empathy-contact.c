@@ -157,6 +157,18 @@ contact_dispose (GObject *object)
     g_object_unref (priv->account);
   priv->account = NULL;
 
+  if (priv->avatar != NULL)
+    {
+      empathy_avatar_unref (priv->avatar);
+      priv->avatar = NULL;
+    }
+
+  if (priv->location != NULL)
+    {
+      g_hash_table_unref (priv->location);
+      priv->location = NULL;
+    }
+
   G_OBJECT_CLASS (empathy_contact_parent_class)->dispose (object);
 }
 
@@ -303,12 +315,6 @@ contact_finalize (GObject *object)
   g_free (priv->name);
   g_free (priv->id);
   g_free (priv->presence_message);
-
-  if (priv->avatar)
-      empathy_avatar_unref (priv->avatar);
-
-  if (priv->location != NULL)
-      g_hash_table_unref (priv->location);
 
   G_OBJECT_CLASS (empathy_contact_parent_class)->finalize (object);
 }
