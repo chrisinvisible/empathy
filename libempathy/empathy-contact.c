@@ -1231,10 +1231,11 @@ geocode_cb (GeoclueGeocode *geocode,
     GError *error,
     gpointer contact)
 {
-  GValue *new_value;
-  GHashTable *location;
+  EmpathyContactPriv *priv = GET_PRIV (contact);
+  GHashTable *new_location;
 
-  location = empathy_contact_get_location (EMPATHY_CONTACT (contact));
+  if (priv->location == NULL)
+    goto out;
 
   if (error != NULL)
     {
@@ -1249,23 +1250,31 @@ geocode_cb (GeoclueGeocode *geocode,
   if (!(fields & GEOCLUE_POSITION_FIELDS_LONGITUDE))
     goto out;
 
-  g_hash_table_insert (location, g_strdup (EMPATHY_LOCATION_LAT),
-      tp_g_value_slice_new_double (latitude));
-  DEBUG ("\t - Latitude: %f", latitude);
+  new_location = tp_asv_new (
+      EMPATHY_LOCATION_LAT, G_TYPE_DOUBLE, latitude,
+      EMPATHY_LOCATION_LON, G_TYPE_DOUBLE, longitude,
+      NULL);
 
-  g_hash_table_insert (location, g_strdup (EMPATHY_LOCATION_LON),
-    tp_g_value_slice_new_double (longitude));
+  DEBUG ("\t - Latitude: %f", latitude);
   DEBUG ("\t - Longitude: %f", longitude);
 
-  if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE)
+  /* Copy remaning fields. LAT and LON were not defined so we won't overwrite
+   * the values we just set. */
+  tp_g_hash_table_update (new_location, priv->location,
+      (GBoxedCopyFunc) g_strdup, (GBoxedCopyFunc) tp_g_value_slice_dup);
+
+  /* Set the altitude only if it wasn't defined before */
+  if (fields & GEOCLUE_POSITION_FIELDS_ALTITUDE &&
+      g_hash_table_lookup (new_location, EMPATHY_LOCATION_LAT) == NULL)
     {
-      new_value = tp_g_value_slice_new_double (altitude);
-      g_hash_table_replace (location, g_strdup (EMPATHY_LOCATION_ALT),
-        new_value);
+      g_hash_table_insert (new_location, g_strdup (EMPATHY_LOCATION_ALT),
+          tp_g_value_slice_new_double (altitude));
       DEBUG ("\t - Altitude: %f", altitude);
     }
 
   /* Don't change the accuracy as we used an address to get this position */
+  g_hash_table_unref (priv->location);
+  priv->location = new_location;
   g_object_notify (contact, "location");
 out:
   g_object_unref (geocode);
