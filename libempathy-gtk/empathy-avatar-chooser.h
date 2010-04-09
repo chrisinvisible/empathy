@@ -59,4 +59,7 @@ void       empathy_avatar_chooser_get_image_data (EmpathyAvatarChooser *chooser,
 						  gsize                *data_size,
 						  const gchar         **mime_type);
 
+void       empathy_avatar_chooser_set_connection (EmpathyAvatarChooser *self,
+						  TpConnection *connection);
+
 #endif /* __EMPATHY_AVATAR_CHOOSER_H__ */

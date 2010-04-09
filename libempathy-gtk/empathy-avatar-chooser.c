@@ -1072,3 +1072,10 @@ empathy_avatar_chooser_get_image_data (EmpathyAvatarChooser  *chooser,
 	}
 }
 
+void
+empathy_avatar_chooser_set_connection (EmpathyAvatarChooser *self,
+				       TpConnection *connection)
+{
+	avatar_chooser_set_connection (self, connection);
+	g_object_notify (G_OBJECT (self), "connection");
+}
