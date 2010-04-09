@@ -972,7 +972,7 @@ update_avatar_chooser_account_cb (EmpathyAccountChooser *account_chooser,
   TpConnection *connection;
 
   connection = empathy_account_chooser_get_connection (account_chooser);
-  g_object_set (avatar_chooser, "connection", connection, NULL);
+  empathy_avatar_chooser_set_connection (avatar_chooser, connection);
 }
 
 static void
