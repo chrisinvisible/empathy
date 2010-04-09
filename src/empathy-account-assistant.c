@@ -339,7 +339,8 @@ account_assistant_apply_account_cb (GObject *source,
 
 static void
 account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self,
-    EmpathyAccountSettings *settings)
+    EmpathyAccountSettings *settings,
+    gboolean set_display_name)
 {
   EmpathyAccountAssistantPriv *priv = GET_PRIV (self);
 
@@ -348,9 +349,7 @@ account_assistant_apply_account_and_finish (EmpathyAccountAssistant *self,
 
   priv->is_creating = TRUE;
 
-  /* set default display name, if there is no current widget then assume the
-   * display name was already set correctly. e.g. salut account creation */
-  if (priv->current_widget_object != NULL)
+  if (set_display_name)
     {
       gchar *display_name;
 
@@ -896,14 +895,17 @@ impl_signal_apply (GtkAssistant *assistant)
   if (current_page == PAGE_SALUT)
     {
       if (priv->create_salut_account)
-        account_assistant_apply_account_and_finish (self, priv->salut_settings);
+        /* create_salut_account_settings() already set the display name of the
+         * account so there is no need to set it again. */
+        account_assistant_apply_account_and_finish (self, priv->salut_settings,
+            FALSE);
       return;
     }
   else if (current_page == PAGE_ENTER_CREATE &&
       priv->settings != NULL &&
       empathy_account_settings_is_valid (priv->settings))
     {
-      account_assistant_apply_account_and_finish (self, priv->settings);
+      account_assistant_apply_account_and_finish (self, priv->settings, TRUE);
     }
 }
 
@@ -948,7 +950,8 @@ impl_signal_prepare (GtkAssistant *assistant,
       if (priv->settings != NULL &&
           empathy_account_settings_is_valid (priv->settings))
         {
-          account_assistant_apply_account_and_finish (self, priv->settings);
+          account_assistant_apply_account_and_finish (self, priv->settings,
+              TRUE);
           g_object_unref (priv->settings);
           priv->settings = NULL;
         }
