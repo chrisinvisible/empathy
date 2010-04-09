@@ -969,10 +969,14 @@ static void
 update_avatar_chooser_account_cb (EmpathyAccountChooser *account_chooser,
                                   EmpathyAvatarChooser *avatar_chooser)
 {
-  TpConnection *connection;
+  TpAccount *account;
 
-  connection = empathy_account_chooser_get_connection (account_chooser);
-  empathy_avatar_chooser_set_connection (avatar_chooser, connection);
+  account = empathy_account_chooser_dup_account (account_chooser);
+  if (account == NULL)
+    return;
+
+  empathy_avatar_chooser_set_account (avatar_chooser, account);
+  g_object_unref (account);
 }
 
 static void
