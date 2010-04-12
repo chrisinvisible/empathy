@@ -901,3 +901,17 @@ empathy_account_chooser_is_ready (EmpathyAccountChooser *self)
 
 	return priv->ready;
 }
+
+TpAccount *
+empathy_account_chooser_get_account (EmpathyAccountChooser *chooser)
+{
+	TpAccount *account;
+
+	account = empathy_account_chooser_dup_account (chooser);
+	if (account == NULL)
+		return NULL;
+
+	g_object_unref (account);
+
+	return account;
+}
