@@ -971,12 +971,11 @@ update_avatar_chooser_account_cb (EmpathyAccountChooser *account_chooser,
 {
   TpAccount *account;
 
-  account = empathy_account_chooser_dup_account (account_chooser);
+  account = empathy_account_chooser_get_account (account_chooser);
   if (account == NULL)
     return;
 
   empathy_avatar_chooser_set_account (avatar_chooser, account);
-  g_object_unref (account);
 }
 
 static void
