@@ -47,13 +47,10 @@ KEYRING_REQUIRED=2.22
 NETWORK_MANAGER_REQUIRED=0.7.0
 NAUTILUS_SENDTO_REQUIRED=2.28.1
 
-# Use --enable-maintainer-mode to disabled deprecated symbols
+# Use --enable-maintainer-mode to disable deprecated symbols and single include.
+# If this is not a released empathy, maintainer mode is forced
+ifelse(empathy_released, 1, [], [enable_maintainer_mode="yes"])
 GNOME_MAINTAINER_MODE_DEFINES
-
-# Warning if GLib/GDK/GTK headers are included
-AC_DEFINE(G_DISABLE_SINGLE_INCLUDES, [], [Disable single includes for GLib])
-AC_DEFINE(GDK_PIXBUF_DISABLE_SINGLE_INCLUDES, [], [Disable single includes for GDK pixbuf])
-AC_DEFINE(GTK_DISABLE_SINGLE_INCLUDES, [], [Disable single includes for GTK])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
