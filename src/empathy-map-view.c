@@ -41,7 +41,6 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "empathy-map-view.h"
-#include "ephy-spinner.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_LOCATION
 #include <libempathy/empathy-debug.h>
@@ -70,9 +69,15 @@ map_view_state_changed (ChamplainView *view,
 
   g_object_get (G_OBJECT (view), "state", &state, NULL);
   if (state == CHAMPLAIN_STATE_LOADING)
-    ephy_spinner_start (EPHY_SPINNER (window->throbber));
+    {
+      gtk_spinner_start (GTK_SPINNER (window->throbber));
+      gtk_widget_show (window->throbber);
+    }
   else
-    ephy_spinner_stop (EPHY_SPINNER (window->throbber));
+    {
+      gtk_spinner_stop (GTK_SPINNER (window->throbber));
+      gtk_widget_hide (window->throbber);
+    }
 }
 
 static gboolean
@@ -434,10 +439,8 @@ empathy_map_view_show (void)
   window->members_changed_id = g_signal_connect (window->contact_list,
       "members-changed", G_CALLBACK (members_changed_cb), window);
 
-  window->throbber = ephy_spinner_new ();
-  ephy_spinner_set_size (EPHY_SPINNER (window->throbber),
-      GTK_ICON_SIZE_LARGE_TOOLBAR);
-  gtk_widget_show (window->throbber);
+  window->throbber = gtk_spinner_new ();
+  gtk_widget_set_size_request (window->throbber, 16, 16);
   gtk_container_add (GTK_CONTAINER (throbber_holder), window->throbber);
 
   /* Set up map view */

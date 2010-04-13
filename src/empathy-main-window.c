@@ -56,7 +56,6 @@
 #include "empathy-accounts-dialog.h"
 #include "empathy-chat-manager.h"
 #include "empathy-main-window.h"
-#include "ephy-spinner.h"
 #include "empathy-preferences.h"
 #include "empathy-about-dialog.h"
 #include "empathy-debug-window.h"
@@ -94,6 +93,7 @@ typedef struct {
 	GtkWidget              *window;
 	GtkWidget              *main_vbox;
 	GtkWidget              *throbber;
+	GtkWidget              *throbber_tool_item;
 	GtkWidget              *presence_toolbar;
 	GtkWidget              *presence_chooser;
 	GtkWidget              *errors_vbox;
@@ -508,9 +508,11 @@ main_window_update_status (EmpathyMainWindow *window)
 
 	/* Update the spinner state */
 	if (connecting) {
-		ephy_spinner_start (EPHY_SPINNER (window->throbber));
+		gtk_spinner_start (GTK_SPINNER (window->throbber));
+		gtk_widget_show (window->throbber_tool_item);
 	} else {
-		ephy_spinner_stop (EPHY_SPINNER (window->throbber));
+		gtk_spinner_stop (GTK_SPINNER (window->throbber));
+		gtk_widget_hide (window->throbber_tool_item);
 	}
 
 	/* Update widgets sensibility */
@@ -1155,7 +1157,7 @@ main_window_help_contents_cb (GtkAction         *action,
 }
 
 static gboolean
-main_window_throbber_button_press_event_cb (GtkWidget         *throbber_ebox,
+main_window_throbber_button_press_event_cb (GtkWidget         *throbber,
 					    GdkEventButton    *event,
 					    EmpathyMainWindow *window)
 {
@@ -1165,7 +1167,7 @@ main_window_throbber_button_press_event_cb (GtkWidget         *throbber_ebox,
 	}
 
 	empathy_accounts_dialog_show_application (
-			gtk_widget_get_screen (GTK_WIDGET (throbber_ebox)),
+			gtk_widget_get_screen (GTK_WIDGET (throbber)),
 			NULL, FALSE, FALSE);
 
 	return FALSE;
@@ -1318,7 +1320,6 @@ empathy_main_window_show (void)
 	EmpathyConf              *conf;
 	GtkWidget                *sw;
 	GtkToggleAction          *show_offline_widget;
-	GtkWidget                *ebox;
 	GtkAction                *show_map_widget;
 	GtkToolItem              *item;
 	gboolean                  show_offline;
@@ -1430,24 +1431,21 @@ empathy_main_window_show (void)
 	gtk_toolbar_insert (GTK_TOOLBAR (window->presence_toolbar), item, -1);
 
 	/* Set up the throbber */
-	ebox = gtk_event_box_new ();
-	gtk_event_box_set_visible_window (GTK_EVENT_BOX (ebox), FALSE);
-	gtk_widget_set_tooltip_text (ebox, _("Show and edit accounts"));
-	g_signal_connect (ebox,
-			  "button-press-event",
-			  G_CALLBACK (main_window_throbber_button_press_event_cb),
-			  window);
-	gtk_widget_show (ebox);
-
-	window->throbber = ephy_spinner_new ();
-	ephy_spinner_set_size (EPHY_SPINNER (window->throbber), GTK_ICON_SIZE_LARGE_TOOLBAR);
-	gtk_container_add (GTK_CONTAINER (ebox), window->throbber);
+	window->throbber = gtk_spinner_new ();
+	gtk_widget_set_size_request (window->throbber, 16, -1);
+	gtk_widget_set_tooltip_text (window->throbber, _("Show and edit accounts"));
+	gtk_widget_set_has_window (GTK_WIDGET (window->throbber), TRUE);
+	gtk_widget_set_events (window->throbber, GDK_BUTTON_PRESS_MASK);
+	g_signal_connect (window->throbber, "button-press-event",
+		G_CALLBACK (main_window_throbber_button_press_event_cb),
+		window);
 	gtk_widget_show (window->throbber);
 
 	item = gtk_tool_item_new ();
-	gtk_container_add (GTK_CONTAINER (item), ebox);
+	gtk_container_set_border_width (GTK_CONTAINER (item), 6);
 	gtk_toolbar_insert (GTK_TOOLBAR (window->presence_toolbar), item, -1);
-	gtk_widget_show (GTK_WIDGET (item));
+	gtk_container_add (GTK_CONTAINER (item), window->throbber);
+	window->throbber_tool_item = GTK_WIDGET (item);
 
 	list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
 	monitor = empathy_contact_list_get_monitor (list_iface);

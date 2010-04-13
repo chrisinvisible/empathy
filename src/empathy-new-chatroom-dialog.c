@@ -43,7 +43,6 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "empathy-new-chatroom-dialog.h"
-#include "ephy-spinner.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -235,9 +234,7 @@ empathy_new_chatroom_dialog_show (GtkWindow *parent)
 	new_chatroom_dialog_model_setup (dialog);
 
 	/* Add throbber */
-	dialog->throbber = ephy_spinner_new ();
-	ephy_spinner_set_size (EPHY_SPINNER (dialog->throbber), GTK_ICON_SIZE_LARGE_TOOLBAR);
-	gtk_widget_show (dialog->throbber);
+	dialog->throbber = gtk_spinner_new ();
 	gtk_table_attach (GTK_TABLE (dialog->table_info),
 			  dialog->throbber,
 			  2, 3, 0, 1,
@@ -491,7 +488,8 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 		dialog->room_list = NULL;
 	}
 
-	ephy_spinner_stop (EPHY_SPINNER (dialog->throbber));
+	gtk_spinner_stop (GTK_SPINNER (dialog->throbber));
+	gtk_widget_hide (dialog->throbber);
 	new_chatroom_dialog_model_clear (dialog);
 
 	if (dialog->account != NULL) {
@@ -553,7 +551,8 @@ new_chatroom_dialog_account_changed_cb (GtkComboBox             *combobox,
 
 		listing = empathy_tp_roomlist_is_listing (dialog->room_list);
 		if (listing) {
-			ephy_spinner_start (EPHY_SPINNER (dialog->throbber));
+			gtk_spinner_start (GTK_SPINNER (dialog->throbber));
+			gtk_widget_show (dialog->throbber);
 		}
 	}
 
@@ -659,9 +658,11 @@ new_chatroom_dialog_listing_cb (EmpathyTpRoomlist        *room_list,
 
 	/* Update the throbber */
 	if (listing) {
-		ephy_spinner_start (EPHY_SPINNER (dialog->throbber));
+		gtk_spinner_start (GTK_SPINNER (dialog->throbber));
+		gtk_widget_show (dialog->throbber);
 	} else {
-		ephy_spinner_stop (EPHY_SPINNER (dialog->throbber));
+		gtk_spinner_stop (GTK_SPINNER (dialog->throbber));
+		gtk_widget_hide (dialog->throbber);
 	}
 }
 

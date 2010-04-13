@@ -52,7 +52,6 @@
 #include "empathy-accounts-dialog.h"
 #include "empathy-import-dialog.h"
 #include "empathy-import-utils.h"
-#include "ephy-spinner.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
@@ -264,7 +263,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_INFO);
 
-            ephy_spinner_start (EPHY_SPINNER (priv->throbber));
+            gtk_spinner_start (GTK_SPINNER (priv->throbber));
             gtk_widget_show (priv->throbber);
             gtk_widget_hide (priv->image_status);
             break;
@@ -308,7 +307,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                message = _("Offline — No Network Connection");
 
             g_object_unref (connectivity);
-            ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
+            gtk_spinner_stop (GTK_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
             gtk_widget_hide (priv->throbber);
             break;
@@ -317,7 +316,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_WARNING);
 
-            ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
+            gtk_spinner_stop (GTK_SPINNER (priv->throbber));
             gtk_widget_hide (priv->image_status);
             gtk_widget_hide (priv->throbber);
         }
@@ -328,7 +327,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
 
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);
-      ephy_spinner_stop (EPHY_SPINNER (priv->throbber));
+      gtk_spinner_stop (GTK_SPINNER (priv->throbber));
       gtk_widget_show (priv->image_status);
       gtk_widget_hide (priv->throbber);
     }
@@ -2047,8 +2046,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_box_pack_start (GTK_BOX (vbox), align, TRUE, TRUE, 0);
 
   /* set up spinner */
-  priv->throbber = ephy_spinner_new ();
-  ephy_spinner_set_size (EPHY_SPINNER (priv->throbber), GTK_ICON_SIZE_SMALL_TOOLBAR);
+  priv->throbber = gtk_spinner_new ();
 
   priv->image_status = gtk_image_new_from_icon_name (
             empathy_icon_name_for_presence (

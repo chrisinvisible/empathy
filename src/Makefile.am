@@ -41,7 +41,6 @@ libempathy_accounts_common_la_SOURCES =					\
 	empathy-import-pidgin.c empathy-import-pidgin.h			\
 	empathy-import-widget.c empathy-import-widget.h			\
 	empathy-import-utils.c empathy-import-utils.h			\
-	ephy-spinner.c ephy-spinner.h					\
 	$(NULL)
 
 libempathy_accounts_common_la_LIBADD =					\
