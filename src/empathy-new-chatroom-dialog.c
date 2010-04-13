@@ -65,6 +65,7 @@ typedef struct {
 	GtkWidget         *label_room;
 	GtkWidget         *entry_room;
 	GtkWidget         *expander_browse;
+	GtkWidget         *hbox_expander;
 	GtkWidget         *throbber;
 	GtkWidget         *treeview;
 	GtkTreeModel      *model;
@@ -201,6 +202,7 @@ empathy_new_chatroom_dialog_show (GtkWindow *parent)
 				       "treeview", &dialog->treeview,
 				       "button_join", &dialog->button_join,
 				       "expander_browse", &dialog->expander_browse,
+				       "hbox_expander", &dialog->hbox_expander,
 				       "label_error_message", &dialog->label_error_message,
 				       "viewport_error", &dialog->viewport_error,
 				       NULL);
@@ -235,10 +237,8 @@ empathy_new_chatroom_dialog_show (GtkWindow *parent)
 
 	/* Add throbber */
 	dialog->throbber = gtk_spinner_new ();
-	gtk_table_attach (GTK_TABLE (dialog->table_info),
-			  dialog->throbber,
-			  2, 3, 0, 1,
-			  0, 0, 0, 0);
+	gtk_box_pack_start (GTK_BOX (dialog->hbox_expander), dialog->throbber,
+		TRUE, TRUE, 0);
 
 	/* Account chooser for custom */
 	dialog->account_chooser = empathy_account_chooser_new ();

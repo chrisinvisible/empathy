@@ -3,8 +3,7 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkImage" id="join_image">
-     <property name="stock">gtk-jump-to</property>
-     <property name="icon-size">4</property>
+    <property name="stock">gtk-jump-to</property>
   </object>
   <object class="GtkDialog" id="new_chatroom_dialog">
     <property name="visible">True</property>
@@ -26,7 +25,7 @@
               <object class="GtkTable" id="table_info">
                 <property name="visible">True</property>
                 <property name="n_rows">3</property>
-                <property name="n_columns">3</property>
+                <property name="n_columns">2</property>
                 <property name="column_spacing">5</property>
                 <property name="row_spacing">5</property>
                 <child>
@@ -39,7 +38,7 @@
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">3</property>
+                    <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                     <property name="x_options">GTK_FILL</property>
@@ -68,7 +67,7 @@
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="right_attach">3</property>
+                    <property name="right_attach">2</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
                     <property name="x_options">GTK_FILL</property>
@@ -104,9 +103,6 @@
                 <child>
                   <placeholder/>
                 </child>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -121,7 +117,6 @@
                 <child>
                   <object class="GtkVBox" id="vbox1">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
                     <property name="spacing">2</property>
                     <child>
                       <object class="GtkViewport" id="viewport_error">
@@ -207,9 +202,21 @@
                   </object>
                 </child>
                 <child type="label">
-                  <object class="GtkLabel" id="label1">
+                  <object class="GtkHBox" id="hbox_expander">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Room List</property>
+                    <property name="spacing">6</property>
+                    <child>
+                      <object class="GtkLabel" id="label1">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Room List</property>
+                      </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -243,6 +250,7 @@
             </child>
             <child>
               <object class="GtkButton" id="button_join">
+                <property name="label" translatable="yes">_Join</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
@@ -250,7 +258,6 @@
                 <property name="has_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="image">join_image</property>
-                <property name="label" translatable="yes">_Join</property>
                 <property name="use_underline">True</property>
               </object>
               <packing>
