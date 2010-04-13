@@ -389,7 +389,7 @@ chat_window_contact_menu_update (EmpathyChatWindowPriv *priv,
 		"/chats_menubar/menu_contact");
 	orig_submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (menu));
 
-	if (orig_submenu == NULL || !GTK_WIDGET_VISIBLE (orig_submenu)) {
+	if (orig_submenu == NULL || !gtk_widget_get_visible (orig_submenu)) {
 		submenu = empathy_chat_get_contact_menu (priv->current_chat);
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu), submenu);
 		gtk_widget_show (menu);

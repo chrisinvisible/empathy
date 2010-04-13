@@ -140,7 +140,7 @@ empathy_geometry_save (GtkWindow *window,
   g_return_if_fail (GTK_IS_WINDOW (window));
   g_return_if_fail (!EMP_STR_EMPTY (name));
 
-  if (!GTK_WIDGET_VISIBLE (window))
+  if (!gtk_widget_get_visible (GTK_WIDGET (window)))
     return;
 
   /* escape the name so that unwanted characters such as # are removed */

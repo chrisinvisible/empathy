@@ -3110,7 +3110,7 @@ empathy_chat_paste (EmpathyChat *chat)
 	priv = GET_PRIV (chat);
 
 	if (priv->tp_chat == NULL ||
-	    !GTK_WIDGET_IS_SENSITIVE (chat->input_text_view))
+	    !gtk_widget_is_sensitive (chat->input_text_view))
 		return;
 
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
