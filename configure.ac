@@ -47,10 +47,14 @@ KEYRING_REQUIRED=2.22
 NETWORK_MANAGER_REQUIRED=0.7.0
 NAUTILUS_SENDTO_REQUIRED=2.28.1
 
-# Use --enable-maintainer-mode to disable deprecated symbols and single include.
-# If this is not a released empathy, maintainer mode is forced
+# Use --enable-maintainer-mode to disable deprecated symbols,
+# disable single include and enable GSEAL. If this is not a released empathy,
+# maintainer mode is forced
 ifelse(empathy_released, 1, [], [enable_maintainer_mode="yes"])
 GNOME_MAINTAINER_MODE_DEFINES
+#if test $USE_MAINTAINER_MODE = yes; then
+#  AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
+#fi
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])

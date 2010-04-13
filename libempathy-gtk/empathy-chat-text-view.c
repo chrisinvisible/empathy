@@ -493,8 +493,13 @@ chat_text_view_size_allocate (GtkWidget     *widget,
 
 	if (down) {
 		GtkAdjustment *adj;
+		GtkWidget *sw;
 
-		adj = GTK_TEXT_VIEW (widget)->vadjustment;
+		sw = gtk_widget_get_parent (widget);
+		if (!GTK_IS_SCROLLED_WINDOW (sw))
+			return;
+
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
 		gtk_adjustment_set_value (adj,
 					  gtk_adjustment_get_upper (adj) -
 					  gtk_adjustment_get_page_size (adj));
@@ -653,6 +658,18 @@ empathy_chat_text_view_init (EmpathyChatTextView *view)
 			  NULL);
 }
 
+static void
+chat_text_view_scroll_stop (EmpathyChatTextView *view)
+{
+	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
+
+	g_timer_destroy (priv->scroll_time);
+	priv->scroll_time = NULL;
+
+	g_source_remove (priv->scroll_timeout);
+	priv->scroll_timeout = 0;
+}
+
 /* Code stolen from pidgin/gtkimhtml.c */
 static gboolean
 chat_text_view_scroll_cb (EmpathyChatTextView *view)
@@ -660,9 +677,17 @@ chat_text_view_scroll_cb (EmpathyChatTextView *view)
 	EmpathyChatTextViewPriv *priv;
 	GtkAdjustment      *adj;
 	gdouble             max_val;
+	GtkWidget          *sw;
 
 	priv = GET_PRIV (view);
-	adj = GTK_TEXT_VIEW (view)->vadjustment;
+
+	sw = gtk_widget_get_parent (GTK_WIDGET (view));
+	if (!GTK_IS_SCROLLED_WINDOW (sw)) {
+		chat_text_view_scroll_stop (view);
+		return FALSE;
+	}
+
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
 	max_val = gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj);
 
 	g_return_val_if_fail (priv->scroll_time != NULL, FALSE);
@@ -670,9 +695,7 @@ chat_text_view_scroll_cb (EmpathyChatTextView *view)
 	if (g_timer_elapsed (priv->scroll_time, NULL) > MAX_SCROLL_TIME) {
 		/* time's up. jump to the end and kill the timer */
 		gtk_adjustment_set_value (adj, max_val);
-		g_timer_destroy (priv->scroll_time);
-		priv->scroll_time = NULL;
-		priv->scroll_timeout = 0;
+		chat_text_view_scroll_stop (view);
 		return FALSE;
 	}
 
