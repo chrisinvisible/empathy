@@ -497,6 +497,14 @@ empathy_protocol_chooser_dup_selected (
             tp_connection_manager_get_protocol (cm, protocol_name);
 
           g_free (protocol_name);
+
+          if (*protocol == NULL)
+            {
+              /* For some reason the CM doesn't know about this protocol
+               * any more */
+              g_object_unref (cm);
+              return NULL;
+            }
         }
 
       if (is_gtalk != NULL)
