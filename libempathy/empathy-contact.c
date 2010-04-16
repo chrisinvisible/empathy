@@ -26,6 +26,7 @@
 #include <glib/gi18n-lib.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 #ifdef ENABEL_TPL
 #include <telepathy-logger/contact.h>
@@ -79,6 +80,9 @@ static void update_geocode (EmpathyContact *contact);
 
 static void empathy_contact_set_location (EmpathyContact *contact,
     GHashTable *location);
+
+static void set_capabilities_from_tp_caps (EmpathyContact *self,
+    TpCapabilities *caps);
 
 G_DEFINE_TYPE (EmpathyContact, empathy_contact, G_TYPE_OBJECT);
 
@@ -137,6 +141,11 @@ tp_contact_notify_cb (TpContact *tp_contact,
       location = tp_contact_get_location (tp_contact);
       /* This will start a geoclue search to find the address if needed */
       empathy_contact_set_location (EMPATHY_CONTACT (contact), location);
+    }
+  else if (!tp_strdiff (param->name, "capabilities"))
+    {
+      set_capabilities_from_tp_caps (EMPATHY_CONTACT (contact),
+          tp_contact_get_capabilities (tp_contact));
     }
 }
 
@@ -336,6 +345,9 @@ set_tp_contact (EmpathyContact *contact,
   location = tp_contact_get_location (tp_contact);
   if (location != NULL)
     empathy_contact_set_location (contact, location);
+
+  set_capabilities_from_tp_caps (contact,
+      tp_contact_get_capabilities (tp_contact));
 
   g_signal_connect (priv->tp_contact, "notify",
     G_CALLBACK (tp_contact_notify_cb), contact);
@@ -1382,3 +1394,73 @@ update_geocode (EmpathyContact *contact)
   g_hash_table_unref (address);
 }
 #endif
+
+static EmpathyCapabilities
+tp_caps_to_capabilities (TpCapabilities *caps)
+{
+  EmpathyCapabilities capabilities = 0;
+  guint i;
+  GPtrArray *classes;
+
+  classes = tp_capabilities_get_channel_classes (caps);
+
+  for (i = 0; i < classes->len; i++)
+    {
+      GValueArray *class_struct;
+      GHashTable *fixed_prop;
+      GStrv allowed_prop;
+      TpHandleType handle_type;
+      const gchar *chan_type;
+
+      class_struct = g_ptr_array_index (classes, i);
+      fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
+      allowed_prop = g_value_get_boxed (g_value_array_get_nth (
+            class_struct, 1));
+
+      handle_type = tp_asv_get_uint32 (fixed_prop,
+        TP_IFACE_CHANNEL ".TargetHandleType", NULL);
+      if (handle_type != TP_HANDLE_TYPE_CONTACT)
+        continue;
+
+      chan_type = tp_asv_get_string (fixed_prop,
+        TP_IFACE_CHANNEL ".ChannelType");
+
+      if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+        {
+          capabilities |= EMPATHY_CAPABILITIES_FT;
+        }
+      else if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE))
+        {
+          capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+        }
+      else if (!tp_strdiff (chan_type,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA))
+        {
+          guint j;
+
+          for (j = 0; allowed_prop[j] != NULL; j++) {
+            if (!tp_strdiff (allowed_prop[j],
+                TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio"))
+              capabilities |= EMPATHY_CAPABILITIES_AUDIO;
+            else if (!tp_strdiff (allowed_prop[j],
+                TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo"))
+              capabilities |= EMPATHY_CAPABILITIES_VIDEO;
+          }
+        }
+    }
+
+  return capabilities;
+}
+
+static void
+set_capabilities_from_tp_caps (EmpathyContact *self,
+    TpCapabilities *caps)
+{
+  EmpathyCapabilities capabilities;
+
+  if (caps == NULL)
+    return;
+
+  capabilities = tp_caps_to_capabilities (caps);
+  empathy_contact_set_capabilities (self, capabilities);
+}
