@@ -1621,6 +1621,45 @@ compare_separator_and_groups (gboolean is_separator_a,
 }
 
 static gint
+contact_list_store_contact_sort (EmpathyContact *contact_a,
+				 EmpathyContact *contact_b)
+{
+	TpAccount *account_a, *account_b;
+	gint ret_val;
+
+	/* alias */
+	ret_val = g_utf8_collate (empathy_contact_get_name (contact_a),
+				  empathy_contact_get_name (contact_b));
+
+	if (ret_val != 0)
+		goto out;
+
+	/* identifier */
+	ret_val = g_utf8_collate (empathy_contact_get_id (contact_a),
+				  empathy_contact_get_id (contact_b));
+
+	if (ret_val != 0)
+		goto out;
+
+	account_a = empathy_contact_get_account (contact_a);
+	account_b = empathy_contact_get_account (contact_b);
+
+	/* protocol */
+	ret_val = strcmp (tp_account_get_protocol (account_a),
+			  tp_account_get_protocol (account_a));
+
+	if (ret_val != 0)
+		goto out;
+
+	/* account ID */
+	ret_val = strcmp (tp_proxy_get_object_path (account_a),
+			  tp_proxy_get_object_path (account_a));
+
+out:
+	return ret_val;
+}
+
+static gint
 contact_list_store_state_sort_func (GtkTreeModel *model,
 				    GtkTreeIter  *iter_a,
 				    GtkTreeIter  *iter_b,
@@ -1660,8 +1699,8 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 		empathy_contact_get_presence (EMPATHY_CONTACT (contact_b)));
 
 	if (ret_val == 0) {
-		/* Fallback: compare by name */
-		ret_val = g_utf8_collate (name_a, name_b);
+		/* Fallback: compare by name et al. */
+		ret_val = contact_list_store_contact_sort (contact_a, contact_b);
 	}
 
 free_and_out:
@@ -1708,7 +1747,7 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
 
 	if (ret_val == 0)
-		ret_val = g_utf8_collate (name_a, name_b);
+		ret_val = contact_list_store_contact_sort (contact_a, contact_b);
 
 	if (contact_a) {
 		g_object_unref (contact_a);
