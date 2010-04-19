@@ -1449,6 +1449,12 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   if (connection_data == NULL)
     {
       /* Connection has been invalidated */
+      if (callback != NULL)
+        {
+          GError error = { TP_DBUS_ERRORS, TP_DBUS_ERROR_PROXY_UNREFERENCED,
+              "Connection has been invalidated" };
+          callback (NULL, &error, user_data);
+        }
       goto out;
     }
 
@@ -1485,8 +1491,12 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
 
   if (error)
     {
-      /* FIXME: Should call data->callback with the error */
       DEBUG ("Error: %s", error->message);
+
+      if (data->callback != NULL)
+        {
+          data->callback (NULL, error, data->user_data);
+        }
     }
   else
     {
