@@ -819,14 +819,9 @@ connection_ready_cb (TpConnection *connection,
       goto out;
     }
 
-  if (tp_proxy_has_interface_by_id (TP_PROXY (connection),
-      TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS))
-    {
-      tp_cli_dbus_properties_call_get_all (connection, -1,
-        TP_IFACE_CONNECTION_INTERFACE_REQUESTS,
-        dispatcher_connection_got_all,
-        NULL, NULL, G_OBJECT (self));
-    }
+  tp_cli_dbus_properties_call_get_all (connection, -1,
+      TP_IFACE_CONNECTION_INTERFACE_REQUESTS, dispatcher_connection_got_all,
+      NULL, NULL, G_OBJECT (self));
 
   /* Advertise VoIP capabilities */
   capabilities = g_ptr_array_sized_new (1);
