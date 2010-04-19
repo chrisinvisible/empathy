@@ -1423,6 +1423,11 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
 
   connection = empathy_contact_get_connection (contact);
   connection_data = g_hash_table_lookup (priv->connections, connection);
+  if (connection_data == NULL)
+    {
+      /* Connection has been invalidated */
+      goto out;
+    }
 
   /* The contact handle might not be known yet */
   request_data = new_dispatcher_request_data (self, connection,
@@ -1435,6 +1440,7 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
 
   dispatcher_request_channel (request_data);
 
+out:
   g_object_unref (self);
 }
 
