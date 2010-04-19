@@ -495,26 +495,15 @@ EmpathyDispatchOperation *
 empathy_dispatch_operation_new (TpConnection *connection, TpChannel *channel,
   EmpathyContact *contact, gboolean incoming)
 {
-  return empathy_dispatch_operation_new_with_wrapper (connection, channel,
-    contact, incoming, NULL);
-}
-
-EmpathyDispatchOperation *
-empathy_dispatch_operation_new_with_wrapper (TpConnection *connection,
-  TpChannel *channel, EmpathyContact *contact, gboolean incoming,
-  GObject *wrapper)
-{
   g_return_val_if_fail (connection != NULL, NULL);
   g_return_val_if_fail (channel != NULL, NULL);
 
-  return EMPATHY_DISPATCH_OPERATION (
-    g_object_new (EMPATHY_TYPE_DISPATCH_OPERATION,
+  return g_object_new (EMPATHY_TYPE_DISPATCH_OPERATION,
       "connection", connection,
       "channel", channel,
-      "channel-wrapper", wrapper,
       "contact", contact,
       "incoming", incoming,
-      NULL));
+      NULL);
 }
 
 void
