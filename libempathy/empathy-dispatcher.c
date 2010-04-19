@@ -1282,150 +1282,23 @@ dispatcher_request_failed (EmpathyDispatcher *self,
 }
 
 static void
-dispatcher_connection_new_requested_channel (EmpathyDispatcher *self,
-  DispatcherRequestData *request_data,
-  const gchar *object_path,
-  GHashTable *properties,
-  const GError *error)
-{
-  EmpathyDispatcherPriv *priv = GET_PRIV (self);
-  EmpathyDispatchOperation *operation = NULL;
-  ConnectionData *conn_data;
-
-  /* The DispatcherRequestData owns a ref on the self object. As the request
-   * data could be destroyed (when calling dispatcher_request_failed for
-   * example) we keep a ref on self to be sure it stays alive while we are
-   * executing this function. */
-  g_object_ref (self);
-
-  conn_data = g_hash_table_lookup (priv->connections,
-    request_data->connection);
-
-  if (error)
-    {
-      DEBUG ("Channel request failed: %s", error->message);
-
-      dispatcher_request_failed (self, request_data, error);
-
-      return;
-    }
-
-  operation = g_hash_table_lookup (conn_data->dispatching_channels,
-        object_path);
-
-  if (operation == NULL)
-    {
-      DispatchData *data = g_hash_table_lookup (conn_data->dispatched_channels,
-        object_path);
-
-      if (data != NULL)
-        {
-          operation = empathy_dispatch_operation_new_with_wrapper (
-            request_data->connection,
-            data->channel, request_data->contact, FALSE,
-            data->channel_wrapper);
-        }
-      else
-        {
-          TpChannel *channel;
-
-          if (properties != NULL)
-            channel = tp_channel_new_from_properties (request_data->connection,
-              object_path, properties, NULL);
-          else
-            channel = tp_channel_new (request_data->connection, object_path,
-              request_data->channel_type, request_data->handle_type,
-              request_data->handle, NULL);
-
-          g_signal_connect (channel, "invalidated",
-            G_CALLBACK (dispatcher_channel_invalidated_cb),
-            request_data->dispatcher);
-
-          priv->channels = g_list_prepend (priv->channels, channel);
-
-          operation = empathy_dispatch_operation_new (request_data->connection,
-             channel, request_data->contact, FALSE);
-          g_object_unref (channel);
-        }
-    }
-  else
-    {
-      /* Already existed set potential extra information */
-      g_object_set (G_OBJECT (operation),
-        "contact", request_data->contact,
-        NULL);
-    }
-
-  request_data->operation = operation;
-
-  /* (pre)-approve this right away as we requested it
-   * This might cause the channel to be claimed, in which case the operation
-   * will disappear. So ref it, and check the status before starting the
-   * dispatching */
-
-  g_object_ref (operation);
-  empathy_dispatch_operation_approve (operation);
-
-   if (empathy_dispatch_operation_get_status (operation) <
-     EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING)
-      dispatcher_start_dispatching (request_data->dispatcher, operation,
-          conn_data);
-
-  g_object_unref (operation);
-}
-
-static void
-dispatcher_request_channel_cb (TpConnection *connection,
-                               const gchar  *object_path,
-                               const GError *error,
-                               gpointer user_data,
-                               GObject *weak_object)
-{
-  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-  EmpathyDispatcher *self =
-      EMPATHY_DISPATCHER (request_data->dispatcher);
-
-  request_data->pending_call = NULL;
-
-  dispatcher_connection_new_requested_channel (self,
-    request_data, object_path, NULL, error);
-}
-
-static void
 dispatcher_request_channel (DispatcherRequestData *request_data)
 {
-  if (tp_proxy_has_interface_by_id (TP_PROXY (request_data->connection),
-      TP_IFACE_QUARK_CONNECTION_INTERFACE_REQUESTS))
-    {
-      /* Extend the request_data to be a valid request */
-      g_assert (request_data->request == NULL);
-      request_data->request = tp_asv_new (
-        TP_IFACE_CHANNEL ".ChannelType",
-          G_TYPE_STRING, request_data->channel_type,
-        TP_IFACE_CHANNEL ".TargetHandleType",
-          G_TYPE_UINT, request_data->handle_type,
-        NULL);
+  /* Extend the request_data to be a valid request */
+  g_assert (request_data->request == NULL);
+  request_data->request = tp_asv_new (
+      TP_IFACE_CHANNEL ".ChannelType",
+        G_TYPE_STRING, request_data->channel_type,
+      TP_IFACE_CHANNEL ".TargetHandleType",
+        G_TYPE_UINT, request_data->handle_type,
+      NULL);
 
-      if (request_data->handle_type != TP_HANDLE_TYPE_NONE)
-        tp_asv_set_uint32 (request_data->request,
-          TP_IFACE_CHANNEL ".TargetHandle", request_data->handle);
+  if (request_data->handle_type != TP_HANDLE_TYPE_NONE)
+    tp_asv_set_uint32 (request_data->request, TP_IFACE_CHANNEL ".TargetHandle",
+        request_data->handle);
 
-      empathy_dispatcher_call_create_or_ensure_channel (
-        request_data->dispatcher, request_data);
-    }
-  else
-    {
-      TpProxyPendingCall *call = tp_cli_connection_call_request_channel (
-        request_data->connection, -1,
-        request_data->channel_type,
-        request_data->handle_type,
-        request_data->handle,
-        TRUE, dispatcher_request_channel_cb,
-        request_data, NULL, NULL);
-
-      if (call != NULL)
-        request_data->pending_call = call;
-    }
+  empathy_dispatcher_call_create_or_ensure_channel (request_data->dispatcher,
+      request_data);
 }
 
 void
