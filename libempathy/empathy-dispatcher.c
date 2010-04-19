@@ -335,8 +335,31 @@ dispatcher_connection_invalidated_cb (TpConnection *connection,
                                       EmpathyDispatcher *self)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
+  ConnectionData *connection_data;
 
   DEBUG ("Error: %s", message);
+
+  /* Terminate pending requests, if any */
+  connection_data = g_hash_table_lookup (priv->connections, connection);
+  if (connection_data != NULL)
+    {
+      GList *l;
+      GError *error;
+
+      error = g_error_new_literal (domain, code, message);
+
+      for (l = connection_data->outstanding_requests; l != NULL;
+          l = g_list_next (l))
+        {
+          DispatcherRequestData *request_data = l->data;
+
+          if (request_data->cb != NULL)
+            request_data->cb (NULL, error, request_data->user_data);
+        }
+
+      g_error_free (error);
+    }
+
   g_hash_table_remove (priv->connections, connection);
 }
 
