@@ -70,6 +70,7 @@ enum {
   PROP_CONTACT,
   PROP_INCOMING,
   PROP_STATUS,
+  PROP_USER_ACTION_TIME,
 };
 
 /* private structure */
@@ -85,6 +86,7 @@ struct _EmpathyDispatchOperationPriv
   EmpathyContact *contact;
   EmpathyDispatchOperationState status;
   gboolean incoming;
+  gint64 user_action_time;
   gboolean approved;
   gulong invalidated_handler;
   gulong ready_handler;
@@ -132,6 +134,10 @@ empathy_dispatch_operation_set_property (GObject *object,
       case PROP_INCOMING:
         priv->incoming = g_value_get_boolean (value);
         break;
+
+      case PROP_USER_ACTION_TIME:
+        priv->user_action_time = g_value_get_int64 (value);
+        break;
     }
 }
 
@@ -161,6 +167,9 @@ empathy_dispatch_operation_get_property (GObject *object,
         break;
       case PROP_STATUS:
         g_value_set_enum (value, priv->status);
+        break;
+      case PROP_USER_ACTION_TIME:
+        g_value_set_int64 (value, priv->user_action_time);
         break;
     }
 }
@@ -357,6 +366,13 @@ empathy_dispatch_operation_class_init (
     EMPATHY_TYPE_DISPATCH_OPERATION_STATE, 0,
     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class, PROP_STATUS, param_spec);
+
+  param_spec = g_param_spec_int64 ("user-action-time",
+    "user action time", "The user action time of the operation",
+    G_MININT64, G_MAXINT64, 0,
+    G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_USER_ACTION_TIME,
+      param_spec);
 }
 
 void
@@ -492,8 +508,11 @@ out:
 }
 
 EmpathyDispatchOperation *
-empathy_dispatch_operation_new (TpConnection *connection, TpChannel *channel,
-  EmpathyContact *contact, gboolean incoming)
+empathy_dispatch_operation_new (TpConnection *connection,
+    TpChannel *channel,
+    EmpathyContact *contact,
+    gboolean incoming,
+    gint64 user_action_time)
 {
   g_return_val_if_fail (connection != NULL, NULL);
   g_return_val_if_fail (channel != NULL, NULL);
@@ -503,6 +522,7 @@ empathy_dispatch_operation_new (TpConnection *connection, TpChannel *channel,
       "channel", channel,
       "contact", contact,
       "incoming", incoming,
+      "user-action-time", user_action_time,
       NULL);
 }
 
@@ -680,4 +700,16 @@ empathy_dispatch_operation_is_incoming (EmpathyDispatchOperation *operation)
   priv = GET_PRIV (operation);
 
   return priv->incoming;
+}
+
+gint64
+empathy_dispatch_operation_get_user_action_time (EmpathyDispatchOperation *self)
+{
+  EmpathyDispatchOperationPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_DISPATCH_OPERATION (self), FALSE);
+
+  priv = GET_PRIV (self);
+
+  return priv->user_action_time;
 }

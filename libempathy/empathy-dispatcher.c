@@ -573,7 +573,8 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
                                    guint handle,
                                    GHashTable *properties,
                                    gboolean incoming,
-                                   const GPtrArray *requests_satisfied)
+                                   const GPtrArray *requests_satisfied,
+                                   gint64 timestamp)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpChannel         *channel;
@@ -630,7 +631,7 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
   priv->channels = g_list_prepend (priv->channels, channel);
 
   operation = empathy_dispatch_operation_new (connection, channel, NULL,
-    incoming);
+    incoming, timestamp);
 
   g_object_unref (channel);
 
@@ -691,7 +692,8 @@ dispatcher_connection_new_channel_with_properties (
     TpConnection *connection,
     const gchar *object_path,
     GHashTable *properties,
-    const GPtrArray *requests_satisfied)
+    const GPtrArray *requests_satisfied,
+    gint64 timestamp)
 {
   const gchar *channel_type;
   guint handle_type;
@@ -735,7 +737,7 @@ dispatcher_connection_new_channel_with_properties (
 
   dispatcher_connection_new_channel (self, connection,
     object_path, channel_type, handle_type, handle, properties, !requested,
-    requests_satisfied);
+    requests_satisfied, timestamp);
 }
 
 static void
@@ -2078,7 +2080,7 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
       properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
 
       dispatcher_connection_new_channel_with_properties (self,
-        connection, object_path, properties, requests_satisfied);
+        connection, object_path, properties, requests_satisfied, timestamp);
     }
 
   return TRUE;

@@ -76,11 +76,14 @@ GType empathy_dispatch_operation_get_type (void);
 
 EmpathyDispatchOperation *empathy_dispatch_operation_new (
   TpConnection *connection, TpChannel *channel, EmpathyContact *contact,
-  gboolean incoming);
+  gboolean incoming,
+  gint64 user_action_time);
 
 EmpathyDispatchOperation *empathy_dispatch_operation_new_with_wrapper (
   TpConnection *connection, TpChannel *channel, EmpathyContact *contact,
-  gboolean incoming, GObject *channel_wrapper);
+  gboolean incoming,
+  gint64 user_action_time,
+  GObject *channel_wrapper);
 
 /* Start the dispatching process, goes to the APPROVING state for incoming
  * channels and DISPATCHING for outgoing ones */
@@ -114,6 +117,9 @@ EmpathyDispatchOperationState empathy_dispatch_operation_get_status (
 
 gboolean empathy_dispatch_operation_is_incoming (
   EmpathyDispatchOperation *operation);
+
+gint64 empathy_dispatch_operation_get_user_action_time (
+    EmpathyDispatchOperation *self);
 
 G_END_DECLS
 
