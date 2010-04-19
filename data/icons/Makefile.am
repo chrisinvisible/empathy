@@ -179,7 +179,7 @@ private_icons = \
 	hicolor_status_scalable_user-available.svg \
 	hicolor_status_scalable_user-away.svg \
 	hicolor_status_scalable_user-busy.svg \
-	hicolor_status_scalable_user-extended-away.svg \
+	hicolor_status_scalable_user-idle.svg \
 	hicolor_status_scalable_user-offline.svg \
 	hicolor_status_scalable_empathy-pending.svg \
 	$(NULL)
