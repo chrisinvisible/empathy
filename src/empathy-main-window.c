@@ -733,7 +733,7 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 
 	current = gtk_toggle_action_get_active (action);
 	empathy_conf_set_bool (empathy_conf_get (),
-			      EMPATHY_PREFS_CONTACTS_SHOW_OFFLINE,
+			      EMPATHY_PREFS_UI_SHOW_OFFLINE,
 			      current);
 
 	/* Turn off sound just while we alter the contact list. */
@@ -1502,10 +1502,10 @@ empathy_main_window_show (void)
 
 	/* Show offline ? */
 	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_CONTACTS_SHOW_OFFLINE,
+			      EMPATHY_PREFS_UI_SHOW_OFFLINE,
 			      &show_offline);
 	empathy_conf_notify_add (conf,
-				EMPATHY_PREFS_CONTACTS_SHOW_OFFLINE,
+				EMPATHY_PREFS_UI_SHOW_OFFLINE,
 				main_window_notify_show_offline_cb,
 				show_offline_widget);
 

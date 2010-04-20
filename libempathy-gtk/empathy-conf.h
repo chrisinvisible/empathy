@@ -76,7 +76,7 @@ struct _EmpathyConfClass {
 #define EMPATHY_PREFS_UI_SHOW_PROTOCOLS            EMPATHY_PREFS_PATH "/ui/show_protocols"
 #define EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST      EMPATHY_PREFS_PATH "/ui/compact_contact_list"
 #define EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS     EMPATHY_PREFS_PATH "/ui/chat_window_paned_pos"
-#define EMPATHY_PREFS_CONTACTS_SHOW_OFFLINE        EMPATHY_PREFS_PATH "/contacts/show_offline"
+#define EMPATHY_PREFS_UI_SHOW_OFFLINE              EMPATHY_PREFS_PATH "/ui/show_offline"
 #define EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM      EMPATHY_PREFS_PATH "/contacts/sort_criterium"
 #define EMPATHY_PREFS_HINTS_CLOSE_MAIN_WINDOW      EMPATHY_PREFS_PATH "/hints/close_main_window"
 #define EMPATHY_PREFS_USE_CONN                     EMPATHY_PREFS_PATH "/use_conn"
