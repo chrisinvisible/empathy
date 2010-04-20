@@ -1704,7 +1704,8 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		}
 
 		/* Added to take care of any outstanding chat events */
-		empathy_chat_window_present_chat (chat);
+		empathy_chat_window_present_chat (chat,
+			EMPATHY_DISPATCHER_NON_USER_ACTION);
 
 		/* We should return TRUE to remove the data when doing
 		 * GDK_ACTION_MOVE, but we don't here otherwise it has
@@ -2267,7 +2268,8 @@ empathy_chat_window_find_chat (TpAccount   *account,
 }
 
 void
-empathy_chat_window_present_chat (EmpathyChat *chat)
+empathy_chat_window_present_chat (EmpathyChat *chat,
+				  gint64 timestamp)
 {
 	EmpathyChatWindow     *window;
 	EmpathyChatWindowPriv *priv;

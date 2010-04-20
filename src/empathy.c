@@ -133,7 +133,8 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
            * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
         }
 
-      empathy_chat_window_present_chat (chat);
+      empathy_chat_window_present_chat (chat,
+          empathy_dispatch_operation_get_user_action_time (operation));
 
       empathy_dispatch_operation_claim (operation);
     }

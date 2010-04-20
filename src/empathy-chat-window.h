@@ -72,7 +72,8 @@ void               empathy_chat_window_switch_to_chat (EmpathyChatWindow *window
 gboolean           empathy_chat_window_has_focus      (EmpathyChatWindow *window);
 EmpathyChat *      empathy_chat_window_find_chat      (TpAccount        *account,
 						       const gchar      *id);
-void               empathy_chat_window_present_chat   (EmpathyChat      *chat);
+void               empathy_chat_window_present_chat   (EmpathyChat      *chat,
+						       gint64 timestamp);
 
 void               empathy_chat_window_get_nb_chats   (EmpathyChatWindow *window,
 						       guint *nb_rooms,
