@@ -817,16 +817,16 @@ iterate_on_channels (EmpathyTpContactList *list,
 		if (tp_strdiff (tp_asv_get_string (properties,
 				TP_IFACE_CHANNEL ".ChannelType"),
 		    TP_IFACE_CHANNEL_TYPE_CONTACT_LIST))
-			return;
+			continue;
 
 		if (tp_asv_get_string (properties, TP_IFACE_CHANNEL ".TargetID") == NULL)
-			return;
+			continue;
 
 		handle_type = tp_asv_get_uint32 (properties,
 			TP_IFACE_CHANNEL ".TargetHandleType", NULL);
 
 		if (handle_type != TP_HANDLE_TYPE_GROUP)
-			return;
+			continue;
 
 		tp_contact_list_group_add_channel (list, path, properties);
 	}
