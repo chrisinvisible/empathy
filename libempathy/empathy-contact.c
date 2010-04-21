@@ -1413,9 +1413,9 @@ tp_caps_to_capabilities (TpCapabilities *caps)
       const gchar *chan_type;
 
       class_struct = g_ptr_array_index (classes, i);
-      fixed_prop = g_value_get_boxed (g_value_array_get_nth (class_struct, 0));
-      allowed_prop = g_value_get_boxed (g_value_array_get_nth (
-            class_struct, 1));
+      tp_value_array_unpack (class_struct, 2,
+          &fixed_prop,
+          &allowed_prop);
 
       handle_type = tp_asv_get_uint32 (fixed_prop,
         TP_IFACE_CHANNEL ".TargetHandleType", NULL);
