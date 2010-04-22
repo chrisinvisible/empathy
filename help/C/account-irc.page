@@ -4,12 +4,14 @@
       id="account-irc">
 
   <info>
+    <link type="guide" xref="irc-manage#manage"/> 
     <desc>Additional information necessary for connecting to IRC networks.</desc>
     <revision pkgversion="2.28" version="0.1" date="2009-08-31" status="review">
       <!--
       <e:review by="shaunm@gnome.org" date="2009-08-31" status="done"/>
       -->
     </revision>
+    <revision pkgversion="2.30" version="0.2" date="2010-04-19" status="review"/>
     <credit type="author">
       <name>Shaun McCance</name>
       <email>shaunm@gnome.org</email>
@@ -26,7 +28,7 @@
 -->
   </info>
 
-  <title>IRC Account Details</title>
+  <title>IRC account details</title>
 
   <p>IRC accounts require different information than many other types of
   accounts.  To create an IRC account, you must specify at least an IRC
@@ -34,8 +36,8 @@
   provide for an IRC account.</p>
 
   <note style="info package">
-    <p>You must have the <sys>telepathy-idle</sys> package installed
-    in order to use IRC in <app>Empathy</app>.</p>
+    <p>You must have the <sys>telepathy-idle</sys> package installed to use IRC 
+    in <app>Empathy</app>.</p>
   </note>
 
   <terms>
