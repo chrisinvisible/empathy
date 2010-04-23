@@ -66,6 +66,7 @@ libempathy_accounts_panel_la_SOURCES =				\
 libempathy_accounts_panel_la_CPPFLAGS =				\
 	$(CPPFLAGS_COMMON)					\
 	$(CONTROL_CENTER_EMBEDDING_CFLAGS)			\
+	-DLOCALEDIR=\""$(datadir)/locale"\"			\
 	$(NULL)
 
 libempathy_accounts_panel_la_LDFLAGS = -export_dynamic -avoid-version -module -no-undefined -export-symbols-regex '^g_io_module_(load|unload)'

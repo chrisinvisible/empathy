@@ -151,6 +151,10 @@ cc_empathy_accounts_panel_init (CcEmpathyAccountsPanel *panel)
 void
 cc_empathy_accounts_panel_register (GIOModule *module)
 {
+  /* Setup gettext */
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
   cc_empathy_accounts_panel_register_type (G_TYPE_MODULE (module));
   g_io_extension_point_implement (CC_PANEL_EXTENSION_POINT_NAME,
       CC_TYPE_EMPATHY_ACCOUNTS_PANEL, "empathy-accounts", 10);
