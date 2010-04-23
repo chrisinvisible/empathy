@@ -24,8 +24,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-05 23:01+0200\n"
-"PO-Revision-Date: 2010-04-04 19:18+0200\n"
+"POT-Creation-Date: 2010-04-23 12:08+0200\n"
+"PO-Revision-Date: 2010-04-23 02:07+0200\n"
 "Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "MIME-Version: 1.0\n"
@@ -477,7 +477,7 @@ msgstr "Håndtér konti for meddelelser og VoIP"
 
 #. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/empathy-accounts-dialog.c:2066 ../src/cc-empathy-accounts-page.c:243
+#: ../src/empathy-accounts-dialog.c:2064 ../src/cc-empathy-accounts-page.c:243
 #: ../src/cc-empathy-accounts-panel.c:91
 msgid "Messaging and VoIP Accounts"
 msgstr "Konti for meddelelser og VoIP"
@@ -669,7 +669,7 @@ msgstr[1] "%d måneder siden"
 msgid "in the future"
 msgstr "i fremtiden"
 
-#: ../libempathy-gtk/empathy-account-chooser.c:462
+#: ../libempathy-gtk/empathy-account-chooser.c:463
 msgid "All"
 msgstr "Alle"
 
@@ -1247,7 +1247,7 @@ msgstr "ukendt"
 msgid "Error sending message '%s': %s"
 msgstr "Fejl under afsendelse af besked \"%s\": %s"
 
-#: ../libempathy-gtk/empathy-chat.c:1305 ../src/empathy-chat-window.c:682
+#: ../libempathy-gtk/empathy-chat.c:1305 ../src/empathy-chat-window.c:676
 msgid "Topic:"
 msgstr "Emne:"
 
@@ -1338,7 +1338,7 @@ msgstr "%s er kommet ind i rummet"
 msgid "%s is now known as %s"
 msgstr "%s har nu navnet %s"
 
-#: ../libempathy-gtk/empathy-chat.c:2269 ../src/empathy-call-window.c:1642
+#: ../libempathy-gtk/empathy-chat.c:2269 ../src/empathy-call-window.c:1643
 msgid "Disconnected"
 msgstr "Frakoblet"
 
@@ -1464,7 +1464,7 @@ msgid "Share my desktop"
 msgstr "Del mit skrivebord"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:435
-#: ../libempathy-gtk/empathy-contact-widget.c:1413
+#: ../libempathy-gtk/empathy-contact-widget.c:1444
 msgid "Favorite"
 msgstr "Favorit"
 
@@ -1478,7 +1478,7 @@ msgid "_Edit"
 msgstr "_Redigér"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:565
-#: ../src/empathy-chat-window.c:867
+#: ../src/empathy-chat-window.c:861
 msgid "Inviting you to this room"
 msgstr "Inviterer dig til dette rum"
 
@@ -1495,7 +1495,7 @@ msgid "Select"
 msgstr "Vælg"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:247
-#: ../src/empathy-main-window.c:1070
+#: ../src/empathy-main-window.c:1072
 msgid "Group"
 msgstr "Gruppe"
 
@@ -2163,7 +2163,7 @@ msgstr ""
 "eller afslutte denne assistent og tilføje konti senere fra Redigér-menuen."
 
 #: ../src/empathy-account-assistant.c:220
-#: ../src/empathy-account-assistant.c:1303
+#: ../src/empathy-account-assistant.c:1308
 msgid "An error occurred"
 msgstr "Der opstod en fejl"
 
@@ -2172,37 +2172,37 @@ msgstr "Der opstod en fejl"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:413 ../src/empathy-accounts-dialog.c:580
+#: ../src/empathy-account-assistant.c:412 ../src/empathy-accounts-dialog.c:579
 #, c-format
 msgid "New %s account"
 msgstr "Ny %s-konto"
 
-#: ../src/empathy-account-assistant.c:508
+#: ../src/empathy-account-assistant.c:507
 msgid "What kind of chat account do you have?"
 msgstr "Hvilken type chatkonto ønsker du?"
 
-#: ../src/empathy-account-assistant.c:514
+#: ../src/empathy-account-assistant.c:513
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "Har du andre chatkonti, du vil have indstillet?"
 
-#: ../src/empathy-account-assistant.c:520
+#: ../src/empathy-account-assistant.c:519
 msgid "Enter your account details"
 msgstr "Indtast dine kontodetaljer"
 
-#: ../src/empathy-account-assistant.c:525
+#: ../src/empathy-account-assistant.c:524
 msgid "What kind of chat account do you want to create?"
 msgstr "Hvilken type konto ønsker du at oprette?"
 
-#: ../src/empathy-account-assistant.c:531
+#: ../src/empathy-account-assistant.c:530
 msgid "Do you want to create other chat accounts?"
 msgstr "Ønsker du at oprette andre chatkonti?"
 
-#: ../src/empathy-account-assistant.c:538
+#: ../src/empathy-account-assistant.c:537
 msgid "Enter the details for the new account"
 msgstr "Indtast detaljerne for den nye konto"
 
 # Jeg tror lige vi ændrer formuleringen lidt frit, eftersom jeg ikke forstår hvad de taler om
-#: ../src/empathy-account-assistant.c:653
+#: ../src/empathy-account-assistant.c:652
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -2213,42 +2213,42 @@ msgstr ""
 "bruger Google Talk, AIM, Windows Live eller mange andre chatprogrammer. Med "
 "en mikrofon eller et webkamera kan du også foretage lyd- eller videoopkald."
 
-#: ../src/empathy-account-assistant.c:670
+#: ../src/empathy-account-assistant.c:669
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "Har du en konto, som du har brugt med et andet chatprogram?"
 
-#: ../src/empathy-account-assistant.c:693
+#: ../src/empathy-account-assistant.c:692
 msgid "Yes, import my account details from "
 msgstr "Ja, importér mine kontodetaljer fra "
 
-#: ../src/empathy-account-assistant.c:714
+#: ../src/empathy-account-assistant.c:713
 msgid "Yes, I'll enter my account details now"
 msgstr "Ja, jeg vil indtaste mine kontodetaljer nu"
 
-#: ../src/empathy-account-assistant.c:736
+#: ../src/empathy-account-assistant.c:735
 msgid "No, I want a new account"
 msgstr "Nej, jeg vil oprette en ny konto"
 
-#: ../src/empathy-account-assistant.c:746
+#: ../src/empathy-account-assistant.c:745
 msgid "No, I just want to see people online nearby for now"
 msgstr ""
 "Nej, jeg vil bare tale med folk, der er tilsluttet i nærheden, indtil videre"
 
-#: ../src/empathy-account-assistant.c:767
+#: ../src/empathy-account-assistant.c:766
 msgid "Select the accounts you want to import:"
 msgstr "Vælg de konti, du vil importere:"
 
-#: ../src/empathy-account-assistant.c:851
+#: ../src/empathy-account-assistant.c:850
+#: ../src/empathy-new-chatroom-dialog.c:607
 #: ../src/empathy-new-chatroom-dialog.c:608
-#: ../src/empathy-new-chatroom-dialog.c:609
 msgid "Yes"
 msgstr "Ja"
 
-#: ../src/empathy-account-assistant.c:858
+#: ../src/empathy-account-assistant.c:857
 msgid "No, that's all for now"
 msgstr "Nej, det var alt - indtil videre"
 
-#: ../src/empathy-account-assistant.c:1117
+#: ../src/empathy-account-assistant.c:1122
 msgid ""
 "Empathy can automatically discover and chat with the people connected on the "
 "same network as you. If you want to use this feature, please check that the "
@@ -2260,16 +2260,16 @@ msgstr ""
 "detaljerne herunder er korrekte. Du kan let ændre disse detaljer senere, "
 "eller deaktivere denne funktion i dialogvinduet \"Konti\""
 
-#: ../src/empathy-account-assistant.c:1123
-#: ../src/empathy-account-assistant.c:1179
+#: ../src/empathy-account-assistant.c:1128
+#: ../src/empathy-account-assistant.c:1184
 msgid "Edit->Accounts"
 msgstr "Redigér->Konti"
 
-#: ../src/empathy-account-assistant.c:1139
+#: ../src/empathy-account-assistant.c:1144
 msgid "I don't want to enable this feature for now"
 msgstr "Jeg vil ikke aktivere denne funktion indtil videre"
 
-#: ../src/empathy-account-assistant.c:1175
+#: ../src/empathy-account-assistant.c:1180
 msgid ""
 "You won't be able to chat with people connected to your local network, as "
 "telepathy-salut is not installed. If you want to enable this feature, please "
@@ -2281,66 +2281,66 @@ msgstr ""
 "funktion, så installér venligst pakken telepathy-salut og opret en \"Folk i "
 "nærheden\"-konto fra dialogvinduet \"Konti\""
 
-#: ../src/empathy-account-assistant.c:1181
+#: ../src/empathy-account-assistant.c:1186
 msgid "telepathy-salut not installed"
 msgstr "telepathy-salut er ikke installeret"
 
-#: ../src/empathy-account-assistant.c:1227
+#: ../src/empathy-account-assistant.c:1232
 msgid "Messaging and VoIP Accounts Assistant"
 msgstr "Assistent for meddelelser og VoIP-konti"
 
-#: ../src/empathy-account-assistant.c:1261
+#: ../src/empathy-account-assistant.c:1266
 msgid "Welcome to Empathy"
 msgstr "Velkommen til Empathy"
 
-#: ../src/empathy-account-assistant.c:1270
+#: ../src/empathy-account-assistant.c:1275
 msgid "Import your existing accounts"
 msgstr "Importér dine eksisterende konti"
 
-#: ../src/empathy-account-assistant.c:1288
+#: ../src/empathy-account-assistant.c:1293
 msgid "Please enter personal details"
 msgstr "Indtast venligst personlige detaljer"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
-#: ../src/empathy-accounts-dialog.c:66
+#: ../src/empathy-accounts-dialog.c:65
 #, c-format
 msgid "There are unsaved modifications to your %s account."
 msgstr "Der er ugemte ændringer til din %s-konto."
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * an unsaved new account
-#: ../src/empathy-accounts-dialog.c:70
+#: ../src/empathy-accounts-dialog.c:69
 msgid "Your new account has not been saved yet."
 msgstr "Din nye konto er ikke blevet gemt endnu."
 
-#: ../src/empathy-accounts-dialog.c:263 ../src/empathy-call-window.c:788
+#: ../src/empathy-accounts-dialog.c:262 ../src/empathy-call-window.c:789
 msgid "Connecting…"
 msgstr "Forbinder…"
 
-#: ../src/empathy-accounts-dialog.c:290
+#: ../src/empathy-accounts-dialog.c:289
 #, c-format
 msgid "Disconnected — %s"
 msgstr "Frakoblet — %s"
 
-#: ../src/empathy-accounts-dialog.c:295
+#: ../src/empathy-accounts-dialog.c:294
 #, c-format
 msgid "Offline — %s"
 msgstr "Ikke tilsluttet — %s"
 
-#: ../src/empathy-accounts-dialog.c:308
+#: ../src/empathy-accounts-dialog.c:307
 msgid "Offline — No Network Connection"
 msgstr "Ikke tilsluttet — Ingen netværksforbindelse"
 
-#: ../src/empathy-accounts-dialog.c:316
+#: ../src/empathy-accounts-dialog.c:315
 msgid "Unknown Status"
 msgstr "Ukendt årsag"
 
-#: ../src/empathy-accounts-dialog.c:327
+#: ../src/empathy-accounts-dialog.c:326
 msgid "Offline — Account Disabled"
 msgstr "Ikke tilsluttet — Konto deaktiveret"
 
-#: ../src/empathy-accounts-dialog.c:768
+#: ../src/empathy-accounts-dialog.c:767
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2348,16 +2348,16 @@ msgstr ""
 "Du er ved at oprette en ny konto, hvilket vil kassere\n"
 "dine ændringer. Er du sikker på, at du vil fortsætte?"
 
-#: ../src/empathy-accounts-dialog.c:1115
+#: ../src/empathy-accounts-dialog.c:1114
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Ønsker du at fjerne %s fra din computer?"
 
-#: ../src/empathy-accounts-dialog.c:1119
+#: ../src/empathy-accounts-dialog.c:1118
 msgid "This will not remove your account on the server."
 msgstr "Dette vil ikke fjerne din konto på serveren."
 
-#: ../src/empathy-accounts-dialog.c:1356
+#: ../src/empathy-accounts-dialog.c:1355
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2365,7 +2365,7 @@ msgstr ""
 "Du er ved at vælge en anden konto, hvilket vil kassere dine \n"
 "ændringer. Er du sikker på, at du vil fortsætte?"
 
-#: ../src/empathy-accounts-dialog.c:1933
+#: ../src/empathy-accounts-dialog.c:1932
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2411,62 +2411,62 @@ msgstr "_Importér…"
 msgid "People nearby"
 msgstr "Folk i nærheden"
 
-#: ../src/empathy-call-window.c:461
+#: ../src/empathy-call-window.c:462
 msgid "Contrast"
 msgstr "Kontrast"
 
-#: ../src/empathy-call-window.c:464
+#: ../src/empathy-call-window.c:465
 msgid "Brightness"
 msgstr "Lysstyrke"
 
-#: ../src/empathy-call-window.c:467
+#: ../src/empathy-call-window.c:468
 msgid "Gamma"
 msgstr "Gamma"
 
-#: ../src/empathy-call-window.c:572
+#: ../src/empathy-call-window.c:573
 msgid "Volume"
 msgstr "Lydstyrke"
 
-#: ../src/empathy-call-window.c:1119
+#: ../src/empathy-call-window.c:1120
 msgid "_Sidebar"
 msgstr "_Sidepanel"
 
-#: ../src/empathy-call-window.c:1138
+#: ../src/empathy-call-window.c:1139
 msgid "Audio input"
 msgstr "Lydinput"
 
-#: ../src/empathy-call-window.c:1142
+#: ../src/empathy-call-window.c:1143
 msgid "Video input"
 msgstr "Videoinput"
 
-#: ../src/empathy-call-window.c:1146
+#: ../src/empathy-call-window.c:1147
 msgid "Dialpad"
 msgstr "Opkaldspanel"
 
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
-#: ../src/empathy-call-window.c:1217
+#: ../src/empathy-call-window.c:1218
 #, c-format
 msgid "Call with %s"
-msgstr "Kald op med %s"
+msgstr "Opkald til %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:1298
+#: ../src/empathy-call-window.c:1299
 msgid "Call"
 msgstr "Opkald"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1955
+#: ../src/empathy-call-window.c:1956
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Forbundet — %d:%02dm"
 
-#: ../src/empathy-call-window.c:2016
+#: ../src/empathy-call-window.c:2017
 msgid "Technical Details"
 msgstr "Tekniske detaljer"
 
-#: ../src/empathy-call-window.c:2054
+#: ../src/empathy-call-window.c:2055
 #, c-format
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
@@ -2474,7 +2474,7 @@ msgid ""
 msgstr ""
 "%ss software forstår ingen af de lydformater, din computer understøtter"
 
-#: ../src/empathy-call-window.c:2059
+#: ../src/empathy-call-window.c:2060
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
@@ -2482,7 +2482,7 @@ msgid ""
 msgstr ""
 "%ss software forstår ingen af de videoformater, din computer understøtter"
 
-#: ../src/empathy-call-window.c:2065
+#: ../src/empathy-call-window.c:2066
 #, c-format
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
@@ -2491,25 +2491,25 @@ msgstr ""
 "Kan ikke oprette forbindelse til %s. En af jer er måske på et netværk, der "
 "ikke tillader direkte forbindelser."
 
-#: ../src/empathy-call-window.c:2071
+#: ../src/empathy-call-window.c:2072
 msgid "There was a failure on the network"
 msgstr "Der opstod en fejl på netværket"
 
-#: ../src/empathy-call-window.c:2075
+#: ../src/empathy-call-window.c:2076
 msgid ""
 "The audio formats necessary for this call are not installed on your computer"
 msgstr ""
 "Lydformaterne, der kræves til dette opkald, er ikke installeret på din "
 "computer"
 
-#: ../src/empathy-call-window.c:2078
+#: ../src/empathy-call-window.c:2079
 msgid ""
 "The video formats necessary for this call are not installed on your computer"
 msgstr ""
 "Videoformaterne, der kræves til dette opkald, er ikke installeret på din "
 "computer"
 
-#: ../src/empathy-call-window.c:2088
+#: ../src/empathy-call-window.c:2089
 #, c-format
 msgid ""
 "Something unexpected happened in a Telepathy component. Please <a href=\"%s"
@@ -2520,15 +2520,15 @@ msgstr ""
 "a> venligst denne fejl og vedhæft logfiler fra fejlfindingsvinduet i menuen "
 "Hjælp."
 
-#: ../src/empathy-call-window.c:2096
+#: ../src/empathy-call-window.c:2097
 msgid "There was a failure in the call engine"
 msgstr "Der opstod en fejl i opkaldsmotoren"
 
-#: ../src/empathy-call-window.c:2135
+#: ../src/empathy-call-window.c:2136
 msgid "Can't establish audio stream"
 msgstr "Kan ikke oprette lydstrøm"
 
-#: ../src/empathy-call-window.c:2145
+#: ../src/empathy-call-window.c:2146
 msgid "Can't establish video stream"
 msgstr "Kan ikke oprette videostrøm"
 
@@ -2600,35 +2600,35 @@ msgstr "Forhåndsvisning for video"
 msgid "_View"
 msgstr "_Vis"
 
-#: ../src/empathy-chat-window.c:446 ../src/empathy-chat-window.c:466
+#: ../src/empathy-chat-window.c:440 ../src/empathy-chat-window.c:460
 #, c-format
 msgid "%s (%d unread)"
 msgid_plural "%s (%d unread)"
 msgstr[0] "%s (%d ulæst)"
 msgstr[1] "%s (%d ulæste)"
 
-#: ../src/empathy-chat-window.c:458
+#: ../src/empathy-chat-window.c:452
 #, c-format
 msgid "%s (and %u other)"
 msgid_plural "%s (and %u others)"
 msgstr[0] "%s (og %u anden)"
 msgstr[1] "%s (og %u andre)"
 
-#: ../src/empathy-chat-window.c:474
+#: ../src/empathy-chat-window.c:468
 #, c-format
 msgid "%s (%d unread from others)"
 msgid_plural "%s (%d unread from others)"
 msgstr[0] "%s (%d ulæst fra andre)"
 msgstr[1] "%s (%d ulæste fra andre)"
 
-#: ../src/empathy-chat-window.c:483
+#: ../src/empathy-chat-window.c:477
 #, c-format
 msgid "%s (%d unread from all)"
 msgid_plural "%s (%d unread from all)"
 msgstr[0] "%s (%d ulæst fra alle)"
 msgstr[1] "%s (%d ulæste fra alle)"
 
-#: ../src/empathy-chat-window.c:686
+#: ../src/empathy-chat-window.c:680
 msgid "Typing a message."
 msgstr "Skriver en besked."
 
@@ -2974,11 +2974,11 @@ msgstr "Redigér kontoen"
 msgid "Close"
 msgstr "Luk"
 
-#: ../src/empathy-main-window.c:1053
+#: ../src/empathy-main-window.c:1055
 msgid "Contact"
 msgstr "Kontakt"
 
-#: ../src/empathy-main-window.c:1435
+#: ../src/empathy-main-window.c:1436
 msgid "Show and edit accounts"
 msgstr "Vis og redigér konti"
 
@@ -3066,17 +3066,17 @@ msgstr "_Personlige oplysninger"
 msgid "_Room"
 msgstr "R_um"
 
-#: ../src/empathy-new-chatroom-dialog.c:382
+#: ../src/empathy-new-chatroom-dialog.c:379
 msgid "Chat Room"
 msgstr "Chatrum"
 
-#: ../src/empathy-new-chatroom-dialog.c:398
+#: ../src/empathy-new-chatroom-dialog.c:395
 msgid "Members"
 msgstr "Medlemmer"
 
 #. Translators: Room/Join's roomlist tooltip. Parameters are a channel name,
 #. yes/no, yes/no and a number.
-#: ../src/empathy-new-chatroom-dialog.c:606
+#: ../src/empathy-new-chatroom-dialog.c:605
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -3089,16 +3089,16 @@ msgstr ""
 "Kræver adgangskode: %s\n"
 "Deltagere: %s"
 
+#: ../src/empathy-new-chatroom-dialog.c:607
 #: ../src/empathy-new-chatroom-dialog.c:608
-#: ../src/empathy-new-chatroom-dialog.c:609
 msgid "No"
 msgstr "Nej"
 
-#: ../src/empathy-new-chatroom-dialog.c:636
+#: ../src/empathy-new-chatroom-dialog.c:635
 msgid "Could not start room listing"
 msgstr "Kunne ikke starte fremvisning af rumliste"
 
-#: ../src/empathy-new-chatroom-dialog.c:646
+#: ../src/empathy-new-chatroom-dialog.c:645
 msgid "Could not stop room listing"
 msgstr "Kunne ikke standse fremvisning af rumliste"
 
@@ -3298,7 +3298,7 @@ msgstr "_Offentliggør placering til mine kontakter"
 msgid "_Reduce location accuracy"
 msgstr "_Reducér placeringens nøjagtighed"
 
-#: ../src/empathy-status-icon.c:202
+#: ../src/empathy-status-icon.c:178
 msgid "Respond"
 msgstr "Svar"
 
@@ -3314,63 +3314,63 @@ msgstr "_Afslut"
 msgid "Contact Map View"
 msgstr "Kontaktkortvisning"
 
-#: ../src/empathy-debug-window.c:1066
+#: ../src/empathy-debug-window.c:1078
 msgid "Save"
 msgstr "Gem"
 
-#: ../src/empathy-debug-window.c:1219
+#: ../src/empathy-debug-window.c:1251
 msgid "Debug Window"
 msgstr "Fejlfindingsvindue"
 
-#: ../src/empathy-debug-window.c:1299
+#: ../src/empathy-debug-window.c:1331
 msgid "Pause"
 msgstr "Pause"
 
-#: ../src/empathy-debug-window.c:1311
+#: ../src/empathy-debug-window.c:1343
 msgid "Level "
 msgstr "Niveau "
 
-#: ../src/empathy-debug-window.c:1331
+#: ../src/empathy-debug-window.c:1363
 msgid "Debug"
 msgstr "Fejlfind"
 
-#: ../src/empathy-debug-window.c:1337
+#: ../src/empathy-debug-window.c:1369
 msgid "Info"
 msgstr "Info"
 
-#: ../src/empathy-debug-window.c:1343 ../src/empathy-debug-window.c:1392
+#: ../src/empathy-debug-window.c:1375 ../src/empathy-debug-window.c:1424
 msgid "Message"
 msgstr "Besked"
 
-#: ../src/empathy-debug-window.c:1349
+#: ../src/empathy-debug-window.c:1381
 msgid "Warning"
 msgstr "Advarsel"
 
-#: ../src/empathy-debug-window.c:1355
+#: ../src/empathy-debug-window.c:1387
 msgid "Critical"
 msgstr "Kritisk"
 
-#: ../src/empathy-debug-window.c:1361
+#: ../src/empathy-debug-window.c:1393
 msgid "Error"
 msgstr "Fejl"
 
-#: ../src/empathy-debug-window.c:1380
+#: ../src/empathy-debug-window.c:1412
 msgid "Time"
 msgstr "Tidspunkt"
 
-#: ../src/empathy-debug-window.c:1383
+#: ../src/empathy-debug-window.c:1415
 msgid "Domain"
 msgstr "Domæne"
 
-#: ../src/empathy-debug-window.c:1385
+#: ../src/empathy-debug-window.c:1417
 msgid "Category"
 msgstr "Kategori"
 
-#: ../src/empathy-debug-window.c:1387
+#: ../src/empathy-debug-window.c:1419
 msgid "Level"
 msgstr "Niveau"
 
-#: ../src/empathy-debug-window.c:1424
+#: ../src/empathy-debug-window.c:1456
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
