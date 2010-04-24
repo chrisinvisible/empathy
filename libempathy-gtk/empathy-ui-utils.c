@@ -1417,20 +1417,6 @@ empathy_window_present_with_time (GtkWindow *window,
 			gtk_widget_hide (GTK_WIDGET (window));
 	}
 
-	timestamp = gtk_get_current_event_time ();
-	if (timestamp == 0 && gdk_window != NULL) {
-		GdkEventMask mask;
-
-		/* According to the documentation of gdk_x11_get_server_time
-		 * GDK_PROPERTY_CHANGE_MASK needs to be set in its events otherwise a hang
-		 * can occur. Be sure to at least temporarily set this mask */
-		mask = gdk_window_get_events (gdk_window);
-		gdk_window_set_events (gdk_window,
-			mask | GDK_PROPERTY_CHANGE_MASK);
-		timestamp = gdk_x11_get_server_time (gdk_window);
-		gdk_window_set_events (gdk_window, mask);
-	}
-
 	gtk_window_present_with_time (window, timestamp);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
 	gtk_window_deiconify (window);
