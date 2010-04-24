@@ -141,6 +141,7 @@ typedef struct
 
   /* Properties to pass to the channel when requesting it */
   GHashTable *request;
+  gint64 timestamp;
   EmpathyDispatcherRequestCb *cb;
   gpointer user_data;
   gpointer *request_data;
@@ -218,6 +219,7 @@ new_dispatcher_request_data (EmpathyDispatcher *self,
                              guint handle_type,
                              guint handle,
                              GHashTable *request,
+                             gint64 timestamp,
                              EmpathyContact *contact,
                              EmpathyDispatcherRequestCb *cb,
                              gpointer user_data)
@@ -233,6 +235,7 @@ new_dispatcher_request_data (EmpathyDispatcher *self,
   result->handle_type = handle_type;
   result->handle = handle;
   result->request = request;
+  result->timestamp = timestamp;
 
   if (contact != NULL)
     result->contact = g_object_ref (contact);
@@ -1329,7 +1332,9 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   /* The contact handle might not be known yet */
   request_data = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
-    empathy_contact_get_handle (contact), NULL, contact, callback, user_data);
+    empathy_contact_get_handle (contact), NULL,
+    EMPATHY_DISPATCHER_NON_USER_ACTION, contact,
+    callback, user_data);
   request_data->should_ensure = TRUE;
 
   connection_data->outstanding_requests = g_list_prepend
@@ -1459,6 +1464,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   /* Don't know the room handle yet */
   request_data  = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL,
+    EMPATHY_DISPATCHER_NON_USER_ACTION,
     NULL, callback, user_data);
   request_data->should_ensure = TRUE;
 
@@ -1619,7 +1625,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
       call = tp_cli_channel_dispatcher_call_ensure_channel (
           priv->channel_dispatcher,
           -1, tp_proxy_get_object_path (TP_PROXY (account)),
-          request_data->request, 0, handler,
+          request_data->request, request_data->timestamp, handler,
           dispatcher_create_channel_cb, request_data, NULL, NULL);
     }
   else
@@ -1627,7 +1633,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
       call = tp_cli_channel_dispatcher_call_create_channel (
           priv->channel_dispatcher,
           -1, tp_proxy_get_object_path (TP_PROXY (account)),
-          request_data->request, 0, handler,
+          request_data->request, request_data->timestamp, handler,
           dispatcher_create_channel_cb, request_data, NULL,
           G_OBJECT (dispatcher));
     }
@@ -1682,7 +1688,7 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *self,
 
   request_data  = new_dispatcher_request_data (self, connection,
     channel_type, handle_type, handle, request,
-    NULL, callback, user_data);
+    EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, callback, user_data);
 
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
