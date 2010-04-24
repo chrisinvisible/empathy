@@ -2288,9 +2288,16 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 		empathy_chat_window_add_chat (window, chat);
 	}
 
+	/* Don't force the window to show itself when it wasn't
+	 * an action by the user
+	 */
+	if (timestamp == EMPATHY_DISPATCHER_NON_USER_ACTION)
+		return;
+
 	priv = GET_PRIV (window);
 	empathy_chat_window_switch_to_chat (window, chat);
-	empathy_window_present (GTK_WINDOW (priv->dialog));
+	empathy_window_present_with_time (GTK_WINDOW (priv->dialog),
+	  CLAMP (timestamp, 0, G_MAXUINT32));
 
  	gtk_widget_grab_focus (chat->input_text_view);
 }

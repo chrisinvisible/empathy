@@ -1392,10 +1392,10 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 
 /* Takes care of moving the window to the current workspace. */
 void
-empathy_window_present (GtkWindow *window)
+empathy_window_present_with_time (GtkWindow *window,
+			guint32 timestamp)
 {
 	GdkWindow *gdk_window;
-	guint32 timestamp;
 
 	g_return_if_fail (GTK_IS_WINDOW (window));
 
@@ -1434,6 +1434,12 @@ empathy_window_present (GtkWindow *window)
 	gtk_window_present_with_time (window, timestamp);
 	gtk_window_set_skip_taskbar_hint (window, FALSE);
 	gtk_window_deiconify (window);
+}
+
+void
+empathy_window_present (GtkWindow *window)
+{
+  empathy_window_present_with_time (window, GDK_CURRENT_TIME);
 }
 
 GtkWindow *
