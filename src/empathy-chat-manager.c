@@ -199,7 +199,8 @@ connection_ready_cb (TpConnection *connection,
   if (error == NULL)
     {
       if (data->room)
-        empathy_dispatcher_join_muc (connection, data->id, NULL, NULL);
+        empathy_dispatcher_join_muc (connection, data->id,
+          EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
       else
         empathy_dispatcher_chat_with_contact_id (connection, data->id,
             EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);

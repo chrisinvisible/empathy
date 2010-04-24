@@ -908,7 +908,8 @@ main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 
 	if (connection != NULL) {
 		DEBUG ("Requesting channel for '%s'", room);
-		empathy_dispatcher_join_muc (connection, room, NULL, NULL);
+		empathy_dispatcher_join_muc (connection, room,
+			gtk_get_current_event_time (), NULL, NULL);
 	}
 }
 

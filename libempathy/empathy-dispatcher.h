@@ -89,7 +89,9 @@ void empathy_dispatcher_send_file_to_contact (EmpathyContact *contact,
 
 /* Request a muc channel */
 void empathy_dispatcher_join_muc (TpConnection *connection,
-  const gchar *roomname, EmpathyDispatcherRequestCb *callback,
+  const gchar *roomname,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
   gpointer user_data);
 
 void empathy_dispatcher_find_requestable_channel_classes_async
