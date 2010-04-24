@@ -804,7 +804,8 @@ contact_list_view_row_activated (GtkTreeView       *view,
 
 	if (contact) {
 		DEBUG ("Starting a chat");
-		empathy_dispatcher_chat_with_contact (contact, NULL, NULL);
+		empathy_dispatcher_chat_with_contact (contact,
+			gtk_get_current_event_time (), NULL, NULL);
 		g_object_unref (contact);
 	}
 }

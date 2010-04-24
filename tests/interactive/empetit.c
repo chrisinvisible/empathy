@@ -42,7 +42,8 @@ clicked_cb (GtkButton *button,
   if (!contact)
     return;
 
-  empathy_dispatcher_chat_with_contact (contact, chat_cb, NULL);
+  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time (),
+      chat_cb, NULL);
 
   g_object_unref (contact);
 }

@@ -1301,6 +1301,7 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
 
 void
 empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
+                                      gint64 timestamp,
                                       EmpathyDispatcherRequestCb *callback,
                                       gpointer user_data)
 {
@@ -1332,8 +1333,7 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   /* The contact handle might not be known yet */
   request_data = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
-    empathy_contact_get_handle (contact), NULL,
-    EMPATHY_DISPATCHER_NON_USER_ACTION, contact,
+    empathy_contact_get_handle (contact), NULL, timestamp, contact,
     callback, user_data);
   request_data->should_ensure = TRUE;
 
@@ -1351,6 +1351,7 @@ typedef struct
   EmpathyDispatcher *dispatcher;
   EmpathyDispatcherRequestCb *callback;
   gpointer user_data;
+  gint64 timestamp;
 } ChatWithContactIdData;
 
 static void
@@ -1373,8 +1374,8 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
     }
   else
     {
-      empathy_dispatcher_chat_with_contact (contact, data->callback,
-          data->user_data);
+      empathy_dispatcher_chat_with_contact (contact, data->timestamp,
+          data->callback, data->user_data);
     }
 
   g_object_unref (data->dispatcher);
@@ -1384,6 +1385,7 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
 void
 empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
                                          const gchar *contact_id,
+                                         gint64 timestamp,
                                          EmpathyDispatcherRequestCb *callback,
                                          gpointer user_data)
 {
@@ -1400,6 +1402,7 @@ empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
   data->dispatcher = self;
   data->callback = callback;
   data->user_data = user_data;
+  data->timestamp = timestamp;
   empathy_tp_contact_factory_get_from_id (factory, contact_id,
       dispatcher_chat_with_contact_id_cb, data, NULL, NULL);
 

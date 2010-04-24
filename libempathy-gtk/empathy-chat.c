@@ -262,7 +262,7 @@ reconnected_connection_ready_cb (TpConnection *connection,
 	switch (priv->handle_type) {
 		case TP_HANDLE_TYPE_CONTACT:
 			empathy_dispatcher_chat_with_contact_id (
-				connection, priv->id,
+				connection, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION,
 				chat_connect_channel_reconnected,
 				chat);
 			break;
@@ -767,6 +767,7 @@ chat_command_msg_internal (EmpathyChat *chat,
 	data->message = g_strdup (message);
 	connection = empathy_tp_chat_get_connection (priv->tp_chat);
 	empathy_dispatcher_chat_with_contact_id (connection, contact_id,
+						 gtk_get_current_event_time (),
 						 chat_command_msg_cb,
 						 data);
 }
