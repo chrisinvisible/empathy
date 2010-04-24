@@ -32,6 +32,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdkx.h>
 #include <glib/gi18n.h>
 #include <libnotify/notification.h>
 
@@ -61,6 +62,13 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
+
+/* Macro to compare guint32 X timestamps, while accounting for wrapping around
+ */
+#define X_EARLIER_OR_EQL(t1, t2) \
+	((t1 <= t2 && ((t2 - t1) < G_MAXUINT32/2))  \
+	  || (t1 >= t2 && (t1 - t2) > (G_MAXUINT32/2)) \
+	)
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChatWindow)
 typedef struct {
@@ -99,6 +107,8 @@ typedef struct {
 	GtkAction   *menu_tabs_left;
 	GtkAction   *menu_tabs_right;
 	GtkAction   *menu_tabs_detach;
+
+	guint32    x_user_action_time;
 } EmpathyChatWindowPriv;
 
 static GList *chat_windows = NULL;
@@ -2273,6 +2283,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 {
 	EmpathyChatWindow     *window;
 	EmpathyChatWindowPriv *priv;
+	guint32 x_timestamp;
 
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
 
@@ -2295,12 +2306,24 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	if (timestamp == EMPATHY_DISPATCHER_NON_USER_ACTION)
 		return;
 
+	x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
+
 	priv = GET_PRIV (window);
+
+	/* Don't present or switch tab if the action was earlier then the
+		 last actions X time, accounting for overflow and the first ever
+		 presentation */
+
+	if (priv->x_user_action_time != 0
+		&& X_EARLIER_OR_EQL (x_timestamp, priv->x_user_action_time))
+		return;
+
 	empathy_chat_window_switch_to_chat (window, chat);
 	empathy_window_present_with_time (GTK_WINDOW (priv->dialog),
-	  CLAMP (timestamp, 0, G_MAXUINT32));
+	  x_timestamp);
 
- 	gtk_widget_grab_focus (chat->input_text_view);
+	gtk_widget_grab_focus (chat->input_text_view);
+	priv->x_user_action_time = x_timestamp;
 }
 
 void
