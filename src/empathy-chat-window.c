@@ -2283,6 +2283,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 		window = empathy_chat_window_get_default (empathy_chat_is_room (chat));
 		if (!window) {
 			window = empathy_chat_window_new ();
+			gtk_widget_show_all (GET_PRIV (window)->dialog);
 		}
 
 		empathy_chat_window_add_chat (window, chat);
