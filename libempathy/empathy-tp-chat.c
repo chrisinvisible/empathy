@@ -160,7 +160,7 @@ tp_chat_add (EmpathyContactList *list,
 		 * valid.
 		 * props now belongs to EmpathyDispatcher, don't free it */
 		empathy_dispatcher_create_channel (dispatcher, connection,
-				props, NULL, NULL);
+				props, EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
 
 		g_object_unref (dispatcher);
 	} else {

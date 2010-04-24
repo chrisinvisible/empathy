@@ -67,8 +67,11 @@ typedef void (EmpathyDispatcherFindChannelClassCb) (
 GType empathy_dispatcher_get_type (void) G_GNUC_CONST;
 
 void empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
-  TpConnection *connection, GHashTable *request,
-  EmpathyDispatcherRequestCb *callback, gpointer user_data);
+  TpConnection *connection,
+  GHashTable *request,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
+  gpointer user_data);
 
 /* Requesting 1 to 1 text channels */
 void empathy_dispatcher_chat_with_contact_id (TpConnection *connection,

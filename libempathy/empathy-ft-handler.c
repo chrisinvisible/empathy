@@ -757,7 +757,8 @@ ft_handler_push_to_dispatcher (EmpathyFTHandler *handler)
 
   /* I want to own a reference to the request, and destroy it later */
   empathy_dispatcher_create_channel (priv->dispatcher, connection,
-      g_hash_table_ref (priv->request), ft_handler_create_channel_cb, handler);
+      g_hash_table_ref (priv->request), EMPATHY_DISPATCHER_NON_USER_ACTION,
+      ft_handler_create_channel_cb, handler);
 }
 
 static void

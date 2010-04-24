@@ -487,7 +487,8 @@ empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
 }
 
 void
-empathy_call_handler_start_call (EmpathyCallHandler *handler)
+empathy_call_handler_start_call (EmpathyCallHandler *handler,
+    gint64 timestamp)
 {
 
   EmpathyCallHandlerPriv *priv = GET_PRIV (handler);
@@ -536,7 +537,7 @@ empathy_call_handler_start_call (EmpathyCallHandler *handler)
   g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandle", value);
 
   empathy_dispatcher_create_channel (dispatcher, connection,
-    request, empathy_call_handler_request_cb, handler);
+    request, timestamp, empathy_call_handler_request_cb, handler);
 
   g_object_unref (dispatcher);
 }

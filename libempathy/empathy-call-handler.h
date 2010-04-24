@@ -70,7 +70,8 @@ EmpathyCallHandler * empathy_call_handler_new_for_contact_with_streams (
 EmpathyCallHandler * empathy_call_handler_new_for_channel (
   EmpathyTpCall *call);
 
-void empathy_call_handler_start_call (EmpathyCallHandler *handler);
+void empathy_call_handler_start_call (EmpathyCallHandler *handler,
+    gint64 timestamp);
 void empathy_call_handler_stop_call (EmpathyCallHandler *handler);
 
 gboolean empathy_call_handler_has_initial_video (EmpathyCallHandler *handler);

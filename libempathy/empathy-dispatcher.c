@@ -1662,6 +1662,7 @@ void
 empathy_dispatcher_create_channel (EmpathyDispatcher *self,
                                    TpConnection *connection,
                                    GHashTable *request,
+                                   gint64 timestamp,
                                    EmpathyDispatcherRequestCb *callback,
                                    gpointer user_data)
 {
@@ -1690,8 +1691,8 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *self,
   handle = tp_asv_get_uint32 (request, TP_IFACE_CHANNEL ".TargetHandle", NULL);
 
   request_data  = new_dispatcher_request_data (self, connection,
-    channel_type, handle_type, handle, request,
-    EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, callback, user_data);
+    channel_type, handle_type, handle, request, timestamp,
+    NULL, callback, user_data);
 
   connection_data->outstanding_requests = g_list_prepend
     (connection_data->outstanding_requests, request_data);
