@@ -12,10 +12,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-17 16:10+0200\n"
-"PO-Revision-Date: 2010-04-14 12:29+0200\n"
+"POT-Creation-Date: 2010-04-25 16:49+0200\n"
+"PO-Revision-Date: 2010-04-25 16:43+0200\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
-"Language-Team: Galician <gnome@g11.net>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -224,7 +224,7 @@ msgstr "Reproducir un son cando un contacto inicia unha sesión"
 # rever
 #: ../data/empathy.schemas.in.h:37
 msgid "Play a sound when a contact logs out"
-msgstr "Reproducir un son cando un contacto termina a sesión"
+msgstr "Reproducir un son cando un contacto saia da sesión"
 
 # rever
 #: ../data/empathy.schemas.in.h:38
@@ -561,7 +561,7 @@ msgstr "Xestionar as contas de mensaxería e VoIP"
 
 #. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/empathy-accounts-dialog.c:2066 ../src/cc-empathy-accounts-page.c:243
+#: ../src/empathy-accounts-dialog.c:2064 ../src/cc-empathy-accounts-page.c:243
 #: ../src/cc-empathy-accounts-panel.c:91
 msgid "Messaging and VoIP Accounts"
 msgstr "Contas de mensaxería e VoIP"
@@ -1633,7 +1633,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:247
-#: ../src/empathy-main-window.c:1070
+#: ../src/empathy-main-window.c:1072
 msgid "Group"
 msgstr "Grupo"
 
@@ -2337,7 +2337,7 @@ msgstr "Produciuse un erro"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:412 ../src/empathy-accounts-dialog.c:580
+#: ../src/empathy-account-assistant.c:412 ../src/empathy-accounts-dialog.c:579
 #, c-format
 msgid "New %s account"
 msgstr "Conta nova de %s"
@@ -2404,8 +2404,8 @@ msgid "Select the accounts you want to import:"
 msgstr "Seleccione as contas que quere importar:"
 
 #: ../src/empathy-account-assistant.c:850
+#: ../src/empathy-new-chatroom-dialog.c:607
 #: ../src/empathy-new-chatroom-dialog.c:608
-#: ../src/empathy-new-chatroom-dialog.c:609
 msgid "Yes"
 msgstr "Si"
 
@@ -2470,45 +2470,45 @@ msgstr "Insira os detalles persoais"
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * unsaved changes
-#: ../src/empathy-accounts-dialog.c:66
+#: ../src/empathy-accounts-dialog.c:65
 #, c-format
 msgid "There are unsaved modifications to your %s account."
 msgstr "Hai modificacións sen gardar respecto da súa conta %s."
 
 #. The primary text of the dialog shown to the user when he is about to lose
 #. * an unsaved new account
-#: ../src/empathy-accounts-dialog.c:70
+#: ../src/empathy-accounts-dialog.c:69
 msgid "Your new account has not been saved yet."
 msgstr "A súa nova conta aínda non foi gardada."
 
-#: ../src/empathy-accounts-dialog.c:263 ../src/empathy-call-window.c:789
+#: ../src/empathy-accounts-dialog.c:262 ../src/empathy-call-window.c:789
 msgid "Connecting…"
 msgstr "Conectando..."
 
-#: ../src/empathy-accounts-dialog.c:290
+#: ../src/empathy-accounts-dialog.c:289
 #, c-format
 msgid "Disconnected — %s"
 msgstr "Desconectado — %s"
 
-#: ../src/empathy-accounts-dialog.c:295
+#: ../src/empathy-accounts-dialog.c:294
 #, c-format
 msgid "Offline — %s"
 msgstr "Desconectado — %s"
 
-#: ../src/empathy-accounts-dialog.c:308
+#: ../src/empathy-accounts-dialog.c:307
 msgid "Offline — No Network Connection"
 msgstr "Desconectado — Sen conexión de rede"
 
-#: ../src/empathy-accounts-dialog.c:316
+#: ../src/empathy-accounts-dialog.c:315
 msgid "Unknown Status"
 msgstr "Estado descoñecido"
 
-#: ../src/empathy-accounts-dialog.c:327
+#: ../src/empathy-accounts-dialog.c:326
 msgid "Offline — Account Disabled"
 msgstr "Desconectado — Conta desactivada"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:768
+#: ../src/empathy-accounts-dialog.c:767
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2517,17 +2517,17 @@ msgstr ""
 "Está seguro de que quere proceder?"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1115
+#: ../src/empathy-accounts-dialog.c:1114
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Está seguro de que quere eliminar o grupo '%s' do seu computador?"
 
-#: ../src/empathy-accounts-dialog.c:1119
+#: ../src/empathy-accounts-dialog.c:1118
 msgid "This will not remove your account on the server."
 msgstr "Isto non eliminará a súa conta no servidor."
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1356
+#: ../src/empathy-accounts-dialog.c:1355
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2536,7 +2536,7 @@ msgstr ""
 "Está seguro de que quere proceder?"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1933
+#: ../src/empathy-accounts-dialog.c:1932
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -3166,12 +3166,12 @@ msgstr "Editar a conta"
 msgid "Close"
 msgstr "Pechar"
 
-#: ../src/empathy-main-window.c:1053
+#: ../src/empathy-main-window.c:1055
 msgid "Contact"
 msgstr "Contacto"
 
 # rever
-#: ../src/empathy-main-window.c:1435
+#: ../src/empathy-main-window.c:1436
 msgid "Show and edit accounts"
 msgstr "Mostrar e editar contas"
 
@@ -3264,17 +3264,17 @@ msgid "_Room"
 msgstr "Sa_la"
 
 # rever
-#: ../src/empathy-new-chatroom-dialog.c:382
+#: ../src/empathy-new-chatroom-dialog.c:379
 msgid "Chat Room"
 msgstr "Salas de conversa"
 
-#: ../src/empathy-new-chatroom-dialog.c:398
+#: ../src/empathy-new-chatroom-dialog.c:395
 msgid "Members"
 msgstr "Membros"
 
 #. Translators: Room/Join's roomlist tooltip. Parameters are a channel name,
 #. yes/no, yes/no and a number.
-#: ../src/empathy-new-chatroom-dialog.c:606
+#: ../src/empathy-new-chatroom-dialog.c:605
 #, c-format
 msgid ""
 "<b>%s</b>\n"
@@ -3287,16 +3287,16 @@ msgstr ""
 "Contrasinal requirido: %s\n"
 "Membros: %s"
 
+#: ../src/empathy-new-chatroom-dialog.c:607
 #: ../src/empathy-new-chatroom-dialog.c:608
-#: ../src/empathy-new-chatroom-dialog.c:609
 msgid "No"
 msgstr "Non"
 
-#: ../src/empathy-new-chatroom-dialog.c:636
+#: ../src/empathy-new-chatroom-dialog.c:635
 msgid "Could not start room listing"
 msgstr "Non foi posíbel arrincar a lista da sala"
 
-#: ../src/empathy-new-chatroom-dialog.c:646
+#: ../src/empathy-new-chatroom-dialog.c:645
 msgid "Could not stop room listing"
 msgstr "Non foi posíbel deter a lista da sala"
 
