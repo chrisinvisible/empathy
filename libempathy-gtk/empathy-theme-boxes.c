@@ -47,7 +47,6 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyThemeBoxes)
 typedef struct {
 	gboolean show_avatars;
-	guint    notify_show_avatars_id;
 } EmpathyThemeBoxesPriv;
 
 G_DEFINE_TYPE (EmpathyThemeBoxes, empathy_theme_boxes, EMPATHY_TYPE_CHAT_TEXT_VIEW);
@@ -362,27 +361,6 @@ theme_boxes_append_message (EmpathyChatTextView *view,
 }
 
 static void
-theme_boxes_notify_show_avatars_cb (EmpathyConf *conf,
-				    const gchar *key,
-				    gpointer     user_data)
-{
-	EmpathyThemeBoxesPriv *priv = GET_PRIV (user_data);
-
-	empathy_conf_get_bool (conf, key, &priv->show_avatars);
-}
-
-static void
-theme_boxes_finalize (GObject *object)
-{
-	EmpathyThemeBoxesPriv *priv = GET_PRIV (object);
-
-	empathy_conf_notify_remove (empathy_conf_get (),
-				    priv->notify_show_avatars_id);
-
-	G_OBJECT_CLASS (empathy_theme_boxes_parent_class)->finalize (object);
-}
-
-static void
 empathy_theme_boxes_class_init (EmpathyThemeBoxesClass *class)
 {
 	GObjectClass             *object_class;
@@ -391,7 +369,6 @@ empathy_theme_boxes_class_init (EmpathyThemeBoxesClass *class)
 	object_class = G_OBJECT_CLASS (class);
 	chat_text_view_class  = EMPATHY_CHAT_TEXT_VIEW_CLASS (class);
 
-	object_class->finalize = theme_boxes_finalize;
 	chat_text_view_class->append_message = theme_boxes_append_message;
 
 	g_type_class_add_private (object_class, sizeof (EmpathyThemeBoxesPriv));
@@ -405,17 +382,11 @@ empathy_theme_boxes_init (EmpathyThemeBoxes *theme)
 
 	theme->priv = priv;
 
+	/* This is just hard-coded to TRUE until someone adds a tickybox in the
+	 * Theme tab for it. */
+	priv->show_avatars = TRUE;
+
 	theme_boxes_create_tags (theme);
-
-	priv->notify_show_avatars_id =
-		empathy_conf_notify_add (empathy_conf_get (),
-					 EMPATHY_PREFS_UI_SHOW_AVATARS,
-					 theme_boxes_notify_show_avatars_cb,
-					 theme);
-
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_UI_SHOW_AVATARS,
-			       &priv->show_avatars);
 
 	/* Define margin */
 	g_object_set (theme,
