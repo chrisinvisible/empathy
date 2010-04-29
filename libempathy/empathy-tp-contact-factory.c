@@ -40,13 +40,6 @@
 typedef struct {
 	TpConnection   *connection;
 	GList          *contacts;
-
-	gchar         **avatar_mime_types;
-	guint           avatar_min_width;
-	guint           avatar_min_height;
-	guint           avatar_max_width;
-	guint           avatar_max_height;
-	guint           avatar_max_size;
 } EmpathyTpContactFactoryPriv;
 
 G_DEFINE_TYPE (EmpathyTpContactFactory, empathy_tp_contact_factory, G_TYPE_OBJECT);
@@ -54,13 +47,6 @@ G_DEFINE_TYPE (EmpathyTpContactFactory, empathy_tp_contact_factory, G_TYPE_OBJEC
 enum {
 	PROP_0,
 	PROP_CONNECTION,
-
-	PROP_MIME_TYPES,
-	PROP_MIN_WIDTH,
-	PROP_MIN_HEIGHT,
-	PROP_MAX_WIDTH,
-	PROP_MAX_HEIGHT,
-	PROP_MAX_SIZE
 };
 
 static TpContactFeature contact_features[] = {
@@ -272,36 +258,6 @@ tp_contact_factory_avatar_updated_cb (TpConnection *connection,
 								  NULL, NULL,
 								  tp_factory);
 	g_array_free (handles, TRUE);
-}
-
-static void
-tp_contact_factory_got_avatar_requirements_cb (TpConnection *proxy,
-					       const gchar **mime_types,
-					       guint         min_width,
-					       guint         min_height,
-					       guint         max_width,
-					       guint         max_height,
-					       guint         max_size,
-					       const GError *error,
-					       gpointer      user_data,
-					       GObject      *tp_factory)
-{
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-
-	if (error) {
-		DEBUG ("Failed to get avatar requirements: %s", error->message);
-		/* We'll just leave avatar_mime_types as NULL; the
-		 * avatar-setting code can use this as a signal that you can't
-		 * set avatars.
-		 */
-	} else {
-		priv->avatar_mime_types = g_strdupv ((gchar **) mime_types);
-		priv->avatar_min_width = min_width;
-		priv->avatar_min_height = min_height;
-		priv->avatar_max_width = max_width;
-		priv->avatar_max_height = max_height;
-		priv->avatar_max_size = max_size;
-	}
 }
 
 static void
@@ -732,24 +688,6 @@ tp_contact_factory_get_property (GObject    *object,
 	case PROP_CONNECTION:
 		g_value_set_object (value, priv->connection);
 		break;
-	case PROP_MIME_TYPES:
-		g_value_set_boxed (value, priv->avatar_mime_types);
-		break;
-	case PROP_MIN_WIDTH:
-		g_value_set_uint (value, priv->avatar_min_width);
-		break;
-	case PROP_MIN_HEIGHT:
-		g_value_set_uint (value, priv->avatar_min_height);
-		break;
-	case PROP_MAX_WIDTH:
-		g_value_set_uint (value, priv->avatar_max_width);
-		break;
-	case PROP_MAX_HEIGHT:
-		g_value_set_uint (value, priv->avatar_max_height);
-		break;
-	case PROP_MAX_SIZE:
-		g_value_set_uint (value, priv->avatar_max_size);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
 		break;
@@ -792,8 +730,6 @@ tp_contact_factory_finalize (GObject *object)
 
 	g_object_unref (priv->connection);
 
-	g_strfreev (priv->avatar_mime_types);
-
 	G_OBJECT_CLASS (empathy_tp_contact_factory_parent_class)->finalize (object);
 }
 
@@ -819,12 +755,6 @@ connection_ready_cb (TpConnection *connection,
 									 NULL, NULL,
 									 G_OBJECT (tp_factory),
 									 NULL);
-
-	tp_cli_connection_interface_avatars_call_get_avatar_requirements (priv->connection,
-									  -1,
-									  tp_contact_factory_got_avatar_requirements_cb,
-									  NULL, NULL,
-									  G_OBJECT (tp_factory));
 
 out:
 	g_object_unref (tp_factory);
@@ -869,69 +799,6 @@ empathy_tp_contact_factory_class_init (EmpathyTpContactFactoryClass *klass)
 							      G_PARAM_READWRITE |
 							      G_PARAM_CONSTRUCT_ONLY |
 							      G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MIME_TYPES,
-					 g_param_spec_boxed ("avatar-mime-types",
-							     "Supported MIME types for avatars",
-							     "Types of images that may be set as "
-							     "avatars on this connection.",
-							     G_TYPE_STRV,
-							     G_PARAM_READABLE |
-							     G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MIN_WIDTH,
-					 g_param_spec_uint ("avatar-min-width",
-							    "Minimum width for avatars",
-							    "Minimum width of avatar that may be set.",
-							    0,
-							    G_MAXUINT,
-							    0,
-							    G_PARAM_READABLE |
-							    G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MIN_HEIGHT,
-					 g_param_spec_uint ("avatar-min-height",
-							    "Minimum height for avatars",
-							    "Minimum height of avatar that may be set.",
-							    0,
-							    G_MAXUINT,
-							    0,
-							    G_PARAM_READABLE |
-							    G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MAX_WIDTH,
-					 g_param_spec_uint ("avatar-max-width",
-							    "Maximum width for avatars",
-							    "Maximum width of avatar that may be set "
-							    "or 0 if there is no maximum.",
-							    0,
-							    G_MAXUINT,
-							    0,
-							    G_PARAM_READABLE |
-							    G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MAX_HEIGHT,
-					 g_param_spec_uint ("avatar-max-height",
-							    "Maximum height for avatars",
-							    "Maximum height of avatar that may be set "
-							    "or 0 if there is no maximum.",
-							    0,
-							    G_MAXUINT,
-							    0,
-							    G_PARAM_READABLE |
-							    G_PARAM_STATIC_STRINGS));
-	g_object_class_install_property (object_class,
-					 PROP_MAX_SIZE,
-					 g_param_spec_uint ("avatar-max-size",
-							    "Maximum size for avatars in bytes",
-							    "Maximum file size of avatar that may be "
-							    "set or 0 if there is no maximum.",
-							    0,
-							    G_MAXUINT,
-							    0,
-							    G_PARAM_READABLE |
-							    G_PARAM_STATIC_STRINGS));
-
 
 	g_type_class_add_private (object_class, sizeof (EmpathyTpContactFactoryPriv));
 }
