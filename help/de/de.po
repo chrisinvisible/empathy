@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy help\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-22 20:59+0000\n"
-"PO-Revision-Date: 2010-04-29 12:02+0100\n"
+"POT-Creation-Date: 2010-04-29 10:09+0000\n"
+"PO-Revision-Date: 2010-04-29 12:12+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -138,9 +138,6 @@ msgstr ""
 "Unterhaltung."
 
 #: C/video-call.page:55(p) C/audio-call.page:57(p)
-#| msgid ""
-#| "To end the conversation, choose <guiseq><gui style=\"menu\">Call</gui><gui "
-#| "style=\"menuitem\">Hang up</gui></guiseq>."
 msgid "To end the conversation, click on <gui style=\"button\">Hang up</gui>."
 msgstr ""
 "Um eine Unterhaltung zu beenden, klicken Sie auf <gui style=\"button"
@@ -767,7 +764,6 @@ msgstr ""
 "linken Seite des Fensters aus."
 
 #: C/remove-account.page:50(p)
-#| msgid "Click <gui style=\"button\">Add</gui>."
 msgid "Click on <gui style=\"button\">Remove</gui>."
 msgstr "Klicken Sie auf <gui style=\"button\">Entfernen</gui>."
 
@@ -1350,11 +1346,17 @@ msgstr ""
 "betreten."
 
 #: C/irc-nick-password.page:40(p)
+#| msgid ""
+#| "<app>Empathy</app> does not currently support nickname registration. Some "
+#| "IRC networks, however, will automatically forward a <em>server password</"
+#| "em> to NickServ. On these networks, you can use the IRC password in "
+#| "<app>Empathy</app> to identify yourself to NickServ. The popular FreeNode "
+#| "network is known to have this feature."
 msgid ""
 "<app>Empathy</app> does not currently support nickname registration. Some IRC "
 "networks, however, will automatically forward a <em>server password</em> to "
 "NickServ. On these networks, you can use the IRC password in <app>Empathy</"
-"app> to identify yourself to NickServ. The popular FreeNode network is known "
+"app> to identify yourself to NickServ. The popular freenode network is known "
 "to have this feature."
 msgstr ""
 "<app>Empathy</app> unterstützt gegenwärtig die Registrierung von Spitznamen "
@@ -1405,9 +1407,6 @@ msgid "Internet Relay Chat (IRC)"
 msgstr "Internet Relay Chat (IRC)"
 
 #: C/irc-manage.page:37(p) C/account-irc.page:39(p)
-#| msgid ""
-#| "You must have the <sys>telepathy-idle</sys> package installed in order to "
-#| "use IRC in <app>Empathy</app>."
 msgid ""
 "You must have the <sys>telepathy-idle</sys> package installed to use IRC in "
 "<app>Empathy</app>."
@@ -1495,28 +1494,31 @@ msgid "Join a protected IRC chat room"
 msgstr "Betreten eines passwortgeschützten Raumes im IRC"
 
 #: C/irc-join-pwd.page:27(p)
+#| msgid ""
+#| "On some IRC networks, private IRC rooms may be protected with a password."
 msgid ""
-"On some IRC networks, private IRC rooms may be protected with a password."
+"On some IRC networks, private IRC rooms may be protected with a password. If "
+"you know the password, use the following steps to join:"
 msgstr ""
 "In einigen IRC-Netzwerken können private IRC-Räume durch ein Passwort "
-"geschützt sein."
+"geschützt sein. Falls Sie das Passwort kennen, gehen Sie wie folgt vor, um "
+"den Raum zu betreten:"
 
-#: C/irc-join-pwd.page:30(p)
-msgid "To join such a room, if you know the password:"
-msgstr ""
-"So betreten Sie einen solchen Raum, falls Ihnen das Passwort bekannt ist:"
+#: C/irc-join-pwd.page:33(p)
+#| msgid "<link xref=\"irc-join-room\">Join the room</link>."
+msgid "<link xref=\"irc-join-room\">Join the room</link> as normal."
+msgstr "<link xref=\"irc-join-room\">Betreten Sie den Raum</link> wie gewohnt."
 
-#: C/irc-join-pwd.page:35(p)
-msgid "<link xref=\"irc-join-room\">Join the room</link>."
-msgstr "<link xref=\"irc-join-room\">Betreten Sie den Raum</link>."
-
-#: C/irc-join-pwd.page:40(p)
+#: C/irc-join-pwd.page:38(p)
+#| msgid ""
+#| "In the <gui>This room is protected by a password</gui> text box, type the "
+#| "IRC room password, and click on <gui style=\"button\">Join</gui>."
 msgid ""
-"In the <gui>This room is protected by a password</gui> text box, type the IRC "
-"room password, and click on <gui style=\"button\">Join</gui>."
+"Empathy will prompt you for a password. Enter the password for the IRC chat "
+"room and click <gui style=\"button\">Join</gui>."
 msgstr ""
-"Geben Sie im Textfeld <gui>Dieser Raum ist durch ein Kennwort geschützt</gui> "
-"das Passwort für den IRC-Raum ein und klicken Sie auf <gui style=\"button"
+"<app>Empathy</app> wird Sie nach einem Passwort fragen. Geben Sie das "
+"Passwort für den IRC-Raum ein und klicken Sie auf <gui style=\"button"
 "\">Beitreten</gui>."
 
 #: C/irc-commands.page:7(desc)
@@ -2358,35 +2360,41 @@ msgstr ""
 "erhalten haben, die Sie zum Verbinden mit <gui>Empathy</gui> benötigen."
 
 #: C/create-account.page:46(title)
-#| msgid "Facebook Chat"
 msgid "Facebook"
 msgstr "Facebook"
 
 #: C/create-account.page:47(p)
+#| msgid ""
+#| "Facebook is one of the most used social network. It provides users with "
+#| "the opportunity to create their own profile, and to communicate with their "
+#| "friends."
 msgid ""
-"Facebook is one of the most used social network. It provides users with the "
-"opportunity to create their own profile, and to communicate with their "
-"friends."
+"Facebook is one of the most-used social networks. It allows users to create "
+"their own profile and to communicate with their friends."
 msgstr ""
 "Facebook ist eines der am meisten genutzten sozialen Netzwerke. Den Benutzern "
 "wird die Erstellung eines eigenen Profils und die Kommunikation mit ihren "
 "Freunden ermöglicht."
 
-#: C/create-account.page:52(p)
+#: C/create-account.page:51(p)
+#| msgid ""
+#| "In order to use Facebook to communicate with your friends, you will need "
+#| "to create a new account from the website: <link href=\"http://www.facebook."
+#| "com\">www.facebook.com</link>."
 msgid ""
-"In order to use Facebook to communicate with your friends, you will need to "
-"create a new account from the website: <link href=\"http://www.facebook.com"
-"\">www.facebook.com</link>."
+"To use Facebook to communicate with your friends, you will need to create a "
+"new account from the website: <link href=\"http://www.facebook.com\">www."
+"facebook.com</link>."
 msgstr ""
 "Um Facebook zur Unterhaltung mit Ihren Freunden nutzen zu können, müssen Sie "
 "ein neues Konto auf folgender Webseite erstellen: <link href=\"http://www."
 "facebook.com\">www.facebook.com</link>."
 
-#: C/create-account.page:60(title) C/audio-video.page:170(p)
+#: C/create-account.page:59(title) C/audio-video.page:170(p)
 msgid "Jabber"
 msgstr "Jabber"
 
-#: C/create-account.page:62(p)
+#: C/create-account.page:61(p)
 msgid ""
 "Jabber is an open instant messaging system. Like email, Jabber allows you to "
 "choose your account provider and communicate with all other Jabber users, "
@@ -2396,7 +2404,7 @@ msgstr ""
 "die Wahl Ihres Konto-Dienstanbieters und die Kommunikation mit anderen Jabber-"
 "Benutzern, unabhängig von deren Konto-Dienstanbietern."
 
-#: C/create-account.page:66(p)
+#: C/create-account.page:65(p)
 msgid ""
 "You will need to create a new account with a Jabber provider. There are many "
 "free providers; one popular provider is <link href=\"http://register.jabber."
@@ -2406,7 +2414,7 @@ msgstr ""
 "anlegen. Es gibt zahlreiche freie Jabber-Dienstanbieter, einer der "
 "populärsten ist <link href=\"http://register.jabber.org/\">Jabber.org</link>."
 
-#: C/create-account.page:71(p)
+#: C/create-account.page:70(p)
 msgid ""
 "If you use Google Mail or Google Talk, you already have a Jabber account. "
 "Google Talk is a Jabber service. Simply use your Google Mail address and "
@@ -2416,11 +2424,11 @@ msgstr ""
 "Konto. Google Talk ist ein Jabber-Dienst. Verwenden Sie einfach Ihre Google "
 "Mail-Adresse und Ihr Passwort in <app>Empathy</app> für die Verbindung."
 
-#: C/create-account.page:78(title) C/audio-video.page:190(p)
+#: C/create-account.page:77(title) C/audio-video.page:190(p)
 msgid "People Nearby"
 msgstr "Personen in der Nähe"
 
-#: C/create-account.page:80(p)
+#: C/create-account.page:79(p)
 msgid ""
 "You do not need to create an account with a service provider to use this "
 "feature. This service works whenever you are connected to a local network, "
@@ -2433,15 +2441,15 @@ msgstr ""
 "drahtlosen Zugangspunkt (Hotspot). Andere Benutzer, die diesen Dienst nutzen, "
 "werden im Netzwerk automatisch gefunden."
 
-#: C/create-account.page:85(p)
+#: C/create-account.page:84(p)
 msgid "For more information, see <link xref=\"salut-protocol\"/>."
 msgstr "Weitere Informationen finden Sie in <link xref=\"salut-protocol\"/>."
 
-#: C/create-account.page:89(title) C/audio-video.page:205(p)
+#: C/create-account.page:88(title) C/audio-video.page:205(p)
 msgid "SIP"
 msgstr "SIP"
 
-#: C/create-account.page:91(p)
+#: C/create-account.page:90(p)
 msgid ""
 "SIP is an open system which allows users to have audio and video "
 "conversations over the Internet. You need to create an account with a SIP "
@@ -2453,7 +2461,7 @@ msgstr ""
 "Unabhängig davon, welchen Dienstanbieter Ihre Kontakte nutzen, können Sie mit "
 "allen anderen SIP-Benutzern kommunizieren."
 
-#: C/create-account.page:96(p)
+#: C/create-account.page:95(p)
 msgid ""
 "There are a number of popular free SIP account providers; one popular "
 "provider is <link href=\"https://signup.sipphone.com/new-users/app?"
@@ -2463,7 +2471,7 @@ msgstr ""
 "<link href=\"https://signup.sipphone.com/new-users/app?class=NewUser;"
 "proc=start\">Sipphone</link>."
 
-#: C/create-account.page:101(p)
+#: C/create-account.page:100(p)
 msgid ""
 "Due to technical differences, the free <link href=\"https://www.ekiga.net/"
 "index.php?page=register\">Ekiga.net</link> service does not currently work "
@@ -2473,7 +2481,7 @@ msgstr ""
 "net/index.php?page=register\">Ekiga.net</link> derzeit nicht mit "
 "<app>Empathy</app>."
 
-#: C/create-account.page:106(p)
+#: C/create-account.page:105(p)
 msgid ""
 "Some SIP providers allow you to call normal phones from your computer. "
 "Generally, you will need to subscribe to a paid service for this feature."
@@ -2482,11 +2490,11 @@ msgstr ""
 "anzurufen. Im Allgemeinen werden Sie sich hierfür an einem zu bezahlenden "
 "Dienst registrieren müssen."
 
-#: C/create-account.page:111(title) C/audio-video.page:165(p)
+#: C/create-account.page:110(title) C/audio-video.page:165(p)
 msgid "IRC"
 msgstr "IRC"
 
-#: C/create-account.page:113(p)
+#: C/create-account.page:112(p)
 msgid ""
 "You do not need to register for an account to use IRC. Although you specify a "
 "nickname when you add an IRC account to <app>Empathy</app>, this nickname is "
@@ -2499,11 +2507,7 @@ msgstr ""
 "Falls aber ein anderer Benutzer diesen Spitznamen verwendet, müssen Sie einen "
 "neuen wählen."
 
-#: C/create-account.page:118(p)
-#| msgid ""
-#| "Some IRC networks use a service called NickServ to allow users to protect "
-#| "thier nicknames. See <link xref=\"irc-nick-password\"/> for more "
-#| "information."
+#: C/create-account.page:117(p)
 msgid ""
 "Some IRC networks use a service called NickServ to allow users to protect "
 "their nicknames. See <link xref=\"irc-nick-password\"/> for more information."
@@ -2512,7 +2516,7 @@ msgstr ""
 "ermöglichen, ihre Spitznamen zu schützen. Weitere Informationen finden Sie in "
 "<link xref=\"irc-nick-password\"/>."
 
-#: C/create-account.page:121(p)
+#: C/create-account.page:120(p)
 msgid ""
 "Some IRC servers are password protected. You will need to know the password "
 "to connect to these servers. Generally, these are private IRC networks."
@@ -2521,11 +2525,11 @@ msgstr ""
 "eine Verbindung zu diesen Servern herzustellen. Im Allgemeinen sind dies "
 "private IRC-Netzwerke."
 
-#: C/create-account.page:126(title)
+#: C/create-account.page:125(title)
 msgid "Proprietary Services"
 msgstr "Proprietäre Dienste"
 
-#: C/create-account.page:128(p)
+#: C/create-account.page:127(p)
 msgid ""
 "There are many proprietary instant messaging services that have been "
 "developed by different companies or organizations. <app>Empathy</app> allows "
@@ -2540,19 +2544,19 @@ msgstr ""
 "anzulegen, besuchen Sie bitte die Webseite des jeweiligen Anbieters. "
 "Bestätigen Sie dort die Nutzungsbedingungen."
 
-#: C/create-account.page:137(link) C/audio-video.page:135(p)
+#: C/create-account.page:136(link) C/audio-video.page:135(p)
 msgid "AIM"
 msgstr "AIM"
 
-#: C/create-account.page:142(link) C/audio-video.page:160(p)
+#: C/create-account.page:141(link) C/audio-video.page:160(p)
 msgid "ICQ"
 msgstr "ICQ"
 
-#: C/create-account.page:147(link) C/audio-video.page:175(p)
+#: C/create-account.page:146(link) C/audio-video.page:175(p)
 msgid "MSN"
 msgstr "MSN"
 
-#: C/create-account.page:152(link) C/audio-video.page:210(p)
+#: C/create-account.page:151(link) C/audio-video.page:210(p)
 msgid "Yahoo!"
 msgstr "Yahoo!"
 
@@ -2957,7 +2961,6 @@ msgstr ""
 "Sie in <link xref=\"accounts-window#details\"/>."
 
 #: C/add-account.page:71(p)
-#| msgid "Click <gui style=\"button\">Add</gui>."
 msgid "Click <gui style=\"button\">Log in</gui>."
 msgstr "Klicken Sie auf <gui style=\"button\">Anmelden</gui>."
 
@@ -3008,7 +3011,6 @@ msgid "Advanced options for Jabber and Google Talk accounts."
 msgstr "Fortgeschrittene Optionen für Konten bei Jabber und Google Talk."
 
 #: C/account-jabber.page:29(title)
-#| msgid "Jabber Account Details"
 msgid "Jabber account details"
 msgstr "Jabber-Kontendetails"
 
@@ -3136,7 +3138,6 @@ msgstr ""
 "Zusätzlich erforderliche Informationen für Verbindungen zu IRC-Netzwerken."
 
 #: C/account-irc.page:31(title)
-#| msgid "IRC Account Details"
 msgid "IRC account details"
 msgstr "IRC-Kontendetails"
 
@@ -3205,10 +3206,17 @@ msgid "NickServ Passwords"
 msgstr "NickServ-Passwörter"
 
 #: C/account-irc.page:66(p)
+#| msgid ""
+#| "On some networks, nicknames can be registered using a service known as "
+#| "NickServ. <app>Empathy</app> does not directly support nickname passwords. "
+#| "On some networks, including the popular FreeNode network, server passwords "
+#| "are automatically forwarded to NickServ, allowing you to set this field to "
+#| "identify yourself with NickServ. See <link xref=\"irc-nick-password\"/> "
+#| "for more details."
 msgid ""
 "On some networks, nicknames can be registered using a service known as "
 "NickServ. <app>Empathy</app> does not directly support nickname passwords. On "
-"some networks, including the popular FreeNode network, server passwords are "
+"some networks, including the popular freenode network, server passwords are "
 "automatically forwarded to NickServ, allowing you to set this field to "
 "identify yourself with NickServ. See <link xref=\"irc-nick-password\"/> for "
 "more details."
@@ -3386,6 +3394,10 @@ msgid "translator-credits"
 msgstr ""
 "Mario Blättermann <mariobl@gnome.org>, 2008, 2009, 2010\n"
 "Philipp Kerling <k.philipp@gmail.com>, 2008"
+
+#~ msgid "To join such a room, if you know the password:"
+#~ msgstr ""
+#~ "So betreten Sie einen solchen Raum, falls Ihnen das Passwort bekannt ist:"
 
 #~ msgid ""
 #~ "Click on the trash icon next to the account name to remove the account."
