@@ -125,17 +125,6 @@ tp_contact_factory_set_aliases_cb (TpConnection *connection,
 }
 
 static void
-tp_contact_factory_set_location_cb (TpConnection *tp_conn,
-				    const GError *error,
-				    gpointer user_data,
-				    GObject *weak_object)
-{
-	if (error != NULL) {
-		DEBUG ("Error setting location: %s", error->message);
-	}
-}
-
-static void
 tp_contact_factory_avatar_retrieved_cb (TpConnection *connection,
 					guint         handle,
 					const gchar  *token,
@@ -729,24 +718,6 @@ empathy_tp_contact_factory_set_alias (EmpathyTpContactFactory *tp_factory,
 							       G_OBJECT (tp_factory));
 
 	g_hash_table_destroy (new_alias);
-}
-
-void
-empathy_tp_contact_factory_set_location (EmpathyTpContactFactory *tp_factory,
-					 GHashTable              *location)
-{
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-
-	g_return_if_fail (EMPATHY_IS_TP_CONTACT_FACTORY (tp_factory));
-
-	DEBUG ("Setting location");
-
-	tp_cli_connection_interface_location_call_set_location (priv->connection,
-								 -1,
-								 location,
-								 tp_contact_factory_set_location_cb,
-								 NULL, NULL,
-								 G_OBJECT (tp_factory));
 }
 
 static void

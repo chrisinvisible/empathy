@@ -38,7 +38,6 @@
 
 #include "libempathy/empathy-enum-types.h"
 #include "libempathy/empathy-location.h"
-#include "libempathy/empathy-tp-contact-factory.h"
 #include "libempathy/empathy-utils.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_LOCATION
@@ -183,6 +182,16 @@ empathy_location_manager_class_init (EmpathyLocationManagerClass *class)
 }
 
 static void
+publish_location_cb (TpConnection *connection,
+                     const GError *error,
+                     gpointer user_data,
+                     GObject *weak_object)
+{
+  if (error != NULL)
+      DEBUG ("Error setting location: %s", error->message);
+}
+
+static void
 publish_location (EmpathyLocationManager *self,
     TpConnection *conn,
     gboolean force_publication)
@@ -191,7 +200,6 @@ publish_location (EmpathyLocationManager *self,
   guint connection_status = -1;
   gboolean can_publish;
   EmpathyConf *conf = empathy_conf_get ();
-  EmpathyTpContactFactory *factory;
 
   if (!conn)
     return;
@@ -215,9 +223,8 @@ publish_location (EmpathyLocationManager *self,
       (g_hash_table_size (priv->location) == 0 ? "empty" : ""),
       conn);
 
-  factory = empathy_tp_contact_factory_dup_singleton (conn);
-  empathy_tp_contact_factory_set_location (factory, priv->location);
-  g_object_unref (factory);
+  tp_cli_connection_interface_location_call_set_location (conn, -1,
+      priv->location, publish_location_cb, NULL, NULL, G_OBJECT (self));
 }
 
 typedef struct

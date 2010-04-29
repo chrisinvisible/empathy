@@ -104,8 +104,6 @@ void                     empathy_tp_contact_factory_get_from_handle  (EmpathyTpC
 void                     empathy_tp_contact_factory_set_alias        (EmpathyTpContactFactory *tp_factory,
 								      EmpathyContact          *contact,
 								      const gchar             *alias);
-void                     empathy_tp_contact_factory_set_location     (EmpathyTpContactFactory *tp_factory,
-								      GHashTable              *location);
 G_END_DECLS
 
 #endif /* __EMPATHY_TP_CONTACT_FACTORY_H__ */
