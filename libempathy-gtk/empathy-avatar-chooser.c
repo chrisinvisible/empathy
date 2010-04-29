@@ -30,7 +30,6 @@
 #include <gio/gio.h>
 
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-tp-contact-factory.h>
 
 #include "empathy-avatar-chooser.h"
 #include "empathy-conf.h"
@@ -63,7 +62,6 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAvatarChooser)
 typedef struct {
-	EmpathyTpContactFactory *factory;
 	TpConnection            *connection;
 	GtkFileChooser          *chooser_dialog;
 
@@ -256,7 +254,6 @@ avatar_chooser_finalize (GObject *object)
 
 	avatar_chooser_set_connection (EMPATHY_AVATAR_CHOOSER (object), NULL);
 	g_assert (priv->connection == NULL);
-	g_assert (priv->factory == NULL);
 
 	if (priv->avatar != NULL) {
 		empathy_avatar_unref (priv->avatar);
@@ -274,14 +271,12 @@ avatar_chooser_set_connection (EmpathyAvatarChooser *self,
 	if (priv->connection != NULL) {
 		g_object_unref (priv->connection);
 		priv->connection = NULL;
-
-		g_object_unref (priv->factory);
-		priv->factory = NULL;
 	}
 
 	if (connection != NULL) {
+		GQuark features[] = { TP_CONNECTION_FEATURE_AVATAR_REQUIREMENTS, 0 };
 		priv->connection = g_object_ref (connection);
-		priv->factory = empathy_tp_contact_factory_dup_singleton (connection);
+		tp_proxy_prepare_async (priv->connection, features, NULL, NULL);
 	}
 }
 
@@ -409,8 +404,7 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 					EmpathyAvatar        *avatar)
 {
 	EmpathyAvatarChooserPriv *priv = GET_PRIV (chooser);
-	guint                     max_width = 0, max_height = 0, max_size = 0;
-	gchar                   **mime_types = NULL;
+	TpAvatarRequirements     *req;
 	gboolean                  needs_conversion = FALSE;
 	guint                     width, height;
 	gchar                    *new_format_name = NULL;
@@ -420,12 +414,11 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 	gchar                    *converted_image_data = NULL;
 	gsize                     converted_image_size = 0;
 
-	g_object_get (priv->factory,
-		"avatar-mime-types", &mime_types, /* Needs g_strfreev-ing */
-		"avatar-max-width", &max_width,
-		"avatar-max-height", &max_height,
-		"avatar-max-size", &max_size,
-		NULL);
+	req = tp_connection_get_avatar_requirements (priv->connection);
+	if (req == NULL) {
+		DEBUG ("Avatar requirements not ready");
+		return NULL;
+	}
 
 	/* Smaller is the factor, smaller will be the image.
 	 * 0 is an empty image, 1 is the full size. */
@@ -435,7 +428,7 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 
 	/* Check if we need to convert to another image format */
 	if (avatar_chooser_need_mime_type_conversion (avatar->format,
-						      mime_types,
+						      req->supported_mime_types,
 						      &new_format_name,
 						      &new_mime_type)) {
 		DEBUG ("Format conversion needed, we'll use mime type '%s' "
@@ -443,7 +436,6 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 		       new_mime_type, new_format_name, avatar->format);
 		needs_conversion = TRUE;
 	}
-	g_strfreev (mime_types);
 
 	/* If there is no format we can use, report error to the user. */
 	if (new_mime_type == NULL || new_format_name == NULL) {
@@ -456,26 +448,26 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 	/* If width or height are too big, it needs converting. */
 	width = gdk_pixbuf_get_width (pixbuf);
 	height = gdk_pixbuf_get_height (pixbuf);
-	if ((max_width > 0 && width > max_width) ||
-	    (max_height > 0 && height > max_height)) {
+	if ((req->maximum_width > 0 && width > req->maximum_width) ||
+	    (req->maximum_height > 0 && height > req->maximum_height)) {
 		gdouble h_factor, v_factor;
 
-		h_factor = (gdouble) max_width / width;
-		v_factor = (gdouble) max_height / height;
+		h_factor = (gdouble) req->maximum_width / width;
+		v_factor = (gdouble) req->maximum_height / height;
 		factor = max_factor = MIN (h_factor, v_factor);
 
 		DEBUG ("Image dimensions (%dx%d) are too big. Max is %dx%d.",
-		       width, height, max_width, max_height);
+		       width, height, req->maximum_width, req->maximum_height);
 
 		needs_conversion = TRUE;
 	}
 
 	/* If the data len is too big and no other conversion is needed,
 	 * try with a lower factor. */
-	if (max_size > 0 && avatar->len > max_size && !needs_conversion) {
+	if (req->maximum_bytes > 0 && avatar->len > req->maximum_bytes && !needs_conversion) {
 		DEBUG ("Image data (%"G_GSIZE_FORMAT" bytes) is too big "
 		       "(max is %u bytes), conversion needed.",
-		       avatar->len, max_size);
+		       avatar->len, req->maximum_bytes);
 
 		factor = 0.5;
 		needs_conversion = TRUE;
@@ -532,14 +524,14 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 		DEBUG ("Produced an image data of %"G_GSIZE_FORMAT" bytes.",
 			converted_image_size);
 
-		if (max_size == 0)
+		if (req->maximum_bytes == 0)
 			break;
 
 		/* Make a binary search for the bigest factor that produce
 		 * an image data size less than max_size */
-		if (converted_image_size > max_size)
+		if (converted_image_size > req->maximum_bytes)
 			max_factor = factor;
-		if (converted_image_size < max_size)
+		if (converted_image_size < req->maximum_bytes)
 			min_factor = factor;
 		factor = (min_factor + max_factor)/2;
 
@@ -551,7 +543,7 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 		 *   a difference of 1k.
 		 */
 	} while (min_factor != max_factor &&
-	         abs (max_size - converted_image_size) > 1024);
+	         abs (req->maximum_bytes - converted_image_size) > 1024);
 	g_free (new_format_name);
 
 	/* Takes ownership of new_mime_type and converted_image_data */
