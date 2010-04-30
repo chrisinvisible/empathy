@@ -30,8 +30,6 @@
 void
 g_io_module_load (GIOModule *module)
 {
-  textdomain (GETTEXT_PACKAGE);
-
   cc_empathy_accounts_panel_register (module);
 }
 
