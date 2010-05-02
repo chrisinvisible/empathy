@@ -313,9 +313,7 @@ empathy_avatar_image_set (EmpathyAvatarImage *avatar_image,
 	}
 
 	if (!priv->pixbuf) {
-		gtk_image_set_from_icon_name (GTK_IMAGE (priv->image),
-					      "stock_person",
-					      GTK_ICON_SIZE_DIALOG);
+		gtk_image_clear (GTK_IMAGE (priv->image));
 		return;
 	}
 
