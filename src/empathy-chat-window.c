@@ -108,6 +108,7 @@ typedef struct {
 	GtkAction   *menu_tabs_right;
 	GtkAction   *menu_tabs_detach;
 
+	/* Last user action time we acted upon to show a tab */
 	guint32    x_user_action_time;
 } EmpathyChatWindowPriv;
 
@@ -2311,8 +2312,8 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	priv = GET_PRIV (window);
 
 	/* Don't present or switch tab if the action was earlier then the
-		 last actions X time, accounting for overflow and the first ever
-		 presentation */
+	 * last actions X time, accounting for overflow and the first ever
+	 * presentation */
 
 	if (priv->x_user_action_time != 0
 		&& X_EARLIER_OR_EQL (x_timestamp, priv->x_user_action_time))
