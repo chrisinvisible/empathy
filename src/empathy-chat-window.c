@@ -2313,7 +2313,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 		x_timestamp = GDK_CURRENT_TIME;
 	} else {
 		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
-		/* Don't present or switch tab if the action was earlier then the
+		/* Don't present or switch tab if the action was earlier than the
 		 * last actions X time, accounting for overflow and the first ever
 		* presentation */
 
