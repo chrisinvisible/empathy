@@ -32,6 +32,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdkx.h>
 #include <glib/gi18n.h>
 #include <libnotify/notification.h>
 
@@ -61,6 +62,13 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
+
+/* Macro to compare guint32 X timestamps, while accounting for wrapping around
+ */
+#define X_EARLIER_OR_EQL(t1, t2) \
+	((t1 <= t2 && ((t2 - t1) < G_MAXUINT32/2))  \
+	  || (t1 >= t2 && (t1 - t2) > (G_MAXUINT32/2)) \
+	)
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChatWindow)
 typedef struct {
@@ -99,6 +107,9 @@ typedef struct {
 	GtkAction   *menu_tabs_left;
 	GtkAction   *menu_tabs_right;
 	GtkAction   *menu_tabs_detach;
+
+	/* Last user action time we acted upon to show a tab */
+	guint32    x_user_action_time;
 } EmpathyChatWindowPriv;
 
 static GList *chat_windows = NULL;
@@ -1682,7 +1693,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 			if (connection) {
 				empathy_dispatcher_chat_with_contact_id (
-					connection, contact_id, NULL, NULL);
+					connection, contact_id, gtk_get_current_event_time (), NULL, NULL);
 			}
 
 			g_strfreev (strv);
@@ -1704,7 +1715,8 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		}
 
 		/* Added to take care of any outstanding chat events */
-		empathy_chat_window_present_chat (chat);
+		empathy_chat_window_present_chat (chat,
+			EMPATHY_DISPATCHER_NON_USER_ACTION);
 
 		/* We should return TRUE to remove the data when doing
 		 * GDK_ACTION_MOVE, but we don't here otherwise it has
@@ -2267,10 +2279,12 @@ empathy_chat_window_find_chat (TpAccount   *account,
 }
 
 void
-empathy_chat_window_present_chat (EmpathyChat *chat)
+empathy_chat_window_present_chat (EmpathyChat *chat,
+				  gint64 timestamp)
 {
 	EmpathyChatWindow     *window;
 	EmpathyChatWindowPriv *priv;
+	guint32 x_timestamp;
 
 	g_return_if_fail (EMPATHY_IS_CHAT (chat));
 
@@ -2281,16 +2295,40 @@ empathy_chat_window_present_chat (EmpathyChat *chat)
 		window = empathy_chat_window_get_default (empathy_chat_is_room (chat));
 		if (!window) {
 			window = empathy_chat_window_new ();
+			gtk_widget_show_all (GET_PRIV (window)->dialog);
 		}
 
 		empathy_chat_window_add_chat (window, chat);
 	}
 
-	priv = GET_PRIV (window);
-	empathy_chat_window_switch_to_chat (window, chat);
-	empathy_window_present (GTK_WINDOW (priv->dialog));
+	/* Don't force the window to show itself when it wasn't
+	 * an action by the user
+	 */
+	if (timestamp == EMPATHY_DISPATCHER_NON_USER_ACTION)
+		return;
 
- 	gtk_widget_grab_focus (chat->input_text_view);
+	priv = GET_PRIV (window);
+
+	if (timestamp == EMPATHY_DISPATCHER_CURRENT_TIME) {
+		x_timestamp = GDK_CURRENT_TIME;
+	} else {
+		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
+		/* Don't present or switch tab if the action was earlier than the
+		 * last actions X time, accounting for overflow and the first ever
+		* presentation */
+
+		if (priv->x_user_action_time != 0
+			&& X_EARLIER_OR_EQL (x_timestamp, priv->x_user_action_time))
+			return;
+
+		priv->x_user_action_time = x_timestamp;
+	}
+
+	empathy_chat_window_switch_to_chat (window, chat);
+	empathy_window_present_with_time (GTK_WINDOW (priv->dialog),
+	  x_timestamp);
+
+	gtk_widget_grab_focus (chat->input_text_view);
 }
 
 void

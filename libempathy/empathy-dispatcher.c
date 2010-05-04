@@ -141,6 +141,7 @@ typedef struct
 
   /* Properties to pass to the channel when requesting it */
   GHashTable *request;
+  gint64 timestamp;
   EmpathyDispatcherRequestCb *cb;
   gpointer user_data;
   gpointer *request_data;
@@ -218,6 +219,7 @@ new_dispatcher_request_data (EmpathyDispatcher *self,
                              guint handle_type,
                              guint handle,
                              GHashTable *request,
+                             gint64 timestamp,
                              EmpathyContact *contact,
                              EmpathyDispatcherRequestCb *cb,
                              gpointer user_data)
@@ -233,6 +235,7 @@ new_dispatcher_request_data (EmpathyDispatcher *self,
   result->handle_type = handle_type;
   result->handle = handle;
   result->request = request;
+  result->timestamp = timestamp;
 
   if (contact != NULL)
     result->contact = g_object_ref (contact);
@@ -570,7 +573,8 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
                                    guint handle,
                                    GHashTable *properties,
                                    gboolean incoming,
-                                   const GPtrArray *requests_satisfied)
+                                   const GPtrArray *requests_satisfied,
+                                   gint64 timestamp)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   TpChannel         *channel;
@@ -627,7 +631,7 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
   priv->channels = g_list_prepend (priv->channels, channel);
 
   operation = empathy_dispatch_operation_new (connection, channel, NULL,
-    incoming);
+    incoming, timestamp);
 
   g_object_unref (channel);
 
@@ -688,7 +692,8 @@ dispatcher_connection_new_channel_with_properties (
     TpConnection *connection,
     const gchar *object_path,
     GHashTable *properties,
-    const GPtrArray *requests_satisfied)
+    const GPtrArray *requests_satisfied,
+    gint64 timestamp)
 {
   const gchar *channel_type;
   guint handle_type;
@@ -732,7 +737,7 @@ dispatcher_connection_new_channel_with_properties (
 
   dispatcher_connection_new_channel (self, connection,
     object_path, channel_type, handle_type, handle, properties, !requested,
-    requests_satisfied);
+    requests_satisfied, timestamp);
 }
 
 static void
@@ -1298,6 +1303,7 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
 
 void
 empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
+                                      gint64 timestamp,
                                       EmpathyDispatcherRequestCb *callback,
                                       gpointer user_data)
 {
@@ -1329,7 +1335,8 @@ empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   /* The contact handle might not be known yet */
   request_data = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
-    empathy_contact_get_handle (contact), NULL, contact, callback, user_data);
+    empathy_contact_get_handle (contact), NULL, timestamp, contact,
+    callback, user_data);
   request_data->should_ensure = TRUE;
 
   connection_data->outstanding_requests = g_list_prepend
@@ -1346,6 +1353,7 @@ typedef struct
   EmpathyDispatcher *dispatcher;
   EmpathyDispatcherRequestCb *callback;
   gpointer user_data;
+  gint64 timestamp;
 } ChatWithContactIdData;
 
 static void
@@ -1368,8 +1376,8 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
     }
   else
     {
-      empathy_dispatcher_chat_with_contact (contact, data->callback,
-          data->user_data);
+      empathy_dispatcher_chat_with_contact (contact, data->timestamp,
+          data->callback, data->user_data);
     }
 
   g_object_unref (data->dispatcher);
@@ -1379,6 +1387,7 @@ dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
 void
 empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
                                          const gchar *contact_id,
+                                         gint64 timestamp,
                                          EmpathyDispatcherRequestCb *callback,
                                          gpointer user_data)
 {
@@ -1395,6 +1404,7 @@ empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
   data->dispatcher = self;
   data->callback = callback;
   data->user_data = user_data;
+  data->timestamp = timestamp;
   empathy_tp_contact_factory_get_from_id (factory, contact_id,
       dispatcher_chat_with_contact_id_cb, data, NULL, NULL);
 
@@ -1437,6 +1447,7 @@ dispatcher_request_handles_cb (TpConnection *connection,
 void
 empathy_dispatcher_join_muc (TpConnection *connection,
                              const gchar *roomname,
+                             gint64 timestamp,
                              EmpathyDispatcherRequestCb *callback,
                              gpointer user_data)
 {
@@ -1458,7 +1469,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
 
   /* Don't know the room handle yet */
   request_data  = new_dispatcher_request_data (self, connection,
-    TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL,
+    TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL, timestamp,
     NULL, callback, user_data);
   request_data->should_ensure = TRUE;
 
@@ -1619,7 +1630,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
       call = tp_cli_channel_dispatcher_call_ensure_channel (
           priv->channel_dispatcher,
           -1, tp_proxy_get_object_path (TP_PROXY (account)),
-          request_data->request, 0, handler,
+          request_data->request, request_data->timestamp, handler,
           dispatcher_create_channel_cb, request_data, NULL, NULL);
     }
   else
@@ -1627,7 +1638,7 @@ empathy_dispatcher_call_create_or_ensure_channel (
       call = tp_cli_channel_dispatcher_call_create_channel (
           priv->channel_dispatcher,
           -1, tp_proxy_get_object_path (TP_PROXY (account)),
-          request_data->request, 0, handler,
+          request_data->request, request_data->timestamp, handler,
           dispatcher_create_channel_cb, request_data, NULL,
           G_OBJECT (dispatcher));
     }
@@ -1653,6 +1664,7 @@ void
 empathy_dispatcher_create_channel (EmpathyDispatcher *self,
                                    TpConnection *connection,
                                    GHashTable *request,
+                                   gint64 timestamp,
                                    EmpathyDispatcherRequestCb *callback,
                                    gpointer user_data)
 {
@@ -1681,7 +1693,7 @@ empathy_dispatcher_create_channel (EmpathyDispatcher *self,
   handle = tp_asv_get_uint32 (request, TP_IFACE_CHANNEL ".TargetHandle", NULL);
 
   request_data  = new_dispatcher_request_data (self, connection,
-    channel_type, handle_type, handle, request,
+    channel_type, handle_type, handle, request, timestamp,
     NULL, callback, user_data);
 
   connection_data->outstanding_requests = g_list_prepend
@@ -2068,7 +2080,7 @@ empathy_dispatcher_handle_channels (EmpathyHandler *handler,
       properties = g_value_get_boxed (g_value_array_get_nth (arr, 1));
 
       dispatcher_connection_new_channel_with_properties (self,
-        connection, object_path, properties, requests_satisfied);
+        connection, object_path, properties, requests_satisfied, timestamp);
     }
 
   return TRUE;

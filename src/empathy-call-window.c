@@ -2387,7 +2387,8 @@ start_call (EmpathyCallWindow *self)
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
   priv->call_started = TRUE;
-  empathy_call_handler_start_call (priv->handler);
+  empathy_call_handler_start_call (priv->handler,
+      gtk_get_current_event_time ());
 
   if (empathy_call_handler_has_initial_video (priv->handler))
     {

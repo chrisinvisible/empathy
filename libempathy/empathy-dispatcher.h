@@ -40,6 +40,9 @@ G_BEGIN_DECLS
 #define EMPATHY_IS_DISPATCHER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_DISPATCHER))
 #define EMPATHY_DISPATCHER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherClass))
 
+#define EMPATHY_DISPATCHER_NON_USER_ACTION  (G_GINT64_CONSTANT (0))
+#define EMPATHY_DISPATCHER_CURRENT_TIME  G_MAXINT64
+
 typedef struct _EmpathyDispatcher      EmpathyDispatcher;
 typedef struct _EmpathyDispatcherClass EmpathyDispatcherClass;
 
@@ -65,15 +68,22 @@ typedef void (EmpathyDispatcherFindChannelClassCb) (
 GType empathy_dispatcher_get_type (void) G_GNUC_CONST;
 
 void empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
-  TpConnection *connection, GHashTable *request,
-  EmpathyDispatcherRequestCb *callback, gpointer user_data);
+  TpConnection *connection,
+  GHashTable *request,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
+  gpointer user_data);
 
 /* Requesting 1 to 1 text channels */
 void empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
-  const gchar *contact_id, EmpathyDispatcherRequestCb *callback,
+  const gchar *contact_id,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
   gpointer user_data);
 void  empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
-  EmpathyDispatcherRequestCb *callback, gpointer user_data);
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
+  gpointer user_data);
 
 /* Request a file channel to a specific contact */
 void empathy_dispatcher_send_file_to_contact (EmpathyContact *contact,
@@ -83,7 +93,9 @@ void empathy_dispatcher_send_file_to_contact (EmpathyContact *contact,
 
 /* Request a muc channel */
 void empathy_dispatcher_join_muc (TpConnection *connection,
-  const gchar *roomname, EmpathyDispatcherRequestCb *callback,
+  const gchar *roomname,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb *callback,
   gpointer user_data);
 
 void empathy_dispatcher_find_requestable_channel_classes_async

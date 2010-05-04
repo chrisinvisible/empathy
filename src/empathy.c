@@ -133,7 +133,8 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
            * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
         }
 
-      empathy_chat_window_present_chat (chat);
+      empathy_chat_window_present_chat (chat,
+          empathy_dispatch_operation_get_user_action_time (operation));
 
       empathy_dispatch_operation_claim (operation);
     }
@@ -481,7 +482,8 @@ account_status_changed_cb (TpAccount *account,
     return;
 
   empathy_dispatcher_join_muc (conn,
-      empathy_chatroom_get_room (room), NULL, NULL);
+      empathy_chatroom_get_room (room), EMPATHY_DISPATCHER_NON_USER_ACTION,
+      NULL, NULL);
 }
 
 static void
@@ -529,7 +531,8 @@ account_manager_chatroom_ready_cb (GObject *source_object,
           else
             {
               empathy_dispatcher_join_muc (conn,
-                  empathy_chatroom_get_room (room), NULL, NULL);
+                  empathy_chatroom_get_room (room),
+                  EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
             }
         }
 
