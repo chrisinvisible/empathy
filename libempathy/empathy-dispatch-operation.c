@@ -702,6 +702,16 @@ empathy_dispatch_operation_is_incoming (EmpathyDispatchOperation *operation)
   return priv->incoming;
 }
 
+void
+empathy_dispatch_operation_set_user_action_time (
+    EmpathyDispatchOperation *self,
+    gint64 user_action_time)
+{
+  EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
+
+  priv->user_action_time = user_action_time;
+}
+
 gint64
 empathy_dispatch_operation_get_user_action_time (EmpathyDispatchOperation *self)
 {

@@ -228,6 +228,12 @@ event_manager_add (EmpathyEventManager *manager,
 static void
 event_channel_process_func (EventPriv *event)
 {
+  gint64 timestamp = gtk_get_current_event_time ();
+  if (timestamp == GDK_CURRENT_TIME)
+    timestamp = G_MAXINT64;
+
+  empathy_dispatch_operation_set_user_action_time (event->approval->operation,
+    timestamp);
   empathy_dispatch_operation_approve (event->approval->operation);
 }
 
@@ -235,6 +241,12 @@ static void
 event_text_channel_process_func (EventPriv *event)
 {
   EmpathyTpChat *tp_chat;
+  gint64 timestamp = gtk_get_current_event_time ();
+  if (timestamp == GDK_CURRENT_TIME)
+    timestamp = G_MAXINT64;
+
+  empathy_dispatch_operation_set_user_action_time (event->approval->operation,
+    timestamp);
 
   if (event->approval->handler != 0)
     {
@@ -527,6 +539,7 @@ invite_dialog_response_cb (GtkDialog *dialog,
   TpChannel *channel;
   TpHandle self_handle;
   GArray *members;
+  gint64 timestamp;
 
   gtk_widget_destroy (GTK_WIDGET (approval->dialog));
   approval->dialog = NULL;
@@ -556,6 +569,12 @@ invite_dialog_response_cb (GtkDialog *dialog,
   tp_cli_channel_interface_group_call_add_members (channel, -1, members,
       "", NULL, NULL, NULL, NULL);
 
+  timestamp = gtk_get_current_event_time ();
+  if (timestamp == GDK_CURRENT_TIME)
+    timestamp = G_MAXINT64;
+
+  empathy_dispatch_operation_set_user_action_time (approval->operation,
+    timestamp);
   empathy_dispatch_operation_approve (approval->operation);
 
   g_array_free (members, TRUE);
