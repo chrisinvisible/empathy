@@ -230,7 +230,7 @@ event_channel_process_func (EventPriv *event)
 {
   gint64 timestamp = gtk_get_current_event_time ();
   if (timestamp == GDK_CURRENT_TIME)
-    timestamp = G_MAXINT64;
+    timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
 
   empathy_dispatch_operation_set_user_action_time (event->approval->operation,
     timestamp);
@@ -243,7 +243,7 @@ event_text_channel_process_func (EventPriv *event)
   EmpathyTpChat *tp_chat;
   gint64 timestamp = gtk_get_current_event_time ();
   if (timestamp == GDK_CURRENT_TIME)
-    timestamp = G_MAXINT64;
+    timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
 
   empathy_dispatch_operation_set_user_action_time (event->approval->operation,
     timestamp);
@@ -571,7 +571,7 @@ invite_dialog_response_cb (GtkDialog *dialog,
 
   timestamp = gtk_get_current_event_time ();
   if (timestamp == GDK_CURRENT_TIME)
-    timestamp = G_MAXINT64;
+    timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
 
   empathy_dispatch_operation_set_user_action_time (approval->operation,
     timestamp);

@@ -2309,7 +2309,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 
 	priv = GET_PRIV (window);
 
-	if (timestamp == G_MAXINT64) {
+	if (timestamp == EMPATHY_DISPATCHER_CURRENT_TIME) {
 		x_timestamp = GDK_CURRENT_TIME;
 	} else {
 		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
