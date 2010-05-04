@@ -2307,24 +2307,28 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	if (timestamp == EMPATHY_DISPATCHER_NON_USER_ACTION)
 		return;
 
-	x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
-
 	priv = GET_PRIV (window);
 
-	/* Don't present or switch tab if the action was earlier then the
-	 * last actions X time, accounting for overflow and the first ever
-	 * presentation */
+	if (timestamp == G_MAXINT64) {
+		x_timestamp = GDK_CURRENT_TIME;
+	} else {
+		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
+		/* Don't present or switch tab if the action was earlier then the
+		 * last actions X time, accounting for overflow and the first ever
+		* presentation */
 
-	if (priv->x_user_action_time != 0
-		&& X_EARLIER_OR_EQL (x_timestamp, priv->x_user_action_time))
-		return;
+		if (priv->x_user_action_time != 0
+			&& X_EARLIER_OR_EQL (x_timestamp, priv->x_user_action_time))
+			return;
+
+		priv->x_user_action_time = x_timestamp;
+	}
 
 	empathy_chat_window_switch_to_chat (window, chat);
 	empathy_window_present_with_time (GTK_WINDOW (priv->dialog),
 	  x_timestamp);
 
 	gtk_widget_grab_focus (chat->input_text_view);
-	priv->x_user_action_time = x_timestamp;
 }
 
 void
