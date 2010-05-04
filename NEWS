@@ -1,3 +1,118 @@
+NEW in 2.31.1 (04/05/2010)
+=============
+
+The "This is not the calendar-based joke you're looking for" release.
+
+This the first release in the new 2.31 cycle. You should continue to use
+2.30.x releases for now if you don't feel adventurous.
+
+Empathy now depends on telepathy-glib 0.11.3 and GTK+ 2.20.0.
+
+This new releases now uses status icons from your icon theme.
+The conversation window is now able to "undo" the closing of a tab.
+
+
+Bugs fixed (since 2.30.1):
+ - Fixed #539765, Jabber contacts in the jabber roster with subscription=none are not shown (Guillaume Desmottes)
+ - Fixed #579813, Use capabilities from TpContact (Guillaume Desmottes)
+ - Fixed #579936, Different icon for hidden status
+ - Fixed #588955, Dont steal focus when join favourites clicked
+ - Fixed #598446, Use GtkSpinner (Xavier Claessens)
+ - Fixed #599162, Should use TpContact get Location (Guillaume Desmottes)
+ - Fixed #602420, Should use status icons from the theme (Guillaume Desmottes)
+ - Fixed #602937, Can't display video preview when there is no call (Guillaume Desmottes)
+ - Fixed #603606, Can't stop sending video to the echo bot
+ - Fixed #604475, new messages after a long time shouldnt be wrapped with the old ones (Felix Kaser)
+ - Fixed #607446, Support the append hint for notifications (Nicolò Chieffo)
+ - Fixed #608104, Use clear icon inside password entry (Guillaume Desmottes)
+ - Fixed #609823, the text in the infobar should stick to the left (Felix Kaser)
+ - Fixed #609832, “Undo close tab” would be nice. (Jonny Lamb)
+ - Fixed #610477, should hang up calls gracefully rather than calling StreamHandler.Error() (Guillaume Desmottes)
+ - Fixed #612020, Empathy fails to initiate a audio/video call over XMPP (Olivier Crête)
+ - Fixed #612185, Remove check for GTK version once we hard dep on 2.20 (Xavier Claessens)
+ - Fixed #612390, Add icon close to the People Nearby group
+ - Fixed #612409, Should depend on GTK+ 2.20
+ - Fixed #612864, Keep ordering of contacts consistent (Jonny Lamb)
+ - Fixed #612949, contact list is empty for a jabber account with a lot of contacts (Guillaume Desmottes)
+ - Fixed #613043, Should use Account.Interface.Avatar to set avatar (Guillaume Desmottes)
+ - Fixed #613044, Should set Account.Nickname instead of calling SetAlias (Guillaume Desmottes)
+ - Fixed #613243, Join room should be greyed out for AIM
+ - Fixed #613382, Previous/Next Tab menu items aren't disabled if at the first/last tab and gtk-keynav-wrap-around is 0 (Aaron Brown)
+ - Fixed #613558, make People Nearby a fake group like Favourites and Ungrouped
+ - Fixed #613583, Should use tp_g_signal_connect_object instead of empathy_signal_connect_weak (Guillaume Desmottes)
+ - Fixed #613603, [patch]Empathy should allow users to toggle auto-away mode on/off (Christian Kampka)
+ - Fixed #613930, empathy incorrectly updates our own IRC nick for /me (Guillaume Desmottes)
+ - Fixed #614002, Shouldn't request RoomList channel if not supported by connection (Guillaume Desmottes)
+ - Fixed #614012, New contacts don't appear on the map (Guillaume Desmottes)
+ - Fixed #614052, Show contacts' status messages in compact mode (Will Thompson)
+ - Fixed #614162, use JID for contact list if the alias of a contact is empty (Felix Kaser)
+ - Fixed #614236, Stop using NewChannel to get groups (Guillaume Desmottes)
+ - Fixed #614375, People Nearby group is gone if I don't build with tpl (Guillaume Desmottes)
+ - Fixed #614524, MUC contacts now appear as "Ungrouped"
+ - Fixed #614562, Contacts with no status message (e.g. IRC MUCs) have "(null)" as their status (Guillaume Desmottes)
+ - Fixed #614862, No need to create a model
+ - Fixed #614874, account-chooser crashes when setting a filter and has-all-option to TRUE (Guillaume Desmottes)
+ - Fixed #614944, GnomeGoal: Correct accounts .desktop file
+ - Fixed #615052, debug window: better default directory and name (Guillaume Desmottes)
+ - Fixed #615135, Crash IA__g_hash_table_unref, contact_finalize at empathy-contact.c line 311 (Guillaume Desmottes)
+ - Fixed #615976, empathy_dispatcher_handle_channels ignores timestamp
+ - Fixed #616439, URL should be highlighted in channel topics
+ - Fixed #616859, build failure due to missing header (Jasper Lievisse Adriaanse)
+ - Fixed #617262, Empathy accounts CC module calls textdomain
+ - Fixed #533638, Topic by expander (Xavier Claessens)
+ - Fixed #608103, Missing image icon shows up when contact has no avatar (Frédéric Péters)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated ast Translation (Xandru Armesto)
+ - Updated bg Translation (Alexander Shopov)
+ - Updated bn Translation (Jamil Ahmed)
+ - Updated ca Translation (Jordi Serratosa, Gil Forcada)
+ - Updated ca@valencia Translation (Carles Ferrando)
+ - Updated crh Translation (Reşat SABIQ)
+ - Updated cs Translation (Petr Kovar, Jiri Eischmann)
+ - Updated da Translation (Ask H. Larsen)
+ - Updated de Translation (Mario Blättermann, Christian Kirbach, Christian.Kirbach)
+ - Updated el Translation (Simos Xenitellis, Kostas Papadimas)
+ - Updated en_GB Translation (Bruce Cowan)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin, Mattias Põldaru)
+ - Updated eu Translation (Inaki Larranaga Murgoitio)
+ - Updated fi Translation (Timo Jyrinki)
+ - Updated fr Translation (Claude Paroz, Bruno Brouard)
+ - Updated gl Translation (Francisco Diéguez, Fran Diéguez)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande, Francesco Marlatta)
+ - Updated ko Translation (Changwoo Ryu)
+ - Updated ku Translation (Sîmurg56, simurg56)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated lv Translation (Peteris Krisjanis)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated oc Translation (Yannig Marchegay)
+ - Updated pa Translation (A S Alam)
+ - Updated pl Translation (Piotr Drąg)
+ - Updated pt_BR Translation (Vladimir Melo, Djavan Fagundes)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated ro Translation (Adi Roiban)
+ - Updated ru Translation (Leonid Kanter)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sr@latin Translation (Branko Kokanović)
+ - Updated sr Translation (Branko Kokanović)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (vasudeven)
+ - Updated th Translation (Theppitak Karoonboonyanan)
+ - Updated uk Translation (Maxim V. Dziumanenko)
+ - Updated zh_CN Translation (Aron Xu)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated el Documentation translation (Simos Xenitellis, Marios Zindilis, Μάριος Ζηντίλης)
+ - Updated es Documentation translation (Jorge González)
+ - Updated fr Documentation translation (Bruno Brouard)
+ - Updated it Documentation translation (Milo Casagrande)
+
 NEW in 2.30.0 (29/03/2010)
 =============
 

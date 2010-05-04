@@ -1,8 +1,8 @@
 dnl If not 1, append datestamp to the version number
-m4_define(empathy_released, 0)
+m4_define(empathy_released, 1)
 
 m4_define([empathy_major_version], [2])
-m4_define([empathy_minor_version], [30])
+m4_define([empathy_minor_version], [31])
 m4_define([empathy_micro_version], [1])
 m4_define([empathy_nano_version], [0])
 
