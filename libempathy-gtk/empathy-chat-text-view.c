@@ -333,23 +333,18 @@ chat_text_view_populate_popup (EmpathyChatTextView *view,
 static gboolean
 chat_text_view_is_scrolled_down (EmpathyChatTextView *view)
 {
-	GtkWidget *sw;
+	GtkAdjustment *vadj;
+	gdouble value;
+	gdouble upper;
+	gdouble page_size;
 
-	sw = gtk_widget_get_parent (GTK_WIDGET (view));
-	if (GTK_IS_SCROLLED_WINDOW (sw)) {
-		GtkAdjustment *vadj;
-		gdouble value;
-		gdouble upper;
-		gdouble page_size;
+	vadj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (view));
+	value = gtk_adjustment_get_value (vadj);
+	upper = gtk_adjustment_get_upper (vadj);
+	page_size = gtk_adjustment_get_page_size (vadj);
 
-		vadj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
-		value = gtk_adjustment_get_value (vadj);
-		upper = gtk_adjustment_get_upper (vadj);
-		page_size = gtk_adjustment_get_page_size (vadj);
-
-		if (value < upper - page_size) {
-			return FALSE;
-		}
+	if (value < upper - page_size) {
+		return FALSE;
 	}
 
 	return TRUE;
@@ -493,13 +488,8 @@ chat_text_view_size_allocate (GtkWidget     *widget,
 
 	if (down) {
 		GtkAdjustment *adj;
-		GtkWidget *sw;
 
-		sw = gtk_widget_get_parent (widget);
-		if (!GTK_IS_SCROLLED_WINDOW (sw))
-			return;
-
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+		adj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (widget));
 		gtk_adjustment_set_value (adj,
 					  gtk_adjustment_get_upper (adj) -
 					  gtk_adjustment_get_page_size (adj));
@@ -677,17 +667,10 @@ chat_text_view_scroll_cb (EmpathyChatTextView *view)
 	EmpathyChatTextViewPriv *priv;
 	GtkAdjustment      *adj;
 	gdouble             max_val;
-	GtkWidget          *sw;
 
 	priv = GET_PRIV (view);
 
-	sw = gtk_widget_get_parent (GTK_WIDGET (view));
-	if (!GTK_IS_SCROLLED_WINDOW (sw)) {
-		chat_text_view_scroll_stop (view);
-		return FALSE;
-	}
-
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+	adj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (view));
 	max_val = gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj);
 
 	g_return_val_if_fail (priv->scroll_time != NULL, FALSE);
