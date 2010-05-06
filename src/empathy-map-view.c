@@ -35,9 +35,7 @@
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-location.h>
 
-#include <libempathy-gtk/empathy-contact-list-store.h>
-#include <libempathy-gtk/empathy-contact-list-view.h>
-#include <libempathy-gtk/empathy-presence-chooser.h>
+#include <libempathy-gtk/empathy-contact-menu.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include "empathy-map-view.h"
