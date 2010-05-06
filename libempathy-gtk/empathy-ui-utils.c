@@ -78,6 +78,7 @@ builder_get_file_valist (const gchar *filename,
 	DEBUG ("Loading file %s", filename);
 
 	gui = gtk_builder_new ();
+	gtk_builder_set_translation_domain (gui, GETTEXT_PACKAGE);
 	if (!gtk_builder_add_from_file (gui, filename, &error)) {
 		g_critical ("GtkBuilder Error (%s): %s",
 				filename, error->message);
