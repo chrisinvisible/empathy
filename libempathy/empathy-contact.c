@@ -84,6 +84,8 @@ static void empathy_contact_set_location (EmpathyContact *contact,
 static void set_capabilities_from_tp_caps (EmpathyContact *self,
     TpCapabilities *caps);
 
+static void contact_set_avatar_from_tp_contact (EmpathyContact *contact);
+
 G_DEFINE_TYPE (EmpathyContact, empathy_contact, G_TYPE_OBJECT);
 
 enum
@@ -146,6 +148,10 @@ tp_contact_notify_cb (TpContact *tp_contact,
     {
       set_capabilities_from_tp_caps (EMPATHY_CONTACT (contact),
           tp_contact_get_capabilities (tp_contact));
+    }
+  else if (!tp_strdiff (param->name, "avatar-file"))
+    {
+      contact_set_avatar_from_tp_contact (EMPATHY_CONTACT (contact));
     }
 }
 
@@ -348,6 +354,8 @@ set_tp_contact (EmpathyContact *contact,
 
   set_capabilities_from_tp_caps (contact,
       tp_contact_get_capabilities (tp_contact));
+
+  contact_set_avatar_from_tp_contact (contact);
 
   g_signal_connect (priv->tp_contact, "notify",
     G_CALLBACK (tp_contact_notify_cb), contact);
@@ -957,44 +965,6 @@ contact_get_avatar_filename (EmpathyContact *contact,
   return avatar_file;
 }
 
-void
-empathy_contact_load_avatar_data (EmpathyContact *contact,
-                                  const guchar *data,
-                                  const gsize len,
-                                  const gchar *format,
-                                  const gchar *token)
-{
-  EmpathyAvatar *avatar;
-  gchar *filename;
-  GError *error = NULL;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-  g_return_if_fail (data != NULL);
-  g_return_if_fail (len > 0);
-  g_return_if_fail (format != NULL);
-  g_return_if_fail (!EMP_STR_EMPTY (token));
-
-  /* Load and set the avatar */
-  filename = contact_get_avatar_filename (contact, token);
-  avatar = empathy_avatar_new (g_memdup (data, len), len, g_strdup (format),
-      g_strdup (token), filename);
-  empathy_contact_set_avatar (contact, avatar);
-  empathy_avatar_unref (avatar);
-
-  /* Save to cache if not yet in it */
-  if (filename && !g_file_test (filename, G_FILE_TEST_EXISTS))
-    {
-      if (!empathy_avatar_save_to_file (avatar, filename, &error))
-        {
-          DEBUG ("Failed to save avatar in cache: %s",
-            error ? error->message : "No error given");
-          g_clear_error (&error);
-        }
-      else
-          DEBUG ("Avatar saved to %s", filename);
-    }
-}
-
 gboolean
 empathy_contact_load_avatar_cache (EmpathyContact *contact,
                                    const gchar *token)
@@ -1465,3 +1435,34 @@ set_capabilities_from_tp_caps (EmpathyContact *self,
   capabilities = tp_caps_to_capabilities (caps);
   empathy_contact_set_capabilities (self, capabilities);
 }
+
+static void
+contact_set_avatar_from_tp_contact (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv = GET_PRIV (contact);
+  const gchar *mime;
+  const gchar *token;
+  GFile *file;
+
+  token = tp_contact_get_avatar_token (priv->tp_contact);
+  mime = tp_contact_get_avatar_mime_type (priv->tp_contact);
+  file = tp_contact_get_avatar_file (priv->tp_contact);
+
+  if (file != NULL)
+    {
+      EmpathyAvatar *avatar;
+      gchar *data;
+      gsize len;
+
+      g_file_load_contents (file, NULL, &data, &len, NULL, NULL);
+      avatar = empathy_avatar_new ((guchar *) data, len, g_strdup (mime), g_strdup (token),
+          g_file_get_path (file));
+      empathy_contact_set_avatar (contact, avatar);
+      empathy_avatar_unref (avatar);
+    }
+  else
+    {
+      empathy_contact_set_avatar (contact, NULL);
+    }
+}
+

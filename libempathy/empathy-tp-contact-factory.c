@@ -51,26 +51,12 @@ enum {
 
 static TpContactFeature contact_features[] = {
 	TP_CONTACT_FEATURE_ALIAS,
+	TP_CONTACT_FEATURE_AVATAR_TOKEN,
+	TP_CONTACT_FEATURE_AVATAR_DATA,
 	TP_CONTACT_FEATURE_PRESENCE,
 	TP_CONTACT_FEATURE_LOCATION,
 	TP_CONTACT_FEATURE_CAPABILITIES,
 };
-
-static EmpathyContact *
-tp_contact_factory_find_by_handle (EmpathyTpContactFactory *tp_factory,
-				   guint                    handle)
-{
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-	GList                       *l;
-
-	for (l = priv->contacts; l; l = l->next) {
-		if (empathy_contact_get_handle (l->data) == handle) {
-			return l->data;
-		}
-	}
-
-	return NULL;
-}
 
 static EmpathyContact *
 tp_contact_factory_find_by_tp_contact (EmpathyTpContactFactory *tp_factory,
@@ -111,163 +97,12 @@ tp_contact_factory_set_aliases_cb (TpConnection *connection,
 }
 
 static void
-tp_contact_factory_avatar_retrieved_cb (TpConnection *connection,
-					guint         handle,
-					const gchar  *token,
-					const GArray *avatar_data,
-					const gchar  *mime_type,
-					gpointer      user_data,
-					GObject      *tp_factory)
-{
-	EmpathyContact *contact;
-
-	contact = tp_contact_factory_find_by_handle (EMPATHY_TP_CONTACT_FACTORY (tp_factory),
-						     handle);
-	if (!contact) {
-		return;
-	}
-
-	DEBUG ("Avatar retrieved for contact %s (%d)",
-		empathy_contact_get_id (contact),
-		handle);
-
-	empathy_contact_load_avatar_data (contact,
-					  (guchar *) avatar_data->data,
-					  avatar_data->len,
-					  mime_type,
-					  token);
-}
-
-static void
-tp_contact_factory_request_avatars_cb (TpConnection *connection,
-				       const GError *error,
-				       gpointer      user_data,
-				       GObject      *tp_factory)
-{
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-	}
-}
-
-static gboolean
-tp_contact_factory_avatar_maybe_update (EmpathyTpContactFactory *tp_factory,
-					guint                    handle,
-					const gchar             *token)
-{
-	EmpathyContact *contact;
-	EmpathyAvatar  *avatar;
-
-	contact = tp_contact_factory_find_by_handle (tp_factory, handle);
-	if (!contact) {
-		return TRUE;
-	}
-
-	/* Check if we have an avatar */
-	if (EMP_STR_EMPTY (token)) {
-		empathy_contact_set_avatar (contact, NULL);
-		return TRUE;
-	}
-
-	/* Check if the avatar changed */
-	avatar = empathy_contact_get_avatar (contact);
-	if (avatar && !tp_strdiff (avatar->token, token)) {
-		return TRUE;
-	}
-
-	/* The avatar changed, search the new one in the cache */
-	if (empathy_contact_load_avatar_cache (contact, token)) {
-		/* Got from cache, use it */
-		return TRUE;
-	}
-
-	/* Avatar is not up-to-date, we have to request it. */
-	return FALSE;
-}
-
-static void
-tp_contact_factory_got_known_avatar_tokens (TpConnection *connection,
-					    GHashTable   *tokens,
-					    const GError *error,
-					    gpointer      user_data,
-					    GObject      *weak_object)
-{
-	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (weak_object);
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-	GArray *handles;
-	GHashTableIter iter;
-	gpointer key, value;
-
-	if (error) {
-		DEBUG ("Error: %s", error->message);
-		return;
-	}
-
-	handles = g_array_new (FALSE, FALSE, sizeof (guint));
-
-	g_hash_table_iter_init (&iter, tokens);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		guint handle = GPOINTER_TO_UINT (key);
-		const gchar *token = value;
-
-		if (!tp_contact_factory_avatar_maybe_update (tp_factory,
-							     handle, token)) {
-			g_array_append_val (handles, handle);
-		}
-	}
-
-	DEBUG ("Got %d tokens, need to request %d avatars",
-		g_hash_table_size (tokens), handles->len);
-
-	/* Request needed avatars */
-	if (handles->len > 0) {
-		tp_cli_connection_interface_avatars_call_request_avatars (priv->connection,
-									  -1,
-									  handles,
-									  tp_contact_factory_request_avatars_cb,
-									  NULL, NULL,
-									  G_OBJECT (tp_factory));
-	}
-
-	g_array_free (handles, TRUE);
-}
-
-static void
-tp_contact_factory_avatar_updated_cb (TpConnection *connection,
-				      guint         handle,
-				      const gchar  *new_token,
-				      gpointer      user_data,
-				      GObject      *tp_factory)
-{
-	GArray *handles;
-
-	if (tp_contact_factory_avatar_maybe_update (EMPATHY_TP_CONTACT_FACTORY (tp_factory),
-						    handle, new_token)) {
-		/* Avatar was cached, nothing to do */
-		return;
-	}
-
-	DEBUG ("Need to request avatar for token %s", new_token);
-
-	handles = g_array_new (FALSE, FALSE, sizeof (guint));
-	g_array_append_val (handles, handle);
-
-	tp_cli_connection_interface_avatars_call_request_avatars (connection,
-								  -1,
-								  handles,
-								  tp_contact_factory_request_avatars_cb,
-								  NULL, NULL,
-								  tp_factory);
-	g_array_free (handles, TRUE);
-}
-
-static void
 tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 				EmpathyContact          *contact)
 {
 	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
 	TpHandle self_handle;
 	TpHandle handle;
-	GArray handles = {(gchar *) &handle, 1};
 
 	/* Keep a weak ref to that contact */
 	g_object_weak_ref (G_OBJECT (contact),
@@ -286,15 +121,6 @@ tp_contact_factory_add_contact (EmpathyTpContactFactory *tp_factory,
 	self_handle = tp_connection_get_self_handle (priv->connection);
 	handle = empathy_contact_get_handle (contact);
 	empathy_contact_set_is_user (contact, self_handle == handle);
-
-	/* FIXME: This should be done by TpContact */
-	if (tp_proxy_has_interface_by_id (priv->connection,
-			TP_IFACE_QUARK_CONNECTION_INTERFACE_AVATARS)) {
-		tp_cli_connection_interface_avatars_call_get_known_avatar_tokens (
-			priv->connection, -1, &handles,
-			tp_contact_factory_got_known_avatar_tokens, NULL, NULL,
-			G_OBJECT (tp_factory));
-	}
 
 	DEBUG ("Contact added: %s (%d)",
 		empathy_contact_get_id (contact),
@@ -734,59 +560,11 @@ tp_contact_factory_finalize (GObject *object)
 }
 
 static void
-connection_ready_cb (TpConnection *connection,
-				const GError *error,
-				gpointer user_data)
-{
-	EmpathyTpContactFactory *tp_factory = EMPATHY_TP_CONTACT_FACTORY (user_data);
-	EmpathyTpContactFactoryPriv *priv = GET_PRIV (tp_factory);
-
-	if (error != NULL)
-		goto out;
-
-	/* FIXME: This should be moved to TpContact */
-	tp_cli_connection_interface_avatars_connect_to_avatar_updated (priv->connection,
-								       tp_contact_factory_avatar_updated_cb,
-								       NULL, NULL,
-								       G_OBJECT (tp_factory),
-								       NULL);
-	tp_cli_connection_interface_avatars_connect_to_avatar_retrieved (priv->connection,
-									 tp_contact_factory_avatar_retrieved_cb,
-									 NULL, NULL,
-									 G_OBJECT (tp_factory),
-									 NULL);
-
-out:
-	g_object_unref (tp_factory);
-}
-
-static GObject *
-tp_contact_factory_constructor (GType                  type,
-				guint                  n_props,
-				GObjectConstructParam *props)
-{
-	GObject *tp_factory;
-	EmpathyTpContactFactoryPriv *priv;
-
-	tp_factory = G_OBJECT_CLASS (empathy_tp_contact_factory_parent_class)->constructor (type, n_props, props);
-	priv = GET_PRIV (tp_factory);
-
-	/* Ensure to keep the self object alive while the call_when_ready is
-	 * running */
-	g_object_ref (tp_factory);
-	tp_connection_call_when_ready (priv->connection, connection_ready_cb,
-		tp_factory);
-
-	return tp_factory;
-}
-
-static void
 empathy_tp_contact_factory_class_init (EmpathyTpContactFactoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = tp_contact_factory_finalize;
-	object_class->constructor = tp_contact_factory_constructor;
 	object_class->get_property = tp_contact_factory_get_property;
 	object_class->set_property = tp_contact_factory_set_property;
 
