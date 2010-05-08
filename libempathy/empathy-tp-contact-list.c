@@ -655,6 +655,9 @@ tp_contact_list_subscribe_group_members_changed_cb (TpChannel     *channel,
 	add_to_members (list, remote_pending);
 
 	/* Implicitly accept pending request of contacts which are now members. */
+	if (priv->publish == NULL)
+		return;
+
 	accept = g_array_new (FALSE, FALSE, sizeof (TpHandle));
 	for (i = 0; i < added->len; i++) {
 		TpHandle handle = g_array_index (added, TpHandle, i);
