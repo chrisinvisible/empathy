@@ -264,7 +264,7 @@ tp_call_request_streams_for_capabilities (EmpathyTpCall *call,
 }
 
 static void
-tp_call_got_contact_cb (EmpathyTpContactFactory *factory,
+tp_call_got_contact_cb (TpConnection            *connection,
                         EmpathyContact          *contact,
                         const GError            *error,
                         gpointer                 user_data,
@@ -303,15 +303,12 @@ tp_call_update_status (EmpathyTpCall *call)
     {
       if (priv->contact == NULL && iter.element != self_handle)
         {
-          EmpathyTpContactFactory *factory;
           TpConnection *connection;
 
           /* We found the remote contact */
           connection = tp_channel_borrow_connection (priv->channel);
-          factory = empathy_tp_contact_factory_dup_singleton (connection);
-          empathy_tp_contact_factory_get_from_handle (factory, iter.element,
+          empathy_tp_contact_factory_get_from_handle (connection, iter.element,
               tp_call_got_contact_cb, NULL, NULL, G_OBJECT (call));
-          g_object_unref (factory);
         }
 
       if (priv->status == EMPATHY_TP_CALL_STATUS_PENDING &&

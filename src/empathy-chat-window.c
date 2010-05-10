@@ -856,7 +856,7 @@ chat_window_contacts_toggled_cb (GtkToggleAction   *toggle_action,
 }
 
 static void
-got_contact_cb (EmpathyTpContactFactory *factory,
+got_contact_cb (TpConnection            *connection,
                 EmpathyContact          *contact,
                 const GError            *error,
                 gpointer                 user_data,
@@ -900,7 +900,6 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 
 	if (response == GTK_RESPONSE_ACCEPT) {
 		TpConnection *connection;
-		EmpathyTpContactFactory *factory;
 		const char *id;
 
 		id = empathy_contact_selector_dialog_get_selected (
@@ -908,12 +907,8 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 		if (EMP_STR_EMPTY (id)) goto out;
 
 		connection = tp_channel_borrow_connection (channel);
-		factory = empathy_tp_contact_factory_dup_singleton (connection);
-
-		empathy_tp_contact_factory_get_from_id (factory, id,
+		empathy_tp_contact_factory_get_from_id (connection, id,
 			got_contact_cb, tp_chat,  NULL, NULL);
-
-		g_object_unref (factory);
 	}
 
 out:

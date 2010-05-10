@@ -1257,7 +1257,7 @@ contact_avatar_changed_cb (EmpathyContact *contact,
 }
 
 static void
-empathy_call_window_got_self_contact_cb (EmpathyTpContactFactory *factory,
+empathy_call_window_got_self_contact_cb (TpConnection *connection,
     EmpathyContact *contact, const GError *error, gpointer user_data,
     GObject *weak_object)
 {
@@ -1282,7 +1282,6 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
   if (priv->contact != NULL)
     {
       TpConnection *connection;
-      EmpathyTpContactFactory *factory;
 
       set_window_title (self);
 
@@ -1294,12 +1293,9 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
 
       /* Retreiving the self avatar */
       connection = empathy_contact_get_connection (priv->contact);
-      factory = empathy_tp_contact_factory_dup_singleton (connection);
-      empathy_tp_contact_factory_get_from_handle (factory,
+      empathy_tp_contact_factory_get_from_handle (connection,
           tp_connection_get_self_handle (connection),
           empathy_call_window_got_self_contact_cb, self, NULL, G_OBJECT (self));
-
-      g_object_unref (factory);
     }
   else
     {

@@ -42,7 +42,7 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyTpChat)
 typedef struct {
 	gboolean               dispose_has_run;
-	EmpathyTpContactFactory *factory;
+	TpConnection          *connection;
 	EmpathyContactMonitor *contact_monitor;
 	EmpathyContact        *user;
 	EmpathyContact        *remote_contact;
@@ -132,14 +132,12 @@ tp_chat_add (EmpathyContactList *list,
 			-1, &handles, NULL, NULL, NULL, NULL, NULL);
 	} else if (priv->can_upgrade_to_muc) {
 		EmpathyDispatcher *dispatcher;
-		TpConnection      *connection;
 		GHashTable        *props;
 		const char        *object_path;
 		GPtrArray          channels = { (gpointer *) &object_path, 1 };
 		const char        *invitees[2] = { NULL, };
 
 		dispatcher = empathy_dispatcher_dup_singleton ();
-		connection = tp_channel_borrow_connection (priv->channel);
 
 		invitees[0] = empathy_contact_get_id (contact);
 		object_path = tp_proxy_get_object_path (priv->channel);
@@ -159,7 +157,7 @@ tp_chat_add (EmpathyContactList *list,
 		/* Although this is a MUC, it's anonymous, so CreateChannel is
 		 * valid.
 		 * props now belongs to EmpathyDispatcher, don't free it */
-		empathy_dispatcher_create_channel (dispatcher, connection,
+		empathy_dispatcher_create_channel (dispatcher, priv->connection,
 				props, EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
 
 		g_object_unref (dispatcher);
@@ -243,7 +241,7 @@ tp_chat_emit_queued_messages (EmpathyTpChat *chat)
 }
 
 static void
-tp_chat_got_sender_cb (EmpathyTpContactFactory *factory,
+tp_chat_got_sender_cb (TpConnection            *connection,
 		       EmpathyContact          *contact,
 		       const GError            *error,
 		       gpointer                 message,
@@ -291,7 +289,7 @@ tp_chat_build_message (EmpathyTpChat *chat,
 		empathy_message_set_sender (message, priv->user);
 		tp_chat_emit_queued_messages (chat);
 	} else {
-		empathy_tp_contact_factory_get_from_handle (priv->factory,
+		empathy_tp_contact_factory_get_from_handle (priv->connection,
 			from_handle,
 			tp_chat_got_sender_cb,
 			message, NULL, G_OBJECT (chat));
@@ -412,7 +410,7 @@ typedef struct {
 } StateChangedData;
 
 static void
-tp_chat_state_changed_got_contact_cb (EmpathyTpContactFactory *factory,
+tp_chat_state_changed_got_contact_cb (TpConnection            *connection,
 				      EmpathyContact          *contact,
 				      const GError            *error,
 				      gpointer                 user_data,
@@ -442,7 +440,7 @@ tp_chat_state_changed_cb (TpChannel *channel,
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 
-	empathy_tp_contact_factory_get_from_handle (priv->factory, handle,
+	empathy_tp_contact_factory_get_from_handle (priv->connection, handle,
 		tp_chat_state_changed_got_contact_cb, GUINT_TO_POINTER (state),
 		NULL, chat);
 }
@@ -758,6 +756,10 @@ tp_chat_dispose (GObject *object)
 
 	priv->dispose_has_run = TRUE;
 
+	if (priv->connection != NULL)
+		g_object_unref (priv->connection);
+	priv->connection = NULL;
+
 	if (priv->channel != NULL) {
 		g_signal_handlers_disconnect_by_func (priv->channel,
 			tp_chat_invalidated_cb, self);
@@ -768,10 +770,6 @@ tp_chat_dispose (GObject *object)
 	if (priv->remote_contact != NULL)
 		g_object_unref (priv->remote_contact);
 	priv->remote_contact = NULL;
-
-	if (priv->factory != NULL)
-		g_object_unref (priv->factory);
-	priv->factory = NULL;
 
 	if (priv->user != NULL)
 		g_object_unref (priv->user);
@@ -931,7 +929,7 @@ tp_chat_update_remote_contact (EmpathyTpChat *chat)
 }
 
 static void
-tp_chat_got_added_contacts_cb (EmpathyTpContactFactory *factory,
+tp_chat_got_added_contacts_cb (TpConnection            *connection,
 			       guint                    n_contacts,
 			       EmpathyContact * const * contacts,
 			       guint                    n_failed,
@@ -1025,7 +1023,7 @@ contact_rename_data_free (ContactRenameData* data)
 }
 
 static void
-tp_chat_got_renamed_contacts_cb (EmpathyTpContactFactory *factory,
+tp_chat_got_renamed_contacts_cb (TpConnection            *connection,
                                  guint                    n_contacts,
                                  EmpathyContact * const * contacts,
                                  guint                    n_failed,
@@ -1107,7 +1105,7 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 		old_handle = g_array_index (removed, guint, 0);
 
 		rename_data = contact_rename_data_new (old_handle, reason, message);
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
+		empathy_tp_contact_factory_get_from_handles (priv->connection,
 			added->len, (TpHandle *) added->data,
 			tp_chat_got_renamed_contacts_cb,
 			rename_data, (GDestroyNotify) contact_rename_data_free,
@@ -1141,7 +1139,7 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 
 	/* Request added contacts */
 	if (added->len > 0) {
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
+		empathy_tp_contact_factory_get_from_handles (priv->connection,
 			added->len, (TpHandle *) added->data,
 			tp_chat_got_added_contacts_cb, NULL, NULL,
 			G_OBJECT (chat));
@@ -1155,7 +1153,7 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 }
 
 static void
-tp_chat_got_remote_contact_cb (EmpathyTpContactFactory *factory,
+tp_chat_got_remote_contact_cb (TpConnection            *connection,
 			       EmpathyContact          *contact,
 			       const GError            *error,
 			       gpointer                 user_data,
@@ -1176,7 +1174,7 @@ tp_chat_got_remote_contact_cb (EmpathyTpContactFactory *factory,
 }
 
 static void
-tp_chat_got_self_contact_cb (EmpathyTpContactFactory *factory,
+tp_chat_got_self_contact_cb (TpConnection            *connection,
 			     EmpathyContact          *contact,
 			     const GError            *error,
 			     gpointer                 user_data,
@@ -1240,15 +1238,13 @@ tp_chat_constructor (GType                  type,
 {
 	GObject           *chat;
 	EmpathyTpChatPriv *priv;
-	TpConnection      *connection;
 	TpHandle           handle;
 
 	chat = G_OBJECT_CLASS (empathy_tp_chat_parent_class)->constructor (type, n_props, props);
 
 	priv = GET_PRIV (chat);
 
-	connection = tp_channel_borrow_connection (priv->channel);
-	priv->factory = empathy_tp_contact_factory_dup_singleton (connection);
+	priv->connection = g_object_ref (tp_channel_borrow_connection (priv->channel));
 	g_signal_connect (priv->channel, "invalidated",
 			  G_CALLBACK (tp_chat_invalidated_cb),
 			  chat);
@@ -1260,14 +1256,14 @@ tp_chat_constructor (GType                  type,
 
 		/* Get self contact from the group's self handle */
 		handle = tp_channel_group_get_self_handle (priv->channel);
-		empathy_tp_contact_factory_get_from_handle (priv->factory,
+		empathy_tp_contact_factory_get_from_handle (priv->connection,
 			handle, tp_chat_got_self_contact_cb,
 			NULL, NULL, chat);
 
 		/* Get initial member contacts */
 		members = tp_channel_group_get_members (priv->channel);
 		handles = tp_intset_to_array (members);
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
+		empathy_tp_contact_factory_get_from_handles (priv->connection,
 			handles->len, (TpHandle *) handles->data,
 			tp_chat_got_added_contacts_cb, NULL, NULL, chat);
 
@@ -1280,19 +1276,19 @@ tp_chat_constructor (GType                  type,
 		GList *list, *ptr;
 
 		/* Get the self contact from the connection's self handle */
-		handle = tp_connection_get_self_handle (connection);
-		empathy_tp_contact_factory_get_from_handle (priv->factory,
+		handle = tp_connection_get_self_handle (priv->connection);
+		empathy_tp_contact_factory_get_from_handle (priv->connection,
 			handle, tp_chat_got_self_contact_cb,
 			NULL, NULL, chat);
 
 		/* Get the remote contact */
 		handle = tp_channel_get_handle (priv->channel, NULL);
-		empathy_tp_contact_factory_get_from_handle (priv->factory,
+		empathy_tp_contact_factory_get_from_handle (priv->connection,
 			handle, tp_chat_got_remote_contact_cb,
 			NULL, NULL, chat);
 
 		list = empathy_dispatcher_find_requestable_channel_classes (
-			dispatcher, connection,
+			dispatcher, priv->connection,
 			tp_channel_get_channel_type (priv->channel),
 			TP_UNKNOWN_HANDLE_TYPE, NULL);
 

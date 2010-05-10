@@ -77,7 +77,6 @@
 
 typedef struct
 {
-  EmpathyTpContactFactory *factory;
   EmpathyContactManager *manager;
   EmpathyContact *contact;
   EmpathyContactWidgetFlags flags;
@@ -957,8 +956,7 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          empathy_tp_contact_factory_set_alias (information->factory,
-              information->contact, alias);
+          empathy_tp_contact_factory_set_alias (information->contact, alias);
         }
     }
 
@@ -1060,9 +1058,7 @@ contact_widget_remove_contact (EmpathyContactWidget *information)
           contact_widget_groups_notify_cb, information);
 
       g_object_unref (information->contact);
-      g_object_unref (information->factory);
       information->contact = NULL;
-      information->factory = NULL;
     }
 }
 
@@ -1170,13 +1166,7 @@ contact_widget_set_contact (EmpathyContactWidget *information,
 
   contact_widget_remove_contact (information);
   if (contact)
-    {
-      TpConnection *connection;
-
-      connection = empathy_contact_get_connection (contact);
-      information->contact = g_object_ref (contact);
-      information->factory = empathy_tp_contact_factory_dup_singleton (connection);
-    }
+    information->contact = g_object_ref (contact);
 
   /* set the selected account to be the account this contact came from */
   if (contact && EMPATHY_IS_ACCOUNT_CHOOSER (information->widget_account)) {
@@ -1194,7 +1184,7 @@ contact_widget_set_contact (EmpathyContactWidget *information,
 }
 
 static void
-contact_widget_got_contact_cb (EmpathyTpContactFactory *factory,
+contact_widget_got_contact_cb (TpConnection *connection,
                                EmpathyContact *contact,
                                const GError *error,
                                gpointer user_data,
@@ -1214,7 +1204,6 @@ contact_widget_got_contact_cb (EmpathyTpContactFactory *factory,
 static void
 contact_widget_change_contact (EmpathyContactWidget *information)
 {
-  EmpathyTpContactFactory *factory;
   TpConnection *connection;
 
   connection = empathy_account_chooser_get_connection (
@@ -1222,7 +1211,6 @@ contact_widget_change_contact (EmpathyContactWidget *information)
   if (!connection)
       return;
 
-  factory = empathy_tp_contact_factory_dup_singleton (connection);
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_ID)
     {
       const gchar *id;
@@ -1230,20 +1218,18 @@ contact_widget_change_contact (EmpathyContactWidget *information)
       id = gtk_entry_get_text (GTK_ENTRY (information->widget_id));
       if (!EMP_STR_EMPTY (id))
         {
-          empathy_tp_contact_factory_get_from_id (factory, id,
+          empathy_tp_contact_factory_get_from_id (connection, id,
               contact_widget_got_contact_cb, information, NULL,
               G_OBJECT (information->vbox_contact_widget));
         }
     }
   else
     {
-      empathy_tp_contact_factory_get_from_handle (factory,
+      empathy_tp_contact_factory_get_from_handle (connection,
           tp_connection_get_self_handle (connection),
           contact_widget_got_contact_cb, information, NULL,
           G_OBJECT (information->vbox_contact_widget));
     }
-
-  g_object_unref (factory);
 }
 
 static gboolean

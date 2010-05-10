@@ -1357,7 +1357,7 @@ typedef struct
 } ChatWithContactIdData;
 
 static void
-dispatcher_chat_with_contact_id_cb (EmpathyTpContactFactory *factory,
+dispatcher_chat_with_contact_id_cb (TpConnection            *connection,
                                     EmpathyContact          *contact,
                                     const GError            *error,
                                     gpointer                 user_data,
@@ -1392,23 +1392,19 @@ empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
                                          gpointer user_data)
 {
   EmpathyDispatcher *self;
-  EmpathyTpContactFactory *factory;
   ChatWithContactIdData *data;
 
   g_return_if_fail (TP_IS_CONNECTION (connection));
   g_return_if_fail (!EMP_STR_EMPTY (contact_id));
 
   self = empathy_dispatcher_dup_singleton ();
-  factory = empathy_tp_contact_factory_dup_singleton (connection);
   data = g_slice_new0 (ChatWithContactIdData);
   data->dispatcher = self;
   data->callback = callback;
   data->user_data = user_data;
   data->timestamp = timestamp;
-  empathy_tp_contact_factory_get_from_id (factory, contact_id,
+  empathy_tp_contact_factory_get_from_id (connection, contact_id,
       dispatcher_chat_with_contact_id_cb, data, NULL, NULL);
-
-  g_object_unref (factory);
 }
 
 static void

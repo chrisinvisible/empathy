@@ -219,7 +219,7 @@ contact_list_view_dnd_get_contact_free (DndGetContactData *data)
 }
 
 static void
-contact_list_view_drag_got_contact (EmpathyTpContactFactory *factory,
+contact_list_view_drag_got_contact (TpConnection            *connection,
 				    EmpathyContact          *contact,
 				    const GError            *error,
 				    gpointer                 user_data,
@@ -293,7 +293,7 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 {
 	EmpathyContactListViewPriv *priv;
 	TpAccountManager           *account_manager;
-	EmpathyTpContactFactory    *factory = NULL;
+        TpConnection               *connection;
 	TpAccount                  *account;
 	DndGetContactData          *data;
 	GtkTreePath                *source_path;
@@ -342,20 +342,15 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 		account = tp_account_manager_ensure_account (account_manager, account_id);
 	}
 	if (account) {
-		TpConnection *connection;
-
 		connection = tp_account_get_connection (account);
-		if (connection) {
-			factory = empathy_tp_contact_factory_dup_singleton (connection);
-		}
 	}
-	g_object_unref (account_manager);
 
-	if (!factory) {
-		DEBUG ("Failed to get factory for account '%s'", account_id);
+	if (!connection) {
+		DEBUG ("Failed to get connection for account '%s'", account_id);
 		success = FALSE;
 		g_free (new_group);
 		g_free (old_group);
+		g_object_unref (account_manager);
 		return FALSE;
 	}
 
@@ -366,12 +361,12 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 
 	/* FIXME: We should probably wait for the cb before calling
 	 * gtk_drag_finish */
-	empathy_tp_contact_factory_get_from_id (factory, contact_id,
+	empathy_tp_contact_factory_get_from_id (connection, contact_id,
 						contact_list_view_drag_got_contact,
 						data, (GDestroyNotify) contact_list_view_dnd_get_contact_free,
 						G_OBJECT (view));
 	g_strfreev (strv);
-	g_object_unref (factory);
+	g_object_unref (account_manager);
 
 	return TRUE;
 }

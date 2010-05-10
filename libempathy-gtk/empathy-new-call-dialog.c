@@ -69,7 +69,7 @@ struct _EmpathyNewCallDialogPriv {
  */
 
 static void
-got_contact_cb (EmpathyTpContactFactory *factory,
+got_contact_cb (TpConnection *connection,
     EmpathyContact *contact,
     const GError *error,
     gpointer user_data,
@@ -93,7 +93,6 @@ static void
 empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
 {
   EmpathyNewCallDialogPriv *priv = GET_PRIV (dialog);
-  EmpathyTpContactFactory *factory;
   gboolean video;
   TpConnection *connection;
   const gchar *contact_id;
@@ -109,11 +108,8 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
    * we return from this function. */
   video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
-  factory = empathy_tp_contact_factory_dup_singleton (connection);
-  empathy_tp_contact_factory_get_from_id (factory, contact_id,
+  empathy_tp_contact_factory_get_from_id (connection, contact_id,
       got_contact_cb, GUINT_TO_POINTER (video), NULL, NULL);
-
-  g_object_unref (factory);
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));

@@ -73,17 +73,11 @@ subscription_dialog_response_cb (GtkDialog *dialog,
 	contact = empathy_contact_widget_get_contact (contact_widget);
 
 	if (response == GTK_RESPONSE_YES) {
-		EmpathyTpContactFactory *factory;
-
-		factory = empathy_tp_contact_factory_dup_singleton (
-			empathy_contact_get_connection (contact));
-
 		empathy_contact_list_add (EMPATHY_CONTACT_LIST (manager),
 					  contact, "");
-		empathy_tp_contact_factory_set_alias (factory, contact,
-			empathy_contact_widget_get_alias (contact_widget));
 
-		g_object_unref (factory);
+		empathy_tp_contact_factory_set_alias (contact,
+			empathy_contact_widget_get_alias (contact_widget));
 	}
 	else if (response == GTK_RESPONSE_NO) {
 		empathy_contact_list_remove (EMPATHY_CONTACT_LIST (manager),

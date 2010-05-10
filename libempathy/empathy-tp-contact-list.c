@@ -41,7 +41,6 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyTpContactList)
 typedef struct {
-	EmpathyTpContactFactory *factory;
 	TpConnection   *connection;
 
 	TpChannel      *publish;
@@ -372,7 +371,7 @@ tp_contact_list_group_add (EmpathyTpContactList *list,
 }
 
 static void
-got_added_members_cb (EmpathyTpContactFactory *factory,
+got_added_members_cb (TpConnection            *connection,
 		      guint                    n_contacts,
 		      EmpathyContact * const * contacts,
 		      guint                    n_failed,
@@ -427,7 +426,7 @@ add_to_members (EmpathyTpContactList *list,
 	}
 
 	if (request->len > 0) {
-			empathy_tp_contact_factory_get_from_handles (priv->factory,
+			empathy_tp_contact_factory_get_from_handles (priv->connection,
 				request->len, (TpHandle *) request->data,
 				got_added_members_cb, NULL, NULL, G_OBJECT (list));
 	}
@@ -436,7 +435,7 @@ add_to_members (EmpathyTpContactList *list,
 }
 
 static void
-tp_contact_list_got_local_pending_cb (EmpathyTpContactFactory *factory,
+tp_contact_list_got_local_pending_cb (TpConnection            *connection,
 				      guint                    n_contacts,
 				      EmpathyContact * const * contacts,
 				      guint                    n_failed,
@@ -562,7 +561,7 @@ tp_contact_list_publish_group_members_changed_cb (TpChannel     *channel,
 	/* Those contacts want our presence, auto accept those that are already
 	 * member, otherwise add in pendings. */
 	if (local_pending->len > 0) {
-		empathy_tp_contact_factory_get_from_handles (priv->factory,
+		empathy_tp_contact_factory_get_from_handles (priv->connection,
 			local_pending->len, (TpHandle *) local_pending->data,
 			tp_contact_list_got_local_pending_cb, NULL, NULL,
 			G_OBJECT (list));
@@ -724,10 +723,6 @@ tp_contact_list_finalize (GObject *object)
 
 	if (priv->connection) {
 		g_object_unref (priv->connection);
-	}
-
-	if (priv->factory) {
-		g_object_unref (priv->factory);
 	}
 
 	g_hash_table_iter_init (&iter, priv->groups);
@@ -919,8 +914,6 @@ static void
 tp_contact_list_constructed (GObject *list)
 {
 	EmpathyTpContactListPriv *priv = GET_PRIV (list);
-
-	priv->factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
 
 	/* call GetAliasFlags */
 	if (tp_proxy_has_interface_by_id (priv->connection,

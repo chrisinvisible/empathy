@@ -624,7 +624,7 @@ event_room_channel_process_func (EventPriv *event)
 }
 
 static void
-event_manager_muc_invite_got_contact_cb (EmpathyTpContactFactory *factory,
+event_manager_muc_invite_got_contact_cb (TpConnection *connection,
                                          EmpathyContact *contact,
                                          const GError *error,
                                          gpointer user_data,
@@ -665,7 +665,7 @@ event_manager_muc_invite_got_contact_cb (EmpathyTpContactFactory *factory,
 }
 
 static void
-event_manager_ft_got_contact_cb (EmpathyTpContactFactory *factory,
+event_manager_ft_got_contact_cb (TpConnection *connection,
                                  EmpathyContact *contact,
                                  const GError *error,
                                  gpointer user_data,
@@ -730,20 +730,16 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
                 channel, self_handle, &inviter, NULL, NULL))
             {
               /* We are invited to a room */
-              EmpathyTpContactFactory *factory;
               TpConnection *connection;
 
               DEBUG ("Have been invited to %s. Ask user if he wants to accept",
                   tp_channel_get_identifier (channel));
 
               connection = empathy_tp_chat_get_connection (tp_chat);
-              factory = empathy_tp_contact_factory_dup_singleton (connection);
-
-              empathy_tp_contact_factory_get_from_handle (factory,
+              empathy_tp_contact_factory_get_from_handle (connection,
                   inviter, event_manager_muc_invite_got_contact_cb,
                   approval, NULL, G_OBJECT (manager));
 
-              g_object_unref (factory);
               return;
             }
 
@@ -781,17 +777,13 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
       TpChannel *channel;
       TpConnection *connection;
       TpHandle handle;
-      EmpathyTpContactFactory *factory;
 
       channel = empathy_dispatch_operation_get_channel (operation);
       handle = tp_channel_get_handle (channel, NULL);
 
       connection = tp_channel_borrow_connection (channel);
-      factory = empathy_tp_contact_factory_dup_singleton (connection);
-      empathy_tp_contact_factory_get_from_handle (factory, handle,
+      empathy_tp_contact_factory_get_from_handle (connection, handle,
         event_manager_ft_got_contact_cb, approval, NULL, G_OBJECT (manager));
-
-      g_object_unref (factory);
     }
   else
     {

@@ -185,7 +185,7 @@ empathy_dispatch_operation_invalidated (TpProxy *proxy, guint domain,
 }
 
 static void
-dispatcher_operation_got_contact_cb (EmpathyTpContactFactory *factory,
+dispatcher_operation_got_contact_cb (TpConnection *connection,
                                      EmpathyContact *contact,
                                      const GError *error,
                                      gpointer user_data,
@@ -219,7 +219,6 @@ dispatch_operation_connection_ready (TpConnection *connection,
 {
   EmpathyDispatchOperation *self = EMPATHY_DISPATCH_OPERATION (user_data);
   EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
-  EmpathyTpContactFactory *factory;
   TpHandle handle;
 
   if (error != NULL)
@@ -231,12 +230,9 @@ dispatch_operation_connection_ready (TpConnection *connection,
 
   handle = tp_channel_get_handle (priv->channel, NULL);
 
-  factory = empathy_tp_contact_factory_dup_singleton (priv->connection);
-
-  empathy_tp_contact_factory_get_from_handle (factory, handle,
+  empathy_tp_contact_factory_get_from_handle (priv->connection, handle,
       dispatcher_operation_got_contact_cb, NULL, NULL, G_OBJECT (self));
 
-  g_object_unref (factory);
 out:
   g_object_unref (self);
 }

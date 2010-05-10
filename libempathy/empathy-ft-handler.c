@@ -1203,7 +1203,7 @@ out:
 }
 
 static void
-contact_factory_contact_cb (EmpathyTpContactFactory *factory,
+contact_factory_contact_cb (TpConnection *connection,
     EmpathyContact *contact,
     const GError *error,
     gpointer user_data,
@@ -1238,7 +1238,6 @@ channel_get_all_properties_cb (TpProxy *proxy,
   CallbacksData *cb_data = user_data;
   EmpathyFTHandler *handler = EMPATHY_FT_HANDLER (weak_object);
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
-  EmpathyTpContactFactory *c_factory;
   TpHandle c_handle;
 
   if (error != NULL)
@@ -1273,14 +1272,11 @@ channel_get_all_properties_cb (TpProxy *proxy,
   priv->description = g_value_dup_string (
       g_hash_table_lookup (properties, "Description"));
 
-  c_factory = empathy_tp_contact_factory_dup_singleton
-      (tp_channel_borrow_connection (TP_CHANNEL (proxy)));
   c_handle = tp_channel_get_handle (TP_CHANNEL (proxy), NULL);
-  empathy_tp_contact_factory_get_from_handle (c_factory, c_handle,
+  empathy_tp_contact_factory_get_from_handle (
+      tp_channel_borrow_connection (TP_CHANNEL (proxy)), c_handle,
       contact_factory_contact_cb, cb_data, callbacks_data_free,
       G_OBJECT (handler));
-
-  g_object_unref (c_factory);
 }
 
 /* public methods */
