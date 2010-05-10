@@ -131,6 +131,8 @@ GHashTable * empathy_contact_get_location (EmpathyContact *contact);
 gboolean empathy_contact_equal (gconstpointer contact1,
     gconstpointer contact2);
 
+EmpathyContact *empathy_contact_dup_from_tp_contact (TpContact *tp_contact);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_CONTACT_H__ */

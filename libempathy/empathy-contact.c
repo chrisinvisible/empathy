@@ -111,6 +111,9 @@ enum {
 
 static guint signals[LAST_SIGNAL];
 
+/* TpContact* -> EmpathyContact* */
+static GHashTable *contacts_table = NULL;
+
 static void
 tp_contact_notify_cb (TpContact *tp_contact,
                       GParamSpec *param,
@@ -162,6 +165,7 @@ contact_dispose (GObject *object)
 
   if (priv->tp_contact)
     {
+      g_hash_table_remove (contacts_table, priv->tp_contact);
       g_signal_handlers_disconnect_by_func (priv->tp_contact,
           tp_contact_notify_cb, object);
       g_object_unref (priv->tp_contact);
@@ -340,6 +344,8 @@ set_tp_contact (EmpathyContact *contact,
 {
   EmpathyContactPriv *priv = GET_PRIV (contact);
   GHashTable *location;
+  TpHandle self_handle;
+  TpHandle handle;
 
   if (tp_contact == NULL)
     return;
@@ -356,6 +362,14 @@ set_tp_contact (EmpathyContact *contact,
       tp_contact_get_capabilities (tp_contact));
 
   contact_set_avatar_from_tp_contact (contact);
+
+  /* Set is-user property. Note that it could still be the handle is
+   * different from the connection's self handle, in the case the handle
+   * comes from a group interface. */
+  self_handle = tp_connection_get_self_handle (
+      tp_contact_get_connection (tp_contact));
+  handle = tp_contact_get_handle (tp_contact);
+  empathy_contact_set_is_user (contact, self_handle == handle);
 
   g_signal_connect (priv->tp_contact, "notify",
     G_CALLBACK (tp_contact_notify_cb), contact);
@@ -1464,5 +1478,34 @@ contact_set_avatar_from_tp_contact (EmpathyContact *contact)
     {
       empathy_contact_set_avatar (contact, NULL);
     }
+}
+
+EmpathyContact *
+empathy_contact_dup_from_tp_contact (TpContact *tp_contact)
+{
+  EmpathyContact *contact = NULL;
+
+  g_return_val_if_fail (TP_IS_CONTACT (tp_contact), NULL);
+
+  if (contacts_table == NULL)
+    contacts_table = g_hash_table_new (g_direct_hash, g_direct_equal);
+  else
+    contact = g_hash_table_lookup (contacts_table, tp_contact);
+
+  if (contact == NULL)
+    {
+      contact = empathy_contact_new (tp_contact);
+
+      /* The hash table does not keep any ref.
+       * contact keeps a ref to tp_contact, and is removed from the table in
+       * contact_dispose() */
+      g_hash_table_insert (contacts_table, tp_contact, contact);
+    }
+  else
+    {
+      g_object_ref (contact);
+    }
+
+  return contact;
 }
 
