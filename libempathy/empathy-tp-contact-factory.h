@@ -30,26 +30,7 @@
 
 G_BEGIN_DECLS
 
-#define EMPATHY_TYPE_TP_CONTACT_FACTORY         (empathy_tp_contact_factory_get_type ())
-#define EMPATHY_TP_CONTACT_FACTORY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), EMPATHY_TYPE_TP_CONTACT_FACTORY, EmpathyTpContactFactory))
-#define EMPATHY_TP_CONTACT_FACTORY_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), EMPATHY_TYPE_TP_CONTACT_FACTORY, EmpathyTpContactFactoryClass))
-#define EMPATHY_IS_TP_CONTACT_FACTORY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_TP_CONTACT_FACTORY))
-#define EMPATHY_IS_TP_CONTACT_FACTORY_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_TP_CONTACT_FACTORY))
-#define EMPATHY_TP_CONTACT_FACTORY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_TP_CONTACT_FACTORY, EmpathyTpContactFactoryClass))
-
-typedef struct _EmpathyTpContactFactory      EmpathyTpContactFactory;
-typedef struct _EmpathyTpContactFactoryClass EmpathyTpContactFactoryClass;
-
-struct _EmpathyTpContactFactory {
-	GObject parent;
-	gpointer priv;
-};
-
-struct _EmpathyTpContactFactoryClass {
-	GObjectClass parent_class;
-};
-
-typedef void (*EmpathyTpContactFactoryContactsByIdCb) (EmpathyTpContactFactory *factory,
+typedef void (*EmpathyTpContactFactoryContactsByIdCb) (TpConnection            *connection,
 						       guint                    n_contacts,
 						       EmpathyContact * const * contacts,
 						       const gchar * const *    requested_ids,
@@ -58,7 +39,7 @@ typedef void (*EmpathyTpContactFactoryContactsByIdCb) (EmpathyTpContactFactory *
 						       gpointer                 user_data,
 						       GObject                 *weak_object);
 
-typedef void (*EmpathyTpContactFactoryContactsByHandleCb) (EmpathyTpContactFactory *factory,
+typedef void (*EmpathyTpContactFactoryContactsByHandleCb) (TpConnection            *connection,
 							   guint                    n_contacts,
 							   EmpathyContact * const * contacts,
                                                            guint                    n_failed,
@@ -67,42 +48,39 @@ typedef void (*EmpathyTpContactFactoryContactsByHandleCb) (EmpathyTpContactFacto
 						           gpointer                 user_data,
 						           GObject                 *weak_object);
 
-typedef void (*EmpathyTpContactFactoryContactCb) (EmpathyTpContactFactory *factory,
+typedef void (*EmpathyTpContactFactoryContactCb) (TpConnection            *connection,
 						  EmpathyContact          *contact,
 						  const GError            *error,
 						  gpointer                 user_data,
 						  GObject                 *weak_object);
 
-GType                    empathy_tp_contact_factory_get_type         (void) G_GNUC_CONST;
-EmpathyTpContactFactory *empathy_tp_contact_factory_dup_singleton    (TpConnection *connection);
-void                     empathy_tp_contact_factory_get_from_ids     (EmpathyTpContactFactory *tp_factory,
+void                     empathy_tp_contact_factory_get_from_ids     (TpConnection            *connection,
 								      guint                    n_ids,
 								      const gchar * const     *ids,
 								      EmpathyTpContactFactoryContactsByIdCb callback,
 								      gpointer                 user_data,
 								      GDestroyNotify           destroy,
 								      GObject                 *weak_object);
-void                     empathy_tp_contact_factory_get_from_handles (EmpathyTpContactFactory *tp_factory,
+void                     empathy_tp_contact_factory_get_from_handles (TpConnection            *connection,
 								      guint                    n_handles,
 								      const TpHandle          *handles,
 								      EmpathyTpContactFactoryContactsByHandleCb callback,
 								      gpointer                 user_data,
 								      GDestroyNotify           destroy,
 								      GObject                 *weak_object);
-void                     empathy_tp_contact_factory_get_from_id      (EmpathyTpContactFactory *tp_factory,
+void                     empathy_tp_contact_factory_get_from_id      (TpConnection            *connection,
 								      const gchar             *id,
 								      EmpathyTpContactFactoryContactCb callback,
 								      gpointer                 user_data,
 								      GDestroyNotify           destroy,
 								      GObject                 *weak_object);
-void                     empathy_tp_contact_factory_get_from_handle  (EmpathyTpContactFactory *tp_factory,
+void                     empathy_tp_contact_factory_get_from_handle  (TpConnection            *connection,
 								      TpHandle                 handle,
 								      EmpathyTpContactFactoryContactCb callback,
 								      gpointer                 user_data,
 								      GDestroyNotify           destroy,
 								      GObject                 *weak_object);
-void                     empathy_tp_contact_factory_set_alias        (EmpathyTpContactFactory *tp_factory,
-								      EmpathyContact          *contact,
+void                     empathy_tp_contact_factory_set_alias        (EmpathyContact          *contact,
 								      const gchar             *alias);
 G_END_DECLS
 
