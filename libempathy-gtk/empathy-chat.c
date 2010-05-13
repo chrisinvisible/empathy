@@ -94,6 +94,20 @@ typedef struct {
 	gboolean           has_input_vscroll;
 	gint               topic_width;
 
+	/* TRUE if spell checking is enabled, FALSE otherwise.
+	 * This is to keep track of the last state of spell checking
+	 * when it changes. */
+	gboolean	   spell_checking_enabled;
+
+	/* These store the signal handler ids for the enclosed text entry. */
+	gulong		   insert_text_id;
+	gulong		   delete_range_id;
+	gulong		   notify_cursor_position_id;
+
+	/* This stores the id for the spell checking configuration setting
+	 * notification signal handler. */
+	guint		   conf_notify_id;
+
 	GtkWidget         *widget;
 	GtkWidget         *hpaned;
 	GtkWidget         *vbox_left;
@@ -1331,80 +1345,160 @@ chat_property_changed_cb (EmpathyTpChat *tp_chat,
 	}
 }
 
+static gboolean
+chat_input_text_get_word_from_iter (GtkTextIter   *iter,
+                                    GtkTextIter   *start,
+                                    GtkTextIter   *end)
+{
+	GtkTextIter word_start = *iter;
+	GtkTextIter word_end = *iter;
+	GtkTextIter tmp;
+
+	if (gtk_text_iter_inside_word (&word_end) &&
+			!gtk_text_iter_ends_word (&word_end)) {
+		gtk_text_iter_forward_word_end (&word_end);
+	}
+
+	tmp = word_end;
+
+	if (gtk_text_iter_get_char (&tmp) == '\'') {
+		gtk_text_iter_forward_char (&tmp);
+
+		if (g_unichar_isalpha (gtk_text_iter_get_char (&tmp))) {
+			gtk_text_iter_forward_word_end (&word_end);
+		}
+	}
+
+
+	if (gtk_text_iter_inside_word (&word_start) ||
+			gtk_text_iter_ends_word (&word_start)) {
+		if (!gtk_text_iter_starts_word (&word_start) ||
+				gtk_text_iter_equal (&word_start, &word_end)) {
+			gtk_text_iter_backward_word_start (&word_start);
+		}
+
+		tmp = word_start;
+		gtk_text_iter_backward_char (&tmp);
+
+		if (gtk_text_iter_get_char (&tmp) == '\'') {
+			gtk_text_iter_backward_char (&tmp);
+
+			if (g_unichar_isalpha (gtk_text_iter_get_char (&tmp))) {
+				gtk_text_iter_backward_word_start (&word_start);
+			}
+		}
+	}
+
+	*start = word_start;
+	*end = word_end;
+	return TRUE;
+}
+
+static void
+chat_input_text_buffer_insert_text_cb (GtkTextBuffer *buffer,
+                                       GtkTextIter   *location,
+                                       gchar         *text,
+                                       gint           len,
+                                       EmpathyChat   *chat)
+{
+	GtkTextIter iter, pos;
+
+	/* Remove all misspelled tags in the inserted text.
+	 * This happens when text is inserted within a misspelled word. */
+	gtk_text_buffer_get_iter_at_offset (buffer, &iter,
+					    gtk_text_iter_get_offset (location) - len);
+	gtk_text_buffer_remove_tag_by_name (buffer, "misspelled",
+					    &iter, location);
+
+	gtk_text_buffer_get_iter_at_mark (buffer, &pos, gtk_text_buffer_get_insert (buffer));
+
+	do {
+		GtkTextIter start, end;
+		gchar *str;
+
+		if (!chat_input_text_get_word_from_iter (&iter, &start, &end))
+			continue;
+
+		str = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+
+		if (gtk_text_iter_in_range (&pos, &start, &end) ||
+				gtk_text_iter_equal (&pos, &end) ||
+				empathy_spell_check (str)) {
+			gtk_text_buffer_remove_tag_by_name (buffer, "misspelled", &start, &end);
+		} else {
+			gtk_text_buffer_apply_tag_by_name (buffer, "misspelled", &start, &end);
+		}
+
+		g_free (str);
+
+	} while (gtk_text_iter_forward_word_end (&iter) &&
+		 gtk_text_iter_compare (&iter, location) <= 0);
+}
+
+static void
+chat_input_text_buffer_delete_range_cb (GtkTextBuffer *buffer,
+                                        GtkTextIter   *start,
+                                        GtkTextIter   *end,
+                                        EmpathyChat   *chat)
+{
+	GtkTextIter word_start, word_end;
+
+	if (chat_input_text_get_word_from_iter (start, &word_start, &word_end)) {
+		gtk_text_buffer_remove_tag_by_name (buffer, "misspelled",
+						    &word_start, &word_end);
+	}
+}
+
 static void
 chat_input_text_buffer_changed_cb (GtkTextBuffer *buffer,
                                    EmpathyChat    *chat)
 {
-	GtkTextIter     start, end;
-	gchar          *str;
-	gboolean        spell_checker = FALSE;
-
 	if (gtk_text_buffer_get_char_count (buffer) == 0) {
 		chat_composing_stop (chat);
 	} else {
 		chat_composing_start (chat);
 	}
+}
 
-	empathy_conf_get_bool (empathy_conf_get (),
-                           EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-                           &spell_checker);
+static void
+chat_input_text_buffer_notify_cursor_position_cb (GtkTextBuffer *buffer,
+                                                  GParamSpec    *pspec,
+                                                  EmpathyChat    *chat)
+{
+	GtkTextIter pos;
+	GtkTextIter prev_pos;
+	GtkTextIter word_start;
+	GtkTextIter word_end;
+	GtkTextMark *mark;
+	gchar *str;
 
-	gtk_text_buffer_get_start_iter (buffer, &start);
+	mark = gtk_text_buffer_get_mark (buffer, "previous-cursor-position");
 
-	if (!spell_checker) {
-		gtk_text_buffer_get_end_iter (buffer, &end);
-		gtk_text_buffer_remove_tag_by_name (buffer, "misspelled", &start, &end);
-		return;
-	}
+	gtk_text_buffer_get_iter_at_mark (buffer, &pos,
+					  gtk_text_buffer_get_insert (buffer));
+	gtk_text_buffer_get_iter_at_mark (buffer, &prev_pos, mark);
 
-	if (!empathy_spell_supported ()) {
-		return;
-	}
+	if (!chat_input_text_get_word_from_iter (&prev_pos, &word_start, &word_end))
+		goto out;
 
-	/* NOTE: this is really inefficient, we shouldn't have to
-	   reiterate the whole buffer each time and check each work
-	   every time. */
-	while (TRUE) {
-		gboolean correct = FALSE;
+	if (!gtk_text_iter_in_range (&pos, &word_start, &word_end) &&
+			!gtk_text_iter_equal (&pos, &word_end)) {
+		str = gtk_text_buffer_get_text (buffer,
+					&word_start, &word_end, FALSE);
 
-		/* if at start */
-		if (gtk_text_iter_is_start (&start)) {
-			end = start;
-
-			if (!gtk_text_iter_forward_word_end (&end)) {
-				/* no whole word yet */
-				break;
-			}
+		if (!empathy_spell_check (str)) {
+			gtk_text_buffer_apply_tag_by_name (buffer,
+					"misspelled", &word_start, &word_end);
 		} else {
-			if (!gtk_text_iter_forward_word_end (&end)) {
-				/* must be the end of the buffer */
-				break;
-			}
-
-			start = end;
-			gtk_text_iter_backward_word_start (&start);
-		}
-
-		str = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
-
-		/* spell check string if not a command */
-		if (str[0] != '/') {
-			correct = empathy_spell_check (str);
-		} else {
-			correct = TRUE;
-		}
-
-		if (!correct) {
-			gtk_text_buffer_apply_tag_by_name (buffer, "misspelled", &start, &end);
-		} else {
-			gtk_text_buffer_remove_tag_by_name (buffer, "misspelled", &start, &end);
+			gtk_text_buffer_remove_tag_by_name (buffer,
+					"misspelled", &word_start, &word_end);
 		}
 
 		g_free (str);
-
-		/* set start iter to the end iters position */
-		start = end;
 	}
+
+out:
+	gtk_text_buffer_move_mark (buffer, mark, &pos);
 }
 
 static gboolean
@@ -2275,6 +2369,106 @@ chat_destroy_cb (EmpathyTpChat *tp_chat,
 }
 
 static gboolean
+update_misspelled_words (gpointer data)
+{
+	EmpathyChat *chat = EMPATHY_CHAT (data);
+	GtkTextBuffer *buffer;
+	GtkTextIter iter;
+	gint length;
+
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
+
+	gtk_text_buffer_get_end_iter (buffer, &iter);
+	length = gtk_text_iter_get_offset (&iter);
+	chat_input_text_buffer_insert_text_cb (buffer, &iter,
+					       NULL, length, chat);
+	return FALSE;
+}
+
+static void
+conf_spell_checking_cb (EmpathyConf *conf,
+			const gchar *key,
+			gpointer user_data)
+{
+	EmpathyChat *chat = EMPATHY_CHAT (user_data);
+	EmpathyChatPriv *priv = GET_PRIV (chat);
+	gboolean spell_checker;
+	GtkTextBuffer *buffer;
+
+	if (strcmp (key, EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED) != 0)
+		return;
+
+	empathy_conf_get_bool (conf, EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+                               &spell_checker);
+
+	if (!empathy_spell_supported ()) {
+		spell_checker = FALSE;
+	}
+
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
+
+	if (spell_checker == priv->spell_checking_enabled) {
+		if (spell_checker) {
+			/* Possibly changed dictionaries,
+			 * update misspelled words. Need to do so in idle
+			 * so the spell checker is updated. */
+			g_idle_add (update_misspelled_words, chat);
+		}
+
+		return;
+	}
+
+	if (spell_checker) {
+		GtkTextIter iter;
+
+		priv->notify_cursor_position_id = tp_g_signal_connect_object  (
+				buffer, "notify::cursor-position",
+				G_CALLBACK (chat_input_text_buffer_notify_cursor_position_cb),
+				chat, 0);
+		priv->insert_text_id = tp_g_signal_connect_object  (
+				buffer, "insert-text",
+				G_CALLBACK (chat_input_text_buffer_insert_text_cb),
+				chat, G_CONNECT_AFTER);
+		priv->delete_range_id = tp_g_signal_connect_object  (
+				buffer, "delete-range",
+				G_CALLBACK (chat_input_text_buffer_delete_range_cb),
+				chat, G_CONNECT_AFTER);
+
+		gtk_text_buffer_create_tag (buffer, "misspelled",
+					    "underline", PANGO_UNDERLINE_ERROR,
+					    NULL);
+
+		gtk_text_buffer_get_iter_at_mark (buffer, &iter,
+	                                          gtk_text_buffer_get_insert (buffer));
+		gtk_text_buffer_create_mark (buffer, "previous-cursor-position",
+					     &iter, TRUE);
+
+		/* Mark misspelled words in the existing buffer.
+		 * Need to do so in idle so the spell checker is updated. */
+		g_idle_add (update_misspelled_words, chat);
+	} else {
+		GtkTextTagTable *table;
+		GtkTextTag *tag;
+
+		g_signal_handler_disconnect (buffer, priv->notify_cursor_position_id);
+		priv->notify_cursor_position_id = 0;
+		g_signal_handler_disconnect (buffer, priv->insert_text_id);
+		priv->insert_text_id = 0;
+		g_signal_handler_disconnect (buffer, priv->delete_range_id);
+		priv->delete_range_id = 0;
+
+		table = gtk_text_buffer_get_tag_table (buffer);
+		tag = gtk_text_tag_table_lookup (table, "misspelled");
+		gtk_text_tag_table_remove (table, tag);
+
+		gtk_text_buffer_delete_mark_by_name (buffer,
+						     "previous-cursor-position");
+	}
+
+	priv->spell_checking_enabled = spell_checker;
+}
+
+static gboolean
 chat_hpaned_pos_changed_cb (GtkWidget* hpaned, gpointer user_data)
 {
 	gint hpaned_pos;
@@ -2358,9 +2552,12 @@ chat_create_ui (EmpathyChat *chat)
 	tp_g_signal_connect_object  (buffer, "changed",
 			  G_CALLBACK (chat_input_text_buffer_changed_cb),
 			  chat, 0);
-	gtk_text_buffer_create_tag (buffer, "misspelled",
-				    "underline", PANGO_UNDERLINE_ERROR,
-				    NULL);
+	priv->conf_notify_id =
+			empathy_conf_notify_add (empathy_conf_get (),
+						 EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+						 conf_spell_checking_cb, chat);
+	conf_spell_checking_cb (empathy_conf_get (),
+				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED, chat);
 	gtk_container_add (GTK_CONTAINER (priv->scrolled_window_input),
 			   chat->input_text_view);
 	gtk_widget_show (chat->input_text_view);
@@ -2463,6 +2660,12 @@ chat_finalize (GObject *object)
 	priv = GET_PRIV (chat);
 
 	DEBUG ("Finalized: %p", object);
+
+	if (priv->conf_notify_id != 0) {
+		empathy_conf_notify_remove (empathy_conf_get (),
+					    priv->conf_notify_id);
+		priv->conf_notify_id = 0;
+	}
 
 	g_list_foreach (priv->input_history, (GFunc) chat_input_history_entry_free, NULL);
 	g_list_free (priv->input_history);
