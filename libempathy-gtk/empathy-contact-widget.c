@@ -34,6 +34,7 @@
 
 #include <telepathy-glib/account.h>
 #include <telepathy-glib/util.h>
+#include <telepathy-glib/interfaces.h>
 
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-manager.h>
@@ -94,7 +95,6 @@ typedef struct
   GtkWidget *widget_id;
   GtkWidget *widget_alias;
   GtkWidget *label_alias;
-  GtkWidget *entry_alias;
   GtkWidget *hbox_presence;
   GtkWidget *image_state;
   GtkWidget *label_status;
@@ -123,6 +123,8 @@ typedef struct
   GtkWidget *vbox_details;
   GtkWidget *table_details;
   GtkWidget *hbox_details_requested;
+  GList *details_to_set;
+  GCancellable *details_cancellable;
 
   /* Client */
   GtkWidget *vbox_client;
@@ -147,16 +149,383 @@ enum
 };
 
 static void
+contact_widget_save (EmpathyContactWidget *information)
+{
+  TpConnection *connection;
+  GList *l, *next;
+
+  connection = empathy_contact_get_connection (information->contact);
+
+  /* Remove empty fields */
+  for (l = information->details_to_set; l != NULL; l = next)
+    {
+      TpContactInfoField *field = l->data;
+
+      next = l->next;
+      if (field->field_value == NULL || EMP_STR_EMPTY (field->field_value[0]))
+        {
+          DEBUG ("Drop empty field: %s", field->field_name);
+          tp_contact_info_field_free (field);
+          information->details_to_set =
+              g_list_delete_link (information->details_to_set, l);
+        }
+    }
+
+  if (information->details_to_set != NULL)
+    {
+      tp_connection_set_contact_info_async (connection,
+          information->details_to_set, NULL, NULL);
+      tp_contact_info_list_free (information->details_to_set);
+      information->details_to_set = NULL;
+    }
+}
+
+static void
 contact_widget_details_setup (EmpathyContactWidget *information)
 {
-  /* FIXME: Needs new telepathy spec */
   gtk_widget_hide (information->vbox_details);
+}
+
+static void
+contact_widget_details_changed_cb (GtkEntry *entry,
+    TpContactInfoField *field)
+{
+  const gchar *strv[] = { NULL, NULL };
+
+  strv[0] = gtk_entry_get_text (entry);
+
+  if (field->field_value != NULL)
+    g_strfreev (field->field_value);
+  field->field_value = g_strdupv ((GStrv) strv);
+}
+
+static void contact_widget_details_notify_cb (EmpathyContactWidget *information);
+
+typedef struct
+{
+  const gchar *field_name;
+  const gchar *title;
+  gboolean linkify;
+} InfoFieldData;
+
+static InfoFieldData info_field_datas[] =
+{
+  { "fn",    N_("Full name:"),      FALSE },
+  { "tel",   N_("Phone number:"),   FALSE },
+  { "email", N_("E-mail address:"), TRUE },
+  { "url",   N_("Website:"),        TRUE },
+  { "bday",  N_("Birthday:"),       FALSE },
+  { NULL, NULL }
+};
+
+static InfoFieldData *
+find_info_field_data (const gchar *field_name)
+{
+  guint i;
+
+  for (i = 0; info_field_datas[i].field_name != NULL; i++)
+    {
+      if (!tp_strdiff (info_field_datas[i].field_name, field_name))
+        return info_field_datas + i;
+    }
+  return NULL;
+}
+
+static gint
+contact_info_field_name_cmp (const gchar *name1,
+    const gchar *name2)
+{
+  guint i;
+
+  if (!tp_strdiff (name1, name2))
+    return 0;
+
+  /* We use the order of info_field_datas */
+  for (i = 0; info_field_datas[i].field_name != NULL; i++)
+    {
+      if (!tp_strdiff (info_field_datas[i].field_name, name1))
+        return -1;
+      if (!tp_strdiff (info_field_datas[i].field_name, name2))
+        return +1;
+    }
+
+  return g_strcmp0 (name1, name2);
+}
+
+static gint
+contact_info_field_cmp (TpContactInfoField *field1,
+    TpContactInfoField *field2)
+{
+  return contact_info_field_name_cmp (field1->field_name, field2->field_name);
+}
+
+static gint
+contact_info_field_spec_cmp (TpContactInfoFieldSpec *spec1,
+    TpContactInfoFieldSpec *spec2)
+{
+  return contact_info_field_name_cmp (spec1->name, spec2->name);
+}
+
+static guint
+contact_widget_details_update_edit (EmpathyContactWidget *information)
+{
+  TpContact *contact;
+  TpConnection *connection;
+  GList *specs, *l;
+  guint n_rows = 0;
+
+  g_assert (information->details_to_set == NULL);
+
+  contact = empathy_contact_get_tp_contact (information->contact);
+  connection = tp_contact_get_connection (contact);
+
+  specs = tp_connection_get_contact_info_supported_fields (connection);
+  specs = g_list_sort (specs, (GCompareFunc) contact_info_field_spec_cmp);
+  for (l = specs; l != NULL; l = l->next)
+    {
+      TpContactInfoFieldSpec *spec = l->data;
+      TpContactInfoField *field;
+      InfoFieldData *field_data;
+      GList *info, *ll;
+      GStrv value = NULL;
+      GtkWidget *w;
+
+      field_data = find_info_field_data (spec->name);
+      if (field_data == NULL)
+        {
+          DEBUG ("Unhandled ContactInfo field spec: %s", spec->name);
+          continue;
+        }
+
+      /* Search initial value */
+      info = tp_contact_get_contact_info (contact);
+      for (ll = info; ll != NULL; ll = ll->next)
+        {
+          field = ll->data;
+          if (!tp_strdiff (field->field_name, spec->name))
+            {
+              value = field->field_value;
+              break;
+            }
+        }
+
+      field = tp_contact_info_field_new (spec->name, spec->parameters, value);
+      information->details_to_set = g_list_prepend (information->details_to_set,
+          field);
+
+      /* Add Title */
+      w = gtk_label_new (_(field_data->title));
+      gtk_table_attach (GTK_TABLE (information->table_details),
+          w, 0, 1, n_rows, n_rows + 1, GTK_FILL, 0, 0, 0);
+      gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+      gtk_widget_show (w);
+
+      /* Add Value */
+      w = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (w),
+          field->field_value[0] ? field->field_value[0] : "");
+      gtk_table_attach_defaults (GTK_TABLE (information->table_details),
+          w, 1, 2, n_rows, n_rows + 1);
+      gtk_widget_show (w);
+
+      g_signal_connect (w, "changed",
+        G_CALLBACK (contact_widget_details_changed_cb), field);
+
+      n_rows++;
+    }
+  g_list_free (specs);
+
+  return n_rows;
+}
+
+static guint
+contact_widget_details_update_show (EmpathyContactWidget *information)
+{
+  TpContact *contact;
+  GList *info, *l;
+  guint n_rows = 0;
+
+  contact = empathy_contact_get_tp_contact (information->contact);
+  info = tp_contact_get_contact_info (contact);
+  info = g_list_sort (info, (GCompareFunc) contact_info_field_cmp);
+  for (l = info; l != NULL; l = l->next)
+    {
+      TpContactInfoField *field = l->data;
+      InfoFieldData *field_data;
+      const gchar *value;
+      GtkWidget *w;
+
+      if (field->field_value == NULL || field->field_value[0] == NULL)
+        continue;
+
+      value = field->field_value[0];
+
+      field_data = find_info_field_data (field->field_name);
+      if (field_data == NULL)
+        {
+          DEBUG ("Unhandled ContactInfo field: %s", field->field_name);
+          continue;
+        }
+
+      /* Add Title */
+      w = gtk_label_new (_(field_data->title));
+      gtk_table_attach (GTK_TABLE (information->table_details),
+          w, 0, 1, n_rows, n_rows + 1, GTK_FILL, 0, 0, 0);
+      gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+      gtk_widget_show (w);
+
+      /* Add Value */
+      w = gtk_label_new (value);
+      if (field_data->linkify)
+        {
+          gchar *markup;
+
+          markup = empathy_add_link_markup (value);
+          gtk_label_set_markup (GTK_LABEL (w), markup);
+          g_free (markup);
+        }
+
+      if ((information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP) == 0)
+        gtk_label_set_selectable (GTK_LABEL (w), TRUE);
+
+      gtk_table_attach_defaults (GTK_TABLE (information->table_details),
+          w, 1, 2, n_rows, n_rows + 1);
+      gtk_misc_set_alignment (GTK_MISC (w), 0, 0.5);
+      gtk_widget_show (w);
+
+      n_rows++;
+    }
+  g_list_free (info);
+
+  return n_rows;
+}
+
+static void
+contact_widget_details_notify_cb (EmpathyContactWidget *information)
+{
+  guint n_rows;
+
+  gtk_container_foreach (GTK_CONTAINER (information->table_details),
+      (GtkCallback) gtk_widget_destroy, NULL);
+
+  if ((information->flags & EMPATHY_CONTACT_WIDGET_EDIT_DETAILS) != 0)
+    n_rows = contact_widget_details_update_edit (information);
+  else
+    n_rows = contact_widget_details_update_show (information);
+
+  if (n_rows > 0)
+    {
+      gtk_widget_show (information->vbox_details);
+      gtk_widget_show (information->table_details);
+    }
+  else
+    {
+      gtk_widget_hide (information->vbox_details);
+    }
+
+  gtk_widget_hide (information->hbox_details_requested);
+}
+
+static void
+contact_widget_details_request_cb (GObject *object,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  TpContact *contact = TP_CONTACT (object);
+  EmpathyContactWidget *information = user_data;
+  GError *error = NULL;
+
+  if (!tp_contact_request_contact_info_finish (contact, res, &error))
+    {
+      /* If the request got cancelled it could mean the contact widget is
+       * destroyed, so we should not dereference information */
+      if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+        {
+          g_clear_error (&error);
+          return;
+        }
+
+      gtk_widget_hide (information->vbox_details);
+      g_clear_error (&error);
+    }
+  else
+    {
+      contact_widget_details_notify_cb (information);
+    }
+
+  /* If we are going to edit ContactInfo, we don't want live updates */
+  if ((information->flags & EMPATHY_CONTACT_WIDGET_EDIT_DETAILS) == 0)
+    {
+      g_signal_connect_swapped (contact, "notify::contact-info",
+          G_CALLBACK (contact_widget_details_notify_cb), information);
+    }
+
+  g_object_unref (information->details_cancellable);
+  information->details_cancellable = NULL;
+}
+
+static void
+contact_widget_details_feature_prepared_cb (GObject *object,
+    GAsyncResult *res,
+    gpointer user_data)
+{
+  TpConnection *connection = TP_CONNECTION (object);
+  EmpathyContactWidget *information = user_data;
+  TpContact *contact;
+  TpContactInfoFlags flags;
+
+  if (!tp_proxy_prepare_finish (connection, res, NULL))
+    {
+      gtk_widget_hide (information->vbox_details);
+      return;
+    }
+
+  /* If we want to edit info, but connection does not support that, stop */
+  flags = tp_connection_get_contact_info_flags (connection);
+  if ((flags & TP_CONTACT_INFO_FLAG_CAN_SET) == 0 &&
+      (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_DETAILS) != 0)
+    {
+      gtk_widget_hide (information->vbox_details);
+      return;
+    }
+
+  /* Request the contact's info */
+  gtk_widget_show (information->vbox_details);
+  gtk_widget_show (information->hbox_details_requested);
+  gtk_widget_hide (information->table_details);
+
+  contact = empathy_contact_get_tp_contact (information->contact);
+  g_assert (information->details_cancellable == NULL);
+  information->details_cancellable = g_cancellable_new ();
+  tp_contact_request_contact_info_async (contact,
+      information->details_cancellable, contact_widget_details_request_cb,
+      information);
 }
 
 static void
 contact_widget_details_update (EmpathyContactWidget *information)
 {
-  /* FIXME: Needs new telepathy spec */
+  TpContact *tp_contact = NULL;
+
+  if ((information->flags & EMPATHY_CONTACT_WIDGET_SHOW_DETAILS) == 0 &&
+      (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_DETAILS) == 0)
+    return;
+
+  gtk_widget_hide (information->vbox_details);
+
+  if (information->contact != NULL)
+    tp_contact = empathy_contact_get_tp_contact (information->contact);
+
+  if (tp_contact != NULL)
+    {
+      GQuark features[] = { TP_CONNECTION_FEATURE_CONTACT_INFO, 0 };
+      TpConnection *connection;
+
+      /* First, make sure the CONTACT_INFO feature is ready on the connection */
+      connection = tp_contact_get_connection (tp_contact);
+      tp_proxy_prepare_async (connection, features,
+          contact_widget_details_feature_prepared_cb, information);
+    }
 }
 
 static void
@@ -1048,6 +1417,10 @@ contact_widget_remove_contact (EmpathyContactWidget *information)
 {
   if (information->contact)
     {
+      TpContact *tp_contact;
+
+      contact_widget_save (information);
+
       g_signal_handlers_disconnect_by_func (information->contact,
           contact_widget_name_notify_cb, information);
       g_signal_handlers_disconnect_by_func (information->contact,
@@ -1057,8 +1430,22 @@ contact_widget_remove_contact (EmpathyContactWidget *information)
       g_signal_handlers_disconnect_by_func (information->contact,
           contact_widget_groups_notify_cb, information);
 
+      tp_contact = empathy_contact_get_tp_contact (information->contact);
+      if (tp_contact != NULL)
+        {
+          g_signal_handlers_disconnect_by_func (tp_contact,
+              contact_widget_details_notify_cb, information);
+        }
+
       g_object_unref (information->contact);
       information->contact = NULL;
+    }
+
+  if (information->details_cancellable != NULL)
+    {
+      g_cancellable_cancel (information->details_cancellable);
+      g_object_unref (information->details_cancellable);
+      information->details_cancellable = NULL;
     }
 }
 
