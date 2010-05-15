@@ -182,7 +182,13 @@ empathy_icon_name_for_presence (TpConnectionPresenceType presence)
 	case TP_CONNECTION_PRESENCE_TYPE_AWAY:
 		return EMPATHY_IMAGE_AWAY;
 	case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
-		return EMPATHY_IMAGE_EXT_AWAY;
+		if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
+					     EMPATHY_IMAGE_EXT_AWAY))
+			return EMPATHY_IMAGE_EXT_AWAY;
+
+		/* The 'extended-away' icon is not an official one so we fallback to idle if
+		 * it's not implemented */
+		return EMPATHY_IMAGE_IDLE;
 	case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
 		if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
 					     EMPATHY_IMAGE_HIDDEN))

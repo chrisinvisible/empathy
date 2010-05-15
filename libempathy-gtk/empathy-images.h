@@ -31,7 +31,8 @@ G_BEGIN_DECLS
 #define EMPATHY_IMAGE_AVAILABLE           "user-available"
 #define EMPATHY_IMAGE_BUSY                "user-busy"
 #define EMPATHY_IMAGE_AWAY                "user-away"
-#define EMPATHY_IMAGE_EXT_AWAY            "user-idle"
+#define EMPATHY_IMAGE_EXT_AWAY            "user-extended-away"
+#define EMPATHY_IMAGE_IDLE                "user-idle"
 #define EMPATHY_IMAGE_PENDING             "empathy-pending"
 
 #define EMPATHY_IMAGE_MESSAGE             "im-message"
