@@ -436,7 +436,7 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
   g_free (dir);
 
   global_file_with_path = g_build_filename (g_getenv ("EMPATHY_SRCDIR"),
-      "libempathy-gtk", IRC_NETWORKS_FILENAME, NULL);
+      "libempathy", IRC_NETWORKS_FILENAME, NULL);
   if (!g_file_test (global_file_with_path, G_FILE_TEST_EXISTS))
     {
       g_free (global_file_with_path);
