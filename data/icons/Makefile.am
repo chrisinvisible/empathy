@@ -22,6 +22,7 @@ private_icons = \
 	hicolor_actions_22x22_im-message-new.png \
 	hicolor_actions_24x24_im-message-new.png \
 	hicolor_status_16x16_im-message.png \
+	hicolor_status_22x22_im-message.png \
 	hicolor_status_16x16_user-typing.png \
 	hicolor_apps_16x16_im-aim.png \
 	hicolor_apps_16x16_im-ekiga.png \
