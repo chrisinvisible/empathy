@@ -1834,3 +1834,52 @@ empathy_tp_chat_leave (EmpathyTpChat *self)
 
 	g_array_free (array, TRUE);
 }
+
+static void
+add_members_cb (TpChannel *proxy,
+		const GError *error,
+		gpointer user_data,
+		GObject *weak_object)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (weak_object);
+
+	if (error != NULL) {
+		DEBUG ("Failed to join chat (%s): %s",
+			tp_channel_get_identifier (priv->channel), error->message);
+	}
+}
+
+void
+empathy_tp_chat_join (EmpathyTpChat *self)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+	TpHandle self_handle;
+	GArray *members;
+
+	self_handle = tp_channel_group_get_self_handle (priv->channel);
+
+	members = g_array_sized_new (FALSE, FALSE, sizeof (TpHandle), 1);
+	g_array_append_val (members, self_handle);
+
+	tp_cli_channel_interface_group_call_add_members (priv->channel, -1, members,
+		"", add_members_cb, NULL, NULL, G_OBJECT (self));
+
+	g_array_free (members, TRUE);
+}
+
+gboolean
+empathy_tp_chat_is_invited (EmpathyTpChat *self)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (self);
+	TpHandle self_handle;
+
+	if (!tp_proxy_has_interface (priv->channel, TP_IFACE_CHANNEL_INTERFACE_GROUP))
+		return FALSE;
+
+	self_handle = tp_channel_group_get_self_handle (priv->channel);
+	if (self_handle == 0)
+		return FALSE;
+
+	return tp_channel_group_get_local_pending_info (priv->channel, self_handle,
+		NULL, NULL, NULL);
+}
