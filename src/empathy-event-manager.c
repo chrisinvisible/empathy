@@ -61,7 +61,6 @@
 typedef struct {
   EmpathyEventManager *manager;
   EmpathyDispatchOperation *operation;
-  gulong approved_handler;
   gulong claimed_handler;
   gulong invalidated_handler;
   /* Remove contact if applicable */
@@ -109,6 +108,7 @@ G_DEFINE_TYPE (EmpathyEventManager, empathy_event_manager, G_TYPE_OBJECT);
 
 static EmpathyEventManager * manager_singleton = NULL;
 
+#if 0
 static EventManagerApproval *
 event_manager_approval_new (EmpathyEventManager *manager,
   EmpathyDispatchOperation *operation)
@@ -119,12 +119,11 @@ event_manager_approval_new (EmpathyEventManager *manager,
 
   return result;
 }
+#endif
 
 static void
 event_manager_approval_free (EventManagerApproval *approval)
 {
-  g_signal_handler_disconnect (approval->operation,
-    approval->approved_handler);
   g_signal_handler_disconnect (approval->operation,
     approval->claimed_handler);
   g_signal_handler_disconnect (approval->operation,
@@ -225,6 +224,7 @@ event_manager_add (EmpathyEventManager *manager,
     }
 }
 
+#if 0
 static void
 event_channel_process_func (EventPriv *event)
 {
@@ -463,13 +463,6 @@ event_manager_approval_done (EventManagerApproval *approval)
 }
 
 static void
-event_manager_operation_approved_cb (EmpathyDispatchOperation *operation,
-  EventManagerApproval *approval)
-{
-  event_manager_approval_done (approval);
-}
-
-static void
 event_manager_operation_claimed_cb (EmpathyDispatchOperation *operation,
   EventManagerApproval *approval)
 {
@@ -564,7 +557,9 @@ invite_dialog_response_cb (GtkDialog *dialog,
 
   empathy_dispatch_operation_set_user_action_time (approval->operation,
     timestamp);
+  /*
   empathy_dispatch_operation_approve (approval->operation);
+  */
 }
 
 static void
@@ -690,9 +685,6 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
   approval = event_manager_approval_new (manager, operation);
   priv->approvals = g_slist_prepend (priv->approvals, approval);
 
-  approval->approved_handler = g_signal_connect (operation, "approved",
-    G_CALLBACK (event_manager_operation_approved_cb), approval);
-
   approval->claimed_handler = g_signal_connect (operation, "claimed",
      G_CALLBACK (event_manager_operation_claimed_cb), approval);
 
@@ -777,6 +769,7 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
       DEBUG ("Unknown channel type (%s), ignoring..", channel_type);
     }
 }
+#endif
 
 static void
 event_pending_subscribe_func (EventPriv *event)
@@ -1000,8 +993,6 @@ empathy_event_manager_init (EmpathyEventManager *manager)
 
   priv->dispatcher = empathy_dispatcher_dup_singleton ();
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
-  g_signal_connect (priv->dispatcher, "approve",
-    G_CALLBACK (event_manager_approve_channel_cb), manager);
   g_signal_connect (priv->contact_manager, "pendings-changed",
     G_CALLBACK (event_manager_pendings_changed_cb), manager);
   g_signal_connect (priv->contact_manager, "members-changed",
