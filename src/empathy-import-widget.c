@@ -22,6 +22,8 @@
 
 /* empathy-import-widget.c */
 
+#include <config.h>
+
 #include "empathy-import-dialog.h"
 #include "empathy-import-widget.h"
 #include "empathy-import-pidgin.h"
@@ -36,7 +38,7 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
-#include <glib/gi18n.h>
+#include <glib/gi18n-lib.h>
 
 G_DEFINE_TYPE (EmpathyImportWidget, empathy_import_widget, G_TYPE_OBJECT)
 

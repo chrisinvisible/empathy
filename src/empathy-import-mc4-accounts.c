@@ -19,10 +19,12 @@
  * Authors: Arnaud Maillet <arnaud.maillet@collabora.co.uk>
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
-#include <glib/gi18n.h>
+#include <glib/gi18n-lib.h>
 #include <gconf/gconf-client.h>
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>

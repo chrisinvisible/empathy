@@ -20,7 +20,8 @@
 
 /* empathy-account-assistant.c */
 
-#include <glib/gi18n.h>
+#include <config.h>
+#include <glib/gi18n-lib.h>
 #include <telepathy-glib/util.h>
 #include <gdk/gdkkeysyms.h>
 

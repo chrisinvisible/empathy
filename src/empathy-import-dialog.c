@@ -24,7 +24,7 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <glib/gi18n.h>
+#include <glib/gi18n-lib.h>
 
 #include <telepathy-glib/util.h>
 

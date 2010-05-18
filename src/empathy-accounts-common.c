@@ -30,7 +30,7 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
-#include <glib/gi18n.h>
+#include <glib/gi18n-lib.h>
 #include <unique/unique.h>
 
 #include <telepathy-glib/account-manager.h>
