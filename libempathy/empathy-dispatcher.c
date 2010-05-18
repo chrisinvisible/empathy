@@ -110,7 +110,6 @@ enum
 enum
 {
   OBSERVE,
-  APPROVE,
   DISPATCH,
   LAST_SIGNAL
 };
@@ -431,16 +430,6 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
 }
 
 static void
-dispatch_operation_approved_cb (EmpathyDispatchOperation *operation,
-                                EmpathyDispatcher *self)
-{
-  g_assert (empathy_dispatch_operation_is_incoming (operation));
-  DEBUG ("Send of for dispatching: %s",
-    empathy_dispatch_operation_get_object_path (operation));
-  g_signal_emit (self, signals[DISPATCH], 0, operation);
-}
-
-static void
 dispatch_operation_claimed_cb (EmpathyDispatchOperation *operation,
                                EmpathyDispatcher *self)
 {
@@ -480,9 +469,6 @@ dispatch_operation_ready_cb (EmpathyDispatchOperation *operation,
   ConnectionData *cd;
   EmpathyDispatchOperationState status;
 
-  g_signal_connect (operation, "approved",
-    G_CALLBACK (dispatch_operation_approved_cb), self);
-
   g_signal_connect (operation, "claimed",
     G_CALLBACK (dispatch_operation_claimed_cb), self);
 
@@ -508,19 +494,10 @@ dispatch_operation_ready_cb (EmpathyDispatchOperation *operation,
   if (status == EMPATHY_DISPATCHER_OPERATION_STATE_CLAIMED)
     return;
 
-  if (status == EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING)
-    {
-      DEBUG ("Send to approvers: %s",
-        empathy_dispatch_operation_get_object_path (operation));
-      g_signal_emit (self, signals[APPROVE], 0, operation);
-    }
-  else
-    {
-      g_assert (status == EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING);
-      DEBUG ("Send of for dispatching: %s",
-        empathy_dispatch_operation_get_object_path (operation));
-      g_signal_emit (self, signals[DISPATCH], 0, operation);
-    }
+  g_assert (status == EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING);
+  DEBUG ("Send of for dispatching: %s",
+      empathy_dispatch_operation_get_object_path (operation));
+  g_signal_emit (self, signals[DISPATCH], 0, operation);
 
   g_object_unref (self);
 }
@@ -608,15 +585,6 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
   DEBUG ("%s channel of type %s on %s", incoming ? "incoming" : "outgoing",
     channel_type, object_path);
 
-  if ((operation = g_hash_table_lookup (cd->dispatching_channels,
-      object_path)) != NULL)
-    {
-      /* This operation was already being dispatched, assume we got the channel
-       * again because something asked for it and approve it right away */
-      empathy_dispatch_operation_approve (operation);
-      return;
-    }
-
   if (properties == NULL)
     channel = tp_channel_new (connection, object_path, channel_type,
       handle_type, handle, NULL);
@@ -679,9 +647,6 @@ dispatcher_connection_new_channel (EmpathyDispatcher *self,
             }
         }
     }
-
-  if (g_hash_table_lookup (cd->dispatched_channels, object_path) != NULL)
-    empathy_dispatch_operation_approve (operation);
 
   dispatcher_start_dispatching (dispatcher, operation, cd);
 }
@@ -1085,16 +1050,6 @@ empathy_dispatcher_class_init (EmpathyDispatcherClass *klass)
 
   signals[OBSERVE] =
     g_signal_new ("observe",
-      G_TYPE_FROM_CLASS (klass),
-      G_SIGNAL_RUN_LAST,
-      0,
-      NULL, NULL,
-      g_cclosure_marshal_VOID__OBJECT,
-      G_TYPE_NONE,
-      1, EMPATHY_TYPE_DISPATCH_OPERATION);
-
-  signals[APPROVE] =
-    g_signal_new ("approve",
       G_TYPE_FROM_CLASS (klass),
       G_SIGNAL_RUN_LAST,
       0,
