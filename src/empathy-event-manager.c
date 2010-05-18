@@ -536,9 +536,6 @@ invite_dialog_response_cb (GtkDialog *dialog,
                            EventManagerApproval *approval)
 {
   EmpathyTpChat *tp_chat;
-  TpChannel *channel;
-  TpHandle self_handle;
-  GArray *members;
   gint64 timestamp;
 
   gtk_widget_destroy (GTK_WIDGET (approval->dialog));
@@ -559,15 +556,7 @@ invite_dialog_response_cb (GtkDialog *dialog,
 
   DEBUG ("Muc invitation accepted");
 
-  /* join the room */
-  channel = empathy_tp_chat_get_channel (tp_chat);
-
-  self_handle = tp_channel_group_get_self_handle (channel);
-  members = g_array_sized_new (FALSE, FALSE, sizeof (TpHandle), 1);
-  g_array_append_val (members, self_handle);
-
-  tp_cli_channel_interface_group_call_add_members (channel, -1, members,
-      "", NULL, NULL, NULL, NULL);
+  /* We'll join the room when handling the channel */
 
   timestamp = gtk_get_current_event_time ();
   if (timestamp == GDK_CURRENT_TIME)
@@ -576,8 +565,6 @@ invite_dialog_response_cb (GtkDialog *dialog,
   empathy_dispatch_operation_set_user_action_time (approval->operation,
     timestamp);
   empathy_dispatch_operation_approve (approval->operation);
-
-  g_array_free (members, TRUE);
 }
 
 static void
