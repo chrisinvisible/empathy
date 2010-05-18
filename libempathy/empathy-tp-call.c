@@ -854,3 +854,11 @@ empathy_tp_call_leave (EmpathyTpCall *self)
   tp_cli_channel_interface_group_call_remove_members (priv->channel, -1, &array,
       "", leave_remove_members_cb, self, NULL, G_OBJECT (self));
 }
+
+EmpathyTpCallStatus
+empathy_tp_call_get_status (EmpathyTpCall *self)
+{
+  EmpathyTpCallPriv *priv = GET_PRIV (self);
+
+  return priv->status;
+}
