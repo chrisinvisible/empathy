@@ -159,6 +159,7 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
       COL_NETWORK_NAME, name, -1);
 
   update_server_params (settings);
+  empathy_account_widget_changed (settings->self);
 
   g_object_unref (network);
   g_free (name);
