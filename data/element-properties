@@ -20,6 +20,12 @@ rtp-payload-size=1
 [theoraenc]
 bitrate=256
 
+[vp8enc]
+bitrate=256000
+max-latency=1
+speed=2
+error-resilient=true
+
 # Work around bug in the re-timestamp slaving method in
 # GStreamer (2 is skew)
 [alsasrc]
