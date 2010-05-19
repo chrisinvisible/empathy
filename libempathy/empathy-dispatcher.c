@@ -347,7 +347,7 @@ dispatcher_connection_invalidated_cb (TpConnection *connection,
   if (connection_data != NULL)
     {
       GList *l;
-      GError *error;
+      GError *error = NULL;
 
       error = g_error_new_literal (domain, code, message);
 
