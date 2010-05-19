@@ -1868,7 +1868,8 @@ empathy_tp_chat_join (EmpathyTpChat *self)
 }
 
 gboolean
-empathy_tp_chat_is_invited (EmpathyTpChat *self)
+empathy_tp_chat_is_invited (EmpathyTpChat *self,
+			    TpHandle *inviter)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (self);
 	TpHandle self_handle;
@@ -1881,5 +1882,5 @@ empathy_tp_chat_is_invited (EmpathyTpChat *self)
 		return FALSE;
 
 	return tp_channel_group_get_local_pending_info (priv->channel, self_handle,
-		NULL, NULL, NULL);
+		inviter, NULL, NULL);
 }
