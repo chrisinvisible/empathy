@@ -34,6 +34,7 @@
 
 #include "empathy-avatar-chooser.h"
 #include "empathy-conf.h"
+#include "empathy-images.h"
 #include "empathy-ui-utils.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
@@ -571,7 +572,8 @@ avatar_chooser_clear_image (EmpathyAvatarChooser *chooser)
 		priv->avatar = NULL;
 	}
 
-	image = gtk_image_new_from_icon_name ("stock_person", GTK_ICON_SIZE_DIALOG);
+	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_AVATAR_DEFAULT,
+		GTK_ICON_SIZE_DIALOG);
 	gtk_button_set_image (GTK_BUTTON (chooser), image);
 	g_signal_emit (chooser, signals[CHANGED], 0);
 }

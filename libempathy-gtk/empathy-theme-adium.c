@@ -41,6 +41,7 @@
 #include "empathy-ui-utils.h"
 #include "empathy-plist.h"
 #include "empathy-string-parser.h"
+#include "empathy-images.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CHAT
 #include <libempathy/empathy-debug.h>
@@ -491,7 +492,7 @@ theme_adium_append_message (EmpathyChatView *view,
 		if (!avatar_filename) {
 			if (!priv->data->default_avatar_filename) {
 				priv->data->default_avatar_filename =
-					empathy_filename_from_icon_name ("stock_person",
+					empathy_filename_from_icon_name (EMPATHY_IMAGE_AVATAR_DEFAULT,
 									 GTK_ICON_SIZE_DIALOG);
 			}
 			avatar_filename = priv->data->default_avatar_filename;

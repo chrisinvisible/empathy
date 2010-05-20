@@ -46,6 +46,7 @@
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-sound.h>
 #include <libempathy-gtk/empathy-geometry.h>
+#include <libempathy-gtk/empathy-images.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_VOIP
 #include <libempathy/empathy-debug.h>
@@ -1206,8 +1207,8 @@ init_contact_avatar_with_size (EmpathyContact *contact,
 
   if (pixbuf_avatar == NULL)
     {
-      pixbuf_avatar = empathy_pixbuf_from_icon_name_sized ("stock_person",
-          size);
+      pixbuf_avatar = empathy_pixbuf_from_icon_name_sized (
+          EMPATHY_IMAGE_AVATAR_DEFAULT, size);
     }
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (image_widget), pixbuf_avatar);

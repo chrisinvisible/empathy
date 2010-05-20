@@ -882,7 +882,7 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
             empathy_contact_get_name (contact));
 
           event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              "stock_person", header, NULL, NULL, NULL, NULL);
+              EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
         }
     }
   else
@@ -898,7 +898,7 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
             empathy_contact_get_name (contact));
 
           event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              "stock_person", header, NULL, NULL, NULL, NULL);
+              EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
         }
     }
   g_free (header);
