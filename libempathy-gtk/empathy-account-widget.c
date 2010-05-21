@@ -32,6 +32,7 @@
 
 #ifdef HAVE_MEEGO
 #include <mx-gtk/mx-gtk.h>
+#include <gio/gdesktopappinfo.h>
 #endif /* HAVE_MEEGO */
 
 #include <libempathy/empathy-utils.h>
@@ -110,6 +111,10 @@ enum {
 };
 
 static void account_widget_apply_and_log_in (EmpathyAccountWidget *);
+
+enum {
+  RESPONSE_LAUNCH
+};
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
@@ -914,6 +919,97 @@ account_widget_build_generic (EmpathyAccountWidget *self,
         G_CALLBACK (account_widget_settings_ready_cb), self);
 }
 
+#ifdef HAVE_MEEGO
+static void
+account_widget_launch_external_clicked (GtkWidget *button,
+    gpointer user_data)
+{
+  GDesktopAppInfo *app_info;
+  const gchar *args[3] = { NULL, };
+  GError *error = NULL;
+
+  app_info = g_desktop_app_info_new ("gnome-control-center.desktop");
+
+  if (app_info == NULL)
+    {
+      g_critical ("Could not locate 'gnome-control-center.desktop'");
+      return;
+    }
+
+  args[0] = g_app_info_get_commandline (G_APP_INFO (app_info));
+  args[1] = "bisho.desktop";
+  args[2] = NULL;
+
+  gdk_spawn_on_screen (gtk_widget_get_screen (button),
+      NULL, (gchar **) args, NULL,
+      G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error);
+  if (error != NULL)
+    {
+      g_critical ("Failed to launch editor: %s", error->message);
+      g_clear_error (&error);
+    }
+
+  g_object_unref (app_info);
+}
+#endif /* HAVE_MEEGO */
+
+static void
+account_widget_build_external (EmpathyAccountWidget *self,
+    EmpathyAccountSettings *settings)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  GtkWidget *bar, *widget;
+  gchar *str;
+
+  self->ui_details->widget = gtk_vbox_new (FALSE, 6);
+  priv->table_common_settings = gtk_table_new (1, 2, FALSE);
+
+  if (!tp_strdiff (empathy_account_settings_get_storage_provider (settings),
+        "org.moblin.libsocialweb"))
+    {
+      /* we know how to handle this external provider */
+      str = g_strdup_printf (
+          _("The account %s is edited via My Web Accounts."),
+          empathy_account_settings_get_display_name (settings));
+    }
+  else
+    {
+      str = g_strdup_printf (
+          _("The account %s cannot be edited in Empathy."),
+          empathy_account_settings_get_display_name (settings));
+    }
+
+  widget = gtk_label_new (str);
+  gtk_label_set_line_wrap (GTK_LABEL (widget), TRUE);
+  g_free (str);
+
+  bar = gtk_info_bar_new ();
+  gtk_info_bar_set_message_type (GTK_INFO_BAR (bar), GTK_MESSAGE_INFO);
+  gtk_container_add (
+      GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (bar))),
+      widget);
+  gtk_container_set_border_width (GTK_CONTAINER (bar), 6);
+
+#ifdef HAVE_MEEGO
+  if (!tp_strdiff (empathy_account_settings_get_storage_provider (settings),
+        "org.moblin.libsocialweb"))
+    {
+      widget = gtk_info_bar_add_button (GTK_INFO_BAR (bar),
+          _("Launch My Web Accounts"), RESPONSE_LAUNCH);
+
+      g_signal_connect (widget, "clicked",
+          G_CALLBACK (account_widget_launch_external_clicked), NULL);
+    }
+#endif
+
+  gtk_box_pack_start (GTK_BOX (self->ui_details->widget), bar,
+      FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (self->ui_details->widget),
+      priv->table_common_settings, FALSE, TRUE, 0);
+
+  gtk_widget_show_all (self->ui_details->widget);
+}
+
 static void
 account_widget_build_salut (EmpathyAccountWidget *self,
     const char *filename)
@@ -1710,7 +1806,6 @@ do_constructed (GObject *obj)
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   TpAccount *account;
-  const gchar *protocol, *cm_name;
   const gchar *display_name, *default_display_name;
   guint i = 0;
   struct {
@@ -1731,31 +1826,46 @@ do_constructed (GObject *obj)
     WIDGET (sofiasip, sip),
   };
 
-  cm_name = empathy_account_settings_get_cm (priv->settings);
-  protocol = empathy_account_settings_get_protocol (priv->settings);
+  account = empathy_account_settings_get_account (priv->settings);
 
-  for (i = 0 ; i < G_N_ELEMENTS (widgets); i++)
+  /* Empathy can only edit accounts without the Cannot_Set_Parameters flag */
+  if (empathy_account_settings_get_storage_restrictions (priv->settings) &
+      TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS)
     {
-      if (!tp_strdiff (widgets[i].cm_name, cm_name) &&
-          !tp_strdiff (widgets[i].protocol, protocol))
-        {
-          gchar *filename;
+      DEBUG ("Account is provided by an external storage provider");
 
-          filename = empathy_file_lookup (widgets[i].file,
-              "libempathy-gtk");
-          widgets[i].func (self, filename);
-          g_free (filename);
-
-          break;
-        }
+      account_widget_build_external (self, priv->settings);
     }
-
-  if (i == G_N_ELEMENTS (widgets))
+  else
     {
-      gchar *filename = empathy_file_lookup (
-          "empathy-account-widget-generic.ui", "libempathy-gtk");
-      account_widget_build_generic (self, filename);
-      g_free (filename);
+      const gchar *protocol, *cm_name;
+
+      cm_name = empathy_account_settings_get_cm (priv->settings);
+      protocol = empathy_account_settings_get_protocol (priv->settings);
+
+      for (i = 0 ; i < G_N_ELEMENTS (widgets); i++)
+        {
+          if (!tp_strdiff (widgets[i].cm_name, cm_name) &&
+              !tp_strdiff (widgets[i].protocol, protocol))
+            {
+              gchar *filename;
+
+              filename = empathy_file_lookup (widgets[i].file,
+                  "libempathy-gtk");
+              widgets[i].func (self, filename);
+              g_free (filename);
+
+              break;
+            }
+        }
+
+      if (i == G_N_ELEMENTS (widgets))
+        {
+          gchar *filename = empathy_file_lookup (
+              "empathy-account-widget-generic.ui", "libempathy-gtk");
+          account_widget_build_generic (self, filename);
+          g_free (filename);
+        }
     }
 
   /* handle default focus */
@@ -1778,7 +1888,9 @@ do_constructed (GObject *obj)
       account_manager_ready_cb, self);
 
   /* handle apply and cancel button */
-  if (!priv->simple)
+  if (!priv->simple &&
+      !(empathy_account_settings_get_storage_restrictions (priv->settings) &
+        TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS))
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
       GtkWidget *image;
@@ -1827,8 +1939,6 @@ do_constructed (GObject *obj)
         account_widget_set_control_buttons_sensitivity (self, FALSE);
     }
 
-  account = empathy_account_settings_get_account (priv->settings);
-
   if (account != NULL)
     {
       g_signal_connect (account, "notify::enabled",
@@ -1838,15 +1948,22 @@ do_constructed (GObject *obj)
 #ifndef HAVE_MEEGO
   add_register_buttons (self, account);
 #endif /* HAVE_MEEGO */
-  add_enable_checkbox (self, account);
+
+  /* add the Enable checkbox to accounts that support it */
+  if (!(empathy_account_settings_get_storage_restrictions (priv->settings) &
+      TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_ENABLED))
+    add_enable_checkbox (self, account);
 
   /* hook up to widget destruction to unref ourselves */
   g_signal_connect (self->ui_details->widget, "destroy",
       G_CALLBACK (account_widget_destroy_cb), self);
 
-  empathy_builder_unref_and_keep_widget (self->ui_details->gui,
-      self->ui_details->widget);
-  self->ui_details->gui = NULL;
+  if (self->ui_details->gui != NULL)
+    {
+      empathy_builder_unref_and_keep_widget (self->ui_details->gui,
+          self->ui_details->widget);
+      self->ui_details->gui = NULL;
+    }
 
   display_name = empathy_account_settings_get_display_name (priv->settings);
   default_display_name = empathy_account_widget_get_default_display_name (self);

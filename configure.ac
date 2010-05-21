@@ -389,6 +389,7 @@ if test "x$enable_meego" != "xno"; then
     PKG_CHECK_MODULES(MEEGO,
     [
        mx-gtk-1.0
+       gio-unix-2.0
     ], have_meego="yes", have_meego="no")
 
     if test "x$have_meego" = "xyes"; then

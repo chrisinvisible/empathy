@@ -76,6 +76,13 @@ struct _EmpathyAccountSettingsPriv
   gulong managers_ready_id;
 
   GSimpleAsyncResult *apply_result;
+
+  gboolean storage;
+  gboolean attempted_storage_properties;
+  gchar *storage_provider;
+  GValue *storage_identifier;
+  GHashTable *storage_specific_information;
+  TpStorageRestrictionFlags storage_restrictions;
 };
 
 static void
@@ -104,6 +111,9 @@ static void empathy_account_settings_managers_ready_cb (GObject *obj,
     GParamSpec *pspec, gpointer user_data);
 static void empathy_account_settings_check_readyness (
     EmpathyAccountSettings *self);
+static void empathy_account_settings_got_account_storage (TpProxy *account,
+    GHashTable *properties, const GError *error, gpointer user_data,
+    GObject *object);
 
 static void
 empathy_account_settings_set_property (GObject *object,
@@ -214,6 +224,15 @@ empathy_account_settings_constructed (GObject *object)
           empathy_account_settings_account_ready_cb, self);
       tp_g_signal_connect_object (priv->managers, "notify::ready",
         G_CALLBACK (empathy_account_settings_managers_ready_cb), object, 0);
+
+      priv->storage = tp_proxy_has_interface_by_id (priv->account,
+          TP_IFACE_QUARK_ACCOUNT_INTERFACE_STORAGE);
+
+      if (priv->storage)
+        tp_cli_dbus_properties_call_get_all (priv->account, -1,
+            TP_IFACE_ACCOUNT_INTERFACE_STORAGE,
+            empathy_account_settings_got_account_storage,
+            NULL, NULL, object);
     }
 
   if (G_OBJECT_CLASS (
@@ -350,6 +369,13 @@ empathy_account_settings_finalize (GObject *object)
   g_free (priv->service);
   g_free (priv->display_name);
   g_free (priv->icon_name);
+  g_free (priv->storage_provider);
+
+  if (priv->storage_identifier != NULL)
+    tp_g_value_slice_free (priv->storage_identifier);
+
+  if (priv->storage_specific_information != NULL)
+    g_hash_table_unref (priv->storage_specific_information);
 
   if (priv->required_params != NULL)
     g_array_free (priv->required_params, TRUE);
@@ -421,6 +447,9 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
         }
     }
 
+  if (priv->storage && !priv->attempted_storage_properties)
+    return;
+
   g_object_ref (priv->manager);
 
   priv->ready = TRUE;
@@ -454,6 +483,43 @@ empathy_account_settings_managers_ready_cb (GObject *object,
   EmpathyAccountSettings *settings = EMPATHY_ACCOUNT_SETTINGS (user_data);
 
   empathy_account_settings_check_readyness (settings);
+}
+
+static void
+empathy_account_settings_got_account_storage (TpProxy *account,
+    GHashTable *properties,
+    const GError *error,
+    gpointer user_data,
+    GObject *object)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (object);
+
+  priv->attempted_storage_properties = TRUE;
+
+  if (error != NULL)
+    {
+      DEBUG ("Failed to get Account.Iface.Storage properties: %s",
+          error->message);
+      return;
+    }
+
+  /* Note to the unwary, GetAll() does not returned fully-qualified property
+   * names as is common for Telepathy APIs */
+  priv->storage_provider = g_strdup (tp_asv_get_string (properties,
+        "StorageProvider"));
+
+  if (!EMP_STR_EMPTY (priv->storage_provider))
+    {
+      priv->storage_identifier = tp_g_value_slice_dup (
+          tp_asv_lookup (properties, "StorageIdentifier"));
+      priv->storage_specific_information = g_hash_table_ref (
+          tp_asv_get_boxed (properties, "StorageSpecificInformation",
+            TP_HASH_TYPE_QUALIFIED_PROPERTY_VALUE_MAP));
+      priv->storage_restrictions = tp_asv_get_uint32 (properties,
+          "StorageRestrictions", NULL);
+    }
+
+  empathy_account_settings_check_readyness (EMPATHY_ACCOUNT_SETTINGS (object));
 }
 
 EmpathyAccountSettings *
@@ -1383,4 +1449,30 @@ empathy_account_settings_get_tp_protocol (EmpathyAccountSettings *self)
   EmpathyAccountSettingsPriv *priv = GET_PRIV (self);
 
   return tp_connection_manager_get_protocol (priv->manager, priv->protocol);
+}
+
+const char *
+empathy_account_settings_get_storage_provider (EmpathyAccountSettings *self)
+{
+  return GET_PRIV (self)->storage_provider;
+}
+
+const GValue *
+empathy_account_settings_get_storage_identifier (EmpathyAccountSettings *self)
+{
+  return GET_PRIV (self)->storage_identifier;
+}
+
+GHashTable *
+empathy_account_settings_get_storage_specific_information (
+    EmpathyAccountSettings *self)
+{
+  return GET_PRIV (self)->storage_specific_information;
+}
+
+TpStorageRestrictionFlags
+empathy_account_settings_get_storage_restrictions (
+    EmpathyAccountSettings *self)
+{
+  return GET_PRIV (self)->storage_restrictions;
 }
