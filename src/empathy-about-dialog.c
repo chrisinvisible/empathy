@@ -97,10 +97,10 @@ static const char *license[] = {
 
 static void
 about_dialog_activate_link_cb (GtkAboutDialog *about,
-			       const gchar    *link,
+			       const gchar    *link_,
 			       gpointer        data)
 {
-	empathy_url_show (GTK_WIDGET (about), link);
+	empathy_url_show (GTK_WIDGET (about), link_);
 }
 
 void

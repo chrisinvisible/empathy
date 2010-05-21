@@ -776,12 +776,12 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
 }
 
 static void
-debug_window_pause_toggled_cb (GtkToggleToolButton *pause,
+debug_window_pause_toggled_cb (GtkToggleToolButton *pause_,
     EmpathyDebugWindow *debug_window)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
 
-  priv->paused = gtk_toggle_tool_button_get_active (pause);
+  priv->paused = gtk_toggle_tool_button_get_active (pause_);
 
   debug_window_set_enabled (debug_window, !priv->paused);
 }

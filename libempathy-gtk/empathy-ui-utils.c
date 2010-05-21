@@ -1530,10 +1530,10 @@ empathy_url_show (GtkWidget *parent,
 
 static void
 link_button_hook (GtkLinkButton *button,
-		  const gchar *link,
+		  const gchar *link_,
 		  gpointer user_data)
 {
-	empathy_url_show (GTK_WIDGET (button), link);
+	empathy_url_show (GTK_WIDGET (button), link_);
 }
 
 GtkWidget *
