@@ -118,8 +118,6 @@ gchar *     empathy_make_absolute_url_len               (const gchar      *url,
 							 guint             len);
 void        empathy_url_show                            (GtkWidget        *parent,
 							 const char       *url);
-GtkWidget * empathy_link_button_new                     (const gchar      *url,
-							 const gchar      *title);
 
 /* File transfer */
 void        empathy_send_file                           (EmpathyContact   *contact,

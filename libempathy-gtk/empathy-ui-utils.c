@@ -1528,28 +1528,6 @@ empathy_url_show (GtkWidget *parent,
 	g_free (real_url);
 }
 
-static void
-link_button_hook (GtkLinkButton *button,
-		  const gchar *link_,
-		  gpointer user_data)
-{
-	empathy_url_show (GTK_WIDGET (button), link_);
-}
-
-GtkWidget *
-empathy_link_button_new (const gchar *url,
-			const gchar *title)
-{
-	static gboolean hook = FALSE;
-
-	if (!hook) {
-		hook = TRUE;
-		gtk_link_button_set_uri_hook (link_button_hook, NULL, NULL);
-	}
-
-	return gtk_link_button_new_with_label (url, title);
-}
-
 void
 empathy_send_file (EmpathyContact *contact, GFile *file)
 {
