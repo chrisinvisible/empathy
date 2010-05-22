@@ -370,7 +370,7 @@ empathy_contact_file_transfer_menu_item_new (EmpathyContact *contact)
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("Send file"));
+	item = gtk_image_menu_item_new_with_mnemonic (_("Send File"));
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_DOCUMENT_SEND,
 					      GTK_ICON_SIZE_MENU);
 	gtk_widget_set_sensitive (item, empathy_contact_can_send_files (contact));
@@ -393,7 +393,7 @@ empathy_contact_share_my_desktop_menu_item_new (EmpathyContact *contact)
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("Share my desktop"));
+	item = gtk_image_menu_item_new_with_mnemonic (_("Share My Desktop"));
 	image = gtk_image_new_from_icon_name (GTK_STOCK_NETWORK,
 					      GTK_ICON_SIZE_MENU);
 	gtk_widget_set_sensitive (item, empathy_contact_can_use_stream_tube (contact));
@@ -594,7 +594,7 @@ empathy_contact_invite_menu_item_new (EmpathyContact *contact)
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
-	item = gtk_image_menu_item_new_with_mnemonic (_("_Invite to chat room"));
+	item = gtk_image_menu_item_new_with_mnemonic (_("_Invite to Chat Room"));
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_GROUP_MESSAGE,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
