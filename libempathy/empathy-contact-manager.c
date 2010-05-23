@@ -31,7 +31,6 @@
 #include <extensions/extensions.h>
 
 #include "empathy-contact-manager.h"
-#include "empathy-contact-monitor.h"
 #include "empathy-contact-list.h"
 #include "empathy-utils.h"
 
@@ -44,7 +43,6 @@ typedef struct {
 	   The contact list associated with each connected connection */
 	GHashTable     *lists;
 	TpAccountManager *account_manager;
-	EmpathyContactMonitor *contact_monitor;
 	TpProxy *logger;
 	/* account object path (gchar *) => GHashTable containing favorite contacts
 	 * (contact ID (gchar *) => TRUE) */
@@ -378,10 +376,6 @@ contact_manager_finalize (GObject *object)
 	g_hash_table_destroy (priv->favourites);
 
 	g_object_unref (priv->account_manager);
-
-	if (priv->contact_monitor) {
-		g_object_unref (priv->contact_monitor);
-	}
 }
 
 static GObject *
@@ -583,7 +577,6 @@ empathy_contact_manager_init (EmpathyContactManager *manager)
 						  g_hash_table_unref);
 
 	priv->account_manager = tp_account_manager_dup ();
-	priv->contact_monitor = NULL;
 
 	tp_account_manager_prepare_async (priv->account_manager, NULL,
 	    account_manager_prepared_cb, manager);
@@ -696,18 +689,6 @@ contact_manager_get_members (EmpathyContactList *manager)
 			      &contacts);
 
 	return contacts;
-}
-
-static EmpathyContactMonitor *
-contact_manager_get_monitor (EmpathyContactList *manager)
-{
-	EmpathyContactManagerPriv *priv = GET_PRIV (manager);
-
-	if (priv->contact_monitor == NULL) {
-		priv->contact_monitor = empathy_contact_monitor_new_for_iface (manager);
-	}
-
-	return priv->contact_monitor;
 }
 
 static void
@@ -889,7 +870,6 @@ contact_manager_iface_init (EmpathyContactListIface *iface)
 	iface->add               = contact_manager_add;
 	iface->remove            = contact_manager_remove;
 	iface->get_members       = contact_manager_get_members;
-	iface->get_monitor       = contact_manager_get_monitor;
 	iface->get_pendings      = contact_manager_get_pendings;
 	iface->get_all_groups    = contact_manager_get_all_groups;
 	iface->get_groups        = contact_manager_get_groups;

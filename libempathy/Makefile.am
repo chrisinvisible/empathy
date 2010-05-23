@@ -36,7 +36,6 @@ libempathy_headers =				\
 	empathy-contact-groups.h		\
 	empathy-contact-list.h			\
 	empathy-contact-manager.h		\
-	empathy-contact-monitor.h		\
 	empathy-contact.h			\
 	empathy-debug.h				\
 	empathy-dispatch-operation.h		\
@@ -81,7 +80,6 @@ libempathy_la_SOURCES =					\
 	empathy-contact-groups.c			\
 	empathy-contact-list.c				\
 	empathy-contact-manager.c			\
-	empathy-contact-monitor.c			\
 	empathy-contact.c				\
 	empathy-debug.c					\
 	empathy-dispatch-operation.c			\

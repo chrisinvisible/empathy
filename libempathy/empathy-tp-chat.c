@@ -29,7 +29,6 @@
 
 #include "empathy-tp-chat.h"
 #include "empathy-tp-contact-factory.h"
-#include "empathy-contact-monitor.h"
 #include "empathy-contact-list.h"
 #include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
@@ -43,7 +42,6 @@
 typedef struct {
 	gboolean               dispose_has_run;
 	TpConnection          *connection;
-	EmpathyContactMonitor *contact_monitor;
 	EmpathyContact        *user;
 	EmpathyContact        *remote_contact;
 	GList                 *members;
@@ -203,22 +201,6 @@ tp_chat_get_members (EmpathyContactList *list)
 	}
 
 	return members;
-}
-
-static EmpathyContactMonitor *
-tp_chat_get_monitor (EmpathyContactList *list)
-{
-	EmpathyTpChatPriv *priv;
-
-	g_return_val_if_fail (EMPATHY_IS_TP_CHAT (list), NULL);
-
-	priv = GET_PRIV (list);
-
-	if (priv->contact_monitor == NULL) {
-		priv->contact_monitor = empathy_contact_monitor_new_for_iface (list);
-	}
-
-	return priv->contact_monitor;
 }
 
 static void
@@ -774,10 +756,6 @@ tp_chat_dispose (GObject *object)
 	if (priv->user != NULL)
 		g_object_unref (priv->user);
 	priv->user = NULL;
-
-	if (priv->contact_monitor)
-		g_object_unref (priv->contact_monitor);
-	priv->contact_monitor = NULL;
 
 	g_queue_foreach (priv->messages_queue, (GFunc) g_object_unref, NULL);
 	g_queue_clear (priv->messages_queue);
@@ -1493,7 +1471,6 @@ empathy_tp_chat_init (EmpathyTpChat *chat)
 		EMPATHY_TYPE_TP_CHAT, EmpathyTpChatPriv);
 
 	chat->priv = priv;
-	priv->contact_monitor = NULL;
 	priv->messages_queue = g_queue_new ();
 	priv->pending_messages_queue = g_queue_new ();
 }
@@ -1504,7 +1481,6 @@ tp_chat_iface_init (EmpathyContactListIface *iface)
 	iface->add         = tp_chat_add;
 	iface->remove      = tp_chat_remove;
 	iface->get_members = tp_chat_get_members;
-	iface->get_monitor = tp_chat_get_monitor;
 }
 
 EmpathyTpChat *

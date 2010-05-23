@@ -69,8 +69,6 @@ struct _EmpathyContactListIface {
 					       const gchar        *new_group);
 	void		 (*remove_group)      (EmpathyContactList *list,
 					       const gchar	  *group);
-	EmpathyContactMonitor *
-			 (*get_monitor)       (EmpathyContactList *list);
 	EmpathyContactListFlags
 			 (*get_flags)         (EmpathyContactList *list);
 	gboolean         (*is_favourite)      (EmpathyContactList *list,
@@ -104,8 +102,6 @@ void     empathy_contact_list_rename_group      (EmpathyContactList *list,
 						 const gchar        *new_group);
 void	 empathy_contact_list_remove_group	(EmpathyContactList *list,
 						 const gchar	    *group);
-EmpathyContactMonitor *
-         empathy_contact_list_get_monitor       (EmpathyContactList *list);
 
 EmpathyContactListFlags
          empathy_contact_list_get_flags		(EmpathyContactList *list);
