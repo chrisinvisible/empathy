@@ -124,7 +124,7 @@ typedef struct {
 	GList                  *actions_connected;
 
 	/* The idle event source to migrate butterfly's logs */
-	guint butterfly_log_migration_contact_added_id;
+	guint butterfly_log_migration_members_changed_id;
 } EmpathyMainWindow;
 
 static EmpathyMainWindow *main_window = NULL;
@@ -1302,14 +1302,21 @@ account_manager_prepared_cb (GObject *source_object,
 }
 
 static void
-main_window_contact_added_cb (EmpathyContactMonitor	*monitor,
-			      EmpathyContact		*contact,
-			      EmpathyMainWindow		*window)
+main_window_members_changed_cb (EmpathyContactList *list,
+				EmpathyContact     *contact,
+				EmpathyContact     *actor,
+				guint               reason,
+				gchar              *message,
+				gboolean            is_member,
+				EmpathyMainWindow  *window)
 {
+	if (!is_member)
+		return;
+
 	if (!empathy_migrate_butterfly_logs (contact)) {
-		g_signal_handler_disconnect (monitor,
-					     window->butterfly_log_migration_contact_added_id);
-		window->butterfly_log_migration_contact_added_id = 0;
+		g_signal_handler_disconnect (list,
+			window->butterfly_log_migration_members_changed_id);
+		window->butterfly_log_migration_members_changed_id = 0;
 	}
 }
 
@@ -1458,8 +1465,9 @@ empathy_main_window_show (void)
 							   EMPATHY_CONTACT_FEATURE_ALL);
 	g_signal_connect (monitor, "contact-presence-changed",
 			  G_CALLBACK (main_window_contact_presence_changed_cb), window);
-	window->butterfly_log_migration_contact_added_id =  g_signal_connect (monitor, "contact-added",
-			  G_CALLBACK (main_window_contact_added_cb), window);
+	window->butterfly_log_migration_members_changed_id = g_signal_connect (
+		list_iface, "members-changed",
+		G_CALLBACK (main_window_members_changed_cb), window);
 	g_object_unref (list_iface);
 
 	gtk_widget_show (GTK_WIDGET (window->list_view));
