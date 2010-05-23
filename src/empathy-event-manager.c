@@ -843,8 +843,7 @@ event_manager_pendings_changed_cb (EmpathyContactList  *list,
 }
 
 static void
-event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
-    EmpathyContact *contact,
+event_manager_presence_changed_cb (EmpathyContact *contact,
     TpConnectionPresenceType current,
     TpConnectionPresenceType previous,
     EmpathyEventManager *manager)
@@ -911,6 +910,22 @@ out:
   g_object_unref (idle);
 }
 
+static void
+event_manager_members_changed_cb (EmpathyContactList  *list,
+    EmpathyContact *contact,
+    EmpathyContact *actor,
+    guint reason,
+    gchar *message,
+    gboolean is_member,
+    EmpathyEventManager *manager)
+{
+  if (is_member)
+    g_signal_connect (contact, "presence-changed",
+        G_CALLBACK (event_manager_presence_changed_cb), manager);
+  else
+    g_signal_handlers_disconnect_by_func (contact,
+        event_manager_presence_changed_cb, manager);
+}
 
 static GObject *
 event_manager_constructor (GType type,
@@ -993,12 +1008,6 @@ empathy_event_manager_init (EmpathyEventManager *manager)
 {
   EmpathyEventManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (manager,
     EMPATHY_TYPE_EVENT_MANAGER, EmpathyEventManagerPriv);
-  EmpathyContactMonitor *monitor;
-  EmpathyContactList *list_iface;
-
-  list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
-  monitor = empathy_contact_list_get_monitor (list_iface);
-  g_object_unref (list_iface);
 
   manager->priv = priv;
 
@@ -1008,8 +1017,8 @@ empathy_event_manager_init (EmpathyEventManager *manager)
     G_CALLBACK (event_manager_approve_channel_cb), manager);
   g_signal_connect (priv->contact_manager, "pendings-changed",
     G_CALLBACK (event_manager_pendings_changed_cb), manager);
-  g_signal_connect (monitor, "contact-presence-changed",
-    G_CALLBACK (event_manager_presence_changed_cb), manager);
+  g_signal_connect (priv->contact_manager, "members-changed",
+    G_CALLBACK (event_manager_members_changed_cb), manager);
 }
 
 EmpathyEventManager *
