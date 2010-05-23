@@ -556,49 +556,6 @@ main_window_connection_changed_cb (TpAccount  *account,
 }
 
 static void
-main_window_contact_presence_changed_cb (EmpathyContactMonitor *monitor,
-					 EmpathyContact *contact,
-					 TpConnectionPresenceType current,
-					 TpConnectionPresenceType previous,
-					 EmpathyMainWindow *window)
-{
-  TpAccount *account;
-  gboolean should_play = FALSE;
-  EmpathyIdle *idle;
-
-  account = empathy_contact_get_account (contact);
-  idle = empathy_idle_dup_singleton ();
-
-  should_play = !empathy_idle_account_is_just_connected (idle, account);
-
-  if (!should_play)
-    goto out;
-
-  if (tp_connection_presence_type_cmp_availability (previous,
-     TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
-    {
-      /* contact was online */
-      if (tp_connection_presence_type_cmp_availability (current,
-          TP_CONNECTION_PRESENCE_TYPE_OFFLINE) <= 0)
-        /* someone is logging off */
-        empathy_sound_play (GTK_WIDGET (window->window),
-          EMPATHY_SOUND_CONTACT_DISCONNECTED);
-    }
-  else
-    {
-      /* contact was offline */
-      if (tp_connection_presence_type_cmp_availability (current,
-          TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
-        /* someone is logging in */
-        empathy_sound_play (GTK_WIDGET (window->window),
-          EMPATHY_SOUND_CONTACT_CONNECTED);
-    }
-
-out:
-  g_object_unref (idle);
-}
-
-static void
 main_window_accels_load (void)
 {
 	gchar *filename;
@@ -1325,7 +1282,6 @@ empathy_main_window_show (void)
 {
 	EmpathyMainWindow        *window;
 	EmpathyContactList       *list_iface;
-	EmpathyContactMonitor    *monitor;
 	GtkBuilder               *gui;
 	EmpathyConf              *conf;
 	GtkWidget                *sw;
@@ -1458,13 +1414,10 @@ empathy_main_window_show (void)
 	window->throbber_tool_item = GTK_WIDGET (item);
 
 	list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
-	monitor = empathy_contact_list_get_monitor (list_iface);
 	window->list_store = empathy_contact_list_store_new (list_iface);
 	window->list_view = empathy_contact_list_view_new (window->list_store,
 							   EMPATHY_CONTACT_LIST_FEATURE_ALL,
 							   EMPATHY_CONTACT_FEATURE_ALL);
-	g_signal_connect (monitor, "contact-presence-changed",
-			  G_CALLBACK (main_window_contact_presence_changed_cb), window);
 	window->butterfly_log_migration_members_changed_id = g_signal_connect (
 		list_iface, "members-changed",
 		G_CALLBACK (main_window_members_changed_cb), window);

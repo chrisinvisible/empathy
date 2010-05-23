@@ -864,33 +864,45 @@ event_manager_presence_changed_cb (EmpathyContactMonitor *monitor,
      TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
     {
       /* contact was online */
-      empathy_conf_get_bool (empathy_conf_get (),
-                      EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT, &preference);
-      if (preference && tp_connection_presence_type_cmp_availability (current,
+      if (tp_connection_presence_type_cmp_availability (current,
           TP_CONNECTION_PRESENCE_TYPE_OFFLINE) <= 0)
         {
           /* someone is logging off */
-          header = g_strdup_printf (_("%s is now offline."),
-            empathy_contact_get_name (contact));
+          empathy_sound_play (empathy_main_window_get (),
+              EMPATHY_SOUND_CONTACT_DISCONNECTED);
 
-          event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
+          empathy_conf_get_bool (empathy_conf_get (),
+              EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT, &preference);
+          if (preference)
+            {
+              header = g_strdup_printf (_("%s is now offline."),
+                  empathy_contact_get_name (contact));
+
+              event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
+                  EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
+            }
         }
     }
   else
     {
       /* contact was offline */
-      empathy_conf_get_bool (empathy_conf_get (),
-                      EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN, &preference);
       if (preference && tp_connection_presence_type_cmp_availability (current,
           TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
         {
           /* someone is logging in */
-          header = g_strdup_printf (_("%s is now online."),
-            empathy_contact_get_name (contact));
+          empathy_sound_play (empathy_main_window_get (),
+              EMPATHY_SOUND_CONTACT_CONNECTED);
 
-          event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
-              EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
+          empathy_conf_get_bool (empathy_conf_get (),
+              EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN, &preference);
+          if (preference)
+            {
+              header = g_strdup_printf (_("%s is now online."),
+                  empathy_contact_get_name (contact));
+
+              event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
+                  EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
+            }
         }
     }
   g_free (header);
