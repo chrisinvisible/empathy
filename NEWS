@@ -1,3 +1,29 @@
+NEW in 2.31.2 (24/05/2010)
+=============
+
+The "brand-new Telepathy store: http://is.gd/cjoQ8" release.
+
+Empathy now uses icons from gnome-icon-theme 2.30. You should consider
+to upgrade to this version if needed.
+
+Bugs fixed:
+ - Fixed #606738, empathy_dispatcher_join_muc: assertion failed: (connection_data != NULL) when joining favorites rooms while account is connecting (Guillaume Desmottes)
+ - Fixed #617909, Should call gtk_builder_set_translation_domain on GtkBuilder UI components (Rob Bradford)
+ - Fixed #618401, Empathy should use port 8001 to connect to freenode irc (Brian Curtis)
+ - Fixed #618753, In the preference dialog, "Automatically _connect..." and  the "_Close" button conflict. (ekspiulo)
+ - Fixed #618883, IRC account: don't allow to save changes when editing network details (Guillaume Desmottes)
+ - Fixed #618969, Incomplete localisation of g-c-c module (Rob Bradford)
+
+Translations:
+ - Updated cs Translation (Petr Kovar)
+ - Updated en@shaw Translation (Thomas Thurman)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated id Translation (Andika Triwidada)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated si Translation (Danishka Navin)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
 NEW in 2.31.1 (04/05/2010)
 =============
 
