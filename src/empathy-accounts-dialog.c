@@ -594,6 +594,9 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
     {
       empathy_account_settings_set_icon_name_async (settings, "im-facebook",
           NULL, NULL);
+
+      empathy_account_settings_set_string (settings, "server",
+          "chat.facebook.com");
     }
 
   accounts_dialog_add (dialog, settings);

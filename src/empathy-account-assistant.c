@@ -428,6 +428,9 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
     {
       empathy_account_settings_set_icon_name_async (settings, "im-facebook",
         NULL, NULL);
+
+      empathy_account_settings_set_string (settings, "server",
+          "chat.facebook.com");
     }
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
