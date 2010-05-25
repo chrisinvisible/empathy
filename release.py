@@ -9,7 +9,7 @@ import time
 from string import Template
 from optparse import OptionParser
 
-last_tag_patern = 'EMPATHY_2_31*'
+last_tag_pattern = 'EMPATHY_2_31*'
 upload_server = 'master.gnome.org'
 template = '''\
 $name $version is now available for download from:
@@ -67,7 +67,7 @@ class Project:
 			version_dir = self.package_version[:second]
 		self.package_dl_url = 'http://download.gnome.org/sources/%s/%s/' % (self.package_name.lower(), 
 										    version_dir)
-		tags_str = self.exec_cmd('git tag -l %s' % (last_tag_patern))
+		tags_str = self.exec_cmd('git tag -l %s' % (last_tag_pattern))
 		tags = tags_str.splitlines()
 		self.last_tag = tags[len(tags)-1]
 
