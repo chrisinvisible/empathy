@@ -913,6 +913,10 @@ impl_signal_apply (GtkAssistant *assistant)
       g_object_unref (priv->settings);
       priv->settings = NULL;
     }
+  else if (current_page == PAGE_IMPORT)
+    {
+      empathy_import_widget_add_selected_accounts (priv->iw);
+    }
 }
 
 static void
