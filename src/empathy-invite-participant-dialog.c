@@ -42,7 +42,7 @@ empathy_invite_participant_dialog_init (EmpathyInviteParticipantDialog *self)
   gtk_widget_show (label);
 
   parent->button_action = gtk_dialog_add_button (GTK_DIALOG (self),
-      "Invite", GTK_RESPONSE_ACCEPT);
+      _("Invite"), GTK_RESPONSE_ACCEPT);
   gtk_widget_set_sensitive (parent->button_action, FALSE);
 
   gtk_window_set_title (GTK_WINDOW (self), _("Invite Participant"));
