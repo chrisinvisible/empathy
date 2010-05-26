@@ -465,7 +465,7 @@ AC_ARG_ENABLE(favourite_contacts,
                              [Enable favourite contacts]), ,
                              enable_favourite_contacts=no)
 
-if test "x$enable_favourite_contacts" != "xno" -o "x$chain_enable_favourite_contacts" == "xyes"; then
+if test "x$enable_favourite_contacts" != "xno" || test "x$chain_enable_favourite_contacts" = "xyes"; then
     PKG_CHECK_MODULES(TELEPATHY_LOGGER,
     [
        telepathy-logger
@@ -479,7 +479,7 @@ else
    have_favourite_contacts="no"
 fi
 
-if test "x$enable_favourite_contacts" = "xyes" -a "x$have_favourite_contacts" != "xyes"; then
+if test "x$enable_favourite_contacts" = "xyes" && test "x$have_favourite_contacts" != "xyes"; then
    AC_MSG_ERROR([Couldn't find favourite contacts dependencies.])
 fi
 
