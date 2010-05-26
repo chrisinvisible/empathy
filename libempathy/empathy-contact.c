@@ -111,7 +111,7 @@ enum {
 
 static guint signals[LAST_SIGNAL];
 
-/* TpContact* -> EmpathyContact* */
+/* TpContact* -> EmpathyContact*, both borrowed ref */
 static GHashTable *contacts_table = NULL;
 
 static void
