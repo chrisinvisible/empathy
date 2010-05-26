@@ -956,7 +956,7 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          empathy_tp_contact_factory_set_alias (information->contact, alias);
+          empathy_contact_set_alias (information->contact, alias);
         }
     }
 

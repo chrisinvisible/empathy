@@ -76,7 +76,7 @@ subscription_dialog_response_cb (GtkDialog *dialog,
 		empathy_contact_list_add (EMPATHY_CONTACT_LIST (manager),
 					  contact, "");
 
-		empathy_tp_contact_factory_set_alias (contact,
+		empathy_contact_set_alias (contact,
 			empathy_contact_widget_get_alias (contact_widget));
 	}
 	else if (response == GTK_RESPONSE_NO) {

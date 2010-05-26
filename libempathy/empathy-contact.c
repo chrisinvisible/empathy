@@ -618,6 +618,44 @@ empathy_contact_set_name (EmpathyContact *contact,
   g_object_unref (contact);
 }
 
+static void
+contact_set_aliases_cb (TpConnection *connection,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+	if (error)
+		DEBUG ("Error: %s", error->message);
+}
+
+void
+empathy_contact_set_alias (EmpathyContact *contact,
+    const gchar *alias)
+{
+	TpConnection *connection;
+	GHashTable *new_alias;
+	guint handle;
+
+	g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+	handle = empathy_contact_get_handle (contact);
+
+	DEBUG ("Setting alias for contact %s (%d) to %s",
+		empathy_contact_get_id (contact),
+		handle, alias);
+
+	new_alias = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL,
+	    g_free);
+
+	g_hash_table_insert (new_alias, GUINT_TO_POINTER (handle), g_strdup (alias));
+
+	connection = empathy_contact_get_connection (contact);
+	tp_cli_connection_interface_aliasing_call_set_aliases (connection, -1,
+	    new_alias, contact_set_aliases_cb, NULL, NULL, NULL);
+
+	g_hash_table_destroy (new_alias);
+}
+
 EmpathyAvatar *
 empathy_contact_get_avatar (EmpathyContact *contact)
 {

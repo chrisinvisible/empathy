@@ -80,8 +80,6 @@ void                     empathy_tp_contact_factory_get_from_handle  (TpConnecti
 								      gpointer                 user_data,
 								      GDestroyNotify           destroy,
 								      GObject                 *weak_object);
-void                     empathy_tp_contact_factory_set_alias        (EmpathyContact          *contact,
-								      const gchar             *alias);
 G_END_DECLS
 
 #endif /* __EMPATHY_TP_CONTACT_FACTORY_H__ */
