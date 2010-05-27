@@ -302,8 +302,8 @@ empathy_message_from_tpl_log_entry (TplLogEntry *logentry)
 
 	body = g_strdup (tpl_log_entry_text_get_message (
 				TPL_LOG_ENTRY_TEXT (logentry)));
-	receiver = tpl_log_entry_text_get_receiver (TPL_LOG_ENTRY_TEXT (logentry));
-	sender = tpl_log_entry_text_get_sender (TPL_LOG_ENTRY_TEXT (logentry));
+	receiver = tpl_log_entry_get_receiver (logentry);
+	sender = tpl_log_entry_get_sender (logentry);
 
 	retval = empathy_message_new (body);
 	if (receiver != NULL)
@@ -316,7 +316,7 @@ empathy_message_from_tpl_log_entry (TplLogEntry *logentry)
 	empathy_message_set_timestamp (retval,
 			tpl_log_entry_get_timestamp (logentry));
 	empathy_message_set_id (retval,
-			tpl_log_entry_text_get_log_id (TPL_LOG_ENTRY_TEXT (logentry)));
+			tpl_log_entry_get_pending_msg_id (logentry));
 	empathy_message_set_is_backlog (retval, FALSE);
 
 	g_free (body);

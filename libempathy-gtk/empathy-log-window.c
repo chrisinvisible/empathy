@@ -368,9 +368,8 @@ got_messages_for_date_cb (GObject *manager,
 	gboolean       can_do_next;
 	GError        *error = NULL;
 
-	messages = tpl_log_manager_get_messages_for_date_async_finish (result, &error);
-
-	if (error != NULL) {
+	if (!tpl_log_manager_get_messages_for_date_finish (TPL_LOG_MANAGER (manager),
+		result, &messages, &error)) {
 			DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
 					error->message);
 			empathy_chat_view_append_event (window->chatview_find,
@@ -523,9 +522,8 @@ log_manager_searched_new_cb (GObject *manager,
 	GtkListStore        *store = user_data;
 	GError              *error = NULL;
 
-	hits = tpl_log_manager_search_new_async_finish (result, &error);
-
-	if (error != NULL) {
+	if (!tpl_log_manager_search_new_finish (TPL_LOG_MANAGER (manager), result,
+		&hits, &error)) {
 			DEBUG ("%s. Aborting", error->message);
 			g_error_free (error);
 			return;
@@ -848,9 +846,8 @@ log_manager_got_chats_cb (GObject *manager,
 	GtkTreeIter            iter;
 	GError                *error = NULL;
 
-	chats = tpl_log_manager_get_chats_async_finish (result, &error);
-
-	if (error != NULL) {
+	if (!tpl_log_manager_get_chats_finish (TPL_LOG_MANAGER (manager),
+		result, &chats, &error)) {
 			DEBUG ("%s. Aborting", error->message);
 			g_error_free (error);
 			return;
@@ -1146,9 +1143,8 @@ log_window_got_messages_for_date_cb (GObject *manager,
   GList *l;
   GError *error = NULL;
 
-  messages = tpl_log_manager_get_messages_for_date_async_finish (result, &error);
-
-  if (error != NULL) {
+  if (!tpl_log_manager_get_messages_for_date_finish (TPL_LOG_MANAGER (manager),
+        result, &messages, &error)) {
       DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
           error->message);
       empathy_chat_view_append_event (window->chatview_find,
@@ -1221,9 +1217,8 @@ log_manager_got_dates_cb (GObject *manager,
   const gchar   *date = NULL;
   GError        *error = NULL;
 
-  dates = tpl_log_manager_get_dates_async_finish (result, &error);
-
-  if (error != NULL) {
+  if (!tpl_log_manager_get_dates_finish (TPL_LOG_MANAGER (manager),
+        result, &dates, &error)) {
     DEBUG ("Unable to retrieve messages' dates: %s. Aborting",
         error->message);
     empathy_chat_view_append_event (window->chatview_find,
@@ -1523,9 +1518,8 @@ log_window_updating_calendar_month_cb (GObject *manager,
 	guint					 month_selected;
 	GError				*error = NULL;
 
-	dates = tpl_log_manager_get_dates_async_finish (result, &error);
-
-	if (error != NULL) {
+	if (!tpl_log_manager_get_dates_finish (TPL_LOG_MANAGER (manager),
+		result, &dates, &error)) {
 			DEBUG ("Unable to retrieve messages' dates: %s. Aborting",
 					error->message);
 			empathy_chat_view_append_event (window->chatview_find,

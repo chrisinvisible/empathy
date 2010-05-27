@@ -2005,9 +2005,8 @@ got_filtered_messages_cb (GObject *manager,
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	GError *error = NULL;
 
-	messages = tpl_log_manager_get_filtered_messages_async_finish (result, &error);
-
-	if (error != NULL) {
+	if (!tpl_log_manager_get_filtered_messages_finish (TPL_LOG_MANAGER (manager),
+		result, &messages, &error)) {
 		DEBUG ("%s. Aborting.", error->message);
 		empathy_chat_view_append_event (chat->view,
 			_("Failed to retrieve recent logs"));

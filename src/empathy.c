@@ -46,7 +46,6 @@
 
 #ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#include <telepathy-logger/log-store-empathy.h>
 #else
 
 #include <libempathy/empathy-log-manager.h>
