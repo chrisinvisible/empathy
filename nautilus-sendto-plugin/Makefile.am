@@ -7,6 +7,7 @@ INCLUDES =					\
 	$(NST_CFLAGS)				\
 	$(WARN_CFLAGS)				\
 	$(DISABLE_DEPRECATED)			\
+	$(TPL_CFLAGS) \
 	$(EMPATHY_CFLAGS)
 
 plugin_LTLIBRARIES = libnstempathy.la
