@@ -620,20 +620,22 @@ log_store_empathy_search_new (EmpathyLogStore *self,
       gchar *filename;
       GMappedFile *file;
       gsize length;
-      gchar *contents;
-      gchar *contents_casefold;
+      gchar *contents = NULL;
+      gchar *contents_casefold = NULL;
 
       filename = l->data;
 
       file = g_mapped_file_new (filename, FALSE, NULL);
-      if (!file)
-        continue;
+      if (file == NULL)
+        goto drinking_island;
 
       length = g_mapped_file_get_length (file);
       contents = g_mapped_file_get_contents (file);
-      contents_casefold = g_utf8_casefold (contents, length);
 
-      g_mapped_file_unref (file);
+      if (length == 0 || contents == NULL)
+        goto drinking_island;
+
+      contents_casefold = g_utf8_casefold (contents, length);
 
       if (strstr (contents_casefold, text_casefold))
         {
@@ -648,6 +650,10 @@ log_store_empathy_search_new (EmpathyLogStore *self,
                   text, hit->filename, hit->date);
             }
         }
+
+drinking_island:
+      if (file != NULL)
+        g_mapped_file_unref (file);
 
       g_free (contents_casefold);
       g_free (filename);
