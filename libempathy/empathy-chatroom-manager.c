@@ -657,7 +657,7 @@ empathy_chatroom_manager_ensure_chatroom (EmpathyChatroomManager *manager,
 	chatroom = empathy_chatroom_manager_find (manager, account, room);
 
 	if (chatroom) {
-		return g_object_ref(chatroom);
+		return g_object_ref (chatroom);
 	} else {
 		chatroom = empathy_chatroom_new_full (account,
 			room,

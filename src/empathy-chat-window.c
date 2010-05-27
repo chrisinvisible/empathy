@@ -843,7 +843,7 @@ chat_window_favorite_toggled_cb (GtkToggleAction   *toggle_action,
 		     empathy_chat_get_name (priv->current_chat));
 
 	empathy_chatroom_set_favorite (chatroom, active);
-	g_object_unref(chatroom);
+	g_object_unref (chatroom);
 }
 
 static void
@@ -867,7 +867,7 @@ chat_window_always_urgent_toggled_cb (GtkToggleAction   *toggle_action,
 		     empathy_chat_get_name (priv->current_chat));
 
 	empathy_chatroom_set_always_urgent (chatroom, active);
-	g_object_unref(chatroom);
+	g_object_unref (chatroom);
 }
 
 static void
