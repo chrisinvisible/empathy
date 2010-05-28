@@ -99,6 +99,8 @@ static void     log_window_find_populate                   (EmpathyLogWindow *wi
 static void     log_window_find_setup                      (EmpathyLogWindow *window);
 static void     log_window_button_find_clicked_cb          (GtkWidget        *widget,
 							    EmpathyLogWindow *window);
+static void     log_window_entry_find_activate_cb          (GtkWidget        *widget,
+							    EmpathyLogWindow *window);
 static void     log_window_button_next_clicked_cb          (GtkWidget        *widget,
 							    EmpathyLogWindow *window);
 static void     log_window_button_previous_clicked_cb      (GtkWidget        *widget,
@@ -241,6 +243,7 @@ empathy_log_window_show (TpAccount  *account,
 	empathy_builder_connect (gui, window,
 			      "log_window", "destroy", log_window_destroy_cb,
 			      "entry_find", "changed", log_window_entry_find_changed_cb,
+			      "entry_find", "activate", log_window_entry_find_activate_cb,
 			      "button_previous", "clicked", log_window_button_previous_clicked_cb,
 			      "button_next", "clicked", log_window_button_next_clicked_cb,
 			      "button_find", "clicked", log_window_button_find_clicked_cb,
@@ -738,8 +741,7 @@ log_window_find_setup (EmpathyLogWindow *window)
 }
 
 static void
-log_window_button_find_clicked_cb (GtkWidget       *widget,
-				   EmpathyLogWindow *window)
+start_find_search (EmpathyLogWindow *window)
 {
 	const gchar *str;
 
@@ -754,6 +756,20 @@ log_window_button_find_clicked_cb (GtkWidget       *widget,
 	window->last_find = g_strdup (str);
 
 	log_window_find_populate (window, str);
+}
+
+static void
+log_window_button_find_clicked_cb (GtkWidget       *widget,
+				   EmpathyLogWindow *window)
+{
+	start_find_search (window);
+}
+
+static void
+log_window_entry_find_activate_cb (GtkWidget *entry,
+				   EmpathyLogWindow *self)
+{
+	start_find_search (self);
 }
 
 static void
