@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2002-2007 Imendio AB
- * Copyright (C) 2007-2008 Collabora Ltd.
+ * Copyright (C) 2007-2010 Collabora Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +23,7 @@
  *          Martyn Russell <martyn@imendio.com>
  *          Xavier Claessens <xclaesse@gmail.com>
  *          Jonny Lamb <jonny.lamb@collabora.co.uk>
+ *          Travis Reitter <travis.reitter@collabora.co.uk>
  *
  *          Part of this file is copied from GtkSourceView (gtksourceiter.c):
  *          Paolo Maggi
@@ -37,6 +38,8 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
+
+#include <folks/folks.h>
 
 #include "empathy-ui-utils.h"
 #include "empathy-images.h"
@@ -217,6 +220,18 @@ empathy_icon_name_for_contact (EmpathyContact *contact)
 			      EMPATHY_IMAGE_OFFLINE);
 
 	presence = empathy_contact_get_presence (contact);
+	return empathy_icon_name_for_presence (presence);
+}
+
+const gchar *
+empathy_icon_name_for_individual (FolksIndividual *individual)
+{
+	FolksPresenceType folks_presence;
+	TpConnectionPresenceType presence;
+
+	folks_presence = folks_individual_get_presence_type (individual);
+	presence = empathy_folks_presence_type_to_tp (folks_presence);
+
 	return empathy_icon_name_for_presence (presence);
 }
 
@@ -524,7 +539,8 @@ empathy_pixbuf_contact_status_icon_with_icon_name (EmpathyContact *contact,
 	gint       height, width;
 	gint       numerator, denominator;
 
-	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact) ||
+			(show_protocol == FALSE), NULL);
 	g_return_val_if_fail (icon_name != NULL, NULL);
 
 	numerator = 3;

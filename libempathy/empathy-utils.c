@@ -32,6 +32,9 @@
 
 #include <libxml/uri.h>
 
+#include <folks/folks.h>
+#include <folks/folks-telepathy.h>
+
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/connection.h>
 #include <telepathy-glib/channel.h>
@@ -44,6 +47,7 @@
 #include "empathy-dispatch-operation.h"
 #include "empathy-idle.h"
 #include "empathy-tp-call.h"
+#include "empathy-tp-contact-factory.h"
 
 #include <extensions/extensions.h>
 
@@ -557,4 +561,35 @@ empathy_connect_new_account (TpAccount *account,
         /* do nothing if the presence is not offline */
         break;
     }
+}
+
+TpConnectionPresenceType
+empathy_folks_presence_type_to_tp (FolksPresenceType type)
+{
+  return (TpConnectionPresenceType) type;
+}
+
+EmpathyContact *
+empathy_contact_from_folks_individual (FolksIndividual *individual)
+{
+  GList *personas, *l;
+  EmpathyContact *contact = NULL;
+
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; (l != NULL) && (contact == NULL); l = l->next)
+    {
+      TpfPersona *persona = l->data;
+
+      if (TPF_IS_PERSONA (persona))
+        {
+          TpContact *tp_contact;
+
+          tp_contact = tpf_persona_get_contact (persona);
+          contact = empathy_contact_dup_from_tp_contact (tp_contact);
+        }
+    }
+
+  return contact;
 }

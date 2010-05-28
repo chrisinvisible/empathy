@@ -52,6 +52,8 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-selector-dialog.c \
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
+	empathy-individual-store.c		\
+	empathy-individual-view.c		\
 	empathy-irc-network-dialog.c		\
 	empathy-kludge-label.c			\
 	empathy-log-window.c			\
@@ -99,6 +101,9 @@ libempathy_gtk_headers =			\
 	empathy-contact-widget.h		\
 	empathy-geometry.h			\
 	empathy-images.h			\
+	empathy-individual-menu.h		\
+	empathy-individual-store.h		\
+	empathy-individual-view.h		\
 	empathy-irc-network-dialog.h		\
 	empathy-kludge-label.h			\
 	empathy-log-window.h			\

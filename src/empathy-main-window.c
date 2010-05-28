@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <folks/folks.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-idle.h>
@@ -40,7 +41,9 @@
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-gsettings.h>
+#include <libempathy/empathy-individual-manager.h>
 #include <libempathy/empathy-status-presets.h>
+#include <libempathy/empathy-tp-contact-factory.h>
 
 #include <libempathy-gtk/empathy-contact-dialogs.h>
 #include <libempathy-gtk/empathy-contact-list-store.h>
@@ -48,6 +51,8 @@
 #include <libempathy-gtk/empathy-live-search.h>
 #include <libempathy-gtk/empathy-geometry.h>
 #include <libempathy-gtk/empathy-gtk-enum-types.h>
+#include <libempathy-gtk/empathy-individual-store.h>
+#include <libempathy-gtk/empathy-individual-view.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
 #include <libempathy-gtk/empathy-new-call-dialog.h>
 #include <libempathy-gtk/empathy-log-window.h>
@@ -88,8 +93,8 @@ G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 #define GET_PRIV(self) ((EmpathyMainWindowPriv *)((EmpathyMainWindow *) self)->priv)
 
 struct _EmpathyMainWindowPriv {
-	EmpathyContactListView  *list_view;
-	EmpathyContactListStore *list_store;
+	EmpathyIndividualStore  *individual_store;
+	EmpathyIndividualView   *individual_view;
 	TpAccountManager        *account_manager;
 	EmpathyChatroomManager  *chatroom_manager;
 	EmpathyEventManager     *event_manager;
@@ -165,19 +170,19 @@ main_window_flash_foreach (GtkTreeModel *model,
 			   gpointer      user_data)
 {
 	FlashForeachData *data = (FlashForeachData *) user_data;
+	FolksIndividual *individual;
 	EmpathyContact   *contact;
 	const gchar      *icon_name;
 	GtkTreePath      *parent_path = NULL;
 	GtkTreeIter       parent_iter;
 	GdkPixbuf        *pixbuf = NULL;
 
-	/* To be used with gtk_tree_model_foreach, update the status icon
-	 * of the contact to show the event icon (on=TRUE) or the presence
-	 * (on=FALSE) */
 	gtk_tree_model_get (model, iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL,
+				&individual,
 			    -1);
 
+	contact = empathy_contact_from_folks_individual (individual);
 	if (contact != data->event->contact) {
 		if (contact) {
 			g_object_unref (contact);
@@ -189,13 +194,13 @@ main_window_flash_foreach (GtkTreeModel *model,
 		icon_name = data->event->icon_name;
 		pixbuf = empathy_pixbuf_from_icon_name (icon_name, GTK_ICON_SIZE_MENU);
 	} else {
-		pixbuf = contact_list_store_get_contact_status_icon (
-						GET_PRIV (data->window)->list_store,
-						contact);
+		pixbuf = empathy_individual_store_get_individual_status_icon (
+						GET_PRIV (data->window)->individual_store,
+						individual);
 	}
 
 	gtk_tree_store_set (GTK_TREE_STORE (model), iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf,
+			    EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, pixbuf,
 			    -1);
 
 	/* To make sure the parent is shown correctly, we emit
@@ -210,7 +215,9 @@ main_window_flash_foreach (GtkTreeModel *model,
 		gtk_tree_path_free (parent_path);
 	}
 
-	g_object_unref (contact);
+	g_object_unref (individual);
+	if (contact)
+		g_object_unref (contact);
 
 	return FALSE;
 }
@@ -226,7 +233,7 @@ main_window_flash_cb (EmpathyMainWindow *window)
 
 	priv->flash_on = !priv->flash_on;
 	data.on = priv->flash_on;
-	model = GTK_TREE_MODEL (priv->list_store);
+	model = GTK_TREE_MODEL (priv->individual_store);
 
 	events = empathy_event_manager_get_events (priv->event_manager);
 	for (l = events; l; l = l->next) {
@@ -290,7 +297,7 @@ main_window_event_removed_cb (EmpathyEventManager *manager,
 	data.on = FALSE;
 	data.event = event;
 	data.window = window;
-	gtk_tree_model_foreach (GTK_TREE_MODEL (priv->list_store),
+	gtk_tree_model_foreach (GTK_TREE_MODEL (priv->individual_store),
 				main_window_flash_foreach,
 				&data);
 }
@@ -302,19 +309,26 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 			      EmpathyMainWindow      *window)
 {
 	EmpathyMainWindowPriv *priv = GET_PRIV (window);
-	EmpathyContact *contact;
+	EmpathyContact *contact = NULL;
+	FolksIndividual *individual;
 	GtkTreeModel   *model;
 	GtkTreeIter     iter;
 	GSList         *events, *l;
 
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->list_view));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->individual_view));
 	gtk_tree_model_get_iter (model, &iter, path);
+
 	gtk_tree_model_get (model, &iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			    EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL,
+				&individual,
 			    -1);
 
+	if (individual != NULL) {
+		contact = empathy_contact_from_folks_individual (individual);
+	}
+
 	if (!contact) {
-		return;
+		goto OUT;
 	}
 
 	/* If the contact has an event activate it, otherwise the
@@ -335,6 +349,9 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 	}
 
 	g_object_unref (contact);
+OUT:
+	if (individual)
+		g_object_unref (individual);
 }
 
 static void
@@ -617,7 +634,7 @@ empathy_main_window_finalize (GObject *window)
 	g_list_free (priv->actions_connected);
 
 	g_object_unref (priv->account_manager);
-	g_object_unref (priv->list_store);
+	g_object_unref (priv->individual_store);
 	g_hash_table_destroy (priv->errors);
 
 	/* disconnect all handlers of status-changed signal */
@@ -717,7 +734,8 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 
 	/* Turn off sound just while we alter the contact list. */
 	// FIXME: empathy_sound_set_enabled (FALSE);
-	empathy_contact_list_store_set_show_offline (priv->list_store, current);
+	empathy_individual_store_set_show_offline (priv->individual_store,
+			current);
 	//empathy_sound_set_enabled (TRUE);
 }
 
@@ -736,7 +754,7 @@ main_window_notify_sort_contact_cb (GSettings         *gsettings,
 		GEnumClass *enum_class;
 		GEnumValue *enum_value;
 
-		type = empathy_contact_list_store_sort_get_type ();
+		type = empathy_individual_store_sort_get_type ();
 		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 		enum_value = g_enum_get_value_by_nick (enum_class, str);
 		if (enum_value) {
@@ -768,7 +786,7 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 	group = gtk_radio_action_get_group (action);
 
 	/* Get string from index */
-	type = empathy_contact_list_store_sort_get_type ();
+		type = empathy_individual_store_sort_get_type ();
 	enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 	enum_value = g_enum_get_value (enum_class, g_slist_index (group, current));
 
@@ -780,7 +798,8 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 				       EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
 				       enum_value->value_nick);
 	}
-	empathy_contact_list_store_set_sort_criterium (priv->list_store, value);
+	empathy_individual_store_set_sort_criterium (priv->individual_store,
+			value);
 }
 
 static void
@@ -795,8 +814,8 @@ main_window_view_show_protocols_cb (GtkToggleAction   *action,
 	g_settings_set_boolean (priv->gsettings_ui,
 				EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
 				value);
-	empathy_contact_list_store_set_show_protocols (priv->list_store,
-						       value);
+	empathy_individual_store_set_show_protocols (priv->individual_store,
+						     value);
 }
 
 /* Matches GtkRadioAction values set in empathy-main-window.ui */
@@ -830,10 +849,11 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 				value == CONTACT_LIST_COMPACT_SIZE);
 	g_settings_apply (gsettings_ui);
 
-	empathy_contact_list_store_set_show_avatars (priv->list_store,
-						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
-	empathy_contact_list_store_set_is_compact (priv->list_store,
-						   value == CONTACT_LIST_COMPACT_SIZE);
+	/* FIXME: these enums probably have the wrong namespace */
+	empathy_individual_store_set_show_avatars (priv->individual_store,
+			value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
+	empathy_individual_store_set_is_compact (priv->individual_store,
+			value == CONTACT_LIST_COMPACT_SIZE);
 
 	g_object_unref (gsettings_ui);
 }
@@ -1144,7 +1164,8 @@ main_window_edit_cb (GtkAction         *action,
 	GtkWidget *submenu;
 
 	/* FIXME: It should use the UIManager to merge the contact/group submenu */
-	submenu = empathy_contact_list_view_get_contact_menu (priv->list_view);
+	submenu = empathy_individual_view_get_individual_menu (
+			priv->individual_view);
 	if (submenu) {
 		GtkMenuItem *item;
 		GtkWidget   *label;
@@ -1161,7 +1182,8 @@ main_window_edit_cb (GtkAction         *action,
 		return;
 	}
 
-	submenu = empathy_contact_list_view_get_group_menu (priv->list_view);
+	submenu = empathy_individual_view_get_group_menu (
+			priv->individual_view);
 	if (submenu) {
 		GtkMenuItem *item;
 		GtkWidget   *label;
@@ -1458,6 +1480,7 @@ empathy_main_window_init (EmpathyMainWindow *window)
 {
 	EmpathyMainWindowPriv    *priv;
 	EmpathyContactList       *list_iface;
+	EmpathyIndividualManager *individual_manager;
 	GtkBuilder               *gui;
 	GtkWidget                *sw;
 	GtkToggleAction          *show_offline_widget;
@@ -1595,33 +1618,36 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	priv->throbber_tool_item = GTK_WIDGET (item);
 
 	list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
-	priv->list_store = empathy_contact_list_store_new (list_iface);
-	priv->list_view = empathy_contact_list_view_new (priv->list_store,
-							 EMPATHY_CONTACT_LIST_FEATURE_ALL,
-							 EMPATHY_CONTACT_FEATURE_ALL);
+	individual_manager = empathy_individual_manager_dup_singleton ();
+	priv->individual_store = empathy_individual_store_new (
+			individual_manager);
+	priv->individual_view = empathy_individual_view_new (
+			priv->individual_store,
+			EMPATHY_INDIVIDUAL_VIEW_FEATURE_ALL,
+			EMPATHY_INDIVIDUAL_FEATURE_ALL);
 
 	priv->butterfly_log_migration_members_changed_id = g_signal_connect (
-		list_iface, "members-changed",
-		G_CALLBACK (main_window_members_changed_cb), window);
+			list_iface, "members-changed",
+			G_CALLBACK (main_window_members_changed_cb), window);
 
 	g_object_unref (list_iface);
 
-	gtk_widget_show (GTK_WIDGET (priv->list_view));
+	gtk_widget_show (GTK_WIDGET (priv->individual_view));
 	gtk_container_add (GTK_CONTAINER (sw),
-			   GTK_WIDGET (priv->list_view));
-	g_signal_connect (priv->list_view, "row-activated",
+			   GTK_WIDGET (priv->individual_view));
+	g_signal_connect (priv->individual_view, "row-activated",
 			  G_CALLBACK (main_window_row_activated_cb),
 			  window);
 
 	/* Set up search bar */
 	priv->search_bar = empathy_live_search_new (
-		GTK_WIDGET (priv->list_view));
-	empathy_contact_list_view_set_live_search (priv->list_view,
+		GTK_WIDGET (priv->individual_view));
+	empathy_individual_view_set_live_search (priv->individual_view,
 		EMPATHY_LIVE_SEARCH (priv->search_bar));
 	gtk_box_pack_start (GTK_BOX (priv->main_vbox), priv->search_bar,
 		FALSE, TRUE, 0);
 	g_signal_connect_swapped (window, "map",
-		G_CALLBACK (gtk_widget_grab_focus), priv->list_view);
+		G_CALLBACK (gtk_widget_grab_focus), priv->individual_view);
 
 	/* Load user-defined accelerators. */
 	main_window_accels_load ();
@@ -1631,13 +1657,11 @@ empathy_main_window_init (EmpathyMainWindow *window)
 
 	/* Enable event handling */
 	priv->event_manager = empathy_event_manager_dup_singleton ();
-	g_signal_connect (priv->event_manager, "event-added",
-			  G_CALLBACK (main_window_event_added_cb),
-			  window);
-	g_signal_connect (priv->event_manager, "event-removed",
-			  G_CALLBACK (main_window_event_removed_cb),
-			  window);
 
+	g_signal_connect (priv->event_manager, "event-added",
+			  G_CALLBACK (main_window_event_added_cb), window);
+	g_signal_connect (priv->event_manager, "event-removed",
+			  G_CALLBACK (main_window_event_removed_cb), window);
 	g_signal_connect (priv->account_manager, "account-validity-changed",
 			  G_CALLBACK (main_window_account_validity_changed_cb),
 			  window);
@@ -1650,8 +1674,8 @@ empathy_main_window_init (EmpathyMainWindow *window)
 
 	l = empathy_event_manager_get_events (priv->event_manager);
 	while (l) {
-		main_window_event_added_cb (priv->event_manager,
-					    l->data, window);
+		main_window_event_added_cb (priv->event_manager, l->data,
+				window);
 		l = l->next;
 	}
 

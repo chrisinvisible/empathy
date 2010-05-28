@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * Copyright (C) 2002-2007 Imendio AB
- * Copyright (C) 2007-2008 Collabora Ltd.
+ * Copyright (C) 2007-2010 Collabora Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +23,7 @@
  *          Martyn Russell <martyn@imendio.com>
  *          Xavier Claessens <xclaesse@gmail.com>
  *          Jonny Lamb <jonny.lamb@collabora.co.uk>
+ *          Travis Reitter <travis.reitter@collabora.co.uk>
  *
  *          Part of this file is copied from GtkSourceView (gtksourceiter.c):
  *          Paolo Maggi
@@ -33,6 +34,8 @@
 #define __EMPATHY_UI_UTILS_H__
 
 #include <gtk/gtk.h>
+
+#include <folks/folks.h>
 
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-ft-handler.h>
@@ -62,6 +65,7 @@ GtkWidget     *empathy_builder_unref_and_keep_widget    (GtkBuilder       *gui,
 /* Pixbufs */
 const gchar * empathy_icon_name_for_presence            (TpConnectionPresenceType  presence);
 const gchar * empathy_icon_name_for_contact             (EmpathyContact   *contact);
+const gchar * empathy_icon_name_for_individual          (FolksIndividual  *individual);
 const gchar * empathy_protocol_name_for_contact         (EmpathyContact   *contact);
 GdkPixbuf *   empathy_pixbuf_from_data                  (gchar            *data,
 							 gsize             data_size);

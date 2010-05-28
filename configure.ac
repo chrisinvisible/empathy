@@ -31,6 +31,7 @@ AC_COPYRIGHT([
 # Minimal version required
 
 # Hardp deps
+FOLKS_REQUIRED=0.1.0
 GCONF_REQUIRED=1.2.0
 GLIB_REQUIRED=2.25.9
 GTK_REQUIRED=2.21.2
@@ -140,6 +141,31 @@ AS_COMPILER_FLAG(-Wmissing-declarations, ERROR_CFLAGS="$ERROR_CFLAGS -Wmissing-d
 AC_SUBST(ERROR_CFLAGS)
 
 # -----------------------------------------------------------
+# Enable TPL
+# -----------------------------------------------------------
+
+# It needs to be defined before PKG_CHECK_MODULES calls
+AC_ARG_ENABLE(tpl,
+  AC_HELP_STRING([--enable-tpl],[enable telepathy-logger code and disable the
+    empathy logger]), enable_tpl=$enableval, enable_tpl=no )
+AM_CONDITIONAL(ENABLE_TPL, test "x$enable_tpl" = "xyes")
+
+if test x${enable_tpl} = xyes; then
+  AC_DEFINE(ENABLE_TPL, [], [Enable TPL code])
+fi
+
+if test "x$enable_tpl" = "xyes"; then
+  PKG_CHECK_MODULES(TPL,
+  [
+     telepathy-logger = $TELEPATHY_LOGGER
+  ])
+  AC_SUBST(TPL_CFLAGS)
+  AC_SUBST(TPL_LIBS)
+fi
+
+
+
+# -----------------------------------------------------------
 # Pkg-Config dependency checks
 # -----------------------------------------------------------
 
@@ -147,6 +173,8 @@ PKG_CHECK_MODULES(EMPATHY,
 [
    dbus-glib-1
    farsight2-0.10
+   folks >= $FOLKS_REQUIRED
+   folks-telepathy >= $FOLKS_REQUIRED
    gconf-2.0 >= $GCONF_REQUIRED
    gio-2.0 >= $GLIB_REQUIRED
    gio-unix-2.0 >= $GLIB_REQUIRED

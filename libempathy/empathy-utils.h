@@ -31,6 +31,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <folks/folks.h>
 #include <telepathy-glib/account-manager.h>
 
 #include "empathy-contact.h"
@@ -88,6 +89,9 @@ gboolean empathy_account_manager_get_accounts_connected (gboolean *connecting);
 
 void empathy_connect_new_account (TpAccount *account,
     TpAccountManager *account_manager);
+
+TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType type);
+EmpathyContact * empathy_contact_from_folks_individual (FolksIndividual *individual);
 
 G_END_DECLS
 
