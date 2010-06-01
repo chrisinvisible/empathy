@@ -22,10 +22,13 @@
  *          Xavier Claessens <xclaesse@gmail.com>
  */
 
+#define _XOPEN_SOURCE /* glibc2 needs this for strptime */
+
 #include "config.h"
 
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
@@ -120,7 +123,7 @@ static gboolean log_window_chats_get_selected              (EmpathyLogWindow *wi
 							    gchar           **chat_id,
 							    gboolean         *is_chatroom);
 static void     log_window_chats_get_messages              (EmpathyLogWindow *window,
-							    const gchar      *date_to_show);
+							    GDate      *date_to_show);
 static void     log_window_calendar_chats_day_selected_cb  (GtkWidget        *calendar,
 							    EmpathyLogWindow *window);
 static void     log_window_calendar_chats_month_changed_cb (GtkWidget        *calendar,
@@ -410,6 +413,34 @@ got_messages_for_date_cb (GObject *manager,
 	gtk_widget_set_sensitive (window->button_next, can_do_next);
 	gtk_widget_set_sensitive (window->button_find, FALSE);
 }
+
+static GDate *
+gdate_from_str (const gchar *str)
+{
+	GDate *gdate;
+	struct tm tm;
+	time_t t;
+	gchar *tmp;
+
+	if (str == NULL)
+		return NULL;
+
+	memset (&tm, 0, sizeof (struct tm));
+
+	tmp = strptime (str, "%Y%m%d", &tm);
+	if (tmp == NULL || tmp[0] != '\0')
+		return NULL;
+
+	t = mktime (&tm);
+	if (t == -1)
+		return NULL;
+
+	gdate = g_date_new ();
+	g_date_set_time_t (gdate, t);
+
+	return gdate;
+}
+
 #endif /* ENABLE_TPL */
 
 static void
@@ -429,6 +460,8 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 	GList         *l;
 	gboolean       can_do_previous;
 	gboolean       can_do_next;
+#else
+	GDate         *gdate;
 #endif /* ENABLE_TPL */
 
 	/* Get selected information */
@@ -468,14 +501,21 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 							      is_chatroom,
 							      date);
 #else
-	tpl_log_manager_get_messages_for_date_async (window->log_manager,
-							      account,
-							      chat_id,
-							      is_chatroom,
-							      date,
-							      got_messages_for_date_cb,
-							      window);
+	gdate = gdate_from_str (date);
+
+	if (gdate != NULL) {
+		tpl_log_manager_get_messages_for_date_async (window->log_manager,
+								      account,
+								      chat_id,
+								      is_chatroom,
+								      gdate,
+								      got_messages_for_date_cb,
+								      window);
+
+		g_date_free (gdate);
+	}
 #endif /* ENABLE_TPL */
+
 	g_object_unref (account);
 	g_free (date);
 	g_free (chat_id);
@@ -533,7 +573,8 @@ log_manager_searched_new_cb (GObject *manager,
 			TplLogSearchHit *hit;
 			const gchar         *account_name;
 			const gchar         *account_icon;
-			gchar               *date_readable;
+			gchar               date_readable[255];
+			gchar               tmp[255];
 
 			hit = l->data;
 
@@ -542,7 +583,12 @@ log_manager_searched_new_cb (GObject *manager,
 					continue;
 			}
 
-			date_readable = tpl_log_manager_get_date_readable (hit->date);
+			g_date_strftime (date_readable, sizeof(date_readable),
+				EMPATHY_TIME_FORMAT_DISPLAY_LONG, hit->date);
+
+			g_date_strftime (tmp, sizeof(tmp),
+				"%Y%m%d", hit->date);
+
 			account_name = tp_account_get_display_name (hit->account);
 			account_icon = tp_account_get_icon_name (hit->account);
 
@@ -554,11 +600,9 @@ log_manager_searched_new_cb (GObject *manager,
 					COL_FIND_CHAT_NAME, hit->chat_id, /* FIXME */
 					COL_FIND_CHAT_ID, hit->chat_id,
 					COL_FIND_IS_CHATROOM, hit->is_chatroom,
-					COL_FIND_DATE, hit->date,
+					COL_FIND_DATE, tmp,
 					COL_FIND_DATE_READABLE, date_readable,
 					-1);
-
-			g_free (date_readable);
 
 			/* FIXME: Update COL_FIND_CHAT_NAME */
 			if (hit->is_chatroom) {
@@ -1172,7 +1216,7 @@ log_window_got_messages_for_date_cb (GObject *manager,
 
 static void
 log_window_get_messages_for_date (EmpathyLogWindow *window,
-                                 const gchar *date)
+				  GDate *date)
 {
   TpAccount *account;
   gchar *chat_id;
@@ -1209,12 +1253,9 @@ log_manager_got_dates_cb (GObject *manager,
   GList         *dates;
   GList         *l;
   guint          year_selected;
-  guint          year;
-  guint          month;
   guint          month_selected;
-  guint          day;
   gboolean       day_selected = FALSE;
-  const gchar   *date = NULL;
+  GDate         *date = NULL;
   GError        *error = NULL;
 
   if (!tpl_log_manager_get_dates_finish (TPL_LOG_MANAGER (manager),
@@ -1227,14 +1268,8 @@ log_manager_got_dates_cb (GObject *manager,
   }
 
   for (l = dates; l; l = l->next) {
-      const gchar *str;
+      GDate *d = l->data;
 
-      str = l->data;
-      if (!str) {
-          continue;
-      }
-
-      sscanf (str, "%4d%2d%2d", &year, &month, &day);
       gtk_calendar_get_date (GTK_CALENDAR (window->calendar_chats),
           &year_selected,
           &month_selected,
@@ -1243,15 +1278,19 @@ log_manager_got_dates_cb (GObject *manager,
       month_selected++;
 
       if (!l->next) {
-          date = str;
+          date = d;
       }
 
-      if (year != year_selected || month != month_selected) {
+      if (g_date_get_year (d) != year_selected ||
+          g_date_get_month (d) != month_selected) {
           continue;
       }
 
-      DEBUG ("Marking date:'%s'", str);
-      gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), day);
+      DEBUG ("Marking date:'%u/%u/%u'", g_date_get_day (d),
+          g_date_get_month (d), g_date_get_year (d));
+
+      gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats),
+          g_date_get_day (d));
 
       if (l->next) {
           continue;
@@ -1259,7 +1298,8 @@ log_manager_got_dates_cb (GObject *manager,
 
       day_selected = TRUE;
 
-      gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), day);
+      gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats),
+          g_date_get_day (d));
   }
 
   if (!day_selected) {
@@ -1282,15 +1322,12 @@ log_manager_got_dates_cb (GObject *manager,
 
 static void
 log_window_chats_get_messages (EmpathyLogWindow *window,
-			       const gchar     *date_to_show)
+			       GDate     *date)
 {
 	TpAccount     *account;
 	gchar         *chat_id;
 	gboolean       is_chatroom;
-	const gchar   *date;
 	guint          year_selected;
-	guint          year;
-	guint          month;
 	guint          month_selected;
 	guint          day;
 
@@ -1305,8 +1342,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 					 window);
 
 	/* Either use the supplied date or get the last */
-	date = date_to_show;
-	if (!date) {
+	if (date == NULL) {
 		/* Get a list of dates and show them on the calendar */
 		tpl_log_manager_get_dates_async (window->log_manager,
 						       account, chat_id,
@@ -1314,7 +1350,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 						       log_manager_got_dates_cb, (gpointer) window);
     /* signal unblocked at the end of the CB flow */
 	} else {
-		sscanf (date, "%4d%2d%2d", &year, &month, &day);
+		day = g_date_get_day (date);
 		gtk_calendar_get_date (GTK_CALENDAR (window->calendar_chats),
 				&year_selected,
 				&month_selected,
@@ -1322,7 +1358,8 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 
 		month_selected++;
 
-		if (year != year_selected && month != month_selected) {
+		if (g_date_get_year (date) != year_selected &&
+			g_date_get_month (date) != month_selected) {
 			day = 0;
 		}
 
@@ -1333,7 +1370,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
         window);
 	}
 
-	if (date) {
+	if (date != NULL) {
       log_window_get_messages_for_date (window, date);
 	}
 
@@ -1345,7 +1382,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 
 static void
 log_window_chats_get_messages (EmpathyLogWindow *window,
-			       const gchar     *date_to_show)
+			       GDate     *date_to_show)
 {
 	TpAccount     *account;
 	gchar         *chat_id;
@@ -1354,7 +1391,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 	GList         *messages;
 	GList         *dates = NULL;
 	GList         *l;
-	const gchar   *date;
+	const gchar   *date = NULL;
 	guint          year_selected;
 	guint          year;
 	guint          month;
@@ -1371,8 +1408,7 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 					 window);
 
 	/* Either use the supplied date or get the last */
-	date = date_to_show;
-	if (!date) {
+	if (date_to_show == NULL) {
 		gboolean day_selected = FALSE;
 
 		/* Get a list of dates and show them on the calendar */
@@ -1422,7 +1458,9 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 			gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), 0);
 		}
 	} else {
-		sscanf (date, "%4d%2d%2d", &year, &month, &day);
+		gchar buf[9];
+
+		day = g_date_get_day (date_to_show);
 		gtk_calendar_get_date (GTK_CALENDAR (window->calendar_chats),
 				       &year_selected,
 				       &month_selected,
@@ -1430,11 +1468,15 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 
 		month_selected++;
 
-		if (year != year_selected && month != month_selected) {
+		if (g_date_get_year (date_to_show) != year_selected &&
+			g_date_get_month (date_to_show) != month_selected) {
 			day = 0;
 		}
 
 		gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), day);
+
+		g_date_strftime (buf, 9, "%Y%m%d", date_to_show);
+		date = buf;
 	}
 
 	g_signal_handlers_unblock_by_func (window->calendar_chats,
@@ -1488,21 +1530,23 @@ log_window_calendar_chats_day_selected_cb (GtkWidget       *calendar,
 	guint  year;
 	guint  month;
 	guint  day;
-
-	gchar *date;
+	GDate *date;
 
 	gtk_calendar_get_date (GTK_CALENDAR (calendar), &year, &month, &day);
+	if (day == 0)
+		/* No date selected */
+		return;
 
 	/* We need this hear because it appears that the months start from 0 */
 	month++;
 
-	date = g_strdup_printf ("%4.4d%2.2d%2.2d", year, month, day);
+	date = g_date_new_dmy (day, month, year);
 
-	DEBUG ("Currently selected date is:'%s'", date);
+	DEBUG ("Currently selected date is:'%u/%u/%u'", day, month, year);
 
 	log_window_chats_get_messages (window, date);
 
-	g_free (date);
+	g_date_free (date);
 }
 
 
@@ -1538,21 +1582,13 @@ log_window_updating_calendar_month_cb (GObject *manager,
 	month_selected++;
 
 	for (l = dates; l; l = l->next) {
-			const gchar *str;
-			guint        year;
-			guint        month;
-			guint        day;
+			GDate *date = l->data;
 
-			str = l->data;
-			if (!str) {
-					continue;
-			}
-
-			sscanf (str, "%4d%2d%2d", &year, &month, &day);
-
-			if (year == year_selected && month == month_selected) {
-					DEBUG ("Marking date:'%s'", str);
-					gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), day);
+			if (g_date_get_year (date) == year_selected &&
+			    g_date_get_month (date) == month_selected) {
+					DEBUG ("Marking date:'%u/%u/%u'", g_date_get_day (date),
+						g_date_get_month (date), g_date_get_year (date));
+					gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), g_date_get_day (date));
 			}
 	}
 
