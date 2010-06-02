@@ -112,6 +112,7 @@ typedef struct {
 
   TpAccountManager *account_manager;
   EmpathyConnectionManagers *cms;
+  EmpathyConnectivity *connectivity;
 
   GtkWindow *parent_window;
   TpAccount *initial_selection;
@@ -200,7 +201,6 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
   guint                     status;
   guint                     reason;
   guint                     presence;
-  EmpathyConnectivity       *connectivity;
   GtkTreeView               *view;
   GtkTreeModel              *model;
   GtkTreeSelection          *selection;
@@ -302,11 +302,9 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                     GTK_MESSAGE_ERROR);
               }
 
-            connectivity = empathy_connectivity_dup_singleton ();
-            if (!empathy_connectivity_is_online (connectivity))
+            if (!empathy_connectivity_is_online (priv->connectivity))
                message = _("Offline — No Network Connection");
 
-            g_object_unref (connectivity);
             gtk_spinner_stop (GTK_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
             gtk_widget_hide (priv->throbber);
@@ -2138,6 +2136,12 @@ do_dispose (GObject *obj)
       priv->cms = NULL;
     }
 
+  if (priv->connectivity)
+    {
+      g_object_unref (priv->connectivity);
+      priv->connectivity = NULL;
+    }
+
   if (priv->initial_selection != NULL)
     g_object_unref (priv->initial_selection);
   priv->initial_selection = NULL;
@@ -2222,6 +2226,8 @@ do_constructed (GObject *object)
           gtk_widget_show (import_dialog);
         }
     }
+
+  priv->connectivity = empathy_connectivity_dup_singleton ();
 }
 
 static void
