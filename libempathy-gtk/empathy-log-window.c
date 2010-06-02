@@ -562,7 +562,7 @@ log_manager_searched_new_cb (GObject *manager,
 	GtkListStore        *store = user_data;
 	GError              *error = NULL;
 
-	if (!tpl_log_manager_search_new_finish (TPL_LOG_MANAGER (manager), result,
+	if (!tpl_log_manager_search_finish (TPL_LOG_MANAGER (manager), result,
 		&hits, &error)) {
 			DEBUG ("%s. Aborting", error->message);
 			g_error_free (error);
@@ -648,7 +648,7 @@ log_window_find_populate (EmpathyLogWindow *window,
 	}
 
 #ifdef ENABLE_TPL
-	tpl_log_manager_search_new_async (window->log_manager, search_criteria,
+	tpl_log_manager_search_async (window->log_manager, search_criteria,
 			log_manager_searched_new_cb, (gpointer) store);
 #else
 	hits = empathy_log_manager_search_new (window->log_manager, search_criteria);
