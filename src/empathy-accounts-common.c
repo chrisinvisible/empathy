@@ -101,9 +101,10 @@ do_show_accounts_ui (TpAccountManager *manager,
     TpAccount *account,
     GCallback window_destroyed_cb)
 {
-  GtkWidget *accounts_window;
+  static GtkWidget *accounts_window = NULL;
 
-  accounts_window = empathy_accounts_dialog_show (NULL, account);
+  if (accounts_window == NULL)
+    accounts_window = empathy_accounts_dialog_show (NULL, account);
 
   if (window_destroyed_cb)
     g_signal_connect (accounts_window, "destroy", window_destroyed_cb, NULL);
