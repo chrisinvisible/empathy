@@ -31,7 +31,7 @@
 #include <glib/gi18n-lib.h>
 
 #ifdef HAVE_MEEGO
-#include <mx/mx-gtk.h>
+#include <mx-gtk/mx-gtk.h>
 #endif /* HAVE_MEEGO */
 
 #include <libempathy/empathy-utils.h>
