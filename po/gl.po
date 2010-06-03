@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-30 18:01+0200\n"
-"PO-Revision-Date: 2010-05-30 18:00+0200\n"
+"POT-Creation-Date: 2010-06-03 21:40+0200\n"
+"PO-Revision-Date: 2010-06-03 21:39+0200\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <gnome@g11.net>\n"
 "MIME-Version: 1.0\n"
@@ -29,8 +29,8 @@ msgid "Empathy"
 msgstr "Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Empathy IM Client"
-msgstr "Cliente de mensaxería Empathy"
+msgid "Empathy Internet Messaging"
+msgstr "Mensaxaría na Internet Empathy"
 
 #: ../data/empathy.desktop.in.in.h:3
 msgid "IM Client"
@@ -562,7 +562,7 @@ msgstr "Xestionar as contas de mensaxería e VoIP"
 
 #. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/empathy-accounts-dialog.c:2067 ../src/cc-empathy-accounts-page.c:244
+#: ../src/empathy-accounts-dialog.c:2094 ../src/cc-empathy-accounts-page.c:244
 #: ../src/cc-empathy-accounts-panel.c:91
 msgid "Messaging and VoIP Accounts"
 msgstr "Contas de mensaxería e VoIP"
@@ -1491,7 +1491,7 @@ msgid "Connected"
 msgstr "Conectado"
 
 #: ../libempathy-gtk/empathy-chat.c:3204
-#: ../libempathy-gtk/empathy-log-window.c:707
+#: ../libempathy-gtk/empathy-log-window.c:710
 msgid "Conversation"
 msgstr "Conversa"
 
@@ -1634,7 +1634,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:246
-#: ../src/empathy-main-window.c:1032
+#: ../src/empathy-main-window.c:1130
 msgid "Group"
 msgstr "Grupo"
 
@@ -1847,12 +1847,12 @@ msgstr "Porto"
 msgid "SSL"
 msgstr "SSL"
 
-#: ../libempathy-gtk/empathy-log-window.c:700
+#: ../libempathy-gtk/empathy-log-window.c:703
 #: ../src/empathy-import-widget.c:312
 msgid "Account"
 msgstr "Conta"
 
-#: ../libempathy-gtk/empathy-log-window.c:717
+#: ../libempathy-gtk/empathy-log-window.c:720
 msgid "Date"
 msgstr "Data"
 
@@ -2338,7 +2338,7 @@ msgstr "Produciuse un erro"
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:413 ../src/empathy-accounts-dialog.c:579
+#: ../src/empathy-account-assistant.c:413 ../src/empathy-accounts-dialog.c:606
 #, c-format
 msgid "New %s account"
 msgstr "Conta nova de %s"
@@ -2482,34 +2482,34 @@ msgstr "Hai modificacións sen gardar respecto da súa conta %s."
 msgid "Your new account has not been saved yet."
 msgstr "A súa nova conta aínda non foi gardada."
 
-#: ../src/empathy-accounts-dialog.c:262 ../src/empathy-call-window.c:792
+#: ../src/empathy-accounts-dialog.c:273 ../src/empathy-call-window.c:792
 msgid "Connecting…"
 msgstr "Conectando..."
 
-#: ../src/empathy-accounts-dialog.c:289
-#, c-format
-msgid "Disconnected — %s"
-msgstr "Desconectado — %s"
-
-#: ../src/empathy-accounts-dialog.c:294
+#: ../src/empathy-accounts-dialog.c:314
 #, c-format
 msgid "Offline — %s"
 msgstr "Desconectado — %s"
 
-#: ../src/empathy-accounts-dialog.c:307
+#: ../src/empathy-accounts-dialog.c:326
+#, c-format
+msgid "Disconnected — %s"
+msgstr "Desconectado — %s"
+
+#: ../src/empathy-accounts-dialog.c:337
 msgid "Offline — No Network Connection"
 msgstr "Desconectado — Sen conexión de rede"
 
-#: ../src/empathy-accounts-dialog.c:315
+#: ../src/empathy-accounts-dialog.c:344
 msgid "Unknown Status"
 msgstr "Estado descoñecido"
 
-#: ../src/empathy-accounts-dialog.c:326
+#: ../src/empathy-accounts-dialog.c:356
 msgid "Offline — Account Disabled"
 msgstr "Desconectado — Conta desactivada"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:770
+#: ../src/empathy-accounts-dialog.c:797
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2518,17 +2518,17 @@ msgstr ""
 "Está seguro de que quere proceder?"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1117
+#: ../src/empathy-accounts-dialog.c:1144
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "Está seguro de que quere eliminar o grupo '%s' do seu computador?"
 
-#: ../src/empathy-accounts-dialog.c:1121
+#: ../src/empathy-accounts-dialog.c:1148
 msgid "This will not remove your account on the server."
 msgstr "Isto non eliminará a súa conta no servidor."
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1358
+#: ../src/empathy-accounts-dialog.c:1385
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2537,7 +2537,7 @@ msgstr ""
 "Está seguro de que quere proceder?"
 
 # rever
-#: ../src/empathy-accounts-dialog.c:1935
+#: ../src/empathy-accounts-dialog.c:1962
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -3170,12 +3170,12 @@ msgstr "Editar a conta"
 msgid "Close"
 msgstr "Pechar"
 
-#: ../src/empathy-main-window.c:1015
+#: ../src/empathy-main-window.c:1113
 msgid "Contact"
 msgstr "Contacto"
 
 # rever
-#: ../src/empathy-main-window.c:1402
+#: ../src/empathy-main-window.c:1500
 msgid "Show and edit accounts"
 msgstr "Mostrar e editar contas"
 
@@ -3540,63 +3540,63 @@ msgstr "_Saír"
 msgid "Contact Map View"
 msgstr "Vista de mapa de contactos"
 
-#: ../src/empathy-debug-window.c:1078
+#: ../src/empathy-debug-window.c:1154
 msgid "Save"
 msgstr "Gardar"
 
-#: ../src/empathy-debug-window.c:1251
+#: ../src/empathy-debug-window.c:1330
 msgid "Debug Window"
 msgstr "Depurar xanela"
 
-#: ../src/empathy-debug-window.c:1331
+#: ../src/empathy-debug-window.c:1410
 msgid "Pause"
 msgstr "Pausa"
 
-#: ../src/empathy-debug-window.c:1343
+#: ../src/empathy-debug-window.c:1422
 msgid "Level "
 msgstr "Nivel"
 
-#: ../src/empathy-debug-window.c:1363
+#: ../src/empathy-debug-window.c:1442
 msgid "Debug"
 msgstr "Depuración"
 
-#: ../src/empathy-debug-window.c:1369
+#: ../src/empathy-debug-window.c:1448
 msgid "Info"
 msgstr "Información"
 
-#: ../src/empathy-debug-window.c:1375 ../src/empathy-debug-window.c:1424
+#: ../src/empathy-debug-window.c:1454 ../src/empathy-debug-window.c:1503
 msgid "Message"
 msgstr "Mensaxe"
 
-#: ../src/empathy-debug-window.c:1381
+#: ../src/empathy-debug-window.c:1460
 msgid "Warning"
 msgstr "Aviso"
 
-#: ../src/empathy-debug-window.c:1387
+#: ../src/empathy-debug-window.c:1466
 msgid "Critical"
 msgstr "Crítico"
 
-#: ../src/empathy-debug-window.c:1393
+#: ../src/empathy-debug-window.c:1472
 msgid "Error"
 msgstr "Erro"
 
-#: ../src/empathy-debug-window.c:1412
+#: ../src/empathy-debug-window.c:1491
 msgid "Time"
 msgstr "Tempo"
 
-#: ../src/empathy-debug-window.c:1415
+#: ../src/empathy-debug-window.c:1494
 msgid "Domain"
 msgstr "Dominio"
 
-#: ../src/empathy-debug-window.c:1417
+#: ../src/empathy-debug-window.c:1496
 msgid "Category"
 msgstr "Categoría"
 
-#: ../src/empathy-debug-window.c:1419
+#: ../src/empathy-debug-window.c:1498
 msgid "Level"
 msgstr "Nivel"
 
-#: ../src/empathy-debug-window.c:1456
+#: ../src/empathy-debug-window.c:1535
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
@@ -3648,6 +3648,9 @@ msgstr "Contas de Empathy"
 #: ../src/empathy-debugger.c:40
 msgid "Empathy Debugger"
 msgstr "Depurador de Empathy"
+
+#~ msgid "Empathy IM Client"
+#~ msgstr "Cliente de mensaxería Empathy"
 
 #~ msgid "Hostname of the proxy for outbound requests."
 #~ msgstr "Nome de equipo do proxy para as peticións de saída."
