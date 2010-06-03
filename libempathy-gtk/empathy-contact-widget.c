@@ -123,6 +123,7 @@ typedef struct
   GtkWidget *vbox_details;
   GtkWidget *table_details;
   GtkWidget *hbox_details_requested;
+  GtkWidget *spinner_details;
   GList *details_to_set;
   GCancellable *details_cancellable;
 
@@ -184,6 +185,11 @@ static void
 contact_widget_details_setup (EmpathyContactWidget *information)
 {
   gtk_widget_hide (information->vbox_details);
+
+  information->spinner_details = gtk_spinner_new ();
+  gtk_box_pack_end (GTK_BOX (information->hbox_details_requested),
+      information->spinner_details, TRUE, TRUE, 0);
+  gtk_widget_show (information->spinner_details);
 }
 
 static void
@@ -424,6 +430,7 @@ contact_widget_details_notify_cb (EmpathyContactWidget *information)
     }
 
   gtk_widget_hide (information->hbox_details_requested);
+  gtk_spinner_stop (GTK_SPINNER (information->spinner_details));
 }
 
 static void
@@ -493,6 +500,7 @@ contact_widget_details_feature_prepared_cb (GObject *object,
   gtk_widget_show (information->vbox_details);
   gtk_widget_show (information->hbox_details_requested);
   gtk_widget_hide (information->table_details);
+  gtk_spinner_start (GTK_SPINNER (information->spinner_details));
 
   contact = empathy_contact_get_tp_contact (information->contact);
   g_assert (information->details_cancellable == NULL);
