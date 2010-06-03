@@ -914,7 +914,7 @@ account_status_changed_cb (TpAccount  *account,
 	switch (new_status) {
 		case TP_CONNECTION_STATUS_DISCONNECTED:
 			/* Don't wait any longer */
-			goto disconnect;
+			goto finally;
 			break;
 
 		case TP_CONNECTION_STATUS_CONNECTING:
@@ -928,7 +928,7 @@ account_status_changed_cb (TpAccount  *account,
 
 	join_chatroom (ctx->chatroom, ctx->timestamp);
 
-disconnect:
+finally:
 	g_source_remove (ctx->timeout);
 	g_signal_handler_disconnect (account, ctx->sig_id);
 }
