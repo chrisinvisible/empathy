@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-05-30 02:00+0300\n"
-"PO-Revision-Date: 2010-05-30 02:58+0200\n"
+"POT-Creation-Date: 2010-06-03 18:43+0300\n"
+"PO-Revision-Date: 2010-06-03 18:44+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,8 +21,8 @@ msgid "Empathy"
 msgstr "Empathy"
 
 #: ../data/empathy.desktop.in.in.h:2
-msgid "Empathy IM Client"
-msgstr "לקוח המסרים המידיים Empathy"
+msgid "Empathy Internet Messaging"
+msgstr "‏Empathy מסרים מידיים"
 
 #: ../data/empathy.desktop.in.in.h:3
 msgid "IM Client"
@@ -438,7 +438,7 @@ msgstr "ניהול חשבונות התכתבות ו־VoIP"
 
 #. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/empathy-accounts-dialog.c:2067 ../src/cc-empathy-accounts-page.c:244
+#: ../src/empathy-accounts-dialog.c:2094 ../src/cc-empathy-accounts-page.c:244
 #: ../src/cc-empathy-accounts-panel.c:91
 msgid "Messaging and VoIP Accounts"
 msgstr "חשבונות התכתבות ו־VoIP"
@@ -1319,7 +1319,7 @@ msgid "Connected"
 msgstr "מחובר"
 
 #: ../libempathy-gtk/empathy-chat.c:3204
-#: ../libempathy-gtk/empathy-log-window.c:707
+#: ../libempathy-gtk/empathy-log-window.c:710
 msgid "Conversation"
 msgstr "שיחה"
 
@@ -1451,7 +1451,7 @@ msgid "Select"
 msgstr "בחירה"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:246
-#: ../src/empathy-main-window.c:1032
+#: ../src/empathy-main-window.c:1130
 msgid "Group"
 msgstr "קבוצה"
 
@@ -1657,12 +1657,12 @@ msgstr "שער"
 msgid "SSL"
 msgstr "SSL"
 
-#: ../libempathy-gtk/empathy-log-window.c:700
+#: ../libempathy-gtk/empathy-log-window.c:703
 #: ../src/empathy-import-widget.c:312
 msgid "Account"
 msgstr "חשבון"
 
-#: ../libempathy-gtk/empathy-log-window.c:717
+#: ../libempathy-gtk/empathy-log-window.c:720
 msgid "Date"
 msgstr "תאריך"
 
@@ -2126,7 +2126,7 @@ msgstr "התרחשה שגיאה."
 #. To translator: %s is the name of the protocol, such as "Google Talk" or
 #. * "Yahoo!"
 #.
-#: ../src/empathy-account-assistant.c:413 ../src/empathy-accounts-dialog.c:579
+#: ../src/empathy-account-assistant.c:413 ../src/empathy-accounts-dialog.c:606
 #, c-format
 msgid "New %s account"
 msgstr "חשבון %s חדש"
@@ -2264,33 +2264,33 @@ msgstr "ישנם שינויים שלא נשמרו בחשבון ה־%s שלך."
 msgid "Your new account has not been saved yet."
 msgstr "החשבון החדש שלך לא נשמר עדיין."
 
-#: ../src/empathy-accounts-dialog.c:262 ../src/empathy-call-window.c:792
+#: ../src/empathy-accounts-dialog.c:273 ../src/empathy-call-window.c:792
 msgid "Connecting…"
 msgstr "מתחבר..."
 
-#: ../src/empathy-accounts-dialog.c:289
-#, c-format
-msgid "Disconnected — %s"
-msgstr "מנותק  — %s"
-
-#: ../src/empathy-accounts-dialog.c:294
+#: ../src/empathy-accounts-dialog.c:314
 #, c-format
 msgid "Offline — %s"
 msgstr "לא מחובר — %s"
 
-#: ../src/empathy-accounts-dialog.c:307
+#: ../src/empathy-accounts-dialog.c:326
+#, c-format
+msgid "Disconnected — %s"
+msgstr "מנותק  — %s"
+
+#: ../src/empathy-accounts-dialog.c:337
 msgid "Offline — No Network Connection"
 msgstr "מנותק — אין חיבור לרשת"
 
-#: ../src/empathy-accounts-dialog.c:315
+#: ../src/empathy-accounts-dialog.c:344
 msgid "Unknown Status"
 msgstr "מצב לא ידוע"
 
-#: ../src/empathy-accounts-dialog.c:326
+#: ../src/empathy-accounts-dialog.c:356
 msgid "Offline — Account Disabled"
 msgstr "מנותק — החשבון מנוטרל"
 
-#: ../src/empathy-accounts-dialog.c:770
+#: ../src/empathy-accounts-dialog.c:797
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2298,16 +2298,16 @@ msgstr ""
 "עומד להיווצר חשבון חדש, מה שיבטל\n"
 "את השינויים שלך. האם ברצונך להמשיך?"
 
-#: ../src/empathy-accounts-dialog.c:1117
+#: ../src/empathy-accounts-dialog.c:1144
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "האם ברצונך להסיר את החשבון '%s' ממחשבך?"
 
-#: ../src/empathy-accounts-dialog.c:1121
+#: ../src/empathy-accounts-dialog.c:1148
 msgid "This will not remove your account on the server."
 msgstr "פעולה זו לא תסיר את חשבונך מהשרת."
 
-#: ../src/empathy-accounts-dialog.c:1358
+#: ../src/empathy-accounts-dialog.c:1385
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2315,7 +2315,7 @@ msgstr ""
 "אתה עומד לבחור חשבון חדש, מה שיבטל\n"
 "את השינויים שלך. האת אתה בטוח שברצונך להמשיך?"
 
-#: ../src/empathy-accounts-dialog.c:1935
+#: ../src/empathy-accounts-dialog.c:1962
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2896,11 +2896,11 @@ msgstr "עריכת חשבון"
 msgid "Close"
 msgstr "סגירה"
 
-#: ../src/empathy-main-window.c:1015
+#: ../src/empathy-main-window.c:1113
 msgid "Contact"
 msgstr "איש קשר"
 
-#: ../src/empathy-main-window.c:1402
+#: ../src/empathy-main-window.c:1500
 msgid "Show and edit accounts"
 msgstr "הצגה ועריכה של חשבונות"
 
@@ -3233,63 +3233,63 @@ msgstr "יצי_אה"
 msgid "Contact Map View"
 msgstr "מפת אנשי קשר"
 
-#: ../src/empathy-debug-window.c:1078
+#: ../src/empathy-debug-window.c:1154
 msgid "Save"
 msgstr "שמירה"
 
-#: ../src/empathy-debug-window.c:1251
+#: ../src/empathy-debug-window.c:1330
 msgid "Debug Window"
 msgstr "חלון ניפוי שגיאות"
 
-#: ../src/empathy-debug-window.c:1331
+#: ../src/empathy-debug-window.c:1410
 msgid "Pause"
 msgstr "השהייה"
 
-#: ../src/empathy-debug-window.c:1343
+#: ../src/empathy-debug-window.c:1422
 msgid "Level "
 msgstr "רמה"
 
-#: ../src/empathy-debug-window.c:1363
+#: ../src/empathy-debug-window.c:1442
 msgid "Debug"
 msgstr "ניפוי שגיאות"
 
-#: ../src/empathy-debug-window.c:1369
+#: ../src/empathy-debug-window.c:1448
 msgid "Info"
 msgstr "מידע"
 
-#: ../src/empathy-debug-window.c:1375 ../src/empathy-debug-window.c:1424
+#: ../src/empathy-debug-window.c:1454 ../src/empathy-debug-window.c:1503
 msgid "Message"
 msgstr "הודעה"
 
-#: ../src/empathy-debug-window.c:1381
+#: ../src/empathy-debug-window.c:1460
 msgid "Warning"
 msgstr "אזהרה"
 
-#: ../src/empathy-debug-window.c:1387
+#: ../src/empathy-debug-window.c:1466
 msgid "Critical"
 msgstr "קריטי"
 
-#: ../src/empathy-debug-window.c:1393
+#: ../src/empathy-debug-window.c:1472
 msgid "Error"
 msgstr "שגיאה"
 
-#: ../src/empathy-debug-window.c:1412
+#: ../src/empathy-debug-window.c:1491
 msgid "Time"
 msgstr "זמן"
 
-#: ../src/empathy-debug-window.c:1415
+#: ../src/empathy-debug-window.c:1494
 msgid "Domain"
 msgstr "תחום"
 
-#: ../src/empathy-debug-window.c:1417
+#: ../src/empathy-debug-window.c:1496
 msgid "Category"
 msgstr "קטגוריה"
 
-#: ../src/empathy-debug-window.c:1419
+#: ../src/empathy-debug-window.c:1498
 msgid "Level"
 msgstr "רמה"
 
-#: ../src/empathy-debug-window.c:1456
+#: ../src/empathy-debug-window.c:1535
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
@@ -3337,6 +3337,9 @@ msgstr "חשבונות Empathy"
 #: ../src/empathy-debugger.c:40
 msgid "Empathy Debugger"
 msgstr "מנפה השגיאות של Empathy"
+
+#~ msgid "Empathy IM Client"
+#~ msgstr "לקוח המסרים המידיים Empathy"
 
 #~ msgid "Salut account is created"
 #~ msgstr "Salut account is created"
@@ -3520,9 +3523,6 @@ msgstr "מנפה השגיאות של Empathy"
 
 #~ msgid "gtk-leave-fullscreen"
 #~ msgstr "gtk-leave-fullscreen"
-
-#~ msgid "Empathy Instant Messenger"
-#~ msgstr "‏Empathy - מסרים מיידיים"
 
 #~ msgid "<b>Network</b>"
 #~ msgstr "<b>רשת</b>"
