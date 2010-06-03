@@ -853,23 +853,33 @@ main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 }
 
 static void
-main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
+join_chatroom (EmpathyChatroom *chatroom,
+	       gint64 timestamp)
 {
 	TpAccount      *account;
 	TpConnection   *connection;
 	const gchar    *room;
 
 	account = empathy_chatroom_get_account (chatroom);
-	if (tp_account_get_connection_status (account, NULL) !=
-					     TP_CONNECTION_STATUS_CONNECTED)
-		return;
 	connection = tp_account_get_connection (account);
 	g_assert (connection != NULL);
 	room = empathy_chatroom_get_room (chatroom);
 
 	DEBUG ("Requesting channel for '%s'", room);
-	empathy_dispatcher_join_muc (connection, room,
-		gtk_get_current_event_time (), NULL, NULL);
+	empathy_dispatcher_join_muc (connection, room, timestamp, NULL, NULL);
+}
+
+static void
+main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
+{
+	TpAccount      *account;
+
+	account = empathy_chatroom_get_account (chatroom);
+	if (tp_account_get_connection_status (account, NULL) !=
+					     TP_CONNECTION_STATUS_CONNECTED)
+		return;
+
+	join_chatroom (chatroom, gtk_get_current_event_time ());
 }
 
 static void
