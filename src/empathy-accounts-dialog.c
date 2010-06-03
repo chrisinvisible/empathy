@@ -191,12 +191,22 @@ accounts_dialog_update_name_label (EmpathyAccountsDialog *dialog,
 }
 
 static void
+accounts_dialog_status_infobar_set_message (EmpathyAccountsDialog *dialog,
+    const gchar *message)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
+  gchar *message_markup;
+
+  message_markup = g_markup_printf_escaped ("<i>%s</i>", message);
+  gtk_label_set_markup (GTK_LABEL (priv->label_status), message_markup);
+  g_free (message_markup);
+}
+
+static void
 accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     TpAccount *account)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  const gchar               *message;
-  gchar                     *message_markup;
   gchar                     *status_message = NULL;
   guint                     status;
   guint                     reason;
@@ -259,7 +269,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       switch (status)
         {
           case TP_CONNECTION_STATUS_CONNECTING:
-            message = _("Connecting…");
+            accounts_dialog_status_infobar_set_message (dialog,
+                _("Connecting…"));
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_INFO);
 
@@ -270,14 +281,24 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
           case TP_CONNECTION_STATUS_CONNECTED:
             if (g_strcmp0 (status_message, "") == 0)
               {
+                gchar *message;
+
                 message = g_strdup_printf ("%s",
                     empathy_presence_get_default_message (presence));
+
+                accounts_dialog_status_infobar_set_message (dialog, message);
+                g_free (message);
               }
             else
               {
+                gchar *message;
+
                 message = g_strdup_printf ("%s — %s",
                     empathy_presence_get_default_message (presence),
                     status_message);
+
+                accounts_dialog_status_infobar_set_message (dialog, message);
+                g_free (message);
               }
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_INFO);
@@ -286,31 +307,41 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
             gtk_widget_hide (priv->throbber);
             break;
           case TP_CONNECTION_STATUS_DISCONNECTED:
-            message = g_strdup_printf (_("Disconnected — %s"),
-                empathy_status_reason_get_default_message (reason));
-
             if (reason == TP_CONNECTION_STATUS_REASON_REQUESTED)
               {
+                gchar *message;
+
                 message = g_strdup_printf (_("Offline — %s"),
                     empathy_status_reason_get_default_message (reason));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_WARNING);
+
+                accounts_dialog_status_infobar_set_message (dialog, message);
+                g_free (message);
               }
             else
               {
+                gchar *message;
+
+                message = g_strdup_printf (_("Disconnected — %s"),
+                    empathy_status_reason_get_default_message (reason));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_ERROR);
+
+                accounts_dialog_status_infobar_set_message (dialog, message);
+                g_free (message);
               }
 
             if (!empathy_connectivity_is_online (priv->connectivity))
-               message = _("Offline — No Network Connection");
+               accounts_dialog_status_infobar_set_message (dialog,
+                    _("Offline — No Network Connection"));
 
             gtk_spinner_stop (GTK_SPINNER (priv->throbber));
             gtk_widget_show (priv->image_status);
             gtk_widget_hide (priv->throbber);
             break;
           default:
-            message = _("Unknown Status");
+            accounts_dialog_status_infobar_set_message (dialog, _("Unknown Status"));
             gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                 GTK_MESSAGE_WARNING);
 
@@ -321,7 +352,8 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     }
   else
     {
-      message = _("Offline — Account Disabled");
+      accounts_dialog_status_infobar_set_message (dialog,
+          _("Offline — Account Disabled"));
 
       gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
           GTK_MESSAGE_WARNING);
@@ -330,8 +362,6 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
       gtk_widget_hide (priv->throbber);
     }
 
-  message_markup = g_markup_printf_escaped ("<i>%s</i>", message);
-  gtk_label_set_markup (GTK_LABEL (priv->label_status), message_markup);
   gtk_widget_show (priv->label_status);
 
   if (!creating_account)
@@ -340,7 +370,6 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
     gtk_widget_hide (priv->infobar);
 
   g_free (status_message);
-  g_free (message_markup);
 }
 
 void
