@@ -871,18 +871,22 @@ join_chatroom (EmpathyChatroom *chatroom,
 
 typedef struct
 {
+	TpAccount *account;
 	EmpathyChatroom *chatroom;
 	gint64 timestamp;
 	glong sig_id;
+	guint timeout;
 } join_fav_account_sig_ctx;
 
 static join_fav_account_sig_ctx *
-join_fav_account_sig_ctx_new (EmpathyChatroom *chatroom,
+join_fav_account_sig_ctx_new (TpAccount *account,
+			     EmpathyChatroom *chatroom,
 			      gint64 timestamp)
 {
 	join_fav_account_sig_ctx *ctx = g_slice_new0 (
 		join_fav_account_sig_ctx);
 
+	ctx->account = g_object_ref (account);
 	ctx->chatroom = g_object_ref (chatroom);
 	ctx->timestamp = timestamp;
 	return ctx;
@@ -891,6 +895,7 @@ join_fav_account_sig_ctx_new (EmpathyChatroom *chatroom,
 static void
 join_fav_account_sig_ctx_free (join_fav_account_sig_ctx *ctx)
 {
+	g_object_unref (ctx->account);
 	g_object_unref (ctx->chatroom);
 	g_slice_free (join_fav_account_sig_ctx, ctx);
 }
@@ -924,7 +929,20 @@ account_status_changed_cb (TpAccount  *account,
 	join_chatroom (ctx->chatroom, ctx->timestamp);
 
 disconnect:
+	g_source_remove (ctx->timeout);
 	g_signal_handler_disconnect (account, ctx->sig_id);
+}
+
+#define JOIN_FAVORITE_TIMEOUT 5
+
+static gboolean
+join_favorite_timeout_cb (gpointer data)
+{
+	join_fav_account_sig_ctx *ctx = data;
+
+	/* stop waiting for joining the favorite room */
+	g_signal_handler_disconnect (ctx->account, ctx->sig_id);
+	return FALSE;
 }
 
 static void
@@ -937,12 +955,15 @@ main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 					     TP_CONNECTION_STATUS_CONNECTED) {
 		join_fav_account_sig_ctx *ctx;
 
-		ctx = join_fav_account_sig_ctx_new (chatroom,
+		ctx = join_fav_account_sig_ctx_new (account, chatroom,
 			gtk_get_current_event_time ());
 
 		ctx->sig_id = g_signal_connect_data (account, "status-changed",
 			G_CALLBACK (account_status_changed_cb), ctx,
 			(GClosureNotify) join_fav_account_sig_ctx_free, 0);
+
+		ctx->timeout = g_timeout_add_seconds (JOIN_FAVORITE_TIMEOUT,
+			join_favorite_timeout_cb, ctx);
 		return;
 	}
 
