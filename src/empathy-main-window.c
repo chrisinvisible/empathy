@@ -869,6 +869,64 @@ join_chatroom (EmpathyChatroom *chatroom,
 	empathy_dispatcher_join_muc (connection, room, timestamp, NULL, NULL);
 }
 
+typedef struct
+{
+	EmpathyChatroom *chatroom;
+	gint64 timestamp;
+	glong sig_id;
+} join_fav_account_sig_ctx;
+
+static join_fav_account_sig_ctx *
+join_fav_account_sig_ctx_new (EmpathyChatroom *chatroom,
+			      gint64 timestamp)
+{
+	join_fav_account_sig_ctx *ctx = g_slice_new0 (
+		join_fav_account_sig_ctx);
+
+	ctx->chatroom = g_object_ref (chatroom);
+	ctx->timestamp = timestamp;
+	return ctx;
+}
+
+static void
+join_fav_account_sig_ctx_free (join_fav_account_sig_ctx *ctx)
+{
+	g_object_unref (ctx->chatroom);
+	g_slice_free (join_fav_account_sig_ctx, ctx);
+}
+
+static void
+account_status_changed_cb (TpAccount  *account,
+			   TpConnectionStatus old_status,
+			   TpConnectionStatus new_status,
+			   guint reason,
+			   gchar *dbus_error_name,
+			   GHashTable *details,
+			   gpointer user_data)
+{
+	join_fav_account_sig_ctx *ctx = user_data;
+
+	switch (new_status) {
+		case TP_CONNECTION_STATUS_DISCONNECTED:
+			/* Don't wait any longer */
+			goto disconnect;
+			break;
+
+		case TP_CONNECTION_STATUS_CONNECTING:
+			/* Wait a bit */
+			return;
+
+		case TP_CONNECTION_STATUS_CONNECTED:
+			/* We can join the room */
+			break;
+	}
+
+	join_chatroom (ctx->chatroom, ctx->timestamp);
+
+disconnect:
+	g_signal_handler_disconnect (account, ctx->sig_id);
+}
+
 static void
 main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 {
@@ -876,8 +934,17 @@ main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 
 	account = empathy_chatroom_get_account (chatroom);
 	if (tp_account_get_connection_status (account, NULL) !=
-					     TP_CONNECTION_STATUS_CONNECTED)
+					     TP_CONNECTION_STATUS_CONNECTED) {
+		join_fav_account_sig_ctx *ctx;
+
+		ctx = join_fav_account_sig_ctx_new (chatroom,
+			gtk_get_current_event_time ());
+
+		ctx->sig_id = g_signal_connect_data (account, "status-changed",
+			G_CALLBACK (account_status_changed_cb), ctx,
+			(GClosureNotify) join_fav_account_sig_ctx_free, 0);
 		return;
+	}
 
 	join_chatroom (chatroom, gtk_get_current_event_time ());
 }
