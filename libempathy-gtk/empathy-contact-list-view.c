@@ -265,8 +265,8 @@ contact_list_view_drag_got_contact (TpConnection            *connection,
 
 static gboolean
 group_can_be_modified (const gchar *name,
-		       gboolean is_fake_group,
-		       gboolean adding)
+		       gboolean     is_fake_group,
+		       gboolean     adding)
 {
 	/* Real groups can always be modified */
 	if (!is_fake_group)
@@ -859,9 +859,9 @@ contact_list_view_call_activated_cb (
 
 static void
 contact_list_view_cell_set_background (EmpathyContactListView *view,
-				       GtkCellRenderer       *cell,
-				       gboolean               is_group,
-				       gboolean               is_active)
+				       GtkCellRenderer        *cell,
+				       gboolean                is_group,
+				       gboolean                is_active)
 {
 	GdkColor  color;
 	GtkStyle *style;
@@ -891,10 +891,10 @@ contact_list_view_cell_set_background (EmpathyContactListView *view,
 }
 
 static void
-contact_list_view_pixbuf_cell_data_func (GtkTreeViewColumn     *tree_column,
-					 GtkCellRenderer       *cell,
-					 GtkTreeModel          *model,
-					 GtkTreeIter           *iter,
+contact_list_view_pixbuf_cell_data_func (GtkTreeViewColumn      *tree_column,
+					 GtkCellRenderer        *cell,
+					 GtkTreeModel           *model,
+					 GtkTreeIter            *iter,
 					 EmpathyContactListView *view)
 {
 	GdkPixbuf *pixbuf;
@@ -987,10 +987,10 @@ contact_list_view_audio_call_cell_data_func (
 }
 
 static void
-contact_list_view_avatar_cell_data_func (GtkTreeViewColumn     *tree_column,
-					 GtkCellRenderer       *cell,
-					 GtkTreeModel          *model,
-					 GtkTreeIter           *iter,
+contact_list_view_avatar_cell_data_func (GtkTreeViewColumn      *tree_column,
+					 GtkCellRenderer        *cell,
+					 GtkTreeModel           *model,
+					 GtkTreeIter            *iter,
 					 EmpathyContactListView *view)
 {
 	GdkPixbuf *pixbuf;
@@ -1018,10 +1018,10 @@ contact_list_view_avatar_cell_data_func (GtkTreeViewColumn     *tree_column,
 }
 
 static void
-contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
-				       GtkCellRenderer       *cell,
-				       GtkTreeModel          *model,
-				       GtkTreeIter           *iter,
+contact_list_view_text_cell_data_func (GtkTreeViewColumn      *tree_column,
+				       GtkCellRenderer        *cell,
+				       GtkTreeModel           *model,
+				       GtkTreeIter            *iter,
 				       EmpathyContactListView *view)
 {
 	gboolean is_group;
@@ -1036,10 +1036,10 @@ contact_list_view_text_cell_data_func (GtkTreeViewColumn     *tree_column,
 }
 
 static void
-contact_list_view_expander_cell_data_func (GtkTreeViewColumn     *column,
-					   GtkCellRenderer       *cell,
-					   GtkTreeModel          *model,
-					   GtkTreeIter           *iter,
+contact_list_view_expander_cell_data_func (GtkTreeViewColumn      *column,
+					   GtkCellRenderer        *cell,
+					   GtkTreeModel           *model,
+					   GtkTreeIter            *iter,
 					   EmpathyContactListView *view)
 {
 	gboolean is_group;
@@ -1071,9 +1071,9 @@ contact_list_view_expander_cell_data_func (GtkTreeViewColumn     *column,
 
 static void
 contact_list_view_row_expand_or_collapse_cb (EmpathyContactListView *view,
-					     GtkTreeIter           *iter,
-					     GtkTreePath           *path,
-					     gpointer               user_data)
+					     GtkTreeIter            *iter,
+					     GtkTreePath            *path,
+					     gpointer                user_data)
 {
 	EmpathyContactListViewPriv *priv = GET_PRIV (view);
 	GtkTreeModel               *model;

@@ -324,7 +324,7 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 
 static void
 main_window_remove_error (EmpathyMainWindow *window,
-			  TpAccount *account)
+			  TpAccount         *account)
 {
 	GtkWidget *error_widget;
 
@@ -336,15 +336,15 @@ main_window_remove_error (EmpathyMainWindow *window,
 }
 
 static void
-main_window_account_disabled_cb (TpAccountManager *manager,
-				 TpAccount *account,
+main_window_account_disabled_cb (TpAccountManager  *manager,
+				 TpAccount         *account,
 				 EmpathyMainWindow *window)
 {
 	main_window_remove_error (window, account);
 }
 
 static void
-main_window_error_retry_clicked_cb (GtkButton *button,
+main_window_error_retry_clicked_cb (GtkButton         *button,
 				    EmpathyMainWindow *window)
 {
 	TpAccount *account;
@@ -356,7 +356,7 @@ main_window_error_retry_clicked_cb (GtkButton *button,
 }
 
 static void
-main_window_error_edit_clicked_cb (GtkButton *button,
+main_window_error_edit_clicked_cb (GtkButton         *button,
 				   EmpathyMainWindow *window)
 {
 	TpAccount *account;
@@ -371,7 +371,7 @@ main_window_error_edit_clicked_cb (GtkButton *button,
 }
 
 static void
-main_window_error_close_clicked_cb (GtkButton *button,
+main_window_error_close_clicked_cb (GtkButton         *button,
 				    EmpathyMainWindow *window)
 {
 	TpAccount *account;
@@ -523,11 +523,11 @@ main_window_update_status (EmpathyMainWindow *window)
 
 static void
 main_window_connection_changed_cb (TpAccount  *account,
-                                   guint       old_status,
-                                   guint       current,
-                                   guint       reason,
-                                   gchar      *dbus_error_name,
-                                   GHashTable *details,
+				   guint       old_status,
+				   guint       current,
+				   guint       reason,
+				   gchar      *dbus_error_name,
+				   GHashTable *details,
 				   EmpathyMainWindow *window)
 {
 	main_window_update_status (window);
@@ -624,9 +624,9 @@ main_window_destroy_cb (GtkWidget         *widget,
 }
 
 static gboolean
-main_window_key_press_event_cb  (GtkWidget *window,
+main_window_key_press_event_cb  (GtkWidget   *window,
 				 GdkEventKey *event,
-				 gpointer user_data)
+				 gpointer     user_data)
 {
 	EmpathyChatManager *chat_manager;
 
@@ -663,7 +663,7 @@ main_window_chat_new_message_cb (GtkAction         *action,
 
 static void
 main_window_chat_new_call_cb (GtkAction         *action,
-				 EmpathyMainWindow *window)
+			      EmpathyMainWindow *window)
 {
 	empathy_new_call_dialog_show (GTK_WINDOW (window->window));
 }
@@ -758,8 +758,8 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 }
 
 static void
-main_window_view_show_protocols_cb (GtkToggleAction *action,
-					EmpathyMainWindow *window)
+main_window_view_show_protocols_cb (GtkToggleAction   *action,
+				    EmpathyMainWindow *window)
 {
 	gboolean value;
 
@@ -800,8 +800,8 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 }
 
 static void main_window_notify_show_protocols_cb (EmpathyConf       *conf,
-					const gchar       *key,
-					EmpathyMainWindow *window)
+						  const gchar       *key,
+						  EmpathyMainWindow *window)
 {
 	gboolean show_protocols;
 
@@ -971,7 +971,7 @@ main_window_favorite_chatroom_join (EmpathyChatroom *chatroom)
 }
 
 static void
-main_window_favorite_chatroom_menu_activate_cb (GtkMenuItem    *menu_item,
+main_window_favorite_chatroom_menu_activate_cb (GtkMenuItem     *menu_item,
 						EmpathyChatroom *chatroom)
 {
 	main_window_favorite_chatroom_join (chatroom);
@@ -979,7 +979,7 @@ main_window_favorite_chatroom_menu_activate_cb (GtkMenuItem    *menu_item,
 
 static void
 main_window_favorite_chatroom_menu_add (EmpathyMainWindow *window,
-					EmpathyChatroom    *chatroom)
+					EmpathyChatroom   *chatroom)
 {
 	GtkWidget   *menu_item;
 	const gchar *name;
@@ -1005,7 +1005,7 @@ main_window_favorite_chatroom_menu_add (EmpathyMainWindow *window,
 static void
 main_window_favorite_chatroom_menu_added_cb (EmpathyChatroomManager *manager,
 					     EmpathyChatroom        *chatroom,
-					     EmpathyMainWindow     *window)
+					     EmpathyMainWindow      *window)
 {
 	main_window_favorite_chatroom_menu_add (window, chatroom);
 	gtk_widget_show (window->room_separator);
@@ -1015,7 +1015,7 @@ main_window_favorite_chatroom_menu_added_cb (EmpathyChatroomManager *manager,
 static void
 main_window_favorite_chatroom_menu_removed_cb (EmpathyChatroomManager *manager,
 					       EmpathyChatroom        *chatroom,
-					       EmpathyMainWindow     *window)
+					       EmpathyMainWindow      *window)
 {
 	GtkWidget *menu_item;
 	GList *chatrooms;
@@ -1097,7 +1097,7 @@ main_window_room_manage_favorites_cb (GtkAction         *action,
 }
 
 static void
-main_window_edit_cb (GtkAction *action,
+main_window_edit_cb (GtkAction         *action,
 		     EmpathyMainWindow *window)
 {
 	GtkWidget *submenu;
@@ -1250,9 +1250,9 @@ main_window_account_removed_cb (TpAccountManager  *manager,
 }
 
 static void
-main_window_account_validity_changed_cb (TpAccountManager *manager,
-					 TpAccount *account,
-					 gboolean valid,
+main_window_account_validity_changed_cb (TpAccountManager  *manager,
+					 TpAccount         *account,
+					 gboolean           valid,
 					 EmpathyMainWindow *window)
 {
 	if (valid) {
@@ -1316,9 +1316,9 @@ empathy_main_window_get (void)
 }
 
 static void
-account_manager_prepared_cb (GObject *source_object,
+account_manager_prepared_cb (GObject      *source_object,
 			     GAsyncResult *result,
-			     gpointer user_data)
+			     gpointer      user_data)
 {
 	GList *accounts, *j;
 	TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
