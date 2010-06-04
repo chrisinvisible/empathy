@@ -1097,9 +1097,9 @@ contact_list_view_row_expand_or_collapse_cb (EmpathyContactListView *view,
 }
 
 static void
-contact_list_view_row_has_child_toggled_cb (GtkTreeModel          *model,
-					    GtkTreePath           *path,
-					    GtkTreeIter           *iter,
+contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
+					    GtkTreePath            *path,
+					    GtkTreeIter            *iter,
 					    EmpathyContactListView *view)
 {
 	EmpathyContactListViewPriv *priv = GET_PRIV (view);
