@@ -50,7 +50,6 @@ typedef struct {
 	GtkWidget             *account_chooser;
 	GtkWidget             *treeview;
 	GtkWidget             *button_remove;
-	GtkWidget             *button_edit;
 	GtkWidget             *button_close;
 } EmpathyChatroomsWindow;
 
@@ -66,15 +65,7 @@ static void             chatrooms_window_model_add                       (Empath
 static void             chatrooms_window_model_cell_auto_connect_toggled (GtkCellRendererToggle  *cell,
 									  gchar                  *path_string,
 									  EmpathyChatroomsWindow  *window);
-static EmpathyChatroom * chatrooms_window_model_get_selected              (EmpathyChatroomsWindow *window);
-static void             chatrooms_window_model_action_selected           (EmpathyChatroomsWindow *window);
-static void             chatrooms_window_row_activated_cb                (GtkTreeView           *tree_view,
-									  GtkTreePath           *path,
-									  GtkTreeViewColumn     *column,
-									  EmpathyChatroomsWindow *window);
 static void             chatrooms_window_button_remove_clicked_cb        (GtkWidget             *widget,
-									  EmpathyChatroomsWindow *window);
-static void             chatrooms_window_button_edit_clicked_cb          (GtkWidget             *widget,
 									  EmpathyChatroomsWindow *window);
 static void             chatrooms_window_button_close_clicked_cb         (GtkWidget             *widget,
 									  EmpathyChatroomsWindow *window);
@@ -120,7 +111,6 @@ empathy_chatrooms_window_show (GtkWindow *parent)
 				       "hbox_account", &window->hbox_account,
 				       "label_account", &window->label_account,
 				       "treeview", &window->treeview,
-				       "button_edit", &window->button_edit,
 				       "button_remove", &window->button_remove,
 				       "button_close", &window->button_close,
 				       NULL);
@@ -129,7 +119,6 @@ empathy_chatrooms_window_show (GtkWindow *parent)
 	empathy_builder_connect (gui, window,
 			      "chatrooms_window", "destroy", chatrooms_window_destroy_cb,
 			      "button_remove", "clicked", chatrooms_window_button_remove_clicked_cb,
-			      "button_edit", "clicked", chatrooms_window_button_edit_clicked_cb,
 			      "button_close", "clicked", chatrooms_window_button_close_clicked_cb,
 			      NULL);
 
@@ -205,10 +194,6 @@ chatrooms_window_model_setup (EmpathyChatroomsWindow *window)
 
 	/* View */
 	view = GTK_TREE_VIEW (window->treeview);
-
-	g_signal_connect (view, "row-activated",
-			  G_CALLBACK (chatrooms_window_row_activated_cb),
-			  window);
 
 	/* Store */
 	store = gtk_list_store_new (COL_COUNT,
@@ -400,46 +385,6 @@ chatrooms_window_model_cell_auto_connect_toggled (GtkCellRendererToggle  *cell,
 	g_object_unref (chatroom);
 }
 
-static EmpathyChatroom *
-chatrooms_window_model_get_selected (EmpathyChatroomsWindow *window)
-{
-	GtkTreeView      *view;
-	GtkTreeModel     *model;
-	GtkTreeSelection *selection;
-	GtkTreeIter       iter;
-	EmpathyChatroom   *chatroom = NULL;
-
-	view = GTK_TREE_VIEW (window->treeview);
-	selection = gtk_tree_view_get_selection (view);
-
-	if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-		gtk_tree_model_get (model, &iter, COL_POINTER, &chatroom, -1);
-	}
-
-	return chatroom;
-}
-
-static void
-chatrooms_window_model_action_selected (EmpathyChatroomsWindow *window)
-{
-	EmpathyChatroom *chatroom;
-
-	/* FIXME: This is still not implemented since Gossip fork */
-	chatroom = chatrooms_window_model_get_selected (window);
-	g_object_unref (chatroom);
-}
-
-static void
-chatrooms_window_row_activated_cb (GtkTreeView           *tree_view,
-				   GtkTreePath           *path,
-				   GtkTreeViewColumn     *column,
-				   EmpathyChatroomsWindow *window)
-{
-	if (gtk_widget_is_sensitive (window->button_edit)) {
-		chatrooms_window_model_action_selected (window);
-	}
-}
-
 static void
 chatrooms_window_button_remove_clicked_cb (GtkWidget             *widget,
 					   EmpathyChatroomsWindow *window)
@@ -464,17 +409,6 @@ chatrooms_window_button_remove_clicked_cb (GtkWidget             *widget,
 	/* Remove from config */
 	empathy_chatroom_manager_remove (window->manager, chatroom);
 
-	g_object_unref (chatroom);
-}
-
-static void
-chatrooms_window_button_edit_clicked_cb (GtkWidget             *widget,
-					 EmpathyChatroomsWindow *window)
-{
-	EmpathyChatroom *chatroom;
-
-	/* FIXME: This is still not implemented since Gossip fork */
-	chatroom = chatrooms_window_model_get_selected (window);
 	g_object_unref (chatroom);
 }
 
