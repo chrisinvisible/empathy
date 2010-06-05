@@ -520,7 +520,7 @@ update_resources (EmpathyLocationManager *self)
    * being found as geoclue-manual report an empty address with
    * accuracy = NONE */
   if (!geoclue_master_client_set_requirements (priv->gc_client,
-          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, TRUE, priv->resources,
+          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, FALSE, priv->resources,
           NULL))
     {
       DEBUG ("set_requirements failed");
