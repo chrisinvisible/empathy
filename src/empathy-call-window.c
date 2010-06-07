@@ -224,7 +224,7 @@ static void empathy_call_window_sidebar_toggled_cb (GtkToggleButton *toggle,
   EmpathyCallWindow *window);
 
 static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
-  gboolean send);
+  CameraState state);
 
 static void empathy_call_window_mic_toggled_cb (
   GtkToggleToolButton *toggle, EmpathyCallWindow *window);
@@ -810,7 +810,7 @@ disable_camera (EmpathyCallWindow *self)
   display_video_preview (self, FALSE);
 
   if (priv->camera_state == CAMERA_STATE_ON)
-    empathy_call_window_set_send_video (self, FALSE);
+    empathy_call_window_set_send_video (self, CAMERA_STATE_OFF);
 
   block_camera_control_signals (self);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
@@ -860,10 +860,14 @@ enable_preview (EmpathyCallWindow *self)
   DEBUG ("Enable preview");
 
   if (priv->camera_state == CAMERA_STATE_ON)
-    /* preview is already displayed so we just have to stop sending */
-    empathy_call_window_set_send_video (self, FALSE);
-
-  display_video_preview (self, TRUE);
+    {
+      /* preview is already displayed so we just have to stop sending */
+      empathy_call_window_set_send_video (self, CAMERA_STATE_PREVIEW);
+    }
+  else
+    {
+      display_video_preview (self, TRUE);
+    }
 
   block_camera_control_signals (self);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
@@ -919,7 +923,7 @@ enable_camera (EmpathyCallWindow *self)
 
   DEBUG ("Enable camera");
 
-  empathy_call_window_set_send_video (self, TRUE);
+  empathy_call_window_set_send_video (self, CAMERA_STATE_ON);
 
   block_camera_control_signals (self);
   gtk_toggle_tool_button_set_active (GTK_TOGGLE_TOOL_BUTTON (
@@ -2175,7 +2179,7 @@ empathy_call_window_connected (gpointer user_data)
     gtk_widget_set_sensitive (priv->dtmf_panel, TRUE);
 
   if (priv->video_input == NULL)
-    empathy_call_window_set_send_video (self, FALSE);
+    empathy_call_window_set_send_video (self, CAMERA_STATE_OFF);
 
   priv->sending_video = can_send_video ?
     empathy_tp_call_is_sending_video (call) : FALSE;
@@ -2717,23 +2721,31 @@ empathy_call_window_sidebar_toggled_cb (GtkToggleButton *toggle,
 
 static void
 empathy_call_window_set_send_video (EmpathyCallWindow *window,
-  gboolean send)
+  CameraState state)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
   EmpathyTpCall *call;
 
-  priv->sending_video = send;
+  priv->sending_video = (state == CAMERA_STATE_ON);
 
-  /* When we start sending video, we want to show the video preview by
-     default. */
-  display_video_preview (window, send);
+  if (state == CAMERA_STATE_PREVIEW ||
+      state == CAMERA_STATE_ON)
+    {
+      /* When we start sending video, we want to show the video preview by
+         default. */
+      display_video_preview (window, TRUE);
+    }
+  else
+    {
+      display_video_preview (window, FALSE);
+    }
 
   if (priv->call_state != CONNECTED)
     return;
 
   g_object_get (priv->handler, "tp-call", &call, NULL);
-  DEBUG ("%s sending video", send ? "start": "stop");
-  empathy_tp_call_request_video_stream_direction (call, send);
+  DEBUG ("%s sending video", priv->sending_video ? "start": "stop");
+  empathy_tp_call_request_video_stream_direction (call, priv->sending_video);
   g_object_unref (call);
 }
 
