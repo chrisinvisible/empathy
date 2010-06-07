@@ -1,7 +1,12 @@
-SUBDIRS = tools extensions po data libempathy libempathy-gtk src help tests
+MY_SUBDIRS = tools extensions po data libempathy libempathy-gtk src help tests
+NST_SUBDIRS = nautilus-sendto-plugin
+
+DIST_SUBDIRS = $(MY_SUBDIRS) $(NST_SUBDIRS)
+
+SUBDIRS = $(MY_SUBDIRS)
 
 if HAVE_NST
-SUBDIRS += nautilus-sendto-plugin
+SUBDIRS += $(NST_SUBDIRS)
 endif
 
 ACLOCAL_AMFLAGS = -I m4
@@ -29,7 +34,7 @@ DISTCLEANFILES = 		\
 distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper'
 
 distclean-local:
-	if test "x$(srdcir)" = "x."; then :; else \
+	if test "x$(srcdir)" = "x."; then :; else \
 		rm -f ChangeLog; \
 	fi
 
