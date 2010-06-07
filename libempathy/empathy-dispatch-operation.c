@@ -433,6 +433,18 @@ empathy_dispatch_operation_set_status (EmpathyDispatchOperation *self,
 }
 
 static void
+channel_wrapper_ready (EmpathyDispatchOperation *self)
+{
+  EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
+
+  g_signal_handler_disconnect (priv->channel_wrapper, priv->ready_handler);
+  priv->ready_handler = 0;
+
+  empathy_dispatch_operation_set_status (self,
+    EMPATHY_DISPATCHER_OPERATION_STATE_PENDING);
+}
+
+static void
 empathy_dispatcher_operation_tp_chat_ready_cb (GObject *object,
   GParamSpec *spec, gpointer user_data)
 {
@@ -442,11 +454,7 @@ empathy_dispatcher_operation_tp_chat_ready_cb (GObject *object,
   if (!empathy_tp_chat_is_ready (EMPATHY_TP_CHAT (priv->channel_wrapper)))
     return;
 
-  g_signal_handler_disconnect (priv->channel_wrapper, priv->ready_handler);
-  priv->ready_handler = 0;
-
-  empathy_dispatch_operation_set_status (self,
-    EMPATHY_DISPATCHER_OPERATION_STATE_PENDING);
+  channel_wrapper_ready (self);
 }
 
 static void
