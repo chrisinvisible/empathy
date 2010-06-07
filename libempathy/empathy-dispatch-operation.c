@@ -458,6 +458,17 @@ empathy_dispatcher_operation_tp_chat_ready_cb (GObject *object,
 }
 
 static void
+call_status_changed_cb (EmpathyTpCall *call,
+    GParamSpec *spec,
+    EmpathyDispatchOperation *self)
+{
+  if (empathy_tp_call_get_status (call) <= EMPATHY_TP_CALL_STATUS_READYING)
+    return;
+
+  channel_wrapper_ready (self);
+}
+
+static void
 empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
   const GError *error, gpointer user_data)
 {
@@ -495,8 +506,22 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
     }
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
     {
+      gboolean requested;
       EmpathyTpCall *call = empathy_tp_call_new (channel);
       priv->channel_wrapper = G_OBJECT (call);
+
+      requested = tp_asv_get_boolean (tp_channel_borrow_immutable_properties (
+            channel), TP_PROP_CHANNEL_REQUESTED, NULL);
+
+      if (!requested &&
+          empathy_tp_call_get_status (call) <= EMPATHY_TP_CALL_STATUS_READYING)
+        {
+          /* For incoming calls, we have to wait that the TpCall is ready as
+           * the call-handler rely on it. */
+          priv->ready_handler = g_signal_connect (call,
+              "notify::status", G_CALLBACK (call_status_changed_cb), self);
+          goto out;
+        }
     }
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
