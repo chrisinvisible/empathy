@@ -1,3 +1,55 @@
+NEW in 2.31.3 (07/06/2010)
+=============
+
+The "Curtain required call" release.
+
+This new release brings significant improvements to the spell checker.
+It should also fix connection issues with Facebook accounts. If you
+experienced issues with previous versions you should recreate your account and
+give it another try.
+
+Empathy now depends on telepathy-glib 0.11.6.
+
+Bugs fixed:
+ - Fixed #520207, Edit favorite button doesn't work (Guillaume Desmottes)
+ - Fixed #579812, Use avatar data/cache from TpContact (Xavier Claessens)
+ - Fixed #604159, Spell checker breaks words incorrectly (on apostrophes, for example) (Mike Ruprecht)
+ - Fixed #611466, "Applications->Internet->Empathy IM client" title is sub-optimal (Paul Sladen)
+ - Fixed #611894, Add option to make chatroom "always urgent" (Jonas Bonn)
+ - Fixed #612523, display protocol names for configured accounts in the debug window (Danielle Madeley)
+ - Fixed #616603, Should use tp-glib API to get avatar requirements (Xavier Claessens)
+ - Fixed #616616, Possible to open multiple accounts dialog (Danielle Madeley)
+ - Fixed #617971, Empathy silently fails importing contacts from Pidgin (Guillaume Desmottes)
+ - Fixed #618993, Fix various channel handling issues (Guillaume Desmottes)
+ - Fixed #619378, Fix contact menu items' capitalization (Gabriel Burt)
+ - Fixed #619488, EmpathyTpContactFactort should be killed (Xavier Claessens)
+ - Fixed #619489, EmpathyContactMonitor should be killed (Xavier Claessens)
+ - Fixed #619678, "Invite" button not marked for translation (Guillaume Desmottes)
+ - Fixed #619701, Avatar chooser can enter infinite loop (Xavier Claessens)
+ - Fixed #619702, configure script not compatible with dash as /bin/sh (Simons McVittie)
+ - Fixed #619736, crash on 0-byte file in log search (Robert McQueen)
+ - Fixed #619862, "Network error" on connecting to Facebook Chat (Guillaume Desmottes)
+ - Fixed #619863, "Previous Conversations" Search entry is not activatable (Guillaume Desmottes)
+ - Fixed #619980, empathy hangs with high cpu load when changing avatar (Xavier Claessens)
+ - Fixed #620439, "Join favorites" should deal better with connecting accounts (Guillaume Desmottes)
+ - Fixed #620474, Status reported by account dialog is wrong in connman mode (Rob Bradford)
+ - Fixed #620476, accounts_dialog_update_status_infobar mixes const and allocated strings for message (Rob Bradford)
+ - Fixed #620657, Empathy should not requires that geoclue providers support updates (Laurent Bigonville)
+ - Fixed #620760, Switching from sending video to just preview makes my local preview jump out into its own window (Guillaume Desmottes)
+
+Translations:
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated nl Translation (Wouter Bolsterlee, Hannie Dumoleyn)
+ - Updated th Translation (Sira Nokyoongtong)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated es Documentation translation (Jorge González)
+
 NEW in 2.31.2 (24/05/2010)
 =============
 
