@@ -553,7 +553,13 @@ setup_geoclue (EmpathyLocationManager *self)
       return;
     }
 
-  update_resources (self);
+  if (!geoclue_master_client_set_requirements (priv->gc_client,
+          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, FALSE, priv->resources,
+          NULL))
+    {
+      DEBUG ("set_requirements failed");
+      return;
+    }
 
   /* Get updated when the position is changes */
   priv->gc_position = geoclue_master_client_create_position (
