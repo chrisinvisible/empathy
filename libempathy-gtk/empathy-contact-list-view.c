@@ -66,6 +66,9 @@ typedef struct {
 	EmpathyContactFeatureFlags      contact_features;
 	GtkWidget                      *tooltip_widget;
 	GtkTargetList                  *file_targets;
+
+	GtkTreeModelFilter             *filter;
+	GtkWidget                      *search_widget;
 } EmpathyContactListViewPriv;
 
 typedef struct {
@@ -133,6 +136,82 @@ contact_list_view_tooltip_destroy_cb (GtkWidget              *widget,
 		g_object_unref (priv->tooltip_widget);
 		priv->tooltip_widget = NULL;
 	}
+}
+
+static gboolean
+contact_list_view_is_visible_contact (EmpathyContactListView *self,
+				      EmpathyContact *contact)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (self);
+	EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
+	const gchar *str;
+
+	/* check alias name */
+	str = empathy_contact_get_name (contact);
+	if (empathy_live_search_match (live, str))
+		return TRUE;
+
+	/* check contact id */
+	str = empathy_contact_get_id (contact);
+	if (empathy_live_search_match (live, str))
+		return TRUE;
+
+	return FALSE;
+}
+
+static gboolean
+contact_list_view_filter_visible_func (GtkTreeModel *model,
+				       GtkTreeIter  *iter,
+				       gpointer      user_data)
+{
+	EmpathyContactListView     *self = EMPATHY_CONTACT_LIST_VIEW (user_data);
+	EmpathyContactListViewPriv *priv = GET_PRIV (self);
+	EmpathyContact             *contact = NULL;
+	gboolean                    is_group, is_separator, valid;
+	GtkTreeIter                 child_iter;
+	gboolean                    visible;
+
+	if (!gtk_widget_get_visible (priv->search_widget))
+		return TRUE;
+
+	gtk_tree_model_get (model, iter,
+		EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+		EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, &is_separator,
+		EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+		-1);
+
+	if (contact != NULL) {
+		visible = contact_list_view_is_visible_contact (self, contact);
+		g_object_unref (contact);
+		return visible;
+	}
+
+	if (is_separator) {
+		return TRUE;
+	}
+
+	/* Not a contact, not a separator, must be a group */
+	g_return_val_if_fail (is_group, FALSE);
+
+	/* only show groups which are not empty */
+	for (valid = gtk_tree_model_iter_children (model, &child_iter, iter);
+	     valid; valid = gtk_tree_model_iter_next (model, &child_iter)) {
+		gtk_tree_model_get (model, &child_iter,
+			EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
+			-1);
+
+		if (contact == NULL)
+			continue;
+
+		visible = contact_list_view_is_visible_contact (self, contact);
+		g_object_unref (contact);
+
+		/* show group if it has at least one visible contact in it */
+		if (visible)
+			return TRUE;
+	}
+
+	return FALSE;
 }
 
 static gboolean
@@ -791,7 +870,7 @@ contact_list_view_row_activated (GtkTreeView       *view,
 		return;
 	}
 
-	model = GTK_TREE_MODEL (priv->store);
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
 	gtk_tree_model_get_iter (model, &iter, path);
 	gtk_tree_model_get (model, &iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
@@ -1096,6 +1175,142 @@ contact_list_view_row_expand_or_collapse_cb (EmpathyContactListView *view,
 	g_free (name);
 }
 
+static gboolean
+contact_list_view_start_search_cb (EmpathyContactListView *view,
+				   gpointer                data)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+
+	if (priv->search_widget == NULL)
+		return FALSE;
+
+	if (gtk_widget_get_visible (GTK_WIDGET (priv->search_widget)))
+		gtk_widget_grab_focus (GTK_WIDGET (priv->search_widget));
+	else
+		gtk_widget_show (GTK_WIDGET (priv->search_widget));
+
+	return TRUE;
+}
+
+static void
+contact_list_view_search_text_notify_cb (EmpathyLiveSearch      *search,
+					 GParamSpec             *pspec,
+					 EmpathyContactListView *view)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+
+	gtk_tree_model_filter_refilter (priv->filter);
+}
+
+static void
+contact_list_view_search_hide_cb (EmpathyLiveSearch      *search,
+				  EmpathyContactListView *view)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+	GtkTreeModel               *model;
+	GtkTreeIter                 iter;
+	gboolean                    valid = FALSE;
+
+	/* block expand or collapse handlers, they would write the
+	 * expand or collapsed setting to file otherwise */
+	g_signal_handlers_block_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (TRUE));
+	g_signal_handlers_block_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (FALSE));
+
+	/* restore which groups are expanded and which are not */
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+	for (valid = gtk_tree_model_get_iter_first (model, &iter);
+	     valid; valid = gtk_tree_model_iter_next (model, &iter)) {
+		gboolean      is_group;
+		gchar        *name = NULL;
+		GtkTreePath  *path;
+
+		gtk_tree_model_get (model, &iter,
+			EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
+			EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+			-1);
+
+		if (!is_group) {
+			g_free (name);
+			continue;
+		}
+
+		path = gtk_tree_model_get_path (model, &iter);
+		if ((priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_GROUPS_SAVE) == 0 ||
+		    empathy_contact_group_get_expanded (name)) {
+			gtk_tree_view_expand_row (GTK_TREE_VIEW (view), path,
+				TRUE);
+		} else {
+			gtk_tree_view_collapse_row (GTK_TREE_VIEW (view), path);
+		}
+
+		gtk_tree_path_free(path);
+		g_free (name);
+	}
+
+	/* unblock expand or collapse handlers */
+	g_signal_handlers_unblock_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (TRUE));
+	g_signal_handlers_unblock_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (FALSE));
+}
+
+static void
+contact_list_view_search_show_cb (EmpathyLiveSearch      *search,
+				  EmpathyContactListView *view)
+{
+	/* block expand or collapse handlers during expand all, they would
+	 * write the expand or collapsed setting to file otherwise */
+	g_signal_handlers_block_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (TRUE));
+
+	gtk_tree_view_expand_all (GTK_TREE_VIEW (view));
+
+	g_signal_handlers_unblock_by_func (view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (TRUE));
+}
+
+typedef struct {
+	EmpathyContactListView *view;
+	GtkTreePath *path;
+	gboolean expand;
+} ExpandData;
+
+static gboolean
+contact_list_view_expand_idle_cb (gpointer user_data)
+{
+	ExpandData *data = user_data;
+
+	g_signal_handlers_block_by_func (data->view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (data->expand));
+
+	if (data->expand) {
+		gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view),
+			data->path, TRUE);
+	} else {
+		gtk_tree_view_collapse_row (GTK_TREE_VIEW (data->view),
+			data->path);
+	}
+
+	g_signal_handlers_unblock_by_func (data->view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (data->expand));
+
+	g_object_unref (data->view);
+	gtk_tree_path_free (data->path);
+	g_slice_free (ExpandData, data);
+
+	return FALSE;
+}
+
 static void
 contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 					    GtkTreePath            *path,
@@ -1105,6 +1320,7 @@ contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 	EmpathyContactListViewPriv *priv = GET_PRIV (view);
 	gboolean  is_group = FALSE;
 	gchar    *name = NULL;
+	ExpandData *data;
 
 	gtk_tree_model_get (model, iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
@@ -1116,47 +1332,46 @@ contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 		return;
 	}
 
-	if (!(priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_GROUPS_SAVE) ||
-	    empathy_contact_group_get_expanded (name)) {
-		g_signal_handlers_block_by_func (view,
-						 contact_list_view_row_expand_or_collapse_cb,
-						 GINT_TO_POINTER (TRUE));
-		gtk_tree_view_expand_row (GTK_TREE_VIEW (view), path, TRUE);
-		g_signal_handlers_unblock_by_func (view,
-						   contact_list_view_row_expand_or_collapse_cb,
-						   GINT_TO_POINTER (TRUE));
-	} else {
-		g_signal_handlers_block_by_func (view,
-						 contact_list_view_row_expand_or_collapse_cb,
-						 GINT_TO_POINTER (FALSE));
-		gtk_tree_view_collapse_row (GTK_TREE_VIEW (view), path);
-		g_signal_handlers_unblock_by_func (view,
-						   contact_list_view_row_expand_or_collapse_cb,
-						   GINT_TO_POINTER (FALSE));
-	}
+	data = g_slice_new0 (ExpandData);
+	data->view = g_object_ref (view);
+	data->path = gtk_tree_path_copy (path);
+	data->expand =
+		(priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_GROUPS_SAVE) == 0 ||
+		(priv->search_widget != NULL && gtk_widget_get_visible (priv->search_widget)) ||
+		empathy_contact_group_get_expanded (name);
+
+	/* FIXME: It doesn't work to call gtk_tree_view_expand_row() from within
+	 * gtk_tree_model_filter_refilter() */
+	g_idle_add (contact_list_view_expand_idle_cb, data);
 
 	g_free (name);
 }
 
 static void
-contact_list_view_setup (EmpathyContactListView *view)
+contact_list_view_constructed (GObject *object)
 {
-	EmpathyContactListViewPriv *priv;
-	GtkCellRenderer           *cell;
-	GtkTreeViewColumn         *col;
-	guint                      i;
-
-	priv = GET_PRIV (view);
+	EmpathyContactListView     *view = EMPATHY_CONTACT_LIST_VIEW (object);
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+	GtkCellRenderer            *cell;
+	GtkTreeViewColumn          *col;
+	guint                       i;
 
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view),
 					     empathy_contact_list_store_search_equal_func,
 					     NULL, NULL);
 
-	g_signal_connect (priv->store, "row-has-child-toggled",
+	priv->filter = GTK_TREE_MODEL_FILTER (gtk_tree_model_filter_new (
+			GTK_TREE_MODEL (priv->store), NULL));
+	gtk_tree_model_filter_set_visible_func (priv->filter,
+			contact_list_view_filter_visible_func,
+			view, NULL);
+
+	g_signal_connect (priv->filter, "row-has-child-toggled",
 			  G_CALLBACK (contact_list_view_row_has_child_toggled_cb),
 			  view);
+
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view),
-				 GTK_TREE_MODEL (priv->store));
+				 GTK_TREE_MODEL (priv->filter));
 
 	/* Setup view */
 	/* Setting reorderable is a hack that gets us row previews as drag icons
@@ -1318,23 +1533,31 @@ contact_list_view_set_list_features (EmpathyContactListView         *view,
 }
 
 static void
-contact_list_view_finalize (GObject *object)
+contact_list_view_dispose (GObject *object)
 {
-	EmpathyContactListViewPriv *priv;
-
-	priv = GET_PRIV (object);
+	EmpathyContactListView *view = EMPATHY_CONTACT_LIST_VIEW (object);
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
 
 	if (priv->store) {
 		g_object_unref (priv->store);
+		priv->store = NULL;
+	}
+	if (priv->filter) {
+		g_object_unref (priv->filter);
+		priv->filter = NULL;
 	}
 	if (priv->tooltip_widget) {
 		gtk_widget_destroy (priv->tooltip_widget);
+		priv->tooltip_widget = NULL;
 	}
 	if (priv->file_targets) {
 		gtk_target_list_unref (priv->file_targets);
+		priv->file_targets = NULL;
 	}
 
-	G_OBJECT_CLASS (empathy_contact_list_view_parent_class)->finalize (object);
+	empathy_contact_list_view_set_live_search (view, NULL);
+
+	G_OBJECT_CLASS (empathy_contact_list_view_parent_class)->dispose (object);
 }
 
 static void
@@ -1375,7 +1598,6 @@ contact_list_view_set_property (GObject      *object,
 	switch (param_id) {
 	case PROP_STORE:
 		priv->store = g_value_dup_object (value);
-		contact_list_view_setup (view);
 		break;
 	case PROP_LIST_FEATURES:
 		contact_list_view_set_list_features (view, g_value_get_flags (value));
@@ -1396,9 +1618,10 @@ empathy_contact_list_view_class_init (EmpathyContactListViewClass *klass)
 	GtkWidgetClass   *widget_class = GTK_WIDGET_CLASS (klass);
 	GtkTreeViewClass *tree_view_class = GTK_TREE_VIEW_CLASS (klass);
 
-	object_class->finalize = contact_list_view_finalize;
-	object_class->get_property = contact_list_view_get_property;
-	object_class->set_property = contact_list_view_set_property;
+	object_class->constructed        = contact_list_view_constructed;
+	object_class->dispose            = contact_list_view_dispose;
+	object_class->get_property       = contact_list_view_get_property;
+	object_class->set_property       = contact_list_view_set_property;
 
 	widget_class->drag_data_received = contact_list_view_drag_data_received;
 	widget_class->drag_drop          = contact_list_view_drag_drop;
@@ -1456,6 +1679,7 @@ empathy_contact_list_view_init (EmpathyContactListView *view)
 		EMPATHY_TYPE_CONTACT_LIST_VIEW, EmpathyContactListViewPriv);
 
 	view->priv = priv;
+
 	/* Get saved group states. */
 	empathy_contact_groups_get_all ();
 
@@ -1769,3 +1993,47 @@ empathy_contact_list_view_get_contact_menu (EmpathyContactListView *view)
 	return menu;
 }
 
+void
+empathy_contact_list_view_set_live_search (EmpathyContactListView *view,
+					   EmpathyLiveSearch      *search)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+
+	/* remove old handlers if old search was not null */
+	if (priv->search_widget != NULL) {
+		g_signal_handlers_disconnect_by_func (view,
+			contact_list_view_start_search_cb,
+			NULL);
+
+		g_signal_handlers_disconnect_by_func (priv->search_widget,
+			contact_list_view_search_text_notify_cb,
+			view);
+		g_signal_handlers_disconnect_by_func (priv->search_widget,
+			contact_list_view_search_hide_cb,
+			view);
+		g_signal_handlers_disconnect_by_func (priv->search_widget,
+			contact_list_view_search_show_cb,
+			view);
+		g_object_unref (priv->search_widget);
+		priv->search_widget = NULL;
+	}
+
+	/* connect handlers if new search is not null */
+	if (search != NULL) {
+		priv->search_widget = g_object_ref (search);
+
+		g_signal_connect (view, "start-interactive-search",
+				  G_CALLBACK (contact_list_view_start_search_cb),
+				  NULL);
+
+		g_signal_connect (priv->search_widget, "notify::text",
+			G_CALLBACK (contact_list_view_search_text_notify_cb),
+			view);
+		g_signal_connect (priv->search_widget, "hide",
+			G_CALLBACK (contact_list_view_search_hide_cb),
+			view);
+		g_signal_connect (priv->search_widget, "show",
+			G_CALLBACK (contact_list_view_search_show_cb),
+			view);
+	}
+}

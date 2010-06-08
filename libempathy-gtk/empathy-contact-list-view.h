@@ -32,6 +32,7 @@
 #include <libempathy/empathy-enum-types.h>
 
 #include "empathy-contact-list-store.h"
+#include "empathy-live-search.h"
 #include "empathy-contact-menu.h"
 
 G_BEGIN_DECLS
@@ -77,6 +78,8 @@ gchar *                    empathy_contact_list_view_get_selected_group (Empathy
 									 gboolean *is_fake_group);
 GtkWidget *                empathy_contact_list_view_get_contact_menu   (EmpathyContactListView         *view);
 GtkWidget *                empathy_contact_list_view_get_group_menu     (EmpathyContactListView         *view);
+void                       empathy_contact_list_view_set_live_search    (EmpathyContactListView         *view,
+								         EmpathyLiveSearch              *search);
 
 G_END_DECLS
 

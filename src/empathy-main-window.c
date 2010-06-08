@@ -44,6 +44,7 @@
 #include <libempathy-gtk/empathy-contact-dialogs.h>
 #include <libempathy-gtk/empathy-contact-list-store.h>
 #include <libempathy-gtk/empathy-contact-list-view.h>
+#include <libempathy-gtk/empathy-live-search.h>
 #include <libempathy-gtk/empathy-geometry.h>
 #include <libempathy-gtk/empathy-gtk-enum-types.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
@@ -97,6 +98,7 @@ typedef struct {
 	GtkWidget              *presence_toolbar;
 	GtkWidget              *presence_chooser;
 	GtkWidget              *errors_vbox;
+	GtkWidget              *search_bar;
 
 	GtkToggleAction        *show_protocols;
 	GtkRadioAction         *sort_by_name;
@@ -292,7 +294,7 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 	GtkTreeIter     iter;
 	GSList         *events, *l;
 
-	model = GTK_TREE_MODEL (window->list_store);
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (window->list_view));
 	gtk_tree_model_get_iter (model, &iter, path);
 	gtk_tree_model_get (model, &iter,
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, &contact,
@@ -1516,9 +1518,11 @@ empathy_main_window_show (void)
 	window->list_view = empathy_contact_list_view_new (window->list_store,
 							   EMPATHY_CONTACT_LIST_FEATURE_ALL,
 							   EMPATHY_CONTACT_FEATURE_ALL);
+
 	window->butterfly_log_migration_members_changed_id = g_signal_connect (
 		list_iface, "members-changed",
 		G_CALLBACK (main_window_members_changed_cb), window);
+
 	g_object_unref (list_iface);
 
 	gtk_widget_show (GTK_WIDGET (window->list_view));
@@ -1527,6 +1531,14 @@ empathy_main_window_show (void)
 	g_signal_connect (window->list_view, "row-activated",
 			  G_CALLBACK (main_window_row_activated_cb),
 			  window);
+
+	/* Set up search bar */
+	window->search_bar = empathy_live_search_new (
+		GTK_WIDGET (window->list_view));
+	empathy_contact_list_view_set_live_search (window->list_view,
+		EMPATHY_LIVE_SEARCH (window->search_bar));
+	gtk_box_pack_start (GTK_BOX (window->main_vbox), window->search_bar,
+		FALSE, TRUE, 0);
 
 	/* Load user-defined accelerators. */
 	main_window_accels_load ();
