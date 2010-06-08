@@ -28,7 +28,8 @@ TEST_PROGS =                                     \
      empathy-irc-network-manager-test            \
      empathy-chatroom-test                       \
      empathy-chatroom-manager-test               \
-     empathy-parser-test
+     empathy-parser-test                         \
+     empathy-live-search-test
 
 empathy_utils_test_SOURCES = empathy-utils-test.c \
      test-helper.c test-helper.h
@@ -52,6 +53,9 @@ empathy_chatroom_manager_test_SOURCES = empathy-chatroom-manager-test.c \
      test-helper.c test-helper.h
 
 empathy_parser_test_SOURCES = empathy-parser-test.c \
+     test-helper.c test-helper.h
+
+empathy_live_search_test_SOURCES = empathy-live-search-test.c \
      test-helper.c test-helper.h
 
 check_PROGRAMS = $(TEST_PROGS)
