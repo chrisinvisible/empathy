@@ -1019,10 +1019,11 @@ contact_list_store_groups_changed_cb (EmpathyContactList      *list_iface,
 static void
 add_contact_to_store (GtkTreeStore *store,
 		      GtkTreeIter *iter,
+		      GtkTreeIter *parent,
 		      EmpathyContact *contact,
 		      EmpathyContactListFlags flags)
 {
-	gtk_tree_store_set (store, iter,
+	gtk_tree_store_insert_with_values (store, iter, parent, 0,
 			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
@@ -1085,10 +1086,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 				&iter_group, NULL, NULL, TRUE);
 		}
 
-		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
-					     parent, NULL);
-
-		add_contact_to_store (GTK_TREE_STORE (store), &iter,
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, parent,
 				      contact, flags);
 	}
 
@@ -1100,10 +1098,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		contact_list_store_get_group (store, l->data, &iter_group, NULL, NULL, FALSE);
 
-		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
-					     &iter_group, NULL);
-
-		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, &iter_group, contact, flags);
 		g_free (l->data);
 	}
 	g_list_free (groups);
@@ -1117,10 +1112,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 		contact_list_store_get_group (store, EMPATHY_CONTACT_LIST_STORE_FAVORITE,
 			&iter_group, NULL, NULL, TRUE);
 
-		gtk_tree_store_insert_after (GTK_TREE_STORE (store), &iter,
-					     &iter_group, NULL);
-
-		add_contact_to_store (GTK_TREE_STORE (store), &iter, contact, flags);
+		add_contact_to_store (GTK_TREE_STORE (store), &iter, &iter_group, contact, flags);
 	}
 #endif
 
@@ -1486,8 +1478,7 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 			*created = TRUE;
 		}
 
-		gtk_tree_store_append (GTK_TREE_STORE (store), &iter_group, NULL);
-		gtk_tree_store_set (GTK_TREE_STORE (store), &iter_group,
+		gtk_tree_store_insert_with_values (GTK_TREE_STORE (store), &iter_group, NULL, 0,
 				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, NULL,
 				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, name,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, TRUE,
@@ -1500,10 +1491,7 @@ contact_list_store_get_group (EmpathyContactListStore *store,
 			*iter_group_to_set = iter_group;
 		}
 
-		gtk_tree_store_append (GTK_TREE_STORE (store),
-				       &iter_separator,
-				       &iter_group);
-		gtk_tree_store_set (GTK_TREE_STORE (store), &iter_separator,
+		gtk_tree_store_insert_with_values (GTK_TREE_STORE (store), &iter_separator, &iter_group, 0,
 				    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, TRUE,
 				    -1);
 
