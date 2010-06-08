@@ -78,6 +78,10 @@ test_parsers (void)
       ":)http://foo.com", "[:)][http://foo.com]",
       "a :) b http://foo.com c :( d www.test.com e", "a [:)] b [http://foo.com] c [:(] d [www.test.com] e",
 
+      /* '\r' should be stripped */
+      "badger\n\rmushroom", "badger\nmushroom",
+      "badger\r\nmushroom", "badger\nmushroom",
+
       /* FIXME: Known issue: Brackets should be counted by the parser */
       //"Foo www.bar.com/test(123)", "Foo [www.bar.com/test(123)]",
       //"Foo (www.bar.com/test(123))", "Foo ([www.bar.com/test(123)])",

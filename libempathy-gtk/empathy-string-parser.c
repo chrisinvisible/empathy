@@ -185,9 +185,23 @@ empathy_string_replace_escaped (const gchar *text,
 {
 	GString *string = user_data;
 	gchar *escaped;
+	guint i;
+	gssize escaped_len, old_len;
 
 	escaped = g_markup_escape_text (text, len);
-	g_string_append (string, escaped);
+	escaped_len = strlen (escaped);
+
+	/* Allocate more space to string (we really need a g_string_extend...) */
+	old_len = string->len;
+	g_string_set_size (string, old_len + escaped_len);
+	g_string_truncate (string, old_len);
+
+	/* Remove '\r' */
+	for (i = 0; i < escaped_len; i++) {
+		if (escaped[i] != '\r')
+			g_string_append_c (string, escaped[i]);
+	}
+
 	g_free (escaped);
 }
 
