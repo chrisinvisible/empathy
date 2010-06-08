@@ -106,7 +106,6 @@ test_parsers (void)
       {NULL, NULL}
     };
   guint i;
-  gboolean failed = FALSE;
 
   DEBUG ("Started");
   for (i = 0; tests[i] != NULL; i += 2)
@@ -119,13 +118,10 @@ test_parsers (void)
 
       ok = !tp_strdiff (tests[i + 1], string->str);
       DEBUG ("'%s' => '%s': %s", tests[i], string->str, ok ? "OK" : "FAILED");
-      if (!ok)
-        failed = TRUE;
+      g_assert (ok);
 
       g_string_free (string, TRUE);
     }
-
-  g_assert (!failed);
 }
 
 int
