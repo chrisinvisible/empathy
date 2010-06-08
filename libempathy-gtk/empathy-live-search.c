@@ -141,14 +141,14 @@ live_search_text_changed (GtkEntry *entry,
 
   text = gtk_entry_get_text (entry);
 
-  g_free (priv->text_stripped);
-  priv->text_stripped = strip_utf8_string (text);
-  g_object_notify (G_OBJECT (self), "text");
-
-  if (g_utf8_strlen (text, -1) < 1)
+  if (EMP_STR_EMPTY (text))
     gtk_widget_hide (GTK_WIDGET (self));
   else
     gtk_widget_show (GTK_WIDGET (self));
+
+  g_free (priv->text_stripped);
+  priv->text_stripped = strip_utf8_string (text);
+  g_object_notify (G_OBJECT (self), "text");
 }
 
 static void
