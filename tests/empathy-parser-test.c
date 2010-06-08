@@ -25,17 +25,6 @@ test_replace_match (const gchar *text,
 }
 
 static void
-test_replace_verbatim (const gchar *text,
-                       gssize len,
-                       gpointer match_data,
-                       gpointer user_data)
-{
-  GString *string = user_data;
-
-  g_string_append_len (string, text, len);
-}
-
-static void
 test_parsers (void)
 {
   gchar *tests[] =
@@ -70,20 +59,20 @@ test_parsers (void)
       "Foo (www.foo.com)", "Foo ([www.foo.com])",
       "Foo {www.foo.com}", "Foo {[www.foo.com]}",
       "Foo [www.foo.com]", "Foo [[www.foo.com]]",
-      "Foo <www.foo.com>", "Foo <[www.foo.com]>",
-      "Foo \"www.foo.com\"", "Foo \"[www.foo.com]\"",
+      "Foo <www.foo.com>", "Foo &lt;[www.foo.com]&gt;",
+      "Foo \"www.foo.com\"", "Foo &quot;[www.foo.com]&quot;",
       "Foo (www.foo.com/bar(123)baz)", "Foo ([www.foo.com/bar(123)baz])",
-      "<a href=\"http://foo.com\">bar</a>", "<a href=\"[http://foo.com]\">bar</a>",
+      "<a href=\"http://foo.com\">bar</a>", "&lt;a href=&quot;[http://foo.com]&quot;&gt;bar&lt;/a&gt;",
       "Foo (user@server.com)", "Foo ([user@server.com])",
       "Foo {user@server.com}", "Foo {[user@server.com]}",
       "Foo [user@server.com]", "Foo [[user@server.com]]",
-      "Foo <user@server.com>", "Foo <[user@server.com]>",
-      "Foo \"user@server.com\"", "Foo \"[user@server.com]\"",
+      "Foo <user@server.com>", "Foo &lt;[user@server.com]&gt;",
+      "Foo \"user@server.com\"", "Foo &quot;[user@server.com]&quot;",
 
       /* Basic smileys */
       "a:)b", "a[:)]b",
       ">:)", "[>:)]",
-      ">:(", ">[:(]",
+      ">:(", "&gt;[:(]",
 
       /* Smileys and links mixed */
       ":)http://foo.com", "[:)][http://foo.com]",
@@ -102,7 +91,7 @@ test_parsers (void)
     {
       {empathy_string_match_link, test_replace_match},
       {empathy_string_match_smiley, test_replace_match},
-      {empathy_string_match_all, test_replace_verbatim},
+      {empathy_string_match_all, empathy_string_replace_escaped},
       {NULL, NULL}
     };
   guint i;
