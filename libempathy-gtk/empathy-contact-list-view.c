@@ -1259,7 +1259,7 @@ contact_list_view_search_hide_cb (EmpathyLiveSearch      *search,
 			gtk_tree_view_collapse_row (GTK_TREE_VIEW (view), path);
 		}
 
-		gtk_tree_path_free(path);
+		gtk_tree_path_free (path);
 		g_free (name);
 	}
 
@@ -1352,8 +1352,8 @@ contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 		(priv->search_widget != NULL && gtk_widget_get_visible (priv->search_widget)) ||
 		empathy_contact_group_get_expanded (name);
 
-	/* FIXME: It doesn't work to call gtk_tree_view_expand_row() from within
-	 * gtk_tree_model_filter_refilter() */
+	/* FIXME: It doesn't work to call gtk_tree_view_expand_row () from within
+	 * gtk_tree_model_filter_refilter () */
 	g_idle_add (contact_list_view_expand_idle_cb, data);
 
 	g_free (name);
