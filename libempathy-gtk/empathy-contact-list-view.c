@@ -145,16 +145,28 @@ contact_list_view_is_visible_contact (EmpathyContactListView *self,
 	EmpathyContactListViewPriv *priv = GET_PRIV (self);
 	EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
 	const gchar *str;
+	const gchar *p;
+	gchar *dup_str = NULL;
+	gboolean visible;
 
 	/* check alias name */
 	str = empathy_contact_get_name (contact);
 	if (empathy_live_search_match (live, str))
 		return TRUE;
 
-	/* check contact id */
+	/* check contact id, remove the @server.com part */
 	str = empathy_contact_get_id (contact);
-	if (empathy_live_search_match (live, str))
+	p = strstr (str, "@");
+	if (p != NULL)
+		str = dup_str = g_strndup (str, p - str);
+
+	visible = empathy_live_search_match (live, str);
+	g_free (dup_str);
+	if (visible)
 		return TRUE;
+
+	/* FIXME: Add more rules here, we could check phone numbers in
+	 * contact's vCard for example. */
 
 	return FALSE;
 }
