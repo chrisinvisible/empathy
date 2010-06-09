@@ -506,6 +506,24 @@ initial_position_cb (GeocluePosition *position,
     }
 }
 
+static gboolean
+set_requirements (EmpathyLocationManager *self)
+{
+  EmpathyLocationManagerPriv *priv = GET_PRIV (self);
+  GError *error = NULL;
+
+  if (!geoclue_master_client_set_requirements (priv->gc_client,
+          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, FALSE, priv->resources,
+          &error))
+    {
+      DEBUG ("set_requirements failed: %s", error->message);
+      g_error_free (error);
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
 static void
 update_resources (EmpathyLocationManager *self)
 {
@@ -519,13 +537,8 @@ update_resources (EmpathyLocationManager *self)
   /* As per Geoclue bug #15126, using NONE results in no address
    * being found as geoclue-manual report an empty address with
    * accuracy = NONE */
-  if (!geoclue_master_client_set_requirements (priv->gc_client,
-          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, FALSE, priv->resources,
-          NULL))
-    {
-      DEBUG ("set_requirements failed");
-      return;
-    }
+  if (!set_requirements (self))
+    return;
 
   geoclue_address_get_address_async (priv->gc_address,
       initial_address_cb, self);
@@ -553,13 +566,8 @@ setup_geoclue (EmpathyLocationManager *self)
       return;
     }
 
-  if (!geoclue_master_client_set_requirements (priv->gc_client,
-          GEOCLUE_ACCURACY_LEVEL_COUNTRY, 0, FALSE, priv->resources,
-          NULL))
-    {
-      DEBUG ("set_requirements failed");
-      return;
-    }
+  if (!set_requirements (self))
+    return;
 
   /* Get updated when the position is changes */
   priv->gc_position = geoclue_master_client_create_position (
