@@ -186,7 +186,7 @@ empathy_string_replace_escaped (const gchar *text,
 	GString *string = user_data;
 	gchar *escaped;
 	guint i;
-	gssize escaped_len, old_len;
+	gsize escaped_len, old_len;
 
 	escaped = g_markup_escape_text (text, len);
 	escaped_len = strlen (escaped);
