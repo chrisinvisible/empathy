@@ -8,10 +8,11 @@ desktop_in_files = \
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
-schemasdir	 = $(GCONF_SCHEMA_FILE_DIR)
-schemas_in_files = empathy.schemas.in
-schemas_DATA 	 = $(schemas_in_files:.schemas.in=.schemas)
-@INTLTOOL_SCHEMAS_RULE@
+gsettings_SCHEMAS = \
+	org.gnome.Empathy.gschema.xml \
+	$(NULL)
+
+@GSETTINGS_RULES@
 
 streamingprefsdir =  $(datadir)/empathy
 streamingprefs_DATA =		\
@@ -28,24 +29,13 @@ org.freedesktop.Telepathy.Client.Empathy.service: org.freedesktop.Telepathy.Clie
 clientfiledir = $(datarootdir)/telepathy/clients
 clientfile_DATA = Empathy.client
 
-if GCONF_SCHEMAS_INSTALL
-install-data-local:
-	if test -z "$(DESTDIR)" ; then \
-	  for p in $(schemas_DATA) ; do \
-	    GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $$p ; \
-	  done \
-	fi
-else
-install-data-local:
-endif
-
 htmldir = $(datadir)/empathy
 html_DATA = Template.html
 
 EXTRA_DIST = 				\
 	$(desktop_in_files)		\
 	$(desktop_DATA)			\
-	$(schemas_in_files)		\
+	$(gsettings_SCHEMAS)		\
 	$(schemas_DATA)			\
 	$(streamingprefs_DATA)		\
 	$(html_DATA)			\
