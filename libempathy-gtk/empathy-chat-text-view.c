@@ -32,14 +32,15 @@
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
+#include <gconf/gconf-client.h>
 
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-chat-text-view.h"
 #include "empathy-chat.h"
-#include "empathy-conf.h"
 #include "empathy-ui-utils.h"
 #include "empathy-smiley-manager.h"
 #include "empathy-string-parser.h"
@@ -68,6 +69,7 @@ typedef struct {
 	time_t                last_timestamp;
 	gboolean              allow_scrolling;
 	guint                 notify_system_fonts_id;
+	GConfClient          *gconf_client;
 	EmpathySmileyManager *smiley_manager;
 	gboolean              only_if_date;
 } EmpathyChatTextViewPriv;
@@ -203,17 +205,20 @@ chat_text_view_create_tags (EmpathyChatTextView *view)
 static void
 chat_text_view_system_font_update (EmpathyChatTextView *view)
 {
+	EmpathyChatTextViewPriv *priv = GET_PRIV (view);
 	PangoFontDescription *font_description = NULL;
 	gchar                *font_name;
 
-	if (empathy_conf_get_string (empathy_conf_get (),
-				     "/desktop/gnome/interface/document_font_name",
-				     &font_name) && font_name) {
-					     font_description = pango_font_description_from_string (font_name);
-					     g_free (font_name);
-				     } else {
-					     font_description = NULL;
-				     }
+	font_name = gconf_client_get_string (priv->gconf_client,
+			"/desktop/gnome/interface/document_font_name",
+			NULL);
+
+	if (font_name != NULL) {
+		font_description = pango_font_description_from_string (font_name);
+		g_free (font_name);
+	} else {
+		font_description = NULL;
+	}
 
 	gtk_widget_modify_font (GTK_WIDGET (view), font_description);
 
@@ -223,9 +228,10 @@ chat_text_view_system_font_update (EmpathyChatTextView *view)
 }
 
 static void
-chat_text_view_notify_system_font_cb (EmpathyConf *conf,
-				      const gchar *key,
-				      gpointer     user_data)
+chat_text_view_notify_system_font_cb (GConfClient *conf,
+				      guint id,
+				      GConfEntry *entry,
+				      gpointer user_data)
 {
 	EmpathyChatTextView *view = user_data;
 
@@ -559,7 +565,9 @@ chat_text_view_finalize (GObject *object)
 
 	DEBUG ("%p", object);
 
-	empathy_conf_notify_remove (empathy_conf_get (), priv->notify_system_fonts_id);
+	gconf_client_notify_remove (priv->gconf_client,
+				    priv->notify_system_fonts_id);
+	g_object_unref (priv->gconf_client);
 
 	if (priv->last_contact) {
 		g_object_unref (priv->last_contact);
@@ -634,11 +642,16 @@ empathy_chat_text_view_init (EmpathyChatTextView *view)
 		      "cursor-visible", FALSE,
 		      NULL);
 
+	priv->gconf_client = gconf_client_get_default ();
+	gconf_client_add_dir (priv->gconf_client,
+			      "/desktop/gnome/interface",
+			      GCONF_CLIENT_PRELOAD_ONELEVEL,
+			      NULL);
 	priv->notify_system_fonts_id =
-		empathy_conf_notify_add (empathy_conf_get (),
+		gconf_client_notify_add (priv->gconf_client,
 					 "/desktop/gnome/interface/document_font_name",
 					 chat_text_view_notify_system_font_cb,
-					 view);
+					 view, NULL, NULL);
 	chat_text_view_system_font_update (view);
 	chat_text_view_create_tags (view);
 
@@ -1405,11 +1418,13 @@ empathy_chat_text_view_append_body (EmpathyChatTextView *view,
 	GtkTextIter              start_iter;
 	GtkTextIter              iter;
 	GtkTextMark             *mark;
+	GSettings		*gsettings_chat;
 
 	/* Check if we have to parse smileys */
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-			       &use_smileys);
+	gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	use_smileys = g_settings_get_boolean (gsettings_chat,
+			EMPATHY_PREFS_CHAT_SHOW_SMILEYS);
+
 	if (use_smileys)
 		parsers = string_parsers_with_smiley;
 	else
@@ -1434,6 +1449,8 @@ empathy_chat_text_view_append_body (EmpathyChatTextView *view,
 					   &iter);
 
 	gtk_text_buffer_delete_mark (priv->buffer, mark);
+
+	g_object_unref (gsettings_chat);
 }
 
 void

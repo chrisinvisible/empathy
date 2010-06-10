@@ -38,9 +38,9 @@
 #include <libempathy/empathy-chatroom.h>
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-contact-manager.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-status-presets.h>
 
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-contact-dialogs.h>
 #include <libempathy-gtk/empathy-contact-list-store.h>
 #include <libempathy-gtk/empathy-contact-list-view.h>
@@ -90,6 +90,9 @@ typedef struct {
 	EmpathyEventManager     *event_manager;
 	guint                    flash_timeout_id;
 	gboolean                 flash_on;
+
+	GSettings              *gsettings_ui;
+	GSettings              *gsettings_contacts;
 
 	GtkWidget              *window;
 	GtkWidget              *main_vbox;
@@ -622,6 +625,9 @@ main_window_destroy_cb (GtkWidget         *widget,
 	g_object_unref (window->ui_manager);
 	g_object_unref (window->chatroom_manager);
 
+	g_object_unref (window->gsettings_ui);
+	g_object_unref (window->gsettings_contacts);
+
 	g_free (window);
 }
 
@@ -691,9 +697,9 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 	gboolean current;
 
 	current = gtk_toggle_action_get_active (action);
-	empathy_conf_set_bool (empathy_conf_get (),
-			      EMPATHY_PREFS_UI_SHOW_OFFLINE,
-			      current);
+	g_settings_set_boolean (window->gsettings_ui,
+				EMPATHY_PREFS_UI_SHOW_OFFLINE,
+				current);
 
 	/* Turn off sound just while we alter the contact list. */
 	// FIXME: empathy_sound_set_enabled (FALSE);
@@ -702,13 +708,15 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 }
 
 static void
-main_window_notify_sort_contact_cb (EmpathyConf       *conf,
+main_window_notify_sort_contact_cb (GSettings         *gsettings,
 				    const gchar       *key,
 				    EmpathyMainWindow *window)
 {
-	gchar *str = NULL;
+	gchar *str;
 
-	if (empathy_conf_get_string (conf, key, &str) && str) {
+	str = g_settings_get_string (gsettings, key);
+
+	if (str != NULL) {
 		GType       type;
 		GEnumClass *enum_class;
 		GEnumValue *enum_value;
@@ -752,9 +760,9 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 		g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioAction index:%d",
 			   g_slist_index (group, action));
 	} else {
-		empathy_conf_set_string (empathy_conf_get (),
-					 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-					 enum_value->value_nick);
+		g_settings_set_string (window->gsettings_contacts,
+				       EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+				       enum_value->value_nick);
 	}
 	empathy_contact_list_store_set_sort_criterium (window->list_store, value);
 }
@@ -767,11 +775,11 @@ main_window_view_show_protocols_cb (GtkToggleAction   *action,
 
 	value = gtk_toggle_action_get_active (action);
 
-	empathy_conf_set_bool (empathy_conf_get (),
-					 EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
-					 value == TRUE);
+	g_settings_set_boolean (window->gsettings_ui,
+				EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+				value);
 	empathy_contact_list_store_set_show_protocols (window->list_store,
-					 value == TRUE);
+						       value);
 }
 
 /* Matches GtkRadioAction values set in empathy-main-window.ui */
@@ -788,12 +796,13 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 
 	value = gtk_radio_action_get_current_value (action);
 
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_UI_SHOW_AVATARS,
-			       value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-			       value == CONTACT_LIST_COMPACT_SIZE);
+	g_settings_set_boolean (window->gsettings_ui,
+				EMPATHY_PREFS_UI_SHOW_AVATARS,
+				value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
+
+	g_settings_set_boolean (window->gsettings_ui,
+				EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+				value == CONTACT_LIST_COMPACT_SIZE);
 
 	empathy_contact_list_store_set_show_avatars (window->list_store,
 						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
@@ -801,44 +810,33 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 						   value == CONTACT_LIST_COMPACT_SIZE);
 }
 
-static void main_window_notify_show_protocols_cb (EmpathyConf       *conf,
+static void main_window_notify_show_protocols_cb (GSettings         *gsettings,
 						  const gchar       *key,
 						  EmpathyMainWindow *window)
 {
-	gboolean show_protocols;
-
-	if (empathy_conf_get_bool (conf,
-				   EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
-				   &show_protocols)) {
-		gtk_toggle_action_set_active (window->show_protocols,
-					      show_protocols);
-	}
+	gtk_toggle_action_set_active (window->show_protocols,
+			g_settings_get_boolean (gsettings,
+				EMPATHY_PREFS_UI_SHOW_PROTOCOLS));
 }
 
 
 static void
-main_window_notify_contact_list_size_cb (EmpathyConf       *conf,
+main_window_notify_contact_list_size_cb (GSettings         *gsettings,
 					 const gchar       *key,
 					 EmpathyMainWindow *window)
 {
-	gboolean show_avatars;
-	gboolean compact_contact_list;
 	gint value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
 
-	if (empathy_conf_get_bool (conf,
-				   EMPATHY_PREFS_UI_SHOW_AVATARS,
-				   &show_avatars)
-	    && empathy_conf_get_bool (conf,
-				      EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-				      &compact_contact_list)) {
-		if (compact_contact_list) {
-			value = CONTACT_LIST_COMPACT_SIZE;
-		} else if (show_avatars) {
-			value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
-		} else {
-			value = CONTACT_LIST_NORMAL_SIZE;
-		}
+	if (g_settings_get_boolean (gsettings,
+			EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST)) {
+		value = CONTACT_LIST_COMPACT_SIZE;
+	} else if (g_settings_get_boolean (gsettings,
+			EMPATHY_PREFS_UI_SHOW_AVATARS)) {
+		value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
+	} else {
+		value = CONTACT_LIST_NORMAL_SIZE;
 	}
+
 	/* By changing the value of the GtkRadioAction,
 	   it emits a signal that calls main_window_view_contacts_list_size_cb
 	   which updates the contacts list */
@@ -1277,15 +1275,12 @@ main_window_account_validity_changed_cb (TpAccountManager  *manager,
 }
 
 static void
-main_window_notify_show_offline_cb (EmpathyConf *conf,
+main_window_notify_show_offline_cb (GSettings   *gsettings,
 				    const gchar *key,
 				    gpointer     toggle_action)
 {
-	gboolean show_offline;
-
-	if (empathy_conf_get_bool (conf, key, &show_offline)) {
-		gtk_toggle_action_set_active (toggle_action, show_offline);
-	}
+	gtk_toggle_action_set_active (toggle_action,
+			g_settings_get_boolean (gsettings, key));
 }
 
 static void
@@ -1383,7 +1378,6 @@ empathy_main_window_show (void)
 	EmpathyMainWindow        *window;
 	EmpathyContactList       *list_iface;
 	GtkBuilder               *gui;
-	EmpathyConf              *conf;
 	GtkWidget                *sw;
 	GtkToggleAction          *show_offline_widget;
 	GtkAction                *show_map_widget;
@@ -1399,6 +1393,9 @@ empathy_main_window_show (void)
 
 	main_window = g_new0 (EmpathyMainWindow, 1);
 	window = main_window;
+
+	window->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+	window->gsettings_contacts = g_settings_new (EMPATHY_PREFS_CONTACTS_SCHEMA);
 
 	/* Set up interface */
 	filename = empathy_file_lookup ("empathy-main-window.ui", "src");
@@ -1572,50 +1569,47 @@ empathy_main_window_show (void)
 		l = l->next;
 	}
 
-	conf = empathy_conf_get ();
-
 	/* Show offline ? */
-	empathy_conf_get_bool (conf,
-			      EMPATHY_PREFS_UI_SHOW_OFFLINE,
-			      &show_offline);
-	empathy_conf_notify_add (conf,
-				EMPATHY_PREFS_UI_SHOW_OFFLINE,
-				main_window_notify_show_offline_cb,
-				show_offline_widget);
+	show_offline = g_settings_get_boolean (window->gsettings_ui,
+					       EMPATHY_PREFS_UI_SHOW_OFFLINE);
+	g_signal_connect (window->gsettings_ui,
+			  "changed::" EMPATHY_PREFS_UI_SHOW_OFFLINE,
+			  G_CALLBACK (main_window_notify_show_offline_cb),
+			  show_offline_widget);
 
 	gtk_toggle_action_set_active (show_offline_widget, show_offline);
 
 	/* Show protocol ? */
-	empathy_conf_notify_add (conf,
-				 EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
-				 (EmpathyConfNotifyFunc) main_window_notify_show_protocols_cb,
-				 window);
+	g_signal_connect (window->gsettings_ui,
+			  "changed::" EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+			  G_CALLBACK (main_window_notify_show_protocols_cb),
+			  window);
 
-	main_window_notify_show_protocols_cb (conf,
-					    EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
-					    window);
+	main_window_notify_show_protocols_cb (window->gsettings_ui,
+					      EMPATHY_PREFS_UI_SHOW_PROTOCOLS,
+					      window);
 
 	/* Sort by name / by status ? */
-	empathy_conf_notify_add (conf,
-				 EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
-				 (EmpathyConfNotifyFunc) main_window_notify_sort_contact_cb,
-				 window);
+	g_signal_connect (window->gsettings_contacts,
+			  "changed::" EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
+			  G_CALLBACK (main_window_notify_sort_contact_cb),
+			  window);
 
-	main_window_notify_sort_contact_cb (conf,
+	main_window_notify_sort_contact_cb (window->gsettings_contacts,
 					    EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM,
 					    window);
 
 	/* Contacts list size */
-	empathy_conf_notify_add (conf,
-				 EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
-				 (EmpathyConfNotifyFunc) main_window_notify_contact_list_size_cb,
-				 window);
-	empathy_conf_notify_add (conf,
-				 EMPATHY_PREFS_UI_SHOW_AVATARS,
-				 (EmpathyConfNotifyFunc) main_window_notify_contact_list_size_cb,
-				 window);
+	g_signal_connect (window->gsettings_ui,
+			  "changed::" EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
+			  G_CALLBACK (main_window_notify_contact_list_size_cb),
+			  window);
+	g_signal_connect (window->gsettings_ui,
+			  "changed::" EMPATHY_PREFS_UI_SHOW_AVATARS,
+			  G_CALLBACK (main_window_notify_contact_list_size_cb),
+			  window);
 
-	main_window_notify_contact_list_size_cb (conf,
+	main_window_notify_contact_list_size_cb (window->gsettings_ui,
 						 EMPATHY_PREFS_UI_SHOW_AVATARS,
 						 window);
 

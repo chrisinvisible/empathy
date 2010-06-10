@@ -32,12 +32,12 @@
 #include <pango/pango.h>
 #include <gdk/gdk.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-time.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-theme-adium.h"
 #include "empathy-smiley-manager.h"
-#include "empathy-conf.h"
 #include "empathy-ui-utils.h"
 #include "empathy-plist.h"
 #include "empathy-string-parser.h"
@@ -63,8 +63,8 @@ typedef struct {
 	gboolean              last_is_backlog;
 	gboolean              page_loaded;
 	GList                *message_queue;
-	guint                 notify_enable_webkit_developer_tools_id;
 	GtkWidget            *inspector_window;
+	GSettings            *gsettings_chat;
 } EmpathyThemeAdiumPriv;
 
 struct _EmpathyAdiumData {
@@ -111,14 +111,13 @@ G_DEFINE_TYPE_WITH_CODE (EmpathyThemeAdium, empathy_theme_adium,
 static void
 theme_adium_update_enable_webkit_developer_tools (EmpathyThemeAdium *theme)
 {
+	EmpathyThemeAdiumPriv *priv = GET_PRIV (theme);
 	WebKitWebView  *web_view = WEBKIT_WEB_VIEW (theme);
 	gboolean        enable_webkit_developer_tools;
 
-	if (!empathy_conf_get_bool (empathy_conf_get (),
-				    EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS,
-				    &enable_webkit_developer_tools)) {
-		return;
-	}
+	enable_webkit_developer_tools = g_settings_get_boolean (
+			priv->gsettings_chat,
+			EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS);
 
 	g_object_set (G_OBJECT (webkit_web_view_get_settings (web_view)),
 		      "enable-developer-extras",
@@ -127,7 +126,7 @@ theme_adium_update_enable_webkit_developer_tools (EmpathyThemeAdium *theme)
 }
 
 static void
-theme_adium_notify_enable_webkit_developer_tools_cb (EmpathyConf *conf,
+theme_adium_notify_enable_webkit_developer_tools_cb (GSettings   *gsettings,
 						     const gchar *key,
 						     gpointer     user_data)
 {
@@ -257,13 +256,10 @@ theme_adium_parse_body (const gchar *text)
 {
 	EmpathyStringParser *parsers;
 	GString *string;
-	gboolean use_smileys;
+	GSettings *gsettings = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
 
 	/* Check if we have to parse smileys */
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-			       &use_smileys);
-	if (use_smileys)
+	if (g_settings_get_boolean (gsettings, EMPATHY_PREFS_CHAT_SHOW_SMILEYS))
 		parsers = string_parsers_with_smiley;
 	else
 		parsers = string_parsers;
@@ -273,6 +269,8 @@ theme_adium_parse_body (const gchar *text)
 	 * displayed verbatim. */
 	string = g_string_sized_new (strlen (text));
 	empathy_string_parser_substr (text, -1, parsers, string);
+
+	g_object_unref (gsettings);
 
 	return g_string_free (string, FALSE);
 }
@@ -875,9 +873,7 @@ theme_adium_finalize (GObject *object)
 	EmpathyThemeAdiumPriv *priv = GET_PRIV (object);
 
 	empathy_adium_data_unref (priv->data);
-
-	empathy_conf_notify_remove (empathy_conf_get (),
-				    priv->notify_enable_webkit_developer_tools_id);
+	g_object_unref (priv->gsettings_chat);
 
 	G_OBJECT_CLASS (empathy_theme_adium_parent_class)->finalize (object);
 }
@@ -1154,11 +1150,11 @@ empathy_theme_adium_init (EmpathyThemeAdium *theme)
 			  G_CALLBACK (theme_adium_navigation_policy_decision_requested_cb),
 			  NULL);
 
-	priv->notify_enable_webkit_developer_tools_id =
-		empathy_conf_notify_add (empathy_conf_get (),
-					 EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS,
-					 theme_adium_notify_enable_webkit_developer_tools_cb,
-					 theme);
+	priv->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	g_signal_connect (priv->gsettings_chat,
+		"changed::" EMPATHY_PREFS_CHAT_WEBKIT_DEVELOPER_TOOLS,
+		G_CALLBACK (theme_adium_notify_enable_webkit_developer_tools_cb),
+		theme);
 
 	theme_adium_update_enable_webkit_developer_tools (theme);
 }

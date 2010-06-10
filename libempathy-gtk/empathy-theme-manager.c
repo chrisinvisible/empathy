@@ -30,11 +30,12 @@
 #include <gtk/gtk.h>
 
 #include <telepathy-glib/util.h>
+
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-theme-manager.h"
 #include "empathy-chat-view.h"
-#include "empathy-conf.h"
 #include "empathy-chat-text-view.h"
 #include "empathy-theme-boxes.h"
 #include "empathy-theme-irc.h"
@@ -48,10 +49,9 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyThemeManager)
 typedef struct {
+	GSettings   *gsettings_chat;
 	gchar       *name;
-	guint        name_notify_id;
 	gchar       *adium_path;
-	guint        adium_path_notify_id;
 	GtkSettings *settings;
 	GList       *boxes_views;
 } EmpathyThemeManagerPriv;
@@ -393,16 +393,17 @@ theme_manager_ensure_theme_exists (const gchar *name)
 }
 
 static void
-theme_manager_notify_name_cb (EmpathyConf *conf,
+theme_manager_notify_name_cb (GSettings   *gsettings_chat,
 			      const gchar *key,
 			      gpointer     user_data)
 {
 	EmpathyThemeManager     *manager = EMPATHY_THEME_MANAGER (user_data);
 	EmpathyThemeManagerPriv *priv = GET_PRIV (manager);
-	gchar                   *name = NULL;
+	gchar                   *name;
 
-	if (!empathy_conf_get_string (conf, key, &name) ||
-	    !theme_manager_ensure_theme_exists (name) ||
+	name = g_settings_get_string (gsettings_chat, key);
+
+	if (!theme_manager_ensure_theme_exists (name) ||
 	    !tp_strdiff (priv->name, name)) {
 		if (!priv->name) {
 			priv->name = g_strdup ("classic");
@@ -431,7 +432,7 @@ theme_manager_notify_name_cb (EmpathyConf *conf,
 }
 
 static void
-theme_manager_notify_adium_path_cb (EmpathyConf *conf,
+theme_manager_notify_adium_path_cb (GSettings   *gsettings_chat,
 				    const gchar *key,
 				    gpointer     user_data)
 {
@@ -439,8 +440,9 @@ theme_manager_notify_adium_path_cb (EmpathyConf *conf,
 	EmpathyThemeManagerPriv *priv = GET_PRIV (manager);
 	gchar                   *adium_path = NULL;
 
-	if (!empathy_conf_get_string (conf, key, &adium_path) ||
-	    !tp_strdiff (priv->adium_path, adium_path)) {
+	adium_path = g_settings_get_string (gsettings_chat, key);
+
+	if (!tp_strdiff (priv->adium_path, adium_path)) {
 		g_free (adium_path);
 		return;
 	}
@@ -457,9 +459,8 @@ theme_manager_finalize (GObject *object)
 	EmpathyThemeManagerPriv *priv = GET_PRIV (object);
 	GList                   *l;
 
-	empathy_conf_notify_remove (empathy_conf_get (), priv->name_notify_id);
+	g_object_unref (priv->gsettings_chat);
 	g_free (priv->name);
-	empathy_conf_notify_remove (empathy_conf_get (), priv->adium_path_notify_id);
 	g_free (priv->adium_path);
 
 	for (l = priv->boxes_views; l; l = l->next) {
@@ -500,23 +501,23 @@ empathy_theme_manager_init (EmpathyThemeManager *manager)
 
 	manager->priv = priv;
 
+	priv->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+
 	/* Take the theme name and track changes */
-	priv->name_notify_id =
-		empathy_conf_notify_add (empathy_conf_get (),
-					 EMPATHY_PREFS_CHAT_THEME,
-					 theme_manager_notify_name_cb,
-					 manager);
-	theme_manager_notify_name_cb (empathy_conf_get (),
+	g_signal_connect (priv->gsettings_chat,
+			  "changed::" EMPATHY_PREFS_CHAT_THEME,
+			  G_CALLBACK (theme_manager_notify_name_cb),
+			  manager);
+	theme_manager_notify_name_cb (priv->gsettings_chat,
 				      EMPATHY_PREFS_CHAT_THEME,
 				      manager);
 
 	/* Take the adium path and track changes */
-	priv->adium_path_notify_id =
-		empathy_conf_notify_add (empathy_conf_get (),
-					 EMPATHY_PREFS_CHAT_ADIUM_PATH,
-					 theme_manager_notify_adium_path_cb,
-					 manager);
-	theme_manager_notify_adium_path_cb (empathy_conf_get (),
+	g_signal_connect (priv->gsettings_chat,
+			  "changed::" EMPATHY_PREFS_CHAT_ADIUM_PATH,
+			  G_CALLBACK (theme_manager_notify_adium_path_cb),
+			  manager);
+	theme_manager_notify_adium_path_cb (priv->gsettings_chat,
 					    EMPATHY_PREFS_CHAT_ADIUM_PATH,
 					    manager);
 }

@@ -27,15 +27,14 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
-
-#include "empathy-conf.h"
 
 typedef struct {
   EmpathySound sound_id;
   const char * event_ca_id;
   const char * event_ca_description;
-  const char * gconf_key;
+  const char * key;
 } EmpathySoundEntry;
 
 typedef struct {
@@ -79,32 +78,37 @@ static gboolean
 empathy_sound_pref_is_enabled (EmpathySound sound_id)
 {
   EmpathySoundEntry *entry;
-  EmpathyConf *conf;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_SOUNDS_SCHEMA);
   gboolean res;
 
   entry = &(sound_entries[sound_id]);
   g_return_val_if_fail (entry->sound_id == sound_id, FALSE);
 
-  if (entry->gconf_key == NULL)
-    return TRUE;
+  if (entry->key == NULL)
+    {
+      res = TRUE;
+      goto finally;
+    }
 
-  conf = empathy_conf_get ();
-  res = FALSE;
-
-  empathy_conf_get_bool (conf, EMPATHY_PREFS_SOUNDS_ENABLED, &res);
+  res = g_settings_get_boolean (gsettings, EMPATHY_PREFS_SOUNDS_ENABLED);
 
   if (!res)
-    return FALSE;
+    goto finally;
 
   if (!empathy_check_available_state ())
     {
-      empathy_conf_get_bool (conf, EMPATHY_PREFS_SOUNDS_DISABLED_AWAY, &res);
-
-      if (res)
-        return FALSE;
+      if (g_settings_get_boolean (gsettings,
+            EMPATHY_PREFS_SOUNDS_DISABLED_AWAY))
+        {
+          res = FALSE;
+          goto finally;
+        }
     }
 
-  empathy_conf_get_bool (conf, entry->gconf_key, &res);
+  res = g_settings_get_boolean (gsettings, entry->key);
+
+finally:
+  g_object_unref (gsettings);
 
   return res;
 }

@@ -41,7 +41,6 @@
 #include "empathy-ui-utils.h"
 #include "empathy-images.h"
 #include "empathy-smiley-manager.h"
-#include "empathy-conf.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>

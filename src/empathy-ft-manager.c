@@ -40,7 +40,6 @@
 #include <libempathy/empathy-tp-file.h>
 #include <libempathy/empathy-utils.h>
 
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-geometry.h>
 #include <libempathy-gtk/empathy-images.h>

@@ -29,10 +29,10 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-avatar-chooser.h"
-#include "empathy-conf.h"
 #include "empathy-images.h"
 #include "empathy-ui-utils.h"
 
@@ -895,10 +895,14 @@ avatar_chooser_response_cb (GtkWidget            *widget,
 
 		path = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (widget));
 		if (path) {
-			empathy_conf_set_string (empathy_conf_get (),
-						 EMPATHY_PREFS_UI_AVATAR_DIRECTORY,
-						 path);
+			GSettings *gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+
+			g_settings_set_string (gsettings_ui,
+					       EMPATHY_PREFS_UI_AVATAR_DIRECTORY,
+					       path);
+
 			g_free (path);
+			g_object_unref (gsettings_ui);
 		}
 	}
 	else if (response == GTK_RESPONSE_NO) {
@@ -919,6 +923,7 @@ avatar_chooser_clicked_cb (GtkWidget            *button,
 	const gchar    *default_dir = DEFAULT_DIR;
 	const gchar    *pics_dir;
 	GtkFileFilter  *filter;
+	GSettings      *gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 	EmpathyAvatarChooserPriv *priv = GET_PRIV (chooser);
 
 	if (priv->chooser_dialog) {
@@ -941,9 +946,9 @@ avatar_chooser_clicked_cb (GtkWidget            *button,
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (chooser_dialog), TRUE);
 
 	/* Get special dirs */
-	empathy_conf_get_string (empathy_conf_get (),
-				 EMPATHY_PREFS_UI_AVATAR_DIRECTORY,
-				 &saved_dir);
+	saved_dir = g_settings_get_string (gsettings_ui,
+					   EMPATHY_PREFS_UI_AVATAR_DIRECTORY);
+
 	if (saved_dir && !g_file_test (saved_dir, G_FILE_TEST_IS_DIR)) {
 		g_free (saved_dir);
 		saved_dir = NULL;
@@ -1007,7 +1012,9 @@ avatar_chooser_clicked_cb (GtkWidget            *button,
 			  chooser);
 
 	gtk_widget_show (GTK_WIDGET (chooser_dialog));
+
 	g_free (saved_dir);
+	g_object_unref (gsettings_ui);
 }
 
 /**

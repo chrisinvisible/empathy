@@ -31,9 +31,9 @@
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-theme-manager.h>
 #include <libempathy-gtk/empathy-spell.h>
@@ -75,7 +75,12 @@ typedef struct {
 	GtkWidget *checkbutton_location_resource_cell;
 	GtkWidget *checkbutton_location_resource_gps;
 
-	GList     *notify_ids;
+	GSettings *gsettings;
+	GSettings *gsettings_chat;
+	GSettings *gsettings_loc;
+	GSettings *gsettings_notify;
+	GSettings *gsettings_sound;
+	GSettings *gsettings_ui;
 } EmpathyPreferences;
 
 static void     preferences_setup_widgets                (EmpathyPreferences      *preferences);
@@ -94,22 +99,6 @@ static gboolean preferences_languages_load_foreach       (GtkTreeModel          
 static void     preferences_languages_cell_toggled_cb    (GtkCellRendererToggle  *cell,
 							  gchar                  *path_string,
 							  EmpathyPreferences      *preferences);
-static void     preferences_widget_sync_bool             (const gchar            *key,
-							  GtkWidget              *widget);
-static void     preferences_notify_bool_cb               (EmpathyConf             *conf,
-							  const gchar            *key,
-							  gpointer                user_data);
-static void     preferences_notify_sensitivity_cb        (EmpathyConf             *conf,
-							  const gchar            *key,
-							  gpointer                user_data);
-static void     preferences_hookup_toggle_button         (EmpathyPreferences      *preferences,
-							  const gchar            *key,
-							  GtkWidget              *widget);
-static void     preferences_hookup_sensitivity           (EmpathyPreferences      *preferences,
-							  const gchar            *key,
-							  GtkWidget              *widget);
-static void     preferences_toggle_button_toggled_cb     (GtkWidget              *button,
-							  gpointer                user_data);
 static void     preferences_destroy_cb                   (GtkWidget              *widget,
 							  EmpathyPreferences      *preferences);
 static void     preferences_response_cb                  (GtkWidget              *widget,
@@ -155,105 +144,149 @@ static SoundEventEntry sound_entries [] = {
 };
 
 static void
-preferences_add_id (EmpathyPreferences *preferences, guint id)
-{
-	preferences->notify_ids = g_list_prepend (preferences->notify_ids,
-						  GUINT_TO_POINTER (id));
-}
-
-static void
 preferences_setup_widgets (EmpathyPreferences *preferences)
 {
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-					  preferences->checkbutton_notifications_enabled);
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
-					  preferences->checkbutton_notifications_disabled_away);
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_NOTIFICATIONS_FOCUS,
-					  preferences->checkbutton_notifications_focus);
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN,
-					  preferences->checkbutton_notifications_contact_signin);
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT,
-					  preferences->checkbutton_notifications_contact_signout);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
+			 preferences->checkbutton_notifications_enabled,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
+			 preferences->checkbutton_notifications_disabled_away,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_FOCUS,
+			 preferences->checkbutton_notifications_focus,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN,
+			 preferences->checkbutton_notifications_contact_signin,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT,
+			 preferences->checkbutton_notifications_contact_signout,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-					preferences->checkbutton_notifications_disabled_away);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-					preferences->checkbutton_notifications_focus);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-					preferences->checkbutton_notifications_contact_signin);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-					preferences->checkbutton_notifications_contact_signout);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
+			 preferences->checkbutton_notifications_disabled_away,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
+			 preferences->checkbutton_notifications_focus,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
+			 preferences->checkbutton_notifications_contact_signin,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
+	g_settings_bind (preferences->gsettings_notify,
+			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
+			 preferences->checkbutton_notifications_contact_signout,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_SOUNDS_ENABLED,
-					  preferences->checkbutton_sounds_enabled);
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_SOUNDS_DISABLED_AWAY,
-					  preferences->checkbutton_sounds_disabled_away);
+	g_settings_bind (preferences->gsettings_sound,
+			 EMPATHY_PREFS_SOUNDS_ENABLED,
+			 preferences->checkbutton_sounds_enabled,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_sound,
+			 EMPATHY_PREFS_SOUNDS_DISABLED_AWAY,
+			 preferences->checkbutton_sounds_disabled_away,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_SOUNDS_ENABLED,
-					preferences->checkbutton_sounds_disabled_away);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_SOUNDS_ENABLED,
-					preferences->treeview_sounds);
+	g_settings_bind (preferences->gsettings_sound,
+			 EMPATHY_PREFS_SOUNDS_ENABLED,
+			 preferences->checkbutton_sounds_disabled_away,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
+	g_settings_bind (preferences->gsettings_sound,
+			EMPATHY_PREFS_SOUNDS_ENABLED,
+			preferences->treeview_sounds,
+			"sensitive",
+			G_SETTINGS_BIND_GET);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
-					  preferences->checkbutton_separate_chat_windows);
+	g_settings_bind (preferences->gsettings_ui,
+			 EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
+			 preferences->checkbutton_separate_chat_windows,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-					  preferences->checkbutton_show_smileys);
+	g_settings_bind (preferences->gsettings_chat,
+			 EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
+			 preferences->checkbutton_show_smileys,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_chat,
+			 EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS,
+			 preferences->checkbutton_show_contacts_in_rooms,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS,
-					  preferences->checkbutton_show_contacts_in_rooms);
+	g_settings_bind (preferences->gsettings,
+			 EMPATHY_PREFS_AUTOCONNECT,
+			 preferences->checkbutton_autoconnect,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_AUTOCONNECT,
-					  preferences->checkbutton_autoconnect);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_PUBLISH,
+			 preferences->checkbutton_location_publish,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_LOCATION_PUBLISH,
-					  preferences->checkbutton_location_publish);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
+			 preferences->checkbutton_location_resource_network,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_PUBLISH,
+			 preferences->checkbutton_location_resource_network,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
-					  preferences->checkbutton_location_resource_network);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_LOCATION_PUBLISH,
-					preferences->checkbutton_location_resource_network);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_RESOURCE_CELL,
+			 preferences->checkbutton_location_resource_cell,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_PUBLISH,
+			 preferences->checkbutton_location_resource_cell,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_LOCATION_RESOURCE_CELL,
-					  preferences->checkbutton_location_resource_cell);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_LOCATION_PUBLISH,
-					preferences->checkbutton_location_resource_cell);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_RESOURCE_GPS,
+			 preferences->checkbutton_location_resource_gps,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_PUBLISH,
+			 preferences->checkbutton_location_resource_gps,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
 
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_LOCATION_RESOURCE_GPS,
-					  preferences->checkbutton_location_resource_gps);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_LOCATION_PUBLISH,
-					preferences->checkbutton_location_resource_gps);
-
-	preferences_hookup_toggle_button (preferences,
-					  EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
-					  preferences->checkbutton_location_reduce_accuracy);
-	preferences_hookup_sensitivity (preferences,
-					EMPATHY_PREFS_LOCATION_PUBLISH,
-					preferences->checkbutton_location_reduce_accuracy);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
+			 preferences->checkbutton_location_reduce_accuracy,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (preferences->gsettings_loc,
+			 EMPATHY_PREFS_LOCATION_PUBLISH,
+			 preferences->checkbutton_location_reduce_accuracy,
+			 "sensitive",
+			 G_SETTINGS_BIND_GET);
 }
 
 static void
@@ -283,7 +316,7 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 			    COL_SOUND_ENABLED, instore, -1);
 
-	empathy_conf_set_bool (empathy_conf_get (), key, instore);
+	g_settings_set_boolean (preferences->gsettings_sound, key, instore);
 
 	g_free (key);
 	gtk_tree_path_free (path);
@@ -297,14 +330,13 @@ preferences_sound_load (EmpathyPreferences *preferences)
 	GtkListStore *store;
 	GtkTreeIter iter;
 	gboolean set;
-	EmpathyConf *conf;
 
 	view = GTK_TREE_VIEW (preferences->treeview_sounds);
 	store = GTK_LIST_STORE (gtk_tree_view_get_model (view));
-	conf = empathy_conf_get ();
 
 	for (i = 0; i < G_N_ELEMENTS (sound_entries); i++) {
-		empathy_conf_get_bool (conf, sound_entries[i].key, &set);
+		set = g_settings_get_boolean (preferences->gsettings_sound,
+					      sound_entries[i].key);
 
 		gtk_list_store_insert_with_values (store, &iter, i,
 						   COL_SOUND_NAME, gettext (sound_entries[i].name),
@@ -419,9 +451,9 @@ preferences_languages_add (EmpathyPreferences *preferences)
 
 	codes = empathy_spell_get_language_codes ();
 
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-			       codes != NULL);
+	g_settings_set_boolean (preferences->gsettings_chat,
+				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+				codes != NULL);
 	if (!codes) {
 		gtk_widget_set_sensitive (preferences->treeview_spell_checker, FALSE);
 	}
@@ -463,13 +495,13 @@ preferences_languages_save (EmpathyPreferences *preferences)
 				&languages);
 
 	/* if user selects no languages, we don't want spell check */
-	empathy_conf_set_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-			       languages != NULL);
+	g_settings_set_boolean (preferences->gsettings_chat,
+				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+				languages != NULL);
 
-	empathy_conf_set_string (empathy_conf_get (),
-				 EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
-				 languages ? languages : "");
+	g_settings_set_string (preferences->gsettings_chat,
+			       EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
+			       languages != NULL ? languages : "");
 
 	g_free (languages);
 }
@@ -518,11 +550,11 @@ preferences_languages_load (EmpathyPreferences *preferences)
 	gchar         *value;
 	gchar        **vlanguages;
 
-	if (!empathy_conf_get_string (empathy_conf_get (),
-				      EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
-				      &value) || !value) {
+	value = g_settings_get_string (preferences->gsettings_chat,
+				       EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES);
+
+	if (value == NULL)
 		return;
-	}
 
 	vlanguages = g_strsplit (value, ",", -1);
 	g_free (value);
@@ -598,316 +630,7 @@ preferences_languages_cell_toggled_cb (GtkCellRendererToggle *cell,
 }
 
 static void
-preferences_widget_sync_bool (const gchar *key, GtkWidget *widget)
-{
-	gboolean value;
-
-	if (empathy_conf_get_bool (empathy_conf_get (), key, &value)) {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
-	}
-}
-
-#if 0
-static void
-preferences_widget_sync_string (const gchar *key, GtkWidget *widget)
-{
-	gchar *value;
-
-	if (empathy_conf_get_string (empathy_conf_get (), key, &value) && value) {
-		if (GTK_IS_ENTRY (widget)) {
-			gtk_entry_set_text (GTK_ENTRY (widget), value);
-		} else if (GTK_IS_RADIO_BUTTON (widget)) {
-			if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
-				GType        type;
-				GEnumClass  *enum_class;
-				GEnumValue  *enum_value;
-				GSList      *list;
-				GtkWidget   *toggle_widget;
-
-				/* Get index from new string */
-				type = empathy_contact_list_store_sort_get_type ();
-				enum_class = G_ENUM_CLASS (g_type_class_peek (type));
-				enum_value = g_enum_get_value_by_nick (enum_class, value);
-
-				if (enum_value) {
-					list = gtk_radio_button_get_group (GTK_RADIO_BUTTON (widget));
-					toggle_widget = g_slist_nth_data (list, enum_value->value);
-					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (toggle_widget), TRUE);
-				}
-			} else {
-				g_warning ("Unhandled key:'%s' just had string change", key);
-			}
-		}
-
-		g_free (value);
-	}
-}
-
-static void
-preferences_notify_string_cb (EmpathyConf  *conf,
-			      const gchar *key,
-			      gpointer     user_data)
-{
-	preferences_widget_sync_string (key, user_data);
-}
-#endif
-
-static void
-preferences_notify_bool_cb (EmpathyConf  *conf,
-			    const gchar *key,
-			    gpointer     user_data)
-{
-	preferences_widget_sync_bool (key, user_data);
-}
-
-static void
-preferences_notify_sensitivity_cb (EmpathyConf  *conf,
-				   const gchar *key,
-				   gpointer     user_data)
-{
-	gboolean value;
-
-	if (empathy_conf_get_bool (conf, key, &value)) {
-		gtk_widget_set_sensitive (GTK_WIDGET (user_data), value);
-	}
-}
-
-#if 0
-static void
-preferences_widget_sync_int (const gchar *key, GtkWidget *widget)
-{
-	gint value;
-
-	if (empathy_conf_get_int (empathy_conf_get (), key, &value)) {
-		if (GTK_IS_SPIN_BUTTON (widget)) {
-			gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), value);
-		}
-	}
-}
-
-static void
-preferences_notify_int_cb (EmpathyConf  *conf,
-			   const gchar *key,
-			   gpointer     user_data)
-{
-	preferences_widget_sync_int (key, user_data);
-}
-
-static void
-preferences_hookup_spin_button (EmpathyPreferences *preferences,
-				const gchar       *key,
-				GtkWidget         *widget)
-{
-	guint id;
-
-	preferences_widget_sync_int (key, widget);
-
-	g_object_set_data_full (G_OBJECT (widget), "key",
-				g_strdup (key), g_free);
-
-	g_signal_connect (widget,
-			  "value_changed",
-			  G_CALLBACK (preferences_spin_button_value_changed_cb),
-			  NULL);
-
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				      key,
-				      preferences_notify_int_cb,
-				      widget);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
-}
-
-static void
-preferences_hookup_entry (EmpathyPreferences *preferences,
-			  const gchar       *key,
-			  GtkWidget         *widget)
-{
-	guint id;
-
-	preferences_widget_sync_string (key, widget);
-
-	g_object_set_data_full (G_OBJECT (widget), "key",
-				g_strdup (key), g_free);
-
-	g_signal_connect (widget,
-			  "changed",
-			  G_CALLBACK (preferences_entry_value_changed_cb),
-			  NULL);
-
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				      key,
-				      preferences_notify_string_cb,
-				      widget);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
-}
-
-static void
-preferences_spin_button_value_changed_cb (GtkWidget *button,
-					  gpointer   user_data)
-{
-	const gchar *key;
-
-	key = g_object_get_data (G_OBJECT (button), "key");
-
-	empathy_conf_set_int (empathy_conf_get (),
-			      key,
-			      gtk_spin_button_get_value (GTK_SPIN_BUTTON (button)));
-}
-
-static void
-preferences_entry_value_changed_cb (GtkWidget *entry,
-				    gpointer   user_data)
-{
-	const gchar *key;
-
-	key = g_object_get_data (G_OBJECT (entry), "key");
-
-	empathy_conf_set_string (empathy_conf_get (),
-				 key,
-				 gtk_entry_get_text (GTK_ENTRY (entry)));
-}
-#endif
-
-static void
-preferences_hookup_toggle_button (EmpathyPreferences *preferences,
-				  const gchar       *key,
-				  GtkWidget         *widget)
-{
-	guint id;
-
-	preferences_widget_sync_bool (key, widget);
-
-	g_object_set_data_full (G_OBJECT (widget), "key",
-				g_strdup (key), g_free);
-
-	g_signal_connect (widget,
-			  "toggled",
-			  G_CALLBACK (preferences_toggle_button_toggled_cb),
-			  NULL);
-
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				     key,
-				     preferences_notify_bool_cb,
-				     widget);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
-}
-
-#if 0
-static void
-preferences_hookup_radio_button (EmpathyPreferences *preferences,
-				 const gchar       *key,
-				 GtkWidget         *widget)
-{
-	GSList *group, *l;
-	guint   id;
-
-	preferences_widget_sync_string (key, widget);
-
-	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (widget));
-	for (l = group; l; l = l->next) {
-		g_signal_connect (l->data,
-				  "toggled",
-				  G_CALLBACK (preferences_radio_button_toggled_cb),
-				  NULL);
-
-		g_object_set_data_full (G_OBJECT (l->data), "key",
-					g_strdup (key), g_free);
-	}
-
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				     key,
-				     preferences_notify_string_cb,
-				     widget);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
-}
-#endif
-
-static void
-preferences_hookup_sensitivity (EmpathyPreferences *preferences,
-				const gchar       *key,
-				GtkWidget         *widget)
-{
-	gboolean value;
-	guint    id;
-
-	if (empathy_conf_get_bool (empathy_conf_get (), key, &value)) {
-		gtk_widget_set_sensitive (widget, value);
-	}
-
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				      key,
-				      preferences_notify_sensitivity_cb,
-				      widget);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
-}
-
-static void
-preferences_toggle_button_toggled_cb (GtkWidget *button,
-				      gpointer   user_data)
-{
-	const gchar *key;
-
-	key = g_object_get_data (G_OBJECT (button), "key");
-
-	empathy_conf_set_bool (empathy_conf_get (),
-			       key,
-			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)));
-}
-
-#if 0
-static void
-preferences_radio_button_toggled_cb (GtkWidget *button,
-				     gpointer   user_data)
-{
-	const gchar *key;
-	const gchar *value = NULL;
-
-	if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
-		return;
-	}
-
-	key = g_object_get_data (G_OBJECT (button), "key");
-
-	if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
-		GSList      *group;
-		GType        type;
-		GEnumClass  *enum_class;
-		GEnumValue  *enum_value;
-
-		group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (button));
-
-		/* Get string from index */
-		type = empathy_contact_list_store_sort_get_type ();
-		enum_class = G_ENUM_CLASS (g_type_class_peek (type));
-		enum_value = g_enum_get_value (enum_class, g_slist_index (group, button));
-
-		if (!enum_value) {
-			g_warning ("No GEnumValue for EmpathyContactListSort with GtkRadioButton index:%d",
-				   g_slist_index (group, button));
-			return;
-		}
-
-		value = enum_value->value_nick;
-	} else if (!tp_strdiff (key, EMPATHY_PREFS_CONTACTS_SORT_CRITERIUM)) {
-           return;
-	}
-
-	empathy_conf_set_string (empathy_conf_get (), key, value);
-}
-#endif
-
-static void
-preferences_theme_notify_cb (EmpathyConf *conf,
+preferences_theme_notify_cb (GSettings   *gsettings,
 			     const gchar *key,
 			     gpointer     user_data)
 {
@@ -919,14 +642,8 @@ preferences_theme_notify_cb (EmpathyConf *conf,
 	GtkTreeIter         iter;
 	gboolean            found = FALSE;
 
-	if (!empathy_conf_get_string (conf, EMPATHY_PREFS_CHAT_THEME, &conf_name)) {
-		return;
-	}
-
-	if (!empathy_conf_get_string (conf, EMPATHY_PREFS_CHAT_ADIUM_PATH, &conf_path)) {
-		g_free (conf_name);
-		return;
-	}
+	conf_name = g_settings_get_string (gsettings, EMPATHY_PREFS_CHAT_THEME);
+	conf_path = g_settings_get_string (gsettings, EMPATHY_PREFS_CHAT_ADIUM_PATH);
 
 	combo = GTK_COMBO_BOX (preferences->combobox_chat_theme);
 	model = gtk_combo_box_get_model (combo);
@@ -988,13 +705,13 @@ preferences_theme_changed_cb (GtkComboBox        *combo,
 				    COL_COMBO_PATH, &path,
 				    -1);
 
-		empathy_conf_set_string (empathy_conf_get (),
-					 EMPATHY_PREFS_CHAT_THEME,
-					 name);
+		g_settings_set_string (preferences->gsettings_chat,
+				       EMPATHY_PREFS_CHAT_THEME,
+				       name);
 		if (is_adium == TRUE)
-			empathy_conf_set_string (empathy_conf_get (),
-						 EMPATHY_PREFS_CHAT_ADIUM_PATH,
-						 path);
+			g_settings_set_string (preferences->gsettings_chat,
+					       EMPATHY_PREFS_CHAT_ADIUM_PATH,
+					       path);
 		g_free (name);
 		g_free (path);
 	}
@@ -1010,7 +727,6 @@ preferences_themes_setup (EmpathyPreferences *preferences)
 	const gchar  **themes;
 	GList         *adium_themes;
 	gint           i;
-	guint          id;
 
 	combo = GTK_COMBO_BOX (preferences->combobox_chat_theme);
 	cell_layout = GTK_CELL_LAYOUT (combo);
@@ -1071,24 +787,18 @@ preferences_themes_setup (EmpathyPreferences *preferences)
 			  preferences);
 
 	/* Select the theme from the gconf key and track changes */
-	preferences_theme_notify_cb (empathy_conf_get (),
+	preferences_theme_notify_cb (preferences->gsettings_chat,
 				     EMPATHY_PREFS_CHAT_THEME,
 				     preferences);
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				      EMPATHY_PREFS_CHAT_THEME,
-				      preferences_theme_notify_cb,
-				      preferences);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
+	g_signal_connect (preferences->gsettings_chat,
+			  "changed::" EMPATHY_PREFS_CHAT_THEME,
+			  G_CALLBACK (preferences_theme_notify_cb),
+			  preferences);
 
-	id = empathy_conf_notify_add (empathy_conf_get (),
-				      EMPATHY_PREFS_CHAT_ADIUM_PATH,
-				      preferences_theme_notify_cb,
-				      preferences);
-	if (id) {
-		preferences_add_id (preferences, id);
-	}
+	g_signal_connect (preferences->gsettings_chat,
+			  "changed::" EMPATHY_PREFS_CHAT_ADIUM_PATH,
+			  G_CALLBACK (preferences_theme_notify_cb),
+			  preferences);
 }
 
 static void
@@ -1103,16 +813,13 @@ static void
 preferences_destroy_cb (GtkWidget         *widget,
 			EmpathyPreferences *preferences)
 {
-	GList *l;
+	g_object_unref (preferences->gsettings);
+	g_object_unref (preferences->gsettings_chat);
+	g_object_unref (preferences->gsettings_loc);
+	g_object_unref (preferences->gsettings_notify);
+	g_object_unref (preferences->gsettings_sound);
+	g_object_unref (preferences->gsettings_ui);
 
-	for (l = preferences->notify_ids; l; l = l->next) {
-		guint id;
-
-		id = GPOINTER_TO_UINT (l->data);
-		empathy_conf_notify_remove (empathy_conf_get (), id);
-	}
-
-	g_list_free (preferences->notify_ids);
 	g_free (preferences);
 }
 
@@ -1165,6 +872,13 @@ empathy_preferences_show (GtkWindow *parent)
 	g_object_unref (gui);
 
 	g_object_add_weak_pointer (G_OBJECT (preferences->dialog), (gpointer) &preferences);
+
+	preferences->gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
+	preferences->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	preferences->gsettings_loc = g_settings_new (EMPATHY_PREFS_LOCATION_SCHEMA);
+	preferences->gsettings_notify = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
+	preferences->gsettings_sound = g_settings_new (EMPATHY_PREFS_SOUNDS_SCHEMA);
+	preferences->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 
 	preferences_themes_setup (preferences);
 

@@ -22,8 +22,7 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
-
-#include <libempathy-gtk/empathy-conf.h>
+#include <libempathy/empathy-gsettings.h>
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
@@ -139,7 +138,7 @@ migration_account_manager_prepared_cb (GObject *source_object,
   TpAccountManager *am = TP_ACCOUNT_MANAGER (source_object);
   GError *error = NULL;
   GList *accounts, *l;
-  EmpathyConf *conf;
+  GSettings *gsettings;
 
   if (!tp_account_manager_prepare_finish (am, result, &error))
     {
@@ -175,8 +174,10 @@ migration_account_manager_prepared_cb (GObject *source_object,
 
   DEBUG ("Finished all migrating");
 
-  conf = empathy_conf_get ();
-  empathy_conf_set_bool (conf, EMPATHY_PREFS_BUTTERFLY_LOGS_MIGRATED, TRUE);
+  gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
+  g_settings_set_boolean (gsettings, EMPATHY_PREFS_BUTTERFLY_LOGS_MIGRATED,
+      TRUE);
+  g_object_unref (gsettings);
 
   g_list_free (accounts);
 }
@@ -199,22 +200,15 @@ migrate_logs (gpointer data)
 gboolean
 empathy_migrate_butterfly_logs (EmpathyContact *contact)
 {
-  EmpathyConf *conf;
-  gboolean logs_migrated;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
   gchar *cm;
-
-  conf = empathy_conf_get ();
 
   /* Already in progress. */
   if (butterfly_log_migration_id != 0)
     return FALSE;
 
   /* Already done. */
-  if (!empathy_conf_get_bool (conf, EMPATHY_PREFS_BUTTERFLY_LOGS_MIGRATED,
-          &logs_migrated))
-    return FALSE;
-
-  if (logs_migrated)
+  if (g_settings_get_boolean (gsettings, EMPATHY_PREFS_BUTTERFLY_LOGS_MIGRATED))
     return FALSE;
 
   tp_account_parse_object_path (

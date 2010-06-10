@@ -61,10 +61,10 @@
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-dispatch-operation.h>
 #include <libempathy/empathy-ft-factory.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-tp-chat.h>
 #include <libempathy/empathy-tp-call.h>
 
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-location-manager.h>
 
@@ -168,17 +168,14 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 }
 
 static void
-use_conn_notify_cb (EmpathyConf *conf,
+use_conn_notify_cb (GSettings *gsettings,
     const gchar *key,
     gpointer     user_data)
 {
   EmpathyConnectivity *connectivity = user_data;
-  gboolean     use_conn;
 
-  if (empathy_conf_get_bool (conf, key, &use_conn))
-    {
-      empathy_connectivity_set_use_conn (connectivity, use_conn);
-    }
+  empathy_connectivity_set_use_conn (connectivity,
+      g_settings_get_boolean (gsettings, key));
 }
 
 static void
@@ -353,8 +350,8 @@ account_manager_ready_cb (GObject *source_object,
   GError *error = NULL;
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
-  gboolean autoconnect = TRUE;
   TpConnectionPresenceType presence;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
 
   if (!tp_account_manager_prepare_finish (manager, result, &error))
     {
@@ -370,9 +367,8 @@ account_manager_ready_cb (GObject *source_object,
   presence = tp_account_manager_get_most_available_presence (manager, NULL,
       NULL);
 
-  empathy_conf_get_bool (empathy_conf_get (),
-      EMPATHY_PREFS_AUTOCONNECT, &autoconnect);
-  if (autoconnect && !no_connect &&
+  if (g_settings_get_boolean (gsettings, EMPATHY_PREFS_AUTOCONNECT) &&
+      !no_connect &&
       tp_connection_presence_type_cmp_availability
           (presence, TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
             <= 0)
@@ -387,6 +383,7 @@ account_manager_ready_cb (GObject *source_object,
 
   g_object_unref (idle);
   g_object_unref (connectivity);
+  g_object_unref (gsettings);
 }
 
 static EmpathyDispatcher *
@@ -561,15 +558,14 @@ chatroom_manager_ready_cb (EmpathyChatroomManager *chatroom_manager,
 }
 
 static void
-empathy_idle_set_auto_away_cb (EmpathyConf *conf,
+empathy_idle_set_auto_away_cb (GSettings *gsettings,
 				const gchar *key,
 				gpointer user_data)
 {
-	gboolean autoaway;
 	EmpathyIdle *idle = user_data;
 
-	empathy_conf_get_bool (conf, key, &autoaway);
-	empathy_idle_set_auto_away (idle, autoaway);
+	empathy_idle_set_auto_away (idle,
+      g_settings_get_boolean (gsettings, key));
 }
 
 int
@@ -600,6 +596,7 @@ main (int argc, char *argv[])
 #ifdef ENABLE_DEBUG
   TpDebugSender *debug_sender;
 #endif
+  GSettings *gsettings;
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
@@ -666,22 +663,22 @@ main (int argc, char *argv[])
   /* Setting up Idle */
   idle = empathy_idle_dup_singleton ();
 
-  empathy_conf_get_bool (empathy_conf_get (),
-      EMPATHY_PREFS_AUTOAWAY, &autoaway);
+  gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
+  autoaway = g_settings_get_boolean (gsettings, EMPATHY_PREFS_AUTOAWAY);
 
-  empathy_conf_notify_add (empathy_conf_get (),
-			   EMPATHY_PREFS_AUTOAWAY,
-			   empathy_idle_set_auto_away_cb,
-			   idle);
+  g_signal_connect (gsettings,
+      "changed::" EMPATHY_PREFS_AUTOAWAY,
+      G_CALLBACK (empathy_idle_set_auto_away_cb), idle);
 
   empathy_idle_set_auto_away (idle, autoaway);
 
   /* Setting up Connectivity */
   connectivity = empathy_connectivity_dup_singleton ();
-  use_conn_notify_cb (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
+  use_conn_notify_cb (gsettings, EMPATHY_PREFS_USE_CONN,
       connectivity);
-  empathy_conf_notify_add (empathy_conf_get (), EMPATHY_PREFS_USE_CONN,
-      use_conn_notify_cb, connectivity);
+  g_signal_connect (gsettings,
+      "changed::" EMPATHY_PREFS_USE_CONN,
+      G_CALLBACK (use_conn_notify_cb), connectivity);
 
   /* account management */
   account_manager = tp_account_manager_dup ();
@@ -763,6 +760,7 @@ main (int argc, char *argv[])
 #endif
   g_object_unref (ft_factory);
   g_object_unref (unique_app);
+  g_object_unref (gsettings);
 
   notify_uninit ();
   xmlCleanupParser ();

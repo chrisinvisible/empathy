@@ -34,9 +34,9 @@
 #include <extensions/extensions.h>
 
 #include "empathy-location-manager.h"
-#include "empathy-conf.h"
 
 #include "libempathy/empathy-enum-types.h"
+#include "libempathy/empathy-gsettings.h"
 #include "libempathy/empathy-location.h"
 #include "libempathy/empathy-utils.h"
 
@@ -55,6 +55,8 @@ typedef struct {
      * GValue). Keys are defined in empathy-location.h
      */
     GHashTable *location;
+
+    GSettings *gsettings_loc;
 
     GeoclueResourceFlags resources;
     GeoclueMasterClient *gc_client;
@@ -104,6 +106,12 @@ location_manager_dispose (GObject *object)
   {
     g_object_unref (priv->account_manager);
     priv->account_manager = NULL;
+  }
+
+  if (priv->gsettings_loc != NULL)
+  {
+    g_object_unref (priv->gsettings_loc);
+    priv->gsettings_loc = NULL;
   }
 
   if (priv->gc_client != NULL)
@@ -198,19 +206,14 @@ publish_location (EmpathyLocationManager *self,
 {
   EmpathyLocationManagerPriv *priv = GET_PRIV (self);
   guint connection_status = -1;
-  gboolean can_publish;
-  EmpathyConf *conf = empathy_conf_get ();
 
   if (!conn)
     return;
 
   if (!force_publication)
     {
-      if (!empathy_conf_get_bool (conf, EMPATHY_PREFS_LOCATION_PUBLISH,
-            &can_publish))
-        return;
-
-      if (!can_publish)
+      if (!g_settings_get_boolean (priv->gsettings_loc,
+            EMPATHY_PREFS_LOCATION_PUBLISH))
         return;
     }
 
@@ -599,21 +602,16 @@ setup_geoclue (EmpathyLocationManager *self)
 }
 
 static void
-publish_cb (EmpathyConf *conf,
+publish_cb (GSettings *gsettings_loc,
             const gchar *key,
             gpointer user_data)
 {
   EmpathyLocationManager *manager = EMPATHY_LOCATION_MANAGER (user_data);
   EmpathyLocationManagerPriv *priv = GET_PRIV (manager);
-  gboolean can_publish;
 
   DEBUG ("Publish Conf changed");
 
-
-  if (!empathy_conf_get_bool (conf, key, &can_publish))
-    return;
-
-  if (can_publish)
+  if (g_settings_get_boolean (gsettings_loc, key))
     {
       if (!priv->geoclue_is_setup)
         setup_geoclue (manager);
@@ -638,19 +636,15 @@ publish_cb (EmpathyConf *conf,
 }
 
 static void
-resource_cb (EmpathyConf  *conf,
+resource_cb (GSettings *gsettings_loc,
              const gchar *key,
              gpointer user_data)
 {
   EmpathyLocationManager *manager = EMPATHY_LOCATION_MANAGER (user_data);
   EmpathyLocationManagerPriv *priv = GET_PRIV (manager);
   GeoclueResourceFlags resource = 0;
-  gboolean resource_enabled;
 
   DEBUG ("%s changed", key);
-
-  if (!empathy_conf_get_bool (conf, key, &resource_enabled))
-    return;
 
   if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK))
     resource = GEOCLUE_RESOURCE_NETWORK;
@@ -659,7 +653,7 @@ resource_cb (EmpathyConf  *conf,
   if (!tp_strdiff (key, EMPATHY_PREFS_LOCATION_RESOURCE_GPS))
     resource = GEOCLUE_RESOURCE_GPS;
 
-  if (resource_enabled)
+  if (g_settings_get_boolean (gsettings_loc, key))
     priv->resources |= resource;
   else
     priv->resources &= ~resource;
@@ -669,20 +663,16 @@ resource_cb (EmpathyConf  *conf,
 }
 
 static void
-accuracy_cb (EmpathyConf  *conf,
+accuracy_cb (GSettings *gsettings_loc,
              const gchar *key,
              gpointer user_data)
 {
   EmpathyLocationManager *manager = EMPATHY_LOCATION_MANAGER (user_data);
   EmpathyLocationManagerPriv *priv = GET_PRIV (manager);
 
-  gboolean enabled;
-
   DEBUG ("%s changed", key);
 
-  if (!empathy_conf_get_bool (conf, key, &enabled))
-    return;
-  priv->reduce_accuracy = enabled;
+  priv->reduce_accuracy = g_settings_get_boolean (gsettings_loc, key);
 
   if (!priv->geoclue_is_setup)
     return;
@@ -724,7 +714,6 @@ account_manager_prepared_cb (GObject *source_object,
 static void
 empathy_location_manager_init (EmpathyLocationManager *self)
 {
-  EmpathyConf               *conf;
   EmpathyLocationManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
       EMPATHY_TYPE_LOCATION_MANAGER, EmpathyLocationManagerPriv);
 
@@ -732,6 +721,7 @@ empathy_location_manager_init (EmpathyLocationManager *self)
   priv->geoclue_is_setup = FALSE;
   priv->location = g_hash_table_new_full (g_direct_hash, g_direct_equal,
       g_free, (GDestroyNotify) tp_g_value_slice_free);
+  priv->gsettings_loc = g_settings_new (EMPATHY_PREFS_LOCATION_SCHEMA);
 
   /* Setup account status callbacks */
   priv->account_manager = tp_account_manager_dup ();
@@ -740,23 +730,29 @@ empathy_location_manager_init (EmpathyLocationManager *self)
       account_manager_prepared_cb, self);
 
   /* Setup settings status callbacks */
-  conf = empathy_conf_get ();
-  empathy_conf_notify_add (conf, EMPATHY_PREFS_LOCATION_PUBLISH, publish_cb,
-      self);
-  empathy_conf_notify_add (conf, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
-      resource_cb, self);
-  empathy_conf_notify_add (conf, EMPATHY_PREFS_LOCATION_RESOURCE_CELL,
-      resource_cb, self);
-  empathy_conf_notify_add (conf, EMPATHY_PREFS_LOCATION_RESOURCE_GPS,
-      resource_cb, self);
-  empathy_conf_notify_add (conf, EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
-      accuracy_cb, self);
+  g_signal_connect (priv->gsettings_loc,
+      "changed::" EMPATHY_PREFS_LOCATION_PUBLISH,
+      G_CALLBACK (publish_cb), self);
+  g_signal_connect (priv->gsettings_loc,
+      "changed::" EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
+      G_CALLBACK (resource_cb), self);
+  g_signal_connect (priv->gsettings_loc,
+      "changed::" EMPATHY_PREFS_LOCATION_RESOURCE_CELL,
+      G_CALLBACK (resource_cb), self);
+  g_signal_connect (priv->gsettings_loc,
+      "changed::" EMPATHY_PREFS_LOCATION_RESOURCE_GPS,
+      G_CALLBACK (resource_cb), self);
+  g_signal_connect (priv->gsettings_loc,
+      "changed::" EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
+      G_CALLBACK (accuracy_cb), self);
 
-  resource_cb (conf, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK, self);
-  resource_cb (conf, EMPATHY_PREFS_LOCATION_RESOURCE_CELL, self);
-  resource_cb (conf, EMPATHY_PREFS_LOCATION_RESOURCE_GPS, self);
-  accuracy_cb (conf, EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY, self);
-  publish_cb (conf, EMPATHY_PREFS_LOCATION_PUBLISH, self);
+  resource_cb (priv->gsettings_loc, EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
+      self);
+  resource_cb (priv->gsettings_loc, EMPATHY_PREFS_LOCATION_RESOURCE_CELL, self);
+  resource_cb (priv->gsettings_loc, EMPATHY_PREFS_LOCATION_RESOURCE_GPS, self);
+  accuracy_cb (priv->gsettings_loc, EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
+      self);
+  publish_cb (priv->gsettings_loc, EMPATHY_PREFS_LOCATION_PUBLISH, self);
 }
 
 EmpathyLocationManager *

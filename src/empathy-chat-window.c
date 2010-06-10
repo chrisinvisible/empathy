@@ -41,12 +41,12 @@
 #include <libempathy/empathy-contact.h>
 #include <libempathy/empathy-message.h>
 #include <libempathy/empathy-chatroom-manager.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-list.h>
 
 #include <libempathy-gtk/empathy-images.h>
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-contact-dialogs.h>
 #include <libempathy-gtk/empathy-log-window.h>
 #include <libempathy-gtk/empathy-geometry.h>
@@ -519,9 +519,10 @@ chat_window_icon_update (EmpathyChatWindowPriv *priv)
 		gtk_window_set_icon_name (GTK_WINDOW (priv->dialog),
 					  EMPATHY_IMAGE_MESSAGE);
 	} else {
-		empathy_conf_get_bool (empathy_conf_get (),
-				       EMPATHY_PREFS_CHAT_AVATAR_IN_ICON,
-				       &avatar_in_icon);
+		GSettings *gsettings = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+
+		avatar_in_icon = g_settings_get_boolean (gsettings,
+				EMPATHY_PREFS_CHAT_AVATAR_IN_ICON);
 
 		if (n_chats == 1 && avatar_in_icon) {
 			remote_contact = empathy_chat_get_remote_contact (priv->current_chat);
@@ -534,6 +535,8 @@ chat_window_icon_update (EmpathyChatWindowPriv *priv)
 		} else {
 			gtk_window_set_icon_name (GTK_WINDOW (priv->dialog), NULL);
 		}
+
+		g_object_unref (gsettings);
 	}
 }
 
@@ -1264,8 +1267,14 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	if (!empathy_notify_manager_notification_is_enabled (priv->notify_mgr)) {
 		return;
 	} else {
-		empathy_conf_get_bool (empathy_conf_get (),
-				       EMPATHY_PREFS_NOTIFICATIONS_FOCUS, &res);
+		GSettings *gsettings = g_settings_new (
+				EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
+
+		res = g_settings_get_boolean (gsettings,
+				EMPATHY_PREFS_NOTIFICATIONS_FOCUS);
+
+		g_object_unref (gsettings);
+
 		if (!res) {
 			return;
 		}
@@ -2068,12 +2077,14 @@ empathy_chat_window_new (void)
 EmpathyChatWindow *
 empathy_chat_window_get_default (gboolean room)
 {
+	GSettings *gsettings = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 	GList    *l;
 	gboolean  separate_windows = TRUE;
 
-	empathy_conf_get_bool (empathy_conf_get (),
-			      EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
-			      &separate_windows);
+	separate_windows = g_settings_get_boolean (gsettings,
+			EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS);
+
+	g_object_unref (gsettings);
 
 	if (separate_windows) {
 		/* Always create a new window */
@@ -2141,12 +2152,14 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 
 	/* If this window has just been created, position it */
 	if (priv->chats == NULL) {
+		GSettings *gsettings = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 		const gchar *name = "chat-window";
 		gboolean     separate_windows;
 
-		empathy_conf_get_bool (empathy_conf_get (),
-				       EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
-				       &separate_windows);
+		separate_windows = g_settings_get_boolean (gsettings,
+				EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS);
+
+		g_object_unref (gsettings);
 
 		if (separate_windows) {
 			name = empathy_chat_get_id (chat);

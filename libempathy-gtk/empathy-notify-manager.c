@@ -25,10 +25,10 @@
 
 #include <telepathy-glib/account-manager.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
-#include <libempathy-gtk/empathy-conf.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -184,23 +184,20 @@ gboolean
 empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
 {
   EmpathyNotifyManagerPriv *priv = GET_PRIV (self);
-  EmpathyConf *conf;
-  gboolean res;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
   TpConnectionPresenceType presence;
+  gboolean ret = FALSE;
 
-  conf = empathy_conf_get ();
-  res = FALSE;
-
-  empathy_conf_get_bool (conf, EMPATHY_PREFS_NOTIFICATIONS_ENABLED, &res);
-
-  if (!res)
-    return FALSE;
+  if (!g_settings_get_boolean (gsettings, EMPATHY_PREFS_NOTIFICATIONS_ENABLED))
+    goto finally;
 
   if (!tp_account_manager_is_prepared (priv->account_manager,
         TP_ACCOUNT_MANAGER_FEATURE_CORE))
     {
       DEBUG ("account manager is not ready yet; display the notification");
-      return TRUE;
+      ret = TRUE;
+
+      goto finally;
     }
 
   presence = tp_account_manager_get_most_available_presence (
@@ -210,12 +207,15 @@ empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
   if (presence != TP_CONNECTION_PRESENCE_TYPE_AVAILABLE &&
       presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
     {
-      empathy_conf_get_bool (conf, EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
-          &res);
-
-      if (res)
-        return FALSE;
+      if (!g_settings_get_boolean (gsettings,
+            EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY))
+        goto finally;
     }
 
-  return TRUE;
+  ret = TRUE;
+
+finally:
+  g_object_unref (gsettings);
+
+  return ret;
 }

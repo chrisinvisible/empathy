@@ -33,10 +33,10 @@
 #endif
 
 #include "empathy-spell.h"
-#include "empathy-conf.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
+#include <libempathy/empathy-gsettings.h>
 
 #ifdef HAVE_ENCHANT
 
@@ -50,7 +50,6 @@ typedef struct {
 
 static GHashTable  *iso_code_names = NULL;
 static GList       *languages = NULL;
-static gboolean     empathy_conf_notify_inited = FALSE;
 
 static void
 spell_iso_codes_parse_start_tag (GMarkupParseContext  *ctx,
@@ -159,7 +158,7 @@ spell_iso_code_names_init (void)
 }
 
 static void
-spell_notify_languages_cb (EmpathyConf  *conf,
+spell_notify_languages_cb (GSettings   *gsettings,
 			   const gchar *key,
 			   gpointer     user_data)
 {
@@ -186,23 +185,26 @@ spell_notify_languages_cb (EmpathyConf  *conf,
 static void
 spell_setup_languages (void)
 {
+	static GSettings *gsettings = NULL;
 	gchar  *str;
 
-	if (!empathy_conf_notify_inited) {
-		empathy_conf_notify_add (empathy_conf_get (),
-					 EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
-					 spell_notify_languages_cb, NULL);
+	if (gsettings == NULL) {
+		/* FIXME: this is never uninitialised */
+		gsettings = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
 
-		empathy_conf_notify_inited = TRUE;
+		g_signal_connect (gsettings,
+			"changed::" EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
+			G_CALLBACK (spell_notify_languages_cb), NULL);
 	}
 
 	if (languages) {
 		return;
 	}
 
-	if (empathy_conf_get_string (empathy_conf_get (),
-				     EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
-				     &str) && str) {
+	str = g_settings_get_string (gsettings,
+			EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES);
+
+	if (str != NULL) {
 		gchar **strv;
 		gint    i;
 

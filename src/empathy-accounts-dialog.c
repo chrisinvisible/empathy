@@ -39,14 +39,14 @@
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-connectivity.h>
-#include <libempathy-gtk/empathy-ui-utils.h>
+#include <libempathy/empathy-gsettings.h>
 
+#include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-account-widget.h>
 #include <libempathy-gtk/empathy-account-widget-irc.h>
 #include <libempathy-gtk/empathy-account-widget-sip.h>
 #include <libempathy-gtk/empathy-cell-renderer-activatable.h>
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-images.h>
 
 #include "empathy-accounts-dialog.h"
@@ -2219,8 +2219,8 @@ do_constructed (GObject *object)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (object);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  gboolean import_asked;
   GtkTreeModel *model;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
 
   accounts_dialog_build_ui (dialog);
   accounts_dialog_model_setup (dialog);
@@ -2237,19 +2237,15 @@ do_constructed (GObject *object)
   tp_account_manager_prepare_async (priv->account_manager, NULL,
       accounts_dialog_manager_ready_cb, dialog);
 
-  empathy_conf_get_bool (empathy_conf_get (),
-      EMPATHY_PREFS_IMPORT_ASKED, &import_asked);
-
   if (empathy_import_accounts_to_import ())
     {
       gtk_widget_show (priv->button_import);
 
-      if (!import_asked)
+      if (!g_settings_get_boolean (gsettings, EMPATHY_PREFS_IMPORT_ASKED))
         {
           GtkWidget *import_dialog;
 
-          empathy_conf_set_bool (empathy_conf_get (),
-              EMPATHY_PREFS_IMPORT_ASKED, TRUE);
+          g_settings_set_boolean (gsettings, EMPATHY_PREFS_IMPORT_ASKED, TRUE);
           import_dialog = empathy_import_dialog_new (GTK_WINDOW (dialog),
               FALSE);
           gtk_widget_show (import_dialog);
@@ -2257,6 +2253,8 @@ do_constructed (GObject *object)
     }
 
   priv->connectivity = empathy_connectivity_dup_singleton ();
+
+  g_object_unref (gsettings);
 }
 
 static void

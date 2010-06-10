@@ -29,7 +29,6 @@
 #include <libebook/e-book.h>
 
 #include <libempathy/empathy-account-settings.h>
-#include <libempathy-gtk/empathy-conf.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>

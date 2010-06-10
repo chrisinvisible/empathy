@@ -43,11 +43,11 @@
 #include <libempathy/empathy-log-manager.h>
 #endif /* ENABLE_TPL */
 #include <libempathy/empathy-contact-list.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-dispatcher.h>
 
 #include "empathy-chat.h"
-#include "empathy-conf.h"
 #include "empathy-spell.h"
 #include "empathy-contact-list-store.h"
 #include "empathy-contact-list-view.h"
@@ -77,6 +77,9 @@ typedef struct {
 	EmpathyContact    *remote_contact;
 	gboolean           show_contacts;
 
+	GSettings         *gsettings_chat;
+	GSettings         *gsettings_ui;
+
 #ifdef ENABLE_TPL
 	TplLogManager     *log_manager;
 #else
@@ -103,10 +106,6 @@ typedef struct {
 	gulong		   insert_text_id;
 	gulong		   delete_range_id;
 	gulong		   notify_cursor_position_id;
-
-	/* This stores the id for the spell checking configuration setting
-	 * notification signal handler. */
-	guint		   conf_notify_id;
 
 	GtkWidget         *widget;
 	GtkWidget         *hpaned;
@@ -1623,7 +1622,6 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		if (completed) {
 			guint        len;
 			const gchar *text;
-			gchar       *complete_char = NULL;
 			GString     *message = NULL;
 			GList       *l;
 
@@ -1657,16 +1655,20 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 
 			gtk_text_buffer_insert_at_cursor (buffer, text, strlen (text));
 
-			if (len == 1 && is_start_of_buffer &&
-			    empathy_conf_get_string (empathy_conf_get (),
-						     EMPATHY_PREFS_CHAT_NICK_COMPLETION_CHAR,
-						     &complete_char) &&
-			    complete_char != NULL) {
+			if (len == 1 && is_start_of_buffer) {
+			    gchar *complete_char;
+
+			    complete_char = g_settings_get_string (
+				    priv->gsettings_chat,
+				    EMPATHY_PREFS_CHAT_NICK_COMPLETION_CHAR);
+
+			    if (complete_char != NULL) {
 				gtk_text_buffer_insert_at_cursor (buffer,
 								  complete_char,
 								  strlen (complete_char));
 				gtk_text_buffer_insert_at_cursor (buffer, " ", 1);
 				g_free (complete_char);
+			    }
 			}
 
 			g_free (completed);
@@ -2386,7 +2388,7 @@ update_misspelled_words (gpointer data)
 }
 
 static void
-conf_spell_checking_cb (EmpathyConf *conf,
+conf_spell_checking_cb (GSettings *gsettings_chat,
 			const gchar *key,
 			gpointer user_data)
 {
@@ -2398,8 +2400,8 @@ conf_spell_checking_cb (EmpathyConf *conf,
 	if (strcmp (key, EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED) != 0)
 		return;
 
-	empathy_conf_get_bool (conf, EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-                               &spell_checker);
+	spell_checker = g_settings_get_boolean (gsettings_chat,
+			EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED);
 
 	if (!empathy_spell_supported ()) {
 		spell_checker = FALSE;
@@ -2471,11 +2473,16 @@ conf_spell_checking_cb (EmpathyConf *conf,
 static gboolean
 chat_hpaned_pos_changed_cb (GtkWidget* hpaned, gpointer user_data)
 {
+	GSettings *gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
 	gint hpaned_pos;
+
 	hpaned_pos = gtk_paned_get_position (GTK_PANED(hpaned));
-	empathy_conf_set_int (empathy_conf_get (),
-			      EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
-			      hpaned_pos);
+	g_settings_set_int (gsettings_chat,
+			    EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
+			    hpaned_pos);
+
+	g_object_unref (gsettings_chat);
+
 	return TRUE;
 }
 
@@ -2552,11 +2559,10 @@ chat_create_ui (EmpathyChat *chat)
 	tp_g_signal_connect_object  (buffer, "changed",
 			  G_CALLBACK (chat_input_text_buffer_changed_cb),
 			  chat, 0);
-	priv->conf_notify_id =
-			empathy_conf_notify_add (empathy_conf_get (),
-						 EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-						 conf_spell_checking_cb, chat);
-	conf_spell_checking_cb (empathy_conf_get (),
+	tp_g_signal_connect_object (priv->gsettings_chat,
+			"changed::" EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+			G_CALLBACK (conf_spell_checking_cb), chat, 0);
+	conf_spell_checking_cb (priv->gsettings_chat,
 				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED, chat);
 	gtk_container_add (GTK_CONTAINER (priv->scrolled_window_input),
 			   chat->input_text_view);
@@ -2577,10 +2583,9 @@ chat_create_ui (EmpathyChat *chat)
 			  NULL);
 
         /* Load the paned position */
-	if (empathy_conf_get_int (empathy_conf_get (),
-				 EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
-				 &paned_pos)
-		&& paned_pos)
+	paned_pos = g_settings_get_int (priv->gsettings_ui,
+			EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS);
+	if (paned_pos != 0)
 		gtk_paned_set_position (GTK_PANED(priv->hpaned), paned_pos);
 
 	/* Set widget focus order */
@@ -2661,11 +2666,8 @@ chat_finalize (GObject *object)
 
 	DEBUG ("Finalized: %p", object);
 
-	if (priv->conf_notify_id != 0) {
-		empathy_conf_notify_remove (empathy_conf_get (),
-					    priv->conf_notify_id);
-		priv->conf_notify_id = 0;
-	}
+	g_object_unref (priv->gsettings_chat);
+	g_object_unref (priv->gsettings_ui);
 
 	g_list_foreach (priv->input_history, (GFunc) chat_input_history_entry_free, NULL);
 	g_list_free (priv->input_history);
@@ -2876,6 +2878,9 @@ empathy_chat_init (EmpathyChat *chat)
 #else
 	priv->log_manager = tpl_log_manager_dup_singleton ();
 #endif /* ENABLE_TPL */
+	priv->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+
 	priv->contacts_width = -1;
 	priv->input_history = NULL;
 	priv->input_history_current = NULL;
@@ -2884,9 +2889,8 @@ empathy_chat_init (EmpathyChat *chat)
 	tp_account_manager_prepare_async (priv->account_manager, NULL,
 					  account_manager_prepared_cb, chat);
 
-	empathy_conf_get_bool (empathy_conf_get (),
-			       EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS,
-			       &priv->show_contacts);
+	priv->show_contacts = g_settings_get_boolean (priv->gsettings_chat,
+			EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS);
 
 	/* Block events for some time to avoid having "has come online" or
 	 * "joined" messages. */

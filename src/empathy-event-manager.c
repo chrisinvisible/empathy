@@ -37,10 +37,10 @@
 #include <libempathy/empathy-tp-file.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-call-factory.h>
+#include <libempathy/empathy-gsettings.h>
 
 #include <extensions/extensions.h>
 
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-contact-dialogs.h>
 #include <libempathy-gtk/empathy-sound.h>
@@ -837,8 +837,8 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
 {
   TpAccount *account;
   gchar *header = NULL;
-  gboolean preference = FALSE;
   EmpathyIdle *idle;
+  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
 
   account = empathy_contact_get_account (contact);
   idle = empathy_idle_dup_singleton ();
@@ -847,7 +847,7 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
     goto out;
 
   if (tp_connection_presence_type_cmp_availability (previous,
-     TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
+        TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
     {
       /* contact was online */
       if (tp_connection_presence_type_cmp_availability (current,
@@ -857,9 +857,8 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
           empathy_sound_play (empathy_main_window_get (),
               EMPATHY_SOUND_CONTACT_DISCONNECTED);
 
-          empathy_conf_get_bool (empathy_conf_get (),
-              EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT, &preference);
-          if (preference)
+          if (g_settings_get_boolean (gsettings,
+                EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT))
             {
               header = g_strdup_printf (_("%s is now offline."),
                   empathy_contact_get_name (contact));
@@ -872,16 +871,15 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
   else
     {
       /* contact was offline */
-      if (preference && tp_connection_presence_type_cmp_availability (current,
-          TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
+      if (tp_connection_presence_type_cmp_availability (current,
+            TP_CONNECTION_PRESENCE_TYPE_OFFLINE) > 0)
         {
           /* someone is logging in */
           empathy_sound_play (empathy_main_window_get (),
               EMPATHY_SOUND_CONTACT_CONNECTED);
 
-          empathy_conf_get_bool (empathy_conf_get (),
-              EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN, &preference);
-          if (preference)
+          if (g_settings_get_boolean (gsettings,
+                EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN))
             {
               header = g_strdup_printf (_("%s is now online."),
                   empathy_contact_get_name (contact));
@@ -895,6 +893,7 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
 
 out:
   g_object_unref (idle);
+  g_object_unref (gsettings);
 }
 
 static void

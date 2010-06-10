@@ -35,10 +35,10 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
 #include <libempathy-gtk/empathy-presence-chooser.h>
-#include <libempathy-gtk/empathy-conf.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-images.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
@@ -66,6 +66,7 @@ typedef struct {
 	EmpathyEventManager *event_manager;
 	EmpathyEvent        *event;
 	NotifyNotification  *notification;
+	GSettings           *gsettings_ui;
 
 	GtkWindow           *window;
 	GtkUIManager        *ui_manager;
@@ -356,8 +357,9 @@ status_icon_set_visibility (EmpathyStatusIcon *icon,
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
 
 	if (store) {
-		empathy_conf_set_bool (empathy_conf_get (),
-				       EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN, !visible);
+		g_settings_set_boolean (priv->gsettings_ui,
+					EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN,
+					!visible);
 	}
 
 	if (!visible) {
@@ -368,16 +370,15 @@ status_icon_set_visibility (EmpathyStatusIcon *icon,
 }
 
 static void
-status_icon_notify_visibility_cb (EmpathyConf *conf,
+status_icon_notify_visibility_cb (GSettings   *gsettings,
 				  const gchar *key,
 				  gpointer     user_data)
 {
 	EmpathyStatusIcon *icon = user_data;
 	gboolean           hidden = FALSE;
 
-	if (empathy_conf_get_bool (conf, key, &hidden)) {
-		status_icon_set_visibility (icon, !hidden, FALSE);
-	}
+	hidden = g_settings_get_boolean (gsettings, key);
+	status_icon_set_visibility (icon, !hidden, FALSE);
 }
 
 static void
@@ -571,6 +572,7 @@ status_icon_finalize (GObject *object)
 	g_object_unref (priv->event_manager);
 	g_object_unref (priv->ui_manager);
 	g_object_unref (priv->notify_mgr);
+	g_object_unref (priv->gsettings_ui);
 }
 
 static void
@@ -625,10 +627,11 @@ empathy_status_icon_init (EmpathyStatusIcon *icon)
 	    account_manager_prepared_cb, icon);
 
 	/* make icon listen and respond to MAIN_WINDOW_HIDDEN changes */
-	empathy_conf_notify_add (empathy_conf_get (),
-				 EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN,
-				 status_icon_notify_visibility_cb,
-				 icon);
+	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+	g_signal_connect (priv->gsettings_ui,
+			  "changed::" EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN,
+			  G_CALLBACK (status_icon_notify_visibility_cb),
+			  icon);
 
 	status_icon_create_menu (icon);
 
@@ -678,13 +681,8 @@ empathy_status_icon_new (GtkWindow *window, gboolean hide_contact_list)
 			  G_CALLBACK (status_icon_delete_event_cb),
 			  icon);
 
-	if (!hide_contact_list) {
-		empathy_conf_get_bool (empathy_conf_get (),
-				       EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN,
-			               &should_hide);
-	} else {
-		should_hide = TRUE;
-	}
+	should_hide = g_settings_get_boolean (priv->gsettings_ui,
+			EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN);
 
 	if (gtk_window_is_active (priv->window) == should_hide) {
 		status_icon_set_visibility (icon, !should_hide, FALSE);

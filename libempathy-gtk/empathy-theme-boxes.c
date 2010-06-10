@@ -33,7 +33,6 @@
 #include <libempathy/empathy-utils.h>
 #include "empathy-theme-boxes.h"
 #include "empathy-ui-utils.h"
-#include "empathy-conf.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>

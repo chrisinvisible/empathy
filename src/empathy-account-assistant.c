@@ -36,7 +36,6 @@
 #include <libempathy-gtk/empathy-account-widget.h>
 #include <libempathy-gtk/empathy-protocol-chooser.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
-#include <libempathy-gtk/empathy-conf.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
