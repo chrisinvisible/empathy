@@ -27,7 +27,7 @@
 
 #include <glib-object.h>
 #ifdef ENABLE_TPL
-#include <telepathy-logger/log-entry.h>
+#include <telepathy-logger/entry.h>
 #endif
 
 #include "empathy-contact.h"
@@ -57,7 +57,7 @@ struct _EmpathyMessageClass {
 GType                    empathy_message_get_type          (void) G_GNUC_CONST;
 EmpathyMessage *         empathy_message_new               (const gchar              *body);
 #ifdef ENABLE_TPL
-EmpathyMessage *         empathy_message_from_tpl_log_entry (TplLogEntry             *logentry);
+EmpathyMessage *         empathy_message_from_tpl_log_entry (TplEntry                *logentry);
 #endif /* ENABLE_TPL */
 TpChannelTextMessageType empathy_message_get_tptype        (EmpathyMessage           *message);
 void                     empathy_message_set_tptype        (EmpathyMessage           *message,

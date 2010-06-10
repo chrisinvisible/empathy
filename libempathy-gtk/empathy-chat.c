@@ -1932,7 +1932,7 @@ chat_input_populate_popup_cb (GtkTextView *view,
 
 #ifdef ENABLE_TPL
 static gboolean
-chat_log_filter (TplLogEntry *log,
+chat_log_filter (TplEntry *log,
 		 gpointer user_data)
 #else
 static gboolean
@@ -1948,7 +1948,7 @@ chat_log_filter (EmpathyMessage *message,
 	const GList *pending;
 
 #ifdef ENABLE_TPL
-	g_return_val_if_fail (TPL_IS_LOG_ENTRY (log), FALSE);
+	g_return_val_if_fail (TPL_IS_ENTRY (log), FALSE);
 #else
 	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
 #endif /* ENABLE_TPL */
@@ -2016,7 +2016,7 @@ got_filtered_messages_cb (GObject *manager,
 
 	for (l = messages; l; l = g_list_next (l)) {
 		EmpathyMessage *message;
-		g_assert (TPL_IS_LOG_ENTRY (l->data));
+		g_assert (TPL_IS_ENTRY (l->data));
 
 		message = empathy_message_from_tpl_log_entry (l->data);
 		g_object_unref (l->data);

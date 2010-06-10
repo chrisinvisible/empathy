@@ -384,7 +384,7 @@ got_messages_for_date_cb (GObject *manager,
 	for (l = messages; l; l = l->next) {
 			EmpathyMessage *message;
 
-			g_assert (TPL_IS_LOG_ENTRY (l->data));
+			g_assert (TPL_IS_ENTRY (l->data));
 
 			message = empathy_message_from_tpl_log_entry (l->data);
 			g_object_unref (l->data);
