@@ -30,7 +30,7 @@ AC_COPYRIGHT([
 
 # Minimal version required
 GLIB_REQUIRED=2.22.0
-GTK_REQUIRED=2.20.0
+GTK_REQUIRED=2.21.2
 GCONF_REQUIRED=1.2.0
 TELEPATHY_GLIB_REQUIRED=0.11.6
 TELEPATHY_LOGGER=0.1.1
@@ -52,9 +52,9 @@ NAUTILUS_SENDTO_REQUIRED=2.28.1
 # maintainer mode is forced
 ifelse(empathy_released, 1, [], [enable_maintainer_mode="yes"])
 GNOME_MAINTAINER_MODE_DEFINES
-#if test $USE_MAINTAINER_MODE = yes; then
-#  AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
-#fi
+if test $USE_MAINTAINER_MODE = yes; then
+  AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
+fi
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
