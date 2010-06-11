@@ -436,6 +436,35 @@ empathy_gdk_pixbuf_is_opaque (GdkPixbuf *pixbuf)
 	return TRUE;
 }
 
+static GdkPixbuf *
+avatar_pixbuf_from_loader (GdkPixbufLoader *loader)
+{
+	GdkPixbuf *pixbuf;
+
+	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (!gdk_pixbuf_get_has_alpha (pixbuf)) {
+		GdkPixbuf *rounded_pixbuf;
+
+		rounded_pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
+						 gdk_pixbuf_get_width (pixbuf),
+						 gdk_pixbuf_get_height (pixbuf));
+		gdk_pixbuf_copy_area (pixbuf, 0, 0,
+				      gdk_pixbuf_get_width (pixbuf),
+				      gdk_pixbuf_get_height (pixbuf),
+				      rounded_pixbuf,
+				      0, 0);
+		pixbuf = rounded_pixbuf;
+	} else {
+		g_object_ref (pixbuf);
+	}
+
+	if (empathy_gdk_pixbuf_is_opaque (pixbuf)) {
+		empathy_avatar_pixbuf_roundify (pixbuf);
+	}
+
+	return pixbuf;
+}
+
 GdkPixbuf *
 empathy_pixbuf_from_avatar_scaled (EmpathyAvatar *avatar,
 				  gint          width,
@@ -469,27 +498,7 @@ empathy_pixbuf_from_avatar_scaled (EmpathyAvatar *avatar,
 	}
 
 	gdk_pixbuf_loader_close (loader, NULL);
-
-	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-	if (!gdk_pixbuf_get_has_alpha (pixbuf)) {
-		GdkPixbuf *rounded_pixbuf;
-
-		rounded_pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
-						 gdk_pixbuf_get_width (pixbuf),
-						 gdk_pixbuf_get_height (pixbuf));
-		gdk_pixbuf_copy_area (pixbuf, 0, 0,
-				      gdk_pixbuf_get_width (pixbuf),
-				      gdk_pixbuf_get_height (pixbuf),
-				      rounded_pixbuf,
-				      0, 0);
-		pixbuf = rounded_pixbuf;
-	} else {
-		g_object_ref (pixbuf);
-	}
-
-	if (empathy_gdk_pixbuf_is_opaque (pixbuf)) {
-		empathy_avatar_pixbuf_roundify (pixbuf);
-	}
+	pixbuf = avatar_pixbuf_from_loader (loader);
 
 	g_object_unref (loader);
 
@@ -508,6 +517,114 @@ empathy_pixbuf_avatar_from_contact_scaled (EmpathyContact *contact,
 	avatar = empathy_contact_get_avatar (contact);
 
 	return empathy_pixbuf_from_avatar_scaled (avatar, width, height);
+}
+
+typedef struct {
+	FolksIndividual *individual;
+	EmpathyPixbufAvatarFromIndividualCb callback;
+	gpointer user_data;
+	guint width;
+	guint height;
+} PixbufAvatarFromIndividualClosure;
+
+static void
+pixbuf_avatar_from_individual_closure_free (
+		PixbufAvatarFromIndividualClosure *closure)
+{
+	g_object_unref (closure->individual);
+	g_free (closure);
+}
+
+static void
+avatar_file_load_contents_cb (GObject      *object,
+			      GAsyncResult *result,
+			      gpointer      user_data)
+{
+	GFile *file = G_FILE (object);
+	PixbufAvatarFromIndividualClosure *closure = user_data;
+	char *data;
+	gsize data_size;
+	struct SizeData size_data;
+	GError *error = NULL;
+	GdkPixbufLoader *loader = NULL;
+	GdkPixbuf *pixbuf = NULL;
+
+	if (!g_file_load_contents_finish (file, result, &data, &data_size,
+				NULL, &error)) {
+		DEBUG ("failed to load avatar from file: %s",
+				error->message);
+		goto out;
+	}
+
+	size_data.width = closure->width;
+	size_data.height = closure->height;
+	size_data.preserve_aspect_ratio = TRUE;
+
+	loader = gdk_pixbuf_loader_new ();
+
+	/* XXX: this seems a bit racy, but apparently works well enough */
+	g_signal_connect (loader, "size-prepared",
+			  G_CALLBACK (pixbuf_from_avatar_size_prepared_cb),
+			  &size_data);
+
+	if (!gdk_pixbuf_loader_write (loader, (guchar *) data, data_size,
+				&error)) {
+		DEBUG ("Failed to write to pixbuf loader: %s",
+			error ? error->message : "No error given");
+		goto out;
+	}
+	if (!gdk_pixbuf_loader_close (loader, &error)) {
+		DEBUG ("Failed to close pixbuf loader: %s",
+			error ? error->message : "No error given");
+		goto out;
+	}
+
+	pixbuf = avatar_pixbuf_from_loader (loader);
+
+	closure->callback (closure->individual, pixbuf, closure->user_data);
+
+out:
+	g_clear_error (&error);
+	g_free (data);
+	if (loader != NULL)
+		g_object_unref (loader);
+	pixbuf_avatar_from_individual_closure_free (closure);
+}
+
+void
+empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual                     *individual,
+						    gint                                 width,
+						    gint                                 height,
+						    EmpathyPixbufAvatarFromIndividualCb  callback,
+						    gpointer                             user_data)
+{
+	GFile *avatar_file;
+	PixbufAvatarFromIndividualClosure *closure;
+
+	if (!FOLKS_IS_INDIVIDUAL (individual)) {
+		DEBUG ("failed assertion: FOLKS_IS_INDIVIDUAL (individual)");
+		goto out;
+	}
+
+	avatar_file = folks_avatar_get_avatar (FOLKS_AVATAR (individual));
+	if (avatar_file == NULL) {
+		goto out;
+	}
+
+	closure = g_new0 (PixbufAvatarFromIndividualClosure, 1);
+	closure->individual = g_object_ref (individual);
+	closure->callback = callback;
+	closure->user_data = user_data;
+	closure->width = width;
+	closure->height = height;
+
+	g_file_load_contents_async (avatar_file, NULL,
+			avatar_file_load_contents_cb, closure);
+
+	return;
+
+out:
+	callback (individual, NULL, user_data);
 }
 
 GdkPixbuf *

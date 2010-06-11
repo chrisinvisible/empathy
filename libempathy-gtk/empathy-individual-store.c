@@ -528,6 +528,24 @@ individual_store_contact_active_cb (ShowActiveData *data)
 }
 
 static void
+individual_avatar_pixbuf_received_cb (FolksIndividual *individual,
+    GdkPixbuf *pixbuf,
+    gpointer user_data)
+{
+  EmpathyIndividualStore *self = user_data;
+  GList *iters, *l;
+
+  iters = individual_store_find_contact (self, individual);
+
+  for (l = iters; l; l = l->next)
+    {
+      gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
+          EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR, pixbuf,
+          -1);
+    }
+}
+
+static void
 individual_store_contact_update (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
@@ -544,7 +562,6 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   gboolean do_set_active = FALSE;
   gboolean do_set_refresh = FALSE;
   gboolean show_avatar = FALSE;
-  GdkPixbuf *pixbuf_avatar;
   GdkPixbuf *pixbuf_status;
 
   priv = GET_PRIV (self);
@@ -657,17 +674,16 @@ individual_store_contact_update (EmpathyIndividualStore *self,
     {
       show_avatar = TRUE;
     }
-  /* TODO: implement */
-  DEBUG ("avatars unimplemented");
+
+  empathy_pixbuf_avatar_from_individual_scaled_async (individual, 32, 32,
+      individual_avatar_pixbuf_received_cb, self);
   pixbuf_status =
       empathy_individual_store_get_individual_status_icon (self, individual);
-  pixbuf_avatar = NULL;
 
   for (l = iters; l && set_model; l = l->next)
     {
       gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
           EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, pixbuf_status,
-          EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
           EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
           EMPATHY_INDIVIDUAL_STORE_COL_NAME,
           folks_individual_get_alias (individual),
@@ -685,11 +701,6 @@ individual_store_contact_update (EmpathyIndividualStore *self,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, FALSE,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, now_online,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE, -1);
-    }
-
-  if (pixbuf_avatar)
-    {
-      g_object_unref (pixbuf_avatar);
     }
 
   if (priv->show_active && do_set_active)
@@ -731,6 +742,8 @@ static void
 individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
+  g_signal_connect (individual, "notify::avatar",
+      G_CALLBACK (individual_store_contact_updated_cb), self);
   g_signal_connect (individual, "notify::presence-type",
       G_CALLBACK (individual_store_contact_updated_cb), self);
   g_signal_connect (individual, "notify::presence-message",
