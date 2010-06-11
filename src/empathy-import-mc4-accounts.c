@@ -33,6 +33,7 @@
 #include <gnome-keyring.h>
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connection-managers.h>
+#include <libempathy/empathy-gsettings.h>
 
 #include "empathy-import-mc4-accounts.h"
 
@@ -40,7 +41,6 @@
 #include <libempathy/empathy-debug.h>
 
 #define MC_ACCOUNTS_GCONF_BASE "/apps/telepathy/mc/accounts"
-#define IMPORTED_MC4_ACCOUNTS "/apps/empathy/accounts/imported_mc4_accounts"
 
 typedef struct
 {
@@ -463,13 +463,15 @@ failed:
 gboolean
 empathy_import_mc4_has_imported (void)
 {
-  GConfClient *client;
+  GSettings *gsettings;
   gboolean ret;
 
-  client = gconf_client_get_default ();
+  gsettings = g_settings_new (EMPATHY_PREFS_ACCOUNTS_SCHEMA);
 
-  ret = gconf_client_get_bool (client, IMPORTED_MC4_ACCOUNTS, NULL);
-  g_object_unref (client);
+  ret = g_settings_get_boolean (gsettings,
+      EMPATHY_PREFS_ACCOUNTS_IMPORTED_MC4_ACCOUNTS);
+
+  g_object_unref (gsettings);
 
   return ret;
 }
@@ -478,6 +480,7 @@ gboolean
 empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
 {
   GConfClient *client;
+  GSettings *gsettings;
   GError *error = NULL;
   GSList *dir, *dirs = NULL;
   gboolean imported_mc4_accounts;
@@ -486,17 +489,10 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
   g_return_val_if_fail (empathy_connection_managers_is_ready (managers),
     FALSE);
 
+  gsettings = g_settings_new (EMPATHY_PREFS_ACCOUNTS_SCHEMA);
   client = gconf_client_get_default ();
 
-  imported_mc4_accounts = gconf_client_get_bool (client,
-      IMPORTED_MC4_ACCOUNTS, &error);
-
-  if (error != NULL)
-    {
-      DEBUG ("Failed to get import_mc4_accounts key: %s", error->message);
-      g_error_free (error);
-      goto out;
-    }
+  imported_mc4_accounts = empathy_import_mc4_has_imported ();
 
   if (imported_mc4_accounts)
     {
@@ -525,9 +521,12 @@ empathy_import_mc4_accounts (EmpathyConnectionManagers *managers)
     }
 
 out:
-  gconf_client_set_bool (client, IMPORTED_MC4_ACCOUNTS, TRUE, NULL);
+  g_settings_set_boolean (gsettings,
+      EMPATHY_PREFS_ACCOUNTS_IMPORTED_MC4_ACCOUNTS, TRUE);
 
   g_slist_free (dirs);
   g_object_unref (client);
+  g_object_unref (gsettings);
+
   return imported;
 }
