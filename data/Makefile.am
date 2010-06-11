@@ -14,6 +14,10 @@ gsettings_SCHEMAS = \
 
 @GSETTINGS_RULES@
 
+convertdir = $(datarootdir)/GConf/gsettings
+convert_DATA = \
+	empathy.convert
+
 streamingprefsdir =  $(datadir)/empathy
 streamingprefs_DATA =		\
 	codec-preferences	\
@@ -33,6 +37,7 @@ htmldir = $(datadir)/empathy
 html_DATA = Template.html
 
 EXTRA_DIST = 				\
+	$(convert_DATA)			\
 	$(desktop_in_files)		\
 	$(desktop_DATA)			\
 	$(gsettings_SCHEMAS)		\
