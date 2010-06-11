@@ -448,7 +448,7 @@ contact_list_view_contact_drag_received (GtkWidget         *view,
 	data = g_slice_new0 (DndGetContactData);
 	data->new_group = new_group;
 	data->old_group = old_group;
-	data->action = context->action;
+	data->action = gdk_drag_context_get_selected_action (context);
 
 	/* FIXME: We should probably wait for the cb before calling
 	 * gtk_drag_finish */
