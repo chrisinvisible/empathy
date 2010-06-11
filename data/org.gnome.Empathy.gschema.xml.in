@@ -1,0 +1,258 @@
+<schemalist>
+  <schema id="org.gnome.Empathy" path="/apps/empathy/">
+    <key name="use-conn" type="b">
+      <default>true</default>
+      <_summary>Connection managers should be used</_summary>
+      <_description>Whether connectivity managers should be used to automatically disconnect/reconnect.</_description>
+    </key>
+    <key name="autoconnect" type="b">
+      <default>true</default>
+      <_summary>Empathy should auto-connect on startup</_summary>
+      <_description>Whether Empathy should automatically log into your accounts on startup.</_description>
+    </key>
+    <key name="autoaway" type="b">
+      <default>true</default>
+      <_summary>Empathy should auto-away when idle</_summary>
+      <_description>Whether Empathy should go into away mode automatically if user is idle.</_description>
+    </key>
+    <key name="import-asked" type="b">
+      <default>false</default>
+      <_summary>Empathy has asked about importing accounts</_summary>
+      <_description>Whether Empathy has asked about importing accounts from other programs.</_description>
+    </key>
+    <key name="butterfly-logs-migrated" type="b">
+      <default>false</default>
+      <_summary>Empathy has migrated butterfly logs</_summary>
+      <_description>Whether Empathy has migrated butterfly logs.</_description>
+    </key>
+    <key name="file-transfer-default-folder" type="s">
+      <default>''</default>
+      <_summary>Empathy default download folder</_summary>
+      <_description>The default folder to save file transfers in.</_description>
+    </key>
+    <child name="ui" schema="org.gnome.Empathy.ui"/>
+    <child name="contacts" schema="org.gnome.Empathy.contacts"/>
+    <child name="sounds" schema="org.gnome.Empathy.sounds"/>
+    <child name="notifications" schema="org.gnome.Empathy.notifications"/>
+    <child name="conversation" schema="org.gnome.Empathy.conversation"/>
+    <child name="hints" schema="org.gnome.Empathy.hints"/>
+    <child name="accounts" schema="org.gnome.Empathy.accounts"/>
+    <child name="location" schema="org.gnome.Empathy.location"/>
+  </schema>
+  <schema id="org.gnome.Empathy.ui" path="/apps/empathy/ui/">
+    <key name="show-offline" type="b">
+      <default>true</default>
+      <_summary>Show offline contacts</_summary>
+      <_description>Whether to show contacts that are offline in the contact list.</_description>
+    </key>
+    <key name="show-avatars" type="b">
+      <default>true</default>
+      <_summary>Show avatars</_summary>
+      <_description>Whether to show avatars for contacts in the contact list and chat windows.</_description>
+    </key>
+    <key name="show-protocols" type="b">
+      <default>false</default>
+      <_summary>Show protocols</_summary>
+      <_description>Whether to show protocols for contacts in the contact list.</_description>
+    </key>
+    <key name="compact-contact-list" type="b">
+      <default>false</default>
+      <_summary>Compact contact list</_summary>
+      <_description>Whether to show the contact list in compact mode.</_description>
+    </key>
+    <key name="main-window-hidden" type="b">
+      <default>false</default>
+      <_summary>Hide main window</_summary>
+      <_description>Hide the main window.</_description>
+    </key>
+    <key name="avatar-directory" type="s">
+      <default>''</default>
+      <_summary>Default directory to select an avatar image from</_summary>
+      <_description>The last directory that an avatar image was chosen from.</_description>
+    </key>
+    <key name="separate-chat-windows" type="b">
+      <default>false</default>
+      <_summary>Open new chats in separate windows</_summary>
+      <_description>Always open a separate chat window for new chats.</_description>
+    </key>
+    <key name="chat-window-paned-pos" type="i">
+      <default>0</default>
+      <_summary>The position for the chat window side pane</_summary>
+      <_description>The stored position (in pixels) of the chat window side pane.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.contacts" path="/apps/empathy/contacts/">
+    <key name="sort-criterium" type="s">
+      <default>'state'</default>
+      <_summary>Contact list sort criterion</_summary>
+      <_description>Which criterion to use when sorting the contact list. Default is to sort by the contact's name with the value "name". A value of "state" will sort the contact list by state.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.sounds" path="/apps/empathy/sounds/">
+    <key name="sounds-enabled" type="b">
+      <default>true</default>
+      <_summary>Use notification sounds</_summary>
+      <_description>Whether to play a sound to notify of events.</_description>
+    </key>
+    <key name="sounds-disabled-away" type="b">
+      <default>true</default>
+      <_summary>Disable sounds when away</_summary>
+      <_description>Whether to play sound notifications when away or busy.</_description>
+    </key>
+    <key name="sounds-incoming-message" type="b">
+      <default>true</default>
+      <_summary>Play a sound for incoming messages</_summary>
+      <_description>Whether to play a sound to notify of incoming messages.</_description>
+    </key>
+    <key name="sounds-outgoing-message" type="b">
+      <default>false</default>
+      <_summary>Play a sound for outgoing messages</_summary>
+      <_description>Whether to play a sound to notify of outgoing messages.</_description>
+    </key>
+    <key name="sounds-new-conversation" type="b">
+      <default>true</default>
+      <_summary>Play a sound for new conversations</_summary>
+      <_description>Whether to play a sound to notify of new conversations.</_description>
+    </key>
+    <key name="sounds-contact-login" type="b">
+      <default>false</default>
+      <_summary>Play a sound when a contact logs in</_summary>
+      <_description>Whether to play a sound to notify of contacts logging into the network.</_description>
+    </key>
+    <key name="sounds-contact-logout" type="b">
+      <default>false</default>
+      <_summary>Play a sound when a contact logs out</_summary>
+      <_description>Whether to play a sound to notify of contacts logging out of the network.</_description>
+    </key>
+    <key name="sounds-service-login" type="b">
+      <default>false</default>
+      <_summary>Play a sound when we log in</_summary>
+      <_description>Whether to play a sound when logging into a network.</_description>
+    </key>
+    <key name="sounds-service-logout" type="b">
+      <default>false</default>
+      <_summary>Play a sound when we log out</_summary>
+      <_description>Whether to play a sound when logging out of a network.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.notifications" path="/apps/empathy/notifications/">
+    <key name="notifications-enabled" type="b">
+      <default>true</default>
+      <_summary>Enable popup notifications for new messages</_summary>
+      <_description>Whether to show a popup notification when receiving a new message.</_description>
+    </key>
+    <key name="notifications-disabled-away" type="b">
+      <default>true</default>
+      <_summary>Disable popup notifications when away</_summary>
+      <_description>Whether to show popup notifications when away or busy.</_description>
+    </key>
+    <key name="notifications-focus" type="b">
+      <default>false</default>
+      <_summary>Pop up notifications if the chat isn't focused</_summary>
+      <_description>Whether to show a popup notification when receiving a new message even if the chat is already opened, but not focused.</_description>
+    </key>
+    <key name="notifications-contact-signin" type="b">
+      <default>false</default>
+      <_summary>Pop up notifications when a contact logs in</_summary>
+      <_description>Whether to show a popup notification when a contact goes online.</_description>
+    </key>
+    <key name="notifications-contact-signout" type="b">
+      <default>false</default>
+      <_summary>Pop up notifications when a contact logs out</_summary>
+      <_description>Whether to show a popup notification when a contact goes offline.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.conversation" path="/apps/empathy/conversation/">
+    <key name="graphical-smileys" type="b">
+      <default>true</default>
+      <_summary>Use graphical smileys</_summary>
+      <_description>Whether to convert smileys into graphical images in conversations.</_description>
+    </key>
+    <key name="show-contacts-in-rooms" type="b">
+      <default>true</default>
+      <_summary>Show contact list in rooms</_summary>
+      <_description>Whether to show the contact list in chat rooms.</_description>
+    </key>
+    <key name="theme" type="s">
+      <default>'classic'</default>
+      <_summary>Chat window theme</_summary>
+      <_description>The theme that is used to display the conversation in chat windows.</_description>
+    </key>
+    <key name="adium-path" type="s">
+      <default>''</default>
+      <_summary>Path of the Adium theme to use</_summary>
+      <_description>Path of the Adium theme to use if the theme used for chat is Adium.</_description>
+    </key>
+    <key name="enable-webkit-developer-tools" type="b">
+      <default>false</default>
+      <_summary>Enable WebKit Developer Tools</_summary>
+      <_description>Whether WebKit developer tools, such as the Web Inspector, should be enabled.</_description>
+    </key>
+    <key name="theme-chat-room" type="b">
+      <default>true</default>
+      <_summary>Use theme for chat rooms</_summary>
+      <_description>Whether to use the theme for chat rooms.</_description>
+    </key>
+    <key name="spell-checker-languages" type="s">
+      <default>'en'</default>
+      <_summary>Spell checking languages</_summary>
+      <_description>Comma-separated list of spell checker languages to use (e.g. "en, fr, nl").</_description>
+    </key>
+    <key name="spell-checker-enabled" type="b">
+      <default>true</default>
+      <_summary>Enable spell checker</_summary>
+      <_description>Whether to check words typed against the languages you want to check with.</_description>
+    </key>
+    <key name="nick-completion-char" type="s">
+      <default>':'</default>
+      <_summary>Nick completed character</_summary>
+      <_description>Character to add after nickname when using nick completion (tab) in group chat.</_description>
+    </key>
+    <key name="avatar-in-icon" type="b">
+      <default>false</default>
+      <_summary>Empathy should use the avatar of the contact as the chat window icon</_summary>
+      <_description>Whether Empathy should use the avatar of the contact as the chat window icon.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.hints" path="/apps/empathy/hints/">
+    <key name="close-main-window" type="b">
+      <default>true</default>
+      <_summary>Show hint about closing the main window</_summary>
+      <_description>Whether to show the message dialog about closing the main window with the 'x' button in the title bar.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.accounts" path="/apps/empathy/accounts/">
+    <key name="imported-mc4-accounts" type="b">
+      <default>false</default>
+      <_summary>MC 4 accounts have been imported</_summary>
+      <_description>MC 4 accounts have been imported.</_description>
+    </key>
+  </schema>
+  <schema id="org.gnome.Empathy.location" path="/apps/empathy/location/">
+    <key name="publish" type="b">
+      <default>false</default>
+      <_summary>Empathy can publish the user's location</_summary>
+      <_description>Whether Empathy can publish the user's location to their contacts.</_description>
+    </key>
+    <key name="resource-network" type="b">
+      <default>true</default>
+      <_summary>Empathy can use the network to guess the location</_summary>
+      <_description>Whether Empathy can use the network to guess the location.</_description>
+    </key>
+    <key name="resource-cell" type="b">
+      <default>true</default>
+      <_summary>Empathy can use the cellular network to guess the location</_summary>
+      <_description>Whether Empathy can use the cellular network to guess the location.</_description>
+    </key>
+    <key name="resource-gps" type="b">
+      <default>false</default>
+      <_summary>Empathy can use the GPS to guess the location</_summary>
+      <_description>Whether Empathy can use the GPS to guess the location.</_description>
+    </key>
+    <key name="reduce-accuracy" type="b">
+      <default>true</default>
+      <_summary>Empathy should reduce the location's accuracy</_summary>
+      <_description>Whether Empathy should reduce the location's accuracy for privacy reasons.</_description>
+    </key>
+  </schema>
+</schemalist>

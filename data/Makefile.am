@@ -12,6 +12,7 @@ gsettings_SCHEMAS = \
 	org.gnome.Empathy.gschema.xml \
 	$(NULL)
 
+@INTLTOOL_XML_NOMERGE_RULE@
 @GSETTINGS_RULES@
 
 convertdir = $(datarootdir)/GConf/gsettings
