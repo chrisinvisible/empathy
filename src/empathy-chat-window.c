@@ -795,6 +795,7 @@ chat_window_conv_activate_cb (GtkAction         *action,
 			found);
 	}
 	gtk_action_set_visible (priv->menu_conv_favorite, is_room);
+	gtk_action_set_visible (priv->menu_conv_always_urgent, is_room);
 
 	/* Show contacts menu */
 	g_object_get (priv->current_chat,
