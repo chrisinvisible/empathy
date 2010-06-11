@@ -149,6 +149,8 @@ contact_list_view_is_visible_contact (EmpathyContactListView *self,
 	gchar *dup_str = NULL;
 	gboolean visible;
 
+	g_assert (live != NULL);
+
 	/* check alias name */
 	str = empathy_contact_get_name (contact);
 	if (empathy_live_search_match (live, str))
@@ -183,7 +185,8 @@ contact_list_view_filter_visible_func (GtkTreeModel *model,
 	GtkTreeIter                 child_iter;
 	gboolean                    visible;
 
-	if (!gtk_widget_get_visible (priv->search_widget))
+	if (priv->search_widget == NULL ||
+	    !gtk_widget_get_visible (priv->search_widget))
 		return TRUE;
 
 	gtk_tree_model_get (model, iter,
