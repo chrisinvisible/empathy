@@ -1294,7 +1294,7 @@ contact_list_view_search_show_cb (EmpathyLiveSearch      *search,
 
 typedef struct {
 	EmpathyContactListView *view;
-	GtkTreePath *path;
+	GtkTreeRowReference *row_ref;
 	gboolean expand;
 } ExpandData;
 
@@ -1302,25 +1302,27 @@ static gboolean
 contact_list_view_expand_idle_cb (gpointer user_data)
 {
 	ExpandData *data = user_data;
+	GtkTreePath *path;
 
 	g_signal_handlers_block_by_func (data->view,
 		contact_list_view_row_expand_or_collapse_cb,
 		GINT_TO_POINTER (data->expand));
 
+	path = gtk_tree_row_reference_get_path (data->row_ref);
 	if (data->expand) {
-		gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view),
-			data->path, TRUE);
+		gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), path,
+		    TRUE);
 	} else {
-		gtk_tree_view_collapse_row (GTK_TREE_VIEW (data->view),
-			data->path);
+		gtk_tree_view_collapse_row (GTK_TREE_VIEW (data->view), path);
 	}
+	gtk_tree_path_free (path);
 
 	g_signal_handlers_unblock_by_func (data->view,
 		contact_list_view_row_expand_or_collapse_cb,
 		GINT_TO_POINTER (data->expand));
 
 	g_object_unref (data->view);
-	gtk_tree_path_free (data->path);
+	gtk_tree_row_reference_free (data->row_ref);
 	g_slice_free (ExpandData, data);
 
 	return FALSE;
@@ -1349,7 +1351,7 @@ contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 
 	data = g_slice_new0 (ExpandData);
 	data->view = g_object_ref (view);
-	data->path = gtk_tree_path_copy (path);
+	data->row_ref = gtk_tree_row_reference_new (model, path);
 	data->expand =
 		(priv->list_features & EMPATHY_CONTACT_LIST_FEATURE_GROUPS_SAVE) == 0 ||
 		(priv->search_widget != NULL && gtk_widget_get_visible (priv->search_widget)) ||
