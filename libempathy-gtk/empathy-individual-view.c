@@ -961,7 +961,10 @@ individual_view_pixbuf_cell_data_func (GtkTreeViewColumn *tree_column,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_ACTIVE, &is_active,
       EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, &pixbuf, -1);
 
-  g_object_set (cell, "visible", !is_group, "pixbuf", pixbuf, NULL);
+  g_object_set (cell,
+      "visible", !is_group,
+      "pixbuf", pixbuf,
+      NULL);
 
   if (pixbuf != NULL)
     {
@@ -1001,7 +1004,10 @@ individual_view_group_icon_cell_data_func (GtkTreeViewColumn *tree_column,
     }
 
 out:
-  g_object_set (cell, "visible", pixbuf != NULL, "pixbuf", pixbuf, NULL);
+  g_object_set (cell,
+      "visible", pixbuf != NULL,
+      "pixbuf", pixbuf,
+      NULL);
 
   if (pixbuf != NULL)
     g_object_unref (pixbuf);
@@ -1053,7 +1059,9 @@ individual_view_avatar_cell_data_func (GtkTreeViewColumn *tree_column,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_ACTIVE, &is_active, -1);
 
   g_object_set (cell,
-      "visible", !is_group && show_avatar, "pixbuf", pixbuf, NULL);
+      "visible", !is_group && show_avatar,
+      "pixbuf", pixbuf,
+      NULL);
 
   if (pixbuf)
     {
@@ -1484,7 +1492,11 @@ individual_view_constructed (GObject *object)
       (GtkTreeCellDataFunc) individual_view_pixbuf_cell_data_func,
       view, NULL);
 
-  g_object_set (cell, "xpad", 5, "ypad", 1, "visible", FALSE, NULL);
+  g_object_set (cell,
+      "xpad", 5,
+      "ypad", 1,
+      "visible", FALSE,
+      NULL);
 
   /* Group icon */
   cell = gtk_cell_renderer_pixbuf_new ();
@@ -1495,7 +1507,11 @@ individual_view_constructed (GObject *object)
 
   g_object_set (cell,
       "xpad", 0,
-      "ypad", 0, "visible", FALSE, "width", 16, "height", 16, NULL);
+      "ypad", 0,
+      "visible", FALSE,
+      "width", 16,
+      "height", 16,
+      NULL);
 
   /* Name */
   cell = empathy_cell_renderer_text_new ();
@@ -1537,7 +1553,11 @@ individual_view_constructed (GObject *object)
 
   g_object_set (cell,
       "xpad", 0,
-      "ypad", 0, "visible", FALSE, "width", 32, "height", 32, NULL);
+      "ypad", 0,
+      "visible", FALSE,
+      "width", 32,
+      "height", 32,
+      NULL);
 
   /* Expander */
   cell = empathy_cell_renderer_expander_new ();
