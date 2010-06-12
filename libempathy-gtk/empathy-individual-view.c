@@ -1326,6 +1326,7 @@ individual_view_expand_idle_cb (gpointer user_data)
   if (path == NULL)
     goto done;
 
+
   g_signal_handlers_block_by_func (data->view,
     individual_view_row_expand_or_collapse_cb,
     GINT_TO_POINTER (data->expand));
