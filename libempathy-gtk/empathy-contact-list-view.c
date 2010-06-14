@@ -1304,13 +1304,13 @@ contact_list_view_expand_idle_cb (gpointer user_data)
 	ExpandData *data = user_data;
 	GtkTreePath *path;
 
-	g_signal_handlers_block_by_func (data->view,
-		contact_list_view_row_expand_or_collapse_cb,
-		GINT_TO_POINTER (data->expand));
-
 	path = gtk_tree_row_reference_get_path (data->row_ref);
 	if (path == NULL)
 		goto done;
+
+	g_signal_handlers_block_by_func (data->view,
+		contact_list_view_row_expand_or_collapse_cb,
+		GINT_TO_POINTER (data->expand));
 
 	if (data->expand) {
 		gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), path,
