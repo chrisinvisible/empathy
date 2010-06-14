@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 Collabora Ltd.
+ * Copyright (C) 2007-2010 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Authors: Felix Kaser <felix.kaser@collabora.co.uk>
+ *          Xavier Claessens <xavier.claessens@collabora.co.uk>
+ *          Claudio Saavedra <csaavedra@igalia.com>
  */
 
 #include <config.h>
