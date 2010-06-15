@@ -939,12 +939,14 @@ individual_view_call_activated_cb (EmpathyCellRendererActivatable *cell,
   shell = GTK_MENU_SHELL (menu);
 
   /* audio */
-  /* TODO: implement */
-  DEBUG ("audio call menu item unimplemented");
+  item = empathy_individual_audio_call_menu_item_new (individual);
+  gtk_menu_shell_append (shell, item);
+  gtk_widget_show (item);
 
   /* video */
-  /* TODO: implement */
-  DEBUG ("video call menu item unimplemented");
+  item = empathy_individual_video_call_menu_item_new (individual);
+  gtk_menu_shell_append (shell, item);
+  gtk_widget_show (item);
 
   g_signal_connect (menu, "deactivate", G_CALLBACK (gtk_menu_detach), NULL);
   gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (view), NULL);
