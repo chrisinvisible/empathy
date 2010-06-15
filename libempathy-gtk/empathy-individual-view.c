@@ -233,6 +233,20 @@ individual_view_filter_visible_func (GtkTreeModel *model,
   return FALSE;
 }
 
+static void
+individual_view_tooltip_destroy_cb (GtkWidget *widget,
+    EmpathyIndividualView *view)
+{
+  EmpathyIndividualViewPriv *priv = GET_PRIV (view);
+
+  if (priv->tooltip_widget != NULL)
+    {
+      DEBUG ("Tooltip destroyed");
+      g_object_unref (priv->tooltip_widget);
+      priv->tooltip_widget = NULL;
+    }
+}
+
 static gboolean
 individual_view_query_tooltip_cb (EmpathyIndividualView *view,
     gint x,
@@ -241,12 +255,16 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
     GtkTooltip *tooltip,
     gpointer user_data)
 {
+  EmpathyIndividualViewPriv *priv;
   FolksIndividual *individual;
   GtkTreeModel *model;
   GtkTreeIter iter;
   GtkTreePath *path;
   static gint running = 0;
   gboolean ret = FALSE;
+  EmpathyContact *contact;
+
+  priv = GET_PRIV (view);
 
   /* Avoid an infinite loop. See GNOME bug #574377 */
   if (running > 0)
@@ -271,12 +289,40 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
   gtk_tree_path_free (path);
 
   gtk_tree_model_get (model, &iter,
-      EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
+      EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
+      -1);
   if (individual == NULL)
     {
       goto OUT;
     }
+  else
+    {
+      contact = empathy_contact_from_folks_individual (individual);
+      if (contact == NULL)
+        goto OUT;
+    }
 
+  if (!priv->tooltip_widget)
+    {
+      priv->tooltip_widget = empathy_contact_widget_new (contact,
+          EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP |
+          EMPATHY_CONTACT_WIDGET_SHOW_LOCATION);
+      gtk_container_set_border_width (GTK_CONTAINER (priv->tooltip_widget), 8);
+      g_object_ref (priv->tooltip_widget);
+      g_signal_connect (priv->tooltip_widget, "destroy",
+          G_CALLBACK (individual_view_tooltip_destroy_cb), view);
+      gtk_widget_show (priv->tooltip_widget);
+    }
+  else
+    {
+      empathy_contact_widget_set_contact (priv->tooltip_widget, contact);
+    }
+
+  gtk_tooltip_set_custom (tooltip, priv->tooltip_widget);
+  ret = TRUE;
+
+  g_object_unref (contact);
+  g_object_unref (individual);
 OUT:
   running--;
 
@@ -876,6 +922,7 @@ individual_view_call_activated_cb (EmpathyCellRendererActivatable *cell,
   FolksIndividual *individual;
   GdkEventButton *event;
   GtkMenuShell *shell;
+  GtkWidget *item;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
   if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
