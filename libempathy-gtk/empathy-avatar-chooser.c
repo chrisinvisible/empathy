@@ -725,7 +725,8 @@ avatar_chooser_drag_motion_cb (GtkWidget          *widget,
 
 	priv = GET_PRIV (chooser);
 
-	for (p = context->targets; p != NULL; p = p->next) {
+	for (p = gdk_drag_context_list_targets (context); p != NULL;
+	     p = p->next) {
 		gchar *possible_type;
 
 		possible_type = gdk_atom_name (GDK_POINTER_TO_ATOM (p->data));
@@ -764,11 +765,12 @@ avatar_chooser_drag_drop_cb (GtkWidget          *widget,
 
 	priv = GET_PRIV (chooser);
 
-	if (context->targets == NULL) {
+	if (gdk_drag_context_list_targets (context) == NULL) {
 		return FALSE;
 	}
 
-	for (p = context->targets; p != NULL; p = p->next) {
+	for (p = gdk_drag_context_list_targets (context);
+	     p != NULL; p = p->next) {
 		char *possible_type;
 
 		possible_type = gdk_atom_name (GDK_POINTER_TO_ATOM (p->data));

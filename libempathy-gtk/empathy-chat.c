@@ -1559,8 +1559,8 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		 */
 
 		view = GTK_TEXT_VIEW (chat->input_text_view);
-		if (gtk_im_context_filter_keypress (view->im_context, event)) {
-			GTK_TEXT_VIEW (chat->input_text_view)->need_im_reset = TRUE;
+		if (gtk_text_view_im_context_filter_keypress (view, event)) {
+			gtk_text_view_reset_im_context (view);
 			return TRUE;
 		}
 
