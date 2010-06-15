@@ -197,6 +197,11 @@ live_search_key_press_event_cb (GtkWidget *widget,
       event->keyval == GDK_Control_R)
     return FALSE;
 
+  /* dont forward the arrow up/down key to the entry, it is needed for
+   * navigation in the treeview */
+   if (event->keyval == GDK_Up || event->keyval == GDK_Down)
+    return FALSE;
+
   /* realize the widget if it is not realized yet */
   gtk_widget_realize (priv->search_entry);
   if (!gtk_widget_has_focus (priv->search_entry))
