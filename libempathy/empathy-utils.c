@@ -593,6 +593,9 @@ empathy_folks_individual_contains_contact (FolksIndividual *individual)
   return FALSE;
 }
 
+/* TODO: this needs to be eliminated (and replaced in some cases with user
+ * prompts) when we break the assumption that FolksIndividuals are 1:1 with
+ * TpContacts */
 EmpathyContact *
 empathy_contact_from_folks_individual (FolksIndividual *individual)
 {
