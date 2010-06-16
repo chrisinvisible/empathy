@@ -770,20 +770,17 @@ individual_view_popup_menu_idle_cb (gpointer user_data)
   GtkWidget *menu;
 
   menu = empathy_individual_view_get_individual_menu (data->view);
-  if (!menu)
-    {
-      menu = empathy_individual_view_get_group_menu (data->view);
-    }
+  if (menu == NULL)
+    menu = empathy_individual_view_get_group_menu (data->view);
 
-  if (menu)
+  if (menu != NULL)
     {
-      g_signal_connect (menu, "deactivate",
-          G_CALLBACK (gtk_menu_detach), NULL);
-      gtk_menu_attach_to_widget (GTK_MENU (menu),
-          GTK_WIDGET (data->view), NULL);
+      g_signal_connect (menu, "deactivate", G_CALLBACK (gtk_menu_detach), NULL);
+      gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (data->view),
+          NULL);
       gtk_widget_show (menu);
-      gtk_menu_popup (GTK_MENU (menu),
-          NULL, NULL, NULL, NULL, data->button, data->time);
+      gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, data->button,
+          data->time);
       g_object_ref_sink (menu);
       g_object_unref (menu);
     }
@@ -2064,8 +2061,7 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
     }
   flags = empathy_individual_view_get_flags (view);
 
-  /* TODO: implement (create the menu here */
-  DEBUG ("individual menu not implemented");
+  menu = empathy_individual_menu_new (individual, priv->individual_features);
 
   /* Remove contact */
   if (priv->view_features &

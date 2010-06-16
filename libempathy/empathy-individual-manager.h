@@ -37,6 +37,7 @@ G_BEGIN_DECLS
 #define EMPATHY_INDIVIDUAL_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_INDIVIDUAL_MANAGER, EmpathyIndividualManagerClass))
     typedef enum
 {
+  EMPATHY_INDIVIDUAL_MANAGER_NO_FLAGS = 0,
   EMPATHY_INDIVIDUAL_MANAGER_CAN_ADD = 1 << 0,
   EMPATHY_INDIVIDUAL_MANAGER_CAN_REMOVE = 1 << 1,
   EMPATHY_INDIVIDUAL_MANAGER_CAN_ALIAS = 1 << 2,
@@ -77,6 +78,11 @@ void empathy_individual_manager_remove (EmpathyIndividualManager *manager,
 gboolean empathy_individual_manager_is_favourite (
     EmpathyIndividualManager *manager,
     FolksIndividual *individual);
+
+EmpathyIndividualManagerFlags
+empathy_individual_manager_get_flags_for_connection (
+    EmpathyIndividualManager *manager,
+    TpConnection *connection);
 
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_MANAGER_H__ */

@@ -52,6 +52,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-selector-dialog.c \
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
+	empathy-individual-menu.c		\
 	empathy-individual-store.c		\
 	empathy-individual-view.c		\
 	empathy-irc-network-dialog.c		\

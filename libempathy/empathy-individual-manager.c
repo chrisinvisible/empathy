@@ -288,3 +288,33 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
   /* TODO: implement */
   DEBUG (G_STRLOC ": individual removal not implemented");
 }
+
+EmpathyIndividualManagerFlags
+empathy_individual_manager_get_flags_for_connection (
+    EmpathyIndividualManager *self,
+    TpConnection *connection)
+{
+  EmpathyIndividualManagerPriv *priv;
+  EmpathyContactListFlags list_flags;
+  EmpathyIndividualManagerFlags flags;
+
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self),
+      EMPATHY_INDIVIDUAL_MANAGER_NO_FLAGS);
+
+  priv = GET_PRIV (self);
+
+  list_flags = empathy_contact_manager_get_flags_for_connection (
+    priv->contact_manager, connection);
+
+  flags = EMPATHY_INDIVIDUAL_MANAGER_NO_FLAGS;
+  if (list_flags & EMPATHY_CONTACT_LIST_CAN_ADD)
+    flags |= EMPATHY_INDIVIDUAL_MANAGER_CAN_ADD;
+  if (list_flags & EMPATHY_CONTACT_LIST_CAN_REMOVE)
+    flags |= EMPATHY_INDIVIDUAL_MANAGER_CAN_REMOVE;
+  if (list_flags & EMPATHY_CONTACT_LIST_CAN_ALIAS)
+    flags |= EMPATHY_INDIVIDUAL_MANAGER_CAN_ALIAS;
+  if (list_flags & EMPATHY_CONTACT_LIST_CAN_GROUP)
+    flags |= EMPATHY_INDIVIDUAL_MANAGER_CAN_GROUP;
+
+  return flags;
+}

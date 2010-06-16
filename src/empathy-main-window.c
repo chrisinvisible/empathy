@@ -182,6 +182,9 @@ main_window_flash_foreach (GtkTreeModel *model,
 				&individual,
 			    -1);
 
+	if (individual == NULL)
+		return FALSE;
+
 	contact = empathy_contact_from_folks_individual (individual);
 	if (contact != data->event->contact) {
 		if (contact) {

@@ -38,6 +38,26 @@ typedef enum {
 	EMPATHY_INDIVIDUAL_FEATURE_ALL = (1 << 6) - 1,
 } EmpathyIndividualFeatureFlags;
 
+GtkWidget * empathy_individual_menu_new (FolksIndividual *individual,
+    EmpathyIndividualFeatureFlags features);
+GtkWidget * empathy_individual_add_menu_item_new  (FolksIndividual *individual);
+GtkWidget * empathy_individual_chat_menu_item_new (FolksIndividual *individual);
+GtkWidget * empathy_individual_audio_call_menu_item_new (
+    FolksIndividual *individual);
+GtkWidget * empathy_individual_video_call_menu_item_new (
+    FolksIndividual *individual);
+GtkWidget * empathy_individual_log_menu_item_new  (FolksIndividual *individual);
+GtkWidget * empathy_individual_info_menu_item_new (FolksIndividual *individual);
+GtkWidget * empathy_individual_edit_menu_item_new (FolksIndividual *individual);
+GtkWidget * empathy_individual_invite_menu_item_new (
+    FolksIndividual *individual);
+GtkWidget * empathy_individual_file_transfer_menu_item_new (
+    FolksIndividual *individual);
+GtkWidget * empathy_individual_share_my_desktop_menu_item_new (
+    FolksIndividual *individual);
+GtkWidget * empathy_individual_favourite_menu_item_new (
+    FolksIndividual *individual);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_INDIVIDUAL_MENU_H__ */

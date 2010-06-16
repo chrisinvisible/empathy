@@ -91,6 +91,7 @@ void empathy_connect_new_account (TpAccount *account,
     TpAccountManager *account_manager);
 
 TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType type);
+gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_from_folks_individual (FolksIndividual *individual);
 
 G_END_DECLS

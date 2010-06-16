@@ -569,6 +569,30 @@ empathy_folks_presence_type_to_tp (FolksPresenceType type)
   return (TpConnectionPresenceType) type;
 }
 
+gboolean
+empathy_folks_individual_contains_contact (FolksIndividual *individual)
+{
+  GList *personas, *l;
+
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), FALSE);
+
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      TpfPersona *persona = l->data;
+
+      if (TPF_IS_PERSONA (persona))
+        {
+          TpContact *contact = tpf_persona_get_contact (persona);
+
+          if (TP_IS_CONTACT (contact))
+            return TRUE;
+        }
+    }
+
+  return FALSE;
+}
+
 EmpathyContact *
 empathy_contact_from_folks_individual (FolksIndividual *individual)
 {

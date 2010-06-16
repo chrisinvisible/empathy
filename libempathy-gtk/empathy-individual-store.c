@@ -117,10 +117,11 @@ G_DEFINE_TYPE (EmpathyIndividualStore, empathy_individual_store,
 static void
 add_individual_to_store (GtkTreeStore *self,
     GtkTreeIter *iter,
+    GtkTreeIter *parent,
     FolksIndividual *individual,
     EmpathyIndividualManagerFlags flags)
 {
-  gtk_tree_store_set (self, iter,
+  gtk_tree_store_insert_with_values (self, iter, parent, 0,
       EMPATHY_INDIVIDUAL_STORE_COL_NAME,
       folks_individual_get_alias (individual),
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, individual,
@@ -132,7 +133,8 @@ add_individual_to_store (GtkTreeStore *self,
       EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
       folks_individual_get_capabilities (individual) &
       FOLKS_CAPABILITIES_FLAGS_VIDEO,
-      EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, flags, -1);
+      EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, flags,
+      -1);
 }
 
 static gboolean
@@ -391,10 +393,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
               &iter_group, NULL, NULL, TRUE);
         }
 
-      gtk_tree_store_insert_after (GTK_TREE_STORE (self), &iter,
-          parent, NULL);
-
-      add_individual_to_store (GTK_TREE_STORE (self), &iter,
+      add_individual_to_store (GTK_TREE_STORE (self), &iter, parent,
           individual, flags);
     }
 
@@ -406,10 +405,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       individual_store_get_group (self, l->data, &iter_group, NULL, NULL,
           FALSE);
 
-      gtk_tree_store_insert_after (GTK_TREE_STORE (self), &iter,
-          &iter_group, NULL);
-
-      add_individual_to_store (GTK_TREE_STORE (self), &iter,
+      add_individual_to_store (GTK_TREE_STORE (self), &iter, &iter_group,
           individual, flags);
     }
   g_list_free (groups);
@@ -426,10 +422,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       individual_store_get_group (self, EMPATHY_INDIVIDUAL_STORE_FAVORITE,
           &iter_group, NULL, NULL, TRUE);
 
-      gtk_tree_store_insert_after (GTK_TREE_STORE (self), &iter,
-          &iter_group, NULL);
-
-      add_individual_to_store (GTK_TREE_STORE (self), &iter,
+      add_individual_to_store (GTK_TREE_STORE (self), &iter, &iter_group,
           individual, flags);
     }
 #endif
@@ -456,7 +449,8 @@ individual_store_contact_set_active (EmpathyIndividualStore *self,
       GtkTreePath *path;
 
       gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
-          EMPATHY_INDIVIDUAL_STORE_COL_IS_ACTIVE, active, -1);
+          EMPATHY_INDIVIDUAL_STORE_COL_IS_ACTIVE, active,
+          -1);
 
       DEBUG ("Set item %s", active ? "active" : "inactive");
 
@@ -686,21 +680,22 @@ individual_store_contact_update (EmpathyIndividualStore *self,
           EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, pixbuf_status,
           EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
           EMPATHY_INDIVIDUAL_STORE_COL_NAME,
-          folks_individual_get_alias (individual),
+            folks_individual_get_alias (individual),
           EMPATHY_INDIVIDUAL_STORE_COL_PRESENCE_TYPE,
-          folks_individual_get_presence_type (individual),
+            folks_individual_get_presence_type (individual),
           EMPATHY_INDIVIDUAL_STORE_COL_STATUS,
-          folks_individual_get_presence_message (individual),
+            folks_individual_get_presence_message (individual),
           EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL,
-          folks_individual_get_capabilities (individual) &
-          FOLKS_CAPABILITIES_FLAGS_AUDIO,
+            folks_individual_get_capabilities (individual) &
+              FOLKS_CAPABILITIES_FLAGS_AUDIO,
           EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
-          folks_individual_get_capabilities (individual) &
-          FOLKS_CAPABILITIES_FLAGS_VIDEO,
+            folks_individual_get_capabilities (individual) &
+              FOLKS_CAPABILITIES_FLAGS_VIDEO,
           EMPATHY_INDIVIDUAL_STORE_COL_COMPACT, priv->is_compact,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, FALSE,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, now_online,
-          EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE, -1);
+          EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE,
+          -1);
     }
 
   if (priv->show_active && do_set_active)
