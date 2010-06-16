@@ -291,6 +291,8 @@ create_marker (EmpathyMapView *window,
 
   clutter_container_add (CLUTTER_CONTAINER (window->layer), marker, NULL);
 
+  DEBUG ("Create marker for %s", empathy_contact_get_id (contact));
+
   return CHAMPLAIN_MARKER (marker);
 }
 
