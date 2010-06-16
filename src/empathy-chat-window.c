@@ -1299,8 +1299,8 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 
 		notify_notification_set_timeout (notification, NOTIFY_EXPIRES_DEFAULT);
 
-		g_signal_connect (notification, "closed",
-				  G_CALLBACK (chat_window_notification_closed_cb), window);
+		tp_g_signal_connect_object (notification, "closed",
+				  G_CALLBACK (chat_window_notification_closed_cb), window, 0);
 
 		if (has_x_canonical_append) {
 			notify_notification_set_hint_string (notification,
