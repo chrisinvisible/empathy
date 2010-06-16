@@ -27,7 +27,7 @@
 #include <telepathy-glib/contact.h>
 #include <telepathy-glib/account.h>
 #ifdef ENABLE_TPL
-#include <telepathy-logger/contact.h>
+#include <telepathy-logger/entity.h>
 #endif /* ENABLE_TPL */
 
 G_BEGIN_DECLS
@@ -75,7 +75,7 @@ GType empathy_contact_get_type (void) G_GNUC_CONST;
 EmpathyContact * empathy_contact_new (TpContact *tp_contact);
 #ifdef ENABLE_TPL
 EmpathyContact * empathy_contact_from_tpl_contact (TpAccount *account,
-    TplContact *tpl_contact);
+    TplEntity *tpl_contact);
 #endif /* ENABLE_TPL */
 EmpathyContact * empathy_contact_new_for_log (TpAccount *account,
     const gchar *id, const gchar *name, gboolean is_user);

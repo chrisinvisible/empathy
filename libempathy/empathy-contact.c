@@ -482,25 +482,25 @@ empathy_contact_new (TpContact *tp_contact)
 #ifdef ENABLE_TPL
 EmpathyContact *
 empathy_contact_from_tpl_contact (TpAccount *account,
-    TplContact *tpl_contact)
+    TplEntity *tpl_entity)
 {
   EmpathyContact *retval;
   gboolean is_user;
 
-  g_return_val_if_fail (TPL_IS_CONTACT (tpl_contact), NULL);
+  g_return_val_if_fail (TPL_IS_ENTITY (tpl_entity), NULL);
 
-  is_user = (TPL_CONTACT_USER == tpl_contact_get_contact_type (tpl_contact));
+  is_user = (TPL_ENTITY_SELF == tpl_entity_get_entity_type (tpl_entity));
 
   retval = g_object_new (EMPATHY_TYPE_CONTACT,
-      "id", tpl_contact_get_alias (tpl_contact),
-      "name", tpl_contact_get_identifier (tpl_contact),
+      "id", tpl_entity_get_alias (tpl_entity),
+      "name", tpl_entity_get_identifier (tpl_entity),
       "account", account,
       "is-user", is_user,
       NULL);
 
-  if (!EMP_STR_EMPTY (tpl_contact_get_avatar_token (tpl_contact)))
+  if (!EMP_STR_EMPTY (tpl_entity_get_avatar_token (tpl_entity)))
     empathy_contact_load_avatar_cache (retval,
-        tpl_contact_get_avatar_token (tpl_contact));
+        tpl_entity_get_avatar_token (tpl_entity));
 
   return retval;
 }

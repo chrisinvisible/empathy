@@ -31,7 +31,7 @@
 #include <telepathy-glib/account.h>
 #include <telepathy-glib/account-manager.h>
 
-#include <telepathy-logger/contact.h>
+#include <telepathy-logger/entity.h>
 #include <telepathy-logger/entry.h>
 #include <telepathy-logger/entry-text.h>
 #endif /* ENABLE_TPL */
@@ -267,8 +267,8 @@ empathy_message_from_tpl_log_entry (TplEntry *logentry)
 	EmpathyMessage *retval = NULL;
 	TpAccountManager *acc_man = NULL;
 	TpAccount *account = NULL;
-	TplContact *receiver = NULL;
-	TplContact *sender = NULL;
+	TplEntity *receiver = NULL;
+	TplEntity *sender = NULL;
 	gchar *body= NULL;
 
 	g_return_val_if_fail (TPL_IS_ENTRY (logentry), NULL);
@@ -279,7 +279,7 @@ empathy_message_from_tpl_log_entry (TplEntry *logentry)
 	 * When #610455 will be fixed, calling tp_account_manager_ensure_account ()
 	 * might add a not existing account to the AM. tp_account_new () probably
 	 * will be the best way to handle it.
-	 * Note: When creating an EmpathyContact from a TplContact instance, the
+	 * Note: When creating an EmpathyContact from a TplEntity instance, the
 	 * TpAccount is passed *only* to let EmpathyContact be able to retrieve the
 	 * avatar (contact_get_avatar_filename () need a TpAccount).
 	 * If the way EmpathyContact stores the avatar is changes, it might not be
