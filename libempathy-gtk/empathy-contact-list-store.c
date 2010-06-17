@@ -790,48 +790,6 @@ empathy_contact_list_store_get_parent_group (GtkTreeModel *model,
 	return name;
 }
 
-gboolean
-empathy_contact_list_store_search_equal_func (GtkTreeModel *model,
-					      gint          column,
-					      const gchar  *key,
-					      GtkTreeIter  *iter,
-					      gpointer      search_data)
-{
-	gchar    *name, *name_folded;
-	gchar    *key_folded;
-	gboolean  ret;
-
-	g_return_val_if_fail (GTK_IS_TREE_MODEL (model), FALSE);
-
-	if (!key) {
-		return TRUE;
-	}
-
-	gtk_tree_model_get (model, iter,
-			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, &name,
-			    -1);
-
-	if (!name) {
-		return TRUE;
-	}
-
-	name_folded = g_utf8_casefold (name, -1);
-	key_folded = g_utf8_casefold (key, -1);
-
-	if (name_folded && key_folded &&
-	    strstr (name_folded, key_folded)) {
-		ret = FALSE;
-	} else {
-		ret = TRUE;
-	}
-
-	g_free (name);
-	g_free (name_folded);
-	g_free (key_folded);
-
-	return ret;
-}
-
 static void
 contact_list_store_setup (EmpathyContactListStore *store)
 {

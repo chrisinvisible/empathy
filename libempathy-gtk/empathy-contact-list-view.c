@@ -1423,10 +1423,6 @@ contact_list_view_constructed (GObject *object)
 	GtkTreeViewColumn          *col;
 	guint                       i;
 
-	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view),
-					     empathy_contact_list_store_search_equal_func,
-					     NULL, NULL);
-
 	priv->filter = GTK_TREE_MODEL_FILTER (gtk_tree_model_filter_new (
 			GTK_TREE_MODEL (priv->store), NULL));
 	gtk_tree_model_filter_set_visible_func (priv->filter,

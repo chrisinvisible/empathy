@@ -109,11 +109,6 @@ gchar *                    empathy_contact_list_store_get_parent_group   (GtkTre
 									 GtkTreePath                *path,
 									 gboolean                   *path_is_group,
 									 gboolean                   *is_fake_group);
-gboolean                   empathy_contact_list_store_search_equal_func  (GtkTreeModel               *model,
-									 gint                        column,
-									 const gchar                *key,
-									 GtkTreeIter                *iter,
-									 gpointer                    search_data);
 GdkPixbuf *                contact_list_store_get_contact_status_icon ( EmpathyContactListStore *store,
 									 EmpathyContact             *contact);
 
