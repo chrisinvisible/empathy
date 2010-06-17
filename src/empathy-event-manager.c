@@ -797,7 +797,7 @@ approve_channels (TpSimpleApprover *approver,
   if (channel == NULL)
     {
       GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
-          "Uknown channel type" };
+          "Unknown channel type" };
 
       DEBUG ("Failed to find the main channel; ignoring");
 
