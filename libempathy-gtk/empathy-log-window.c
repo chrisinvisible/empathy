@@ -1275,8 +1275,8 @@ log_manager_got_dates_cb (GObject *manager,
           continue;
       }
 
-      DEBUG ("Marking date:'%u/%u/%u'", g_date_get_day (d),
-          g_date_get_month (d), g_date_get_year (d));
+      DEBUG ("Marking date: %04u-%02u-%02u", g_date_get_year (d),
+          g_date_get_month (d), g_date_get_day (d));
 
       gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats),
           g_date_get_day (d));
@@ -1531,7 +1531,7 @@ log_window_calendar_chats_day_selected_cb (GtkWidget       *calendar,
 
 	date = g_date_new_dmy (day, month, year);
 
-	DEBUG ("Currently selected date is:'%u/%u/%u'", day, month, year);
+	DEBUG ("Currently selected date is: %04u-%02u-%02u", year, month, day);
 
 	log_window_chats_get_messages (window, date);
 
@@ -1575,8 +1575,8 @@ log_window_updating_calendar_month_cb (GObject *manager,
 
 			if (g_date_get_year (date) == year_selected &&
 			    g_date_get_month (date) == month_selected) {
-					DEBUG ("Marking date:'%u/%u/%u'", g_date_get_day (date),
-						g_date_get_month (date), g_date_get_year (date));
+					DEBUG ("Marking date: %04u-%02u-%02u", g_date_get_year (date),
+						g_date_get_month (date), g_date_get_day (date));
 					gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), g_date_get_day (date));
 			}
 	}
