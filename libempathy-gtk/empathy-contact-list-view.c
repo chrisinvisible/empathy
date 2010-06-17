@@ -1369,6 +1369,52 @@ contact_list_view_row_has_child_toggled_cb (GtkTreeModel           *model,
 }
 
 static void
+contact_list_view_verify_group_visibility (EmpathyContactListView *view,
+					   GtkTreePath            *path)
+{
+	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+	GtkTreeModel *model;
+	GtkTreePath *parent_path;
+	GtkTreeIter parent_iter;
+
+	if (gtk_tree_path_get_depth (path) < 2)
+		return;
+
+	/* A group row is visible if and only if at least one if its child is
+	 * visible. So when a row is inserted/deleted/changed in the base model,
+	 * that could modify the visibility of its parent in the filter model.
+	 */
+
+	model = GTK_TREE_MODEL (priv->store);
+	parent_path = gtk_tree_path_copy (path);
+	gtk_tree_path_up (parent_path);
+	if (gtk_tree_model_get_iter (model, &parent_iter, parent_path)) {
+		/* This tells the filter to verify the visibility of that row,
+		 * and show/hide it if necessary */
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (priv->store),
+			parent_path, &parent_iter);
+	}
+	gtk_tree_path_free (parent_path);
+}
+
+static void
+contact_list_view_store_row_changed_cb (GtkTreeModel           *model,
+					GtkTreePath            *path,
+					GtkTreeIter            *iter,
+					EmpathyContactListView *view)
+{
+	contact_list_view_verify_group_visibility (view, path);
+}
+
+static void
+contact_list_view_store_row_deleted_cb (GtkTreeModel           *model,
+					GtkTreePath            *path,
+					EmpathyContactListView *view)
+{
+	contact_list_view_verify_group_visibility (view, path);
+}
+
+static void
 contact_list_view_constructed (GObject *object)
 {
 	EmpathyContactListView     *view = EMPATHY_CONTACT_LIST_VIEW (object);
@@ -1393,6 +1439,16 @@ contact_list_view_constructed (GObject *object)
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (view),
 				 GTK_TREE_MODEL (priv->filter));
+
+	tp_g_signal_connect_object (priv->store, "row-changed",
+		G_CALLBACK (contact_list_view_store_row_changed_cb),
+		view, 0);
+	tp_g_signal_connect_object (priv->store, "row-inserted",
+		G_CALLBACK (contact_list_view_store_row_changed_cb),
+		view, 0);
+	tp_g_signal_connect_object (priv->store, "row-deleted",
+		G_CALLBACK (contact_list_view_store_row_deleted_cb),
+		view, 0);
 
 	/* Setup view */
 	/* Setting reorderable is a hack that gets us row previews as drag icons
