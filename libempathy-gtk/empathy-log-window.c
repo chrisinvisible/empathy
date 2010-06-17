@@ -22,13 +22,10 @@
  *          Xavier Claessens <xclaesse@gmail.com>
  */
 
-#define _XOPEN_SOURCE /* glibc2 needs this for strptime */
-
 #include "config.h"
 
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
@@ -417,28 +414,20 @@ got_messages_for_date_cb (GObject *manager,
 static GDate *
 gdate_from_str (const gchar *str)
 {
-	GDate *gdate;
-	struct tm tm;
-	time_t t;
-	gchar *tmp;
+	guint u;
+	guint day, month, year;
 
-	if (str == NULL)
+	if (sscanf (str, "%u", &u) != 1)
 		return NULL;
 
-	memset (&tm, 0, sizeof (struct tm));
+	day = (u % 100);
+	month = ((u / 100) % 100);
+	year = (u / 10000);
 
-	tmp = strptime (str, "%Y%m%d", &tm);
-	if (tmp == NULL || tmp[0] != '\0')
+	if (!g_date_valid_dmy (day, month, year))
 		return NULL;
 
-	t = mktime (&tm);
-	if (t == -1)
-		return NULL;
-
-	gdate = g_date_new ();
-	g_date_set_time_t (gdate, t);
-
-	return gdate;
+	return g_date_new_dmy (day, month, year);
 }
 
 #endif /* ENABLE_TPL */
