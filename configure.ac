@@ -153,7 +153,7 @@ fi
 if test "x$enable_tpl" = "xyes"; then
   PKG_CHECK_MODULES(TPL,
   [
-     telepathy-logger = $TELEPATHY_LOGGER
+     telepathy-logger-0.1 >= $TELEPATHY_LOGGER
   ])
   AC_SUBST(TPL_CFLAGS)
   AC_SUBST(TPL_LIBS)
