@@ -1,0 +1,411 @@
+From sjoerd.simons@collabora.co.uk Tue Jun 15 16:28:08 2010
+Received: from [127.0.0.1] (localhost [127.0.0.1]) (Authenticated sender:
+ sjoerd) with ESMTPSA id 0BEF66002FD
+Received: by night.luon.net (Postfix, from userid 1000) id 3C2161A21B; Tue,
+ 15 Jun 2010 16:28:08 +0100 (BST)
+Date: Tue, 15 Jun 2010 16:28:08 +0100
+From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+To: martyn@lanedo.com, micke@tinybird.com, richard@tinybird.com
+Cc: Robert McQueen <robert.mcqueen@collabora.co.uk>, Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+Subject: Telepathy logger, good old Gossip and licenses
+Message-ID: <20100615152808.GA10311@night.luon.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.20 (2009-06-14)
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+Hey,
+
+  Long time ago that i talked with most of you, hopefully you're all doing
+  well and are having fun with your current endeavours :)
+
+  As a bit of background of why i'm mailing you all, we're building a logger
+  service for Telepathy. This allows any IM conversation done via telepathy
+  (whether it be in gnome shell, Empathy or whatever) to be automagically
+  logged. Part of this service will be a little library one can use for writing
+  log viewers.
+
+  The current storage backend is based on the logging code from Empathy, which
+  in turn has its origins in Gossip. Which means the library needs has to be
+  GPL currently, which is not great for obvious reasons. Hence we were
+  wondering if there is a possibility to relicense this code to LGPL v2.1+
+
+  To be more specific we tracked the code down the follow files from Gossip:
+    libgossip/gossip-time.c:
+      Copyright: Imendio AB
+      Main Author is Richard with contributions from Mikael and Martyn
+
+    libgossip/gossip-log.c:
+      Copyright: Imendio AB
+      No main author in the license header, code mostly written by Martyn
+      with contributions from Richard and Mikael
+
+  So what it in the end comes down to is: would you be happy to relicense this
+  code such that we can use it under the LGPL v2.1+ and are you able to make
+  that decision on behalf of Imendio AB (which from a legal perspective own
+  the copyrights ttbomk)
+
+  Sjoerd
+-- 
+One meets his destiny often on the road he takes to avoid it.
+
+From martyn@lanedo.com Wed Jun 16 11:58:43 2010
+X-Greylist: delayed 434 seconds by postgrey-1.31 at bhuna; Wed, 16 Jun 2010
+ 11:58:43 BST
+Received: from lanedo.com (lanedo.com [85.214.136.179]) (using TLSv1 with
+ cipher ADH-AES256-SHA (256/256 bits)) (No client certificate requested) by
+ bhuna.collabora.co.uk (Postfix) with ESMTPS id 7D42D600304; Wed, 16 Jun
+ 2010 11:58:43 +0100 (BST)
+Received: from [192.168.0.2]
+ (host86-172-70-241.range86-172.btcentralplus.com [86.172.70.241])
+ (Authenticated sender: martyn) by lanedo.com (Postfix) with ESMTPSA id
+ A40DC7F407C; Wed, 16 Jun 2010 12:51:26 +0200 (CEST)
+Subject: Re: Telepathy logger, good old Gossip and licenses
+From: Martyn Russell <martyn@lanedo.com>
+To: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Cc: micke@tinybird.com, richard@tinybird.com, Robert McQueen <robert.mcqueen@collabora.co.uk>, Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+In-Reply-To: <20100615152808.GA10311@night.luon.net>
+References: <20100615152808.GA10311@night.luon.net>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 16 Jun 2010 11:51:26 +0100
+Message-ID: <1276685486.1808.2.camel@petunia>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.28.3 
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+On Tue, 2010-06-15 at 16:28 +0100, Sjoerd Simons wrote:
+> Hey,
+
+Hi,
+
+>   Long time ago that i talked with most of you, hopefully you're all doing
+>   well and are having fun with your current endeavours :)
+
+Certainly is :)
+
+>   As a bit of background of why i'm mailing you all, we're building a logger
+>   service for Telepathy. This allows any IM conversation done via telepathy
+>   (whether it be in gnome shell, Empathy or whatever) to be automagically
+>   logged. Part of this service will be a little library one can use for writing
+>   log viewers.
+
+I see.
+
+>   The current storage backend is based on the logging code from Empathy, which
+>   in turn has its origins in Gossip. Which means the library needs has to be
+>   GPL currently, which is not great for obvious reasons. Hence we were
+>   wondering if there is a possibility to relicense this code to LGPL v2.1+
+> 
+>   To be more specific we tracked the code down the follow files from Gossip:
+>     libgossip/gossip-time.c:
+>       Copyright: Imendio AB
+>       Main Author is Richard with contributions from Mikael and Martyn
+> 
+>     libgossip/gossip-log.c:
+>       Copyright: Imendio AB
+>       No main author in the license header, code mostly written by Martyn
+>       with contributions from Richard and Mikael
+> 
+>   So what it in the end comes down to is: would you be happy to relicense this
+>   code such that we can use it under the LGPL v2.1+ and are you able to make
+>   that decision on behalf of Imendio AB (which from a legal perspective own
+>   the copyrights ttbomk)
+
+Absolutely fine by me.
+
+-- 
+Regards,
+Martyn
+
+
+From richard@tinybird.com Thu Jun 17 09:21:13 2010
+X-Greylist: delayed 331 seconds by postgrey-1.31 at bhuna; Thu, 17 Jun 2010
+ 09:21:13 BST
+Received: from mail.tinybird.com (static-212-247-165-146.cust.tele2.se
+ [212.247.165.146]) by bhuna.collabora.co.uk (Postfix) with ESMTP id
+ F34FF6006C3; Thu, 17 Jun 2010 09:21:13 +0100 (BST)
+Received: from localhost (localhost [127.0.0.1]) by mail.tinybird.com
+ (Postfix) with ESMTP id 159649D8FC; Thu, 17 Jun 2010 10:15:42 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at tinybird.com
+Received: from mail.tinybird.com ([127.0.0.1]) by localhost
+ (core.tinybird.com [127.0.0.1]) (amavisd-new, port 10024) with ESMTP id
+ hqkRcJPolNBx; Thu, 17 Jun 2010 10:15:41 +0200 (CEST)
+Received: from [192.168.50.6] (c80-216-159-112.bredband.comhem.se
+ [80.216.159.112]) by mail.tinybird.com (Postfix) with ESMTPSA id
+ A684F9D8F1; Thu, 17 Jun 2010 10:15:41 +0200 (CEST)
+Subject: Re: Telepathy logger, good old Gossip and licenses
+Mime-Version: 1.0 (Apple Message framework v1081)
+Content-Type: text/plain; charset=us-ascii
+From: Richard Hult <richard@tinybird.com>
+In-Reply-To: <20100615152808.GA10311@night.luon.net>
+Date: Thu, 17 Jun 2010 10:15:40 +0200
+Cc: martyn@lanedo.com, micke@tinybird.com, Robert McQueen <robert.mcqueen@collabora.co.uk>, Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+Message-Id: <53541F05-0D68-41C8-B0B2-E42B56B6D862@tinybird.com>
+References: <20100615152808.GA10311@night.luon.net>
+To: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+X-Mailer: Apple Mail (2.1081)
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+Hi Sjoerd,
+
+Long time no see :) Hope everything is fine!
+
+> To be more specific we tracked the code down the follow files from Gossip:
+>    libgossip/gossip-time.c:
+>      Copyright: Imendio AB
+>      Main Author is Richard with contributions from Mikael and Martyn
+> 
+>    libgossip/gossip-log.c:
+>      Copyright: Imendio AB
+>      No main author in the license header, code mostly written by Martyn
+>      with contributions from Richard and Mikael
+
+>  So what it in the end comes down to is: would you be happy to relicense this
+>  code such that we can use it under the LGPL v2.1+ and are you able to make
+>  that decision on behalf of Imendio AB (which from a legal perspective own
+>  the copyrights ttbomk)
+
+Micke and I are fine with relicensing any Imendio and/or personally owned code in the mentioned files to LGPL v2.1+. I can make that decision on behalf of Imendio AB (now known as Tinybird Interactive AB).
+
+Cheers,
+Richard
+
+-- 
+Tinybird Interactive - Inspiring Software
+
+
+From guillaume.desmottes@collabora.co.uk Thu Jun 17 14:51:24 2010
+Subject: Relicensing of empathy-log-store-empathy to LPGL
+From: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+To: lars@metafoo.de, 84yelo3@gmail.com
+Cc: Robert McQueen <robert.mcqueen@collabora.co.uk>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <1276779083.2456.12.camel@cass-x200s.lan>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.28.3 
+Date: Thu, 17 Jun 2010 14:51:24 +0200
+X-Evolution-Format: text/plain
+X-Evolution-Account: 1171035114.6047.0@cass-lpt
+X-Evolution-Transport:
+ smtp://cassidy;auth=PLAIN@mail.collabora.co.uk:587/;use_ssl=when-possible
+X-Evolution-Fcc: mbox:/home/cassidy/.evolution/mail/local#Sent
+Content-Transfer-Encoding: 8bit
+
+Hi Nicolò,
+Hi Lars-Peter,
+
+As a bit of background of why i'm mailing you all, we're building a
+logger service for Telepathy. This allows any IM conversation done via
+telepathy (whether it be in gnome shell, Empathy or whatever) to be
+automagically logged. Part of this service will be a little library one
+can use for writing log viewers.
+
+The current storage backend is based on the logging code from Empathy
+which is currently GPL, which is not great for obvious reasons. Hence we
+were wondering if there is a possibility to relicense this code to LGPL
+v2.1+.
+
+Both of you contributed to empathy-log-store-empathy. Would you agree to
+relicense your contributions to LGPL v2.1+ ?
+
+Nicolò:
+http://git.gnome.org/browse/empathy/commit/?id=ee5227403193fe7b5dae7d5c15e33d8a9c385c3f
+
+Lars-Peter:
+http://git.gnome.org/browse/empathy/commit/?id=ddae3ae13b1bf6368bd91327357e3c6999ac6a45
+http://git.gnome.org/browse/empathy/commit/?id=61226f8d9920b92dd5b2defa606efabde6367b2c
+
+
+Regards,
+
+
+
+	G.
+
+
+From lars@metafoo.de Thu Jun 17 16:14:56 2010
+X-Greylist: delayed 562 seconds by postgrey-1.31 at bhuna; Thu, 17 Jun 2010
+ 16:14:56 BST
+Received: from mailhost.informatik.uni-hamburg.de
+ (mailhost.informatik.uni-hamburg.de [134.100.9.70]) (using TLSv1 with
+ cipher DHE-RSA-AES256-SHA (256/256 bits)) (No client certificate requested)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPS id 241E66006C3; Thu, 17 Jun
+ 2010 16:14:56 +0100 (BST)
+Received: from localhost (localhost [127.0.0.1]) by
+ mailhost.informatik.uni-hamburg.de (Postfix) with ESMTP id 43812668; Thu,
+ 17 Jun 2010 17:05:34 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at informatik.uni-hamburg.de
+Received: from mailhost.informatik.uni-hamburg.de ([127.0.0.1]) by
+ localhost (mailhost.informatik.uni-hamburg.de [127.0.0.1]) (amavisd-new,
+ port 10024) with LMTP id WhF0cb1qF-Gb; Thu, 17 Jun 2010 17:05:33 +0200
+ (CEST)
+Received: from [192.168.37.31] (port-91423.pppoe.wtnet.de [84.46.69.149])
+ (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits)) (Client did not
+ present a certificate) (Authenticated sender: 7clausen) by
+ mailhost.informatik.uni-hamburg.de (Postfix) with ESMTPSA id 97DE0667; Thu,
+ 17 Jun 2010 17:05:33 +0200 (CEST)
+Message-ID: <4C1A39A4.8020701@metafoo.de>
+Date: Thu, 17 Jun 2010 17:05:08 +0200
+From: Lars-Peter Clausen <lars@metafoo.de>
+User-Agent: Mozilla-Thunderbird 2.0.0.24 (X11/20100329)
+MIME-Version: 1.0
+To: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+CC: 84yelo3@gmail.com, Robert McQueen <robert.mcqueen@collabora.co.uk>,  Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Subject: Re: Relicensing of empathy-log-store-empathy to LPGL
+References: <1276779083.2456.12.camel@cass-x200s.lan>
+In-Reply-To: <1276779083.2456.12.camel@cass-x200s.lan>
+X-Enigmail-Version: 0.95.0
+Content-Type: text/plain; charset=UTF-8
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Guillaume Desmottes wrote:
+> Hi Nicolò, Hi Lars-Peter,
+>
+> [...] Both of you contributed to empathy-log-store-empathy. Would
+> you agree to relicense your contributions to LGPL v2.1+ ?
+>
+> [...]
+Hi
+
+Fine with me.
+
+- - Lars
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org
+
+iEYEARECAAYFAkwaOaMACgkQBX4mSR26RiM/dQCaAzquubkWKf3jx1CyIHghWhhQ
+d6YAnRAKhP9uN+NnmhC94ayMr+BeCRul
+=B059
+-----END PGP SIGNATURE-----
+
+
+From nicolo.chieffo@gmail.com Thu Jun 17 16:24:40 2010
+Received: from mail-wy0-f172.google.com (mail-wy0-f172.google.com
+ [74.125.82.172]) by bhuna.collabora.co.uk (Postfix) with ESMTP id
+ A2E0F6006C3; Thu, 17 Jun 2010 16:24:40 +0100 (BST)
+Received: by wya21 with SMTP id 21so27253wya.31 for <multiple recipients>;
+ Thu, 17 Jun 2010 08:24:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+ h=domainkey-signature:received:mime-version:sender:received
+ :in-reply-to:references:from:date:x-google-sender-auth:message-id
+ :subject:to:cc:content-type;
+ bh=hmyX3rIMLanTFUJL3nCeh5iR1GDib6JXQiw+blZttN0=;
+ b=U9/xsAQws3wrzopusunxTW9SAkHf1sBc84qe943kJ4kj9XRoSBDqrq5dC8BnLV3VNC
+ 35EIahuYTPH9FEvSh+MBgWBECTLpBUilBizoKAtC+Nj0bk9Oy9TssNi/cNG0wjGqnkPT
+ HfBHHzdktmWKEeXCWqAY6M0CryrTkNHG0AHqI=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=gmail.com; s=gamma;
+ h=mime-version:sender:in-reply-to:references:from:date
+ :x-google-sender-auth:message-id:subject:to:cc:content-type;
+ b=ppfACJwhVh5UUD4FBaNpAtvfscnd+Pz9bYgXfAY5m0BQ10BoSrWRe5/V6AoML76hDM
+ LMSvIHeusFiS/jX4S+hGIAQwK3+MkK7PXXtbiZK6IcBmmvOD1vHyESpAN6gxEIoZNVrM
+ PR8IpueImsXYO+x+IJmrFo1Pc1XTKK8A4kv70=
+Received: by 10.227.137.205 with SMTP id x13mr113184wbt.6.1276787896890;
+ Thu,  17 Jun 2010 08:18:16 -0700 (PDT)
+MIME-Version: 1.0
+Sender: nicolo.chieffo@gmail.com
+Received: by 10.216.180.78 with HTTP; Thu, 17 Jun 2010 08:17:55 -0700 (PDT)
+In-Reply-To: <4C1A39A4.8020701@metafoo.de>
+References: <1276779083.2456.12.camel@cass-x200s.lan>
+	 <4C1A39A4.8020701@metafoo.de>
+From: "Nicolo' Chieffo" <84yelo3@gmail.com>
+Date: Thu, 17 Jun 2010 17:17:55 +0200
+X-Google-Sender-Auth: A9mwR_wn2kw1OycMVY0OShQudeo
+Message-ID: <AANLkTilMg-E7CbtlJOQJ-wAwO62U6z1VbeDwNaj7Xl17@mail.gmail.com>
+Subject: Re: Relicensing of empathy-log-store-empathy to LPGL
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>,  Robert McQueen <robert.mcqueen@collabora.co.uk>,  Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+I'm not a license expert so I don't exactly know why GPL is not ok for
+this log service.
+So I just trust your decision.
+
+From guillaume.desmottes@collabora.co.uk Thu Jun 17 17:26:37 2010
+Subject: Re: Relicensing of empathy-log-store-empathy to LPGL
+From: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+To: Nicolo' Chieffo <84yelo3@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Robert McQueen <robert.mcqueen@collabora.co.uk>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+In-Reply-To: <AANLkTilMg-E7CbtlJOQJ-wAwO62U6z1VbeDwNaj7Xl17@mail.gmail.com>
+References: <1276779083.2456.12.camel@cass-x200s.lan>
+	 <4C1A39A4.8020701@metafoo.de>
+	 <AANLkTilMg-E7CbtlJOQJ-wAwO62U6z1VbeDwNaj7Xl17@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Message-ID: <1276788396.2456.14.camel@cass-x200s.lan>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.28.3 
+Date: Thu, 17 Jun 2010 17:26:37 +0200
+X-Evolution-Format: text/plain
+X-Evolution-Account: 1171035114.6047.0@cass-lpt
+X-Evolution-Transport:
+ smtp://cassidy;auth=PLAIN@mail.collabora.co.uk:587/;use_ssl=when-possible
+X-Evolution-Fcc: mbox:/home/cassidy/.evolution/mail/local#Sent
+Content-Transfer-Encoding: 8bit
+
+Le jeudi 17 juin 2010 à 17:17 +0200, Nicolo' Chieffo a écrit :
+> I'm not a license expert so I don't exactly know why GPL is not ok for
+> this log service.
+> So I just trust your decision.
+
+We want libtelepathy-logger to be LGPL instead of GPL so non-GPL
+application can link to it.
+That's also a requirement for libraries in the GNOME platform.
+
+
+
+	G. 
+
+From nicolo.chieffo@gmail.com Thu Jun 17 16:27:58 2010
+Received: from mail-wy0-f172.google.com (mail-wy0-f172.google.com
+ [74.125.82.172]) by bhuna.collabora.co.uk (Postfix) with ESMTP id
+ 86CF86006C3 for <guillaume.desmottes@collabora.co.uk>; Thu, 17 Jun 2010
+ 16:27:58 +0100 (BST)
+Received: by wya21 with SMTP id 21so30560wya.31 for
+ <guillaume.desmottes@collabora.co.uk>; Thu, 17 Jun 2010 08:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+ h=domainkey-signature:received:mime-version:sender:received
+ :in-reply-to:references:from:date:x-google-sender-auth:message-id
+ :subject:to:cc:content-type;
+ bh=orax0p81ikSvJkK+LpN58Qx8sL4dnVGz74R8hVjlW1o=;
+ b=f83vuoMX92uBOszQlHtOpOoe1HF13I86nNH9aiLGzZUIW8cPYJbugmn0QstVoUiUWK
+ LNqLpXTplmG4nXG4R/6V17L4agMmodI4jdc3qUQQ56rN50T+8Hek4b+rXj8ZYbXgyw7X
+ x27V5GiyWGIgrhwb5T1yDcUrwCFox8QmA65Gk=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=gmail.com; s=gamma;
+ h=mime-version:sender:in-reply-to:references:from:date
+ :x-google-sender-auth:message-id:subject:to:cc:content-type;
+ b=A3Za1Mf5DUGfRlP/NqXypn3b8TX7fP3lbsaqM8ZPVO6+TztvH38K7xzDQNMtwYa93c
+ jvWvuNbBGXgx4f1rxZekJrBYDMhPTWJZihJ/5DapW/81ru7iDRRkgEzCTrhvG6vlSjAs
+ axiXV36o28DJ2BZ0+Rsx84+VvUq316JHB9gIg=
+Received: by 10.216.165.208 with SMTP id e58mr50808wel.57.1276788477987;
+ Thu,  17 Jun 2010 08:27:57 -0700 (PDT)
+MIME-Version: 1.0
+Sender: nicolo.chieffo@gmail.com
+Received: by 10.216.180.78 with HTTP; Thu, 17 Jun 2010 08:27:37 -0700 (PDT)
+In-Reply-To: <1276788396.2456.14.camel@cass-x200s.lan>
+References: <1276779083.2456.12.camel@cass-x200s.lan>
+	 <4C1A39A4.8020701@metafoo.de>
+	  <AANLkTilMg-E7CbtlJOQJ-wAwO62U6z1VbeDwNaj7Xl17@mail.gmail.com>
+	  <1276788396.2456.14.camel@cass-x200s.lan>
+From: "Nicolo' Chieffo" <84yelo3@gmail.com>
+Date: Thu, 17 Jun 2010 17:27:37 +0200
+X-Google-Sender-Auth: eHESWH-FxRr__2Ul8LGf0pj9RU0
+Message-ID: <AANLkTiniCDBpJLILee3X55Oodyi5OQKucK3Wr1f_G_Al@mail.gmail.com>
+Subject: Re: Relicensing of empathy-log-store-empathy to LPGL
+To: Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Robert McQueen <robert.mcqueen@collabora.co.uk>,  Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Content-Type: text/plain; charset=ISO-8859-1
+X-Evolution-Source: imap://cassidy@mail.collabora.co.uk/
+Content-Transfer-Encoding: 8bit
+
+OK!
+
