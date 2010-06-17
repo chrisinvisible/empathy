@@ -666,12 +666,8 @@ empathy_message_equal (EmpathyMessage *message1, EmpathyMessage *message2)
 	priv1 = GET_PRIV (message1);
 	priv2 = GET_PRIV (message2);
 
-#ifdef ENABLE_TPL
 	if (priv1->timestamp == priv2->timestamp &&
 			!tp_strdiff (priv1->body, priv2->body)) {
-#else
-	if (priv1->id == priv2->id && !tp_strdiff (priv1->body, priv2->body)) {
-#endif /* ENABLE_TPL */
 		return TRUE;
 	}
 
