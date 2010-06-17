@@ -352,26 +352,39 @@ event_update (EmpathyEventManager *manager, EventPriv *event,
 }
 
 static void
-call_channel_claim_cb (GObject *source,
+channel_claim_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
   TpChannelDispatchOperation *cdo = TP_CHANNEL_DISPATCH_OPERATION (source);
-  EmpathyTpCall *call = user_data;
   GError *error = NULL;
 
   if (!tp_channel_dispatch_operation_claim_finish (cdo, result, &error))
     {
-      DEBUG ("Failed to claim call channel: %s", error->message);
+      DEBUG ("Failed to claim channel: %s", error->message);
 
       g_error_free (error);
       goto out;
     }
 
-  empathy_tp_call_close (call);
+  if (EMPATHY_IS_TP_CALL (user_data))
+    {
+      empathy_tp_call_close (user_data);
+    }
+  else if (EMPATHY_IS_TP_CHAT (user_data))
+    {
+      empathy_tp_chat_leave (user_data);
+    }
 
 out:
-  g_object_unref (call);
+  g_object_unref (user_data);
+}
+
+static void
+reject_approval (EventManagerApproval *approval)
+{
+  tp_channel_dispatch_operation_claim_async (approval->operation,
+      channel_claim_cb, g_object_ref (approval->handler_instance));
 }
 
 static void
@@ -385,10 +398,7 @@ event_manager_call_window_confirmation_dialog_response_cb (GtkDialog *dialog,
 
   if (response != GTK_RESPONSE_ACCEPT)
     {
-      EmpathyTpCall *call = EMPATHY_TP_CALL (approval->handler_instance);
-
-      tp_channel_dispatch_operation_claim_async (approval->operation,
-          call_channel_claim_cb, g_object_ref (call));
+      reject_approval (approval);
     }
   else
     {
@@ -591,29 +601,6 @@ event_manager_media_channel_contact_changed_cb (EmpathyTpCall *call,
 }
 
 static void
-room_channel_claim_cb (GObject *source,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  TpChannelDispatchOperation *cdo = TP_CHANNEL_DISPATCH_OPERATION (source);
-  EmpathyTpChat *tp_chat = user_data;
-  GError *error = NULL;
-
-  if (!tp_channel_dispatch_operation_claim_finish (cdo, result, &error))
-    {
-      DEBUG ("Failed to claim room channel: %s", error->message);
-
-      g_error_free (error);
-      goto out;
-    }
-
-  empathy_tp_chat_leave (tp_chat);
-
-out:
-  g_object_unref (tp_chat);
-}
-
-static void
 invite_dialog_response_cb (GtkDialog *dialog,
                            gint response,
                            EventManagerApproval *approval)
@@ -630,8 +617,7 @@ invite_dialog_response_cb (GtkDialog *dialog,
       /* close channel */
       DEBUG ("Muc invitation rejected");
 
-      tp_channel_dispatch_operation_claim_async (approval->operation,
-          room_channel_claim_cb, g_object_ref (tp_chat));
+      reject_approval (approval);
 
       return;
     }
