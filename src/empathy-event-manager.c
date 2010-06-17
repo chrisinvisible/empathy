@@ -791,7 +791,7 @@ approve_channels (TpSimpleApprover *approver,
   EmpathyEventManagerPriv *priv = GET_PRIV (self);
   TpChannel *channel;
   EventManagerApproval *approval;
-  const gchar *channel_type;
+  GQuark channel_type;
 
   channel = find_main_channel (channels);
   if (channel == NULL)
@@ -811,9 +811,9 @@ approve_channels (TpSimpleApprover *approver,
   approval->invalidated_handler = g_signal_connect (dispatch_operation,
       "invalidated", G_CALLBACK (cdo_invalidated_cb), approval);
 
-  channel_type = tp_channel_get_channel_type (channel);
+  channel_type = tp_channel_get_channel_type_id (channel);
 
-  if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_TEXT))
+  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
     {
       EmpathyTpChat *tp_chat;
 
@@ -845,7 +845,7 @@ approve_channels (TpSimpleApprover *approver,
       approval->handler = g_signal_connect (tp_chat, "message-received",
         G_CALLBACK (event_manager_chat_message_received_cb), approval);
     }
-  else if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA))
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
     {
       EmpathyContact *contact;
       EmpathyTpCall *call = empathy_tp_call_new (channel);
@@ -867,7 +867,7 @@ approve_channels (TpSimpleApprover *approver,
         }
 
     }
-  else if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
       TpHandle handle;
 
@@ -882,7 +882,8 @@ approve_channels (TpSimpleApprover *approver,
       GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
           "Invalid channel type" };
 
-      DEBUG ("Unknown channel type (%s), ignoring..", channel_type);
+      DEBUG ("Unknown channel type (%s), ignoring..",
+          g_quark_to_string (channel_type));
 
       tp_add_dispatch_operation_context_fail (context, &error);
       return;
