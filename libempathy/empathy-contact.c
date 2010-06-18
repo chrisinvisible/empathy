@@ -970,7 +970,7 @@ empathy_contact_can_send_files (EmpathyContact *contact)
 }
 
 gboolean
-empathy_contact_can_use_stream_tube (EmpathyContact *contact)
+empathy_contact_can_use_rfb_stream_tube (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv;
 
@@ -978,7 +978,7 @@ empathy_contact_can_use_stream_tube (EmpathyContact *contact)
 
   priv = GET_PRIV (contact);
 
-  return priv->capabilities & EMPATHY_CAPABILITIES_STREAM_TUBE;
+  return priv->capabilities & EMPATHY_CAPABILITIES_RFB_STREAM_TUBE;
 }
 
 static gchar *
@@ -1448,7 +1448,13 @@ tp_caps_to_capabilities (TpCapabilities *caps)
         }
       else if (!tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_STREAM_TUBE))
         {
-          capabilities |= EMPATHY_CAPABILITIES_STREAM_TUBE;
+          const gchar *service;
+
+          service = tp_asv_get_string (fixed_prop,
+              TP_PROP_CHANNEL_TYPE_STREAM_TUBE_SERVICE);
+
+          if (!tp_strdiff (service, "rfb"))
+            capabilities |= EMPATHY_CAPABILITIES_RFB_STREAM_TUBE;
         }
       else if (!tp_strdiff (chan_type,
         TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA))
