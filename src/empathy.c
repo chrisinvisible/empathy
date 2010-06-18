@@ -131,7 +131,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
       empathy_chat_window_present_chat (chat,
           empathy_dispatch_operation_get_user_action_time (operation));
 
-      if (empathy_tp_chat_is_invited (tp_chat))
+      if (empathy_tp_chat_is_invited (tp_chat, NULL))
         {
           /* We have been invited to the room. Add ourself as member as this
            * channel has been approved. */

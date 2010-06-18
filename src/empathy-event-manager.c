@@ -27,6 +27,7 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/simple-approver.h>
 
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-idle.h>
@@ -60,9 +61,7 @@
 
 typedef struct {
   EmpathyEventManager *manager;
-  EmpathyDispatchOperation *operation;
-  gulong approved_handler;
-  gulong claimed_handler;
+  TpChannelDispatchOperation *operation;
   gulong invalidated_handler;
   /* Remove contact if applicable */
   EmpathyContact *contact;
@@ -71,10 +70,13 @@ typedef struct {
   GObject *handler_instance;
   /* optional accept widget */
   GtkWidget *dialog;
+  /* Channel of the CDO that will be used during the approval */
+  TpChannel *main_channel;
 } EventManagerApproval;
 
 typedef struct {
   EmpathyDispatcher *dispatcher;
+  TpBaseClient *approver;
   EmpathyContactManager *contact_manager;
   GSList *events;
   /* Ongoing approvals */
@@ -111,11 +113,13 @@ static EmpathyEventManager * manager_singleton = NULL;
 
 static EventManagerApproval *
 event_manager_approval_new (EmpathyEventManager *manager,
-  EmpathyDispatchOperation *operation)
+  TpChannelDispatchOperation *operation,
+  TpChannel *main_channel)
 {
   EventManagerApproval *result = g_slice_new0 (EventManagerApproval);
   result->operation = g_object_ref (operation);
   result->manager = manager;
+  result->main_channel = g_object_ref (main_channel);
 
   return result;
 }
@@ -124,16 +128,17 @@ static void
 event_manager_approval_free (EventManagerApproval *approval)
 {
   g_signal_handler_disconnect (approval->operation,
-    approval->approved_handler);
-  g_signal_handler_disconnect (approval->operation,
-    approval->claimed_handler);
-  g_signal_handler_disconnect (approval->operation,
     approval->invalidated_handler);
   g_object_unref (approval->operation);
+
+  g_object_unref (approval->main_channel);
 
   if (approval->handler != 0)
     g_signal_handler_disconnect (approval->handler_instance,
       approval->handler);
+
+  if (approval->handler_instance != NULL)
+    g_object_unref (approval->handler_instance);
 
   if (approval->contact != NULL)
     g_object_unref (approval->contact);
@@ -226,15 +231,68 @@ event_manager_add (EmpathyEventManager *manager,
 }
 
 static void
-event_channel_process_func (EventPriv *event)
+handle_with_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpChannelDispatchOperation *cdo = TP_CHANNEL_DISPATCH_OPERATION (source);
+  GError *error = NULL;
+
+  if (!tp_channel_dispatch_operation_handle_with_finish (cdo, result, &error))
+    {
+      DEBUG ("HandleWith failed: %s\n", error->message);
+      g_error_free (error);
+    }
+}
+
+static void
+handle_with_time_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpChannelDispatchOperation *cdo = TP_CHANNEL_DISPATCH_OPERATION (source);
+  GError *error = NULL;
+
+  if (!tp_channel_dispatch_operation_handle_with_time_finish (cdo, result,
+        &error))
+    {
+      if (g_error_matches (error, TP_ERRORS, TP_ERROR_NOT_IMPLEMENTED))
+        {
+          EventManagerApproval *approval = user_data;
+
+          DEBUG ("HandleWithTime() is not implemented, falling back to "
+              "HandleWith(). Please upgrade to telepathy-mission-control "
+              "5.5.0 or later");
+
+          tp_channel_dispatch_operation_handle_with_async (approval->operation,
+              NULL, handle_with_cb, approval);
+        }
+      else
+        {
+          DEBUG ("HandleWithTime failed: %s\n", error->message);
+        }
+      g_error_free (error);
+    }
+}
+
+static void
+event_manager_approval_approve (EventManagerApproval *approval)
 {
   gint64 timestamp = gtk_get_current_event_time ();
+
   if (timestamp == GDK_CURRENT_TIME)
     timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
 
-  empathy_dispatch_operation_set_user_action_time (event->approval->operation,
-    timestamp);
-  empathy_dispatch_operation_approve (event->approval->operation);
+  g_assert (approval->operation != NULL);
+
+  tp_channel_dispatch_operation_handle_with_time_async (approval->operation,
+      NULL, timestamp, handle_with_time_cb, approval);
+}
+
+static void
+event_channel_process_func (EventPriv *event)
+{
+  event_manager_approval_approve (event->approval);
 }
 
 static void
@@ -245,19 +303,15 @@ event_text_channel_process_func (EventPriv *event)
   if (timestamp == GDK_CURRENT_TIME)
     timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
 
-  empathy_dispatch_operation_set_user_action_time (event->approval->operation,
-    timestamp);
-
   if (event->approval->handler != 0)
     {
-      tp_chat = EMPATHY_TP_CHAT
-        (empathy_dispatch_operation_get_channel_wrapper (event->approval->operation));
+      tp_chat = EMPATHY_TP_CHAT (event->approval->handler_instance);
 
       g_signal_handler_disconnect (tp_chat, event->approval->handler);
       event->approval->handler = 0;
     }
 
-  empathy_dispatch_operation_approve (event->approval->operation);
+  event_manager_approval_approve (event->approval);
 }
 
 static EventPriv *
@@ -298,6 +352,43 @@ event_update (EmpathyEventManager *manager, EventPriv *event,
 }
 
 static void
+reject_channel_claim_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpChannelDispatchOperation *cdo = TP_CHANNEL_DISPATCH_OPERATION (source);
+  GError *error = NULL;
+
+  if (!tp_channel_dispatch_operation_claim_finish (cdo, result, &error))
+    {
+      DEBUG ("Failed to claim channel: %s", error->message);
+
+      g_error_free (error);
+      goto out;
+    }
+
+  if (EMPATHY_IS_TP_CALL (user_data))
+    {
+      empathy_tp_call_close (user_data);
+    }
+  else if (EMPATHY_IS_TP_CHAT (user_data))
+    {
+      empathy_tp_chat_leave (user_data);
+    }
+
+out:
+  g_object_unref (user_data);
+}
+
+static void
+reject_approval (EventManagerApproval *approval)
+{
+  /* We have to claim the channel before closing it */
+  tp_channel_dispatch_operation_claim_async (approval->operation,
+      reject_channel_claim_cb, g_object_ref (approval->handler_instance));
+}
+
+static void
 event_manager_call_window_confirmation_dialog_response_cb (GtkDialog *dialog,
   gint response, gpointer user_data)
 {
@@ -308,21 +399,11 @@ event_manager_call_window_confirmation_dialog_response_cb (GtkDialog *dialog,
 
   if (response != GTK_RESPONSE_ACCEPT)
     {
-      EmpathyTpCall *call =
-        EMPATHY_TP_CALL (
-          empathy_dispatch_operation_get_channel_wrapper (
-            approval->operation));
-
-      g_object_ref (call);
-      if (empathy_dispatch_operation_claim (approval->operation))
-        empathy_tp_call_close (call);
-      g_object_unref (call);
-
+      reject_approval (approval);
     }
   else
     {
-      EmpathyCallFactory *factory = empathy_call_factory_get ();
-      empathy_call_factory_claim_channel (factory, approval->operation);
+      event_manager_approval_approve (approval);
     }
 }
 
@@ -341,8 +422,7 @@ event_channel_process_voip_func (EventPriv *event)
       return;
     }
 
-  call = EMPATHY_TP_CALL (empathy_dispatch_operation_get_channel_wrapper (
-        event->approval->operation));
+  call = EMPATHY_TP_CALL (event->approval->handler_instance);
 
   video = empathy_tp_call_has_initial_video (call);
 
@@ -397,7 +477,8 @@ event_channel_process_voip_func (EventPriv *event)
 
 static void
 event_manager_chat_message_received_cb (EmpathyTpChat *tp_chat,
-  EmpathyMessage *message, EventManagerApproval *approval)
+  EmpathyMessage *message,
+  EventManagerApproval *approval)
 {
   EmpathyContact  *sender;
   const gchar     *header;
@@ -416,7 +497,8 @@ event_manager_chat_message_received_cb (EmpathyTpChat *tp_chat,
   channel = empathy_tp_chat_get_channel (tp_chat);
 
   if (event != NULL)
-    event_update (approval->manager, event, EMPATHY_IMAGE_NEW_MESSAGE, header, msg);
+    event_update (approval->manager, event, EMPATHY_IMAGE_NEW_MESSAGE, header,
+        msg);
   else
     event_manager_add (approval->manager, sender, EMPATHY_EVENT_TYPE_CHAT,
         EMPATHY_IMAGE_NEW_MESSAGE, header, msg, approval,
@@ -436,8 +518,8 @@ event_manager_approval_done (EventManagerApproval *approval)
     {
       GQuark channel_type;
 
-      channel_type = empathy_dispatch_operation_get_channel_type_id (
-          approval->operation);
+      channel_type = tp_channel_get_channel_type_id (approval->main_channel);
+
       if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
         {
           priv->ringing--;
@@ -463,24 +545,14 @@ event_manager_approval_done (EventManagerApproval *approval)
 }
 
 static void
-event_manager_operation_approved_cb (EmpathyDispatchOperation *operation,
-  EventManagerApproval *approval)
+cdo_invalidated_cb (TpProxy *cdo,
+    guint domain,
+    gint code,
+    gchar *message,
+    EventManagerApproval *approval)
 {
-  event_manager_approval_done (approval);
-}
+  DEBUG ("ChannelDispatchOperation has been invalidated: %s", message);
 
-static void
-event_manager_operation_claimed_cb (EmpathyDispatchOperation *operation,
-  EventManagerApproval *approval)
-{
-  event_manager_approval_done (approval);
-}
-
-static void
-event_manager_operation_invalidated_cb (EmpathyDispatchOperation *operation,
-  guint domain, gint code, gchar *message,
-  EventManagerApproval *approval)
-{
   event_manager_approval_done (approval);
 }
 
@@ -492,8 +564,7 @@ event_manager_media_channel_got_contact (EventManagerApproval *approval)
   EmpathyTpCall *call;
   gboolean video;
 
-  call = EMPATHY_TP_CALL (empathy_dispatch_operation_get_channel_wrapper (
-        approval->operation));
+  call = EMPATHY_TP_CALL (approval->handler_instance);
 
   video = empathy_tp_call_has_initial_video (call);
 
@@ -536,43 +607,33 @@ invite_dialog_response_cb (GtkDialog *dialog,
                            EventManagerApproval *approval)
 {
   EmpathyTpChat *tp_chat;
-  gint64 timestamp;
 
   gtk_widget_destroy (GTK_WIDGET (approval->dialog));
   approval->dialog = NULL;
 
-  tp_chat = EMPATHY_TP_CHAT (empathy_dispatch_operation_get_channel_wrapper (
-        approval->operation));
+  tp_chat = EMPATHY_TP_CHAT (approval->handler_instance);
 
   if (response != GTK_RESPONSE_OK)
     {
       /* close channel */
       DEBUG ("Muc invitation rejected");
 
-      if (empathy_dispatch_operation_claim (approval->operation))
-        empathy_tp_chat_leave (tp_chat);
+      reject_approval (approval);
+
       return;
     }
 
   DEBUG ("Muc invitation accepted");
 
   /* We'll join the room when handling the channel */
-
-  timestamp = gtk_get_current_event_time ();
-  if (timestamp == GDK_CURRENT_TIME)
-    timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
-
-  empathy_dispatch_operation_set_user_action_time (approval->operation,
-    timestamp);
-  empathy_dispatch_operation_approve (approval->operation);
+  event_manager_approval_approve (approval);
 }
 
 static void
 event_room_channel_process_func (EventPriv *event)
 {
   GtkWidget *dialog, *button, *image;
-  TpChannel *channel = empathy_dispatch_operation_get_channel (
-      event->approval->operation);
+  TpChannel *channel = event->approval->main_channel;
 
   if (event->approval->dialog != NULL)
     {
@@ -618,7 +679,6 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
                                          GObject *object)
 {
   EventManagerApproval *approval = (EventManagerApproval *) user_data;
-  TpChannel *channel;
   const gchar *invite_msg;
   gchar *msg;
   TpHandle self_handle;
@@ -631,15 +691,14 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
     }
 
   approval->contact = g_object_ref (contact);
-  channel = empathy_dispatch_operation_get_channel (approval->operation);
 
-  self_handle = tp_channel_group_get_self_handle (channel);
-  tp_channel_group_get_local_pending_info (channel, self_handle, NULL, NULL,
-      &invite_msg);
+  self_handle = tp_channel_group_get_self_handle (approval->main_channel);
+  tp_channel_group_get_local_pending_info (approval->main_channel, self_handle,
+      NULL, NULL, &invite_msg);
 
   msg = g_strdup_printf (_("%s invited you to join %s"),
       empathy_contact_get_name (approval->contact),
-      tp_channel_get_identifier (channel));
+      tp_channel_get_identifier (approval->main_channel));
 
   event_manager_add (approval->manager, approval->contact,
       EMPATHY_EVENT_TYPE_CHAT, EMPATHY_IMAGE_GROUP_MESSAGE, msg, invite_msg,
@@ -677,57 +736,93 @@ event_manager_ft_got_contact_cb (TpConnection *connection,
   g_free (header);
 }
 
-static void
-event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
-  EmpathyDispatchOperation  *operation, EmpathyEventManager *manager)
+/* If there is a file-transfer or media channel consider it as the
+ * main one. */
+static TpChannel *
+find_main_channel (GList *channels)
 {
-  const gchar *channel_type;
+  GList *l;
+  TpChannel *text = NULL;
+
+  for (l = channels; l != NULL; l = g_list_next (l))
+    {
+      TpChannel *channel = l->data;
+      GQuark channel_type;
+
+      if (tp_proxy_get_invalidated (channel) != NULL)
+        continue;
+
+      channel_type = tp_channel_get_channel_type_id (channel);
+
+      if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA ||
+          channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
+        return channel;
+
+      else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
+        text = channel;
+    }
+
+  return text;
+}
+
+static void
+approve_channels (TpSimpleApprover *approver,
+    TpAccount *account,
+    TpConnection *connection,
+    GList *channels,
+    TpChannelDispatchOperation *dispatch_operation,
+    TpAddDispatchOperationContext *context,
+    gpointer user_data)
+{
+  EmpathyEventManager *self = user_data;
+  EmpathyEventManagerPriv *priv = GET_PRIV (self);
+  TpChannel *channel;
   EventManagerApproval *approval;
-  EmpathyEventManagerPriv *priv = GET_PRIV (manager);
+  GQuark channel_type;
 
-  channel_type = empathy_dispatch_operation_get_channel_type (operation);
+  channel = find_main_channel (channels);
+  if (channel == NULL)
+    {
+      GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
+          "Unknown channel type" };
 
-  approval = event_manager_approval_new (manager, operation);
+      DEBUG ("Failed to find the main channel; ignoring");
+
+      tp_add_dispatch_operation_context_fail (context, &error);
+      return;
+    }
+
+  approval = event_manager_approval_new (self, dispatch_operation, channel);
   priv->approvals = g_slist_prepend (priv->approvals, approval);
 
-  approval->approved_handler = g_signal_connect (operation, "approved",
-    G_CALLBACK (event_manager_operation_approved_cb), approval);
+  approval->invalidated_handler = g_signal_connect (dispatch_operation,
+      "invalidated", G_CALLBACK (cdo_invalidated_cb), approval);
 
-  approval->claimed_handler = g_signal_connect (operation, "claimed",
-     G_CALLBACK (event_manager_operation_claimed_cb), approval);
+  channel_type = tp_channel_get_channel_type_id (channel);
 
-  approval->invalidated_handler = g_signal_connect (operation, "invalidated",
-     G_CALLBACK (event_manager_operation_invalidated_cb), approval);
-
-  if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_TEXT))
+  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
     {
-      EmpathyTpChat *tp_chat =
-        EMPATHY_TP_CHAT (
-          empathy_dispatch_operation_get_channel_wrapper (operation));
-      TpChannel *channel = empathy_tp_chat_get_channel (tp_chat);
+      EmpathyTpChat *tp_chat;
+
+      tp_chat = empathy_tp_chat_new (channel);
+      approval->handler_instance = G_OBJECT (tp_chat);
 
       if (tp_proxy_has_interface (channel, TP_IFACE_CHANNEL_INTERFACE_GROUP))
         {
           /* Are we in local-pending ? */
-          TpHandle self_handle, inviter;
+          TpHandle inviter;
 
-          self_handle = tp_channel_group_get_self_handle (channel);
-
-          if (self_handle != 0 && tp_channel_group_get_local_pending_info (
-                channel, self_handle, &inviter, NULL, NULL))
+          if (empathy_tp_chat_is_invited (tp_chat, &inviter))
             {
               /* We are invited to a room */
-              TpConnection *connection;
-
               DEBUG ("Have been invited to %s. Ask user if he wants to accept",
                   tp_channel_get_identifier (channel));
 
-              connection = empathy_tp_chat_get_connection (tp_chat);
               empathy_tp_contact_factory_get_from_handle (connection,
                   inviter, event_manager_muc_invite_got_contact_cb,
-                  approval, NULL, G_OBJECT (manager));
+                  approval, NULL, G_OBJECT (self));
 
-              return;
+              goto out;
             }
 
           /* if we are not invited, let's wait for the first message */
@@ -736,13 +831,13 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
       /* 1-1 text channel, wait for the first message */
       approval->handler = g_signal_connect (tp_chat, "message-received",
         G_CALLBACK (event_manager_chat_message_received_cb), approval);
-      approval->handler_instance = G_OBJECT (tp_chat);
     }
-  else if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA))
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
     {
       EmpathyContact *contact;
-      EmpathyTpCall *call = EMPATHY_TP_CALL (
-          empathy_dispatch_operation_get_channel_wrapper (operation));
+      EmpathyTpCall *call = empathy_tp_call_new (channel);
+
+      approval->handler_instance = G_OBJECT (call);
 
       g_object_get (G_OBJECT (call), "contact", &contact, NULL);
 
@@ -759,23 +854,30 @@ event_manager_approve_channel_cb (EmpathyDispatcher *dispatcher,
         }
 
     }
-  else if (!tp_strdiff (channel_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
-      TpChannel *channel;
-      TpConnection *connection;
       TpHandle handle;
 
-      channel = empathy_dispatch_operation_get_channel (operation);
       handle = tp_channel_get_handle (channel, NULL);
 
       connection = tp_channel_borrow_connection (channel);
       empathy_tp_contact_factory_get_from_handle (connection, handle,
-        event_manager_ft_got_contact_cb, approval, NULL, G_OBJECT (manager));
+        event_manager_ft_got_contact_cb, approval, NULL, G_OBJECT (self));
     }
   else
     {
-      DEBUG ("Unknown channel type (%s), ignoring..", channel_type);
+      GError error = { TP_ERRORS, TP_ERROR_INVALID_ARGUMENT,
+          "Invalid channel type" };
+
+      DEBUG ("Unknown channel type (%s), ignoring..",
+          g_quark_to_string (channel_type));
+
+      tp_add_dispatch_operation_context_fail (context, &error);
+      return;
     }
+
+out:
+  tp_add_dispatch_operation_context_accept (context);
 }
 
 static void
@@ -947,6 +1049,7 @@ event_manager_finalize (GObject *object)
   g_slist_free (priv->approvals);
   g_object_unref (priv->contact_manager);
   g_object_unref (priv->dispatcher);
+  g_object_unref (priv->approver);
 }
 
 static void
@@ -994,17 +1097,67 @@ empathy_event_manager_init (EmpathyEventManager *manager)
 {
   EmpathyEventManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (manager,
     EMPATHY_TYPE_EVENT_MANAGER, EmpathyEventManagerPriv);
+  TpDBusDaemon *dbus;
+  GError *error = NULL;
 
   manager->priv = priv;
 
   priv->dispatcher = empathy_dispatcher_dup_singleton ();
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
-  g_signal_connect (priv->dispatcher, "approve",
-    G_CALLBACK (event_manager_approve_channel_cb), manager);
   g_signal_connect (priv->contact_manager, "pendings-changed",
     G_CALLBACK (event_manager_pendings_changed_cb), manager);
+
   g_signal_connect (priv->contact_manager, "members-changed",
     G_CALLBACK (event_manager_members_changed_cb), manager);
+
+  dbus = tp_dbus_daemon_dup (&error);
+  if (dbus == NULL)
+    {
+      DEBUG ("Failed to get TpDBusDaemon: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  priv->approver = tp_simple_approver_new (dbus, "EmpathyEventManager", FALSE,
+      approve_channels, manager, NULL);
+
+  /* Private text channels */
+  tp_base_client_take_approver_filter (priv->approver,
+      tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        NULL));
+
+  /* Muc text channels */
+  tp_base_client_take_approver_filter (priv->approver,
+      tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_ROOM,
+        NULL));
+
+  /* File transfer */
+  tp_base_client_take_approver_filter (priv->approver,
+      tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        NULL));
+
+  /* Calls */
+  tp_base_client_take_approver_filter (priv->approver,
+      tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        NULL));
+
+  if (!tp_base_client_register (priv->approver, &error))
+    {
+      DEBUG ("Failed to register Approver: %s", error->message);
+      g_error_free (error);
+    }
+
+  g_object_unref (dbus);
 }
 
 EmpathyEventManager *

@@ -51,8 +51,6 @@ enum
 {
     /* Ready for dispatching */
     READY,
-    /* Approved by an approver, can only happens on incoming operations */
-    APPROVED,
     /* Claimed by a handler */
     CLAIMED,
     /* Error, channel went away, inspecting it failed etc */
@@ -87,7 +85,6 @@ struct _EmpathyDispatchOperationPriv
   EmpathyDispatchOperationState status;
   gboolean incoming;
   gint64 user_action_time;
-  gboolean approved;
   gulong invalidated_handler;
   gulong ready_handler;
 };
@@ -288,14 +285,6 @@ empathy_dispatch_operation_class_init (
   object_class->constructed = empathy_dispatch_operation_constructed;
 
   signals[READY] = g_signal_new ("ready",
-    G_OBJECT_CLASS_TYPE(empathy_dispatch_operation_class),
-      G_SIGNAL_RUN_LAST,
-      0,
-      NULL, NULL,
-      g_cclosure_marshal_VOID__VOID,
-      G_TYPE_NONE, 0);
-
-  signals[APPROVED] = g_signal_new ("approved",
     G_OBJECT_CLASS_TYPE(empathy_dispatch_operation_class),
       G_SIGNAL_RUN_LAST,
       0,
@@ -567,45 +556,8 @@ empathy_dispatch_operation_start (EmpathyDispatchOperation *operation)
   g_return_if_fail (
     priv->status == EMPATHY_DISPATCHER_OPERATION_STATE_PENDING);
 
-  if (priv->incoming && !priv->approved)
-    empathy_dispatch_operation_set_status (operation,
-      EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING);
-  else
-    empathy_dispatch_operation_set_status (operation,
+  empathy_dispatch_operation_set_status (operation,
       EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING);
-}
-
-void
-empathy_dispatch_operation_approve (EmpathyDispatchOperation *operation)
-{
-  EmpathyDispatchOperationPriv *priv;
-
-  g_return_if_fail (EMPATHY_IS_DISPATCH_OPERATION (operation));
-
-  priv = GET_PRIV (operation);
-
-  if (priv->status == EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING)
-    {
-      DEBUG ("Approving operation %s",
-        empathy_dispatch_operation_get_object_path (operation));
-
-      empathy_dispatch_operation_set_status (operation,
-        EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING);
-
-      g_signal_emit (operation, signals[APPROVED], 0);
-    }
-  else if (priv->status < EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING)
-    {
-      DEBUG ("Pre-approving operation %s",
-        empathy_dispatch_operation_get_object_path (operation));
-      priv->approved = TRUE;
-    }
-  else
-    {
-      DEBUG (
-        "Ignoring approval for %s as it's already past the approval stage",
-        empathy_dispatch_operation_get_object_path (operation));
-    }
 }
 
 /* Returns whether or not the operation was successfully claimed */

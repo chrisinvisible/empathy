@@ -45,8 +45,6 @@ typedef enum {
     EMPATHY_DISPATCHER_OPERATION_STATE_PREPARING = 0,
     /* Information gathered ready to be dispatched */
     EMPATHY_DISPATCHER_OPERATION_STATE_PENDING,
-    /* Send to approving bits for approval */
-    EMPATHY_DISPATCHER_OPERATION_STATE_APPROVING,
     /* Send to handlers for dispatching */
     EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING,
     /* somebody claimed the channel */
@@ -88,8 +86,6 @@ EmpathyDispatchOperation *empathy_dispatch_operation_new_with_wrapper (
 /* Start the dispatching process, goes to the APPROVING state for incoming
  * channels and DISPATCHING for outgoing ones */
 void empathy_dispatch_operation_start (EmpathyDispatchOperation *operation);
-
-void empathy_dispatch_operation_approve (EmpathyDispatchOperation *operation);
 
 /* Returns whether or not the operation was successfully claimed */
 gboolean empathy_dispatch_operation_claim (EmpathyDispatchOperation *operation);
