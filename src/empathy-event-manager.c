@@ -352,7 +352,7 @@ event_update (EmpathyEventManager *manager, EventPriv *event,
 }
 
 static void
-channel_claim_cb (GObject *source,
+reject_channel_claim_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
@@ -383,8 +383,9 @@ out:
 static void
 reject_approval (EventManagerApproval *approval)
 {
+  /* We have to claim the channel before closing it */
   tp_channel_dispatch_operation_claim_async (approval->operation,
-      channel_claim_cb, g_object_ref (approval->handler_instance));
+      reject_channel_claim_cb, g_object_ref (approval->handler_instance));
 }
 
 static void
