@@ -25,12 +25,8 @@
 
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
-#ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#else
 
-#include <libempathy/empathy-log-manager.h>
-#endif /* ENABLE_TPL */
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -322,30 +318,19 @@ contact_log_menu_item_activate_cb (EmpathyContact *contact)
 GtkWidget *
 empathy_contact_log_menu_item_new (EmpathyContact *contact)
 {
-#ifndef ENABLE_TPL
-	EmpathyLogManager *manager;
-#else
 	TplLogManager     *manager;
-#endif /* ENABLE_TPL */
 	gboolean           have_log;
 	GtkWidget         *item;
 	GtkWidget         *image;
 
 	g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
-#ifndef ENABLE_TPL
-	manager = empathy_log_manager_dup_singleton ();
-	have_log = empathy_log_manager_exists (manager,
-					       empathy_contact_get_account (contact),
-					       empathy_contact_get_id (contact),
-					       FALSE);
-#else
 	manager = tpl_log_manager_dup_singleton ();
 	have_log = tpl_log_manager_exists (manager,
 					       empathy_contact_get_account (contact),
 					       empathy_contact_get_id (contact),
 					       FALSE);
-#endif /* ENABLE_TPL */
+
 	g_object_unref (manager);
 
 	item = gtk_image_menu_item_new_with_mnemonic (_("_Previous Conversations"));

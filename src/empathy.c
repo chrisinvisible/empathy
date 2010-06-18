@@ -44,12 +44,8 @@
 #include <telepathy-glib/connection-manager.h>
 #include <telepathy-glib/interfaces.h>
 
-#ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#else
 
-#include <libempathy/empathy-log-manager.h>
-#endif /* ENABLE_TPL */
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
 #include <libempathy/empathy-call-factory.h>
@@ -576,11 +572,7 @@ main (int argc, char *argv[])
   EmpathyStatusIcon *icon;
   EmpathyDispatcher *dispatcher;
   TpAccountManager *account_manager;
-#ifdef ENABLE_TPL
   TplLogManager *log_manager;
-#else
-  EmpathyLogManager *log_manager;
-#endif /* ENABLE_TPL */
   EmpathyChatroomManager *chatroom_manager;
   EmpathyCallFactory *call_factory;
   EmpathyFTFactory  *ft_factory;
@@ -701,12 +693,7 @@ main (int argc, char *argv[])
       G_CALLBACK (unique_app_message_cb), window);
 
   /* Logging */
-#ifdef ENABLE_TPL
   log_manager = tpl_log_manager_dup_singleton ();
-#else
-  log_manager = empathy_log_manager_dup_singleton ();
-  empathy_log_manager_observe (log_manager, dispatcher);
-#endif
 
   chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
   empathy_chatroom_manager_observe (chatroom_manager, dispatcher);

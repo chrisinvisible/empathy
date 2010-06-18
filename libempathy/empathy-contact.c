@@ -28,9 +28,6 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
-#ifdef ENABEL_TPL
-#include <telepathy-logger/contact.h>
-#endif /* ENABLE_TPL */
 
 #if HAVE_GEOCLUE
 #include <geoclue/geoclue-geocode.h>
@@ -479,7 +476,6 @@ empathy_contact_new (TpContact *tp_contact)
       NULL);
 }
 
-#ifdef ENABLE_TPL
 EmpathyContact *
 empathy_contact_from_tpl_contact (TpAccount *account,
     TplEntity *tpl_entity)
@@ -504,7 +500,6 @@ empathy_contact_from_tpl_contact (TpAccount *account,
 
   return retval;
 }
-#endif /* ENABLE_TPL */
 
 EmpathyContact *
 empathy_contact_new_for_log (TpAccount *account,

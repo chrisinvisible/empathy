@@ -7,7 +7,6 @@ AM_CPPFLAGS =                                           \
 	-DDATADIR=\""$(datadir)"\"              	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
 	$(LIBEMPATHYGTK_CFLAGS)				\
-	$(TPL_CFLAGS)					\
 	$(LIBNOTIFY_CFLAGS)				\
 	$(ENCHANT_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
@@ -132,7 +131,6 @@ nodist_libempathy_gtk_la_SOURCES =\
 libempathy_gtk_la_LIBADD =			\
 	$(LIBEMPATHYGTK_LIBS)			\
 	$(LIBNOTIFY_LIBS)			\
-	$(TPL_LIBS)				\
 	$(ENCHANT_LIBS)				\
 	$(LIBCHAMPLAIN_LIBS)			\
 	$(GEOCLUE_LIBS)				\

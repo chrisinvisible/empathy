@@ -8,7 +8,6 @@ AM_CPPFLAGS =                                           \
 	-DDATADIR=\""$(datadir)"\"              	\
 	-DLOCALEDIR=\""$(datadir)/locale"\"		\
 	-DG_LOG_DOMAIN=\"empathy\"			\
-	$(TPL_CFLAGS)					\
 	$(LIBEMPATHY_CFLAGS)				\
 	$(GEOCLUE_CFLAGS)				\
 	$(NETWORK_MANAGER_CFLAGS)			\
@@ -61,14 +60,6 @@ libempathy_headers =				\
 	empathy-types.h				\
 	empathy-utils.h
 
-if !ENABLE_TPL
-libempathy_headers +=	\
-	empathy-log-manager.h				\
-	empathy-log-store-empathy.h			\
-	empathy-log-store.h				\
-	$(NULL)
-endif
-
 libempathy_la_SOURCES =					\
 	$(libempathy_headers)				\
 	empathy-account-settings.c			\
@@ -103,14 +94,6 @@ libempathy_la_SOURCES =					\
 	empathy-tp-roomlist.c				\
 	empathy-utils.c
 
-if !ENABLE_TPL
-libempathy_la_SOURCES += \
-	empathy-log-manager.c				\
-	empathy-log-store-empathy.c			\
-	empathy-log-store.c				\
-	$(NULL)
-endif
-
 # do not distribute generated files
 nodist_libempathy_la_SOURCES =\
 	$(BUILT_SOURCES)
@@ -119,7 +102,6 @@ libempathy_la_LIBADD =		\
 	$(top_builddir)/extensions/libemp-extensions.la \
 	$(LIBEMPATHY_LIBS) \
 	$(GEOCLUE_LIBS) \
-	$(TPL_LIBS) \
 	$(NETWORK_MANAGER_LIBS) \
 	$(CONNMAN_LIBS)
 
@@ -192,11 +174,6 @@ dtd_DATA = 					\
 	empathy-chatroom-manager.dtd		\
 	empathy-irc-networks.dtd
 
-if !ENABLE_TPL
-stylesheetdir = $(datadir)/empathy
-stylesheet_DATA = empathy-log-manager.xsl
-endif
-
 ircnetworksdir = $(datadir)/empathy
 ircnetworks_DATA =		\
 	irc-networks.xml
@@ -205,10 +182,6 @@ EXTRA_DIST = 			\
 	empathy-marshal.list	\
 	$(dtd_DATA)		\
 	$(ircnetworks_DATA)
-
-if !ENABLE_TPL
-EXTRA_DIST +=  $(stylesheet_DATA)
-endif
 
 CLEANFILES = 				\
 	$(BUILT_SOURCES)		\

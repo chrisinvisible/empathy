@@ -31,13 +31,8 @@
 #include <gtk/gtk.h>
 
 #include <telepathy-glib/account-manager.h>
-#ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#endif /* ENABLE_TPL */
 
-#ifndef ENABLE_TPL
-#include <libempathy/empathy-log-manager.h>
-#endif /* ENABLE_TPL */
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-chatroom.h>
 #include <libempathy/empathy-message.h>
@@ -76,11 +71,7 @@ typedef struct {
 
 	gchar             *last_find;
 
-#ifndef ENABLE_TPL
-	EmpathyLogManager *log_manager;
-#else
 	TplLogManager     *log_manager;
-#endif /* ENABLE_TPL */
 
 	/* Those are only used while waiting for the account chooser to be ready */
 	TpAccount         *selected_account;
@@ -215,11 +206,7 @@ empathy_log_window_show (TpAccount  *account,
 	}
 
 	window = g_new0 (EmpathyLogWindow, 1);
-#ifndef ENABLE_TPL
-	window->log_manager = empathy_log_manager_dup_singleton ();
-#else
 	window->log_manager = tpl_log_manager_dup_singleton ();
-#endif /* ENABLE_TPL */
 
 	filename = empathy_file_lookup ("empathy-log-window.ui",
 					"libempathy-gtk");
@@ -355,7 +342,6 @@ log_window_entry_find_changed_cb (GtkWidget       *entry,
 	gtk_widget_set_sensitive (window->button_find, is_sensitive);
 }
 
-#ifdef ENABLE_TPL
 static void
 got_messages_for_date_cb (GObject *manager,
                        GAsyncResult *result,
@@ -430,8 +416,6 @@ gdate_from_str (const gchar *str)
 	return g_date_new_dmy (day, month, year);
 }
 
-#endif /* ENABLE_TPL */
-
 static void
 log_window_find_changed_cb (GtkTreeSelection *selection,
 			    EmpathyLogWindow  *window)
@@ -443,15 +427,7 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 	gchar         *chat_id;
 	gboolean       is_chatroom;
 	gchar         *date;
-#ifndef ENABLE_TPL
-	EmpathyMessage *message;
-	GList         *messages;
-	GList         *l;
-	gboolean       can_do_previous;
-	gboolean       can_do_next;
-#else
 	GDate         *gdate;
-#endif /* ENABLE_TPL */
 
 	/* Get selected information */
 	view = GTK_TREE_VIEW (window->treeview_find);
@@ -483,13 +459,6 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 	empathy_chat_view_scroll (window->chatview_find, FALSE);
 
 	/* Get messages */
-#ifndef ENABLE_TPL
-	messages = empathy_log_manager_get_messages_for_date (window->log_manager,
-							      account,
-							      chat_id,
-							      is_chatroom,
-							      date);
-#else
 	gdate = gdate_from_str (date);
 
 	if (gdate != NULL) {
@@ -503,43 +472,13 @@ log_window_find_changed_cb (GtkTreeSelection *selection,
 
 		g_date_free (gdate);
 	}
-#endif /* ENABLE_TPL */
 
 	g_object_unref (account);
 	g_free (date);
 	g_free (chat_id);
-
-#ifndef ENABLE_TPL
-	for (l = messages; l; l = l->next) {
-		message = l->data;
-		empathy_chat_view_append_message (window->chatview_find, message);
-		g_object_unref (message);
-	}
-	g_list_free (messages);
-
-	/* Scroll to the most recent messages */
-	empathy_chat_view_scroll (window->chatview_find, TRUE);
-
-	/* Highlight and find messages */
-	empathy_chat_view_highlight (window->chatview_find,
-				    window->last_find, FALSE);
-	empathy_chat_view_find_next (window->chatview_find,
-				    window->last_find,
-				    TRUE,
-				    FALSE);
-	empathy_chat_view_find_abilities (window->chatview_find,
-					 window->last_find,
-					 FALSE,
-					 &can_do_previous,
-					 &can_do_next);
-	gtk_widget_set_sensitive (window->button_previous, can_do_previous);
-	gtk_widget_set_sensitive (window->button_next, can_do_next);
-	gtk_widget_set_sensitive (window->button_find, FALSE);
-#endif /* ENABLE_TPL */
 }
 
 
-#ifdef ENABLE_TPL
 static void
 log_manager_searched_new_cb (GObject *manager,
                              GAsyncResult *result,
@@ -603,24 +542,15 @@ log_manager_searched_new_cb (GObject *manager,
 			tpl_log_manager_search_free (hits);
 	}
 }
-#endif /* ENABLE_TPL */
-
 
 static void
 log_window_find_populate (EmpathyLogWindow *window,
 			  const gchar     *search_criteria)
 {
-#ifndef ENABLE_TPL
-	GList              *hits, *l;
-
-#endif /* ENABLE_TPL */
 	GtkTreeView        *view;
 	GtkTreeModel       *model;
 	GtkTreeSelection   *selection;
 	GtkListStore       *store;
-#ifndef ENABLE_TPL
-	GtkTreeIter         iter;
-#endif /* ENABLE_TPL */
 
 	view = GTK_TREE_VIEW (window->treeview_find);
 	model = gtk_tree_view_get_model (view);
@@ -636,53 +566,8 @@ log_window_find_populate (EmpathyLogWindow *window,
 		return;
 	}
 
-#ifdef ENABLE_TPL
 	tpl_log_manager_search_async (window->log_manager, search_criteria,
 			log_manager_searched_new_cb, (gpointer) store);
-#else
-	hits = empathy_log_manager_search_new (window->log_manager, search_criteria);
-
-	for (l = hits; l; l = l->next) {
-		EmpathyLogSearchHit *hit;
-		const gchar         *account_name;
-		const gchar         *account_icon;
-		gchar               *date_readable;
-
-		hit = l->data;
-
-		/* Protect against invalid data (corrupt or old log files. */
-		if (!hit->account || !hit->chat_id) {
-			continue;
-		}
-
-		date_readable = empathy_log_manager_get_date_readable (hit->date);
-		account_name = tp_account_get_display_name (hit->account);
-		account_icon = tp_account_get_icon_name (hit->account);
-
-		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter,
-				    COL_FIND_ACCOUNT_ICON, account_icon,
-				    COL_FIND_ACCOUNT_NAME, account_name,
-				    COL_FIND_ACCOUNT, hit->account,
-				    COL_FIND_CHAT_NAME, hit->chat_id, /* FIXME */
-				    COL_FIND_CHAT_ID, hit->chat_id,
-				    COL_FIND_IS_CHATROOM, hit->is_chatroom,
-				    COL_FIND_DATE, hit->date,
-				    COL_FIND_DATE_READABLE, date_readable,
-				    -1);
-
-		g_free (date_readable);
-
-		/* FIXME: Update COL_FIND_CHAT_NAME */
-		if (hit->is_chatroom) {
-		} else {
-		}
-	}
-
-	if (hits) {
-		empathy_log_manager_search_free (hits);
-	}
-#endif /* ENABLE_TPL */
 }
 
 static void
@@ -861,7 +746,6 @@ log_window_chats_changed_cb (GtkTreeSelection *selection,
 	log_window_chats_get_messages (window, NULL);
 }
 
-#ifdef ENABLE_TPL
 static void
 log_manager_got_chats_cb (GObject *manager,
                        GAsyncResult *result,
@@ -922,25 +806,17 @@ log_manager_got_chats_cb (GObject *manager,
 
 	g_object_unref (account);
 }
-#endif /* ENABLE_TPL */
-
 
 static void
 log_window_chats_populate (EmpathyLogWindow *window)
 {
 	EmpathyAccountChooser *account_chooser;
 	TpAccount             *account;
-#ifndef ENABLE_TPL
-	GList                *chats, *l;
-#endif /* ENABLE_TPL */
 
 	GtkTreeView          *view;
 	GtkTreeModel         *model;
 	GtkTreeSelection     *selection;
 	GtkListStore         *store;
-#ifndef ENABLE_TPL
-	GtkTreeIter           iter;
-#endif /* ENABLE_TPL */
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (window->account_chooser_chats);
 	account = empathy_account_chooser_dup_account (account_chooser);
@@ -962,40 +838,8 @@ log_window_chats_populate (EmpathyLogWindow *window)
 
 	gtk_list_store_clear (store);
 
-#ifdef ENABLE_TPL
 	tpl_log_manager_get_chats_async (window->log_manager, account,
 			log_manager_got_chats_cb, (gpointer) window);
-#else
-	chats = empathy_log_manager_get_chats (window->log_manager, account);
-	for (l = chats; l; l = l->next) {
-		EmpathyLogSearchHit *hit;
-
-		hit = l->data;
-
-		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter,
-				    COL_CHAT_ICON, "empathy-available", /* FIXME */
-				    COL_CHAT_NAME, hit->chat_id,
-				    COL_CHAT_ACCOUNT, account,
-				    COL_CHAT_ID, hit->chat_id,
-				    COL_CHAT_IS_CHATROOM, hit->is_chatroom,
-				    -1);
-
-		/* FIXME: Update COL_CHAT_ICON/NAME */
-		if (hit->is_chatroom) {
-		} else {
-		}
-	}
-	empathy_log_manager_search_free (chats);
-
-	/* Unblock signals */
-	g_signal_handlers_unblock_by_func (selection,
-					   log_window_chats_changed_cb,
-					   window);
-
-
-	g_object_unref (account);
-#endif /* ENABLE_TPL */
 }
 
 static void
@@ -1165,7 +1009,6 @@ log_window_chats_get_selected (EmpathyLogWindow  *window,
 	return TRUE;
 }
 
-#ifdef ENABLE_TPL
 static void
 log_window_got_messages_for_date_cb (GObject *manager,
     GAsyncResult *result,
@@ -1367,151 +1210,6 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 	g_free (chat_id);
 }
 
-#else
-
-static void
-log_window_chats_get_messages (EmpathyLogWindow *window,
-			       GDate     *date_to_show)
-{
-	TpAccount     *account;
-	gchar         *chat_id;
-	gboolean       is_chatroom;
-	EmpathyMessage *message;
-	GList         *messages;
-	GList         *dates = NULL;
-	GList         *l;
-	const gchar   *date = NULL;
-	guint          year_selected;
-	guint          year;
-	guint          month;
-	guint          month_selected;
-	guint          day;
-
-	if (!log_window_chats_get_selected (window, &account,
-					    &chat_id, &is_chatroom)) {
-		return;
-	}
-
-	g_signal_handlers_block_by_func (window->calendar_chats,
-					 log_window_calendar_chats_day_selected_cb,
-					 window);
-
-	/* Either use the supplied date or get the last */
-	if (date_to_show == NULL) {
-		gboolean day_selected = FALSE;
-
-		/* Get a list of dates and show them on the calendar */
-		dates = empathy_log_manager_get_dates (window->log_manager,
-						       account, chat_id,
-						       is_chatroom);
-
-		for (l = dates; l; l = l->next) {
-			const gchar *str;
-
-			str = l->data;
-			if (!str) {
-				continue;
-			}
-
-			sscanf (str, "%4d%2d%2d", &year, &month, &day);
-			gtk_calendar_get_date (GTK_CALENDAR (window->calendar_chats),
-					       &year_selected,
-					       &month_selected,
-					       NULL);
-
-			month_selected++;
-
-			if (!l->next) {
-				date = str;
-			}
-
-			if (year != year_selected || month != month_selected) {
-				continue;
-			}
-
-
-			DEBUG ("Marking date:'%s'", str);
-			gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), day);
-
-			if (l->next) {
-				continue;
-			}
-
-			day_selected = TRUE;
-
-			gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), day);
-		}
-
-		if (!day_selected) {
-			/* Unselect the day in the calendar */
-			gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), 0);
-		}
-	} else {
-		gchar buf[9];
-
-		day = g_date_get_day (date_to_show);
-		gtk_calendar_get_date (GTK_CALENDAR (window->calendar_chats),
-				       &year_selected,
-				       &month_selected,
-				       NULL);
-
-		month_selected++;
-
-		if (g_date_get_year (date_to_show) != year_selected &&
-			g_date_get_month (date_to_show) != month_selected) {
-			day = 0;
-		}
-
-		gtk_calendar_select_day (GTK_CALENDAR (window->calendar_chats), day);
-
-		g_date_strftime (buf, 9, "%Y%m%d", date_to_show);
-		date = buf;
-	}
-
-	g_signal_handlers_unblock_by_func (window->calendar_chats,
-					   log_window_calendar_chats_day_selected_cb,
-					   window);
-
-	if (!date) {
-		goto OUT;
-	}
-
-	/* Clear all current messages shown in the textview */
-	empathy_chat_view_clear (window->chatview_chats);
-
-	/* Turn off scrolling temporarily */
-	empathy_chat_view_scroll (window->chatview_find, FALSE);
-
-	/* Get messages */
-	messages = empathy_log_manager_get_messages_for_date (window->log_manager,
-							      account, chat_id,
-							      is_chatroom,
-							      date);
-
-	for (l = messages; l; l = l->next) {
-		message = l->data;
-
-		empathy_chat_view_append_message (window->chatview_chats,
-						 message);
-		g_object_unref (message);
-	}
-	g_list_free (messages);
-
-	/* Turn back on scrolling */
-	empathy_chat_view_scroll (window->chatview_find, TRUE);
-
-	/* Give the search entry main focus */
-	gtk_widget_grab_focus (window->entry_chats);
-
-OUT:
-	g_list_foreach (dates, (GFunc) g_free, NULL);
-	g_list_free (dates);
-	g_object_unref (account);
-	g_free (chat_id);
-}
-
-#endif /* ENABLE_TPL */
-
 static void
 log_window_calendar_chats_day_selected_cb (GtkWidget       *calendar,
 					   EmpathyLogWindow *window)
@@ -1538,8 +1236,6 @@ log_window_calendar_chats_day_selected_cb (GtkWidget       *calendar,
 	g_date_free (date);
 }
 
-
-#ifdef ENABLE_TPL
 static void
 log_window_updating_calendar_month_cb (GObject *manager,
 		GAsyncResult *result, gpointer user_data)
@@ -1587,8 +1283,6 @@ log_window_updating_calendar_month_cb (GObject *manager,
 	DEBUG ("Currently showing month %d and year %d", month_selected,
 			year_selected);
 }
-#endif /* ENABLE_TPL */
-
 
 static void
 log_window_calendar_chats_month_changed_cb (GtkWidget       *calendar,
@@ -1597,13 +1291,6 @@ log_window_calendar_chats_month_changed_cb (GtkWidget       *calendar,
 	TpAccount     *account;
 	gchar         *chat_id;
 	gboolean       is_chatroom;
-#ifndef ENABLE_TPL
-	guint          year_selected;
-	guint          month_selected;
-
-	GList         *dates;
-	GList         *l;
-#endif /* ENABLE_TPL */
 
 	gtk_calendar_clear_marks (GTK_CALENDAR (calendar));
 
@@ -1614,48 +1301,10 @@ log_window_calendar_chats_month_changed_cb (GtkWidget       *calendar,
 	}
 
 	/* Get the log object for this contact */
-#ifdef ENABLE_TPL
 	tpl_log_manager_get_dates_async (window->log_manager, account,
 					       chat_id, is_chatroom,
 					       log_window_updating_calendar_month_cb,
 					       (gpointer) window);
-#else
-	dates = empathy_log_manager_get_dates (window->log_manager, account,
-					       chat_id, is_chatroom);
-
-	g_object_get (calendar,
-		      "month", &month_selected,
-		      "year", &year_selected,
-		      NULL);
-
-	/* We need this here because it appears that the months start from 0 */
-	month_selected++;
-
-	for (l = dates; l; l = l->next) {
-		const gchar *str;
-		guint        year;
-		guint        month;
-		guint        day;
-
-		str = l->data;
-		if (!str) {
-			continue;
-		}
-
-		sscanf (str, "%4d%2d%2d", &year, &month, &day);
-
-		if (year == year_selected && month == month_selected) {
-			DEBUG ("Marking date:'%s'", str);
-			gtk_calendar_mark_day (GTK_CALENDAR (window->calendar_chats), day);
-		}
-	}
-
-	g_list_foreach (dates, (GFunc) g_free, NULL);
-	g_list_free (dates);
-
-	DEBUG ("Currently showing month %d and year %d", month_selected,
-		year_selected);
-#endif /* ENABLE_TPL */
 
 	g_object_unref (account);
 	g_free (chat_id);
@@ -1693,4 +1342,3 @@ log_window_entry_chats_activate_cb (GtkWidget       *entry,
 					    FALSE);
 	}
 }
-

@@ -27,14 +27,12 @@
 #include <string.h>
 
 #include <telepathy-glib/util.h>
-#ifdef ENABLE_TPL
 #include <telepathy-glib/account.h>
 #include <telepathy-glib/account-manager.h>
 
 #include <telepathy-logger/entity.h>
 #include <telepathy-logger/entry.h>
 #include <telepathy-logger/entry-text.h>
-#endif /* ENABLE_TPL */
 
 #include "empathy-message.h"
 #include "empathy-utils.h"
@@ -260,7 +258,6 @@ empathy_message_new (const gchar *body)
 			     NULL);
 }
 
-#ifdef ENABLE_TPL
 EmpathyMessage *
 empathy_message_from_tpl_log_entry (TplEntry *logentry)
 {
@@ -323,7 +320,6 @@ empathy_message_from_tpl_log_entry (TplEntry *logentry)
 
 	return retval;
 }
-#endif /* ENABLE_TPL */
 
 TpChannelTextMessageType
 empathy_message_get_tptype (EmpathyMessage *message)

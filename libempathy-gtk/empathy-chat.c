@@ -36,12 +36,7 @@
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
-#ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#else
-
-#include <libempathy/empathy-log-manager.h>
-#endif /* ENABLE_TPL */
 #include <libempathy/empathy-contact-list.h>
 #include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
@@ -80,11 +75,7 @@ typedef struct {
 	GSettings         *gsettings_chat;
 	GSettings         *gsettings_ui;
 
-#ifdef ENABLE_TPL
 	TplLogManager     *log_manager;
-#else
-	EmpathyLogManager *log_manager;
-#endif /* ENABLE_TPL */
 	TpAccountManager  *account_manager;
 	GList             *input_history;
 	GList             *input_history_current;
@@ -1930,43 +1921,28 @@ chat_input_populate_popup_cb (GtkTextView *view,
 }
 
 
-#ifdef ENABLE_TPL
 static gboolean
 chat_log_filter (TplEntry *log,
 		 gpointer user_data)
-#else
-static gboolean
-chat_log_filter (EmpathyMessage *message,
-		 gpointer user_data)
-#endif /* ENABLE_TPL */
 {
 	EmpathyChat *chat = user_data;
-#ifdef ENABLE_TPL
 	EmpathyMessage *message;
-#endif /* ENABLE_TPL */
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	const GList *pending;
 
-#ifdef ENABLE_TPL
 	g_return_val_if_fail (TPL_IS_ENTRY (log), FALSE);
-#else
-	g_return_val_if_fail (EMPATHY_IS_MESSAGE (message), FALSE);
-#endif /* ENABLE_TPL */
 	g_return_val_if_fail (EMPATHY_IS_CHAT (chat), FALSE);
 
 	pending = empathy_tp_chat_get_pending_messages (priv->tp_chat);
-#ifdef ENABLE_TPL
 	message = empathy_message_from_tpl_log_entry (log);
-#endif /* ENABLE_TPL */
 
 	for (; pending; pending = g_list_next (pending)) {
 		if (empathy_message_equal (message, pending->data)) {
 			return FALSE;
 		}
 	}
-#ifdef ENABLE_TPL
+
 	g_object_unref (message);
-#endif
 	return TRUE;
 }
 
@@ -1993,7 +1969,6 @@ show_pending_messages (EmpathyChat *chat) {
 }
 
 
-#ifdef ENABLE_TPL
 static void
 got_filtered_messages_cb (GObject *manager,
 		GAsyncResult *result,
@@ -2039,17 +2014,12 @@ out:
 	/* Turn back on scrolling */
 	empathy_chat_view_scroll (chat->view, TRUE);
 }
-#endif /* ENABLE_TPL */
-
 
 static void
 chat_add_logs (EmpathyChat *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 	gboolean         is_chatroom;
-#ifndef ENABLE_TPL
-	GList           *messages, *l;
-#endif /* ENABLE_TPL */
 
 	if (!priv->id) {
 		return;
@@ -2061,25 +2031,6 @@ chat_add_logs (EmpathyChat *chat)
 	/* Add messages from last conversation */
 	is_chatroom = priv->handle_type == TP_HANDLE_TYPE_ROOM;
 
-#ifndef ENABLE_TPL
-	messages = empathy_log_manager_get_filtered_messages (priv->log_manager,
-							      priv->account,
-							      priv->id,
-							      is_chatroom,
-							      5,
-							      chat_log_filter,
-							      chat);
-
-	for (l = messages; l; l = g_list_next (l)) {
-		empathy_chat_view_append_message (chat->view, l->data);
-		g_object_unref (l->data);
-	}
-
-	g_list_free (messages);
-
-	/* Turn back on scrolling */
-	empathy_chat_view_scroll (chat->view, TRUE);
-#else
 	priv->retrieving_backlogs = TRUE;
 	tpl_log_manager_get_filtered_messages_async (priv->log_manager,
 							      priv->account,
@@ -2090,7 +2041,6 @@ chat_add_logs (EmpathyChat *chat)
 							      chat,
 							      got_filtered_messages_cb,
 							      (gpointer) chat);
-#endif /* ENABLE_TPL */
 }
 
 static gint
@@ -2724,12 +2674,6 @@ chat_constructed (GObject *object)
 
 	if (priv->handle_type != TP_HANDLE_TYPE_ROOM)
 		chat_add_logs (chat);
-#ifndef ENABLE_TPL
-	/* When async API are involved, pending message are shown at the end of the
-	 * callbacks' chain fired by chat_add_logs */
-	priv->can_show_pending = TRUE;
-	show_pending_messages (chat);
-#endif /* ENABLE_TPL */
 }
 
 static void
@@ -2872,11 +2816,7 @@ empathy_chat_init (EmpathyChat *chat)
 		EMPATHY_TYPE_CHAT, EmpathyChatPriv);
 
 	chat->priv = priv;
-#ifndef ENABLE_TPL
-	priv->log_manager = empathy_log_manager_dup_singleton ();
-#else
 	priv->log_manager = tpl_log_manager_dup_singleton ();
-#endif /* ENABLE_TPL */
 	priv->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
 	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 

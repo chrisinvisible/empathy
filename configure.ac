@@ -137,30 +137,6 @@ AS_COMPILER_FLAG(-Wmissing-declarations, ERROR_CFLAGS="$ERROR_CFLAGS -Wmissing-d
 AC_SUBST(ERROR_CFLAGS)
 
 # -----------------------------------------------------------
-# Enable TPL
-# -----------------------------------------------------------
-
-# It needs to be defined before PKG_CHECK_MODULES calls
-AC_ARG_ENABLE(tpl,
-  AC_HELP_STRING([--enable-tpl],[enable telepathy-logger code and disable the
-    empathy logger]), enable_tpl=$enableval, enable_tpl=no )
-AM_CONDITIONAL(ENABLE_TPL, test "x$enable_tpl" = "xyes")
-
-if test x${enable_tpl} = xyes; then
-  AC_DEFINE(ENABLE_TPL, [], [Enable TPL code])
-fi
-
-if test "x$enable_tpl" = "xyes"; then
-  PKG_CHECK_MODULES(TPL,
-  [
-     telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-  ])
-  AC_SUBST(TPL_CFLAGS)
-  AC_SUBST(TPL_LIBS)
-fi
-
-
-# -----------------------------------------------------------
 # Pkg-Config dependency checks
 # -----------------------------------------------------------
 
@@ -175,6 +151,7 @@ PKG_CHECK_MODULES(LIBEMPATHY,
    telepathy-farsight
    farsight2-0.10
    gstreamer-0.10
+   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
 ])
 
 PKG_CHECK_MODULES(LIBEMPATHYGTK,
@@ -190,6 +167,7 @@ PKG_CHECK_MODULES(LIBEMPATHYGTK,
    farsight2-0.10
    gstreamer-0.10
    gstreamer-interfaces-0.10
+   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
 ])
 
 PKG_CHECK_MODULES(EMPATHY,
@@ -207,6 +185,7 @@ PKG_CHECK_MODULES(EMPATHY,
    gstreamer-0.10
    unique-1.0 >= $UNIQUE_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
+   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
 ])
 
 PKG_CHECK_MODULES(LIBEMPATHY_ACCOUNTS_PANEL,
@@ -221,6 +200,7 @@ PKG_CHECK_MODULES(LIBEMPATHY_ACCOUNTS_PANEL,
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    unique-1.0 >= $UNIQUE_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
+   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
 ])
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
@@ -583,9 +563,6 @@ Configure summary:
 	Meego widgets ..............:  ${have_meego}
 	Favourite contacts .........:  ${have_favourite_contacts}
 	Control center embedding....:  ${have_control_center_embedding}
-
-    Logging:
-        Telepathy Logger............:  ${enable_tpl}
 
     Connectivity:
 	NetworkManager integration..:  ${have_nm}
