@@ -2420,17 +2420,17 @@ conf_spell_checking_cb (GSettings *gsettings_chat,
 }
 
 static gboolean
-chat_hpaned_pos_changed_cb (GtkWidget* hpaned, gpointer user_data)
+chat_hpaned_pos_changed_cb (GtkWidget* hpaned,
+		GParamSpec *spec,
+		gpointer user_data)
 {
-	GSettings *gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	EmpathyChat *chat = EMPATHY_CHAT (user_data);
 	gint hpaned_pos;
 
 	hpaned_pos = gtk_paned_get_position (GTK_PANED(hpaned));
-	g_settings_set_int (gsettings_chat,
+	g_settings_set_int (chat->priv->gsettings_ui,
 			    EMPATHY_PREFS_UI_CHAT_WINDOW_PANED_POS,
 			    hpaned_pos);
-
-	g_object_unref (gsettings_chat);
 
 	return TRUE;
 }
@@ -2529,7 +2529,7 @@ chat_create_ui (EmpathyChat *chat)
 
 	g_signal_connect (priv->hpaned, "notify::position",
 			  G_CALLBACK (chat_hpaned_pos_changed_cb),
-			  NULL);
+			  chat);
 
         /* Load the paned position */
 	paned_pos = g_settings_get_int (priv->gsettings_ui,
