@@ -1061,7 +1061,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 	g_list_free (groups);
 
-#ifdef HAVE_FAVOURITE_CONTACTS
 	if (priv->show_groups &&
 	    empathy_contact_list_is_favourite (priv->list, contact)) {
 	/* Add contact to the fake 'Favorites' group */
@@ -1072,7 +1071,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		add_contact_to_store (GTK_TREE_STORE (store), &iter, &iter_group, contact, flags);
 	}
-#endif
 
 	contact_list_store_contact_update (store, contact);
 }
