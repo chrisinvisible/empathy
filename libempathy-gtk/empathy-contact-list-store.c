@@ -1573,6 +1573,8 @@ contact_list_store_contact_sort (EmpathyContact *contact_a,
 	TpAccount *account_a, *account_b;
 	gint ret_val;
 
+	g_return_val_if_fail (contact_a != NULL || contact_b != NULL, 0);
+
 	/* alias */
 	ret_val = g_utf8_collate (empathy_contact_get_name (contact_a),
 				  empathy_contact_get_name (contact_b));
