@@ -1630,10 +1630,9 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_b,
 			    -1);
 
-	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
-
-	if (ret_val != 0) {
+	if (contact_a == NULL || contact_b == NULL) {
+		ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
+			name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
 		goto free_and_out;
 	}
 
