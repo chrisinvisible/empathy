@@ -63,7 +63,7 @@
 #define COMPOSING_STOP_TIMEOUT 5
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyChat)
-typedef struct {
+struct _EmpathyChatPriv {
 	EmpathyTpChat     *tp_chat;
 	TpAccount         *account;
 	gchar             *id;
@@ -138,7 +138,7 @@ typedef struct {
 	 * notified again about the already notified pending messages when the
 	 * messages in tab will be properly shown */
 	gboolean           retrieving_backlogs;
-} EmpathyChatPriv;
+};
 
 typedef struct {
 	gchar *text; /* Original message that was specified
