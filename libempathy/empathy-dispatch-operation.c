@@ -217,6 +217,7 @@ dispatch_operation_connection_ready (TpConnection *connection,
   EmpathyDispatchOperation *self = EMPATHY_DISPATCH_OPERATION (user_data);
   EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
   TpHandle handle;
+  TpHandleType handle_type;
 
   if (error != NULL)
     goto out;
@@ -225,10 +226,18 @@ dispatch_operation_connection_ready (TpConnection *connection,
     /* no point to get more information */
     goto out;
 
-  handle = tp_channel_get_handle (priv->channel, NULL);
-
-  empathy_tp_contact_factory_get_from_handle (priv->connection, handle,
-      dispatcher_operation_got_contact_cb, NULL, NULL, G_OBJECT (self));
+  handle = tp_channel_get_handle (priv->channel, &handle_type);
+  if (handle_type == TP_HANDLE_TYPE_CONTACT && priv->contact == NULL)
+    {
+      empathy_tp_contact_factory_get_from_handle (priv->connection, handle,
+        dispatcher_operation_got_contact_cb, NULL, NULL, G_OBJECT (self));
+    }
+  else
+    {
+      g_object_ref (self);
+      tp_channel_call_when_ready (priv->channel,
+          empathy_dispatch_operation_channel_ready_cb, self);
+    }
 
 out:
   g_object_unref (self);
@@ -239,8 +248,6 @@ empathy_dispatch_operation_constructed (GObject *object)
 {
   EmpathyDispatchOperation *self = EMPATHY_DISPATCH_OPERATION (object);
   EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
-  TpHandle handle;
-  TpHandleType handle_type;
 
   empathy_dispatch_operation_set_status (self,
     EMPATHY_DISPATCHER_OPERATION_STATE_PREPARING);
@@ -249,21 +256,9 @@ empathy_dispatch_operation_constructed (GObject *object)
     g_signal_connect (priv->channel, "invalidated",
       G_CALLBACK (empathy_dispatch_operation_invalidated), self);
 
-  handle = tp_channel_get_handle (priv->channel, &handle_type);
-
-  if (handle_type == TP_HANDLE_TYPE_CONTACT && priv->contact == NULL)
-    {
-      /* Ensure to keep the self object alive while the call_when_ready is
-       * running */
-      g_object_ref (self);
-      tp_connection_call_when_ready (priv->connection,
-          dispatch_operation_connection_ready, object);
-      return;
-    }
-
   g_object_ref (self);
-  tp_channel_call_when_ready (priv->channel,
-    empathy_dispatch_operation_channel_ready_cb, self);
+  tp_connection_call_when_ready (priv->connection,
+          dispatch_operation_connection_ready, object);
 }
 
 static void
