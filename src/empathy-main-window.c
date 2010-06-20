@@ -1536,6 +1536,8 @@ empathy_main_window_show (void)
 		EMPATHY_LIVE_SEARCH (window->search_bar));
 	gtk_box_pack_start (GTK_BOX (window->main_vbox), window->search_bar,
 		FALSE, TRUE, 0);
+	g_signal_connect_swapped (window->window, "map",
+		G_CALLBACK (gtk_widget_grab_focus), window->list_view);
 
 	/* Load user-defined accelerators. */
 	main_window_accels_load ();
