@@ -131,14 +131,12 @@ empathy_contact_menu_new (EmpathyContact             *contact,
 		gtk_widget_show (item);
 	}
 
-#if HAVE_FAVOURITE_CONTACTS
 	/* Favorite checkbox */
 	if (features & EMPATHY_CONTACT_FEATURE_FAVOURITE) {
 		item = empathy_contact_favourite_menu_item_new (contact);
 		gtk_menu_shell_append (shell, item);
 		gtk_widget_show (item);
 	}
-#endif
 
 	return menu;
 }
@@ -392,7 +390,6 @@ empathy_contact_share_my_desktop_menu_item_new (EmpathyContact *contact)
 	return item;
 }
 
-#if HAVE_FAVOURITE_CONTACTS
 static void
 favourite_menu_item_toggled_cb (GtkCheckMenuItem *item,
 	EmpathyContact *contact)
@@ -432,7 +429,6 @@ empathy_contact_favourite_menu_item_new (EmpathyContact *contact)
 	g_object_unref (manager);
 	return item;
 }
-#endif
 
 static void
 contact_info_menu_item_activate_cb (EmpathyContact *contact)

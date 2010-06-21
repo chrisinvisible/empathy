@@ -1405,7 +1405,6 @@ contact_widget_presence_notify_cb (EmpathyContactWidget *information)
   gtk_widget_show (information->image_state);
 }
 
-#if HAVE_FAVOURITE_CONTACTS
 static void
 contact_widget_favourites_changed_cb (EmpathyContactManager *manager,
     EmpathyContact *contact,
@@ -1418,7 +1417,6 @@ contact_widget_favourites_changed_cb (EmpathyContactManager *manager,
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (
             information->favourite_checkbox), is_favourite);
 }
-#endif
 
 static void
 contact_widget_remove_contact (EmpathyContactWidget *information)
@@ -1524,7 +1522,6 @@ contact_widget_contact_update (EmpathyContactWidget *information)
       contact_widget_presence_notify_cb (information);
       contact_widget_avatar_notify_cb (information);
 
-#if HAVE_FAVOURITE_CONTACTS
       if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
         {
           gboolean is_favourite;
@@ -1536,7 +1533,6 @@ contact_widget_contact_update (EmpathyContactWidget *information)
           contact_widget_favourites_changed_cb (information->manager,
               information->contact, is_favourite, information);
         }
-#endif
 
       gtk_widget_show (information->label_alias);
       gtk_widget_show (information->widget_alias);
@@ -1657,7 +1653,6 @@ contact_widget_id_focus_out_cb (GtkWidget *widget,
   return FALSE;
 }
 
-#if HAVE_FAVOURITE_CONTACTS
 static void
 favourite_toggled_cb (GtkToggleButton *button,
     EmpathyContactWidget *information)
@@ -1677,7 +1672,6 @@ favourite_toggled_cb (GtkToggleButton *button,
           EMPATHY_CONTACT_LIST (information->manager), information->contact);
     }
 }
-#endif
 
 static void
 contact_widget_contact_setup (EmpathyContactWidget *information)
@@ -1817,7 +1811,6 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
   }
   gtk_widget_show (information->widget_alias);
 
-#if HAVE_FAVOURITE_CONTACTS
   /* Favorite */
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
     {
@@ -1836,7 +1829,6 @@ contact_widget_contact_setup (EmpathyContactWidget *information)
 
       gtk_widget_show (information->favourite_checkbox);
     }
-#endif
 }
 
 static void

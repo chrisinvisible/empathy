@@ -1061,7 +1061,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 	}
 	g_list_free (groups);
 
-#ifdef HAVE_FAVOURITE_CONTACTS
 	if (priv->show_groups &&
 	    empathy_contact_list_is_favourite (priv->list, contact)) {
 	/* Add contact to the fake 'Favorites' group */
@@ -1072,7 +1071,6 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 		add_contact_to_store (GTK_TREE_STORE (store), &iter, &iter_group, contact, flags);
 	}
-#endif
 
 	contact_list_store_contact_update (store, contact);
 }
@@ -1573,6 +1571,8 @@ contact_list_store_contact_sort (EmpathyContact *contact_a,
 	TpAccount *account_a, *account_b;
 	gint ret_val;
 
+	g_return_val_if_fail (contact_a != NULL || contact_b != NULL, 0);
+
 	/* alias */
 	ret_val = g_utf8_collate (empathy_contact_get_name (contact_a),
 				  empathy_contact_get_name (contact_b));
@@ -1630,10 +1630,9 @@ contact_list_store_state_sort_func (GtkTreeModel *model,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_b,
 			    -1);
 
-	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
-
-	if (ret_val != 0) {
+	if (contact_a == NULL || contact_b == NULL) {
+		ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
+			name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
 		goto free_and_out;
 	}
 
@@ -1689,10 +1688,10 @@ contact_list_store_name_sort_func (GtkTreeModel *model,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_FAKE_GROUP, &fake_group_b,
 			    -1);
 
-	ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-		name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
-
-	if (ret_val == 0)
+	if (contact_a == NULL || contact_b == NULL)
+		ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
+			name_a, name_b, contact_a, contact_b, fake_group_a, fake_group_b);
+	else
 		ret_val = contact_list_store_contact_sort (contact_a, contact_b);
 
 	if (contact_a) {
