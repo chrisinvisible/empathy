@@ -792,22 +792,32 @@ main_window_view_contacts_list_size_cb (GtkRadioAction    *action,
 					GtkRadioAction    *current,
 					EmpathyMainWindow *window)
 {
-	gint     value;
+	GSettings *gsettings_ui;
+	gint value;
 
 	value = gtk_radio_action_get_current_value (action);
+	/* create a new GSettings, so we can delay the setting until both
+	 * values are set */
+	gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 
-	g_settings_set_boolean (window->gsettings_ui,
+	DEBUG ("radio button toggled, value = %i", value);
+
+	g_settings_delay (gsettings_ui);
+	g_settings_set_boolean (gsettings_ui,
 				EMPATHY_PREFS_UI_SHOW_AVATARS,
 				value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 
-	g_settings_set_boolean (window->gsettings_ui,
+	g_settings_set_boolean (gsettings_ui,
 				EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST,
 				value == CONTACT_LIST_COMPACT_SIZE);
+	g_settings_apply (gsettings_ui);
 
 	empathy_contact_list_store_set_show_avatars (window->list_store,
 						     value == CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS);
 	empathy_contact_list_store_set_is_compact (window->list_store,
 						   value == CONTACT_LIST_COMPACT_SIZE);
+
+	g_object_unref (gsettings_ui);
 }
 
 static void main_window_notify_show_protocols_cb (GSettings         *gsettings,
@@ -825,7 +835,7 @@ main_window_notify_contact_list_size_cb (GSettings         *gsettings,
 					 const gchar       *key,
 					 EmpathyMainWindow *window)
 {
-	gint value = CONTACT_LIST_NORMAL_SIZE_WITH_AVATARS;
+	gint value;
 
 	if (g_settings_get_boolean (gsettings,
 			EMPATHY_PREFS_UI_COMPACT_CONTACT_LIST)) {
@@ -836,6 +846,8 @@ main_window_notify_contact_list_size_cb (GSettings         *gsettings,
 	} else {
 		value = CONTACT_LIST_NORMAL_SIZE;
 	}
+
+	DEBUG ("setting changed, value = %i", value);
 
 	/* By changing the value of the GtkRadioAction,
 	   it emits a signal that calls main_window_view_contacts_list_size_cb
