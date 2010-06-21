@@ -68,5 +68,4 @@ empathy_share_my_desktop_share_with_contact (EmpathyContact *contact)
       NULL, NULL);
 
   g_object_unref (dispatcher);
-  g_hash_table_unref (request);
 }
