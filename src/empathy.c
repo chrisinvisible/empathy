@@ -140,13 +140,6 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 
       empathy_dispatch_operation_claim (operation);
     }
-  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
-    {
-      EmpathyCallFactory *factory;
-
-      factory = empathy_call_factory_get ();
-      empathy_call_factory_claim_channel (factory, operation);
-    }
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
       EmpathyFTFactory *factory;
@@ -396,15 +389,9 @@ setup_dispatcher (void)
     { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM  },
     /* file transfer to contacts */
     { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
-    /* stream media to contacts */
-    { TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA, TP_HANDLE_TYPE_CONTACT  },
     /* roomlists */
     { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
   };
-  gchar *capabilities[] = {
-    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/ice-udp",
-    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
-    NULL };
   GHashTable *asv;
   guint i;
 
@@ -435,29 +422,8 @@ setup_dispatcher (void)
       g_ptr_array_add (filters, asv);
     }
 
-  asv = tp_asv_new (
-        TP_IFACE_CHANNEL ".ChannelType",
-          G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
-        TP_IFACE_CHANNEL ".TargetHandleType",
-          G_TYPE_INT, TP_HANDLE_TYPE_CONTACT,
-        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialAudio",
-          G_TYPE_BOOLEAN, TRUE,
-        NULL);
-  g_ptr_array_add (filters, asv);
-
-  asv = tp_asv_new (
-        TP_IFACE_CHANNEL ".ChannelType",
-          G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
-        TP_IFACE_CHANNEL ".TargetHandleType",
-          G_TYPE_INT, TP_HANDLE_TYPE_CONTACT,
-        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA ".InitialVideo",
-          G_TYPE_BOOLEAN, TRUE,
-        NULL);
-  g_ptr_array_add (filters, asv);
-
-
   empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThanMeetsTheEye",
-    filters, capabilities);
+    filters, NULL);
 
   g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
   g_ptr_array_free (filters, TRUE);
