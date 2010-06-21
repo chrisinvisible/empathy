@@ -762,26 +762,11 @@ dispatcher_connection_got_all (TpProxy *proxy,
 }
 
 static void
-dispatcher_connection_advertise_capabilities_cb (TpConnection    *connection,
-                                                 const GPtrArray *capabilities,
-                                                 const GError    *error,
-                                                 gpointer         user_data,
-                                                 GObject         *self)
-{
-  if (error)
-    DEBUG ("Error: %s", error->message);
-}
-
-static void
 connection_ready_cb (TpConnection *connection,
     const GError *error,
     gpointer user_data)
 {
   EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
-  GPtrArray   *capabilities;
-  GType        cap_type;
-  GValue       cap = {0, };
-  const gchar *remove_ = NULL;
 
   if (error != NULL)
     {
@@ -793,29 +778,6 @@ connection_ready_cb (TpConnection *connection,
       TP_IFACE_CONNECTION_INTERFACE_REQUESTS, dispatcher_connection_got_all,
       NULL, NULL, G_OBJECT (self));
 
-  /* Advertise VoIP capabilities */
-  capabilities = g_ptr_array_sized_new (1);
-  cap_type = dbus_g_type_get_struct ("GValueArray", G_TYPE_STRING,
-    G_TYPE_UINT, G_TYPE_INVALID);
-  g_value_init (&cap, cap_type);
-  g_value_take_boxed (&cap, dbus_g_type_specialized_construct (cap_type));
-  dbus_g_type_struct_set (&cap,
-        0, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
-        1, TP_CHANNEL_MEDIA_CAPABILITY_AUDIO |
-           TP_CHANNEL_MEDIA_CAPABILITY_VIDEO |
-           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_STUN  |
-           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_GTALK_P2P |
-           TP_CHANNEL_MEDIA_CAPABILITY_NAT_TRAVERSAL_ICE_UDP,
-           G_MAXUINT);
-  g_ptr_array_add (capabilities, g_value_get_boxed (&cap));
-
-  tp_cli_connection_interface_capabilities_call_advertise_capabilities (
-    connection, -1, capabilities, &remove_,
-    dispatcher_connection_advertise_capabilities_cb,
-    NULL, NULL, G_OBJECT (self));
-
-  g_value_unset (&cap);
-  g_ptr_array_free (capabilities, TRUE);
 out:
   g_object_unref (self);
 }
