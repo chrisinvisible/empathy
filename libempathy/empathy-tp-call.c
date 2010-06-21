@@ -278,9 +278,14 @@ tp_call_got_contact_cb (TpConnection            *connection,
     }
 
   priv->contact = g_object_ref (contact);
-  priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
+
+  if (priv->status < EMPATHY_TP_CALL_STATUS_PENDING)
+    {
+      priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
+      g_object_notify (G_OBJECT (call), "status");
+    }
+
   g_object_notify (G_OBJECT (call), "contact");
-  g_object_notify (G_OBJECT (call), "status");
 }
 
 static void
@@ -298,16 +303,6 @@ tp_call_update_status (EmpathyTpCall *call)
   tp_intset_iter_init (&iter, set);
   while (tp_intset_iter_next (&iter))
     {
-      if (priv->contact == NULL && iter.element != self_handle)
-        {
-          TpConnection *connection;
-
-          /* We found the remote contact */
-          connection = tp_channel_borrow_connection (priv->channel);
-          empathy_tp_contact_factory_get_from_handle (connection, iter.element,
-              tp_call_got_contact_cb, NULL, NULL, G_OBJECT (call));
-        }
-
       if (priv->status == EMPATHY_TP_CALL_STATUS_PENDING &&
           ((priv->is_incoming && iter.element == self_handle) ||
            (!priv->is_incoming && iter.element != self_handle)))
@@ -432,6 +427,12 @@ tp_call_constructor (GType type,
   requested = tp_asv_get_boolean (props, TP_PROP_CHANNEL_REQUESTED, NULL);
 
   priv->is_incoming = !requested;
+
+  /* Get the remote contact */
+  empathy_tp_contact_factory_get_from_handle (
+      tp_channel_borrow_connection (priv->channel),
+      tp_channel_get_handle (priv->channel, NULL), tp_call_got_contact_cb,
+      NULL, NULL, object);
 
   /* Update status when members changes */
   tp_call_update_status (call);
