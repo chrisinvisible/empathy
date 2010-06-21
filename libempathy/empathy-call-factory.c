@@ -222,21 +222,6 @@ empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
 #endif
 }
 
-
-/**
- * empathy_call_factory_new_call:
- * @factory: an #EmpathyCallFactory
- * @contact: an #EmpathyContact
- *
- * Initiate a new call with @contact.
- */
-void
-empathy_call_factory_new_call (EmpathyCallFactory *factory,
-    EmpathyContact *contact)
-{
-  empathy_call_factory_new_call_with_streams (factory, contact, TRUE, FALSE);
-}
-
 static void
 create_call_handler (EmpathyCallFactory *factory,
   EmpathyTpCall *call)
