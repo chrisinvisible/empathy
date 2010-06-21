@@ -50,6 +50,14 @@ enum
   PROP_TEXT
 };
 
+enum
+{
+  ACTIVATE,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
+
 static void live_search_hook_widget_destroy_cb (GtkObject *object,
     gpointer user_data);
 
@@ -206,6 +214,13 @@ live_search_key_press_event_cb (GtkWidget *widget,
 }
 
 static void
+live_search_entry_activate_cb (GtkEntry *entry,
+    EmpathyLiveSearch *self)
+{
+  g_signal_emit (self, signals[ACTIVATE], 0);
+}
+
+static void
 live_search_release_hook_widget (EmpathyLiveSearch *self)
 {
   EmpathyLiveSearchPriv *priv = GET_PRIV (self);
@@ -349,6 +364,14 @@ empathy_live_search_class_init (EmpathyLiveSearchClass *klass)
   widget_class->show = live_search_show;
   widget_class->grab_focus = live_search_grab_focus;
 
+  signals[ACTIVATE] = g_signal_new ("activate",
+      G_TYPE_FROM_CLASS (object_class),
+      G_SIGNAL_RUN_LAST,
+      0,
+      NULL, NULL,
+      g_cclosure_marshal_VOID__VOID,
+      G_TYPE_NONE, 0);
+
   param_spec = g_param_spec_object ("hook-widget", "Live Searchs Hook Widget",
       "The live search catches key-press-events on this widget",
       GTK_TYPE_WIDGET, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
@@ -389,6 +412,8 @@ empathy_live_search_init (EmpathyLiveSearch *self)
       G_CALLBACK (live_search_text_changed), self);
   g_signal_connect (priv->search_entry, "key-press-event",
       G_CALLBACK (live_search_entry_key_pressed_cb), self);
+  g_signal_connect (priv->search_entry, "activate",
+      G_CALLBACK (live_search_entry_activate_cb), self);
 
   priv->hook_widget = NULL;
 
