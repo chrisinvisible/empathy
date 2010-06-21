@@ -3,8 +3,6 @@
 #include <string.h>
 #include <glib/gstdio.h>
 
-#include <gconf/gconf.h>
-#include <gconf/gconf-client.h>
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 

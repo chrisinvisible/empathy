@@ -403,7 +403,7 @@ empathy_connectivity_set_use_conn (EmpathyConnectivity *connectivity,
   if (use_conn == priv->use_conn)
     return;
 
-  DEBUG ("use_conn gconf key changed; new value = %s",
+  DEBUG ("use_conn GSetting key changed; new value = %s",
       use_conn ? "true" : "false");
 
   priv->use_conn = use_conn;

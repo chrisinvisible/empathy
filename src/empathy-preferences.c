@@ -786,7 +786,7 @@ preferences_themes_setup (EmpathyPreferences *preferences)
 			  G_CALLBACK (preferences_theme_changed_cb),
 			  preferences);
 
-	/* Select the theme from the gconf key and track changes */
+	/* Select the theme from the GSetting key and track changes */
 	preferences_theme_notify_cb (preferences->gsettings_chat,
 				     EMPATHY_PREFS_CHAT_THEME,
 				     preferences);
