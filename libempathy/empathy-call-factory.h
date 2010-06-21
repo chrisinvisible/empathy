@@ -70,9 +70,6 @@ void empathy_call_factory_new_call (EmpathyCallFactory *factory,
 void empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
   EmpathyContact *contact, gboolean initial_audio, gboolean initial_video);
 
-void empathy_call_factory_claim_channel (EmpathyCallFactory *factory,
-  EmpathyDispatchOperation *operation);
-
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_CALL_FACTORY_H__*/

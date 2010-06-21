@@ -22,11 +22,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <telepathy-glib/simple-handler.h>
+#include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/util.h>
+
 #include "empathy-marshal.h"
 #include "empathy-call-factory.h"
 #include "empathy-utils.h"
 
 G_DEFINE_TYPE(EmpathyCallFactory, empathy_call_factory, G_TYPE_OBJECT)
+
+static void handle_channels_cb (TpSimpleHandler *handler,
+    TpAccount *account,
+    TpConnection *connection,
+    GList *channels,
+    GList *requests_satisfied,
+    gint64 user_action_time,
+    TpHandleChannelsContext *context,
+    gpointer user_data);
 
 /* signal enum */
 enum
@@ -39,6 +52,7 @@ static guint signals[LAST_SIGNAL] = {0};
 
 /* private structure */
 typedef struct {
+  TpBaseClient *handler;
   gboolean dispose_has_run;
 } EmpathyCallFactoryPriv;
 
@@ -51,8 +65,54 @@ empathy_call_factory_init (EmpathyCallFactory *obj)
 {
   EmpathyCallFactoryPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (obj,
     EMPATHY_TYPE_CALL_FACTORY, EmpathyCallFactoryPriv);
+  TpDBusDaemon *dbus;
+  GError *error = NULL;
 
   obj->priv = priv;
+
+  dbus = tp_dbus_daemon_dup (&error);
+  if (dbus == NULL)
+    {
+      g_warning ("Failed to get TpDBusDaemon: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE,
+      "Empathy.AudioVideo", FALSE, handle_channels_cb, obj, NULL);
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        NULL));
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN, TRUE,
+        NULL));
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN, TRUE,
+        NULL));
+
+  tp_base_client_add_handler_capabilities_varargs (priv->handler,
+    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/ice-udp",
+    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
+    NULL);
+
+  if (!tp_base_client_register (priv->handler, &error))
+    {
+      g_warning ("Failed to register Handler: %s", error->message);
+      g_error_free (error);
+    }
+
+  g_object_unref (dbus);
 }
 
 static GObject *
@@ -159,6 +219,7 @@ empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
     handler, TRUE);
 
   g_object_unref (handler);
+#endif
 }
 
 
@@ -176,26 +237,75 @@ empathy_call_factory_new_call (EmpathyCallFactory *factory,
   empathy_call_factory_new_call_with_streams (factory, contact, TRUE, FALSE);
 }
 
-void
-empathy_call_factory_claim_channel (EmpathyCallFactory *factory,
-  EmpathyDispatchOperation *operation)
+static void
+create_call_handler (EmpathyCallFactory *factory,
+  EmpathyTpCall *call)
 {
   EmpathyCallHandler *handler;
-  EmpathyTpCall *call;
 
   g_return_if_fail (factory != NULL);
-  g_return_if_fail (operation != NULL);
-
-  call = EMPATHY_TP_CALL (
-    empathy_dispatch_operation_get_channel_wrapper (operation));
 
   handler = empathy_call_handler_new_for_channel (call);
-  empathy_dispatch_operation_claim (operation);
 
-  /* FIXME should actually look at the channel */
   g_signal_emit (factory, signals[NEW_CALL_HANDLER], 0,
     handler, FALSE);
 
   g_object_unref (handler);
 }
 
+static void
+call_status_changed_cb (EmpathyTpCall *call,
+    GParamSpec *spec,
+    EmpathyCallFactory *self)
+{
+  if (empathy_tp_call_get_status (call) <= EMPATHY_TP_CALL_STATUS_READYING)
+    return;
+
+  create_call_handler (self, call);
+
+  g_signal_handlers_disconnect_by_func (call, call_status_changed_cb, self);
+  g_object_unref (call);
+}
+
+static void
+handle_channels_cb (TpSimpleHandler *handler,
+    TpAccount *account,
+    TpConnection *connection,
+    GList *channels,
+    GList *requests_satisfied,
+    gint64 user_action_time,
+    TpHandleChannelsContext *context,
+    gpointer user_data)
+{
+  EmpathyCallFactory *self = user_data;
+  GList *l;
+
+  for (l = channels; l != NULL; l = g_list_next (l))
+    {
+      TpChannel *channel = l->data;
+      EmpathyTpCall *call;
+
+      if (tp_proxy_get_invalidated (channel) != NULL)
+        continue;
+
+      if (tp_channel_get_channel_type_id (channel) !=
+          TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
+        continue;
+
+      call = empathy_tp_call_new (channel);
+
+      if (empathy_tp_call_get_status (call) <= EMPATHY_TP_CALL_STATUS_READYING)
+        {
+          /* We have to wait that the TpCall is ready as the
+           * call-handler rely on it. */
+          tp_g_signal_connect_object (call, "notify::status",
+              G_CALLBACK (call_status_changed_cb), self, 0);
+          continue;
+        }
+
+      create_call_handler (self, call);
+      g_object_unref (call);
+    }
+
+  tp_handle_channels_context_accept (context);
+}
