@@ -1213,8 +1213,67 @@ contact_list_view_search_text_notify_cb (EmpathyLiveSearch      *search,
 					 EmpathyContactListView *view)
 {
 	EmpathyContactListViewPriv *priv = GET_PRIV (view);
+	GtkTreePath *path;
+	GtkTreeViewColumn *focus_column;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	gboolean set_cursor = FALSE;
 
 	gtk_tree_model_filter_refilter (priv->filter);
+
+	/* Set cursor on the first contact. If it is already set on a group,
+	 * set it on its first child contact. Note that first child of a group
+	 * is its separator, that's why we actually set to the 2nd
+	 */
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+	gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &path, &focus_column);
+
+	if (path == NULL) {
+		path = gtk_tree_path_new_from_string ("0:1");
+		set_cursor = TRUE;
+	} else if (gtk_tree_path_get_depth (path) < 2) {
+		gboolean is_group;
+
+		gtk_tree_model_get_iter (model, &iter, path);
+		gtk_tree_model_get (model, &iter,
+			EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, &is_group,
+			-1);
+
+		if (is_group) {
+			gtk_tree_path_down (path);
+			gtk_tree_path_next (path);
+			set_cursor = TRUE;
+		}
+	}
+
+	if (set_cursor) {
+		/* FIXME: Workaround for GTK bug #621651, we have to make sure
+		 * the path is valid. */
+		if (gtk_tree_model_get_iter (model, &iter, path)) {
+			gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), path,
+				focus_column, FALSE);
+		}
+	}
+
+	gtk_tree_path_free (path);
+}
+
+static void
+contact_list_view_search_activate_cb (GtkWidget *search,
+				      EmpathyContactListView *view)
+{
+	GtkTreePath *path;
+	GtkTreeViewColumn *focus_column;
+ 
+	gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &path, &focus_column);
+	if (path != NULL) {
+		gtk_tree_view_row_activated (GTK_TREE_VIEW (view), path,
+			focus_column);
+		gtk_tree_path_free (path);
+
+		gtk_widget_hide (search);
+	}
 }
 
 static void
@@ -2082,6 +2141,9 @@ empathy_contact_list_view_set_live_search (EmpathyContactListView *view,
 			contact_list_view_search_text_notify_cb,
 			view);
 		g_signal_handlers_disconnect_by_func (priv->search_widget,
+			contact_list_view_search_activate_cb,
+			view);
+		g_signal_handlers_disconnect_by_func (priv->search_widget,
 			contact_list_view_search_hide_cb,
 			view);
 		g_signal_handlers_disconnect_by_func (priv->search_widget,
@@ -2101,6 +2163,9 @@ empathy_contact_list_view_set_live_search (EmpathyContactListView *view,
 
 		g_signal_connect (priv->search_widget, "notify::text",
 			G_CALLBACK (contact_list_view_search_text_notify_cb),
+			view);
+		g_signal_connect (priv->search_widget, "activate",
+			G_CALLBACK (contact_list_view_search_activate_cb),
 			view);
 		g_signal_connect (priv->search_widget, "hide",
 			G_CALLBACK (contact_list_view_search_hide_cb),
