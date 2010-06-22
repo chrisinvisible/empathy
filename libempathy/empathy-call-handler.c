@@ -29,6 +29,7 @@
 #include <telepathy-farsight/stream.h>
 
 #include "empathy-call-handler.h"
+#include "empathy-call-factory.h"
 #include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
 #include "empathy-utils.h"
@@ -464,18 +465,21 @@ empathy_call_handler_start_tpfs (EmpathyCallHandler *self)
 
 static void
 empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
-  const GError *error, gpointer user_data)
+  const GError *error,
+  gpointer user_data)
 {
   EmpathyCallHandler *self = EMPATHY_CALL_HANDLER (user_data);
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+  TpChannel *channel;
 
   if (error != NULL)
     return;
 
-  priv->call = EMPATHY_TP_CALL (
-    empathy_dispatch_operation_get_channel_wrapper (operation));
+  channel = empathy_dispatch_operation_get_channel (operation);
+  g_assert (channel != NULL);
 
-  g_object_ref (priv->call);
+  priv->call = empathy_tp_call_new (channel);
+
   g_object_notify (G_OBJECT (self), "tp-call");
 
   empathy_call_handler_start_tpfs (self);
@@ -492,11 +496,6 @@ empathy_call_handler_start_call (EmpathyCallHandler *handler,
 {
 
   EmpathyCallHandlerPriv *priv = GET_PRIV (handler);
-  EmpathyDispatcher *dispatcher;
-  TpConnection *connection;
-  GList *classes;
-  GValue *value;
-  GHashTable *request;
 
   if (priv->call != NULL)
     {
@@ -505,41 +504,13 @@ empathy_call_handler_start_call (EmpathyCallHandler *handler,
       return;
     }
 
+  /* No TpCall object (we are redialing). Request a new media channel that
+   * will be used to create a new EmpathyTpCall. */
   g_assert (priv->contact != NULL);
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
-  connection = empathy_contact_get_connection (priv->contact);
-  classes = empathy_dispatcher_find_requestable_channel_classes
-    (dispatcher, connection, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
-     TP_HANDLE_TYPE_CONTACT, NULL);
-
-  if (classes == NULL)
-    return;
-
-  g_list_free (classes);
-
-  request = g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
-      (GDestroyNotify) tp_g_value_slice_free);
-
-  /* org.freedesktop.Telepathy.Channel.ChannelType */
-  value = tp_g_value_slice_new (G_TYPE_STRING);
-  g_value_set_string (value, TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA);
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".ChannelType", value);
-
-  /* org.freedesktop.Telepathy.Channel.TargetHandleType */
-  value = tp_g_value_slice_new (G_TYPE_UINT);
-  g_value_set_uint (value, TP_HANDLE_TYPE_CONTACT);
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandleType", value);
-
-  /* org.freedesktop.Telepathy.Channel.TargetHandle*/
-  value = tp_g_value_slice_new (G_TYPE_UINT);
-  g_value_set_uint (value, empathy_contact_get_handle (priv->contact));
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandle", value);
-
-  empathy_dispatcher_create_channel (dispatcher, connection,
-    request, timestamp, empathy_call_handler_request_cb, handler);
-
-  g_object_unref (dispatcher);
+  empathy_call_factory_new_call_with_streams (empathy_call_factory_get (),
+      priv->contact, priv->initial_audio, priv->initial_video, timestamp,
+      empathy_call_handler_request_cb, handler);
 }
 
 /**
