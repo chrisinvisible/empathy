@@ -279,27 +279,6 @@ empathy_call_handler_new_for_contact (EmpathyContact *contact)
     "contact", contact, NULL));
 }
 
-/**
- * empathy_call_handler_new_for_contact_with_streams:
- * @contact: an #EmpathyContact
- * @audio: if %TRUE the call will be started with audio
- * @video: if %TRUE the call will be started with video
- *
- * Creates a new #EmpathyCallHandler with contact @contact.
- *
- * Return value: a new #EmpathyCallHandler
- */
-EmpathyCallHandler *
-empathy_call_handler_new_for_contact_with_streams (EmpathyContact *contact,
-    gboolean audio, gboolean video)
-{
-  return EMPATHY_CALL_HANDLER (g_object_new (EMPATHY_TYPE_CALL_HANDLER,
-    "contact", contact,
-    "initial-audio", audio,
-    "initial-video", video,
-    NULL));
-}
-
 EmpathyCallHandler *
 empathy_call_handler_new_for_channel (EmpathyTpCall *call)
 {
