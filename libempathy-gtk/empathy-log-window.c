@@ -142,6 +142,8 @@ enum {
 	COL_CHAT_COUNT
 };
 
+static EmpathyLogWindow *log_window = NULL;
+
 static void
 account_manager_prepared_cb (GObject *source_object,
 			     GAsyncResult *result,
@@ -187,26 +189,28 @@ empathy_log_window_show (TpAccount  *account,
 			gboolean     is_chatroom,
 			GtkWindow   *parent)
 {
-	static EmpathyLogWindow *window = NULL;
 	EmpathyAccountChooser   *account_chooser;
 	TpAccountManager        *account_manager;
 	GtkBuilder             *gui;
 	gchar                  *filename;
+	EmpathyLogWindow       *window;
 
-	if (window) {
-		gtk_window_present (GTK_WINDOW (window->window));
+	if (log_window) {
+		gtk_window_present (GTK_WINDOW (log_window->window));
 
 		if (account && chat_id) {
-			gtk_notebook_set_current_page (GTK_NOTEBOOK (window->notebook), 1);
-			log_window_chats_set_selected (window, account,
+			gtk_notebook_set_current_page (GTK_NOTEBOOK (log_window->notebook), 1);
+			log_window_chats_set_selected (log_window, account,
 						       chat_id, is_chatroom);
 		}
 
-		return window->window;
+		return log_window->window;
 	}
 
-	window = g_new0 (EmpathyLogWindow, 1);
-	window->log_manager = tpl_log_manager_dup_singleton ();
+	log_window = g_new0 (EmpathyLogWindow, 1);
+	log_window->log_manager = tpl_log_manager_dup_singleton ();
+
+	window = log_window;
 
 	filename = empathy_file_lookup ("empathy-log-window.ui",
 					"libempathy-gtk");
@@ -241,7 +245,7 @@ empathy_log_window_show (TpAccount  *account,
 	g_object_unref (gui);
 
 	g_object_add_weak_pointer (G_OBJECT (window->window),
-				   (gpointer) &window);
+				   (gpointer) &log_window);
 
 	/* We set this up here so we can block it when needed. */
 	g_signal_connect (window->calendar_chats, "day-selected",
