@@ -27,12 +27,8 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <telepathy-glib/util.h>
-#ifdef ENABLE_TPL
 #include <telepathy-logger/log-manager.h>
-#else
 
-#include <libempathy/empathy-log-manager.h>
-#endif /* ENABLE_TPL */
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-contact-manager.h>
@@ -296,7 +292,8 @@ empathy_individual_audio_call_menu_item_activated (GtkMenuItem *item,
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   factory = empathy_call_factory_get ();
-  empathy_call_factory_new_call_with_streams (factory, contact, TRUE, FALSE);
+  empathy_call_factory_new_call_with_streams (contact, TRUE, FALSE,
+      gtk_get_current_event_time (), NULL, NULL);
   g_object_unref (contact);
 }
 
@@ -340,7 +337,8 @@ empathy_individual_video_call_menu_item_activated (GtkMenuItem *item,
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   factory = empathy_call_factory_get ();
-  empathy_call_factory_new_call_with_streams (factory, contact, TRUE, TRUE);
+  empathy_call_factory_new_call_with_streams (contact, TRUE, TRUE,
+      gtk_get_current_event_time (), NULL, NULL);
   g_object_unref (contact);
 }
 
@@ -389,11 +387,7 @@ individual_log_menu_item_activate_cb (FolksIndividual *individual)
 GtkWidget *
 empathy_individual_log_menu_item_new (FolksIndividual *individual)
 {
-#ifndef ENABLE_TPL
-  EmpathyLogManager *manager;
-#else
   TplLogManager *manager;
-#endif /* ENABLE_TPL */
   gboolean have_log;
   GtkWidget *item;
   GtkWidget *image;
@@ -405,17 +399,10 @@ empathy_individual_log_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
-#ifndef ENABLE_TPL
-  manager = empathy_log_manager_dup_singleton ();
-  have_log = empathy_log_manager_exists (manager,
-      empathy_contact_get_account (contact), empathy_contact_get_id (contact),
-      FALSE);
-#else
   manager = tpl_log_manager_dup_singleton ();
   have_log = tpl_log_manager_exists (manager,
       empathy_contact_get_account (contact), empathy_contact_get_id (contact),
       FALSE);
-#endif /* ENABLE_TPL */
   g_object_unref (manager);
 
   item = gtk_image_menu_item_new_with_mnemonic (_("_Previous Conversations"));
@@ -505,7 +492,7 @@ empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual)
   item = gtk_image_menu_item_new_with_mnemonic (_("Share My Desktop"));
   image = gtk_image_new_from_icon_name (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU);
   gtk_widget_set_sensitive (item,
-      empathy_contact_can_use_stream_tube (contact));
+      empathy_contact_can_use_rfb_stream_tube (contact));
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 

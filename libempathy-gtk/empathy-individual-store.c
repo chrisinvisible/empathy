@@ -820,7 +820,7 @@ individual_store_manager_setup (gpointer user_data)
 {
   EmpathyIndividualStore *self = user_data;
   EmpathyIndividualStorePriv *priv = GET_PRIV (self);
-  GList *contacts;
+  GList *individuals;
 
   /* Signal connection. */
 
@@ -839,10 +839,13 @@ individual_store_manager_setup (gpointer user_data)
       G_CALLBACK (individual_store_groups_changed_cb), self);
 
   /* Add contacts already created. */
-  contacts = empathy_individual_manager_get_members (priv->manager);
-  individual_store_members_changed_cb (priv->manager, "initial add",
-      contacts, NULL, 0, self);
-  g_list_free (contacts);
+  individuals = empathy_individual_manager_get_members (priv->manager);
+  if (individuals != NULL && FOLKS_IS_INDIVIDUAL (individuals->data))
+    {
+      individual_store_members_changed_cb (priv->manager, "initial add",
+          individuals, NULL, 0, self);
+      g_list_free (individuals);
+    }
 
   priv->setup_idle_id = 0;
   return FALSE;

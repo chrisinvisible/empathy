@@ -141,31 +141,6 @@ AS_COMPILER_FLAG(-Wmissing-declarations, ERROR_CFLAGS="$ERROR_CFLAGS -Wmissing-d
 AC_SUBST(ERROR_CFLAGS)
 
 # -----------------------------------------------------------
-# Enable TPL
-# -----------------------------------------------------------
-
-# It needs to be defined before PKG_CHECK_MODULES calls
-AC_ARG_ENABLE(tpl,
-  AC_HELP_STRING([--enable-tpl],[enable telepathy-logger code and disable the
-    empathy logger]), enable_tpl=$enableval, enable_tpl=no )
-AM_CONDITIONAL(ENABLE_TPL, test "x$enable_tpl" = "xyes")
-
-if test x${enable_tpl} = xyes; then
-  AC_DEFINE(ENABLE_TPL, [], [Enable TPL code])
-fi
-
-if test "x$enable_tpl" = "xyes"; then
-  PKG_CHECK_MODULES(TPL,
-  [
-     telepathy-logger = $TELEPATHY_LOGGER
-  ])
-  AC_SUBST(TPL_CFLAGS)
-  AC_SUBST(TPL_LIBS)
-fi
-
-
-
-# -----------------------------------------------------------
 # Pkg-Config dependency checks
 # -----------------------------------------------------------
 
