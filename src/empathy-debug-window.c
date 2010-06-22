@@ -846,6 +846,13 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
       COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
       -1);
 
+  /* add the logger */
+  gtk_list_store_append (priv->cms, &iter);
+  gtk_list_store_set (priv->cms, &iter,
+      COL_CM_NAME, "logger",
+      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Logger",
+      -1);
+
   priv->name_owner_changed_signal =
       tp_cli_dbus_daemon_connect_to_name_owner_changed (priv->dbus,
       debug_window_name_owner_changed_cb, debug_window, NULL, NULL, NULL);
