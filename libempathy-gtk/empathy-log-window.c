@@ -1073,8 +1073,6 @@ log_window_get_messages_for_date (EmpathyLogWindow *window,
   gchar *chat_id;
   gboolean is_chatroom;
 
-  gtk_calendar_clear_marks (GTK_CALENDAR (window->calendar_chats));
-
   if (!log_window_chats_get_selected (window, &account,
         &chat_id, &is_chatroom)) {
       return;
