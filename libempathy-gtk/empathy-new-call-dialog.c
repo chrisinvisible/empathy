@@ -68,49 +68,32 @@ struct _EmpathyNewCallDialogPriv {
  * to be started with any contact on any enabled account.
  */
 
-typedef struct
-{
-  gboolean video;
-  gint64 timestamp;
-} new_call_ctx;
-
-static new_call_ctx *
-new_call_ctx_new (gboolean video,
+static void
+call_contact (TpConnection *connection,
+    const gchar *contact_id,
+    gboolean video,
     gint64 timestamp)
 {
-  new_call_ctx *ctx = g_slice_new (new_call_ctx);
+  EmpathyDispatcher *dispatcher;
+  GHashTable *request;
 
-  ctx->video = video;
-  ctx->timestamp = timestamp;
-  return ctx;
-}
+  request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, contact_id,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN,
+        TRUE,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN,
+        video,
+      NULL);
 
-static void
-new_call_ctx_free (new_call_ctx *ctx)
-{
-  g_slice_free (new_call_ctx, ctx);
-}
+  dispatcher = empathy_dispatcher_dup_singleton ();
 
-static void
-got_contact_cb (TpConnection *connection,
-    EmpathyContact *contact,
-    const GError *error,
-    gpointer user_data,
-    GObject *object)
-{
-  EmpathyCallFactory *call_factory;
-  new_call_ctx *ctx = user_data;
+  empathy_dispatcher_create_channel (dispatcher, connection, request,
+      timestamp, NULL, NULL);
 
-  if (error != NULL)
-    {
-      DEBUG ("Failed: %s", error->message);
-      return;
-    }
-
-  call_factory = empathy_call_factory_get ();
-
-  empathy_call_factory_new_call_with_streams (call_factory, contact, TRUE,
-      ctx->video, ctx->timestamp, NULL, NULL);
+  g_object_unref (dispatcher);
 }
 
 static void
@@ -120,7 +103,6 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
   gboolean video;
   TpConnection *connection;
   const gchar *contact_id;
-  new_call_ctx *ctx;
 
   if (response_id != GTK_RESPONSE_ACCEPT) goto out;
 
@@ -133,10 +115,7 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
    * we return from this function. */
   video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
-  ctx = new_call_ctx_new (video, gtk_get_current_event_time ());
-
-  empathy_tp_contact_factory_get_from_id (connection, contact_id,
-      got_contact_cb, ctx, (GDestroyNotify) new_call_ctx_free, NULL);
+  call_contact (connection, contact_id, video, gtk_get_current_event_time ());
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));
