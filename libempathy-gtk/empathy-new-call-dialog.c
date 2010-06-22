@@ -69,24 +69,31 @@ struct _EmpathyNewCallDialogPriv {
  */
 
 static void
-got_contact_cb (TpConnection *connection,
-    EmpathyContact *contact,
-    const GError *error,
-    gpointer user_data,
-    GObject *object)
+call_contact (TpConnection *connection,
+    const gchar *contact_id,
+    gboolean video,
+    gint64 timestamp)
 {
-  EmpathyCallFactory *call_factory;
-  gboolean video = GPOINTER_TO_UINT (user_data);
+  EmpathyDispatcher *dispatcher;
+  GHashTable *request;
 
-  if (error != NULL)
-    {
-      DEBUG ("Failed: %s", error->message);
-      return;
-    }
+  request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, contact_id,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN,
+        TRUE,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN,
+        video,
+      NULL);
 
-  call_factory = empathy_call_factory_get ();
-  empathy_call_factory_new_call_with_streams (call_factory, contact, TRUE,
-      video);
+  dispatcher = empathy_dispatcher_dup_singleton ();
+
+  empathy_dispatcher_create_channel (dispatcher, connection, request,
+      timestamp, NULL, NULL);
+
+  g_object_unref (dispatcher);
 }
 
 static void
@@ -108,8 +115,7 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
    * we return from this function. */
   video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
-  empathy_tp_contact_factory_get_from_id (connection, contact_id,
-      got_contact_cb, GUINT_TO_POINTER (video), NULL, NULL);
+  call_contact (connection, contact_id, video, gtk_get_current_event_time ());
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));

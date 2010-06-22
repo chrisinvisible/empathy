@@ -25,6 +25,7 @@
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/util.h>
 
 #include "empathy-tp-call.h"
 #include "empathy-tp-contact-factory.h"
@@ -61,7 +62,6 @@ enum
   PROP_0,
   PROP_CHANNEL,
   PROP_CONTACT,
-  PROP_IS_INCOMING,
   PROP_STATUS,
   PROP_AUDIO_STREAM,
   PROP_VIDEO_STREAM
@@ -279,11 +279,14 @@ tp_call_got_contact_cb (TpConnection            *connection,
     }
 
   priv->contact = g_object_ref (contact);
-  priv->is_incoming = TRUE;
-  priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
-  g_object_notify (G_OBJECT (call), "is-incoming");
+
+  if (priv->status < EMPATHY_TP_CALL_STATUS_PENDING)
+    {
+      priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
+      g_object_notify (G_OBJECT (call), "status");
+    }
+
   g_object_notify (G_OBJECT (call), "contact");
-  g_object_notify (G_OBJECT (call), "status");
 }
 
 static void
@@ -301,16 +304,6 @@ tp_call_update_status (EmpathyTpCall *call)
   tp_intset_iter_init (&iter, set);
   while (tp_intset_iter_next (&iter))
     {
-      if (priv->contact == NULL && iter.element != self_handle)
-        {
-          TpConnection *connection;
-
-          /* We found the remote contact */
-          connection = tp_channel_borrow_connection (priv->channel);
-          empathy_tp_contact_factory_get_from_handle (connection, iter.element,
-              tp_call_got_contact_cb, NULL, NULL, G_OBJECT (call));
-        }
-
       if (priv->status == EMPATHY_TP_CALL_STATUS_PENDING &&
           ((priv->is_incoming && iter.element == self_handle) ||
            (!priv->is_incoming && iter.element != self_handle)))
@@ -321,30 +314,6 @@ tp_call_update_status (EmpathyTpCall *call)
     }
 
   g_object_unref (call);
-}
-
-void
-empathy_tp_call_to (EmpathyTpCall *call, EmpathyContact *contact,
-  gboolean audio, gboolean video)
-{
-  EmpathyTpCallPriv *priv = GET_PRIV (call);
-  EmpathyCapabilities capabilities = 0;
-
-  g_assert (audio || video);
-
-  priv->contact = g_object_ref (contact);
-  priv->is_incoming = FALSE;
-  priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
-  g_object_notify (G_OBJECT (call), "is-incoming");
-  g_object_notify (G_OBJECT (call), "contact");
-  g_object_notify (G_OBJECT (call), "status");
-
-  if (video)
-    capabilities |= EMPATHY_CAPABILITIES_VIDEO;
-  if (audio)
-    capabilities |= EMPATHY_CAPABILITIES_AUDIO;
-
-  tp_call_request_streams_for_capabilities (call, capabilities);
 }
 
 static void
@@ -407,6 +376,8 @@ tp_call_constructor (GType type,
   GObject *object;
   EmpathyTpCall *call;
   EmpathyTpCallPriv *priv;
+  GHashTable *props;
+  gboolean requested;
 
   object = G_OBJECT_CLASS (empathy_tp_call_parent_class)->constructor (type,
       n_construct_params, construct_params);
@@ -430,10 +401,22 @@ tp_call_constructor (GType type,
   tp_cli_channel_type_streamed_media_call_list_streams (priv->channel, -1,
       tp_call_request_streams_cb, NULL, NULL, G_OBJECT (call));
 
+  /* Is the call incoming? */
+  props = tp_channel_borrow_immutable_properties (priv->channel);
+  requested = tp_asv_get_boolean (props, TP_PROP_CHANNEL_REQUESTED, NULL);
+
+  priv->is_incoming = !requested;
+
+  /* Get the remote contact */
+  empathy_tp_contact_factory_get_from_handle (
+      tp_channel_borrow_connection (priv->channel),
+      tp_channel_get_handle (priv->channel, NULL), tp_call_got_contact_cb,
+      NULL, NULL, object);
+
   /* Update status when members changes */
   tp_call_update_status (call);
-  g_signal_connect_swapped (priv->channel, "group-members-changed",
-      G_CALLBACK (tp_call_update_status), call);
+  tp_g_signal_connect_object (priv->channel, "group-members-changed",
+      G_CALLBACK (tp_call_update_status), call, G_CONNECT_SWAPPED);
 
   return object;
 }
@@ -513,9 +496,6 @@ tp_call_get_property (GObject *object,
     case PROP_CONTACT:
       g_value_set_object (value, priv->contact);
       break;
-    case PROP_IS_INCOMING:
-      g_value_set_boolean (value, priv->is_incoming);
-      break;
     case PROP_STATUS:
       g_value_set_uint (value, priv->status);
       break;
@@ -553,10 +533,6 @@ empathy_tp_call_class_init (EmpathyTpCallClass *klass)
       g_param_spec_object ("contact", "Call contact", "Call contact",
       EMPATHY_TYPE_CONTACT,
       G_PARAM_READABLE | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
-  g_object_class_install_property (object_class, PROP_IS_INCOMING,
-      g_param_spec_boolean ("is-incoming", "Is media stream incoming",
-      "Is media stream incoming", FALSE, G_PARAM_READABLE |
-      G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
   g_object_class_install_property (object_class, PROP_STATUS,
       g_param_spec_uint ("status", "Call status",
       "Call status", 0, 255, 0, G_PARAM_READABLE | G_PARAM_STATIC_NICK |
@@ -623,7 +599,9 @@ empathy_tp_call_accept_incoming_call (EmpathyTpCall *call)
 
   g_return_if_fail (EMPATHY_IS_TP_CALL (call));
   g_return_if_fail (priv->status == EMPATHY_TP_CALL_STATUS_PENDING);
-  g_return_if_fail (priv->is_incoming);
+
+  if (!priv->is_incoming)
+    return;
 
   DEBUG ("Accepting incoming call");
 
