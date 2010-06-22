@@ -155,6 +155,9 @@ account_manager_prepared_cb (GObject *source_object,
 	GList *accounts;
 	GError *error = NULL;
 
+	if (log_window == NULL)
+		return;
+
 	if (!tp_account_manager_prepare_finish (account_manager, result, &error)) {
 		DEBUG ("Failed to prepare account manager: %s", error->message);
 		g_error_free (error);
@@ -358,6 +361,9 @@ got_messages_for_date_cb (GObject *manager,
 	gboolean       can_do_next;
 	GError        *error = NULL;
 
+	if (log_window == NULL)
+		return;
+
 	if (!tpl_log_manager_get_messages_for_date_finish (TPL_LOG_MANAGER (manager),
 		result, &messages, &error)) {
 			DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
@@ -493,6 +499,9 @@ log_manager_searched_new_cb (GObject *manager,
 	GtkTreeIter          iter;
 	GtkListStore        *store = user_data;
 	GError              *error = NULL;
+
+	if (log_window == NULL)
+		return;
 
 	if (!tpl_log_manager_search_finish (TPL_LOG_MANAGER (manager), result,
 		&hits, &error)) {
@@ -767,6 +776,9 @@ log_manager_got_chats_cb (GObject *manager,
 	GtkTreeIter            iter;
 	GError                *error = NULL;
 
+	if (log_window == NULL)
+		return;
+
 	if (!tpl_log_manager_get_chats_finish (TPL_LOG_MANAGER (manager),
 		result, &chats, &error)) {
 			DEBUG ("%s. Aborting", error->message);
@@ -1023,6 +1035,9 @@ log_window_got_messages_for_date_cb (GObject *manager,
   GList *l;
   GError *error = NULL;
 
+  if (log_window == NULL)
+    return;
+
   if (!tpl_log_manager_get_messages_for_date_finish (TPL_LOG_MANAGER (manager),
         result, &messages, &error)) {
       DEBUG ("Unable to retrieve messages for the selected date: %s. Aborting",
@@ -1093,6 +1108,9 @@ log_manager_got_dates_cb (GObject *manager,
   gboolean       day_selected = FALSE;
   GDate         *date = NULL;
   GError        *error = NULL;
+
+  if (log_window == NULL)
+    return;
 
   if (!tpl_log_manager_get_dates_finish (TPL_LOG_MANAGER (manager),
         result, &dates, &error)) {
@@ -1250,6 +1268,9 @@ log_window_updating_calendar_month_cb (GObject *manager,
 	guint					 year_selected;
 	guint					 month_selected;
 	GError				*error = NULL;
+
+	if (log_window == NULL)
+		return;
 
 	if (!tpl_log_manager_get_dates_finish (TPL_LOG_MANAGER (manager),
 		result, &dates, &error)) {
