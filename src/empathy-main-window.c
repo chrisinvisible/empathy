@@ -52,6 +52,7 @@
 #include <libempathy-gtk/empathy-live-search.h>
 #include <libempathy-gtk/empathy-geometry.h>
 #include <libempathy-gtk/empathy-gtk-enum-types.h>
+#include <libempathy-gtk/empathy-individual-dialogs.h>
 #include <libempathy-gtk/empathy-individual-store.h>
 #include <libempathy-gtk/empathy-individual-view.h>
 #include <libempathy-gtk/empathy-new-message-dialog.h>
@@ -714,7 +715,7 @@ static void
 main_window_chat_add_contact_cb (GtkAction         *action,
 				 EmpathyMainWindow *window)
 {
-	empathy_new_contact_dialog_show (GTK_WINDOW (window));
+	empathy_new_individual_dialog_show (GTK_WINDOW (window));
 }
 
 static void

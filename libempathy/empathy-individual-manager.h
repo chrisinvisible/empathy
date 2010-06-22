@@ -71,6 +71,10 @@ FolksIndividual *empathy_individual_manager_lookup_member (
     EmpathyIndividualManager *manager,
     const gchar *id);
 
+void empathy_individual_manager_add_from_contact (
+    EmpathyIndividualManager *manager,
+    EmpathyContact *contact);
+
 void empathy_individual_manager_remove (EmpathyIndividualManager *manager,
     FolksIndividual *individual,
     const gchar *message);

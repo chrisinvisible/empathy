@@ -260,6 +260,56 @@ empathy_individual_manager_lookup_member (EmpathyIndividualManager *self,
   return NULL;
 }
 
+static void
+aggregator_add_persona_from_details_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  EmpathyIndividualManager *self = EMPATHY_INDIVIDUAL_MANAGER (user_data);
+  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+  FolksPersona *persona;
+  GError *error = NULL;
+
+  persona = folks_individual_aggregator_add_persona_from_details_finish (
+      priv->aggregator, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to add individual from contact: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
+void
+empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
+    EmpathyContact *contact)
+{
+  EmpathyIndividualManagerPriv *priv;
+  GHashTable* details;
+  TpAccount *account;
+  const gchar *store_id;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self));
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+  priv = GET_PRIV (self);
+
+  DEBUG (G_STRLOC ": adding individual from contact %s (%s)",
+      empathy_contact_get_id (contact), empathy_contact_get_name (contact));
+
+  account = empathy_contact_get_account (contact);
+  store_id = tp_proxy_get_object_path (TP_PROXY (account));
+
+  details = g_hash_table_new (g_str_hash, g_str_equal);
+  g_hash_table_insert (details, "contact",
+      (gchar*) empathy_contact_get_id (contact));
+
+  folks_individual_aggregator_add_persona_from_details (
+      priv->aggregator, NULL, "telepathy", store_id, details,
+      aggregator_add_persona_from_details_cb, self);
+
+  g_hash_table_destroy (details);
+}
+
 void
 empathy_individual_manager_remove (EmpathyIndividualManager *self,
     FolksIndividual *individual,

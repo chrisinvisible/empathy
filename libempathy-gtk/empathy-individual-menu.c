@@ -40,6 +40,7 @@
 #include "empathy-images.h"
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
+#include "empathy-individual-dialogs.h"
 #include "empathy-ui-utils.h"
 #include "empathy-share-my-desktop.h"
 
@@ -160,18 +161,13 @@ empathy_individual_add_menu_item_activated (GtkMenuItem *item,
   FolksIndividual *individual)
 {
   GtkWidget *toplevel;
-  EmpathyContact *contact;
 
   toplevel = gtk_widget_get_toplevel (GTK_WIDGET (item));
   if (!gtk_widget_is_toplevel (toplevel) || !GTK_IS_WINDOW (toplevel))
     toplevel = NULL;
 
-  contact = empathy_contact_from_folks_individual (individual);
-  empathy_new_contact_dialog_show_with_contact (GTK_WINDOW (toplevel),
-      contact);
-
-  if (contact != NULL)
-    g_object_unref (contact);
+  empathy_new_individual_dialog_show_with_individual (GTK_WINDOW (toplevel),
+      individual);
 }
 
 GtkWidget *
