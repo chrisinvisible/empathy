@@ -49,8 +49,8 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyThemeAdium)
 
 /* GConf key containing current value of font */
-#define EMPATHY_GCONF_FONT_KEY_NAME       "/desktop/gnome/interface/font_name"
-#define BORING_DPI_DEFAULT                96
+#define EMPATHY_GCONF_FONT_KEY_NAME "/desktop/gnome/interface/document_font_name"
+#define BORING_DPI_DEFAULT 96
 
 /* "Join" consecutive messages with timestamps within five minutes */
 #define MESSAGE_JOIN_PERIOD 5*60
