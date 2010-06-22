@@ -316,28 +316,6 @@ tp_call_update_status (EmpathyTpCall *call)
   g_object_unref (call);
 }
 
-void
-empathy_tp_call_to (EmpathyTpCall *call, EmpathyContact *contact,
-  gboolean audio, gboolean video)
-{
-  EmpathyTpCallPriv *priv = GET_PRIV (call);
-  EmpathyCapabilities capabilities = 0;
-
-  g_assert (audio || video);
-
-  priv->contact = g_object_ref (contact);
-  priv->status = EMPATHY_TP_CALL_STATUS_PENDING;
-  g_object_notify (G_OBJECT (call), "contact");
-  g_object_notify (G_OBJECT (call), "status");
-
-  if (video)
-    capabilities |= EMPATHY_CAPABILITIES_VIDEO;
-  if (audio)
-    capabilities |= EMPATHY_CAPABILITIES_AUDIO;
-
-  tp_call_request_streams_for_capabilities (call, capabilities);
-}
-
 static void
 tp_call_channel_invalidated_cb (TpChannel     *channel,
                                 GQuark         domain,

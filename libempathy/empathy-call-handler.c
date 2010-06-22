@@ -463,9 +463,6 @@ empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
 
   empathy_call_handler_start_tpfs (self);
 
-  empathy_tp_call_to (priv->call, priv->contact,
-    priv->initial_audio, priv->initial_video);
-
   empathy_dispatch_operation_claim (operation);
 }
 
