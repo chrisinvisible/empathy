@@ -41,7 +41,7 @@ typedef struct
   GtkWidget *search_entry;
   GtkWidget *hook_widget;
 
-  gunichar *text_stripped;
+  GPtrArray *stripped_words;
 } EmpathyLiveSearchPriv;
 
 enum
@@ -100,31 +100,56 @@ stripped_char (gunichar ch)
   return retval;
 }
 
-static gunichar *
+static GPtrArray *
 strip_utf8_string (const gchar *string)
 {
-  gunichar *ret;
-  gint ret_len;
+  GPtrArray *words = NULL;
   const gchar *p;
 
   if (EMP_STR_EMPTY (string))
     return NULL;
 
-  ret = g_malloc (sizeof (gunichar) * (strlen (string) + 1));
-  ret_len = 0;
-
   for (p = string; *p != '\0'; p = g_utf8_next_char (p))
     {
-      gunichar sc;
+      GString *str = NULL;
 
-      sc = stripped_char (g_utf8_get_char (p));
-      if (sc != 0)
-        ret[ret_len++] = sc;
+      /* Search the start of the word (skip non alpha-num chars) */
+      while (*p != '\0' && !g_unichar_isalnum (g_utf8_get_char (p)))
+        p = g_utf8_next_char (p);
+
+      /* Strip this word */
+      while (*p != '\0')
+        {
+          gunichar c;
+          gunichar sc;
+
+          c = g_utf8_get_char (p);
+          if (!g_unichar_isalnum (c))
+            break;
+
+          sc = stripped_char (c);
+          if (sc != 0)
+            {
+              if (str == NULL)
+                str = g_string_new (NULL);
+              g_string_append_unichar (str, sc);
+            }
+
+          p = g_utf8_next_char (p);
+        }
+
+      if (str != NULL)
+        {
+          if (words == NULL)
+            words = g_ptr_array_new_with_free_func (g_free);
+          g_ptr_array_add (words, g_string_free (str, FALSE));
+        }
+
+      if (*p == '\0')
+        break;
     }
 
-  ret[ret_len] = 0;
-
-  return ret;
+  return words;
 }
 
 static gboolean
@@ -168,8 +193,11 @@ live_search_text_changed (GtkEntry *entry,
   else
     gtk_widget_show (GTK_WIDGET (self));
 
-  g_free (priv->text_stripped);
-  priv->text_stripped = strip_utf8_string (text);
+  if (priv->stripped_words != NULL)
+    g_ptr_array_unref (priv->stripped_words);
+
+  priv->stripped_words = strip_utf8_string (text);
+
   g_object_notify (G_OBJECT (self), "text");
 }
 
@@ -281,7 +309,8 @@ live_search_finalize (GObject *obj)
   EmpathyLiveSearch *self = EMPATHY_LIVE_SEARCH (obj);
   EmpathyLiveSearchPriv *priv = GET_PRIV (self);
 
-  g_free (priv->text_stripped);
+  if (priv->stripped_words != NULL)
+    g_ptr_array_unref (priv->stripped_words);
 
   if (G_OBJECT_CLASS (empathy_live_search_parent_class)->finalize != NULL)
     G_OBJECT_CLASS (empathy_live_search_parent_class)->finalize (obj);
@@ -519,8 +548,8 @@ empathy_live_search_set_text (EmpathyLiveSearch *self,
 }
 
 static gboolean
-live_search_match_string (const gchar *string,
-    const gunichar *prefix)
+live_search_match_prefix (const gchar *string,
+    const gchar *prefix)
 {
   const gchar *p;
 
@@ -532,7 +561,7 @@ live_search_match_string (const gchar *string,
 
   for (p = string; *p != '\0'; p = g_utf8_next_char (p))
     {
-      guint i = 0;
+      const gchar *prefix_p = prefix;
 
       /* Search the start of the word (skip non alpha-num chars) */
       while (*p != '\0' && !g_unichar_isalnum (g_utf8_get_char (p)))
@@ -547,11 +576,12 @@ live_search_match_string (const gchar *string,
           if (sc != 0)
             {
               /* If the char does not match, stop */
-              if (sc != prefix[i])
+              if (sc != g_utf8_get_char (prefix_p))
                 break;
 
               /* The char matched. If it was the last of prefix, stop */
-              if (prefix[++i] == 0)
+              prefix_p = g_utf8_next_char (prefix_p);
+              if (*prefix_p == '\0')
                 return TRUE;
             }
 
@@ -567,6 +597,22 @@ live_search_match_string (const gchar *string,
     }
 
   return FALSE;
+}
+
+static gboolean
+live_search_match_words (const gchar *string,
+    GPtrArray *words)
+{
+  guint i;
+
+  if (words == NULL)
+    return TRUE;
+
+  for (i = 0; i < words->len; i++)
+    if (!live_search_match_prefix (string, g_ptr_array_index (words, i)))
+      return FALSE;
+
+  return TRUE;
 }
 
 /**
@@ -595,19 +641,20 @@ empathy_live_search_match (EmpathyLiveSearch *self,
 
   priv = GET_PRIV (self);
 
-  return live_search_match_string (string, priv->text_stripped);
+  return live_search_match_words (string, priv->stripped_words);
 }
 
 gboolean
 empathy_live_search_match_string (const gchar *string,
     const gchar *prefix)
 {
-  gunichar *stripped;
+  GPtrArray *words;
   gboolean match;
 
-  stripped = strip_utf8_string (prefix);
-  match = live_search_match_string (string, stripped);
-  g_free (stripped);
+  words = strip_utf8_string (prefix);
+  match = live_search_match_words (string, words);
+  if (words != NULL)
+    g_ptr_array_unref (words);
 
   return match;
 }
