@@ -1166,6 +1166,7 @@ log_manager_got_dates_cb (GObject *manager,
       window);
 
   if (date) {
+      /* Show messages of the most recent date */
       log_window_get_messages_for_date (window, date);
   }
 
@@ -1225,7 +1226,8 @@ log_window_chats_get_messages (EmpathyLogWindow *window,
 	}
 
 	if (date != NULL) {
-      log_window_get_messages_for_date (window, date);
+		/* Show messages of the selected date */
+		log_window_get_messages_for_date (window, date);
 	}
 
 	g_object_unref (account);
