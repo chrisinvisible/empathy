@@ -25,6 +25,7 @@
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/interfaces.h>
+#include <telepathy-glib/util.h>
 
 #include "empathy-tp-call.h"
 #include "empathy-tp-contact-factory.h"
@@ -436,8 +437,8 @@ tp_call_constructor (GType type,
 
   /* Update status when members changes */
   tp_call_update_status (call);
-  g_signal_connect_swapped (priv->channel, "group-members-changed",
-      G_CALLBACK (tp_call_update_status), call);
+  tp_g_signal_connect_object (priv->channel, "group-members-changed",
+      G_CALLBACK (tp_call_update_status), call, G_CONNECT_SWAPPED);
 
   return object;
 }
