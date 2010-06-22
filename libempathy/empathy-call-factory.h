@@ -25,6 +25,7 @@
 
 #include <libempathy/empathy-dispatch-operation.h>
 #include <libempathy/empathy-call-handler.h>
+#include <libempathy/empathy-dispatcher.h>
 
 G_BEGIN_DECLS
 
@@ -65,7 +66,12 @@ EmpathyCallFactory *empathy_call_factory_initialise (void);
 EmpathyCallFactory *empathy_call_factory_get (void);
 
 void empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
-  EmpathyContact *contact, gboolean initial_audio, gboolean initial_video);
+  EmpathyContact *contact,
+  gboolean initial_audio,
+  gboolean initial_video,
+  gint64 timestamp,
+  EmpathyDispatcherRequestCb callback,
+  gpointer user_data);
 
 G_END_DECLS
 

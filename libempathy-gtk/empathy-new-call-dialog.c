@@ -68,6 +68,29 @@ struct _EmpathyNewCallDialogPriv {
  * to be started with any contact on any enabled account.
  */
 
+typedef struct
+{
+  gboolean video;
+  gint64 timestamp;
+} new_call_ctx;
+
+static new_call_ctx *
+new_call_ctx_new (gboolean video,
+    gint64 timestamp)
+{
+  new_call_ctx *ctx = g_slice_new (new_call_ctx);
+
+  ctx->video = video;
+  ctx->timestamp = timestamp;
+  return ctx;
+}
+
+static void
+new_call_ctx_free (new_call_ctx *ctx)
+{
+  g_slice_free (new_call_ctx, ctx);
+}
+
 static void
 got_contact_cb (TpConnection *connection,
     EmpathyContact *contact,
@@ -76,7 +99,7 @@ got_contact_cb (TpConnection *connection,
     GObject *object)
 {
   EmpathyCallFactory *call_factory;
-  gboolean video = GPOINTER_TO_UINT (user_data);
+  new_call_ctx *ctx = user_data;
 
   if (error != NULL)
     {
@@ -85,8 +108,9 @@ got_contact_cb (TpConnection *connection,
     }
 
   call_factory = empathy_call_factory_get ();
+
   empathy_call_factory_new_call_with_streams (call_factory, contact, TRUE,
-      video);
+      ctx->video, ctx->timestamp, NULL, NULL);
 }
 
 static void
@@ -96,6 +120,7 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
   gboolean video;
   TpConnection *connection;
   const gchar *contact_id;
+  new_call_ctx *ctx;
 
   if (response_id != GTK_RESPONSE_ACCEPT) goto out;
 
@@ -108,8 +133,10 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
    * we return from this function. */
   video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
+  ctx = new_call_ctx_new (video, gtk_get_current_event_time ());
+
   empathy_tp_contact_factory_get_from_id (connection, contact_id,
-      got_contact_cb, GUINT_TO_POINTER (video), NULL, NULL);
+      got_contact_cb, ctx, (GDestroyNotify) new_call_ctx_free, NULL);
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));

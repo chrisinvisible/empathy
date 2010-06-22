@@ -26,6 +26,7 @@
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 
+#include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
 #include "empathy-call-factory.h"
 #include "empathy-utils.h"
@@ -205,21 +206,33 @@ void
 empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
     EmpathyContact *contact,
     gboolean initial_audio,
-    gboolean initial_video)
+    gboolean initial_video,
+    gint64 timestamp,
+    EmpathyDispatcherRequestCb callback,
+    gpointer user_data)
 {
-  EmpathyCallHandler *handler;
+  EmpathyDispatcher *dispatcher;
+  GHashTable *request;
 
-  g_return_if_fail (factory != NULL);
-  g_return_if_fail (contact != NULL);
+  request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_HANDLE, G_TYPE_UINT,
+        empathy_contact_get_handle (contact),
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN,
+        initial_audio,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN,
+        initial_video,
+      NULL);
 
-  handler = empathy_call_handler_new_for_contact_with_streams (contact,
-    initial_audio, initial_video);
+  dispatcher = empathy_dispatcher_dup_singleton ();
 
-  g_signal_emit (factory, signals[NEW_CALL_HANDLER], 0,
-    handler, TRUE);
+  empathy_dispatcher_create_channel (dispatcher,
+      empathy_contact_get_connection (contact), request, timestamp, callback,
+      user_data);
 
-  g_object_unref (handler);
-#endif
+  g_object_unref (dispatcher);
 }
 
 static void

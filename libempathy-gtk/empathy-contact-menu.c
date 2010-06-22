@@ -248,7 +248,8 @@ empathy_contact_audio_call_menu_item_activated (GtkMenuItem *item,
 	EmpathyCallFactory *factory;
 
 	factory = empathy_call_factory_get ();
-	empathy_call_factory_new_call_with_streams (factory, contact, TRUE, FALSE);
+	empathy_call_factory_new_call_with_streams (factory, contact, TRUE, FALSE,
+		gtk_get_current_event_time (), NULL, NULL);
 }
 
 GtkWidget *
@@ -280,7 +281,8 @@ empathy_contact_video_call_menu_item_activated (GtkMenuItem *item,
 	EmpathyCallFactory *factory;
 
 	factory = empathy_call_factory_get ();
-	empathy_call_factory_new_call_with_streams (factory, contact, TRUE, TRUE);
+	empathy_call_factory_new_call_with_streams (factory, contact, TRUE, TRUE,
+		gtk_get_current_event_time (), NULL, NULL);
 }
 
 GtkWidget *
