@@ -35,6 +35,12 @@ test_live_search (void)
       { "élève", "ele", TRUE },
       { "Azais", "AzaÏs", TRUE },
 
+      /* Multi words */
+      { "Xavier Claessens", "Xav Cla", TRUE },
+      { "Xavier Claessens", "Cla Xav", TRUE },
+      { "Foo Bar Baz", "   b  ", TRUE },
+      { "Foo Bar Baz", "bar bazz", FALSE },
+
       { NULL, NULL, FALSE }
     };
   guint i;
