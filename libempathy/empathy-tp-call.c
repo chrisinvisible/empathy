@@ -621,7 +621,9 @@ empathy_tp_call_accept_incoming_call (EmpathyTpCall *call)
 
   g_return_if_fail (EMPATHY_IS_TP_CALL (call));
   g_return_if_fail (priv->status == EMPATHY_TP_CALL_STATUS_PENDING);
-  g_return_if_fail (priv->is_incoming);
+
+  if (!priv->is_incoming)
+    return;
 
   DEBUG ("Accepting incoming call");
 
