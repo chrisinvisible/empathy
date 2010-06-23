@@ -75,10 +75,6 @@ void empathy_individual_manager_remove (EmpathyIndividualManager *manager,
     FolksIndividual *individual,
     const gchar *message);
 
-gboolean empathy_individual_manager_is_favourite (
-    EmpathyIndividualManager *manager,
-    FolksIndividual *individual);
-
 EmpathyIndividualManagerFlags
 empathy_individual_manager_get_flags_for_connection (
     EmpathyIndividualManager *manager,

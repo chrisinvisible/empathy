@@ -48,10 +48,6 @@ typedef struct
   FolksIndividualAggregator *aggregator;
   EmpathyContactManager *contact_manager;
   TpProxy *logger;
-  /* account object path (gchar *) => GHashTable containing favorite contacts
-   * (contact ID (gchar *) => TRUE) */
-  GHashTable *favourites;
-  TpProxySignalConnection *favourite_contacts_changed_signal;
 } EmpathyIndividualManagerPriv;
 
 G_DEFINE_TYPE (EmpathyIndividualManager, empathy_individual_manager,
@@ -112,9 +108,6 @@ individual_manager_finalize (GObject *object)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
 
-  tp_proxy_signal_connection_disconnect (
-      priv->favourite_contacts_changed_signal);
-
   if (priv->logger != NULL)
     g_object_unref (priv->logger);
 
@@ -123,8 +116,6 @@ individual_manager_finalize (GObject *object)
 
   if (priv->aggregator != NULL)
     g_object_unref (priv->aggregator);
-
-  g_hash_table_destroy (priv->favourites);
 }
 
 static GObject *
@@ -208,22 +199,11 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
   self->priv = priv;
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
 
-  priv->favourites = g_hash_table_new_full (g_str_hash, g_str_equal,
-      (GDestroyNotify) g_free, (GDestroyNotify) g_hash_table_unref);
-
   priv->aggregator = folks_individual_aggregator_new ();
-  if (error == NULL)
-    {
-      g_signal_connect (priv->aggregator, "individuals-added",
-          G_CALLBACK (aggregator_individuals_added_cb), self);
-      g_signal_connect (priv->aggregator, "individuals-removed",
-          G_CALLBACK (aggregator_individuals_removed_cb), self);
-    }
-  else
-    {
-      DEBUG ("Failed to get individual aggregator: %s", error->message);
-      g_clear_error (&error);
-    }
+  g_signal_connect (priv->aggregator, "individuals-added",
+      G_CALLBACK (aggregator_individuals_added_cb), self);
+  g_signal_connect (priv->aggregator, "individuals-removed",
+      G_CALLBACK (aggregator_individuals_removed_cb), self);
 
   bus = tp_dbus_daemon_dup (&error);
 

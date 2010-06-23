@@ -516,10 +516,8 @@ favourite_menu_item_toggled_cb (GtkCheckMenuItem *item,
   manager = empathy_individual_manager_dup_singleton ();
   list = EMPATHY_INDIVIDUAL_MANAGER (manager);
 
-  if (gtk_check_menu_item_get_active (item))
-    empathy_individual_manager_add_to_favourites (list, individual);
-  else
-    empathy_individual_manager_remove_from_favourites (list, individual);
+  folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual),
+      gtk_check_menu_item_get_active (item));
 
   g_object_unref (manager);
 }
@@ -534,8 +532,7 @@ empathy_individual_favourite_menu_item_new (FolksIndividual *individual)
 
   manager = empathy_individual_manager_dup_singleton ();
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
-      empathy_individual_manager_is_favourite (
-          EMPATHY_INDIVIDUAL_MANAGER (manager), individual));
+      folks_favourite_get_is_favourite (FOLKS_FAVOURITE (individual)));
 
   g_signal_connect (item, "toggled",
       G_CALLBACK (favourite_menu_item_toggled_cb), individual);

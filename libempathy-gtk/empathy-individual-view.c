@@ -345,6 +345,7 @@ individual_view_handle_drag (EmpathyIndividualView *self,
   if (!tp_strdiff (new_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
     {
       /* Mark contact as favourite */
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), TRUE);
 
       /* TODO: implement this */
       DEBUG ("adding individual to favourites not fully implemented");
@@ -355,6 +356,7 @@ individual_view_handle_drag (EmpathyIndividualView *self,
   if (!tp_strdiff (old_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
     {
       /* Remove contact as favourite */
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), FALSE);
 
       /* TODO: implement this */
       DEBUG ("removing individual from favourites not fully " "implemented");

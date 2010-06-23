@@ -412,9 +412,8 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   if (group_set != NULL)
     g_hash_table_unref (group_set);
 
-#ifdef HAVE_FAVOURITE_CONTACTS
   if (priv->show_groups &&
-      empathy_individual_manager_is_favourite (priv->manager, individual))
+      folks_favourite_get_is_favourite (FOLKS_FAVOURITE (individual)))
     {
       /* Add contact to the fake 'Favorites' group */
       GtkTreeIter iter_group;
@@ -425,7 +424,6 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       add_individual_to_store (GTK_TREE_STORE (self), &iter, &iter_group,
           individual, flags);
     }
-#endif
 
   individual_store_contact_update (self, individual);
 }
