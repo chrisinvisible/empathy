@@ -649,7 +649,8 @@ main (int argc, char *argv[])
   migrate_config_to_xdg_dir ();
 
   /* Setting up UI */
-  window = empathy_main_window_show ();
+  window = empathy_main_window_dup ();
+  gtk_widget_show (window);
   icon = empathy_status_icon_new (GTK_WINDOW (window), start_hidden);
 
   /* Chat manager */
