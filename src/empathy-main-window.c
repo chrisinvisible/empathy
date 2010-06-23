@@ -42,6 +42,7 @@
 #include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-individual-manager.h>
+#include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-status-presets.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 
