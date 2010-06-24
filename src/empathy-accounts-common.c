@@ -43,7 +43,6 @@
 #include "empathy-accounts-common.h"
 #include "empathy-accounts-dialog.h"
 #include "empathy-account-assistant.h"
-#include "empathy-import-mc4-accounts.h"
 #include "empathy-auto-salut-account-helper.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
@@ -82,18 +81,6 @@ empathy_accounts_has_accounts (TpAccountManager *manager)
   g_list_free (accounts);
 
   return has_accounts;
-}
-
-void
-empathy_accounts_import (TpAccountManager *account_mgr,
-    EmpathyConnectionManagers *cm_mgr)
-{
-  g_return_if_fail (tp_account_manager_is_prepared (account_mgr,
-      TP_ACCOUNT_MANAGER_FEATURE_CORE));
-  g_return_if_fail (empathy_connection_managers_is_ready (cm_mgr));
-
-  if (!empathy_import_mc4_has_imported ())
-    empathy_import_mc4_accounts (cm_mgr);
 }
 
 static void

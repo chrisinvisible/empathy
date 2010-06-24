@@ -64,7 +64,6 @@
 #include <libempathy-gtk/empathy-location-manager.h>
 
 #include "empathy-main-window.h"
-#include "empathy-import-mc4-accounts.h"
 #include "empathy-accounts-common.h"
 #include "empathy-accounts-dialog.h"
 #include "empathy-chat-manager.h"
@@ -363,10 +362,8 @@ account_manager_ready_cb (GObject *source_object,
       /* if current state is Offline, then put it online */
       empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
-  /* Pop up the accounts dialog if it's needed (either when we don't have any
-   * accounts yet or when we haven't imported mc4 accounts yet */
-  if (!empathy_accounts_has_accounts (manager)
-      || !empathy_import_mc4_has_imported ())
+  /* Pop up the accounts dialog if we don't have any account */
+  if (!empathy_accounts_has_accounts (manager))
     show_accounts_ui (gdk_screen_get_default (), TRUE);
 
   g_object_unref (idle);

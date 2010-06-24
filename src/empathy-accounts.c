@@ -45,7 +45,6 @@
 #include "empathy-accounts-common.h"
 #include "empathy-accounts-dialog.h"
 #include "empathy-account-assistant.h"
-#include "empathy-import-mc4-accounts.h"
 #include "empathy-auto-salut-account-helper.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
@@ -86,25 +85,6 @@ maybe_show_accounts_ui (TpAccountManager *manager)
     gtk_main_quit ();
   else
     empathy_accounts_show_accounts_ui (manager, NULL, gtk_main_quit);
-}
-
-static void
-cm_manager_prepared_cb (GObject *source,
-    GAsyncResult *result,
-    gpointer user_data)
-{
-  if (!empathy_connection_managers_prepare_finish (
-      EMPATHY_CONNECTION_MANAGERS (source), result, NULL))
-    {
-      g_warning ("Failed to prepare connection managers singleton");
-      gtk_main_quit ();
-      return;
-    }
-
-  empathy_accounts_import (TP_ACCOUNT_MANAGER (user_data),
-    EMPATHY_CONNECTION_MANAGERS (source));
-
-  maybe_show_accounts_ui (TP_ACCOUNT_MANAGER (user_data));
 }
 
 static void
@@ -151,18 +131,7 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
     }
   else
     {
-      if (empathy_import_mc4_has_imported ())
-        {
-          maybe_show_accounts_ui (manager);
-        }
-      else
-        {
-          EmpathyConnectionManagers *cm_mgr =
-            empathy_connection_managers_dup_singleton ();
-
-          empathy_connection_managers_prepare_async (
-            cm_mgr, cm_manager_prepared_cb, manager);
-        }
+      maybe_show_accounts_ui (manager);
     }
 }
 
