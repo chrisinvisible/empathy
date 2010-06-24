@@ -832,7 +832,11 @@ approve_channels (TpSimpleApprover *approver,
               goto out;
             }
 
-          /* if we are not invited, let's wait for the first message */
+          /* We are not invited, approve the channel right now */
+          tp_add_dispatch_operation_context_accept (context);
+
+          event_manager_approval_approve (approval);
+          return;
         }
 
       /* 1-1 text channel, wait for the first message */
