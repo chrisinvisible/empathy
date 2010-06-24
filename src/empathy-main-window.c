@@ -1501,8 +1501,10 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	gtk_container_add (GTK_CONTAINER (window), priv->main_vbox);
 	gtk_widget_show (priv->main_vbox);
 
+	g_signal_connect (window, "key-press-event",
+			  G_CALLBACK (main_window_key_press_event_cb), NULL);
+
 	empathy_builder_connect (gui, window,
-			      "main_window", "key-press-event", main_window_key_press_event_cb,
 			      "chat_quit", "activate", main_window_chat_quit_cb,
 			      "chat_new_message", "activate", main_window_chat_new_message_cb,
 			      "chat_new_call", "activate", main_window_chat_new_call_cb,
