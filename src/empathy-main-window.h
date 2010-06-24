@@ -19,6 +19,7 @@
  * Boston, MA  02110-1301  USA
  *
  * Authors: Xavier Claessens <xclaesse@gmail.com>
+ *          Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #ifndef __EMPATHY_MAIN_WINDOW_H__
@@ -28,8 +29,29 @@
 
 G_BEGIN_DECLS
 
-GtkWidget *empathy_main_window_get (void);
-GtkWidget *empathy_main_window_show (void);
+#define EMPATHY_TYPE_MAIN_WINDOW         (empathy_main_window_get_type ())
+#define EMPATHY_MAIN_WINDOW(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), EMPATHY_TYPE_MAIN_WINDOW, EmpathyMainWindow))
+#define EMPATHY_MAIN_WINDOW_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), EMPATHY_TYPE_MAIN_WINDOW, EmpathyMainWindowClass))
+#define EMPATHY_IS_MAIN_WINDOW(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_MAIN_WINDOW))
+#define EMPATHY_IS_MAIN_WINDOW_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_MAIN_WINDOW))
+#define EMPATHY_MAIN_WINDOW_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_MAIN_WINDOW, EmpathyMainWindowClass))
+
+typedef struct _EmpathyMainWindow EmpathyMainWindow;
+typedef struct _EmpathyMainWindowClass EmpathyMainWindowClass;
+typedef struct _EmpathyMainWindowPriv EmpathyMainWindowPriv;
+
+struct _EmpathyMainWindow {
+	GtkWindow parent;
+	gpointer priv;
+};
+
+struct _EmpathyMainWindowClass {
+	GtkWindowClass parent_class;
+};
+
+GType empathy_main_window_get_type (void);
+
+GtkWidget *empathy_main_window_dup (void);
 
 G_END_DECLS
 
