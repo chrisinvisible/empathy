@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
@@ -48,7 +49,6 @@
 
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-utils.h>
-#include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-account-settings.h>
 #include <libempathy/empathy-connectivity.h>
@@ -58,7 +58,6 @@
 #include <libempathy/empathy-ft-factory.h>
 #include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-tp-chat.h>
-#include <libempathy/empathy-tp-call.h>
 
 #include <libempathy-gtk/empathy-ui-utils.h>
 #include <libempathy-gtk/empathy-location-manager.h>
@@ -68,7 +67,6 @@
 #include "empathy-accounts-dialog.h"
 #include "empathy-chat-manager.h"
 #include "empathy-status-icon.h"
-#include "empathy-call-window.h"
 #include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
 
@@ -76,8 +74,6 @@
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
-
-#include <gst/gst.h>
 
 static gboolean start_hidden = FALSE;
 static gboolean no_connect = FALSE;
@@ -317,18 +313,6 @@ new_ft_handler_cb (EmpathyFTFactory *factory,
 }
 
 static void
-new_call_handler_cb (EmpathyCallFactory *factory,
-    EmpathyCallHandler *handler,
-    gboolean outgoing,
-    gpointer user_data)
-{
-  EmpathyCallWindow *window;
-
-  window = empathy_call_window_new (handler);
-  gtk_widget_show (GTK_WIDGET (window));
-}
-
-static void
 account_manager_ready_cb (GObject *source_object,
     GAsyncResult *result,
     gpointer user_data)
@@ -537,7 +521,6 @@ main (int argc, char *argv[])
   TpAccountManager *account_manager;
   TplLogManager *log_manager;
   EmpathyChatroomManager *chatroom_manager;
-  EmpathyCallFactory *call_factory;
   EmpathyFTFactory  *ft_factory;
   GtkWidget *window;
   EmpathyIdle *idle;
@@ -573,7 +556,6 @@ main (int argc, char *argv[])
   empathy_init ();
 
   optcontext = g_option_context_new (N_("- Empathy IM Client"));
-  g_option_context_add_group (optcontext, gst_init_get_option_group ());
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
 #if HAVE_LIBCHAMPLAIN
   g_option_context_add_group (optcontext, clutter_get_option_group ());
@@ -591,7 +573,6 @@ main (int argc, char *argv[])
 
   empathy_gtk_init ();
   g_set_application_name (_(PACKAGE_NAME));
-  g_setenv ("PULSE_PROP_media.role", "phone", TRUE);
 
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
@@ -673,10 +654,6 @@ main (int argc, char *argv[])
       chatroom_manager_ready_cb (chatroom_manager, NULL, account_manager);
     }
 
-  /* Create the call factory */
-  call_factory = empathy_call_factory_initialise ();
-  g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
-      G_CALLBACK (new_call_handler_cb), NULL);
   /* Create the FT factory */
   ft_factory = empathy_ft_factory_dup_singleton ();
   g_signal_connect (ft_factory, "new-ft-handler",
