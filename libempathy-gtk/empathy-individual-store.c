@@ -353,6 +353,9 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   GtkTreeIter iter;
   GHashTable *group_set = NULL;
   GList *groups = NULL, *l;
+  EmpathyIndividualManager *manager;
+  EmpathyContact *contact;
+  TpConnection *connection;
   EmpathyIndividualManagerFlags flags = 0;
 
   priv = GET_PRIV (self);
@@ -369,8 +372,11 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       groups = g_hash_table_get_keys (group_set);
     }
 
-  /* TODO: implement */
-  DEBUG ("group capability flags not implemented");
+  manager = empathy_individual_manager_dup_singleton ();
+  contact = empathy_contact_from_folks_individual (individual);
+  connection = empathy_contact_get_connection (contact);
+  flags = empathy_individual_manager_get_flags_for_connection (manager,
+      connection);
 
   if (!groups)
     {

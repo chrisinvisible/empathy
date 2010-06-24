@@ -310,13 +310,27 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   g_hash_table_destroy (details);
 }
 
+/**
+ * Removes the inner contact from the server (and thus the Individual). Not
+ * meant for de-shelling inner personas from an Individual.
+ */
 void
 empathy_individual_manager_remove (EmpathyIndividualManager *self,
     FolksIndividual *individual,
     const gchar *message)
 {
-  /* TODO: implement */
-  DEBUG (G_STRLOC ": individual removal not implemented");
+  EmpathyIndividualManagerPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self));
+  g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
+
+  priv = GET_PRIV (self);
+
+  DEBUG (G_STRLOC ": removing individual %s (%s)",
+      folks_individual_get_id (individual),
+      folks_individual_get_alias (individual));
+
+  folks_individual_aggregator_remove_individual (priv->aggregator, individual);
 }
 
 EmpathyIndividualManagerFlags
