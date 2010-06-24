@@ -99,6 +99,7 @@ struct _EmpathyMainWindowPriv {
 	GSettings              *gsettings_ui;
 	GSettings              *gsettings_contacts;
 
+	GtkWidget              *preferences;
 	GtkWidget              *main_vbox;
 	GtkWidget              *throbber;
 	GtkWidget              *throbber_tool_item;
@@ -1202,7 +1203,17 @@ static void
 main_window_edit_preferences_cb (GtkAction         *action,
 				 EmpathyMainWindow *window)
 {
-	empathy_preferences_show (GTK_WINDOW (window));
+	EmpathyMainWindowPriv *priv = GET_PRIV (window);
+
+	if (priv->preferences == NULL) {
+		priv->preferences = empathy_preferences_new (GTK_WINDOW (window));
+		g_object_add_weak_pointer (G_OBJECT (priv->preferences),
+					   (gpointer) &priv->preferences);
+
+		gtk_widget_show (priv->preferences);
+	} else {
+		gtk_window_present (GTK_WINDOW (priv->preferences));
+	}
 }
 
 static void

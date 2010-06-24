@@ -20,6 +20,7 @@
  * Authors: Mikael Hallendal <micke@imendio.com>
  *          Richard Hult <richard@imendio.com>
  *          Martyn Russell <martyn@imendio.com>
+ *          Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #include <config.h>
@@ -46,9 +47,11 @@
 
 #include "empathy-preferences.h"
 
-typedef struct {
-	GtkWidget *dialog;
+G_DEFINE_TYPE (EmpathyPreferences, empathy_preferences, GTK_TYPE_DIALOG);
 
+#define GET_PRIV(self) ((EmpathyPreferencesPriv*)((EmpathyPreferences*)self)->priv)
+
+struct _EmpathyPreferencesPriv {
 	GtkWidget *notebook;
 
 	GtkWidget *checkbutton_show_smileys;
@@ -81,7 +84,7 @@ typedef struct {
 	GSettings *gsettings_notify;
 	GSettings *gsettings_sound;
 	GSettings *gsettings_ui;
-} EmpathyPreferences;
+};
 
 static void     preferences_setup_widgets                (EmpathyPreferences      *preferences);
 static void     preferences_languages_setup              (EmpathyPreferences      *preferences);
@@ -98,11 +101,6 @@ static gboolean preferences_languages_load_foreach       (GtkTreeModel          
 							  gchar                 **languages);
 static void     preferences_languages_cell_toggled_cb    (GtkCellRendererToggle  *cell,
 							  gchar                  *path_string,
-							  EmpathyPreferences      *preferences);
-static void     preferences_destroy_cb                   (GtkWidget              *widget,
-							  EmpathyPreferences      *preferences);
-static void     preferences_response_cb                  (GtkWidget              *widget,
-							  gint                    response,
 							  EmpathyPreferences      *preferences);
 
 enum {
@@ -146,145 +144,147 @@ static SoundEventEntry sound_entries [] = {
 static void
 preferences_setup_widgets (EmpathyPreferences *preferences)
 {
-	g_settings_bind (preferences->gsettings_notify,
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
+
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-			 preferences->checkbutton_notifications_enabled,
+			 priv->checkbutton_notifications_enabled,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY,
-			 preferences->checkbutton_notifications_disabled_away,
+			 priv->checkbutton_notifications_disabled_away,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_FOCUS,
-			 preferences->checkbutton_notifications_focus,
+			 priv->checkbutton_notifications_focus,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN,
-			 preferences->checkbutton_notifications_contact_signin,
+			 priv->checkbutton_notifications_contact_signin,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT,
-			 preferences->checkbutton_notifications_contact_signout,
+			 priv->checkbutton_notifications_contact_signout,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-			 preferences->checkbutton_notifications_disabled_away,
+			 priv->checkbutton_notifications_disabled_away,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-			 preferences->checkbutton_notifications_focus,
+			 priv->checkbutton_notifications_focus,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-			 preferences->checkbutton_notifications_contact_signin,
+			 priv->checkbutton_notifications_contact_signin,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
-	g_settings_bind (preferences->gsettings_notify,
+	g_settings_bind (priv->gsettings_notify,
 			 EMPATHY_PREFS_NOTIFICATIONS_ENABLED,
-			 preferences->checkbutton_notifications_contact_signout,
+			 priv->checkbutton_notifications_contact_signout,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
 
-	g_settings_bind (preferences->gsettings_sound,
+	g_settings_bind (priv->gsettings_sound,
 			 EMPATHY_PREFS_SOUNDS_ENABLED,
-			 preferences->checkbutton_sounds_enabled,
+			 priv->checkbutton_sounds_enabled,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_sound,
+	g_settings_bind (priv->gsettings_sound,
 			 EMPATHY_PREFS_SOUNDS_DISABLED_AWAY,
-			 preferences->checkbutton_sounds_disabled_away,
+			 priv->checkbutton_sounds_disabled_away,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings_sound,
+	g_settings_bind (priv->gsettings_sound,
 			 EMPATHY_PREFS_SOUNDS_ENABLED,
-			 preferences->checkbutton_sounds_disabled_away,
+			 priv->checkbutton_sounds_disabled_away,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
-	g_settings_bind (preferences->gsettings_sound,
+	g_settings_bind (priv->gsettings_sound,
 			EMPATHY_PREFS_SOUNDS_ENABLED,
-			preferences->treeview_sounds,
+			priv->treeview_sounds,
 			"sensitive",
 			G_SETTINGS_BIND_GET);
 
-	g_settings_bind (preferences->gsettings_ui,
+	g_settings_bind (priv->gsettings_ui,
 			 EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
-			 preferences->checkbutton_separate_chat_windows,
+			 priv->checkbutton_separate_chat_windows,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings_chat,
+	g_settings_bind (priv->gsettings_chat,
 			 EMPATHY_PREFS_CHAT_SHOW_SMILEYS,
-			 preferences->checkbutton_show_smileys,
+			 priv->checkbutton_show_smileys,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_chat,
+	g_settings_bind (priv->gsettings_chat,
 			 EMPATHY_PREFS_CHAT_SHOW_CONTACTS_IN_ROOMS,
-			 preferences->checkbutton_show_contacts_in_rooms,
+			 priv->checkbutton_show_contacts_in_rooms,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings,
+	g_settings_bind (priv->gsettings,
 			 EMPATHY_PREFS_AUTOCONNECT,
-			 preferences->checkbutton_autoconnect,
+			 priv->checkbutton_autoconnect,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_PUBLISH,
-			 preferences->checkbutton_location_publish,
+			 priv->checkbutton_location_publish,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_RESOURCE_NETWORK,
-			 preferences->checkbutton_location_resource_network,
+			 priv->checkbutton_location_resource_network,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_PUBLISH,
-			 preferences->checkbutton_location_resource_network,
+			 priv->checkbutton_location_resource_network,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
 
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_RESOURCE_CELL,
-			 preferences->checkbutton_location_resource_cell,
+			 priv->checkbutton_location_resource_cell,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_PUBLISH,
-			 preferences->checkbutton_location_resource_cell,
+			 priv->checkbutton_location_resource_cell,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
 
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_RESOURCE_GPS,
-			 preferences->checkbutton_location_resource_gps,
+			 priv->checkbutton_location_resource_gps,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_PUBLISH,
-			 preferences->checkbutton_location_resource_gps,
+			 priv->checkbutton_location_resource_gps,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
 
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_REDUCE_ACCURACY,
-			 preferences->checkbutton_location_reduce_accuracy,
+			 priv->checkbutton_location_reduce_accuracy,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (preferences->gsettings_loc,
+	g_settings_bind (priv->gsettings_loc,
 			 EMPATHY_PREFS_LOCATION_PUBLISH,
-			 preferences->checkbutton_location_reduce_accuracy,
+			 priv->checkbutton_location_reduce_accuracy,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
 }
@@ -294,6 +294,7 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 				   char *path_string,
 				   EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreePath *path;
 	gboolean toggled, instore;
 	GtkTreeIter iter;
@@ -301,7 +302,7 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 	GtkTreeModel *model;
 	char *key;
 
-	view = GTK_TREE_VIEW (preferences->treeview_sounds);
+	view = GTK_TREE_VIEW (priv->treeview_sounds);
 	model = gtk_tree_view_get_model (view);
 
 	path = gtk_tree_path_new_from_string (path_string);
@@ -316,7 +317,7 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter,
 			    COL_SOUND_ENABLED, instore, -1);
 
-	g_settings_set_boolean (preferences->gsettings_sound, key, instore);
+	g_settings_set_boolean (priv->gsettings_sound, key, instore);
 
 	g_free (key);
 	gtk_tree_path_free (path);
@@ -325,17 +326,18 @@ preferences_sound_cell_toggled_cb (GtkCellRendererToggle *toggle,
 static void
 preferences_sound_load (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	guint i;
 	GtkTreeView *view;
 	GtkListStore *store;
 	GtkTreeIter iter;
 	gboolean set;
 
-	view = GTK_TREE_VIEW (preferences->treeview_sounds);
+	view = GTK_TREE_VIEW (priv->treeview_sounds);
 	store = GTK_LIST_STORE (gtk_tree_view_get_model (view));
 
 	for (i = 0; i < G_N_ELEMENTS (sound_entries); i++) {
-		set = g_settings_get_boolean (preferences->gsettings_sound,
+		set = g_settings_get_boolean (priv->gsettings_sound,
 					      sound_entries[i].key);
 
 		gtk_list_store_insert_with_values (store, &iter, i,
@@ -348,12 +350,13 @@ preferences_sound_load (EmpathyPreferences *preferences)
 static void
 preferences_sound_setup (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView *view;
 	GtkListStore *store;
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
 
-	view = GTK_TREE_VIEW (preferences->treeview_sounds);
+	view = GTK_TREE_VIEW (priv->treeview_sounds);
 
 	store = gtk_list_store_new (COL_SOUND_COUNT,
 				    G_TYPE_BOOLEAN, /* enabled */
@@ -388,6 +391,7 @@ preferences_sound_setup (EmpathyPreferences *preferences)
 static void
 preferences_languages_setup (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView       *view;
 	GtkListStore      *store;
 	GtkTreeSelection  *selection;
@@ -396,7 +400,7 @@ preferences_languages_setup (EmpathyPreferences *preferences)
 	GtkCellRenderer   *renderer;
 	guint              col_offset;
 
-	view = GTK_TREE_VIEW (preferences->treeview_spell_checker);
+	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 
 	store = gtk_list_store_new (COL_LANG_COUNT,
 				    G_TYPE_BOOLEAN,  /* enabled */
@@ -442,20 +446,21 @@ preferences_languages_setup (EmpathyPreferences *preferences)
 static void
 preferences_languages_add (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView  *view;
 	GtkListStore *store;
 	GList        *codes, *l;
 
-	view = GTK_TREE_VIEW (preferences->treeview_spell_checker);
+	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 	store = GTK_LIST_STORE (gtk_tree_view_get_model (view));
 
 	codes = empathy_spell_get_language_codes ();
 
-	g_settings_set_boolean (preferences->gsettings_chat,
+	g_settings_set_boolean (priv->gsettings_chat,
 				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
 				codes != NULL);
 	if (!codes) {
-		gtk_widget_set_sensitive (preferences->treeview_spell_checker, FALSE);
+		gtk_widget_set_sensitive (priv->treeview_spell_checker, FALSE);
 	}
 
 	for (l = codes; l; l = l->next) {
@@ -482,12 +487,13 @@ preferences_languages_add (EmpathyPreferences *preferences)
 static void
 preferences_languages_save (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView       *view;
 	GtkTreeModel      *model;
 
 	gchar             *languages = NULL;
 
-	view = GTK_TREE_VIEW (preferences->treeview_spell_checker);
+	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 	model = gtk_tree_view_get_model (view);
 
 	gtk_tree_model_foreach (model,
@@ -495,11 +501,11 @@ preferences_languages_save (EmpathyPreferences *preferences)
 				&languages);
 
 	/* if user selects no languages, we don't want spell check */
-	g_settings_set_boolean (preferences->gsettings_chat,
+	g_settings_set_boolean (priv->gsettings_chat,
 				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
 				languages != NULL);
 
-	g_settings_set_string (preferences->gsettings_chat,
+	g_settings_set_string (priv->gsettings_chat,
 			       EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES,
 			       languages != NULL ? languages : "");
 
@@ -545,12 +551,13 @@ preferences_languages_save_foreach (GtkTreeModel  *model,
 static void
 preferences_languages_load (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView   *view;
 	GtkTreeModel  *model;
 	gchar         *value;
 	gchar        **vlanguages;
 
-	value = g_settings_get_string (preferences->gsettings_chat,
+	value = g_settings_get_string (priv->gsettings_chat,
 				       EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES);
 
 	if (value == NULL)
@@ -559,7 +566,7 @@ preferences_languages_load (EmpathyPreferences *preferences)
 	vlanguages = g_strsplit (value, ",", -1);
 	g_free (value);
 
-	view = GTK_TREE_VIEW (preferences->treeview_spell_checker);
+	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 	model = gtk_tree_view_get_model (view);
 
 	gtk_tree_model_foreach (model,
@@ -605,6 +612,7 @@ preferences_languages_cell_toggled_cb (GtkCellRendererToggle *cell,
 				       gchar                 *path_string,
 				       EmpathyPreferences     *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView  *view;
 	GtkTreeModel *model;
 	GtkListStore *store;
@@ -612,7 +620,7 @@ preferences_languages_cell_toggled_cb (GtkCellRendererToggle *cell,
 	GtkTreeIter   iter;
 	gboolean      enabled;
 
-	view = GTK_TREE_VIEW (preferences->treeview_spell_checker);
+	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 	model = gtk_tree_view_get_model (view);
 	store = GTK_LIST_STORE (model);
 
@@ -635,6 +643,7 @@ preferences_theme_notify_cb (GSettings   *gsettings,
 			     gpointer     user_data)
 {
 	EmpathyPreferences *preferences = user_data;
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkComboBox        *combo;
 	gchar              *conf_name;
 	gchar              *conf_path;
@@ -645,7 +654,7 @@ preferences_theme_notify_cb (GSettings   *gsettings,
 	conf_name = g_settings_get_string (gsettings, EMPATHY_PREFS_CHAT_THEME);
 	conf_path = g_settings_get_string (gsettings, EMPATHY_PREFS_CHAT_ADIUM_PATH);
 
-	combo = GTK_COMBO_BOX (preferences->combobox_chat_theme);
+	combo = GTK_COMBO_BOX (priv->combobox_chat_theme);
 	model = gtk_combo_box_get_model (combo);
 	if (gtk_tree_model_get_iter_first (model, &iter)) {
 		gboolean is_adium;
@@ -690,6 +699,7 @@ static void
 preferences_theme_changed_cb (GtkComboBox        *combo,
 			      EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeModel *model;
 	GtkTreeIter   iter;
 	gboolean      is_adium;
@@ -705,11 +715,11 @@ preferences_theme_changed_cb (GtkComboBox        *combo,
 				    COL_COMBO_PATH, &path,
 				    -1);
 
-		g_settings_set_string (preferences->gsettings_chat,
+		g_settings_set_string (priv->gsettings_chat,
 				       EMPATHY_PREFS_CHAT_THEME,
 				       name);
 		if (is_adium == TRUE)
-			g_settings_set_string (preferences->gsettings_chat,
+			g_settings_set_string (priv->gsettings_chat,
 					       EMPATHY_PREFS_CHAT_ADIUM_PATH,
 					       path);
 		g_free (name);
@@ -720,6 +730,7 @@ preferences_theme_changed_cb (GtkComboBox        *combo,
 static void
 preferences_themes_setup (EmpathyPreferences *preferences)
 {
+	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkComboBox   *combo;
 	GtkCellLayout *cell_layout;
 	GtkCellRenderer *renderer;
@@ -728,7 +739,7 @@ preferences_themes_setup (EmpathyPreferences *preferences)
 	GList         *adium_themes;
 	gint           i;
 
-	combo = GTK_COMBO_BOX (preferences->combobox_chat_theme);
+	combo = GTK_COMBO_BOX (priv->combobox_chat_theme);
 	cell_layout = GTK_CELL_LAYOUT (combo);
 
 	/* Create the model */
@@ -787,98 +798,114 @@ preferences_themes_setup (EmpathyPreferences *preferences)
 			  preferences);
 
 	/* Select the theme from the GSetting key and track changes */
-	preferences_theme_notify_cb (preferences->gsettings_chat,
+	preferences_theme_notify_cb (priv->gsettings_chat,
 				     EMPATHY_PREFS_CHAT_THEME,
 				     preferences);
-	g_signal_connect (preferences->gsettings_chat,
+	g_signal_connect (priv->gsettings_chat,
 			  "changed::" EMPATHY_PREFS_CHAT_THEME,
 			  G_CALLBACK (preferences_theme_notify_cb),
 			  preferences);
 
-	g_signal_connect (preferences->gsettings_chat,
+	g_signal_connect (priv->gsettings_chat,
 			  "changed::" EMPATHY_PREFS_CHAT_ADIUM_PATH,
 			  G_CALLBACK (preferences_theme_notify_cb),
 			  preferences);
 }
 
 static void
-preferences_response_cb (GtkWidget         *widget,
-			 gint               response,
-			 EmpathyPreferences *preferences)
+empathy_preferences_response (GtkDialog *widget,
+			      gint response)
 {
-	gtk_widget_destroy (widget);
+	gtk_widget_destroy (GTK_WIDGET (widget));
 }
 
 static void
-preferences_destroy_cb (GtkWidget         *widget,
-			EmpathyPreferences *preferences)
+empathy_preferences_finalize (GObject *self)
 {
-	g_object_unref (preferences->gsettings);
-	g_object_unref (preferences->gsettings_chat);
-	g_object_unref (preferences->gsettings_loc);
-	g_object_unref (preferences->gsettings_notify);
-	g_object_unref (preferences->gsettings_sound);
-	g_object_unref (preferences->gsettings_ui);
+	EmpathyPreferencesPriv *priv = GET_PRIV (self);
 
-	g_free (preferences);
+	g_object_unref (priv->gsettings);
+	g_object_unref (priv->gsettings_chat);
+	g_object_unref (priv->gsettings_loc);
+	g_object_unref (priv->gsettings_notify);
+	g_object_unref (priv->gsettings_sound);
+	g_object_unref (priv->gsettings_ui);
+
+	G_OBJECT_CLASS (empathy_preferences_parent_class)->finalize (self);
 }
 
-GtkWidget *
-empathy_preferences_show (GtkWindow *parent)
+static void
+empathy_preferences_class_init (EmpathyPreferencesClass *klass)
 {
-	static EmpathyPreferences *preferences;
+	GtkDialogClass *dialog_class = GTK_DIALOG_CLASS (klass);
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	dialog_class->response = empathy_preferences_response;
+
+	object_class->finalize = empathy_preferences_finalize;
+
+	g_type_class_add_private (object_class,
+				  sizeof (EmpathyPreferencesPriv));
+}
+
+static void
+empathy_preferences_init (EmpathyPreferences *preferences)
+{
+	EmpathyPreferencesPriv    *priv;
 	GtkBuilder                *gui;
 	gchar                     *filename;
 	GtkWidget                 *page;
 
-	if (preferences) {
-		gtk_window_present (GTK_WINDOW (preferences->dialog));
-		return preferences->dialog;
-	}
+	priv = preferences->priv = G_TYPE_INSTANCE_GET_PRIVATE (preferences,
+			EMPATHY_TYPE_PREFERENCES, EmpathyPreferencesPriv);
 
-	preferences = g_new0 (EmpathyPreferences, 1);
+	gtk_dialog_add_button (GTK_DIALOG (preferences),
+			       GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE);
+
+	gtk_container_set_border_width (GTK_CONTAINER (preferences), 5);
+	gtk_window_set_title (GTK_WINDOW (preferences), _("Preferences"));
+	gtk_window_set_role (GTK_WINDOW (preferences), "preferences");
+	gtk_window_set_position (GTK_WINDOW (preferences),
+				 GTK_WIN_POS_CENTER_ON_PARENT);
+	gtk_window_set_icon_name (GTK_WINDOW (preferences), "gtk-preferences");
+	gtk_dialog_set_has_separator (GTK_DIALOG (preferences), FALSE);
 
 	filename = empathy_file_lookup ("empathy-preferences.ui", "src");
 	gui = empathy_builder_get_file (filename,
-		"preferences_dialog", &preferences->dialog,
-		"notebook", &preferences->notebook,
-		"checkbutton_show_smileys", &preferences->checkbutton_show_smileys,
-		"checkbutton_show_contacts_in_rooms", &preferences->checkbutton_show_contacts_in_rooms,
-		"combobox_chat_theme", &preferences->combobox_chat_theme,
-		"checkbutton_separate_chat_windows", &preferences->checkbutton_separate_chat_windows,
-		"checkbutton_autoconnect", &preferences->checkbutton_autoconnect,
-		"checkbutton_notifications_enabled", &preferences->checkbutton_notifications_enabled,
-		"checkbutton_notifications_disabled_away", &preferences->checkbutton_notifications_disabled_away,
-		"checkbutton_notifications_focus", &preferences->checkbutton_notifications_focus,
-		"checkbutton_notifications_contact_signin", &preferences->checkbutton_notifications_contact_signin,
-		"checkbutton_notifications_contact_signout", &preferences->checkbutton_notifications_contact_signout,
-		"checkbutton_sounds_enabled", &preferences->checkbutton_sounds_enabled,
-		"checkbutton_sounds_disabled_away", &preferences->checkbutton_sounds_disabled_away,
-		"treeview_sounds", &preferences->treeview_sounds,
-		"treeview_spell_checker", &preferences->treeview_spell_checker,
-		"checkbutton_location_publish", &preferences->checkbutton_location_publish,
-		"checkbutton_location_reduce_accuracy", &preferences->checkbutton_location_reduce_accuracy,
-		"checkbutton_location_resource_network", &preferences->checkbutton_location_resource_network,
-		"checkbutton_location_resource_cell", &preferences->checkbutton_location_resource_cell,
-		"checkbutton_location_resource_gps", &preferences->checkbutton_location_resource_gps,
+		"notebook", &priv->notebook,
+		"checkbutton_show_smileys", &priv->checkbutton_show_smileys,
+		"checkbutton_show_contacts_in_rooms", &priv->checkbutton_show_contacts_in_rooms,
+		"combobox_chat_theme", &priv->combobox_chat_theme,
+		"checkbutton_separate_chat_windows", &priv->checkbutton_separate_chat_windows,
+		"checkbutton_autoconnect", &priv->checkbutton_autoconnect,
+		"checkbutton_notifications_enabled", &priv->checkbutton_notifications_enabled,
+		"checkbutton_notifications_disabled_away", &priv->checkbutton_notifications_disabled_away,
+		"checkbutton_notifications_focus", &priv->checkbutton_notifications_focus,
+		"checkbutton_notifications_contact_signin", &priv->checkbutton_notifications_contact_signin,
+		"checkbutton_notifications_contact_signout", &priv->checkbutton_notifications_contact_signout,
+		"checkbutton_sounds_enabled", &priv->checkbutton_sounds_enabled,
+		"checkbutton_sounds_disabled_away", &priv->checkbutton_sounds_disabled_away,
+		"treeview_sounds", &priv->treeview_sounds,
+		"treeview_spell_checker", &priv->treeview_spell_checker,
+		"checkbutton_location_publish", &priv->checkbutton_location_publish,
+		"checkbutton_location_reduce_accuracy", &priv->checkbutton_location_reduce_accuracy,
+		"checkbutton_location_resource_network", &priv->checkbutton_location_resource_network,
+		"checkbutton_location_resource_cell", &priv->checkbutton_location_resource_cell,
+		"checkbutton_location_resource_gps", &priv->checkbutton_location_resource_gps,
 		NULL);
 	g_free (filename);
 
-	empathy_builder_connect (gui, preferences,
-			      "preferences_dialog", "destroy", preferences_destroy_cb,
-			      "preferences_dialog", "response", preferences_response_cb,
-			      NULL);
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (preferences))), priv->notebook);
+	gtk_widget_show (priv->notebook);
 
 	g_object_unref (gui);
 
-	g_object_add_weak_pointer (G_OBJECT (preferences->dialog), (gpointer) &preferences);
-
-	preferences->gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
-	preferences->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
-	preferences->gsettings_loc = g_settings_new (EMPATHY_PREFS_LOCATION_SCHEMA);
-	preferences->gsettings_notify = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
-	preferences->gsettings_sound = g_settings_new (EMPATHY_PREFS_SOUNDS_SCHEMA);
-	preferences->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+	priv->gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
+	priv->gsettings_chat = g_settings_new (EMPATHY_PREFS_CHAT_SCHEMA);
+	priv->gsettings_loc = g_settings_new (EMPATHY_PREFS_LOCATION_SCHEMA);
+	priv->gsettings_notify = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
+	priv->gsettings_sound = g_settings_new (EMPATHY_PREFS_SOUNDS_SCHEMA);
+	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 
 	preferences_themes_setup (preferences);
 
@@ -892,25 +919,31 @@ empathy_preferences_show (GtkWindow *parent)
 	preferences_sound_load (preferences);
 
 	if (empathy_spell_supported ()) {
-		page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (preferences->notebook), 2);
+		page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), 2);
 		gtk_widget_show (page);
 	}
 
-	page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (preferences->notebook), 3);
+	page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), 3);
 #if HAVE_GEOCLUE
 	gtk_widget_show (page);
 #else
 	gtk_widget_hide (page);
 #endif
-
-
-	if (parent) {
-		gtk_window_set_transient_for (GTK_WINDOW (preferences->dialog),
-					      GTK_WINDOW (parent));
-	}
-
-	gtk_widget_show (preferences->dialog);
-
-	return preferences->dialog;
 }
 
+GtkWidget *
+empathy_preferences_new (GtkWindow *parent)
+{
+	GtkWidget *self;
+
+	g_return_val_if_fail (parent == NULL || GTK_IS_WINDOW (parent), NULL);
+
+	self = g_object_new (EMPATHY_TYPE_PREFERENCES, NULL);
+
+	if (parent != NULL) {
+		gtk_window_set_transient_for (GTK_WINDOW (self),
+					      parent);
+	}
+
+	return self;
+}

@@ -20,6 +20,7 @@
  * Authors: Mikael Hallendal <micke@imendio.com>
  *          Richard Hult <richard@imendio.com>
  *          Martyn Russell <martyn@imendio.com>
+ *          Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #ifndef __EMPATHY_PREFERENCES_H__
@@ -29,7 +30,29 @@
 
 G_BEGIN_DECLS
 
-GtkWidget * empathy_preferences_show (GtkWindow *parent);
+#define EMPATHY_TYPE_PREFERENCES         (empathy_preferences_get_type ())
+#define EMPATHY_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), EMPATHY_TYPE_PREFERENCES, EmpathyPreferences))
+#define EMPATHY_PREFERENCES_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), EMPATHY_TYPE_PREFERENCES, EmpathyPreferencesClass))
+#define EMPATHY_IS_PREFERENCES(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_PREFERENCES))
+#define EMPATHY_IS_PREFERENCES_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_PREFERENCES))
+#define EMPATHY_PREFERENCES_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_PREFERENCES, EmpathyPreferencesClass))
+
+typedef struct _EmpathyPreferences EmpathyPreferences;
+typedef struct _EmpathyPreferencesClass EmpathyPreferencesClass;
+typedef struct _EmpathyPreferencesPriv EmpathyPreferencesPriv;
+
+struct _EmpathyPreferences {
+	GtkDialog parent;
+	gpointer priv;
+};
+
+struct _EmpathyPreferencesClass {
+	GtkDialogClass parent_class;
+};
+
+GType empathy_preferences_get_type (void);
+
+GtkWidget *empathy_preferences_new (GtkWindow *parent);
 
 G_END_DECLS
 
