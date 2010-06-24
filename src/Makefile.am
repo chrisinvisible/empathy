@@ -79,6 +79,7 @@ bin_PROGRAMS =			\
 	empathy			\
 	empathy-accounts	\
 	empathy-debugger	\
+	empathy-av \
 	$(NULL)
 
 BUILT_SOURCES=
@@ -97,10 +98,15 @@ empathy_debugger_SOURCES =						\
 	empathy-debugger.c		 				\
 	$(NULL)
 
+empathy_av_SOURCES =						\
+	empathy-av.c \
+	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
+	empathy-call-window.c empathy-call-window.h	 \
+	empathy-sidebar.c empathy-sidebar.h \
+	$(NULL)
+
 empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
-	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
-	empathy-call-window.c empathy-call-window.h			\
 	empathy-chat-window.c empathy-chat-window.h			\
 	empathy-chatrooms-window.c empathy-chatrooms-window.h		\
 	empathy-event-manager.c empathy-event-manager.h			\
@@ -110,7 +116,6 @@ empathy_handwritten_source = \
 	empathy-migrate-butterfly-logs.c empathy-migrate-butterfly-logs.h \
 	empathy-new-chatroom-dialog.c empathy-new-chatroom-dialog.h	\
 	empathy-preferences.c empathy-preferences.h			\
-	empathy-sidebar.c empathy-sidebar.h				\
 	empathy-status-icon.c empathy-status-icon.h			\
 	empathy-chat-manager.c empathy-chat-manager.h			\
 	empathy.c
@@ -134,7 +139,8 @@ nodist_empathy_SOURCES = $(BUILT_SOURCES)
 
 check_c_sources = \
     $(empathy_handwritten_source) \
-    $(empathy_logs_SOURCES)
+    $(empathy_logs_SOURCES) \
+    $(empathy_av_SOURCES)
 
 include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style
