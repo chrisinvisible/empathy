@@ -853,6 +853,13 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
       COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Logger",
       -1);
 
+  /* add Empathy audio/video client */
+  gtk_list_store_append (priv->cms, &iter);
+  gtk_list_store_set (priv->cms, &iter,
+      COL_CM_NAME, "Audio/Video",
+      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Empathy.AudioVideo",
+      -1);
+
   priv->name_owner_changed_signal =
       tp_cli_dbus_daemon_connect_to_name_owner_changed (priv->dbus,
       debug_window_name_owner_changed_cb, debug_window, NULL, NULL, NULL);
