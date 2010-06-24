@@ -1125,7 +1125,7 @@ empathy_event_manager_init (EmpathyEventManager *manager)
       return;
     }
 
-  priv->approver = tp_simple_approver_new (dbus, "EmpathyEventManager", FALSE,
+  priv->approver = tp_simple_approver_new (dbus, "Empathy.EventManager", FALSE,
       approve_channels, manager, NULL);
 
   /* Private text channels */
