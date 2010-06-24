@@ -35,7 +35,6 @@ libempathy_accounts_common_la_SOURCES =					\
 	empathy-accounts-dialog.c empathy-accounts-dialog.h		\
 	empathy-auto-salut-account-helper.c empathy-auto-salut-account-helper.h \
 	empathy-import-dialog.c empathy-import-dialog.h			\
-	empathy-import-mc4-accounts.c empathy-import-mc4-accounts.h	\
 	empathy-import-pidgin.c empathy-import-pidgin.h			\
 	empathy-import-widget.c empathy-import-widget.h			\
 	empathy-import-utils.c empathy-import-utils.h			\
