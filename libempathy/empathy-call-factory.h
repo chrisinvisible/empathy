@@ -65,8 +65,7 @@ EmpathyCallFactory *empathy_call_factory_initialise (void);
 
 EmpathyCallFactory *empathy_call_factory_get (void);
 
-void empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
-  EmpathyContact *contact,
+void empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
   gboolean initial_audio,
   gboolean initial_video,
   gint64 timestamp,

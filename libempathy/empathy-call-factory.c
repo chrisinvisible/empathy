@@ -203,8 +203,7 @@ empathy_call_factory_get (void)
  * Initiate a new call with @contact.
  */
 void
-empathy_call_factory_new_call_with_streams (EmpathyCallFactory *factory,
-    EmpathyContact *contact,
+empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
     gboolean initial_audio,
     gboolean initial_video,
     gint64 timestamp,

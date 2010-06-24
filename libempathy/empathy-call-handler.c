@@ -484,8 +484,8 @@ empathy_call_handler_start_call (EmpathyCallHandler *handler,
    * will be used to create a new EmpathyTpCall. */
   g_assert (priv->contact != NULL);
 
-  empathy_call_factory_new_call_with_streams (empathy_call_factory_get (),
-      priv->contact, priv->initial_audio, priv->initial_video, timestamp,
+  empathy_call_factory_new_call_with_streams (priv->contact,
+      priv->initial_audio, priv->initial_video, timestamp,
       empathy_call_handler_request_cb, handler);
 }
 
