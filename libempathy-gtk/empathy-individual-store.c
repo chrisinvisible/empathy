@@ -794,6 +794,24 @@ individual_store_members_changed_cb (EmpathyIndividualManager *manager,
 }
 
 static void
+individual_store_favourites_changed_cb (EmpathyIndividualManager *manager,
+    FolksIndividual *individual,
+    gboolean is_favourite,
+    EmpathyIndividualStore *self)
+{
+  EmpathyIndividualStorePriv *priv;
+
+  priv = GET_PRIV (self);
+
+  DEBUG ("Individual %s is %s a favourite",
+      folks_individual_get_id (individual),
+      is_favourite ? "now" : "no longer");
+
+  individual_store_remove_individual (self, individual);
+  individual_store_add_individual (self, individual);
+}
+
+static void
 individual_store_groups_changed_cb (EmpathyIndividualManager *manager,
     FolksIndividual *individual,
     gchar *group,
@@ -835,8 +853,9 @@ individual_store_manager_setup (gpointer user_data)
       "members-changed",
       G_CALLBACK (individual_store_members_changed_cb), self);
 
-  /* TODO: implement */
-  DEBUG ("handling individual favourite status changes unimplemented");
+  g_signal_connect (priv->manager,
+      "favourites-changed",
+      G_CALLBACK (individual_store_favourites_changed_cb), self);
 
   g_signal_connect (priv->manager,
       "groups-changed",
@@ -888,24 +907,6 @@ individual_store_member_renamed_cb (EmpathyIndividualManager *manager,
 
   /* remove old contact */
   individual_store_remove_individual_and_disconnect (self, old_individual);
-}
-
-static void
-individual_store_favourites_changed_cb (EmpathyIndividualManager *manager,
-    FolksIndividual *individual,
-    gboolean is_favourite,
-    EmpathyIndividualStore *self)
-{
-  EmpathyIndividualStorePriv *priv;
-
-  priv = GET_PRIV (self);
-
-  DEBUG ("Individual %s is %s a favourite",
-      folks_individual_get_id (individual),
-      is_favourite ? "now" : "no longer");
-
-  individual_store_remove_individual (self, individual);
-  individual_store_add_individual (self, individual);
 }
 
 static void

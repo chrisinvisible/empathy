@@ -66,6 +66,16 @@ individual_group_changed_cb (FolksIndividual *individual,
 }
 
 static void
+individual_notify_is_favourite_cb (FolksIndividual *individual,
+    GParamSpec *pspec,
+    EmpathyIndividualManager *self)
+{
+  gboolean is_favourite = folks_favourite_get_is_favourite (
+      FOLKS_FAVOURITE (individual));
+  g_signal_emit_by_name (self, "favourites-changed", individual, is_favourite);
+}
+
+static void
 aggregator_individuals_added_cb (FolksIndividualAggregator *aggregator,
     GList *individuals,
     EmpathyIndividualManager *self)
@@ -76,6 +86,8 @@ aggregator_individuals_added_cb (FolksIndividualAggregator *aggregator,
     {
       g_signal_connect (l->data, "group-changed",
           G_CALLBACK (individual_group_changed_cb), self);
+      g_signal_connect (l->data, "notify::is-favourite",
+          G_CALLBACK (individual_notify_is_favourite_cb), self);
     }
 
   /* TODO: don't hard-code the reason or message */
@@ -95,6 +107,8 @@ aggregator_individuals_removed_cb (FolksIndividualAggregator *aggregator,
     {
       g_signal_handlers_disconnect_by_func (l->data,
           individual_group_changed_cb, self);
+      g_signal_handlers_disconnect_by_func (l->data,
+          individual_notify_is_favourite_cb, self);
     }
 
   /* TODO: don't hard-code the reason or message */
@@ -174,6 +188,14 @@ empathy_individual_manager_class_init (EmpathyIndividualManagerClass *klass)
       NULL, NULL,
       _empathy_marshal_VOID__OBJECT_STRING_BOOLEAN,
       G_TYPE_NONE, 3, FOLKS_TYPE_INDIVIDUAL, G_TYPE_STRING, G_TYPE_BOOLEAN);
+
+  g_signal_new ("favourites-changed",
+      G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_LAST,
+      0,
+      NULL, NULL,
+      _empathy_marshal_VOID__OBJECT_BOOLEAN,
+      G_TYPE_NONE, 2, FOLKS_TYPE_INDIVIDUAL, G_TYPE_BOOLEAN);
 
   g_signal_new ("members-changed",
       G_TYPE_FROM_CLASS (klass),
