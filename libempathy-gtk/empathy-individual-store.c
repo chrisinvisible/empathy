@@ -198,24 +198,25 @@ individual_store_get_group (EmpathyIndividualStore *self,
           *created = TRUE;
         }
 
-      gtk_tree_store_append (GTK_TREE_STORE (self), &iter_group, NULL);
-      gtk_tree_store_set (GTK_TREE_STORE (self), &iter_group,
+      gtk_tree_store_insert_with_values (GTK_TREE_STORE (self), &iter_group,
+          NULL, 0,
           EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, NULL,
           EMPATHY_INDIVIDUAL_STORE_COL_NAME, name,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, TRUE,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_ACTIVE, FALSE,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE,
-          EMPATHY_INDIVIDUAL_STORE_COL_IS_FAKE_GROUP, is_fake_group, -1);
+          EMPATHY_INDIVIDUAL_STORE_COL_IS_FAKE_GROUP, is_fake_group,
+          -1);
 
       if (iter_group_to_set)
         {
           *iter_group_to_set = iter_group;
         }
 
-      gtk_tree_store_append (GTK_TREE_STORE (self),
-          &iter_separator, &iter_group);
-      gtk_tree_store_set (GTK_TREE_STORE (self), &iter_separator,
-          EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, TRUE, -1);
+      gtk_tree_store_insert_with_values (GTK_TREE_STORE (self), &iter_separator,
+          &iter_group, 0,
+          EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, TRUE,
+          -1);
 
       if (iter_separator_to_set)
         {
