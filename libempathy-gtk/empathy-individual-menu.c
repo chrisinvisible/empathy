@@ -501,16 +501,13 @@ empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual)
   return item;
 }
 
-#if HAVE_FAVOURITE_CONTACTS
 static void
 favourite_menu_item_toggled_cb (GtkCheckMenuItem *item,
   FolksIndividual *individual)
 {
   EmpathyIndividualManager *manager;
-  FolksIndividualList *list;
 
   manager = empathy_individual_manager_dup_singleton ();
-  list = EMPATHY_INDIVIDUAL_MANAGER (manager);
 
   folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual),
       gtk_check_menu_item_get_active (item));
@@ -536,7 +533,6 @@ empathy_individual_favourite_menu_item_new (FolksIndividual *individual)
   g_object_unref (manager);
   return item;
 }
-#endif
 
 static void
 individual_info_menu_item_activate_cb (FolksIndividual *individual)
