@@ -885,7 +885,7 @@ individual_view_row_activated (GtkTreeView *view,
       return;
     }
 
-  model = GTK_TREE_MODEL (priv->store);
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
