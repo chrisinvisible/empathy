@@ -1489,7 +1489,6 @@ individual_view_constructed (GObject *object)
 {
   EmpathyIndividualView *view = EMPATHY_INDIVIDUAL_VIEW (object);
   EmpathyIndividualViewPriv *priv = GET_PRIV (view);
-
   GtkCellRenderer *cell;
   GtkTreeViewColumn *col;
   guint i;
