@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-03-18 07:49+0000\n"
-"PO-Revision-Date: 2010-05-22 08:23+0300\n"
+"POT-Creation-Date: 2010-06-26 06:06+0000\n"
+"PO-Revision-Date: 2010-06-27 10:57+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -24,8 +24,8 @@ msgstr ""
 msgid "Empathy"
 msgstr "Empathy"
 
-msgid "Empathy IM Client"
-msgstr "Empathy sõnumivahetuse klient"
+msgid "Empathy Internet Messaging"
+msgstr "Empathy interneti sõnumivahetus"
 
 msgid "IM Client"
 msgstr "Välksõnumiklient"
@@ -84,6 +84,9 @@ msgstr "Empathylt küsiti kontode importimise kohta"
 msgid "Empathy has migrated butterfly logs"
 msgstr "Empathy on üle kandnud butterfly logid"
 
+msgid "Empathy should auto-away when idle"
+msgstr "Empathy peaks jõudeoleku korral automaatselt eemaloleku määrama"
+
 msgid "Empathy should auto-connect on startup"
 msgstr "Empathy peaks käivitumisel ise ühenduma"
 
@@ -107,12 +110,6 @@ msgstr "Peida peaaken"
 
 msgid "Hide the main window."
 msgstr "Peaakna peitmine."
-
-msgid "MC 4 accounts have been imported"
-msgstr "MC 4 kontod on imporditud"
-
-msgid "MC 4 accounts have been imported."
-msgstr "MC 4 kontod on imporditud."
 
 msgid "Nick completed character"
 msgstr "Nimele lisamise märk"
@@ -180,6 +177,12 @@ msgstr "Vaikimisi kataloog, kuhu salvestada vastuvõetud failid."
 msgid "The last directory that an avatar image was chosen from."
 msgstr "Kataloog, kust viimati valiti avatari pilt."
 
+msgid "The position for the chat window side pane"
+msgstr "Vestlusakna külgpaneeli asukoht"
+
+msgid "The stored position (in pixels) of the chat window side pane."
+msgstr "Vestlusakna külgpaneeli asukoht (pikslites)."
+
 msgid "The theme that is used to display the conversation in chat windows."
 msgstr "Kujundus, mida kasutatakse jututoaakende vestluste kuvamisel."
 
@@ -212,6 +215,9 @@ msgstr "Kas Empathy on üle kandnud butterfly logid."
 
 msgid "Whether Empathy should automatically log into your accounts on startup."
 msgstr "Kas Empathy peaks käivitumisel ise kontodesse sisse logima."
+
+msgid "Whether Empathy should go into away mode automatically if user is idle."
+msgstr "Kas Empathy peaks jõudeoleku korral määrama olekuks automaatselt eemaloleku."
 
 msgid "Whether Empathy should reduce the location's accuracy for privacy reasons."
 msgstr "Kas Empathy peaks privaatsuse tagamiseks vähendama asukoha täpsust."
@@ -316,9 +322,6 @@ msgstr "Valitud fail pole harilik fail"
 msgid "The selected file is empty"
 msgstr "Valitud fail on tühi"
 
-msgid "People nearby"
-msgstr "Lähedalasuvad inimesed"
-
 msgid "Socket type not supported"
 msgstr "Sokli pole toetatud."
 
@@ -357,6 +360,9 @@ msgstr "Nähtamatu"
 
 msgid "Offline"
 msgstr "Ühendamata"
+
+msgid "Unknown"
+msgstr "Tundmatu"
 
 msgid "No reason specified"
 msgstr "Põhjendust pole määratud"
@@ -609,6 +615,7 @@ msgstr "_Tähtsus:"
 msgid "Reso_urce:"
 msgstr "_Vahend:"
 
+#. This string is not wrapped in the dialog so you may have to add some '\n' to make it look nice.
 msgid ""
 "This is your username, not your normal Facebook login.\n"
 "If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
@@ -690,17 +697,11 @@ msgstr "Seonduse avastamine"
 msgid "Discover the STUN server automatically"
 msgstr "STUN-serveri automaatne tuvastus"
 
-msgid "Hostname of the proxy for outbound requests."
-msgstr "Väljuvate päringute jaoks kasutatava proksi hostinimi."
-
 msgid "Interval (seconds)"
 msgstr "Intervall (sekundites)"
 
 msgid "Keep-Alive Options"
 msgstr "Ühenduse elushoidmise valikud"
-
-msgid "Look up the DNS SRV record at the service's domain for the host name of a STUN server."
-msgstr "Kasuta DNS-SRV kirjet teenuse domeenist STUN serveri määramiseks."
 
 msgid "Loose Routing"
 msgstr "Vaba marsruutimine"
@@ -714,9 +715,6 @@ msgstr "Muud valikud"
 msgid "NAT Traversal Options"
 msgstr "NAT-traversal valikud"
 
-msgid "Port of the proxy for outbound requests."
-msgstr "Piiridest väljuvate päringute jaoks kasutatav proksi."
-
 msgid "Port:"
 msgstr "Port:"
 
@@ -729,21 +727,8 @@ msgstr "STUN server:"
 msgid "Server:"
 msgstr "Server:"
 
-msgid ""
-"The username for SIP authentication, if different from the SIP URI\n"
-"username."
-msgstr ""
-"SIP autentimise kasutajanimi, kui see erineb SIP URI\n"
-"kasutajanimest."
-
 msgid "Transport:"
 msgstr "Transport:"
-
-msgid "Update the registration binding if the external address for the client is discovered to be different from the local binding."
-msgstr "Uuenda registreerimisseost, kui kliendi väline aadress erineb kohalikust seosest."
-
-msgid "Use the loose routing behavior and the Route header as recommended in RFC 3261."
-msgstr "Kasuta vaba marsruutimist ning marsruutimise päist nagu kirjeldatud dokumendis RFC 3261."
 
 msgid "What is your SIP account password?"
 msgstr "Mis on sinu SIP-konto parool?"
@@ -870,6 +855,9 @@ msgstr "tundmatu"
 msgid "Error sending message '%s': %s"
 msgstr "Viga teate '%s' saatmisel: %s"
 
+msgid "Topic:"
+msgstr "Teema:"
+
 #, c-format
 msgid "Topic set to: %s"
 msgstr "Teema on: %s"
@@ -961,9 +949,6 @@ msgstr "Ühendatud"
 msgid "Conversation"
 msgstr "Vestlus"
 
-msgid "Topic:"
-msgstr "Teema:"
-
 #. Copy Link Address menu item
 msgid "_Copy Link Address"
 msgstr "_Kopeeri lingi aadress"
@@ -1027,10 +1012,10 @@ msgstr "_Videovestlus"
 msgid "_Previous Conversations"
 msgstr "_Eelmised vestlused"
 
-msgid "Send file"
-msgstr "Saada fail"
+msgid "Send File"
+msgstr "Faili saatmine"
 
-msgid "Share my desktop"
+msgid "Share My Desktop"
 msgstr "Jaga minu töölauda"
 
 msgid "Favorite"
@@ -1046,11 +1031,26 @@ msgstr "_Muuda"
 msgid "Inviting you to this room"
 msgstr "Kutse sellesse tuppa"
 
-msgid "_Invite to chat room"
-msgstr "_Jututuppa kutsumine"
+msgid "_Invite to Chat Room"
+msgstr "_Kutsu jututuppa"
 
 msgid "Select a contact"
 msgstr "Vali kontakt"
+
+msgid "Full name:"
+msgstr "Täisnimi:"
+
+msgid "Phone number:"
+msgstr "Telefoninumber:"
+
+msgid "E-mail address:"
+msgstr "Meiliaadress:"
+
+msgid "Website:"
+msgstr "Veebileht:"
+
+msgid "Birthday:"
+msgstr "Sünnipäev:"
 
 msgid "Select"
 msgstr "Vali"
@@ -1151,9 +1151,6 @@ msgstr "<b>Asukoht</b> kuupäeval\t"
 msgid "Alias:"
 msgstr "Alias:"
 
-msgid "Birthday:"
-msgstr "Sünnipäev:"
-
 msgid "Client Information"
 msgstr "Kliendi andmed"
 
@@ -1162,12 +1159,6 @@ msgstr "Klient:"
 
 msgid "Contact Details"
 msgstr "Kontaktandmed"
-
-msgid "E-mail address:"
-msgstr "Meiliaadress:"
-
-msgid "Full name:"
-msgstr "Täisnimi:"
 
 msgid "Groups"
 msgstr "Grupid"
@@ -1187,9 +1178,6 @@ msgstr "Vali grupid, milles see kontakt peaks esinema. Sa võid valida mitu või
 
 msgid "Version:"
 msgstr "Versioon:"
-
-msgid "Website:"
-msgstr "Veebileht:"
 
 msgid "_Add Group"
 msgstr "_Lisa grupp"
@@ -1596,12 +1584,12 @@ msgid "Connecting…"
 msgstr "Ühendumine…"
 
 #, c-format
-msgid "Disconnected — %s"
-msgstr "Ühendus katkestatud — %s"
-
-#, c-format
 msgid "Offline — %s"
 msgstr "Ühendamata — %s"
+
+#, c-format
+msgid "Disconnected — %s"
+msgstr "Ühendus katkestatud — %s"
 
 msgid "Offline — No Network Connection"
 msgstr "Ühendamata — puudub võrguühendus"
@@ -1654,6 +1642,9 @@ msgstr "_Lisa…"
 
 msgid "_Import…"
 msgstr "_Impordi…"
+
+msgid "People nearby"
+msgstr "Lähedalasuvad inimesed"
 
 msgid "Contrast"
 msgstr "Kontrastsus"
@@ -1819,6 +1810,9 @@ msgstr "_Kontakt"
 msgid "Chat"
 msgstr "Vestlus"
 
+msgid "Important Room"
+msgstr "Oluline jututuba"
+
 msgid "Insert _Smiley"
 msgstr "Lisa _tujunägu"
 
@@ -1860,6 +1854,9 @@ msgstr "_Sõbranimekirja näidatakse"
 
 msgid "_Tabs"
 msgstr "_Sakid"
+
+msgid "_Undo Close Tab"
+msgstr "_Võta saki sulgemine tagasi"
 
 msgid "Name"
 msgstr "Nimi"
@@ -1934,12 +1931,10 @@ msgstr ""
 "\n"
 "Sõnum: %s"
 
-#. someone is logging off
 #, c-format
 msgid "%s is now offline."
 msgstr "%s pole enam ühendatud."
 
-#. someone is logging in
 #, c-format
 msgid "%s is now online."
 msgstr "%s on nüüd ühendatud."
@@ -2049,10 +2044,6 @@ msgstr "Protokoll"
 msgid "Source"
 msgstr "Allikas"
 
-#, c-format
-msgid "%s account"
-msgstr "%s konto"
-
 msgid "Reconnect"
 msgstr "Ühendu uuesti"
 
@@ -2065,11 +2056,11 @@ msgstr "Sulge"
 msgid "Contact"
 msgstr "Kontakt"
 
-msgid "Show and edit accounts"
-msgstr "Kontode näitamine ja redigeerimine"
-
 msgid "Contact List"
 msgstr "Kontaktide nimekiri"
+
+msgid "Show and edit accounts"
+msgstr "Kontode näitamine ja redigeerimine"
 
 msgid "Contacts on a _Map"
 msgstr "Kontaktid _kaardil"
@@ -2202,11 +2193,11 @@ msgstr "Konto ühendus katkestatud"
 msgid "Language"
 msgstr "Keel"
 
+msgid "Preferences"
+msgstr "Eelistused"
+
 msgid "Appearance"
 msgstr "Välimus"
-
-msgid "Automatically _connect on startup "
-msgstr "_Käivitumisel ühendutakse automaatselt"
 
 msgid "Behavior"
 msgstr "Käitumine"
@@ -2244,9 +2235,6 @@ msgstr "Teavitamisviisid"
 msgid "Play sound for events"
 msgstr "Helisid esitatakse järgnevate sündmuste puhul"
 
-msgid "Preferences"
-msgstr "Eelistused"
-
 msgid "Privacy"
 msgstr "Privaatsus"
 
@@ -2270,6 +2258,9 @@ msgstr "Keelte nimekiri kajastab ainult neid keeli, mille jaoks on paigaldatud s
 
 msgid "Themes"
 msgstr "Teemad"
+
+msgid "_Automatically connect on startup"
+msgstr "_Käivitumisel ühendutakse automaatselt"
 
 msgid "_Cellphone"
 msgstr "_Mobiiltelefon"
@@ -2357,6 +2348,9 @@ msgstr "Osalise kutsumine"
 
 msgid "Choose a contact to invite into the conversation:"
 msgstr "Vali kontakt, keda vestlusesse kutsuda:"
+
+msgid "Invite"
+msgstr "Kutsu"
 
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr "Ei kuvata mingeid dialooge; sooritatakse ülesanne (nt. importimine) ja väljutakse"
