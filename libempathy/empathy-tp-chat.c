@@ -204,6 +204,23 @@ tp_chat_get_members (EmpathyContactList *list)
 }
 
 static void
+check_ready (EmpathyTpChat *chat)
+{
+	EmpathyTpChatPriv *priv = GET_PRIV (chat);
+
+	if (priv->ready)
+		return;
+
+	if (g_queue_get_length (priv->messages_queue) > 0)
+		return;
+
+	DEBUG ("Ready");
+
+	priv->ready = TRUE;
+	g_object_notify (G_OBJECT (chat), "ready");
+}
+
+static void
 tp_chat_emit_queued_messages (EmpathyTpChat *chat)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
@@ -220,6 +237,8 @@ tp_chat_emit_queued_messages (EmpathyTpChat *chat)
 		g_queue_push_tail (priv->pending_messages_queue, message);
 		g_signal_emit (chat, signals[MESSAGE_RECEIVED], 0, message);
 	}
+
+	check_ready (chat);
 }
 
 static void
@@ -495,6 +514,8 @@ tp_chat_list_pending_messages_cb (TpChannel       *channel,
 		acknowledge_messages (chat, empty_non_text_content_ids);
 		g_array_free (empty_non_text_content_ids, TRUE);
 	}
+
+	check_ready (chat);
 }
 
 static void
@@ -797,7 +818,7 @@ tp_chat_finalize (GObject *object)
 }
 
 static void
-tp_chat_check_if_ready (EmpathyTpChat *chat)
+check_almost_ready (EmpathyTpChat *chat)
 {
 	EmpathyTpChatPriv *priv = GET_PRIV (chat);
 
@@ -817,13 +838,14 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 	    priv->remote_contact == NULL)
 		return;
 
-	DEBUG ("Ready!");
-
 	tp_cli_channel_type_text_connect_to_received (priv->channel,
 						      tp_chat_received_cb,
 						      NULL, NULL,
 						      G_OBJECT (chat), NULL);
 	priv->listing_pending_messages = TRUE;
+
+	/* TpChat will be ready once ListPendingMessages returned and all the messages
+	 * have been added to the pending messages queue. */
 	tp_cli_channel_type_text_call_list_pending_messages (priv->channel, -1,
 							     FALSE,
 							     tp_chat_list_pending_messages_cb,
@@ -842,8 +864,6 @@ tp_chat_check_if_ready (EmpathyTpChat *chat)
 									   tp_chat_state_changed_cb,
 									   NULL, NULL,
 									   G_OBJECT (chat), NULL);
-	priv->ready = TRUE;
-	g_object_notify (G_OBJECT (chat), "ready");
 }
 
 static void
@@ -942,7 +962,7 @@ tp_chat_got_added_contacts_cb (TpConnection            *connection,
 	}
 
 	tp_chat_update_remote_contact (EMPATHY_TP_CHAT (chat));
-	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
+	check_almost_ready (EMPATHY_TP_CHAT (chat));
 }
 
 static EmpathyContact *
@@ -1052,7 +1072,7 @@ tp_chat_got_renamed_contacts_cb (TpConnection            *connection,
 	}
 
 	tp_chat_update_remote_contact (EMPATHY_TP_CHAT (chat));
-	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
+	check_almost_ready (EMPATHY_TP_CHAT (chat));
 }
 
 
@@ -1148,7 +1168,7 @@ tp_chat_got_remote_contact_cb (TpConnection            *connection,
 	priv->remote_contact = g_object_ref (contact);
 	g_object_notify (chat, "remote-contact");
 
-	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
+	check_almost_ready (EMPATHY_TP_CHAT (chat));
 }
 
 static void
@@ -1168,7 +1188,7 @@ tp_chat_got_self_contact_cb (TpConnection            *connection,
 
 	priv->user = g_object_ref (contact);
 	empathy_contact_set_is_user (priv->user, TRUE);
-	tp_chat_check_if_ready (EMPATHY_TP_CHAT (chat));
+	check_almost_ready (EMPATHY_TP_CHAT (chat));
 }
 
 static void
@@ -1206,7 +1226,7 @@ got_password_flags_cb (TpChannel *proxy,
 	priv->got_password_flags = TRUE;
 	priv->password_flags = password_flags;
 
-	tp_chat_check_if_ready (EMPATHY_TP_CHAT (self));
+	check_almost_ready (EMPATHY_TP_CHAT (self));
 }
 
 static GObject *
