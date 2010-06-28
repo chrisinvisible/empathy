@@ -1,3 +1,71 @@
+NEW in 2.31.4 (28/06/2010)
+=============
+
+A lot of new things in this release!
+
+Empathy now has an awesome contact live search feature.
+See http://kaserf.blogspot.com/2010/06/empathy-live-search.html for details.
+
+Empathy doesn't log messages any more but relies on a new component,
+the telepathy-logger, to do so. As a result the feature allowing you to tag
+contacts as favourites is now built-in.
+
+The contact list and status icon are now a proper Telepathy Approver. That
+means external applications can now approve channels as well and Empathy will
+handle them nicely.
+
+This release makes a few steps forward to the bright GNOME 3 future by removing
+deprecated GTK+ symbols and switching from GConf to GSettings.
+
+Dependencies:
+
+* telepathy-logger ≥ 0.1.2 (0.1.3 recommended)
+* telepathy-glib ≥ 0.11.7
+* libunique ≥ 0.1.2
+* GTK+ ≥ 2.21.2
+
+Bugs fixed:
+ - Fixed #586476, Use accessor functions instead direct access (Danielle Madeley)
+ - Fixed #588922, Empathy should use ContactInfo (Xavier Claessens)
+ - Fixed #589225, We should check if the contact supports vnc stream tube for Share my desktop (Guillaume Desmottes)
+ - Fixed #599158, Contact list and status icon should be an Approver (Guillaume Desmottes)
+ - Fixed #608166, Add contacts live search bar (Felix Kaser, Xavier Claessens)
+ - Fixed #610956, Should depend on telepathy-logger (Guillaume Desmottes)
+ - Fixed #616362, Port Empathy to GSettings (Danielle Madeley)
+ - Fixed #619873, search-as-you-type should only match beginnings of words (Xavier Claessens)
+ - Fixed #620903, some messages get dropped when using adium themes (Guillaume Desmottes)
+ - Fixed #621023, empathy does not set geoclue requirements before asking for address/position (Laurent Bigonville)
+ - Fixed #621089, The live search don't always have focus in main window (Xavier Claessens)
+ - Fixed #621409, empathy-2.30.1.1: tests fail (Guillaume Desmottes)
+ - Fixed #621545, Stable empathy passes GTK_DISABLE_SINGLE_INCLUDES and doesn't require libunique that is fine with that (Xavier Claessens)
+ - Fixed #621703, Here come a couple of UI tweaks (Will Thompson)
+ - Fixed #621789, crash when closing chat with still-open notification bubble (Guillaume Desmottes)
+ - Fixed #621797, Doesn't display outgoing message (Guillaume Desmottes)
+ - Fixed #621894, Should port to new tp-logger API (Guillaume Desmottes)
+ - Fixed #621998, Should stop using ShareWithTube() (Guillaume Desmottes)
+ - Fixed #622201, Can't connect chatroom if space after adress (Guillaume Desmottes)
+ - Fixed #622266, Should decide which default font to use for chat view (Xavier Claessens)
+ - Fixed #622273, Crash when closing the log viewer while searching (Guillaume Desmottes)
+ - Fixed #622368, Audio/Video: Use TpSimpleHandler (Guillaume Desmottes)
+ - Fixed #622370, Should bold dates having logs (Guillaume Desmottes)
+ - Fixed #622381, Debug dialog: display Logger logs (Guillaume Desmottes)
+ - Fixed #622491, port EmpathyMainWindow to GtkWindow subclass (Danielle Madeley)
+ - Fixed #622557, port EmpathyPreferences to GtkDialog subclass (Danielle Madeley)
+ - Fixed #622578, Remove MC4 import (Guillaume Desmottes)
+ - Fixed #622714, 'previous conversations' on a contact brings up generic dialog (Guillaume Desmottes)
+
+Translations:
+ - Updated eo Translation (Kristjan Schmidt)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated fr Translation (Claude Paroz)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated lv Translation (Rudolfs Mazurs)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
 NEW in 2.31.3 (07/06/2010)
 =============
 
