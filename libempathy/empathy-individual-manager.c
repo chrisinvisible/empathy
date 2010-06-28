@@ -252,8 +252,6 @@ empathy_individual_manager_dup_singleton (void)
   return g_object_new (EMPATHY_TYPE_INDIVIDUAL_MANAGER, NULL);
 }
 
-/* TODO: support adding and removing Individuals */
-
 GList *
 empathy_individual_manager_get_members (EmpathyIndividualManager *self)
 {
