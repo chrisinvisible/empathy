@@ -827,14 +827,6 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
       return;
     }
 
-  /* Add empathy */
-  gtk_list_store_append (priv->cms, &iter);
-  gtk_list_store_set (priv->cms, &iter,
-      COL_CM_NAME, _(PACKAGE_NAME),
-      COL_CM_UNIQUE_NAME, "org.gnome."PACKAGE_NAME,
-      -1);
-  gtk_combo_box_set_active (GTK_COMBO_BOX (priv->cm_chooser), 0);
-
   /* Add CMs to list */
   tp_list_connection_names (priv->dbus, debug_window_list_connection_names_cb,
       debug_window, NULL, NULL);
@@ -844,20 +836,6 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
   gtk_list_store_set (priv->cms, &iter,
       COL_CM_NAME, "misson-control",
       COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
-      -1);
-
-  /* add the logger */
-  gtk_list_store_append (priv->cms, &iter);
-  gtk_list_store_set (priv->cms, &iter,
-      COL_CM_NAME, "logger",
-      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Logger",
-      -1);
-
-  /* add Empathy audio/video client */
-  gtk_list_store_append (priv->cms, &iter);
-  gtk_list_store_set (priv->cms, &iter,
-      COL_CM_NAME, "Audio/Video",
-      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.Client.Empathy.AudioVideo",
       -1);
 
   priv->name_owner_changed_signal =
