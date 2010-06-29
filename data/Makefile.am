@@ -35,7 +35,7 @@ org.freedesktop.Telepathy.Client.Empathy.service: org.freedesktop.Telepathy.Clie
 	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
 
 org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service: org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service.in
-	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
+	$(AM_V_GEN)sed -e "s|[@]libexecdir[@]|$(libexecdir)|" $< > $@
 
 clientfiledir = $(datarootdir)/telepathy/clients
 clientfile_DATA = \

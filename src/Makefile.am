@@ -79,8 +79,10 @@ bin_PROGRAMS =			\
 	empathy			\
 	empathy-accounts	\
 	empathy-debugger	\
-	empathy-av \
 	$(NULL)
+
+libexec_PROGRAMS = \
+	empathy-av
 
 BUILT_SOURCES=
 
