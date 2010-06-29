@@ -25,14 +25,22 @@ streamingprefs_DATA =		\
 	element-properties
 
 servicefiledir = $(datadir)/dbus-1/services
-servicefile_in_files = org.freedesktop.Telepathy.Client.Empathy.service.in
+servicefile_in_files = \
+	org.freedesktop.Telepathy.Client.Empathy.service.in \
+	org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service.in
+
 servicefile_DATA = $(servicefile_in_files:.service.in=.service)
 
 org.freedesktop.Telepathy.Client.Empathy.service: org.freedesktop.Telepathy.Client.Empathy.service.in
 	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
 
+org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service: org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service.in
+	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
+
 clientfiledir = $(datarootdir)/telepathy/clients
-clientfile_DATA = Empathy.client
+clientfile_DATA = \
+	Empathy.client \
+	Empathy.AudioVideo.client
 
 htmldir = $(datadir)/empathy
 html_DATA = Template.html
