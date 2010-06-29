@@ -43,6 +43,7 @@
 
 static guint nb_windows = 0;
 static guint timeout_id = 0;
+static gboolean use_timer = TRUE;
 
 static gboolean
 timeout_cb (gpointer data)
@@ -56,6 +57,9 @@ timeout_cb (gpointer data)
 static void
 start_timer (void)
 {
+  if (!use_timer)
+    return;
+
   if (timeout_id != 0)
     return;
 
@@ -164,6 +168,13 @@ main (int argc,
       g_critical ("Failed to register Handler: %s", error->message);
       g_error_free (error);
       return EXIT_FAILURE;
+    }
+
+  if (g_getenv ("EMPATHY_PERSIST") != NULL)
+    {
+      DEBUG ("Disable timer");
+
+      use_timer = FALSE;
     }
 
   start_timer ();
