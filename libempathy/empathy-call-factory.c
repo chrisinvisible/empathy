@@ -143,7 +143,7 @@ empathy_call_factory_dispose (GObject *object)
 
   priv->dispose_has_run = TRUE;
 
-  /* release any references held by the object here */
+  tp_clear_object (&priv->handler);
 
   if (G_OBJECT_CLASS (empathy_call_factory_parent_class)->dispose)
     G_OBJECT_CLASS (empathy_call_factory_parent_class)->dispose (object);
