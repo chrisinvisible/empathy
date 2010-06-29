@@ -105,6 +105,7 @@ empathy_call_factory_init (EmpathyCallFactory *obj)
   tp_base_client_add_handler_capabilities_varargs (priv->handler,
     "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/ice-udp",
     "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
+    "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/video/h264",
     NULL);
 
   g_object_unref (dbus);
