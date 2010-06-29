@@ -67,7 +67,6 @@
 
 typedef struct {
   TpChannel *channel;
-  gboolean ready;
 
   GInputStream *in_stream;
   GOutputStream *out_stream;
