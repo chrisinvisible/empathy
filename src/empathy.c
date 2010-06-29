@@ -82,30 +82,6 @@ static void account_manager_ready_cb (GObject *source_object,
     gpointer user_data);
 
 static void
-dispatch_cb (EmpathyDispatcher *dispatcher,
-    EmpathyDispatchOperation *operation,
-    gpointer user_data)
-{
-  GQuark channel_type;
-
-  channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
-
-  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
-    {
-      EmpathyFTFactory *factory;
-
-      factory = empathy_ft_factory_dup_singleton ();
-
-      /* if the operation is not incoming, don't claim it,
-       * as it might have been triggered by another client, and
-       * we are observing it.
-       */
-      if (empathy_dispatch_operation_is_incoming (operation))
-        empathy_ft_factory_claim_channel (factory, operation);
-    }
-}
-
-static void
 use_conn_notify_cb (GSettings *gsettings,
     const gchar *key,
     gpointer     user_data)
@@ -311,41 +287,6 @@ account_manager_ready_cb (GObject *source_object,
   g_object_unref (idle);
   g_object_unref (connectivity);
   g_object_unref (gsettings);
-}
-
-static EmpathyDispatcher *
-setup_dispatcher (void)
-{
-  EmpathyDispatcher *d;
-  GPtrArray *filters;
-  struct {
-    const gchar *channeltype;
-    TpHandleType handletype;
-  } types[] = {
-    /* file transfer to contacts */
-    { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
-  };
-  GHashTable *asv;
-  guint i;
-
-  /* Setup the an extended Client.Handler that matches everything we can do */
-  filters = g_ptr_array_new ();
-  for (i = 0 ; i < G_N_ELEMENTS (types); i++)
-    {
-      asv = tp_asv_new (
-        TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING, types[i].channeltype,
-        TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_INT, types[i].handletype,
-        NULL);
-
-      g_ptr_array_add (filters, asv);
-    }
-
-  d = empathy_dispatcher_new (PACKAGE_NAME"MoreThanMeetsTheEye", filters, NULL);
-
-  g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
-  g_ptr_array_free (filters, TRUE);
-
-  return d;
 }
 
 static void
@@ -557,9 +498,9 @@ main (int argc, char *argv[])
   tp_account_manager_prepare_async (account_manager, NULL,
       account_manager_ready_cb, NULL);
 
-  /* Handle channels */
-  dispatcher = setup_dispatcher ();
-  g_signal_connect (dispatcher, "dispatch", G_CALLBACK (dispatch_cb), NULL);
+  /* The EmpathyDispatcher doesn't dispatch anything any more but we have to
+   * keep it around as we still use it to request channels */
+  dispatcher = empathy_dispatcher_dup_singleton ();
 
   migrate_config_to_xdg_dir ();
 

@@ -27,8 +27,6 @@
 #include "empathy-dispatch-operation.h"
 #include <libempathy/empathy-enum-types.h>
 #include <libempathy/empathy-tp-contact-factory.h>
-#include <libempathy/empathy-tp-call.h>
-#include <libempathy/empathy-tp-file.h>
 
 #include "empathy-marshal.h"
 
@@ -424,7 +422,8 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
 {
   EmpathyDispatchOperation *self = EMPATHY_DISPATCH_OPERATION (user_data);
   EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
-  GQuark channel_type;
+
+  /* FIXME: remove */
 
   /* The error will be handled in empathy_dispatch_operation_invalidated */
   if (error != NULL)
@@ -439,14 +438,6 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
   /* If the channel wrapper is defined, we assume it's ready */
   if (priv->channel_wrapper != NULL)
     goto ready;
-
-  channel_type = tp_channel_get_channel_type_id (channel);
-
-  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
-    {
-       EmpathyTpFile *file = empathy_tp_file_new (channel, priv->incoming);
-       priv->channel_wrapper = G_OBJECT (file);
-    }
 
 ready:
   empathy_dispatch_operation_set_status (self,
