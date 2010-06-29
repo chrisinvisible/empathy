@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#undef G_DISABLE_DEPRECATED /* for GCompletion */
 #include <gdk/gdkkeysyms.h>
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
