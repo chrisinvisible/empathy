@@ -803,8 +803,8 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 
       /* set the CM as disabled in the model */
       if (debug_window_cm_is_in_model (user_data, arg1, &iter, FALSE))
-	{
-	  gtk_list_store_set (priv->cms,
+        {
+          gtk_list_store_set (priv->cms,
               iter, COL_CM_GONE, TRUE, -1);
           gtk_tree_iter_free (iter);
         }
