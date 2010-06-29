@@ -2673,8 +2673,15 @@ chat_constructed (GObject *object)
 	EmpathyChat *chat = EMPATHY_CHAT (object);
 	EmpathyChatPriv *priv = GET_PRIV (chat);
 
-	if (priv->handle_type != TP_HANDLE_TYPE_ROOM)
+	if (priv->handle_type != TP_HANDLE_TYPE_ROOM) {
+		/* First display logs from the logger and then display pending messages */
 		chat_add_logs (chat);
+	}
+	 else {
+		/* Just display pending messages for rooms */
+		priv->can_show_pending = TRUE;
+		show_pending_messages (chat);
+	}
 }
 
 static void
