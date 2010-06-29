@@ -46,6 +46,12 @@
 G_DEFINE_TYPE (EmpathyDebugWindow, empathy_debug_window,
     GTK_TYPE_WINDOW)
 
+typedef enum
+{
+  SERVICE_TYPE_CM = 0,
+  SERVICE_TYPE_CLIENT,
+} ServiceType;
+
 enum
 {
   COL_DEBUG_TIMESTAMP = 0,
@@ -629,8 +635,29 @@ get_cm_display_name (EmpathyDebugWindow *self,
 typedef struct
 {
   EmpathyDebugWindow *debug_window;
-  gchar *cm_name;
-} FillCmChooserData;
+  gchar *name;
+  ServiceType type;
+} FillServiceChooserData;
+
+static FillServiceChooserData *
+fill_service_chooser_data_new (EmpathyDebugWindow *window,
+    const gchar *name,
+    ServiceType type)
+{
+  FillServiceChooserData * data = g_slice_new (FillServiceChooserData);
+
+  data->debug_window = window;
+  data->name = g_strdup (name);
+  data->type = SERVICE_TYPE_CM;
+  return data;
+}
+
+static void
+fill_service_chooser_data_free (FillServiceChooserData *data)
+{
+  g_free (data->name);
+  g_slice_free (FillServiceChooserData, data);
+}
 
 static void
 debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
@@ -639,7 +666,7 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
     gpointer user_data,
     GObject *weak_object)
 {
-  FillCmChooserData *data = (FillCmChooserData *) user_data;
+  FillServiceChooserData *data = (FillServiceChooserData *) user_data;
   EmpathyDebugWindow *self = EMPATHY_DEBUG_WINDOW (data->debug_window);
   EmpathyDebugWindowPriv *priv = GET_PRIV (data->debug_window);
 
@@ -655,9 +682,9 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
       char *name;
 
       DEBUG ("Adding CM to list: %s at unique name: %s",
-          data->cm_name, out);
+          data->name, out);
 
-      name = get_cm_display_name (self, data->cm_name);
+      name = get_cm_display_name (self, data->name);
 
       gtk_list_store_append (priv->service_store, &iter);
       gtk_list_store_set (priv->service_store, &iter,
@@ -669,8 +696,7 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
     }
 
 OUT:
-  g_free (data->cm_name);
-  g_slice_free (FillCmChooserData, data);
+  fill_service_chooser_data_free (data);
 }
 
 static void
@@ -704,11 +730,8 @@ debug_window_list_connection_names_cb (const gchar * const *names,
 
   for (i = 0; cms[i] != NULL; i++)
     {
-      FillCmChooserData *data;
-
-      data = g_slice_new0 (FillCmChooserData);
-      data->debug_window = debug_window;
-      data->cm_name = g_strdup (cms[i]);
+      FillServiceChooserData *data = fill_service_chooser_data_new (
+          debug_window, cms[i], SERVICE_TYPE_CM);
 
       tp_cli_dbus_daemon_call_get_name_owner (dbus, -1,
           names[i], debug_window_get_name_owner_cb,
