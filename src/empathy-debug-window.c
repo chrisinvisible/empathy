@@ -59,10 +59,10 @@ enum
 
 enum
 {
-  COL_CM_NAME = 0,
-  COL_CM_UNIQUE_NAME,
-  COL_CM_GONE,
-  NUM_COLS_CM
+  COL_NAME = 0,
+  COL_UNIQUE_NAME,
+  COL_GONE,
+  NUM_COLS
 };
 
 enum
@@ -76,7 +76,7 @@ enum
 typedef struct
 {
   /* Toolbar items */
-  GtkWidget *cm_chooser;
+  GtkWidget *chooser;
   GtkToolItem *save_button;
   GtkToolItem *copy_button;
   GtkToolItem *clear_button;
@@ -85,7 +85,7 @@ typedef struct
   GtkWidget *level_filter;
 
   /* Cache */
-  GHashTable *all_cms;
+  GHashTable *cache;
 
   /* TreeView */
   GtkListStore *store;
@@ -105,8 +105,8 @@ typedef struct
   /* Whether NewDebugMessage will be fired */
   gboolean paused;
 
-  /* CM chooser store */
-  GtkListStore *cms;
+  /* Service (CM, Client) chooser store */
+  GtkListStore *service_store;
 
   /* Misc. */
   gboolean dispose_run;
@@ -185,17 +185,17 @@ debug_message_list_free (gpointer data)
 }
 
 static gchar *
-get_active_cm_name (EmpathyDebugWindow *self)
+get_active_service_name (EmpathyDebugWindow *self)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (self);
   GtkTreeIter iter;
   gchar *name;
 
-  if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter))
+  if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->chooser), &iter))
     return NULL;
 
-  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
-      COL_CM_NAME, &name, -1);
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->service_store), &iter,
+      COL_NAME, &name, -1);
 
   return name;
 }
@@ -212,13 +212,13 @@ debug_window_cache_new_message (EmpathyDebugWindow *debug_window,
   DebugMessage *dm;
   char *name;
 
-  name = get_active_cm_name (debug_window);
-  messages = g_hash_table_lookup (priv->all_cms, name);
+  name = get_active_service_name (debug_window);
+  messages = g_hash_table_lookup (priv->cache, name);
 
   dm = debug_message_new (timestamp, domain, level, message);
   messages = g_list_append (messages, dm);
 
-  g_hash_table_insert (priv->all_cms, name, messages);
+  g_hash_table_insert (priv->cache, name, messages);
 }
 
 static void
@@ -356,8 +356,8 @@ debug_window_get_messages_cb (TpProxy *proxy,
 
   debug_window_set_toolbar_sensitivity (debug_window, TRUE);
 
-  name = get_active_cm_name (debug_window);
-  old_messages = g_hash_table_lookup (priv->all_cms, name);
+  name = get_active_service_name (debug_window);
+  old_messages = g_hash_table_lookup (priv->cache, name);
 
   /* we call get_messages either when a new CM is added or
    * when a CM that we've already seen re-appears; in both cases
@@ -365,7 +365,7 @@ debug_window_get_messages_cb (TpProxy *proxy,
    */
   if (old_messages != NULL)
     {
-      g_hash_table_remove (priv->all_cms, name);
+      g_hash_table_remove (priv->cache, name);
       debug_message_list_free (old_messages);
     }
 
@@ -399,7 +399,7 @@ debug_window_add_log_messages_from_cache (EmpathyDebugWindow *debug_window,
 
   DEBUG ("Adding logs from cache for CM %s", name);
 
-  messages = g_hash_table_lookup (priv->all_cms, name);
+  messages = g_hash_table_lookup (priv->cache, name);
 
   if (messages == NULL)
     return;
@@ -427,7 +427,7 @@ proxy_invalidated_cb (TpProxy *proxy,
 }
 
 static void
-debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
+debug_window_service_chooser_changed_cb (GtkComboBox *chooser,
     EmpathyDebugWindow *debug_window)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
@@ -436,25 +436,25 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
   gchar *bus_name, *name = NULL;
   TpProxy *proxy;
   GtkTreeIter iter;
-  gboolean cm_gone;
+  gboolean gone;
 
-  if (!gtk_combo_box_get_active_iter (cm_chooser, &iter))
+  if (!gtk_combo_box_get_active_iter (chooser, &iter))
     {
       DEBUG ("No CM is selected");
       if (gtk_tree_model_iter_n_children (
-          GTK_TREE_MODEL (priv->cms), NULL) > 0)
+          GTK_TREE_MODEL (priv->service_store), NULL) > 0)
         {
-          gtk_combo_box_set_active (cm_chooser, 0);
+          gtk_combo_box_set_active (chooser, 0);
         }
       return;
     }
 
   gtk_list_store_clear (priv->store);
 
-  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
-      COL_CM_NAME, &name, COL_CM_GONE, &cm_gone, -1);
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->service_store), &iter,
+      COL_NAME, &name, COL_GONE, &gone, -1);
 
-  if (cm_gone)
+  if (gone)
     {
       debug_window_add_log_messages_from_cache (debug_window, name);
       g_free (name);
@@ -470,8 +470,8 @@ debug_window_cm_chooser_changed_cb (GtkComboBox *cm_chooser,
       DEBUG ("Failed at duping the dbus daemon: %s", error->message);
     }
 
-  gtk_tree_model_get (GTK_TREE_MODEL (priv->cms), &iter,
-      COL_CM_UNIQUE_NAME, &bus_name, -1);
+  gtk_tree_model_get (GTK_TREE_MODEL (priv->service_store), &iter,
+      COL_UNIQUE_NAME, &bus_name, -1);
   proxy = g_object_new (TP_TYPE_PROXY,
       "bus-name", bus_name,
       "dbus-daemon", dbus,
@@ -518,7 +518,7 @@ typedef struct
 } CmInModelForeachData;
 
 static gboolean
-debug_window_cms_foreach (GtkTreeModel *model,
+debug_window_service_foreach (GtkTreeModel *model,
     GtkTreePath *path,
     GtkTreeIter *iter,
     gpointer user_data)
@@ -527,7 +527,7 @@ debug_window_cms_foreach (GtkTreeModel *model,
   gchar *store_name;
 
   gtk_tree_model_get (model, iter,
-      (data->use_name ? COL_CM_NAME : COL_CM_UNIQUE_NAME),
+      (data->use_name ? COL_NAME : COL_UNIQUE_NAME),
       &store_name,
       -1);
 
@@ -545,7 +545,7 @@ debug_window_cms_foreach (GtkTreeModel *model,
 }
 
 static gboolean
-debug_window_cm_is_in_model (EmpathyDebugWindow *debug_window,
+debug_window_service_is_in_model (EmpathyDebugWindow *debug_window,
     const gchar *name,
     GtkTreeIter **iter,
     gboolean use_name)
@@ -560,8 +560,8 @@ debug_window_cm_is_in_model (EmpathyDebugWindow *debug_window,
   data->found_iter = iter;
   data->use_name = use_name;
 
-  gtk_tree_model_foreach (GTK_TREE_MODEL (priv->cms),
-      debug_window_cms_foreach, data);
+  gtk_tree_model_foreach (GTK_TREE_MODEL (priv->service_store),
+      debug_window_service_foreach, data);
 
   found = data->found;
 
@@ -649,7 +649,7 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
       goto OUT;
     }
 
-  if (!debug_window_cm_is_in_model (data->debug_window, out, NULL, FALSE))
+  if (!debug_window_service_is_in_model (data->debug_window, out, NULL, FALSE))
     {
       GtkTreeIter iter;
       char *name;
@@ -659,10 +659,10 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
 
       name = get_cm_display_name (self, data->cm_name);
 
-      gtk_list_store_append (priv->cms, &iter);
-      gtk_list_store_set (priv->cms, &iter,
-          COL_CM_NAME, name,
-          COL_CM_UNIQUE_NAME, out,
+      gtk_list_store_append (priv->service_store, &iter);
+      gtk_list_store_set (priv->service_store, &iter,
+          COL_NAME, name,
+          COL_UNIQUE_NAME, out,
           -1);
 
       g_free (name);
@@ -745,7 +745,7 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
        */
       const gchar *name = arg0 + strlen (CM_WELL_KNOWN_NAME_PREFIX);
 
-      if (!g_hash_table_lookup (priv->all_cms, name))
+      if (!g_hash_table_lookup (priv->cache, name))
         {
           GtkTreeIter iter;
           char *str;
@@ -754,10 +754,10 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 
           str = get_cm_display_name (self, name);
 
-          gtk_list_store_append (priv->cms, &iter);
-          gtk_list_store_set (priv->cms, &iter,
-              COL_CM_NAME, str,
-              COL_CM_UNIQUE_NAME, arg2,
+          gtk_list_store_append (priv->service_store, &iter);
+          gtk_list_store_set (priv->service_store, &iter,
+              COL_NAME, str,
+              COL_UNIQUE_NAME, arg2,
               -1);
 
           g_free (str);
@@ -769,7 +769,7 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
            */
           GtkTreeIter *iter = NULL;
 
-          if (debug_window_cm_is_in_model (user_data, name, &iter, TRUE))
+          if (debug_window_service_is_in_model (user_data, name, &iter, TRUE))
             {
               char *str;
 
@@ -777,16 +777,16 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 
               str = get_cm_display_name (self, name);
 
-              gtk_list_store_set (priv->cms, iter,
-                  COL_CM_NAME, str,
-                  COL_CM_UNIQUE_NAME, arg2,
-                  COL_CM_GONE, FALSE,
+              gtk_list_store_set (priv->service_store, iter,
+                  COL_NAME, str,
+                  COL_UNIQUE_NAME, arg2,
+                  COL_GONE, FALSE,
                   -1);
               gtk_tree_iter_free (iter);
               g_free (str);
 
-              debug_window_cm_chooser_changed_cb
-                (GTK_COMBO_BOX (priv->cm_chooser), user_data);
+              debug_window_service_chooser_changed_cb
+                (GTK_COMBO_BOX (priv->chooser), user_data);
             }
         }
     }
@@ -802,10 +802,10 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
       DEBUG ("Setting CM disabled from %s.", arg1);
 
       /* set the CM as disabled in the model */
-      if (debug_window_cm_is_in_model (user_data, arg1, &iter, FALSE))
+      if (debug_window_service_is_in_model (user_data, arg1, &iter, FALSE))
         {
-          gtk_list_store_set (priv->cms,
-              iter, COL_CM_GONE, TRUE, -1);
+          gtk_list_store_set (priv->service_store,
+              iter, COL_GONE, TRUE, -1);
           gtk_tree_iter_free (iter);
         }
     }
@@ -821,16 +821,16 @@ add_client (EmpathyDebugWindow *self,
 
   suffix = name + strlen (TP_CLIENT_BUS_NAME_BASE);
 
-  gtk_list_store_append (priv->cms, &iter);
-  gtk_list_store_set (priv->cms, &iter,
-      COL_CM_NAME, suffix,
-      COL_CM_UNIQUE_NAME, name,
+  gtk_list_store_append (priv->service_store, &iter);
+  gtk_list_store_set (priv->service_store, &iter,
+      COL_NAME, suffix,
+      COL_UNIQUE_NAME, name,
       -1);
 
   /* Select Empathy by default */
   if (!tp_strdiff (suffix, "Empathy"))
     {
-      gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
+      gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->chooser), &iter);
     }
 }
 
@@ -860,7 +860,7 @@ list_names_cb (TpDBusDaemon *bus_daemon,
 }
 
 static void
-debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
+debug_window_fill_service_chooser (EmpathyDebugWindow *debug_window)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
   GError *error = NULL;
@@ -880,13 +880,13 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
       debug_window, NULL, NULL);
 
   /* add Mission Control */
-  gtk_list_store_append (priv->cms, &iter);
-  gtk_list_store_set (priv->cms, &iter,
-      COL_CM_NAME, "misson-control",
-      COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
+  gtk_list_store_append (priv->service_store, &iter);
+  gtk_list_store_set (priv->service_store, &iter,
+      COL_NAME, "misson-control",
+      COL_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
       -1);
 
-  gtk_combo_box_set_active (GTK_COMBO_BOX (priv->cm_chooser), 0);
+  gtk_combo_box_set_active (GTK_COMBO_BOX (priv->chooser), 0);
 
   /* add clients */
   tp_dbus_daemon_list_names (priv->dbus, 2000,
@@ -1210,7 +1210,7 @@ debug_window_save_clicked_cb (GtkToolButton *tool_button,
   gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (file_chooser),
       g_get_tmp_dir ());
 
-  name = get_active_cm_name (debug_window);
+  name = get_active_service_name (debug_window);
 
   t = time (NULL);
   tm_s = localtime (&t);
@@ -1394,20 +1394,20 @@ am_prepared_cb (GObject *am,
   gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 0);
 
   /* CM */
-  priv->cm_chooser = gtk_combo_box_new_text ();
-  priv->cms = gtk_list_store_new (NUM_COLS_CM, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_BOOLEAN);
-  gtk_combo_box_set_model (GTK_COMBO_BOX (priv->cm_chooser),
-      GTK_TREE_MODEL (priv->cms));
-  gtk_widget_show (priv->cm_chooser);
+  priv->chooser = gtk_combo_box_new_text ();
+  priv->service_store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING,
+      G_TYPE_STRING, G_TYPE_BOOLEAN);
+  gtk_combo_box_set_model (GTK_COMBO_BOX (priv->chooser),
+      GTK_TREE_MODEL (priv->service_store));
+  gtk_widget_show (priv->chooser);
 
   item = gtk_tool_item_new ();
   gtk_widget_show (GTK_WIDGET (item));
-  gtk_container_add (GTK_CONTAINER (item), priv->cm_chooser);
+  gtk_container_add (GTK_CONTAINER (item), priv->chooser);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar), item, -1);
-  g_signal_connect (priv->cm_chooser, "changed",
-      G_CALLBACK (debug_window_cm_chooser_changed_cb), object);
-  gtk_widget_show (GTK_WIDGET (priv->cm_chooser));
+  g_signal_connect (priv->chooser, "changed",
+      G_CALLBACK (debug_window_service_chooser_changed_cb), object);
+  gtk_widget_show (GTK_WIDGET (priv->chooser));
 
   item = gtk_separator_tool_item_new ();
   gtk_widget_show (GTK_WIDGET (item));
@@ -1587,7 +1587,7 @@ am_prepared_cb (GObject *am,
   priv->view_visible = FALSE;
 
   debug_window_set_toolbar_sensitivity (EMPATHY_DEBUG_WINDOW (object), FALSE);
-  debug_window_fill_cm_chooser (EMPATHY_DEBUG_WINDOW (object));
+  debug_window_fill_service_chooser (EMPATHY_DEBUG_WINDOW (object));
   gtk_widget_show (GTK_WIDGET (object));
 }
 
@@ -1610,7 +1610,7 @@ empathy_debug_window_init (EmpathyDebugWindow *empathy_debug_window)
   empathy_debug_window->priv = priv;
 
   priv->dispose_run = FALSE;
-  priv->all_cms = g_hash_table_new_full (g_str_hash, g_str_equal,
+  priv->cache = g_hash_table_new_full (g_str_hash, g_str_equal,
       g_free, NULL);
 }
 
@@ -1650,7 +1650,7 @@ debug_window_finalize (GObject *object)
   char *key;
   GList *values;
 
-  g_hash_table_iter_init (&iter, priv->all_cms);
+  g_hash_table_iter_init (&iter, priv->cache);
 
   while (g_hash_table_iter_next (&iter, (gpointer *) &key,
           (gpointer *) &values))
@@ -1658,7 +1658,7 @@ debug_window_finalize (GObject *object)
       debug_message_list_free (values);
     }
 
-  g_hash_table_destroy (priv->all_cms);
+  g_hash_table_destroy (priv->cache);
 
   (G_OBJECT_CLASS (empathy_debug_window_parent_class)->finalize) (object);
 }
@@ -1690,8 +1690,8 @@ debug_window_dispose (GObject *object)
   if (priv->new_debug_message_signal != NULL)
     tp_proxy_signal_connection_disconnect (priv->new_debug_message_signal);
 
-  if (priv->cms != NULL)
-    g_object_unref (priv->cms);
+  if (priv->service_store != NULL)
+    g_object_unref (priv->service_store);
 
   if (priv->dbus != NULL)
     g_object_unref (priv->dbus);
