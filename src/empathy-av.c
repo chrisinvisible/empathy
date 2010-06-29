@@ -38,6 +38,56 @@
 
 #include <gst/gst.h>
 
+/* Exit after $TIMEOUT seconds if not displaying any call window */
+#define TIMEOUT 60
+
+static guint nb_windows = 0;
+static guint timeout_id = 0;
+
+static gboolean
+timeout_cb (gpointer data)
+{
+  DEBUG ("Timing out; exiting");
+
+  gtk_main_quit ();
+  return FALSE;
+}
+
+static void
+start_timer (void)
+{
+  if (timeout_id != 0)
+    return;
+
+  DEBUG ("Start timer");
+
+  timeout_id = g_timeout_add_seconds (TIMEOUT, timeout_cb, NULL);
+}
+
+static void
+stop_timer (void)
+{
+  if (timeout_id == 0)
+    return;
+
+  DEBUG ("Stop timer");
+
+  g_source_remove (timeout_id);
+  timeout_id = 0;
+}
+
+static void
+call_window_destroy_cb (EmpathyCallWindow *window,
+    gpointer user_data)
+{
+  nb_windows--;
+
+  if (nb_windows > 0)
+    return;
+
+  start_timer ();
+}
+
 static void
 new_call_handler_cb (EmpathyCallFactory *factory,
     EmpathyCallHandler *handler,
@@ -46,7 +96,16 @@ new_call_handler_cb (EmpathyCallFactory *factory,
 {
   EmpathyCallWindow *window;
 
+  DEBUG ("Create a new call window");
+
   window = empathy_call_window_new (handler);
+
+  nb_windows++;
+  stop_timer ();
+
+  g_signal_connect (window, "destroy",
+      G_CALLBACK (call_window_destroy_cb), NULL);
+
   gtk_widget_show (GTK_WIDGET (window));
 }
 
@@ -106,6 +165,8 @@ main (int argc,
       g_error_free (error);
       return EXIT_FAILURE;
     }
+
+  start_timer ();
 
   gtk_main ();
 
