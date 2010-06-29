@@ -107,12 +107,6 @@ empathy_call_factory_init (EmpathyCallFactory *obj)
     "org.freedesktop.Telepathy.Channel.Interface.MediaSignalling/gtalk-p2p",
     NULL);
 
-  if (!tp_base_client_register (priv->handler, &error))
-    {
-      g_warning ("Failed to register Handler: %s", error->message);
-      g_error_free (error);
-    }
-
   g_object_unref (dbus);
 }
 
@@ -305,4 +299,13 @@ handle_channels_cb (TpSimpleHandler *handler,
     }
 
   tp_handle_channels_context_accept (context);
+}
+
+gboolean
+empathy_call_factory_register (EmpathyCallFactory *self,
+    GError **error)
+{
+  EmpathyCallFactoryPriv *priv = GET_PRIV (self);
+
+  return tp_base_client_register (priv->handler, error);
 }

@@ -62,6 +62,7 @@ main (int argc,
   TpDebugSender *debug_sender;
 #endif
   EmpathyCallFactory *call_factory;
+  GError *error = NULL;
 
   /* Init */
   g_thread_init (NULL);
@@ -98,6 +99,13 @@ main (int argc,
 
   g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
       G_CALLBACK (new_call_handler_cb), NULL);
+
+  if (!empathy_call_factory_register (call_factory, &error))
+    {
+      g_critical ("Failed to register Handler: %s", error->message);
+      g_error_free (error);
+      return EXIT_FAILURE;
+    }
 
   gtk_main ();
 

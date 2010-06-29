@@ -72,6 +72,9 @@ void empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
   EmpathyDispatcherRequestCb callback,
   gpointer user_data);
 
+gboolean empathy_call_factory_register (EmpathyCallFactory *self,
+    GError **error);
+
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_CALL_FACTORY_H__*/
