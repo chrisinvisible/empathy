@@ -8,10 +8,10 @@ desktop_in_files = \
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
-gsettings_SCHEMAS = \
-	org.gnome.Empathy.gschema.xml \
+gsettings_files = \
+	org.gnome.Empathy.gschema.xml.in \
 	$(NULL)
-
+gsettings_SCHEMAS = $(gsettings_files:.xml.in=.xml)
 @INTLTOOL_XML_NOMERGE_RULE@
 @GSETTINGS_RULES@
 
@@ -41,15 +41,17 @@ EXTRA_DIST = 				\
 	$(convert_DATA)			\
 	$(desktop_in_files)		\
 	$(desktop_DATA)			\
-	$(gsettings_SCHEMAS)		\
 	$(schemas_DATA)			\
 	$(streamingprefs_DATA)		\
 	$(html_DATA)			\
 	$(clientfile_DATA)		\
-	$(servicefile_in_files)
+	$(servicefile_in_files)		\
+	$(gsettings_files)		\
+	$(NULL)
 
 DISTCLEANFILES = 		\
 	$(desktop_DATA)		\
 	$(schemas_DATA)		\
-	$(servicefile_DATA)
-
+	$(servicefile_DATA)	\
+	$(gsettings_SCHEMAS)	\
+	$(NULL)
