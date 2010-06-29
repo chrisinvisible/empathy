@@ -812,6 +812,54 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 }
 
 static void
+add_client (EmpathyDebugWindow *self,
+    const gchar *name)
+{
+  EmpathyDebugWindowPriv *priv = GET_PRIV (self);
+  const gchar *suffix;
+  GtkTreeIter iter;
+
+  suffix = name + strlen (TP_CLIENT_BUS_NAME_BASE);
+
+  gtk_list_store_append (priv->cms, &iter);
+  gtk_list_store_set (priv->cms, &iter,
+      COL_CM_NAME, suffix,
+      COL_CM_UNIQUE_NAME, name,
+      -1);
+
+  /* Select Empathy by default */
+  if (!tp_strdiff (suffix, "Empathy"))
+    {
+      gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->cm_chooser), &iter);
+    }
+}
+
+static void
+list_names_cb (TpDBusDaemon *bus_daemon,
+    const gchar * const *names,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  EmpathyDebugWindow *self = EMPATHY_DEBUG_WINDOW (weak_object);
+  guint i;
+
+  if (error != NULL)
+    {
+      DEBUG ("Failed to list names: %s", error->message);
+      return;
+    }
+
+  for (i = 0; names[i] != NULL; i++)
+    {
+      if (g_str_has_prefix (names[i], TP_CLIENT_BUS_NAME_BASE))
+        {
+          add_client (self, names[i]);
+        }
+    }
+}
+
+static void
 debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (debug_window);
@@ -837,6 +885,12 @@ debug_window_fill_cm_chooser (EmpathyDebugWindow *debug_window)
       COL_CM_NAME, "misson-control",
       COL_CM_UNIQUE_NAME, "org.freedesktop.Telepathy.MissionControl5",
       -1);
+
+  gtk_combo_box_set_active (GTK_COMBO_BOX (priv->cm_chooser), 0);
+
+  /* add clients */
+  tp_dbus_daemon_list_names (priv->dbus, 2000,
+      list_names_cb, NULL, NULL, G_OBJECT (debug_window));
 
   priv->name_owner_changed_signal =
       tp_cli_dbus_daemon_connect_to_name_owner_changed (priv->dbus,
