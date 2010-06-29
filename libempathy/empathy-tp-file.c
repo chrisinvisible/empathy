@@ -772,9 +772,6 @@ do_set_property (GObject *object,
       case PROP_CHANNEL:
         priv->channel = g_object_ref (g_value_get_object (value));
         break;
-      case PROP_INCOMING:
-        priv->incoming = g_value_get_boolean (value);
-        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
         break;
@@ -786,12 +783,16 @@ do_constructed (GObject *object)
 {
   EmpathyTpFile *tp_file;
   EmpathyTpFilePriv *priv;
+  GHashTable *props;
 
   tp_file = EMPATHY_TP_FILE (object);
   priv = GET_PRIV (tp_file);
 
   g_signal_connect (priv->channel, "invalidated",
     G_CALLBACK (tp_file_invalidated_cb), tp_file);
+
+  props = tp_channel_borrow_immutable_properties (priv->channel);
+  priv->incoming = !tp_asv_get_boolean (props, TP_PROP_CHANNEL_REQUESTED, NULL);
 
   tp_cli_channel_type_file_transfer_connect_to_file_transfer_state_changed (
       priv->channel, tp_file_state_changed_cb, NULL, NULL, object, NULL);
@@ -850,8 +851,7 @@ empathy_tp_file_class_init (EmpathyTpFileClass *klass)
           "direction of transfer",
           "The direction of the file being transferred",
           FALSE,
-          G_PARAM_READWRITE |
-          G_PARAM_CONSTRUCT_ONLY));
+          G_PARAM_READABLE));
 
   g_type_class_add_private (object_class, sizeof (EmpathyTpFilePriv));
 }
@@ -863,22 +863,21 @@ empathy_tp_file_class_init (EmpathyTpFileClass *klass)
  * @channel: a #TpChannel
  * @incoming: whether the file transfer is incoming or not
  *
- * Creates a new #EmpathyTpFile wrapping @channel, with the direction
- * specified by @incoming. The returned #EmpathyTpFile should be unrefed
+ * Creates a new #EmpathyTpFile wrapping @channel.
+ * The returned #EmpathyTpFile should be unrefed
  * with g_object_unref() when finished with.
  *
  * Return value: a new #EmpathyTpFile
  */
 EmpathyTpFile *
-empathy_tp_file_new (TpChannel *channel,
-    gboolean incoming)
+empathy_tp_file_new (TpChannel *channel)
 {
   EmpathyTpFile *tp_file;
 
   g_return_val_if_fail (TP_IS_CHANNEL (channel), NULL);
 
   tp_file = g_object_new (EMPATHY_TYPE_TP_FILE,
-      "channel", channel, "incoming", incoming,
+      "channel", channel,
       NULL);
 
   return tp_file;

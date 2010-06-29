@@ -924,7 +924,7 @@ approve_channels (TpSimpleApprover *approver,
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
       TpHandle handle;
-      EmpathyTpFile *tp_file = empathy_tp_file_new (channel, TRUE);
+      EmpathyTpFile *tp_file = empathy_tp_file_new (channel);
 
       approval->handler_instance = G_OBJECT (tp_file);
 
