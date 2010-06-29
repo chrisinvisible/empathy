@@ -23,6 +23,8 @@
 
 #include <glib.h>
 
+#include <telepathy-glib/telepathy-glib.h>
+
 #include "empathy-ft-factory.h"
 #include "empathy-ft-handler.h"
 #include "empathy-marshal.h"
@@ -56,6 +58,13 @@ enum {
 static EmpathyFTFactory *factory_singleton = NULL;
 static guint signals[LAST_SIGNAL] = { 0 };
 
+/* private structure */
+typedef struct {
+  TpBaseClient *handler;
+} EmpathyFTFactoryPriv;
+
+#define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyFTFactory)
+
 static GObject *
 do_constructor (GType type,
     guint n_props,
@@ -80,6 +89,8 @@ static void
 empathy_ft_factory_class_init (EmpathyFTFactoryClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  g_type_class_add_private (klass, sizeof (EmpathyFTFactoryPriv));
 
   object_class->constructor = do_constructor;
 
@@ -127,9 +138,84 @@ empathy_ft_factory_class_init (EmpathyFTFactoryClass *klass)
 }
 
 static void
+ft_handler_incoming_ready_cb (EmpathyFTHandler *handler,
+    GError *error,
+    gpointer user_data)
+{
+  EmpathyFTFactory *factory = user_data;
+
+  g_signal_emit (factory, signals[NEW_INCOMING_TRANSFER], 0, handler, error);
+}
+
+static void
+handle_channels_cb (TpSimpleHandler *handler,
+    TpAccount *account,
+    TpConnection *connection,
+    GList *channels,
+    GList *requests_satisfied,
+    gint64 user_action_time,
+    TpHandleChannelsContext *context,
+    gpointer user_data)
+{
+  EmpathyFTFactory *self = user_data;
+  GList *l;
+
+  for (l = channels; l != NULL; l = g_list_next (l))
+    {
+      TpChannel *channel = l->data;
+      EmpathyTpFile *tp_file;
+
+      if (tp_proxy_get_invalidated (channel) != NULL)
+        continue;
+
+      if (tp_channel_get_channel_type_id (channel) !=
+          TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
+        continue;
+
+      tp_file = empathy_tp_file_new (channel);
+
+      /* We handle only incoming FT */
+      empathy_ft_handler_new_incoming (tp_file, ft_handler_incoming_ready_cb,
+          self);
+
+      g_object_unref (tp_file);
+    }
+
+
+  tp_handle_channels_context_accept (context);
+}
+
+static void
 empathy_ft_factory_init (EmpathyFTFactory *self)
 {
-  /* do nothing */
+  EmpathyFTFactoryPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
+    EMPATHY_TYPE_FT_FACTORY, EmpathyFTFactoryPriv);
+  TpDBusDaemon *dbus;
+  GError *error = NULL;
+
+  self->priv = priv;
+
+  dbus = tp_dbus_daemon_dup (&error);
+  if (dbus == NULL)
+    {
+      g_warning ("Failed to get TpDBusDaemon: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE,
+      "Empathy.FileTransfer", FALSE, handle_channels_cb, self, NULL);
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+          TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        /* Only handle *incoming* channels as outgoing FT channels has to be
+         * handled by the requester. */
+        TP_PROP_CHANNEL_REQUESTED, G_TYPE_BOOLEAN, FALSE,
+        NULL));
+
+  g_object_unref (dbus);
 }
 
 static void
@@ -140,16 +226,6 @@ ft_handler_outgoing_ready_cb (EmpathyFTHandler *handler,
   EmpathyFTFactory *factory = user_data;
 
   g_signal_emit (factory, signals[NEW_FT_HANDLER], 0, handler, error);
-}
-
-static void
-ft_handler_incoming_ready_cb (EmpathyFTHandler *handler,
-    GError *error,
-    gpointer user_data)
-{
-  EmpathyFTFactory *factory = user_data;
-
-  g_signal_emit (factory, signals[NEW_INCOMING_TRANSFER], 0, handler, error);
 }
 
 /* public methods */
@@ -191,33 +267,6 @@ empathy_ft_factory_new_transfer_outgoing (EmpathyFTFactory *factory,
 }
 
 /**
- * empathy_ft_factory_claim_channel:
- * @factory: an #EmpathyFTFactory
- * @operation: the #EmpathyDispatchOperation wrapping the channel
- *
- * Let the @factory claim the channel, starting the creation of a new
- * incoming #EmpathyFTHandler.
- */
-void
-empathy_ft_factory_claim_channel (EmpathyFTFactory *factory,
-    EmpathyDispatchOperation *operation)
-{
-  EmpathyTpFile *tp_file;
-
-  g_return_if_fail (EMPATHY_IS_FT_FACTORY (factory));
-  g_return_if_fail (EMPATHY_IS_DISPATCH_OPERATION (operation));
-
-  /* own a reference to the EmpathyTpFile */
-  tp_file = EMPATHY_TP_FILE
-      ((empathy_dispatch_operation_get_channel_wrapper (operation)));
-
-  empathy_ft_handler_new_incoming (tp_file, ft_handler_incoming_ready_cb,
-      factory);
-
-  empathy_dispatch_operation_claim (operation);
-}
-
-/**
  * empathy_ft_factory_set_destination_for_incoming_handler:
  * @factory: an #EmpathyFTFactory
  * @handler: the #EmpathyFTHandler to set the destination of
@@ -239,4 +288,13 @@ empathy_ft_factory_set_destination_for_incoming_handler (
   empathy_ft_handler_incoming_set_destination (handler, destination);
 
   g_signal_emit (factory, signals[NEW_FT_HANDLER], 0, handler, NULL);
+}
+
+gboolean
+empathy_ft_factory_register (EmpathyFTFactory *self,
+    GError **error)
+{
+  EmpathyFTFactoryPriv *priv = GET_PRIV (self);
+
+  return tp_base_client_register (priv->handler, error);
 }

@@ -64,12 +64,13 @@ EmpathyFTFactory* empathy_ft_factory_dup_singleton (void);
 void empathy_ft_factory_new_transfer_outgoing (EmpathyFTFactory *factory,
     EmpathyContact *contact,
     GFile *source);
-void empathy_ft_factory_claim_channel (EmpathyFTFactory *factory,
-    EmpathyDispatchOperation *operation);
 void empathy_ft_factory_set_destination_for_incoming_handler (
     EmpathyFTFactory *factory,
     EmpathyFTHandler *handler,
     GFile *destination);
+
+gboolean empathy_ft_factory_register (EmpathyFTFactory *self,
+    GError **error);
 
 G_END_DECLS
 

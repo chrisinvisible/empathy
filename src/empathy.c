@@ -538,6 +538,12 @@ main (int argc, char *argv[])
   g_signal_connect (ft_factory, "new-incoming-transfer",
       G_CALLBACK (new_incoming_transfer_cb), NULL);
 
+  if (!empathy_ft_factory_register (ft_factory, &error))
+    {
+      g_warning ("Failed to register FileTransfer handler: %s", error->message);
+      g_error_free (error);
+    }
+
   /* Location mananger */
 #ifdef HAVE_GEOCLUE
   location_manager = empathy_location_manager_dup_singleton ();
