@@ -745,9 +745,6 @@ debug_window_list_connection_names_cb (const gchar * const *names,
   g_object_unref (dbus);
 }
 
-#define CM_WELL_KNOWN_NAME_PREFIX \
-    "org.freedesktop.Telepathy.ConnectionManager."
-
 static void
 debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
     const gchar *arg0,
@@ -758,77 +755,79 @@ debug_window_name_owner_changed_cb (TpDBusDaemon *proxy,
 {
   EmpathyDebugWindow *self = EMPATHY_DEBUG_WINDOW (user_data);
   EmpathyDebugWindowPriv *priv = GET_PRIV (user_data);
+  ServiceType type;
+  const gchar *name;
 
-  /* Wow, I hate all of this code... */
-  if (!g_str_has_prefix (arg0, CM_WELL_KNOWN_NAME_PREFIX))
-    return;
+  if (g_str_has_prefix (arg0, TP_CM_BUS_NAME_BASE))
+    {
+      type = SERVICE_TYPE_CM;
+      name = arg0 + strlen (TP_CM_BUS_NAME_BASE);
+    }
+  else if (g_str_has_prefix (arg0, TP_CLIENT_BUS_NAME_BASE))
+    {
+      type = SERVICE_TYPE_CLIENT;
+      name = arg0 + strlen (TP_CLIENT_BUS_NAME_BASE);
+    }
+  else
+    {
+      return;
+    }
 
   if (EMP_STR_EMPTY (arg1) && !EMP_STR_EMPTY (arg2))
     {
-      /* A connection manager joined -- because it's guaranteed
-       * that the CM just joined (because o.fd.Tp.CM.foo
-       * just joined), we don't need to check whether the unique
-       * name is in the CM model. Hooray.
-       */
-      const gchar *name = arg0 + strlen (CM_WELL_KNOWN_NAME_PREFIX);
+      gchar *display_name;
 
+      if (type == SERVICE_TYPE_CM)
+        display_name = get_cm_display_name (self, name);
+      else
+        display_name = g_strdup (name);
+
+      /* A service joined */
       if (!g_hash_table_lookup (priv->cache, name))
         {
           GtkTreeIter iter;
-          char *str;
 
-          DEBUG ("Adding new CM '%s' at %s.", name, arg2);
-
-          str = get_cm_display_name (self, name);
+          DEBUG ("Adding new service '%s' at %s.", name, arg2);
 
           gtk_list_store_append (priv->service_store, &iter);
           gtk_list_store_set (priv->service_store, &iter,
-              COL_NAME, str,
+              COL_NAME, display_name,
               COL_UNIQUE_NAME, arg2,
               -1);
-
-          g_free (str);
         }
       else
         {
-          /* a CM with the same name is already in the hash table,
+          /* a service with the same name is already in the hash table,
            * update it and set it as re-enabled in the model.
            */
           GtkTreeIter *iter = NULL;
 
           if (debug_window_service_is_in_model (user_data, name, &iter, TRUE))
             {
-              char *str;
-
               DEBUG ("Refreshing CM '%s' at '%s'.", name, arg2);
 
-              str = get_cm_display_name (self, name);
-
               gtk_list_store_set (priv->service_store, iter,
-                  COL_NAME, str,
+                  COL_NAME, display_name,
                   COL_UNIQUE_NAME, arg2,
                   COL_GONE, FALSE,
                   -1);
               gtk_tree_iter_free (iter);
-              g_free (str);
 
               debug_window_service_chooser_changed_cb
                 (GTK_COMBO_BOX (priv->chooser), user_data);
             }
         }
+
+      g_free (display_name);
     }
   else if (!EMP_STR_EMPTY (arg1) && EMP_STR_EMPTY (arg2))
     {
-      /* A connection manager died -- because it's guaranteed
-       * that the CM itself just died (because o.fd.Tp.CM.foo
-       * just died), we don't need to check that it was already
-       * in the model.
-       */
+      /* A service died */
       GtkTreeIter *iter = NULL;
 
-      DEBUG ("Setting CM disabled from %s.", arg1);
+      DEBUG ("Setting service disabled from %s.", arg1);
 
-      /* set the CM as disabled in the model */
+      /* set the service as disabled in the model */
       if (debug_window_service_is_in_model (user_data, arg1, &iter, FALSE))
         {
           gtk_list_store_set (priv->service_store,
