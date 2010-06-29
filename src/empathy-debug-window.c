@@ -681,10 +681,14 @@ debug_window_get_name_owner_cb (TpDBusDaemon *proxy,
       GtkTreeIter iter;
       char *name;
 
-      DEBUG ("Adding CM to list: %s at unique name: %s",
+      DEBUG ("Adding %s to list: %s at unique name: %s",
+          data->type == SERVICE_TYPE_CM? "CM": "Client",
           data->name, out);
 
-      name = get_cm_display_name (self, data->name);
+      if (data->type == SERVICE_TYPE_CM)
+        name = get_cm_display_name (self, data->name);
+      else
+        name = g_strdup (data->name);
 
       gtk_list_store_append (priv->service_store, &iter);
       gtk_list_store_set (priv->service_store, &iter,
@@ -840,21 +844,14 @@ add_client (EmpathyDebugWindow *self,
 {
   EmpathyDebugWindowPriv *priv = GET_PRIV (self);
   const gchar *suffix;
-  GtkTreeIter iter;
+  FillServiceChooserData *data;
 
   suffix = name + strlen (TP_CLIENT_BUS_NAME_BASE);
 
-  gtk_list_store_append (priv->service_store, &iter);
-  gtk_list_store_set (priv->service_store, &iter,
-      COL_NAME, suffix,
-      COL_UNIQUE_NAME, name,
-      -1);
+  data = fill_service_chooser_data_new (self, suffix, SERVICE_TYPE_CLIENT);
 
-  /* Select Empathy by default */
-  if (!tp_strdiff (suffix, "Empathy"))
-    {
-      gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->chooser), &iter);
-    }
+  tp_cli_dbus_daemon_call_get_name_owner (priv->dbus, -1,
+      name, debug_window_get_name_owner_cb, data, NULL, NULL);
 }
 
 static void
