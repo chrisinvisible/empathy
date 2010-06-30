@@ -228,6 +228,7 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
   priv->aggregator = folks_individual_aggregator_new ();
   g_signal_connect (priv->aggregator, "individuals-changed",
       G_CALLBACK (aggregator_individuals_changed_cb), self);
+  folks_individual_aggregator_prepare (priv->aggregator, NULL, NULL);
 }
 
 EmpathyIndividualManager *
