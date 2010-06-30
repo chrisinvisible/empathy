@@ -505,32 +505,23 @@ static void
 favourite_menu_item_toggled_cb (GtkCheckMenuItem *item,
   FolksIndividual *individual)
 {
-  EmpathyIndividualManager *manager;
-
-  manager = empathy_individual_manager_dup_singleton ();
-
   folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual),
       gtk_check_menu_item_get_active (item));
-
-  g_object_unref (manager);
 }
 
 GtkWidget *
 empathy_individual_favourite_menu_item_new (FolksIndividual *individual)
 {
   GtkWidget *item;
-  EmpathyIndividualManager *manager;
 
   item = gtk_check_menu_item_new_with_label (_("Favorite"));
 
-  manager = empathy_individual_manager_dup_singleton ();
   gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
       folks_favourite_get_is_favourite (FOLKS_FAVOURITE (individual)));
 
   g_signal_connect (item, "toggled",
       G_CALLBACK (favourite_menu_item_toggled_cb), individual);
 
-  g_object_unref (manager);
   return item;
 }
 
