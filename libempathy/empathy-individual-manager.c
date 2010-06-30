@@ -47,7 +47,6 @@ typedef struct
 {
   FolksIndividualAggregator *aggregator;
   EmpathyContactManager *contact_manager;
-  TpProxy *logger;
 } EmpathyIndividualManagerPriv;
 
 G_DEFINE_TYPE (EmpathyIndividualManager, empathy_individual_manager,
@@ -121,9 +120,6 @@ static void
 individual_manager_finalize (GObject *object)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
-
-  if (priv->logger != NULL)
-    g_object_unref (priv->logger);
 
   if (priv->contact_manager != NULL)
     g_object_unref (priv->contact_manager);
@@ -215,8 +211,6 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
 {
   EmpathyIndividualManagerPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
       EMPATHY_TYPE_INDIVIDUAL_MANAGER, EmpathyIndividualManagerPriv);
-  TpDBusDaemon *bus;
-  GError *error = NULL;
 
   self->priv = priv;
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
@@ -226,24 +220,6 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
       G_CALLBACK (aggregator_individuals_added_cb), self);
   g_signal_connect (priv->aggregator, "individuals-removed",
       G_CALLBACK (aggregator_individuals_removed_cb), self);
-
-  bus = tp_dbus_daemon_dup (&error);
-
-  if (error == NULL)
-    {
-      priv->logger = g_object_new (TP_TYPE_PROXY,
-          "bus-name", "org.freedesktop.Telepathy.Logger",
-          "object-path",
-          "/org/freedesktop/Telepathy/Logger", "dbus-daemon", bus, NULL);
-      g_object_unref (bus);
-
-      tp_proxy_add_interface_by_id (priv->logger, EMP_IFACE_QUARK_LOGGER);
-    }
-  else
-    {
-      DEBUG ("Failed to get telepathy-logger proxy: %s", error->message);
-      g_clear_error (&error);
-    }
 }
 
 EmpathyIndividualManager *
