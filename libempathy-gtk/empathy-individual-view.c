@@ -473,6 +473,7 @@ individual_view_file_drag_received (GtkWidget *view,
   GtkTreeIter iter;
   const gchar *sel_data;
   FolksIndividual *individual;
+  EmpathyContact *contact;
 
   sel_data = (const gchar *) gtk_selection_data_get_data (selection);
 
@@ -484,8 +485,8 @@ individual_view_file_drag_received (GtkWidget *view,
       return FALSE;
     }
 
-  /* TODO: implement this */
-  DEBUG ("file transfer not implemented");
+  contact = empathy_contact_from_folks_individual (individual);
+  empathy_send_file_from_uri_list (contact, sel_data);
 
   g_object_unref (individual);
 
