@@ -925,8 +925,6 @@ individual_store_dispose (GObject *object)
     {
       g_signal_handlers_disconnect_by_func (l->data,
           G_CALLBACK (individual_store_contact_updated_cb), object);
-
-      g_object_unref (l->data);
     }
   g_list_free (contacts);
 
@@ -1455,8 +1453,6 @@ empathy_individual_store_set_show_offline (EmpathyIndividualStore *self,
   for (l = contacts; l; l = l->next)
     {
       individual_store_contact_update (self, l->data);
-
-      g_object_unref (l->data);
     }
   g_list_free (contacts);
 
@@ -1511,6 +1507,8 @@ individual_store_update_list_mode_foreach (GtkTreeModel *model,
       EMPATHY_INDIVIDUAL_STORE_COL_ICON_STATUS, pixbuf_status,
       EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
       EMPATHY_INDIVIDUAL_STORE_COL_COMPACT, priv->is_compact, -1);
+
+  g_object_unref (individual);
 
   return FALSE;
 }
@@ -1616,7 +1614,6 @@ empathy_individual_store_set_show_groups (EmpathyIndividualStore *self,
       individual_store_members_changed_cb (priv->manager,
           "re-adding members: toggled group visibility",
           contacts, NULL, 0, self);
-      g_list_foreach (contacts, (GFunc) g_free, NULL);
       g_list_free (contacts);
     }
 

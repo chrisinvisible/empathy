@@ -295,12 +295,12 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
     {
       goto OUT;
     }
-  else
-    {
-      contact = empathy_contact_from_folks_individual (individual);
-      if (contact == NULL)
-        goto OUT;
-    }
+
+  contact = empathy_contact_from_folks_individual (individual);
+  g_object_unref (individual);
+
+  if (contact == NULL)
+    goto OUT;
 
   if (!priv->tooltip_widget)
     {
@@ -322,7 +322,6 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
   ret = TRUE;
 
   g_object_unref (contact);
-  g_object_unref (individual);
 OUT:
   running--;
 
@@ -648,7 +647,6 @@ individual_view_drag_motion (GtkWidget *widget,
           gdk_drag_status (context, GDK_ACTION_COPY, time_);
           gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
               path, GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
-          g_object_unref (individual);
         }
       else
         {
@@ -656,6 +654,9 @@ individual_view_drag_motion (GtkWidget *widget,
           gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
           retval = FALSE;
         }
+
+      if (individual != NULL)
+        g_object_unref (individual);
     }
 
   if (!is_different && !cleanup)
@@ -768,6 +769,8 @@ individual_view_drag_data_get (GtkWidget *widget,
           (guchar *) individual_id, strlen (individual_id) + 1);
       break;
     }
+
+  g_object_unref (individual);
 }
 
 static void
