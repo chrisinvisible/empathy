@@ -352,7 +352,8 @@ empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
 
   /* Remove every individual from the group */
   individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
-  g_hash_table_foreach (individuals, (GHFunc) remove_group_cb, group);
+  g_hash_table_foreach (individuals, (GHFunc) remove_group_cb,
+      (gpointer) group);
 }
 
 EmpathyIndividualManagerFlags
