@@ -79,6 +79,9 @@ void empathy_individual_manager_remove (EmpathyIndividualManager *manager,
     FolksIndividual *individual,
     const gchar *message);
 
+void empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
+    const gchar *group);
+
 EmpathyIndividualManagerFlags
 empathy_individual_manager_get_flags_for_connection (
     EmpathyIndividualManager *manager,

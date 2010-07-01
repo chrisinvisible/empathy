@@ -329,6 +329,32 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
   folks_individual_aggregator_remove_individual (priv->aggregator, individual);
 }
 
+static void
+remove_group_cb (const gchar *id, FolksIndividual *individual,
+    const gchar *group)
+{
+  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE);
+}
+
+void
+empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
+    const gchar *group)
+{
+  EmpathyIndividualManagerPriv *priv;
+  GHashTable *individuals;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (manager));
+  g_return_if_fail (group != NULL);
+
+  priv = GET_PRIV (manager);
+
+  DEBUG (G_STRLOC ": removing group %s", group);
+
+  /* Remove every individual from the group */
+  individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
+  g_hash_table_foreach (individuals, (GHFunc) remove_group_cb, group);
+}
+
 EmpathyIndividualManagerFlags
 empathy_individual_manager_get_flags_for_connection (
     EmpathyIndividualManager *self,

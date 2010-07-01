@@ -1997,8 +1997,10 @@ individual_view_group_remove_activate_cb (GtkMenuItem *menuitem,
       if (individual_view_remove_dialog_show (parent, _("Removing group"),
               text))
         {
-          /* TODO: implement */
-          DEBUG ("removing group unimplemented");
+          EmpathyIndividualManager *manager =
+              empathy_individual_manager_dup_singleton ();
+          empathy_individual_manager_remove_group (manager, group);
+          g_object_unref (G_OBJECT (manager));
         }
 
       g_free (text);
