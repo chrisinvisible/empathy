@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <telepathy-glib/account-channel-request.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/interfaces.h>
@@ -711,55 +712,61 @@ ft_transfer_progress_callback (EmpathyTpFile *tp_file,
 }
 
 static void
-ft_handler_create_channel_cb (EmpathyDispatchOperation *operation,
-    const GError *error,
+ft_handler_create_channel_cb (GObject *source,
+    GAsyncResult *result,
     gpointer user_data)
 {
   EmpathyFTHandler *handler = user_data;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
-  GError *my_error = (GError *) error;
+  GError *error = NULL;
+  TpChannel *channel = NULL;
 
   DEBUG ("Dispatcher create channel CB");
 
-  if (my_error == NULL)
+  channel = tp_account_channel_request_create_and_handle_channel_finish (
+        TP_ACCOUNT_CHANNEL_REQUEST (source), result, NULL, &error);
+
+  if (channel == NULL)
+    DEBUG ("Failed to request FT channel: %s", error->message);
+  else
+    g_cancellable_set_error_if_cancelled (priv->cancellable, &error);
+
+  if (error != NULL)
     {
-      g_cancellable_set_error_if_cancelled (priv->cancellable, &my_error);
+      emit_error_signal (handler, error);
+
+      g_error_free (error);
+      goto out;
     }
 
-  if (my_error != NULL)
-    {
-      emit_error_signal (handler, my_error);
-
-      if (my_error != error)
-        g_clear_error (&my_error);
-
-      return;
-    }
-
-  priv->tpfile = g_object_ref
-      (empathy_dispatch_operation_get_channel_wrapper (operation));
+  priv->tpfile = empathy_tp_file_new (channel);
 
   empathy_tp_file_offer (priv->tpfile, priv->gfile, priv->cancellable,
       ft_transfer_progress_callback, handler,
       ft_transfer_operation_callback, handler);
 
-  empathy_dispatch_operation_claim (operation);
+out:
+  tp_clear_object (&channel);
 }
 
 static void
 ft_handler_push_to_dispatcher (EmpathyFTHandler *handler)
 {
-  TpConnection *connection;
+  TpAccount *account;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
+  TpAccountChannelRequest *req;
 
   DEBUG ("Pushing request to the dispatcher");
 
-  connection = empathy_contact_get_connection (priv->contact);
+  account = empathy_contact_get_account (priv->contact);
 
-  /* I want to own a reference to the request, and destroy it later */
-  empathy_dispatcher_create_channel (priv->dispatcher, connection,
-      g_hash_table_ref (priv->request), EMPATHY_DISPATCHER_NON_USER_ACTION,
+  req = tp_account_channel_request_new (account, priv->request,
+      EMPATHY_DISPATCHER_NON_USER_ACTION);
+
+  tp_account_channel_request_create_and_handle_channel_async (req, NULL,
       ft_handler_create_channel_cb, handler);
+
+  g_object_unref (req);
 }
 
 static void
