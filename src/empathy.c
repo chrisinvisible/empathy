@@ -67,7 +67,6 @@
 #include "empathy-accounts-dialog.h"
 #include "empathy-chat-manager.h"
 #include "empathy-status-icon.h"
-#include "empathy-chat-window.h"
 #include "empathy-ft-manager.h"
 
 #include "extensions/extensions.h"
@@ -91,51 +90,7 @@ dispatch_cb (EmpathyDispatcher *dispatcher,
 
   channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
 
-  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
-    {
-      EmpathyTpChat *tp_chat;
-      EmpathyChat   *chat = NULL;
-      const gchar   *id;
-
-      tp_chat = EMPATHY_TP_CHAT
-        (empathy_dispatch_operation_get_channel_wrapper (operation));
-
-      id = empathy_tp_chat_get_id (tp_chat);
-      if (!EMP_STR_EMPTY (id))
-        {
-          TpConnection *connection;
-          TpAccount *account;
-
-          connection = empathy_tp_chat_get_connection (tp_chat);
-          account = empathy_get_account_for_connection (connection);
-          chat = empathy_chat_window_find_chat (account, id);
-        }
-
-      if (chat)
-        {
-          empathy_chat_set_tp_chat (chat, tp_chat);
-        }
-      else
-        {
-          chat = empathy_chat_new (tp_chat);
-          /* empathy_chat_new returns a floating reference as EmpathyChat is
-           * a GtkWidget. This reference will be taken by a container
-           * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
-        }
-
-      empathy_chat_window_present_chat (chat,
-          empathy_dispatch_operation_get_user_action_time (operation));
-
-      if (empathy_tp_chat_is_invited (tp_chat, NULL))
-        {
-          /* We have been invited to the room. Add ourself as member as this
-           * channel has been approved. */
-          empathy_tp_chat_join (tp_chat);
-        }
-
-      empathy_dispatch_operation_claim (operation);
-    }
-  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
+  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
       EmpathyFTFactory *factory;
 

@@ -17,7 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <telepathy-glib/telepathy-glib.h>
+
 #include <libempathy/empathy-dispatcher.h>
+
+#include "empathy-chat-window.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
@@ -40,6 +44,8 @@ struct _EmpathyChatManagerPriv
 {
   /* Queue of (ChatData *) representing the closed chats */
   GQueue *queue;
+
+  TpBaseClient *handler;
 };
 
 #define GET_PRIV(o) \
@@ -88,11 +94,171 @@ chat_data_free (ChatData *data)
 }
 
 static void
+process_tp_chat (EmpathyTpChat *tp_chat,
+    TpAccount *account,
+    gint64 user_action_time)
+{
+  EmpathyChat *chat = NULL;
+  const gchar *id;
+
+  id = empathy_tp_chat_get_id (tp_chat);
+  if (!tp_str_empty (id))
+    {
+      chat = empathy_chat_window_find_chat (account, id);
+    }
+
+  if (chat != NULL)
+    {
+      empathy_chat_set_tp_chat (chat, tp_chat);
+    }
+  else
+    {
+      chat = empathy_chat_new (tp_chat);
+      /* empathy_chat_new returns a floating reference as EmpathyChat is
+       * a GtkWidget. This reference will be taken by a container
+       * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
+    }
+
+  empathy_chat_window_present_chat (chat, user_action_time);
+
+  if (empathy_tp_chat_is_invited (tp_chat, NULL))
+    {
+      /* We have been invited to the room. Add ourself as member as this
+       * channel has been approved. */
+      empathy_tp_chat_join (tp_chat);
+    }
+
+  g_object_unref (tp_chat);
+}
+
+typedef struct
+{
+  EmpathyTpChat *tp_chat;
+  TpAccount *account;
+  gint64 user_action_time;
+  gulong sig_id;
+} chat_ready_ctx;
+
+static chat_ready_ctx *
+chat_ready_ctx_new (EmpathyTpChat *tp_chat,
+    TpAccount *account,
+    gint64 user_action_time)
+{
+  chat_ready_ctx *ctx = g_slice_new0 (chat_ready_ctx);
+
+  ctx->tp_chat = g_object_ref (tp_chat);
+  ctx->account = g_object_ref (account);
+  ctx->user_action_time = user_action_time;
+  return ctx;
+}
+
+static void
+chat_ready_ctx_free (chat_ready_ctx *ctx)
+{
+  g_object_unref (ctx->tp_chat);
+  g_object_unref (ctx->account);
+
+  if (ctx->sig_id != 0)
+    g_signal_handler_disconnect (ctx->tp_chat, ctx->sig_id);
+
+  g_slice_free (chat_ready_ctx, ctx);
+}
+
+static void
+tp_chat_ready_cb (GObject *object,
+  GParamSpec *spec,
+  gpointer user_data)
+{
+  EmpathyTpChat *tp_chat = EMPATHY_TP_CHAT (object);
+  chat_ready_ctx *ctx = user_data;
+
+  if (!empathy_tp_chat_is_ready (tp_chat))
+    return;
+
+  process_tp_chat (tp_chat, ctx->account, ctx->user_action_time);
+
+  chat_ready_ctx_free (ctx);
+}
+
+static void
+handle_channels (TpSimpleHandler *handler,
+    TpAccount *account,
+    TpConnection *connection,
+    GList *channels,
+    GList *requests_satisfied,
+    gint64 user_action_time,
+    TpHandleChannelsContext *context,
+    gpointer user_data)
+{
+  GList *l;
+
+  for (l = channels; l != NULL; l = g_list_next (l))
+    {
+      TpChannel *channel = l->data;
+      EmpathyTpChat *tp_chat;
+
+      tp_chat = empathy_tp_chat_new (channel);
+
+      if (empathy_tp_chat_is_ready (tp_chat))
+        {
+          process_tp_chat (tp_chat, account, user_action_time);
+        }
+      else
+        {
+          chat_ready_ctx *ctx = chat_ready_ctx_new (tp_chat, account,
+              user_action_time);
+
+          ctx->sig_id = g_signal_connect (tp_chat, "notify::ready",
+              G_CALLBACK (tp_chat_ready_cb), ctx);
+        }
+    }
+
+  tp_handle_channels_context_accept (context);
+}
+
+static void
 empathy_chat_manager_init (EmpathyChatManager *self)
 {
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
+  TpDBusDaemon *dbus;
+  GError *error = NULL;
 
   priv->queue = g_queue_new ();
+
+  dbus = tp_dbus_daemon_dup (&error);
+  if (dbus == NULL)
+    {
+      g_critical ("Failed to get D-Bus daemon: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  /* Text channels handler */
+  priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE, "Empathy", FALSE,
+      handle_channels, self, NULL);
+
+  g_object_unref (dbus);
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+        NULL));
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_ROOM,
+        NULL));
+
+  tp_base_client_take_handler_filter (priv->handler, tp_asv_new (
+        TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING, TP_IFACE_CHANNEL_TYPE_TEXT,
+        TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_NONE,
+        NULL));
+
+  if (!tp_base_client_register (priv->handler, &error))
+    {
+      g_critical ("Failed to register text handler: %s", error->message);
+      g_error_free (error);
+    }
 }
 
 static void
@@ -107,6 +273,8 @@ empathy_chat_manager_finalize (GObject *object)
       g_queue_free (priv->queue);
       priv->queue = NULL;
     }
+
+  tp_clear_object (&priv->handler);
 
   G_OBJECT_CLASS (empathy_chat_manager_parent_class)->finalize (object);
 }
