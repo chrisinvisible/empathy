@@ -364,30 +364,11 @@ setup_dispatcher (void)
     const gchar *channeltype;
     TpHandleType handletype;
   } types[] = {
-    /* Text channels with handle types none, contact and room */
-    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_NONE  },
-    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT  },
-    { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM  },
     /* file transfer to contacts */
     { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
   };
   GHashTable *asv;
   guint i;
-
-  /* Setup the basic Client.Handler that matches our client filter */
-  filters = g_ptr_array_new ();
-  asv = tp_asv_new (
-        TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
-           TP_IFACE_CHANNEL_TYPE_TEXT,
-        TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_INT,
-            TP_HANDLE_TYPE_CONTACT,
-        NULL);
-  g_ptr_array_add (filters, asv);
-
-  d = empathy_dispatcher_new (PACKAGE_NAME, filters, NULL);
-
-  g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
-  g_ptr_array_free (filters, TRUE);
 
   /* Setup the an extended Client.Handler that matches everything we can do */
   filters = g_ptr_array_new ();
@@ -401,8 +382,7 @@ setup_dispatcher (void)
       g_ptr_array_add (filters, asv);
     }
 
-  empathy_dispatcher_add_handler (d, PACKAGE_NAME"MoreThanMeetsTheEye",
-    filters, NULL);
+  d = empathy_dispatcher_new (PACKAGE_NAME"MoreThanMeetsTheEye", filters, NULL);
 
   g_ptr_array_foreach (filters, (GFunc) g_hash_table_destroy, NULL);
   g_ptr_array_free (filters, TRUE);

@@ -27,7 +27,6 @@
 #include "empathy-dispatch-operation.h"
 #include <libempathy/empathy-enum-types.h>
 #include <libempathy/empathy-tp-contact-factory.h>
-#include <libempathy/empathy-tp-chat.h>
 #include <libempathy/empathy-tp-call.h>
 #include <libempathy/empathy-tp-file.h>
 
@@ -417,31 +416,6 @@ empathy_dispatch_operation_set_status (EmpathyDispatchOperation *self,
 }
 
 static void
-channel_wrapper_ready (EmpathyDispatchOperation *self)
-{
-  EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
-
-  g_signal_handler_disconnect (priv->channel_wrapper, priv->ready_handler);
-  priv->ready_handler = 0;
-
-  empathy_dispatch_operation_set_status (self,
-    EMPATHY_DISPATCHER_OPERATION_STATE_PENDING);
-}
-
-static void
-empathy_dispatcher_operation_tp_chat_ready_cb (GObject *object,
-  GParamSpec *spec, gpointer user_data)
-{
-  EmpathyDispatchOperation *self = EMPATHY_DISPATCH_OPERATION (user_data);
-  EmpathyDispatchOperationPriv *priv = GET_PRIV (self);
-
-  if (!empathy_tp_chat_is_ready (EMPATHY_TP_CHAT (priv->channel_wrapper)))
-    return;
-
-  channel_wrapper_ready (self);
-}
-
-static void
 empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
   const GError *error, gpointer user_data)
 {
@@ -465,19 +439,7 @@ empathy_dispatch_operation_channel_ready_cb (TpChannel *channel,
 
   channel_type = tp_channel_get_channel_type_id (channel);
 
-  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
-    {
-      EmpathyTpChat *chat= empathy_tp_chat_new (channel);
-      priv->channel_wrapper = G_OBJECT (chat);
-
-      if (!empathy_tp_chat_is_ready (chat))
-        {
-          priv->ready_handler = g_signal_connect (chat, "notify::ready",
-            G_CALLBACK (empathy_dispatcher_operation_tp_chat_ready_cb), self);
-          goto out;
-        }
-    }
-  else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
+  if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
        EmpathyTpFile *file = empathy_tp_file_new (channel, priv->incoming);
        priv->channel_wrapper = G_OBJECT (file);
