@@ -2,7 +2,7 @@ SUBDIRS = interactive xml
 
 CLEANFILES=
 
-SUPPRESSIONS=valgrind.supp dlopen.supp
+SUPPRESSIONS=tp-glib.supp dlopen.supp
 
 EXTRA_DIST = 		\
 	test.manager	\
