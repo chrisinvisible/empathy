@@ -978,6 +978,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
 
       text = g_strconcat ( _("<b>Location</b>, "), user_date, NULL);
       gtk_label_set_markup (GTK_LABEL (information->label_location), text);
+      g_free (user_date);
       g_free (text);
     }
 
