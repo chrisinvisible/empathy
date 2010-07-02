@@ -1534,14 +1534,18 @@ contact_widget_contact_update (EmpathyContactWidget *information)
 
       if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
         {
-          gboolean is_favourite;
-
-          is_favourite = empathy_contact_list_is_favourite (
-              EMPATHY_CONTACT_LIST (information->manager),
+          FolksIndividual *individual = folks_individual_from_empathy_contact (
               information->contact);
 
-          contact_widget_favourites_changed_cb (information->manager,
-              information->contact, is_favourite, information);
+          if (individual)
+            {
+              gboolean is_favourite = folks_favourite_get_is_favourite (
+                  FOLKS_FAVOURITE (individual));
+              contact_widget_favourites_changed_cb (information->manager,
+                  information->contact, is_favourite, information);
+
+              g_object_unref (individual);
+            }
         }
 
       gtk_widget_show (information->label_alias);
@@ -1667,19 +1671,14 @@ static void
 favourite_toggled_cb (GtkToggleButton *button,
     EmpathyContactWidget *information)
 {
-  gboolean active;
+  FolksIndividual *individual = folks_individual_from_empathy_contact (
+      information->contact);
 
-  active = gtk_toggle_button_get_active (button);
-
-  if (active)
+  if (individual)
     {
-      empathy_contact_list_add_to_favourites (
-          EMPATHY_CONTACT_LIST (information->manager), information->contact);
-    }
-  else
-    {
-      empathy_contact_list_remove_from_favourites (
-          EMPATHY_CONTACT_LIST (information->manager), information->contact);
+      gboolean active = gtk_toggle_button_get_active (button);
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), active);
+      g_object_unref (individual);
     }
 }
 
