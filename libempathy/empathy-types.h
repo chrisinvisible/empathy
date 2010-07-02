@@ -24,6 +24,4 @@
 
 typedef struct _EmpathyContactList      EmpathyContactList;
 
-typedef struct _EmpathyContactMonitor      EmpathyContactMonitor;
-
 #endif /* __EMPATHY_TYPES_H__ */
