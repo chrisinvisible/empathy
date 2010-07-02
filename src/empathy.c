@@ -688,6 +688,7 @@ main (int argc, char *argv[])
   g_object_unref (ft_factory);
   g_object_unref (unique_app);
   g_object_unref (gsettings);
+  gtk_widget_destroy (window);
 
   notify_uninit ();
   xmlCleanupParser ();
