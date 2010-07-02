@@ -38,6 +38,7 @@ typedef struct _EmpathyChatManagerPriv EmpathyChatManagerPriv;
 
 struct _EmpathyChatManagerPriv
 {
+  /* Queue of (ChatData *) representing the closed chats */
   GQueue *queue;
 };
 
