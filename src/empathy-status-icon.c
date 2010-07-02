@@ -573,6 +573,7 @@ status_icon_finalize (GObject *object)
 	g_object_unref (priv->ui_manager);
 	g_object_unref (priv->notify_mgr);
 	g_object_unref (priv->gsettings_ui);
+	g_object_unref (priv->window);
 }
 
 static void
