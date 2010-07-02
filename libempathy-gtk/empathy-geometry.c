@@ -174,6 +174,7 @@ empathy_geometry_save (GtkWindow *window,
       escaped_name, maximized);
 
   geometry_schedule_store (key_file);
+  g_free (escaped_name);
 }
 
 void
