@@ -43,6 +43,7 @@
 
 #include "empathy-utils.h"
 #include "empathy-contact-manager.h"
+#include "empathy-individual-manager.h"
 #include "empathy-dispatcher.h"
 #include "empathy-dispatch-operation.h"
 #include "empathy-idle.h"
@@ -619,4 +620,32 @@ empathy_contact_from_folks_individual (FolksIndividual *individual)
     }
 
   return contact;
+}
+
+/* TODO: This also needs to be eliminated, and is horrifically slow. */
+FolksIndividual *
+folks_individual_from_empathy_contact (EmpathyContact *contact)
+{
+  EmpathyIndividualManager *manager;
+  FolksIndividual *individual = NULL;
+  GList *individuals, *l;
+
+  manager = empathy_individual_manager_dup_singleton ();
+  individuals = empathy_individual_manager_get_members (manager);
+
+  for (l = individuals; (l != NULL) && (individual == NULL); l = l->next)
+    {
+      FolksIndividual *i = FOLKS_INDIVIDUAL (l->data);
+      EmpathyContact *c = empathy_contact_from_folks_individual (i);
+
+      if (c == contact)
+        individual = g_object_ref (i);
+
+      g_object_unref (c);
+    }
+
+  g_list_free (individuals);
+  g_object_unref (manager);
+
+  return individual;
 }

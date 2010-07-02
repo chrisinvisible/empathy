@@ -93,6 +93,7 @@ void empathy_connect_new_account (TpAccount *account,
 TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType type);
 gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_from_folks_individual (FolksIndividual *individual);
+FolksIndividual *folks_individual_from_empathy_contact (EmpathyContact *contact);
 
 G_END_DECLS
 
