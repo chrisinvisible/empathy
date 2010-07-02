@@ -1336,7 +1336,14 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          empathy_contact_set_alias (information->contact, alias);
+          FolksIndividual *individual = folks_individual_from_empathy_contact (
+              information->contact);
+
+          if (individual)
+            {
+              folks_alias_set_alias (FOLKS_ALIAS (individual), alias);
+              g_object_unref (individual);
+            }
         }
     }
 

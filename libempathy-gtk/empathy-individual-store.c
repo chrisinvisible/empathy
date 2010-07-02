@@ -748,9 +748,7 @@ individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
       G_CALLBACK (individual_store_contact_updated_cb), self);
   g_signal_connect (individual, "notify::presence-message",
       G_CALLBACK (individual_store_contact_updated_cb), self);
-  g_signal_connect (individual, "notify::name",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
-  g_signal_connect (individual, "notify::avatar",
+  g_signal_connect (individual, "notify::alias",
       G_CALLBACK (individual_store_contact_updated_cb), self);
   g_signal_connect (individual, "notify::capabilities",
       G_CALLBACK (individual_store_contact_updated_cb), self);
