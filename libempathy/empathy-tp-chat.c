@@ -1243,9 +1243,9 @@ tp_chat_constructor (GType                  type,
 	priv = GET_PRIV (chat);
 
 	priv->connection = g_object_ref (tp_channel_borrow_connection (priv->channel));
-	g_signal_connect (priv->channel, "invalidated",
+	tp_g_signal_connect_object (priv->channel, "invalidated",
 			  G_CALLBACK (tp_chat_invalidated_cb),
-			  chat);
+			  chat, 0);
 
 	if (tp_proxy_has_interface_by_id (priv->channel,
 					  TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP)) {
@@ -1267,8 +1267,8 @@ tp_chat_constructor (GType                  type,
 
 		priv->can_upgrade_to_muc = FALSE;
 
-		g_signal_connect (priv->channel, "group-members-changed",
-			G_CALLBACK (tp_chat_group_members_changed_cb), chat);
+		tp_g_signal_connect_object (priv->channel, "group-members-changed",
+			G_CALLBACK (tp_chat_group_members_changed_cb), chat, 0);
 	} else {
 		EmpathyDispatcher *dispatcher = empathy_dispatcher_dup_singleton ();
 		GList *list, *ptr;
