@@ -370,8 +370,6 @@ setup_dispatcher (void)
     { TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM  },
     /* file transfer to contacts */
     { TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT  },
-    /* roomlists */
-    { TP_IFACE_CHANNEL_TYPE_ROOM_LIST, TP_HANDLE_TYPE_NONE },
   };
   GHashTable *asv;
   guint i;
