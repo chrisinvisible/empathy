@@ -70,8 +70,10 @@ GList *                empathy_chatroom_manager_get_chatrooms (EmpathyChatroomMa
 							      TpAccount               *account);
 guint                  empathy_chatroom_manager_get_count     (EmpathyChatroomManager *manager,
 							      TpAccount               *account);
-void                   empathy_chatroom_manager_observe       (EmpathyChatroomManager *manager,
-							      EmpathyDispatcher *dispatcher);
+
+void		       empathy_chatroom_manager_chat_handled  (EmpathyChatroomManager *self,
+							       EmpathyTpChat *chat,
+							       TpAccount *account);
 
 G_END_DECLS
 

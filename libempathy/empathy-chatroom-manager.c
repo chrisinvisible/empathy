@@ -754,46 +754,25 @@ chatroom_manager_chat_destroyed_cb (EmpathyTpChat *chat,
     }
 }
 
-static void
-chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
-  EmpathyDispatchOperation *operation, gpointer manager)
+/* Called by EmpathyChatManager when we are handling a new group chat */
+void
+empathy_chatroom_manager_chat_handled (EmpathyChatroomManager *self,
+    EmpathyTpChat *chat,
+    TpAccount *account)
 {
   EmpathyChatroom *chatroom;
-  TpChannel *channel;
-  EmpathyTpChat *chat;
   const gchar *roomname;
-  GQuark channel_type;
-  TpHandleType handle_type;
-  TpAccount *account;
-  TpConnection *connection;
-
-  channel_type = empathy_dispatch_operation_get_channel_type_id (operation);
-
-  /* Observe Text channels to rooms only */
-  if (channel_type != TP_IFACE_QUARK_CHANNEL_TYPE_TEXT)
-    return;
-
-  channel = empathy_dispatch_operation_get_channel (operation);
-  tp_channel_get_handle (channel, &handle_type);
-
-  if (handle_type != TP_HANDLE_TYPE_ROOM)
-    return;
-
-  chat = EMPATHY_TP_CHAT (
-    empathy_dispatch_operation_get_channel_wrapper (operation));
-  connection = empathy_tp_chat_get_connection (chat);
-  account = empathy_get_account_for_connection (connection);
 
   roomname = empathy_tp_chat_get_id (chat);
 
-  chatroom = empathy_chatroom_manager_find (manager, account, roomname);
+  chatroom = empathy_chatroom_manager_find (self, account, roomname);
 
   if (chatroom == NULL)
     {
       chatroom = empathy_chatroom_new_full (account, roomname, roomname,
         FALSE);
       empathy_chatroom_set_tp_chat (chatroom, chat);
-      empathy_chatroom_manager_add (manager, chatroom);
+      empathy_chatroom_manager_add (self, chatroom);
       g_object_unref (chatroom);
     }
   else
@@ -805,13 +784,5 @@ chatroom_manager_observe_channel_cb (EmpathyDispatcher *dispatcher,
    * has been invalidated in the dispatcher..  */
   g_signal_connect (chat, "destroy",
     G_CALLBACK (chatroom_manager_chat_destroyed_cb),
-    manager);
-}
-
-void
-empathy_chatroom_manager_observe (EmpathyChatroomManager *manager,
-  EmpathyDispatcher *dispatcher)
-{
-  g_signal_connect (dispatcher, "observe",
-    G_CALLBACK (chatroom_manager_observe_channel_cb), manager);
+    self);
 }

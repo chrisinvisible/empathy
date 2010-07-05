@@ -19,6 +19,7 @@
 
 #include <telepathy-glib/telepathy-glib.h>
 
+#include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-dispatcher.h>
 
 #include "empathy-chat-window.h"
@@ -126,6 +127,15 @@ process_tp_chat (EmpathyTpChat *tp_chat,
       /* We have been invited to the room. Add ourself as member as this
        * channel has been approved. */
       empathy_tp_chat_join (tp_chat);
+    }
+
+  if (empathy_chat_is_room (chat))
+    {
+      EmpathyChatroomManager *chatroom_mgr;
+
+      chatroom_mgr = empathy_chatroom_manager_dup_singleton (NULL);
+      empathy_chatroom_manager_chat_handled (chatroom_mgr, tp_chat, account);
+      g_object_unref (chatroom_mgr);
     }
 
   g_object_unref (tp_chat);

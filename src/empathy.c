@@ -574,7 +574,6 @@ main (int argc, char *argv[])
   log_manager = tpl_log_manager_dup_singleton ();
 
   chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
-  empathy_chatroom_manager_observe (chatroom_manager, dispatcher);
 
   g_object_get (chatroom_manager, "ready", &chatroom_manager_ready, NULL);
   if (!chatroom_manager_ready)
