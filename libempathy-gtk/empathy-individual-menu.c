@@ -28,6 +28,8 @@
 #include <gtk/gtk.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-logger/log-manager.h>
+#include <folks/folks.h>
+#include <folks/folks-telepathy.h>
 
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-dispatcher.h>
@@ -246,19 +248,80 @@ out:
   return item;
 }
 
+typedef gboolean (*SensitivityPredicate) (EmpathyContact *contact);
+
+/* Like menu_item_set_first_contact(), but always operates upon the given
+ * contact */
+static gboolean
+menu_item_set_contact (GtkWidget *item,
+    EmpathyContact *contact,
+    GCallback activate_callback,
+    SensitivityPredicate sensitivity_predicate)
+{
+  gboolean contact_valid = TRUE;
+
+  if (sensitivity_predicate != NULL)
+    {
+      contact_valid = sensitivity_predicate (contact);
+      gtk_widget_set_sensitive (item, sensitivity_predicate (contact));
+    }
+
+  g_signal_connect (item, "activate", G_CALLBACK (activate_callback),
+      contact);
+
+  return contact_valid;
+}
+
+/**
+ * Set the given menu @item to call @activate_callback upon the first valid
+ * TpContact associated with @individual whenever @item is activated.
+ *
+ * @sensitivity_predicate is an optional function to determine whether the menu
+ * item should be insensitive (if the function returns @FALSE). Otherwise, the
+ * menu item's sensitivity will not change.
+ */
+static GtkWidget *
+menu_item_set_first_contact (GtkWidget *item,
+    FolksIndividual *individual,
+    GCallback activate_callback,
+    SensitivityPredicate sensitivity_predicate)
+{
+  GList *personas, *l;
+
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+      TpfPersona *persona = l->data;
+      gboolean contact_valid = TRUE;
+
+      if (!TPF_IS_PERSONA (persona))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (persona);
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+
+      contact_valid = menu_item_set_contact (item, contact,
+          G_CALLBACK (activate_callback), sensitivity_predicate);
+
+      g_object_unref (contact);
+
+      /* stop after the first valid match */
+      if (contact_valid)
+        break;
+    }
+
+  return item;
+}
+
 static void
 empathy_individual_chat_menu_item_activated (GtkMenuItem *item,
-  FolksIndividual *individual)
+  EmpathyContact *contact)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_if_fail (contact != NULL);
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time ());
-
-  g_object_unref (contact);
 }
 
 GtkWidget *
@@ -277,25 +340,20 @@ empathy_individual_chat_menu_item_new (FolksIndividual *individual)
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 
-  g_signal_connect (item, "activate",
-      G_CALLBACK (empathy_individual_chat_menu_item_activated), individual);
+  menu_item_set_first_contact (item, individual,
+      G_CALLBACK (empathy_individual_chat_menu_item_activated), NULL);
 
   return item;
 }
 
 static void
 empathy_individual_audio_call_menu_item_activated (GtkMenuItem *item,
-  FolksIndividual *individual)
+  EmpathyContact *contact)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_call_factory_new_call_with_streams (contact, TRUE, FALSE,
       gtk_get_current_event_time (), NULL);
-  g_object_unref (contact);
 }
 
 GtkWidget *
@@ -303,42 +361,29 @@ empathy_individual_audio_call_menu_item_new (FolksIndividual *individual)
 {
   GtkWidget *item;
   GtkWidget *image;
-  EmpathyContact *contact;
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (C_("menu item", "_Audio Call"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP, GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-  gtk_widget_set_sensitive (item, empathy_contact_can_voip_audio (contact));
   gtk_widget_show (image);
 
-  g_signal_connect (item, "activate",
+  menu_item_set_first_contact (item, individual,
       G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
-      individual);
-
-  g_object_unref (contact);
+      empathy_contact_can_voip_audio);
 
   return item;
 }
 
 static void
 empathy_individual_video_call_menu_item_activated (GtkMenuItem *item,
-  FolksIndividual *individual)
+  EmpathyContact *contact)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_call_factory_new_call_with_streams (contact, TRUE, TRUE,
       gtk_get_current_event_time (), NULL);
-  g_object_unref (contact);
 }
 
 GtkWidget *
@@ -346,26 +391,18 @@ empathy_individual_video_call_menu_item_new (FolksIndividual *individual)
 {
   GtkWidget *item;
   GtkWidget *image;
-  EmpathyContact *contact;
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (C_("menu item", "_Video Call"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VIDEO_CALL,
       GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-  gtk_widget_set_sensitive (item, empathy_contact_can_voip_video (contact));
   gtk_widget_show (image);
 
-  g_signal_connect (item, "activate",
+  menu_item_set_first_contact (item, individual,
       G_CALLBACK (empathy_individual_video_call_menu_item_activated),
-      individual);
-
-  g_object_unref (contact);
+      empathy_contact_can_voip_video);
 
   return item;
 }
