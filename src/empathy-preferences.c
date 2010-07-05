@@ -58,6 +58,7 @@ struct _EmpathyPreferencesPriv {
 	GtkWidget *checkbutton_show_contacts_in_rooms;
 	GtkWidget *combobox_chat_theme;
 	GtkWidget *checkbutton_separate_chat_windows;
+	GtkWidget *checkbutton_events_notif_area;
 	GtkWidget *checkbutton_autoconnect;
 
 	GtkWidget *checkbutton_sounds_enabled;
@@ -218,6 +219,12 @@ preferences_setup_widgets (EmpathyPreferences *preferences)
 	g_settings_bind (priv->gsettings_ui,
 			 EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS,
 			 priv->checkbutton_separate_chat_windows,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	g_settings_bind (priv->gsettings_ui,
+			 EMPATHY_PREFS_UI_EVENTS_NOTIFY_AREA,
+			 priv->checkbutton_events_notif_area,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
@@ -877,6 +884,7 @@ empathy_preferences_init (EmpathyPreferences *preferences)
 		"checkbutton_show_contacts_in_rooms", &priv->checkbutton_show_contacts_in_rooms,
 		"combobox_chat_theme", &priv->combobox_chat_theme,
 		"checkbutton_separate_chat_windows", &priv->checkbutton_separate_chat_windows,
+		"checkbutton_events_notif_area", &priv->checkbutton_events_notif_area,
 		"checkbutton_autoconnect", &priv->checkbutton_autoconnect,
 		"checkbutton_notifications_enabled", &priv->checkbutton_notifications_enabled,
 		"checkbutton_notifications_disabled_away", &priv->checkbutton_notifications_disabled_away,

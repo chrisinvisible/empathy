@@ -65,6 +65,7 @@ G_BEGIN_DECLS
 
 #define EMPATHY_PREFS_UI_SCHEMA EMPATHY_PREFS_SCHEMA ".ui"
 #define EMPATHY_PREFS_UI_SEPARATE_CHAT_WINDOWS     "separate-chat-windows"
+#define EMPATHY_PREFS_UI_EVENTS_NOTIFY_AREA        "events-notify-area"
 #define EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN        "main-window-hidden"
 #define EMPATHY_PREFS_UI_AVATAR_DIRECTORY          "avatar-directory"
 #define EMPATHY_PREFS_UI_SHOW_AVATARS              "show-avatars"
