@@ -41,6 +41,7 @@
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
 #include "empathy-individual-dialogs.h"
+#include "empathy-individual-information-dialog.h"
 #include "empathy-ui-utils.h"
 #include "empathy-share-my-desktop.h"
 #include "empathy-linking-dialog.h"
@@ -531,12 +532,7 @@ empathy_individual_favourite_menu_item_new (FolksIndividual *individual)
 static void
 individual_info_menu_item_activate_cb (FolksIndividual *individual)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-  empathy_contact_information_dialog_show (contact, NULL);
-
-  tp_clear_object (&contact);
+  empathy_individual_information_dialog_show (individual, NULL);
 }
 
 GtkWidget *
