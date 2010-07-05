@@ -37,7 +37,7 @@
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-individual-information-dialog.h"
-#include "empathy-contact-widget.h"
+#include "empathy-individual-widget.h"
 #include "empathy-ui-utils.h"
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIndividualInformationDialog)
@@ -109,7 +109,7 @@ individual_information_dialog_set_individual (
     FolksIndividual *individual)
 {
   EmpathyIndividualInformationDialogPriv *priv;
-  GList *personas, *l;
+  GtkWidget *individual_widget;
 
   g_return_if_fail (EMPATHY_INDIVIDUAL_INFORMATION_DIALOG (dialog));
   g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
@@ -119,32 +119,14 @@ individual_information_dialog_set_individual (
   gtk_window_set_title (GTK_WINDOW (dialog),
       folks_individual_get_alias (individual));
 
-  personas = folks_individual_get_personas (individual);
-
-  for (l = personas; l != NULL; l = l->next)
-    {
-      GtkWidget *contact_widget;
-      TpContact *tp_contact;
-      EmpathyContact *contact;
-      TpfPersona *persona = l->data;
-
-      if (!TPF_IS_PERSONA (persona))
-        continue;
-
-      tp_contact = tpf_persona_get_contact (persona);
-      contact = empathy_contact_dup_from_tp_contact (tp_contact);
-
-      /* Contact info widget */
-      contact_widget = empathy_contact_widget_new (contact,
-          EMPATHY_CONTACT_WIDGET_SHOW_LOCATION |
-          EMPATHY_CONTACT_WIDGET_SHOW_DETAILS);
-      gtk_container_set_border_width (GTK_CONTAINER (contact_widget), 8);
-      gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (
-          GTK_DIALOG (dialog))), contact_widget, TRUE, TRUE, 0);
-      gtk_widget_show (contact_widget);
-
-      g_object_unref (contact);
-    }
+  individual_widget = empathy_individual_widget_new (individual,
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION |
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS |
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS);
+  gtk_container_set_border_width (GTK_CONTAINER (individual_widget), 8);
+  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (
+      GTK_DIALOG (dialog))), individual_widget, TRUE, TRUE, 0);
+  gtk_widget_show (individual_widget);
 
   priv->individual = g_object_ref (individual);
 }
