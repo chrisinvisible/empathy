@@ -228,28 +228,6 @@ chat_set_property (GObject      *object,
 }
 
 static void
-chat_connect_channel_reconnected (EmpathyDispatchOperation *dispatch,
-				  const GError             *error,
-				  gpointer                  user_data)
-{
-	EmpathyChat *chat = EMPATHY_CHAT (user_data);
-	EmpathyTpChat *tpchat;
-
-	if (error != NULL) {
-		empathy_chat_view_append_event (chat->view,
-			_("Failed to reconnect this chat"));
-		return;
-	}
-
-	tpchat = EMPATHY_TP_CHAT (
-		empathy_dispatch_operation_get_channel_wrapper (dispatch));
-
-	if (empathy_dispatch_operation_claim (dispatch)) {
-		empathy_chat_set_tp_chat (chat, tpchat);
-	}
-}
-
-static void
 reconnected_connection_ready_cb (TpConnection *connection,
 			const GError *error,
 			gpointer user_data)
@@ -268,14 +246,12 @@ reconnected_connection_ready_cb (TpConnection *connection,
 		case TP_HANDLE_TYPE_CONTACT:
 			empathy_dispatcher_chat_with_contact_id (
 				connection, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION,
-				chat_connect_channel_reconnected,
-				chat);
+				NULL, NULL);
 			break;
 		case TP_HANDLE_TYPE_ROOM:
 			empathy_dispatcher_join_muc (connection,
 				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION,
-				chat_connect_channel_reconnected,
-				chat);
+				NULL, NULL);
 			break;
 		default:
 			g_assert_not_reached ();
