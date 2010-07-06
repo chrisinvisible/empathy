@@ -71,6 +71,7 @@ EmpathyEvent *       empathy_event_manager_get_top_event (EmpathyEventManager *m
 GSList *             empathy_event_manager_get_events    (EmpathyEventManager *manager);
 void                 empathy_event_activate              (EmpathyEvent        *event);
 void                 empathy_event_inhibit_updates       (EmpathyEvent        *event);
+void                 empathy_event_approve               (EmpathyEvent        *event);
 
 G_END_DECLS
 

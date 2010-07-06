@@ -1219,3 +1219,13 @@ empathy_event_inhibit_updates (EmpathyEvent *event_public)
 
   event->inhibit = TRUE;
 }
+
+void
+empathy_event_approve (EmpathyEvent *event_public)
+{
+  EventPriv *event = (EventPriv *) event_public;
+
+  g_return_if_fail (event_public != NULL);
+
+  event_manager_approval_approve (event->approval);
+}
