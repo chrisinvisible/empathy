@@ -1670,8 +1670,16 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 {
 	GtkWidget *widget;
 	const gchar *dir;
+	EmpathyContact *contact;
+	gchar *title;
 
-	widget = gtk_file_chooser_dialog_new (_("Select a destination"),
+	contact = empathy_ft_handler_get_contact (handler);
+	g_assert (contact != NULL);
+
+	title = g_strdup_printf (_("Incoming file from %s"),
+		empathy_contact_get_name (contact));
+
+	widget = gtk_file_chooser_dialog_new (title,
 					      NULL,
 					      GTK_FILE_CHOOSER_ACTION_SAVE,
 					      GTK_STOCK_CANCEL,
@@ -1695,5 +1703,5 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 		G_CALLBACK (file_manager_receive_file_response_cb), handler);
 
 	gtk_widget_show (widget);
+	g_free (title);
 }
-
