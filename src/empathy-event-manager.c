@@ -72,6 +72,7 @@ typedef struct {
   GtkWidget *dialog;
   /* Channel of the CDO that will be used during the approval */
   TpChannel *main_channel;
+  gboolean auto_approved;
 } EventManagerApproval;
 
 typedef struct {
@@ -191,6 +192,22 @@ autoremove_event_timeout_cb (EventPriv *event)
   return FALSE;
 }
 
+static gboolean
+display_notify_area (void)
+
+{
+  GSettings *gsettings;
+  gboolean result;
+
+  gsettings = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+
+  result = g_settings_get_boolean (gsettings,
+      EMPATHY_PREFS_UI_EVENTS_NOTIFY_AREA);
+  g_object_unref (gsettings);
+
+  return result;
+}
+
 static void
 event_manager_add (EmpathyEventManager *manager,
     EmpathyContact *contact,
@@ -220,6 +237,15 @@ event_manager_add (EmpathyEventManager *manager,
 
   DEBUG ("Adding event %p", event);
   priv->events = g_slist_prepend (priv->events, event);
+
+  if (!display_notify_area ())
+    {
+      /* Don't fire the 'event-added' signal as we activate the event now */
+      approval->auto_approved = TRUE;
+      empathy_event_activate (&event->public);
+      return;
+    }
+
   g_signal_emit (event->manager, signals[EVENT_ADDED], 0, event);
 
   if (!event->public.must_ack)
@@ -278,10 +304,19 @@ handle_with_time_cb (GObject *source,
 static void
 event_manager_approval_approve (EventManagerApproval *approval)
 {
-  gint64 timestamp = gtk_get_current_event_time ();
+  gint64 timestamp;
 
-  if (timestamp == GDK_CURRENT_TIME)
-    timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
+  if (approval->auto_approved)
+    {
+      timestamp = EMPATHY_DISPATCHER_NON_USER_ACTION;
+    }
+  else
+    {
+      timestamp = gtk_get_current_event_time ();
+
+      if (timestamp == GDK_CURRENT_TIME)
+        timestamp = EMPATHY_DISPATCHER_CURRENT_TIME;
+    }
 
   g_assert (approval->operation != NULL);
 
