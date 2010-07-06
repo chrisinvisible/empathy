@@ -414,6 +414,8 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
 
   connection = tp_channel_borrow_connection (TP_CHANNEL (proxy));
 
+  priv->channels = g_list_remove (priv->channels, proxy);
+
   cd = g_hash_table_lookup (priv->connections, connection);
   /* Connection itself invalidated? */
   if (cd == NULL)
@@ -425,8 +427,6 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
 
   g_hash_table_remove (cd->dispatched_channels, object_path);
   g_hash_table_remove (cd->dispatching_channels, object_path);
-
-  priv->channels = g_list_remove (priv->channels, proxy);
 }
 
 static void
