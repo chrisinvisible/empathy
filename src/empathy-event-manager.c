@@ -711,8 +711,8 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
       tp_channel_get_identifier (approval->main_channel));
 
   event_manager_add (approval->manager, approval->contact,
-      EMPATHY_EVENT_TYPE_CHAT, EMPATHY_IMAGE_GROUP_MESSAGE, msg, invite_msg,
-      approval, event_room_channel_process_func, NULL);
+      EMPATHY_EVENT_TYPE_INVITATION, EMPATHY_IMAGE_GROUP_MESSAGE, msg,
+      invite_msg, approval, event_room_channel_process_func, NULL);
 
   empathy_sound_play (window, EMPATHY_SOUND_CONVERSATION_NEW);
 
