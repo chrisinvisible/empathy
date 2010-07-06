@@ -152,6 +152,16 @@ add_notification_actions (EmpathyStatusIcon *self,
 					self, NULL);
 			break;
 
+		case EMPATHY_EVENT_TYPE_TRANSFER:
+			notify_notification_add_action (notification,
+				"decline", _("Decline"), (NotifyActionCallback) notification_decline_cb,
+					self, NULL);
+
+			notify_notification_add_action (notification,
+				"accept", _("Accept"), (NotifyActionCallback) notification_approve_cb,
+					self, NULL);
+			break;
+
 		default:
 			break;
 	}
