@@ -261,18 +261,21 @@ aggregator_add_persona_from_details_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
-  EmpathyIndividualManager *self = EMPATHY_INDIVIDUAL_MANAGER (user_data);
-  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+  FolksIndividualAggregator *aggregator = FOLKS_INDIVIDUAL_AGGREGATOR (source);
+  EmpathyContact *contact = EMPATHY_CONTACT (user_data);
   FolksPersona *persona;
   GError *error = NULL;
 
   persona = folks_individual_aggregator_add_persona_from_details_finish (
-      priv->aggregator, result, &error);
+      aggregator, result, &error);
   if (error != NULL)
     {
       g_warning ("failed to add individual from contact: %s", error->message);
       g_clear_error (&error);
     }
+
+  /* We can unref the contact now */
+  g_object_unref (contact);
 }
 
 void
@@ -289,6 +292,10 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
 
   priv = GET_PRIV (self);
 
+  /* We need to ref the contact since otherwise its linked TpHandle will be
+   * destroyed. */
+  g_object_ref (contact);
+
   DEBUG (G_STRLOC ": adding individual from contact %s (%s)",
       empathy_contact_get_id (contact), empathy_contact_get_name (contact));
 
@@ -301,7 +308,7 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
 
   folks_individual_aggregator_add_persona_from_details (
       priv->aggregator, NULL, "telepathy", store_id, details,
-      aggregator_add_persona_from_details_cb, self);
+      aggregator_add_persona_from_details_cb, contact);
 
   g_hash_table_destroy (details);
 }
