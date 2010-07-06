@@ -1198,6 +1198,8 @@ individual_store_contact_sort (FolksIndividual *individual_a,
 {
   gint ret_val;
 
+  g_return_val_if_fail (individual_a != NULL || individual_b != NULL, 0);
+
   /* alias */
   ret_val = g_utf8_collate (folks_individual_get_alias (individual_a),
       folks_individual_get_alias (individual_b));
@@ -1241,11 +1243,11 @@ individual_store_state_sort_func (GtkTreeModel *model,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator_b,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_FAKE_GROUP, &fake_group_b, -1);
 
-  ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-      name_a, name_b, individual_a, individual_b, fake_group_a, fake_group_b);
-
-  if (ret_val != 0)
+  if (individual_a == NULL || individual_b == NULL)
     {
+      ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
+          name_a, name_b, individual_a, individual_b, fake_group_a,
+          fake_group_b);
       goto free_and_out;
     }
 
@@ -1306,10 +1308,10 @@ individual_store_name_sort_func (GtkTreeModel *model,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator_b,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_FAKE_GROUP, &fake_group_b, -1);
 
-  ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
-      name_a, name_b, individual_a, individual_b, fake_group_a, fake_group_b);
-
-  if (ret_val == 0)
+  if (individual_a == NULL || individual_b == NULL)
+    ret_val = compare_separator_and_groups (is_separator_a, is_separator_b,
+        name_a, name_b, individual_a, individual_b, fake_group_a, fake_group_b);
+  else
     ret_val = individual_store_contact_sort (individual_a, individual_b);
 
   if (individual_a)
