@@ -649,20 +649,6 @@ chat_input_history_update (EmpathyChat *chat,
 	g_free (text);
 }
 
-static void
-chat_command_join_cb (EmpathyDispatchOperation *dispatch,
-		      const GError             *error,
-		      gpointer                  user_data)
-{
-	EmpathyChat *chat = user_data;
-
-	if (error != NULL) {
-		DEBUG ("Error: %s", error->message);
-		empathy_chat_view_append_event (chat->view,
-			_("Failed to join chat room"));
-	}
-}
-
 typedef struct {
 	EmpathyChat *chat;
 	gchar *message;
@@ -749,8 +735,7 @@ chat_command_join (EmpathyChat *chat,
 			connection = empathy_tp_chat_get_connection (priv->tp_chat);
 			empathy_dispatcher_join_muc (connection, rooms[i],
 						     gtk_get_current_event_time (),
-						     chat_command_join_cb,
-						     chat);
+						     NULL, NULL);
 		}
 		i++;
 	}
