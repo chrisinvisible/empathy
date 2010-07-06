@@ -242,6 +242,9 @@ reconnected_connection_ready_cb (TpConnection *connection,
 
 	DEBUG ("Account reconnected, request a new Text channel");
 
+	/* FIXME: Ideally we should ask to handle ourself the channel so we can
+	* report the error if any but this is blocked by
+	* https://bugs.freedesktop.org/show_bug.cgi?id=13422 */
 	switch (priv->handle_type) {
 		case TP_HANDLE_TYPE_CONTACT:
 			empathy_dispatcher_chat_with_contact_id (
@@ -702,6 +705,9 @@ chat_command_join (EmpathyChat *chat,
 
 	GStrv rooms = g_strsplit_set (strv[1], ", ", -1);
 
+	/* FIXME: Ideally we should ask to handle ourself the channel so we can
+	* report the error if any but this is blocked by
+	* https://bugs.freedesktop.org/show_bug.cgi?id=13422 */
 	while (rooms[i] != NULL) {
 		/* ignore empty strings */
 		if (!EMP_STR_EMPTY (rooms[i])) {
