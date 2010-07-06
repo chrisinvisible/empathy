@@ -983,11 +983,7 @@ presence_chooser_finalize (GObject *object)
 GtkWidget *
 empathy_presence_chooser_new (void)
 {
-	GtkWidget *chooser;
-
-	chooser = g_object_new (EMPATHY_TYPE_PRESENCE_CHOOSER, NULL);
-
-	return chooser;
+	return g_object_new (EMPATHY_TYPE_PRESENCE_CHOOSER, NULL);
 }
 
 static void
