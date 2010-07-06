@@ -454,6 +454,7 @@ event_channel_process_voip_func (EventPriv *event)
   GtkWidget *image;
   EmpathyTpCall *call;
   gboolean video;
+  gchar *title;
 
   if (event->approval->dialog != NULL)
     {
@@ -474,6 +475,12 @@ event_channel_process_voip_func (EventPriv *event)
       _("%s is video calling you. Do you want to answer?"):
       _("%s is calling you. Do you want to answer?"),
       empathy_contact_get_name (event->approval->contact));
+
+  title = g_strdup_printf (_("Incoming call from %s"),
+      empathy_contact_get_name (event->approval->contact));
+
+  gtk_window_set_title (GTK_WINDOW (dialog), title);
+  g_free (title);
 
   /* Set image of the dialog */
   if (video)
