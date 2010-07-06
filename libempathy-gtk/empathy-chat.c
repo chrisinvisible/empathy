@@ -250,8 +250,7 @@ reconnected_connection_ready_cb (TpConnection *connection,
 			break;
 		case TP_HANDLE_TYPE_ROOM:
 			empathy_dispatcher_join_muc (connection,
-				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION,
-				NULL, NULL);
+				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
 		default:
 			g_assert_not_reached ();
@@ -710,8 +709,7 @@ chat_command_join (EmpathyChat *chat,
 
 			connection = empathy_tp_chat_get_connection (priv->tp_chat);
 			empathy_dispatcher_join_muc (connection, rooms[i],
-						     gtk_get_current_event_time (),
-						     NULL, NULL);
+						     gtk_get_current_event_time ());
 		}
 		i++;
 	}

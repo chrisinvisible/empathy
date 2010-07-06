@@ -899,7 +899,7 @@ join_chatroom (EmpathyChatroom *chatroom,
 	room = empathy_chatroom_get_room (chatroom);
 
 	DEBUG ("Requesting channel for '%s'", room);
-	empathy_dispatcher_join_muc (connection, room, timestamp, NULL, NULL);
+	empathy_dispatcher_join_muc (connection, room, timestamp);
 }
 
 typedef struct

@@ -361,8 +361,7 @@ account_status_changed_cb (TpAccount *account,
     return;
 
   empathy_dispatcher_join_muc (conn,
-      empathy_chatroom_get_room (room), EMPATHY_DISPATCHER_NON_USER_ACTION,
-      NULL, NULL);
+      empathy_chatroom_get_room (room), EMPATHY_DISPATCHER_NON_USER_ACTION);
 }
 
 static void
@@ -411,7 +410,7 @@ account_manager_chatroom_ready_cb (GObject *source_object,
             {
               empathy_dispatcher_join_muc (conn,
                   empathy_chatroom_get_room (room),
-                  EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
+                  EMPATHY_DISPATCHER_NON_USER_ACTION);
             }
         }
 

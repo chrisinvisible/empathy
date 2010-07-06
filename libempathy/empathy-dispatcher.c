@@ -1360,9 +1360,7 @@ dispatcher_request_handles_cb (TpConnection *connection,
 void
 empathy_dispatcher_join_muc (TpConnection *connection,
                              const gchar *roomname,
-                             gint64 timestamp,
-                             EmpathyDispatcherRequestCb *callback,
-                             gpointer user_data)
+                             gint64 timestamp)
 {
   EmpathyDispatcher *self;
   EmpathyDispatcherPriv *priv;
@@ -1383,7 +1381,7 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   /* Don't know the room handle yet */
   request_data  = new_dispatcher_request_data (self, connection,
     TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL, timestamp,
-    NULL, callback, user_data);
+    NULL, NULL, NULL);
   request_data->should_ensure = TRUE;
 
   connection_data->outstanding_requests = g_list_prepend
