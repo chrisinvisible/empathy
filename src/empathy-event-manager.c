@@ -685,6 +685,7 @@ event_room_channel_process_func (EventPriv *event)
 {
   GtkWidget *dialog, *button, *image;
   TpChannel *channel = event->approval->main_channel;
+  gchar *title;
 
   if (event->approval->dialog != NULL)
     {
@@ -695,6 +696,12 @@ event_room_channel_process_func (EventPriv *event)
   /* create dialog */
   dialog = gtk_message_dialog_new (NULL, 0,
       GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE, _("Room invitation"));
+
+  title = g_strdup_printf (_("Invitation to join %s"),
+      tp_channel_get_identifier (channel));
+
+  gtk_window_set_title (GTK_WINDOW (dialog), title);
+  g_free (title);
 
   gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
       _("%s is inviting you to join %s"),
