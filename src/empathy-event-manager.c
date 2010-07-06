@@ -375,6 +375,10 @@ reject_channel_claim_cb (GObject *source,
     {
       empathy_tp_chat_leave (user_data);
     }
+  else if (EMPATHY_IS_TP_FILE (user_data))
+    {
+      empathy_tp_file_close (user_data);
+    }
 
 out:
   g_object_unref (user_data);
@@ -868,6 +872,9 @@ approve_channels (TpSimpleApprover *approver,
   else if (channel_type == TP_IFACE_QUARK_CHANNEL_TYPE_FILE_TRANSFER)
     {
       TpHandle handle;
+      EmpathyTpFile *tp_file = empathy_tp_file_new (channel, TRUE);
+
+      approval->handler_instance = G_OBJECT (tp_file);
 
       handle = tp_channel_get_handle (channel, NULL);
 
