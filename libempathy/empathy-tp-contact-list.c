@@ -242,6 +242,7 @@ tp_contact_list_group_ready_cb (TpChannel *channel,
 		g_object_unref (old_group);
 	}
 
+	/* Pass the reference on the TpChannel to priv->groups */
 	g_hash_table_insert (priv->groups, (gpointer) group_name, channel);
 	DEBUG ("Group %s added", group_name);
 
