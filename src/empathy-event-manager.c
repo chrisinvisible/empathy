@@ -1229,3 +1229,13 @@ empathy_event_approve (EmpathyEvent *event_public)
 
   event_manager_approval_approve (event->approval);
 }
+
+void
+empathy_event_decline (EmpathyEvent *event_public)
+{
+  EventPriv *event = (EventPriv *) event_public;
+
+  g_return_if_fail (event_public != NULL);
+
+  reject_approval (event->approval);
+}
