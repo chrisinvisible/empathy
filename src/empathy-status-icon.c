@@ -119,6 +119,17 @@ notification_approve_cb (NotifyNotification *notification,
 }
 
 static void
+notification_decline_cb (NotifyNotification *notification,
+			gchar              *action,
+			EmpathyStatusIcon  *icon)
+{
+	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
+
+	if (priv->event)
+		empathy_event_decline (priv->event);
+}
+
+static void
 add_notification_actions (EmpathyStatusIcon *self,
 			  NotifyNotification *notification)
 {
@@ -128,6 +139,16 @@ add_notification_actions (EmpathyStatusIcon *self,
 		case EMPATHY_EVENT_TYPE_CHAT:
 			notify_notification_add_action (notification,
 				"respond", _("Respond"), (NotifyActionCallback) notification_approve_cb,
+					self, NULL);
+			break;
+
+		case EMPATHY_EVENT_TYPE_VOIP:
+			notify_notification_add_action (notification,
+				"reject", _("Reject"), (NotifyActionCallback) notification_decline_cb,
+					self, NULL);
+
+			notify_notification_add_action (notification,
+				"answer", _("Answer"), (NotifyActionCallback) notification_approve_cb,
 					self, NULL);
 			break;
 
