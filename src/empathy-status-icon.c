@@ -119,6 +119,20 @@ notification_action_cb (NotifyNotification *notification,
 }
 
 static void
+add_notification_actions (EmpathyStatusIcon *self,
+			  NotifyNotification *notification)
+{
+	EmpathyStatusIconPriv *priv = GET_PRIV (self);
+
+	if (priv->event->type ==EMPATHY_EVENT_TYPE_PRESENCE)
+		return;
+
+	notify_notification_add_action (notification,
+		"respond", _("Respond"), (NotifyActionCallback) notification_action_cb,
+		self, NULL);
+}
+
+static void
 status_icon_update_notification (EmpathyStatusIcon *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
@@ -172,15 +186,8 @@ status_icon_update_notification (EmpathyStatusIcon *icon)
 			}
 
 			if (empathy_notify_manager_has_capability (priv->notify_mgr,
-			           EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS) &&
-			           priv->event->type != EMPATHY_EVENT_TYPE_PRESENCE) {
-				notify_notification_add_action (notification,
-					"respond",
-					_("Respond"),
-					(NotifyActionCallback) notification_action_cb,
-					icon,
-					NULL);
-			}
+			           EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS))
+				add_notification_actions (icon, notification);
 
 			g_signal_connect (notification, "closed",
 					  G_CALLBACK (status_icon_notification_closed_cb), icon);
