@@ -108,14 +108,14 @@ notification_close_helper (EmpathyStatusIconPriv *priv)
 }
 
 static void
-notification_action_cb (NotifyNotification *notification,
+notification_approve_cb (NotifyNotification *notification,
 			gchar              *action,
 			EmpathyStatusIcon  *icon)
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
 
 	if (priv->event)
-		empathy_event_activate (priv->event);
+		empathy_event_approve (priv->event);
 }
 
 static void
@@ -124,12 +124,16 @@ add_notification_actions (EmpathyStatusIcon *self,
 {
 	EmpathyStatusIconPriv *priv = GET_PRIV (self);
 
-	if (priv->event->type ==EMPATHY_EVENT_TYPE_PRESENCE)
-		return;
+	switch (priv->event->type) {
+		case EMPATHY_EVENT_TYPE_CHAT:
+			notify_notification_add_action (notification,
+				"respond", _("Respond"), (NotifyActionCallback) notification_approve_cb,
+					self, NULL);
+			break;
 
-	notify_notification_add_action (notification,
-		"respond", _("Respond"), (NotifyActionCallback) notification_action_cb,
-		self, NULL);
+		default:
+			break;
+	}
 }
 
 static void
