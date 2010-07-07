@@ -6,7 +6,7 @@ AM_CFLAGS = \
     -I$(top_srcdir) \
     -I$(top_builddir) \
     $(WARN_CFLAGS) \
-    $(LIBEMPATHY_CFLAGS)
+    $(EMPATHY_CFLAGS)
 
 EXTRA_DIST = \
     all.xml \

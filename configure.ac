@@ -139,67 +139,27 @@ AC_SUBST(ERROR_CFLAGS)
 # Pkg-Config dependency checks
 # -----------------------------------------------------------
 
-PKG_CHECK_MODULES(LIBEMPATHY,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gio-unix-2.0 >= $GLIB_REQUIRED
-   libxml-2.0
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   telepathy-farsight
-   farsight2-0.10
-   gstreamer-0.10
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
-PKG_CHECK_MODULES(LIBEMPATHYGTK,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gconf-2.0 >= $GCONF_REQUIRED
-   x11
-   gtk+-2.0 >= $GTK_REQUIRED
-   libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   farsight2-0.10
-   gstreamer-0.10
-   gstreamer-interfaces-0.10
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
 PKG_CHECK_MODULES(EMPATHY,
 [
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gdk-x11-2.0
-   gtk+-2.0 >= $GTK_REQUIRED
-   libebook-1.2
    dbus-glib-1
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   telepathy-farsight
    farsight2-0.10
-   gstreamer-0.10
-   unique-1.0 >= $UNIQUE_REQUIRED
-   gnome-keyring-1 >= $KEYRING_REQUIRED
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
-PKG_CHECK_MODULES(LIBEMPATHY_ACCOUNTS_PANEL,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
+   gconf-2.0 >= $GCONF_REQUIRED
    gdk-x11-2.0
-   gtk+-2.0 >= $GTK_REQUIRED
-   libebook-1.2
-   dbus-glib-1
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   unique-1.0 >= $UNIQUE_REQUIRED
+   gio-2.0 >= $GLIB_REQUIRED
+   gio-unix-2.0 >= $GLIB_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
+   gobject-2.0
+   gstreamer-0.10
+   gstreamer-interfaces-0.10
+   gtk+-2.0 >= $GTK_REQUIRED
+   libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
+   libebook-1.2
+   libxml-2.0
+   telepathy-farsight
+   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-logger-0.1 >= $TELEPATHY_LOGGER
+   unique-1.0 >= $UNIQUE_REQUIRED
+   x11
 ])
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
