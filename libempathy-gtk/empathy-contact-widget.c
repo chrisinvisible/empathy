@@ -579,15 +579,11 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
 
   if (group != NULL)
     {
-      FolksIndividual *individual = folks_individual_dup_from_empathy_contact (
+      FolksPersona *persona = empathy_contact_get_persona (
           information->contact);
 
-      if (individual != NULL)
-        {
-          folks_groups_change_group (FOLKS_GROUPS (individual), group,
-              !was_enabled);
-          g_object_unref (individual);
-        }
+      if (persona != NULL && FOLKS_IS_GROUPS (persona))
+        folks_groups_change_group (FOLKS_GROUPS (persona), group, !was_enabled);
 
       g_free (group);
     }
@@ -795,7 +791,7 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
   GtkTreeView *view;
   GtkListStore *store;
   GtkTreeIter iter;
-  FolksIndividual *individual;
+  FolksPersona *persona;
   const gchar *group;
 
   view = GTK_TREE_VIEW (information->treeview_groups);
@@ -809,13 +805,10 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
       COL_ENABLED, TRUE,
       -1);
 
-  individual = folks_individual_dup_from_empathy_contact (information->contact);
+  persona = empathy_contact_get_persona (information->contact);
 
-  if (individual != NULL)
-    {
-      folks_groups_change_group (FOLKS_GROUPS (individual), group, TRUE);
-      g_object_unref (individual);
-    }
+  if (persona != NULL && FOLKS_IS_GROUPS (persona))
+    folks_groups_change_group (FOLKS_GROUPS (persona), group, TRUE);
 }
 
 static void
@@ -1337,14 +1330,7 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          FolksIndividual *individual =
-              folks_individual_dup_from_empathy_contact (information->contact);
-
-          if (individual != NULL)
-            {
-              folks_alias_set_alias (FOLKS_ALIAS (individual), alias);
-              g_object_unref (individual);
-            }
+          empathy_contact_set_alias (information->contact, alias);
         }
     }
 
@@ -1535,17 +1521,15 @@ contact_widget_contact_update (EmpathyContactWidget *information)
 
       if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
         {
-          FolksIndividual *individual =
-              folks_individual_dup_from_empathy_contact (information->contact);
+          FolksPersona *persona = empathy_contact_get_persona (
+              information->contact);
 
-          if (individual != NULL)
+          if (persona != NULL && FOLKS_IS_FAVOURITE (persona))
             {
               gboolean is_favourite = folks_favourite_get_is_favourite (
-                  FOLKS_FAVOURITE (individual));
+                  FOLKS_FAVOURITE (persona));
               contact_widget_favourites_changed_cb (information->manager,
                   information->contact, is_favourite, information);
-
-              g_object_unref (individual);
             }
         }
 
@@ -1672,14 +1656,12 @@ static void
 favourite_toggled_cb (GtkToggleButton *button,
     EmpathyContactWidget *information)
 {
-  FolksIndividual *individual = folks_individual_dup_from_empathy_contact (
-      information->contact);
+  FolksPersona *persona = empathy_contact_get_persona (information->contact);
 
-  if (individual != NULL)
+  if (persona != NULL && FOLKS_IS_FAVOURITE (persona))
     {
       gboolean active = gtk_toggle_button_get_active (button);
-      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), active);
-      g_object_unref (individual);
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (persona), active);
     }
 }
 

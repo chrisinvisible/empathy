@@ -93,7 +93,6 @@ void empathy_connect_new_account (TpAccount *account,
 TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType type);
 gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_dup_from_folks_individual (FolksIndividual *individual);
-FolksIndividual *folks_individual_dup_from_empathy_contact (EmpathyContact *contact);
 TpChannelGroupChangeReason tp_chanel_group_change_reason_from_folks_groups_change_reason (FolksGroupsChangeReason reason);
 
 G_END_DECLS

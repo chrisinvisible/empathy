@@ -621,38 +621,6 @@ empathy_contact_dup_from_folks_individual (FolksIndividual *individual)
   return contact;
 }
 
-/* TODO: This also needs to be eliminated, and is horrifically slow. */
-
-/* Retrieve the first Individual containing a TpContact that corresponds to the
- * given EmpathyContact. Note that this is a temporary convenience. See
- * the TODO above. */
-FolksIndividual *
-folks_individual_dup_from_empathy_contact (EmpathyContact *contact)
-{
-  EmpathyIndividualManager *manager;
-  FolksIndividual *individual = NULL;
-  GList *individuals, *l;
-
-  manager = empathy_individual_manager_dup_singleton ();
-  individuals = empathy_individual_manager_get_members (manager);
-
-  for (l = individuals; (l != NULL) && (individual == NULL); l = l->next)
-    {
-      FolksIndividual *i = FOLKS_INDIVIDUAL (l->data);
-      EmpathyContact *c = empathy_contact_dup_from_folks_individual (i);
-
-      if (c == contact)
-        individual = g_object_ref (i);
-
-      g_object_unref (c);
-    }
-
-  g_list_free (individuals);
-  g_object_unref (manager);
-
-  return individual;
-}
-
 TpChannelGroupChangeReason
 tp_chanel_group_change_reason_from_folks_groups_change_reason (
     FolksGroupsChangeReason reason)
