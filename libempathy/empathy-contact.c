@@ -629,6 +629,16 @@ empathy_contact_set_alias (EmpathyContact *contact,
 
   g_object_ref (contact);
 
+  /* Set the alias on the persona if possible */
+  persona = empathy_contact_get_persona (contact);
+  if (persona != NULL && FOLKS_IS_ALIAS (persona))
+    {
+      DEBUG ("Setting alias for contact %s to %s",
+          empathy_contact_get_id (contact), alias);
+
+      folks_alias_set_alias (FOLKS_ALIAS (persona), alias);
+    }
+
   if (tp_strdiff (alias, priv->alias))
     {
       g_free (priv->alias);
@@ -768,6 +778,11 @@ empathy_contact_set_persona (EmpathyContact *contact,
   priv->persona = g_object_ref (persona);
 
   g_object_notify (G_OBJECT (contact), "persona");
+
+  /* Set the persona's alias, since ours could've been set using
+   * empathy_contact_set_alias() before we had a persona; this happens when
+   * adding a contact. */
+  empathy_contact_set_alias (contact, priv->alias);
 }
 
 TpConnection *
