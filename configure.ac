@@ -57,9 +57,6 @@ WEBKIT_REQUIRED=1.1.15
 # maintainer mode is forced
 ifelse(empathy_released, 1, [], [enable_maintainer_mode="yes"])
 GNOME_MAINTAINER_MODE_DEFINES
-if test $USE_MAINTAINER_MODE = yes; then
-  AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
-fi
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
@@ -165,9 +162,32 @@ PKG_CHECK_MODULES(EMPATHY,
    x11
 ])
 
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
-
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
+
+# -----------------------------------------------------------
+# GTK+
+# -----------------------------------------------------------
+AC_ARG_ENABLE(gtk3,
+              AS_HELP_STRING([--enable-gtk3=@<:@no/yes/auto@:>@],
+                             [build with GTK+3]), ,
+                             enable_gtk3=auto)
+
+# Try to use GTK+3 if available
+if test "x$enable_gtk3" != "xno"; then
+  PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
+      enable_gtk3="yes", enable_gtk3="no")
+fi
+
+# ...if not use GTK+2
+if test "x$enable_gtk3" == "xno"; then
+  enable_gtk3=no
+  PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
+
+  # Enable GSEAL checks if needed
+  if test $USE_MAINTAINER_MODE = yes; then
+    AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
+  fi
+fi
 
 # -----------------------------------------------------------
 # Enable debug
@@ -489,6 +509,7 @@ Configure summary:
 	Compiler Flags..............:  ${CFLAGS} ${ERROR_CFLAGS}
 	Prefix......................:  ${prefix}
 	Coding style checks.........:  ${ENABLE_CODING_STYLE_CHECKS}
+	Use GTK+3...................:  ${enable_gtk3}
 
     Features:
 	Spell checking (enchant)....:  ${have_enchant}
