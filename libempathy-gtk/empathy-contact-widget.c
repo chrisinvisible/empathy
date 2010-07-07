@@ -579,12 +579,7 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
 
   if (group != NULL)
     {
-      FolksPersona *persona = empathy_contact_get_persona (
-          information->contact);
-
-      if (persona != NULL && FOLKS_IS_GROUPS (persona))
-        folks_groups_change_group (FOLKS_GROUPS (persona), group, !was_enabled);
-
+      empathy_contact_change_group (information->contact, group, !was_enabled);
       g_free (group);
     }
 }
@@ -791,7 +786,6 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
   GtkTreeView *view;
   GtkListStore *store;
   GtkTreeIter iter;
-  FolksPersona *persona;
   const gchar *group;
 
   view = GTK_TREE_VIEW (information->treeview_groups);
@@ -805,10 +799,7 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
       COL_ENABLED, TRUE,
       -1);
 
-  persona = empathy_contact_get_persona (information->contact);
-
-  if (persona != NULL && FOLKS_IS_GROUPS (persona))
-    folks_groups_change_group (FOLKS_GROUPS (persona), group, TRUE);
+  empathy_contact_change_group (information->contact, group, TRUE);
 }
 
 static void

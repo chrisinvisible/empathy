@@ -81,6 +81,8 @@ const gchar * empathy_contact_get_id (EmpathyContact *contact);
 void empathy_contact_set_id (EmpathyContact *contact, const gchar *id);
 const gchar * empathy_contact_get_alias (EmpathyContact *contact);
 void empathy_contact_set_alias (EmpathyContact *contact, const gchar *alias);
+void empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
+    gboolean is_member);
 EmpathyAvatar * empathy_contact_get_avatar (EmpathyContact *contact);
 void empathy_contact_set_avatar (EmpathyContact *contact,
     EmpathyAvatar *avatar);

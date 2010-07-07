@@ -67,6 +67,7 @@ typedef struct {
    * more fields by searching the address using geoclue.
    */
   GHashTable *location;
+  GHashTable *groups;
 } EmpathyContactPriv;
 
 static void contact_finalize (GObject *object);
@@ -334,6 +335,7 @@ empathy_contact_init (EmpathyContact *contact)
   contact->priv = priv;
 
   priv->location = NULL;
+  priv->groups = NULL;
 }
 
 static void
@@ -345,6 +347,8 @@ contact_finalize (GObject *object)
 
   DEBUG ("finalize: %p", object);
 
+  if (priv->groups != NULL)
+    g_hash_table_destroy (priv->groups);
   g_free (priv->alias);
   g_free (priv->id);
   g_free (priv->presence_message);
@@ -649,6 +653,39 @@ empathy_contact_set_alias (EmpathyContact *contact,
   g_object_unref (contact);
 }
 
+void
+empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
+    gboolean is_member)
+{
+  EmpathyContactPriv *priv;
+  FolksPersona *persona;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+  g_return_if_fail (group != NULL);
+
+  priv = GET_PRIV (contact);
+
+  /* Normally pass through the changes to the persona */
+  persona = empathy_contact_get_persona (contact);
+  if (persona != NULL)
+    {
+      if (FOLKS_IS_GROUPS (persona))
+        folks_groups_change_group (FOLKS_GROUPS (persona), group, is_member);
+      return;
+    }
+
+  /* If the persona doesn't exist yet, we have to cache the changes until it
+   * does */
+  if (priv->groups == NULL)
+    {
+      priv->groups = g_hash_table_new_full (g_str_hash, g_str_equal, g_free,
+          NULL);
+    }
+
+  g_hash_table_insert (priv->groups, g_strdup (group),
+      GUINT_TO_POINTER (is_member));
+}
+
 EmpathyAvatar *
 empathy_contact_get_avatar (EmpathyContact *contact)
 {
@@ -783,6 +820,16 @@ empathy_contact_set_persona (EmpathyContact *contact,
    * empathy_contact_set_alias() before we had a persona; this happens when
    * adding a contact. */
   empathy_contact_set_alias (contact, priv->alias);
+
+  /* Set the persona's groups */
+  if (priv->groups != NULL)
+    {
+      if (FOLKS_IS_GROUPS (persona))
+        folks_groups_set_groups (FOLKS_GROUPS (persona), priv->groups);
+
+      g_hash_table_destroy (priv->groups);
+      priv->groups = NULL;
+    }
 }
 
 TpConnection *
