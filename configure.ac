@@ -152,7 +152,6 @@ PKG_CHECK_MODULES(EMPATHY,
    gobject-2.0
    gstreamer-0.10
    gstreamer-interfaces-0.10
-   libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
    libebook-1.2
    libxml-2.0
    telepathy-farsight
@@ -176,12 +175,18 @@ AC_ARG_ENABLE(gtk3,
 if test "x$enable_gtk3" != "xno"; then
   PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
       enable_gtk3="yes", enable_gtk3="no")
+
+  # GTK3 specific deps
+  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
 fi
 
 # ...if not use GTK+2
 if test "x$enable_gtk3" == "xno"; then
   enable_gtk3=no
   PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
+
+  # GTK2 specific deps
+  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
 
   # Enable GSEAL checks if needed
   if test $USE_MAINTAINER_MODE = yes; then

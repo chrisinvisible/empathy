@@ -9,6 +9,7 @@ AM_CPPFLAGS =                                           \
 	$(EMPATHY_CFLAGS)				\
 	$(GTK_CFLAGS)				\
 	$(LIBNOTIFY_CFLAGS)				\
+	$(CANBERRA_CFLAGS) \
 	$(ENCHANT_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
 	$(GEOCLUE_CFLAGS)				\
@@ -133,6 +134,7 @@ libempathy_gtk_la_LIBADD =			\
 	$(EMPATHY_LIBS)			\
 	$(GTK_LIBS)			\
 	$(LIBNOTIFY_LIBS)			\
+	$(CANBERRA_LIBS) \
 	$(ENCHANT_LIBS)				\
 	$(LIBCHAMPLAIN_LIBS)			\
 	$(GEOCLUE_LIBS)				\
