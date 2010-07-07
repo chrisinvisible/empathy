@@ -1858,7 +1858,7 @@ empathy_receive_file_with_file_chooser (EmpathyFTHandler *handler)
 	g_assert (contact != NULL);
 
 	title = g_strdup_printf (_("Incoming file from %s"),
-		empathy_contact_get_name (contact));
+		empathy_contact_get_alias (contact));
 
 	widget = gtk_file_chooser_dialog_new (title,
 					      NULL,

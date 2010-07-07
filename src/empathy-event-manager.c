@@ -476,10 +476,10 @@ event_channel_process_voip_func (EventPriv *event)
     GTK_MESSAGE_DIALOG (dialog), video ?
       _("%s is video calling you. Do you want to answer?"):
       _("%s is calling you. Do you want to answer?"),
-      empathy_contact_get_name (event->approval->contact));
+      empathy_contact_get_alias (event->approval->contact));
 
   title = g_strdup_printf (_("Incoming call from %s"),
-      empathy_contact_get_name (event->approval->contact));
+      empathy_contact_get_alias (event->approval->contact));
 
   gtk_window_set_title (GTK_WINDOW (dialog), title);
   g_free (title);
@@ -540,7 +540,7 @@ event_manager_chat_message_received_cb (EmpathyTpChat *tp_chat,
   event = event_lookup_by_approval (approval->manager, approval);
 
   sender = empathy_message_get_sender (message);
-  header = empathy_contact_get_name (sender);
+  header = empathy_contact_get_alias (sender);
   msg = empathy_message_get_body (message);
 
   channel = empathy_tp_chat_get_channel (tp_chat);
@@ -621,7 +621,7 @@ event_manager_media_channel_got_contact (EventManagerApproval *approval)
 
   header = g_strdup_printf (
     video ? _("Incoming video call from %s") :_("Incoming call from %s"),
-    empathy_contact_get_name (approval->contact));
+    empathy_contact_get_alias (approval->contact));
 
   event_manager_add (approval->manager, approval->contact,
       EMPATHY_EVENT_TYPE_VOIP,
@@ -707,7 +707,7 @@ event_room_channel_process_func (EventPriv *event)
 
   gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
       _("%s is inviting you to join %s"),
-      empathy_contact_get_name (event->approval->contact),
+      empathy_contact_get_alias (event->approval->contact),
       tp_channel_get_identifier (channel));
 
   gtk_dialog_set_default_response (GTK_DIALOG (dialog),
@@ -758,7 +758,7 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
       NULL, NULL, &invite_msg);
 
   msg = g_strdup_printf (_("%s invited you to join %s"),
-      empathy_contact_get_name (approval->contact),
+      empathy_contact_get_alias (approval->contact),
       tp_channel_get_identifier (approval->main_channel));
 
   event_manager_add (approval->manager, approval->contact,
@@ -785,7 +785,7 @@ event_manager_ft_got_contact_cb (TpConnection *connection,
   approval->contact = g_object_ref (contact);
 
   header = g_strdup_printf (_("Incoming file transfer from %s"),
-                            empathy_contact_get_name (approval->contact));
+                            empathy_contact_get_alias (approval->contact));
 
   event_manager_add (approval->manager, approval->contact,
       EMPATHY_EVENT_TYPE_TRANSFER, EMPATHY_IMAGE_DOCUMENT_SEND, header, NULL,
@@ -986,7 +986,7 @@ event_manager_pendings_changed_cb (EmpathyContactList  *list,
     }
 
   header = g_strdup_printf (_("Subscription requested by %s"),
-    empathy_contact_get_name (contact));
+    empathy_contact_get_alias (contact));
 
   if (!EMP_STR_EMPTY (message))
     event_msg = g_strdup_printf (_("\nMessage: %s"), message);
@@ -1033,7 +1033,7 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
                 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNOUT))
             {
               header = g_strdup_printf (_("%s is now offline."),
-                  empathy_contact_get_name (contact));
+                  empathy_contact_get_alias (contact));
 
               event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
                   EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);
@@ -1053,7 +1053,7 @@ event_manager_presence_changed_cb (EmpathyContact *contact,
                 EMPATHY_PREFS_NOTIFICATIONS_CONTACT_SIGNIN))
             {
               header = g_strdup_printf (_("%s is now online."),
-                  empathy_contact_get_name (contact));
+                  empathy_contact_get_alias (contact));
 
               event_manager_add (manager, contact, EMPATHY_EVENT_TYPE_PRESENCE,
                   EMPATHY_IMAGE_AVATAR_DEFAULT, header, NULL, NULL, NULL, NULL);

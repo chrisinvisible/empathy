@@ -1281,7 +1281,7 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 	}
 
 	sender = empathy_message_get_sender (message);
-	header = empathy_contact_get_name (sender);
+	header = empathy_contact_get_alias (sender);
 	body = empathy_message_get_body (message);
 	escaped = g_markup_escape_text (body, -1);
 	has_x_canonical_append = empathy_notify_manager_has_capability (

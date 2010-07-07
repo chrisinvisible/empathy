@@ -204,7 +204,7 @@ theme_boxes_maybe_append_header (EmpathyThemeBoxes *theme,
 	gboolean              consecutive;
 
 	contact = empathy_message_get_sender (msg);
-	name = empathy_contact_get_name (contact);
+	name = empathy_contact_get_alias (contact);
 	last_contact = empathy_chat_text_view_get_last_contact (view);
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (theme));
 	time_ = empathy_message_get_timestamp (msg);
@@ -347,7 +347,7 @@ theme_boxes_append_message (EmpathyChatTextView *view,
 		gchar *body;
 
 		body = g_strdup_printf (" * %s %s",
-					empathy_contact_get_name (sender),
+					empathy_contact_get_alias (sender),
 					empathy_message_get_body (message));
 		empathy_chat_text_view_append_body (EMPATHY_CHAT_TEXT_VIEW (view),
 						    body,

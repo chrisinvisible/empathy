@@ -135,16 +135,16 @@ contact_selector_dialog_account_changed_cb (GtkWidget *widget,
 
       DEBUG ("Adding contact ID %s, Name %s",
              empathy_contact_get_id (contact),
-             empathy_contact_get_name (contact));
+             empathy_contact_get_alias (contact));
 
       tmpstr = g_strdup_printf ("%s (%s)",
-        empathy_contact_get_name (contact),
+        empathy_contact_get_alias (contact),
         empathy_contact_get_id (contact));
 
       gtk_list_store_insert_with_values (priv->store, &iter, -1,
         COMPLETION_COL_TEXT, tmpstr,
         COMPLETION_COL_ID, empathy_contact_get_id (contact),
-        COMPLETION_COL_NAME, empathy_contact_get_name (contact),
+        COMPLETION_COL_NAME, empathy_contact_get_alias (contact),
         -1);
 
       g_free (tmpstr);

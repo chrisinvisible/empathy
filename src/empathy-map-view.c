@@ -227,7 +227,7 @@ map_view_contacts_update_label (ChamplainMarker *marker)
 
   contact = g_object_get_data (G_OBJECT (marker), "contact");
   location = empathy_contact_get_location (contact);
-  name = empathy_contact_get_name (contact);
+  name = empathy_contact_get_alias (contact);
   gtime = g_hash_table_lookup (location, EMPATHY_LOCATION_TIMESTAMP);
 
   if (gtime != NULL)

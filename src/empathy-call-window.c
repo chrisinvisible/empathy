@@ -1244,7 +1244,7 @@ set_window_title (EmpathyCallWindow *self)
   /* translators: Call is a noun and %s is the contact name. This string
    * is used in the window title */
   tmp = g_strdup_printf (_("Call with %s"),
-      empathy_contact_get_name (priv->contact));
+      empathy_contact_get_alias (priv->contact));
   gtk_window_set_title (GTK_WINDOW (self), tmp);
   g_free (tmp);
 }
@@ -2215,19 +2215,19 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
           return g_strdup_printf (
               _("%s's software does not understand any of the audio formats "
                 "supported by your computer"),
-            empathy_contact_get_name (priv->contact));
+            empathy_contact_get_alias (priv->contact));
         else
           return g_strdup_printf (
               _("%s's software does not understand any of the video formats "
                 "supported by your computer"),
-            empathy_contact_get_name (priv->contact));
+            empathy_contact_get_alias (priv->contact));
 
       case TP_MEDIA_STREAM_ERROR_CONNECTION_FAILED:
         return g_strdup_printf (
             _("Can't establish a connection to %s. "
               "One of you might be on a network that does not allow "
               "direct connections."),
-          empathy_contact_get_name (priv->contact));
+          empathy_contact_get_alias (priv->contact));
 
       case TP_MEDIA_STREAM_ERROR_NETWORK_ERROR:
           return g_strdup (_("There was a failure on the network"));

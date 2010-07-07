@@ -75,12 +75,11 @@ EmpathyContact * empathy_contact_new (TpContact *tp_contact);
 EmpathyContact * empathy_contact_from_tpl_contact (TpAccount *account,
     TplEntity *tpl_contact);
 EmpathyContact * empathy_contact_new_for_log (TpAccount *account,
-    const gchar *id, const gchar *name, gboolean is_user);
+    const gchar *id, const gchar *alias, gboolean is_user);
 TpContact * empathy_contact_get_tp_contact (EmpathyContact *contact);
 const gchar * empathy_contact_get_id (EmpathyContact *contact);
 void empathy_contact_set_id (EmpathyContact *contact, const gchar *id);
-const gchar * empathy_contact_get_name (EmpathyContact *contact);
-void empathy_contact_set_name (EmpathyContact *contact, const gchar *name);
+const gchar * empathy_contact_get_alias (EmpathyContact *contact);
 void empathy_contact_set_alias (EmpathyContact *contact, const gchar *alias);
 EmpathyAvatar * empathy_contact_get_avatar (EmpathyContact *contact);
 void empathy_contact_set_avatar (EmpathyContact *contact,

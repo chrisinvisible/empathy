@@ -309,7 +309,7 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   g_object_ref (contact);
 
   DEBUG ("adding individual from contact %s (%s)",
-      empathy_contact_get_id (contact), empathy_contact_get_name (contact));
+      empathy_contact_get_id (contact), empathy_contact_get_alias (contact));
 
   account = empathy_contact_get_account (contact);
   store_id = tp_proxy_get_object_path (TP_PROXY (account));

@@ -205,7 +205,7 @@ ft_manager_remove_file_from_model (EmpathyFTManager *manager,
   g_return_if_fail (row_ref);
 
   DEBUG ("Removing file transfer from window: contact=%s, filename=%s",
-      empathy_contact_get_name (empathy_ft_handler_get_contact (handler)),
+      empathy_contact_get_alias (empathy_ft_handler_get_contact (handler)),
       empathy_ft_handler_get_filename (handler));
 
   /* Get the iter from the row_ref */
@@ -296,7 +296,7 @@ ft_manager_format_contact_info (EmpathyFTHandler *handler)
   char *retval;
 
   incoming = empathy_ft_handler_is_incoming (handler);
-  contact_name = empathy_contact_get_name
+  contact_name = empathy_contact_get_alias
     (empathy_ft_handler_get_contact (handler));
   filename = empathy_ft_handler_get_filename (handler);
 
@@ -326,7 +326,7 @@ ft_manager_format_error_message (EmpathyFTHandler *handler,
 
   contact = empathy_ft_handler_get_contact (handler);
   if (contact)
-    contact_name = empathy_contact_get_name (contact);
+    contact_name = empathy_contact_get_alias (contact);
 
   filename = empathy_ft_handler_get_filename (handler);
 
@@ -478,7 +478,7 @@ do_real_transfer_done (EmpathyFTManager *manager,
   g_return_if_fail (row_ref != NULL);
 
   incoming = empathy_ft_handler_is_incoming (handler);
-  contact_name = empathy_contact_get_name
+  contact_name = empathy_contact_get_alias
     (empathy_ft_handler_get_contact (handler));
   filename = empathy_ft_handler_get_filename (handler);
 
@@ -857,7 +857,7 @@ ft_manager_stop (EmpathyFTManager *manager)
   g_return_if_fail (handler != NULL);
 
   DEBUG ("Stopping file transfer: contact=%s, filename=%s",
-      empathy_contact_get_name (empathy_ft_handler_get_contact (handler)),
+      empathy_contact_get_alias (empathy_ft_handler_get_contact (handler)),
       empathy_ft_handler_get_filename (handler));
 
   empathy_ft_handler_cancel_transfer (handler);

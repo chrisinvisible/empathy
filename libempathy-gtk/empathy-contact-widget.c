@@ -1086,7 +1086,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
       champlain_view_add_layer (information->map_view, layer);
 
       marker = champlain_marker_new_with_text (
-          empathy_contact_get_name (information->contact), NULL, NULL, NULL);
+          empathy_contact_get_alias (information->contact), NULL, NULL, NULL);
       champlain_base_marker_set_position (CHAMPLAIN_BASE_MARKER (marker), lat, lon);
       clutter_container_add (CLUTTER_CONTAINER (layer), marker, NULL);
 
@@ -1378,10 +1378,10 @@ contact_widget_name_notify_cb (EmpathyContactWidget *information)
 {
   if (GTK_IS_ENTRY (information->widget_alias))
       gtk_entry_set_text (GTK_ENTRY (information->widget_alias),
-          empathy_contact_get_name (information->contact));
+          empathy_contact_get_alias (information->contact));
   else
       gtk_label_set_label (GTK_LABEL (information->widget_alias),
-          empathy_contact_get_name (information->contact));
+          empathy_contact_get_alias (information->contact));
 }
 
 static void

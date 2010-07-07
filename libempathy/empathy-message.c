@@ -530,7 +530,7 @@ empathy_message_should_highlight (EmpathyMessage *message)
 		return FALSE;
 	}
 
-	to = empathy_contact_get_name (contact);
+	to = empathy_contact_get_alias (contact);
 	if (!to) {
 		return FALSE;
 	}

@@ -51,7 +51,7 @@ typedef struct {
   TpAccount *account;
   FolksPersona *persona;
   gchar *id;
-  gchar *name;
+  gchar *alias;
   EmpathyAvatar *avatar;
   TpConnectionPresenceType presence;
   gchar *presence_message;
@@ -96,7 +96,7 @@ enum
   PROP_ACCOUNT,
   PROP_PERSONA,
   PROP_ID,
-  PROP_NAME,
+  PROP_ALIAS,
   PROP_AVATAR,
   PROP_PRESENCE,
   PROP_PRESENCE_MESSAGE,
@@ -125,7 +125,7 @@ tp_contact_notify_cb (TpContact *tp_contact,
 
   /* Forward property notifications */
   if (!tp_strdiff (param->name, "alias"))
-    g_object_notify (contact, "name");
+    g_object_notify (contact, "alias");
   else if (!tp_strdiff (param->name, "presence-type")) {
     TpConnectionPresenceType presence;
 
@@ -242,10 +242,10 @@ empathy_contact_class_init (EmpathyContactClass *class)
         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
-      PROP_NAME,
-      g_param_spec_string ("name",
-        "Contact Name",
-        "The name of the contact",
+      PROP_ALIAS,
+      g_param_spec_string ("alias",
+        "Contact alias",
+        "An alias for the contact",
         NULL,
         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
@@ -345,7 +345,7 @@ contact_finalize (GObject *object)
 
   DEBUG ("finalize: %p", object);
 
-  g_free (priv->name);
+  g_free (priv->alias);
   g_free (priv->id);
   g_free (priv->presence_message);
 
@@ -411,8 +411,8 @@ contact_get_property (GObject *object,
       case PROP_ID:
         g_value_set_string (value, empathy_contact_get_id (contact));
         break;
-      case PROP_NAME:
-        g_value_set_string (value, empathy_contact_get_name (contact));
+      case PROP_ALIAS:
+        g_value_set_string (value, empathy_contact_get_alias (contact));
         break;
       case PROP_AVATAR:
         g_value_set_boxed (value, empathy_contact_get_avatar (contact));
@@ -462,8 +462,8 @@ contact_set_property (GObject *object,
       case PROP_ID:
         empathy_contact_set_id (contact, g_value_get_string (value));
         break;
-      case PROP_NAME:
-        empathy_contact_set_name (contact, g_value_get_string (value));
+      case PROP_ALIAS:
+        empathy_contact_set_alias (contact, g_value_get_string (value));
         break;
       case PROP_AVATAR:
         empathy_contact_set_avatar (contact, g_value_get_boxed (value));
@@ -512,7 +512,7 @@ empathy_contact_from_tpl_contact (TpAccount *account,
 
   retval = g_object_new (EMPATHY_TYPE_CONTACT,
       "id", tpl_entity_get_alias (tpl_entity),
-      "name", tpl_entity_get_identifier (tpl_entity),
+      "alias", tpl_entity_get_identifier (tpl_entity),
       "account", account,
       "is-user", is_user,
       NULL);
@@ -527,7 +527,7 @@ empathy_contact_from_tpl_contact (TpAccount *account,
 EmpathyContact *
 empathy_contact_new_for_log (TpAccount *account,
                              const gchar *id,
-                             const gchar *name,
+                             const gchar *alias,
                              gboolean is_user)
 {
   g_return_val_if_fail (id != NULL, NULL);
@@ -536,7 +536,7 @@ empathy_contact_new_for_log (TpAccount *account,
   return g_object_new (EMPATHY_TYPE_CONTACT,
       "account", account,
       "id", id,
-      "name", name,
+      "alias", alias,
       "is-user", is_user,
       NULL);
 }
@@ -588,15 +588,15 @@ empathy_contact_set_id (EmpathyContact *contact,
       priv->id = g_strdup (id);
 
       g_object_notify (G_OBJECT (contact), "id");
-      if (EMP_STR_EMPTY (priv->name))
-          g_object_notify (G_OBJECT (contact), "name");
+      if (EMP_STR_EMPTY (priv->alias))
+          g_object_notify (G_OBJECT (contact), "alias");
     }
 
   g_object_unref (contact);
 }
 
 const gchar *
-empathy_contact_get_name (EmpathyContact *contact)
+empathy_contact_get_alias (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv;
   const gchar        *alias;
@@ -608,7 +608,7 @@ empathy_contact_get_name (EmpathyContact *contact)
   if (priv->tp_contact != NULL)
     alias = tp_contact_get_alias (priv->tp_contact);
   else
-    alias = priv->name;
+    alias = priv->alias;
 
   if (!EMP_STR_EMPTY (alias))
     return alias;
@@ -617,41 +617,26 @@ empathy_contact_get_name (EmpathyContact *contact)
 }
 
 void
-empathy_contact_set_name (EmpathyContact *contact,
-                          const gchar *name)
+empathy_contact_set_alias (EmpathyContact *contact,
+                          const gchar *alias)
 {
   EmpathyContactPriv *priv;
+  FolksPersona *persona;
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   priv = GET_PRIV (contact);
 
   g_object_ref (contact);
-  if (tp_strdiff (name, priv->name))
+
+  if (tp_strdiff (alias, priv->alias))
     {
-      g_free (priv->name);
-      priv->name = g_strdup (name);
-      g_object_notify (G_OBJECT (contact), "name");
+      g_free (priv->alias);
+      priv->alias = g_strdup (alias);
+      g_object_notify (G_OBJECT (contact), "alias");
     }
+
   g_object_unref (contact);
-}
-
-void
-empathy_contact_set_alias (EmpathyContact *contact,
-    const gchar *alias)
-{
-  FolksPersona *persona;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  persona = empathy_contact_get_persona (contact);
-  if (persona == NULL || !FOLKS_IS_ALIAS (persona))
-    return;
-
-  DEBUG ("Setting alias for contact %s to %s", empathy_contact_get_id (contact),
-      alias);
-
-  folks_alias_set_alias (FOLKS_ALIAS (persona), alias);
 }
 
 EmpathyAvatar *

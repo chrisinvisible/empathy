@@ -429,7 +429,7 @@ tp_chat_state_changed_got_contact_cb (TpConnection            *connection,
 
 	state = GPOINTER_TO_UINT (user_data);
 	DEBUG ("Chat state changed for %s (%d): %d",
-		empathy_contact_get_name (contact),
+		empathy_contact_get_alias (contact),
 		empathy_contact_get_handle (contact), state);
 
 	g_signal_emit (chat, signals[CHAT_STATE_CHANGED], 0, contact, state);

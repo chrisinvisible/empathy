@@ -982,7 +982,7 @@ add_contact_to_store (GtkTreeStore *store,
 		      EmpathyContactListFlags flags)
 {
 	gtk_tree_store_insert_with_values (store, iter, parent, 0,
-			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
+			    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_alias (contact),
 			    EMPATHY_CONTACT_LIST_STORE_COL_CONTACT, contact,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_GROUP, FALSE,
 			    EMPATHY_CONTACT_LIST_STORE_COL_IS_SEPARATOR, FALSE,
@@ -1009,7 +1009,7 @@ contact_list_store_add_contact (EmpathyContactListStore *store,
 
 	priv = GET_PRIV (store);
 
-	if (EMP_STR_EMPTY (empathy_contact_get_name (contact)) ||
+	if (EMP_STR_EMPTY (empathy_contact_get_alias (contact)) ||
 	    (!priv->show_offline && !empathy_contact_is_online (contact))) {
 		return;
 	}
@@ -1155,7 +1155,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	if (!in_list && !should_be_in_list) {
 		/* Nothing to do. */
 		DEBUG ("Contact:'%s' in list:NO, should be:NO",
-			empathy_contact_get_name (contact));
+			empathy_contact_get_alias (contact));
 
 		g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
 		g_list_free (iters);
@@ -1163,7 +1163,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	}
 	else if (in_list && !should_be_in_list) {
 		DEBUG ("Contact:'%s' in list:YES, should be:NO",
-			empathy_contact_get_name (contact));
+			empathy_contact_get_alias (contact));
 
 		if (priv->show_active) {
 			do_remove = TRUE;
@@ -1179,7 +1179,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 	}
 	else if (!in_list && should_be_in_list) {
 		DEBUG ("Contact:'%s' in list:NO, should be:YES",
-			empathy_contact_get_name (contact));
+			empathy_contact_get_alias (contact));
 
 		contact_list_store_add_contact (store, contact);
 
@@ -1190,7 +1190,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 		}
 	} else {
 		DEBUG ("Contact:'%s' in list:YES, should be:YES",
-			empathy_contact_get_name (contact));
+			empathy_contact_get_alias (contact));
 
 		/* Get online state before. */
 		if (iters && g_list_length (iters) > 0) {
@@ -1230,7 +1230,7 @@ contact_list_store_contact_update (EmpathyContactListStore *store,
 				    EMPATHY_CONTACT_LIST_STORE_COL_ICON_STATUS, pixbuf_status,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
 				    EMPATHY_CONTACT_LIST_STORE_COL_PIXBUF_AVATAR_VISIBLE, show_avatar,
-				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_name (contact),
+				    EMPATHY_CONTACT_LIST_STORE_COL_NAME, empathy_contact_get_alias (contact),
 				    EMPATHY_CONTACT_LIST_STORE_COL_PRESENCE_TYPE,
 				      empathy_contact_get_presence (contact),
 				    EMPATHY_CONTACT_LIST_STORE_COL_STATUS,
@@ -1278,7 +1278,7 @@ contact_list_store_contact_updated_cb (EmpathyContact          *contact,
 				       EmpathyContactListStore *store)
 {
 	DEBUG ("Contact:'%s' updated, checking roster is in sync...",
-		empathy_contact_get_name (contact));
+		empathy_contact_get_alias (contact));
 
 	contact_list_store_contact_update (store, contact);
 }
@@ -1326,7 +1326,7 @@ contact_list_store_contact_active_new (EmpathyContactListStore *store,
 	ShowActiveData *data;
 
 	DEBUG ("Contact:'%s' now active, and %s be removed",
-		empathy_contact_get_name (contact),
+		empathy_contact_get_alias (contact),
 		remove_ ? "WILL" : "WILL NOT");
 
 	data = g_slice_new0 (ShowActiveData);
@@ -1358,12 +1358,12 @@ contact_list_store_contact_active_cb (ShowActiveData *data)
 	    !priv->show_offline &&
 	    !empathy_contact_is_online (data->contact)) {
 		DEBUG ("Contact:'%s' active timeout, removing item",
-			empathy_contact_get_name (data->contact));
+			empathy_contact_get_alias (data->contact));
 		contact_list_store_remove_contact (data->store, data->contact);
 	}
 
 	DEBUG ("Contact:'%s' no longer active",
-		empathy_contact_get_name (data->contact));
+		empathy_contact_get_alias (data->contact));
 
 	contact_list_store_contact_set_active (data->store,
 					       data->contact,
@@ -1574,8 +1574,8 @@ contact_list_store_contact_sort (EmpathyContact *contact_a,
 	g_return_val_if_fail (contact_a != NULL || contact_b != NULL, 0);
 
 	/* alias */
-	ret_val = g_utf8_collate (empathy_contact_get_name (contact_a),
-				  empathy_contact_get_name (contact_b));
+	ret_val = g_utf8_collate (empathy_contact_get_alias (contact_a),
+				  empathy_contact_get_alias (contact_b));
 
 	if (ret_val != 0)
 		goto out;

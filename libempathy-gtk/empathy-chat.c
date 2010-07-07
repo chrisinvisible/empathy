@@ -1119,7 +1119,7 @@ chat_message_received (EmpathyChat *chat, EmpathyMessage *message)
 	sender = empathy_message_get_sender (message);
 
 	DEBUG ("Appending new message from %s (%d)",
-		empathy_contact_get_name (sender),
+		empathy_contact_get_alias (sender),
 		empathy_contact_get_handle (sender));
 
 	empathy_chat_view_append_message (chat->view, message);
@@ -1600,7 +1600,7 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 				 * which might be cased all wrong.
 				 * Fixes #120876
 				 * */
-				text = empathy_contact_get_name (completed_list->data);
+				text = empathy_contact_get_alias (completed_list->data);
 			} else {
 				text = completed;
 
@@ -1610,7 +1610,7 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 				 * */
 				 message = g_string_new ("");
 				 for (l = completed_list; l != NULL; l = l->next) {
-					g_string_append (message, empathy_contact_get_name (l->data));
+					g_string_append (message, empathy_contact_get_alias (l->data));
 					g_string_append (message, " - ");
 				 }
 				 empathy_chat_view_append_event (chat->view, message->str);
@@ -2057,7 +2057,7 @@ build_part_message (guint           reason,
 	const gchar *actor_name = NULL;
 
 	if (actor != NULL) {
-		actor_name = empathy_contact_get_name (actor);
+		actor_name = empathy_contact_get_alias (actor);
 	}
 
 	/* Having an actor only really makes sense for a few actions... */
@@ -2113,7 +2113,7 @@ chat_members_changed_cb (EmpathyTpChat  *tp_chat,
 			 EmpathyChat    *chat)
 {
 	EmpathyChatPriv *priv = GET_PRIV (chat);
-	const gchar *name = empathy_contact_get_name (contact);
+	const gchar *name = empathy_contact_get_alias (contact);
 	gchar *str;
 
 	g_return_if_fail (TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED != reason);
@@ -2148,8 +2148,8 @@ chat_member_renamed_cb (EmpathyTpChat  *tp_chat,
 		gchar *str;
 
 		str = g_strdup_printf (_("%s is now known as %s"),
-				       empathy_contact_get_name (old_contact),
-				       empathy_contact_get_name (new_contact));
+				       empathy_contact_get_alias (old_contact),
+				       empathy_contact_get_alias (new_contact));
 		empathy_chat_view_append_event (chat->view, str);
 		g_free (str);
 	}
@@ -2817,7 +2817,7 @@ empathy_chat_init (EmpathyChat *chat)
 		g_timeout_add_seconds (1, chat_block_events_timeout_cb, chat);
 
 	/* Add nick name completion */
-	priv->completion = g_completion_new ((GCompletionFunc) empathy_contact_get_name);
+	priv->completion = g_completion_new ((GCompletionFunc) empathy_contact_get_alias);
 	g_completion_set_compare (priv->completion, chat_contacts_completion_func);
 
 	chat_create_ui (chat);
@@ -3118,7 +3118,7 @@ empathy_chat_get_name (EmpathyChat *chat)
 
 	ret = priv->name;
 	if (!ret && priv->remote_contact) {
-		ret = empathy_contact_get_name (priv->remote_contact);
+		ret = empathy_contact_get_alias (priv->remote_contact);
 	}
 
 	if (!ret)

@@ -461,7 +461,7 @@ theme_adium_append_message (EmpathyChatView *view,
 	timestamp = empathy_message_get_timestamp (msg);
 	body = empathy_message_get_body (msg);
 	body_escaped = theme_adium_parse_body (body);
-	name = empathy_contact_get_name (sender);
+	name = empathy_contact_get_alias (sender);
 	contact_id = empathy_contact_get_id (sender);
 
 	/* If this is a /me, append an event */

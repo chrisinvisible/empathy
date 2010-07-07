@@ -152,7 +152,7 @@ contact_list_view_is_visible_contact (EmpathyContactListView *self,
 	g_assert (live != NULL);
 
 	/* check alias name */
-	str = empathy_contact_get_name (contact);
+	str = empathy_contact_get_alias (contact);
 	if (empathy_live_search_match (live, str))
 		return TRUE;
 
@@ -2063,7 +2063,7 @@ contact_list_view_remove_activate_cb (GtkMenuItem            *menuitem,
 
 		parent = empathy_get_toplevel_window (GTK_WIDGET (view));
 		text = g_strdup_printf (_("Do you really want to remove the contact '%s'?"),
-					empathy_contact_get_name (contact));
+					empathy_contact_get_alias (contact));
 		if (contact_list_view_remove_dialog_show (parent, _("Removing contact"), text)) {
 			EmpathyContactList *list;
 
