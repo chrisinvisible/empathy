@@ -2,6 +2,7 @@ include $(top_srcdir)/tools/flymake.mk
 
 CPPFLAGS_COMMON =					\
 	$(EMPATHY_CFLAGS)				\
+	$(GTK_CFLAGS)				\
 	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DG_LOG_DOMAIN=\"empathy\"			\
@@ -24,6 +25,7 @@ LDADD =								\
 	$(top_builddir)/extensions/libemp-extensions.la		\
 	$(LIBNOTIFY_LIBS)					\
 	$(EMPATHY_LIBS)						\
+	$(GTK_LIBS)						\
 	$(LIBCHAMPLAIN_LIBS)					\
 	$(WEBKIT_LIBS)
 

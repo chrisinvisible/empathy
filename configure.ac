@@ -155,7 +155,6 @@ PKG_CHECK_MODULES(EMPATHY,
    gobject-2.0
    gstreamer-0.10
    gstreamer-interfaces-0.10
-   gtk+-2.0 >= $GTK_REQUIRED
    libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
    libebook-1.2
    libxml-2.0
@@ -165,6 +164,8 @@ PKG_CHECK_MODULES(EMPATHY,
    unique-1.0 >= $UNIQUE_REQUIRED
    x11
 ])
+
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 
 PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
 
