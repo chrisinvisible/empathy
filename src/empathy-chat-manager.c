@@ -95,12 +95,32 @@ chat_data_free (ChatData *data)
 }
 
 static void
+tell_chatroom_manager_if_needed (TpAccount *account,
+    EmpathyTpChat *chat)
+{
+  TpHandleType type;
+
+  tp_channel_get_handle (empathy_tp_chat_get_channel (chat), &type);
+
+  if (type == TP_HANDLE_TYPE_ROOM)
+    {
+      EmpathyChatroomManager *chatroom_mgr;
+
+      chatroom_mgr = empathy_chatroom_manager_dup_singleton (NULL);
+      empathy_chatroom_manager_chat_handled (chatroom_mgr, chat, account);
+      g_object_unref (chatroom_mgr);
+    }
+}
+
+static void
 process_tp_chat (EmpathyTpChat *tp_chat,
     TpAccount *account,
     gint64 user_action_time)
 {
   EmpathyChat *chat = NULL;
   const gchar *id;
+
+  tell_chatroom_manager_if_needed (account, tp_chat);
 
   id = empathy_tp_chat_get_id (tp_chat);
   if (!tp_str_empty (id))
@@ -119,7 +139,6 @@ process_tp_chat (EmpathyTpChat *tp_chat,
        * a GtkWidget. This reference will be taken by a container
        * (a GtkNotebook) when we'll call empathy_chat_window_present_chat */
     }
-
   empathy_chat_window_present_chat (chat, user_action_time);
 
   if (empathy_tp_chat_is_invited (tp_chat, NULL))
@@ -127,15 +146,6 @@ process_tp_chat (EmpathyTpChat *tp_chat,
       /* We have been invited to the room. Add ourself as member as this
        * channel has been approved. */
       empathy_tp_chat_join (tp_chat);
-    }
-
-  if (empathy_chat_is_room (chat))
-    {
-      EmpathyChatroomManager *chatroom_mgr;
-
-      chatroom_mgr = empathy_chatroom_manager_dup_singleton (NULL);
-      empathy_chatroom_manager_chat_handled (chatroom_mgr, tp_chat, account);
-      g_object_unref (chatroom_mgr);
     }
 
   g_object_unref (tp_chat);
