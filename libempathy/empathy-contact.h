@@ -27,6 +27,7 @@
 #include <telepathy-glib/contact.h>
 #include <telepathy-glib/account.h>
 #include <telepathy-logger/entity.h>
+#include <folks/folks.h>
 
 G_BEGIN_DECLS
 
@@ -85,6 +86,9 @@ EmpathyAvatar * empathy_contact_get_avatar (EmpathyContact *contact);
 void empathy_contact_set_avatar (EmpathyContact *contact,
     EmpathyAvatar *avatar);
 TpAccount * empathy_contact_get_account (EmpathyContact *contact);
+FolksPersona * empathy_contact_get_persona (EmpathyContact *contact);
+void empathy_contact_set_persona (EmpathyContact *contact,
+    FolksPersona *persona);
 TpConnection * empathy_contact_get_connection (EmpathyContact *contact);
 TpConnectionPresenceType empathy_contact_get_presence (EmpathyContact *contact);
 void empathy_contact_set_presence (EmpathyContact *contact,

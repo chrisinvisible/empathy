@@ -282,6 +282,9 @@ aggregator_add_persona_from_details_cb (GObject *source,
       g_clear_error (&error);
     }
 
+  /* Set the contact's persona */
+  empathy_contact_set_persona (contact, persona);
+
   /* We can unref the contact now */
   g_object_unref (contact);
   g_object_unref (persona);

@@ -29,6 +29,9 @@
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 
+#include <folks/folks.h>
+#include <folks/folks-telepathy.h>
+
 #if HAVE_GEOCLUE
 #include <geoclue/geoclue-geocode.h>
 #endif
@@ -46,6 +49,7 @@
 typedef struct {
   TpContact *tp_contact;
   TpAccount *account;
+  FolksPersona *persona;
   gchar *id;
   gchar *name;
   EmpathyAvatar *avatar;
@@ -90,6 +94,7 @@ enum
   PROP_0,
   PROP_TP_CONTACT,
   PROP_ACCOUNT,
+  PROP_PERSONA,
   PROP_ID,
   PROP_NAME,
   PROP_AVATAR,
@@ -173,6 +178,10 @@ contact_dispose (GObject *object)
     g_object_unref (priv->account);
   priv->account = NULL;
 
+  if (priv->persona)
+    g_object_unref (priv->persona);
+  priv->persona = NULL;
+
   if (priv->avatar != NULL)
     {
       empathy_avatar_unref (priv->avatar);
@@ -215,6 +224,14 @@ empathy_contact_class_init (EmpathyContactClass *class)
         "The account associated with the contact",
         TP_TYPE_ACCOUNT,
         G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
+  g_object_class_install_property (object_class,
+      PROP_PERSONA,
+      g_param_spec_object ("persona",
+        "Persona",
+        "The FolksPersona associated with the contact",
+        FOLKS_TYPE_PERSONA,
+        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
       PROP_ID,
@@ -388,6 +405,9 @@ contact_get_property (GObject *object,
       case PROP_ACCOUNT:
         g_value_set_object (value, empathy_contact_get_account (contact));
         break;
+      case PROP_PERSONA:
+        g_value_set_object (value, empathy_contact_get_persona (contact));
+        break;
       case PROP_ID:
         g_value_set_string (value, empathy_contact_get_id (contact));
         break;
@@ -435,6 +455,9 @@ contact_set_property (GObject *object,
       case PROP_ACCOUNT:
         g_assert (priv->account == NULL);
         priv->account = g_value_dup_object (value);
+        break;
+      case PROP_PERSONA:
+        empathy_contact_set_persona (contact, g_value_get_object (value));
         break;
       case PROP_ID:
         empathy_contact_set_id (contact, g_value_get_string (value));
@@ -708,6 +731,78 @@ empathy_contact_get_account (EmpathyContact *contact)
     }
 
   return priv->account;
+}
+
+FolksPersona *
+empathy_contact_get_persona (EmpathyContact *contact)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+
+  priv = GET_PRIV (contact);
+
+  if (priv->persona == NULL && priv->tp_contact != NULL)
+    {
+      /* FIXME: This is disgustingly slow */
+      /* Query for the persona */
+      EmpathyIndividualManager *manager;
+      GList *individuals, *l;
+
+      manager = empathy_individual_manager_dup_singleton ();
+      individuals = empathy_individual_manager_get_members (manager);
+
+      for (l = individuals; l != NULL; l = l->next)
+        {
+          GList *personas, *j;
+          FolksIndividual *individual = FOLKS_INDIVIDUAL (l->data);
+
+          personas = folks_individual_get_personas (individual);
+          for (j = personas; j != NULL; j = j->next)
+            {
+              TpfPersona *persona = j->data;
+
+              if (TPF_IS_PERSONA (persona))
+                {
+                  TpContact *tp_contact = tpf_persona_get_contact (persona);
+
+                  if (tp_contact == priv->tp_contact)
+                    {
+                      /* Found the right persona */
+                      priv->persona = g_object_ref (persona);
+                      goto finished;
+                    }
+                }
+            }
+        }
+
+finished:
+      g_list_free (individuals);
+      g_object_unref (manager);
+    }
+
+  return priv->persona;
+}
+
+void
+empathy_contact_set_persona (EmpathyContact *contact,
+    FolksPersona *persona)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+  g_return_if_fail (FOLKS_IS_PERSONA (persona));
+
+  priv = GET_PRIV (contact);
+
+  if (persona == priv->persona)
+    return;
+
+  if (priv->persona != NULL)
+    g_object_unref (priv->persona);
+  priv->persona = g_object_ref (persona);
+
+  g_object_notify (G_OBJECT (contact), "persona");
 }
 
 TpConnection *
