@@ -23,6 +23,8 @@
 
 #include <glib-object.h>
 
+#include <libempathy/empathy-contact.h>
+
 G_BEGIN_DECLS
 
 #define EMPATHY_NOTIFY_MANAGER_CAP_ACTIONS             "actions"
