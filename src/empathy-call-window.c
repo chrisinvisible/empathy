@@ -1247,8 +1247,10 @@ contact_avatar_changed_cb (EmpathyContact *contact,
     GParamSpec *pspec, GtkWidget *avatar_widget)
 {
   int size;
+  GtkAllocation allocation;
 
-  size = avatar_widget->allocation.height;
+  gtk_widget_get_allocation (avatar_widget, &allocation);
+  size = allocation.height;
 
   if (size == 0)
     {
