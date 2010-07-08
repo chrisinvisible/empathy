@@ -539,12 +539,13 @@ empathy_pixbuf_contact_status_icon_with_icon_name (EmpathyContact *contact,
 
 	pix_status = gdk_pixbuf_new_from_file (icon_filename, NULL);
 
-	g_free (icon_filename);
-
 	if (pix_status == NULL) {
 		DEBUG ("Could not open icon %s\n", icon_filename);
+		g_free (icon_filename);
 		return NULL;
 	}
+
+	g_free (icon_filename);
 
 	if (!show_protocol)
 		return pix_status;
