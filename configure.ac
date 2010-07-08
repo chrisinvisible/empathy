@@ -146,7 +146,6 @@ PKG_CHECK_MODULES(EMPATHY,
    dbus-glib-1
    farsight2-0.10
    gconf-2.0 >= $GCONF_REQUIRED
-   gdk-x11-2.0
    gio-2.0 >= $GLIB_REQUIRED
    gio-unix-2.0 >= $GLIB_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
