@@ -192,7 +192,8 @@ check_c_sources += $(libempathy_accounts_panel_la_SOURCES)
 endif
 
 dist_man_MANS =			\
-	empathy.1
+	empathy.1 \
+	empathy-accounts.1
 
 # rules for making the glib enum objects
 %-enumtypes.h: %.h Makefile.in

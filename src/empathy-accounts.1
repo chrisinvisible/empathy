@@ -1,0 +1,36 @@
+.TH EMPATHY-ACCOUNTS "1" "February 2010" "Telepathy project" "User Commands"
+.SH NAME
+empathy-accounts \- Accounts configuration dialog for Empathy instant messaging client
+.SH SYNOPSIS
+empathy-accounts
+.RI [ options ]
+.SH DESCRIPTION
+Accounts configuration dialog for Empathy instant messaging client
+.PP
+This utility allows you to configure your instant messaging accounts for Empathy.
+.SH OPTIONS
+.TP
+.BR \-i ,\  \-\-import
+Try to import any recognized accounts and display an assistant if that fails
+.TP
+.BR \-h ,\  \-\-hidden
+Don't display any dialogs; do any work (eg, importing) and exit
+.TP
+.BI \-s\  account\-id
+.TQ
+.BI \-\-select\-account= account\-id
+Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)
+.SH AUTHOR
+This manual page was written by
+.MT bigon@debian.org
+Laurent Bigonville
+.ME ,
+for the Debian GNU/Linux system (but may be used by others).
+.SH SEE ALSO
+.BR empathy (1),
+.UR http://telepathy.freedesktop.org/
+The Telepathy project
+.UE ,
+.UR http://live.gnome.org/Empathy
+The Empathy project
+.UE .
