@@ -559,7 +559,7 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
   GtkListStore *store;
   GtkTreePath *path;
   GtkTreeIter iter;
-  gboolean enabled;
+  gboolean was_enabled;
   gchar *group;
 
   view = GTK_TREE_VIEW (information->treeview_groups);
@@ -570,11 +570,11 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
 
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_model_get (model, &iter,
-      COL_ENABLED, &enabled,
+      COL_ENABLED, &was_enabled,
       COL_NAME, &group,
       -1);
 
-  gtk_list_store_set (store, &iter, COL_ENABLED, !enabled, -1);
+  gtk_list_store_set (store, &iter, COL_ENABLED, !was_enabled, -1);
   gtk_tree_path_free (path);
 
   if (group != NULL)
@@ -584,7 +584,8 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
 
       if (individual != NULL)
         {
-          folks_groups_change_group (FOLKS_GROUPS (individual), group, !enabled);
+          folks_groups_change_group (FOLKS_GROUPS (individual), group,
+              !was_enabled);
           g_object_unref (individual);
         }
 
