@@ -352,17 +352,23 @@ AC_ARG_ENABLE(map,
                              enable_map=auto)
 
 if test "x$enable_map" != "xno"; then
-   PKG_CHECK_MODULES(LIBCHAMPLAIN,
-   [
-      champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
-      champlain-gtk-0.4 >= $LIBCHAMPLAIN_GTK_REQUIRED
-      clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
-   ], have_libchamplain="yes", have_libchamplain="no")
+
+   if test "x$enable_gtk3" == "xno"; then
+      PKG_CHECK_MODULES(LIBCHAMPLAIN,
+      [
+         champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
+         champlain-gtk-0.4 >= $LIBCHAMPLAIN_GTK_REQUIRED
+         clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
+      ], have_libchamplain="yes", have_libchamplain="no")
+   else
+      have_libchamplain="no"
+   fi
 
    if test "x$have_libchamplain" = "xyes"; then
       AC_DEFINE(HAVE_LIBCHAMPLAIN, 1, [Define if you have libchamplain])
    fi
 else
+   # FIXME: check deps once clutter-gtk and champlain have been ported to GTK3
    have_libchamplain=no
 fi
 
