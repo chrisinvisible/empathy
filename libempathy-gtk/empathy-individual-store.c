@@ -430,6 +430,8 @@ individual_store_add_individual (EmpathyIndividualStore *self,
     }
 
   individual_store_contact_update (self, individual);
+
+  tp_clear_object (&contact);
 }
 
 static void
@@ -1820,6 +1822,8 @@ individual_store_get_individual_status_icon_with_icon_name (
     }
 
   g_free (icon_name);
+  tp_clear_object (&contact);
+
   return pixbuf_status;
 }
 

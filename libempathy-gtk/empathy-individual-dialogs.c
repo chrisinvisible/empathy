@@ -27,6 +27,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/util.h>
 #include <folks/folks.h>
 
 #include <libempathy/empathy-individual-manager.h>
@@ -149,4 +150,6 @@ empathy_new_individual_dialog_show_with_individual (GtkWindow *parent,
     gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
 
   gtk_widget_show (dialog);
+
+  tp_clear_object (&contact);
 }

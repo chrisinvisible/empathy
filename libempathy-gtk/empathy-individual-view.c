@@ -488,6 +488,7 @@ individual_view_file_drag_received (GtkWidget *view,
   empathy_send_file_from_uri_list (contact, sel_data);
 
   g_object_unref (individual);
+  tp_clear_object (&contact);
 
   return TRUE;
 }
@@ -898,7 +899,6 @@ individual_view_row_activated (GtkTreeView *view,
     return;
 
   contact = empathy_contact_dup_from_folks_individual (individual);
-
   if (contact != NULL)
     {
       DEBUG ("Starting a chat");
@@ -908,6 +908,7 @@ individual_view_row_activated (GtkTreeView *view,
     }
 
   g_object_unref (individual);
+  tp_clear_object (&contact);
 }
 
 static void

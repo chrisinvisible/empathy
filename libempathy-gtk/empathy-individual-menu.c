@@ -378,6 +378,8 @@ individual_log_menu_item_activate_cb (FolksIndividual *individual)
 
   empathy_log_window_show (empathy_contact_get_account (contact),
       empathy_contact_get_id (contact), FALSE, NULL);
+
+  g_object_unref (contact);
 }
 
 GtkWidget *
@@ -532,6 +534,8 @@ individual_info_menu_item_activate_cb (FolksIndividual *individual)
 
   contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_contact_information_dialog_show (contact, NULL);
+
+  tp_clear_object (&contact);
 }
 
 GtkWidget *
@@ -564,6 +568,8 @@ individual_edit_menu_item_activate_cb (FolksIndividual *individual)
 
   contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_contact_edit_dialog_show (contact, NULL);
+
+  tp_clear_object (&contact);
 }
 
 GtkWidget *
