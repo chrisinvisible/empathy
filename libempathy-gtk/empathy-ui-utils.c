@@ -522,27 +522,25 @@ empathy_pixbuf_avatar_from_contact_scaled (EmpathyContact *contact,
 
 typedef struct {
 	FolksIndividual *individual;
-	EmpathyPixbufAvatarFromIndividualCb callback;
-	gpointer user_data;
+	GSimpleAsyncResult *result;
 	guint width;
 	guint height;
 } PixbufAvatarFromIndividualClosure;
 
 static PixbufAvatarFromIndividualClosure *
-pixbuf_avatar_from_individual_closure_new (FolksIndividual                     *individual,
-					   gint                                 width,
-					   gint                                 height,
-					   EmpathyPixbufAvatarFromIndividualCb  callback,
-					   gpointer                             user_data)
+pixbuf_avatar_from_individual_closure_new (FolksIndividual    *individual,
+					   GSimpleAsyncResult *result,
+					   gint                width,
+					   gint                height)
 {
 	PixbufAvatarFromIndividualClosure *closure;
 
 	g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+	g_return_val_if_fail (G_IS_ASYNC_RESULT (result), NULL);
 
 	closure = g_new0 (PixbufAvatarFromIndividualClosure, 1);
 	closure->individual = g_object_ref (individual);
-	closure->callback = callback;
-	closure->user_data = user_data;
+	closure->result = g_object_ref (result);
 	closure->width = width;
 	closure->height = height;
 
@@ -554,6 +552,7 @@ pixbuf_avatar_from_individual_closure_free (
 		PixbufAvatarFromIndividualClosure *closure)
 {
 	g_object_unref (closure->individual);
+	g_object_unref (closure->result);
 	g_free (closure);
 }
 
@@ -569,12 +568,12 @@ avatar_file_load_contents_cb (GObject      *object,
 	struct SizeData size_data;
 	GError *error = NULL;
 	GdkPixbufLoader *loader = NULL;
-	GdkPixbuf *pixbuf = NULL;
 
 	if (!g_file_load_contents_finish (file, result, &data, &data_size,
 				NULL, &error)) {
 		DEBUG ("failed to load avatar from file: %s",
 				error->message);
+		g_simple_async_result_set_from_error (closure->result, error);
 		goto out;
 	}
 
@@ -592,19 +591,22 @@ avatar_file_load_contents_cb (GObject      *object,
 				&error)) {
 		DEBUG ("Failed to write to pixbuf loader: %s",
 			error ? error->message : "No error given");
+		g_simple_async_result_set_from_error (closure->result, error);
 		goto out;
 	}
 	if (!gdk_pixbuf_loader_close (loader, &error)) {
 		DEBUG ("Failed to close pixbuf loader: %s",
 			error ? error->message : "No error given");
+		g_simple_async_result_set_from_error (closure->result, error);
 		goto out;
 	}
 
-	pixbuf = avatar_pixbuf_from_loader (loader);
-
-	closure->callback (closure->individual, pixbuf, closure->user_data);
+	g_simple_async_result_set_op_res_gpointer (closure->result,
+			avatar_pixbuf_from_loader (loader), NULL);
 
 out:
+	g_simple_async_result_complete (closure->result);
+
 	g_clear_error (&error);
 	g_free (data);
 	tp_clear_object (&loader);
@@ -613,33 +615,63 @@ out:
 
 void
 empathy_pixbuf_avatar_from_individual_scaled_async (
-		FolksIndividual                     *individual,
-		gint                                 width,
-		gint                                 height,
-		EmpathyPixbufAvatarFromIndividualCb  callback,
-		gpointer                             user_data)
+		FolksIndividual     *individual,
+		GAsyncReadyCallback  callback,
+		gint                 width,
+		gint                 height,
+		gpointer             user_data)
 {
 	GFile *avatar_file;
+	GSimpleAsyncResult *result;
 	PixbufAvatarFromIndividualClosure *closure;
 
-	avatar_file = folks_avatar_get_avatar (FOLKS_AVATAR (individual));
-	if (avatar_file == NULL) {
-		goto out;
-	}
+	result = g_simple_async_result_new (G_OBJECT (individual),
+			callback, user_data,
+			empathy_pixbuf_avatar_from_individual_scaled_finish);
 
-	closure = pixbuf_avatar_from_individual_closure_new (individual, width,
-							     height, callback,
-							     user_data);
+	avatar_file = folks_avatar_get_avatar (FOLKS_AVATAR (individual));
+	if (avatar_file == NULL)
+		goto out;
+
+	closure = pixbuf_avatar_from_individual_closure_new (individual, result,
+							     width, height);
 	if (closure == NULL)
 		goto out;
 
 	g_file_load_contents_async (avatar_file, NULL,
 			avatar_file_load_contents_cb, closure);
 
+	g_object_unref (result);
+
 	return;
 
 out:
-	callback (individual, NULL, user_data);
+	g_simple_async_result_set_op_res_gpointer (result, NULL, NULL);
+	g_simple_async_result_complete (result);
+	g_object_unref (result);
+}
+
+GdkPixbuf *
+empathy_pixbuf_avatar_from_individual_scaled_finish (
+		FolksIndividual *individual,
+		GAsyncResult *result,
+		GError **error)
+{
+	GSimpleAsyncResult *simple = G_SIMPLE_ASYNC_RESULT (result);
+	gboolean result_valid;
+
+	g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (simple), NULL);
+
+	if (g_simple_async_result_propagate_error (simple, error))
+		return NULL;
+
+	result_valid = g_simple_async_result_is_valid (result,
+			G_OBJECT (individual),
+			empathy_pixbuf_avatar_from_individual_scaled_finish);
+	g_return_val_if_fail (result_valid, NULL);
+
+	return g_simple_async_result_get_op_res_gpointer (simple);
 }
 
 GdkPixbuf *

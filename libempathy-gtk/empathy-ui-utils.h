@@ -76,11 +76,15 @@ GdkPixbuf *   empathy_pixbuf_from_data                  (gchar            *data,
 GdkPixbuf *   empathy_pixbuf_from_data_and_mime         (gchar            *data,
 							 gsize             data_size,
 							 gchar           **mime_type);
-void empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual                     *individual,
-							 gint                                 width,
-							 gint                                 height,
-							 EmpathyPixbufAvatarFromIndividualCb  callback,
-							 gpointer                             user_data);
+void empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual     *individual,
+							 GAsyncReadyCallback  callback,
+							 gint                 width,
+							 gint                 height,
+							 gpointer             user_data);
+GdkPixbuf * empathy_pixbuf_avatar_from_individual_scaled_finish (
+							 FolksIndividual  *individual,
+							 GAsyncResult     *result,
+							 GError          **error);
 GdkPixbuf *   empathy_pixbuf_from_avatar_scaled         (EmpathyAvatar    *avatar,
 							 gint              width,
 							 gint              height);

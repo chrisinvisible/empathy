@@ -524,20 +524,36 @@ individual_store_contact_active_cb (ShowActiveData *data)
 }
 
 static void
-individual_avatar_pixbuf_received_cb (FolksIndividual *individual,
-    GdkPixbuf *pixbuf,
+individual_avatar_pixbuf_received_cb (GObject *object,
+    GAsyncResult *result,
     gpointer user_data)
 {
+  FolksIndividual *individual = FOLKS_INDIVIDUAL (object);
   EmpathyIndividualStore *self = user_data;
-  GList *iters, *l;
+  GError *error = NULL;
+  GdkPixbuf *pixbuf;
 
-  iters = individual_store_find_contact (self, individual);
+  pixbuf = empathy_pixbuf_avatar_from_individual_scaled_finish (individual,
+      result, &error);
 
-  for (l = iters; l; l = l->next)
+  if (error != NULL)
     {
-      gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
-          EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR, pixbuf,
-          -1);
+      DEBUG ("failed to retrieve pixbuf for individual %s: %s",
+          folks_individual_get_alias (individual),
+          error->message);
+      g_clear_error (&error);
+    }
+  else
+    {
+      GList *iters, *l;
+
+      iters = individual_store_find_contact (self, individual);
+      for (l = iters; l; l = l->next)
+        {
+          gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
+              EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR, pixbuf,
+              -1);
+        }
     }
 }
 
@@ -671,8 +687,9 @@ individual_store_contact_update (EmpathyIndividualStore *self,
       show_avatar = TRUE;
     }
 
-  empathy_pixbuf_avatar_from_individual_scaled_async (individual, 32, 32,
-      individual_avatar_pixbuf_received_cb, self);
+  empathy_pixbuf_avatar_from_individual_scaled_async (individual,
+      individual_avatar_pixbuf_received_cb, 32, 32, self);
+
   pixbuf_status =
       empathy_individual_store_get_individual_status_icon (self, individual);
 
