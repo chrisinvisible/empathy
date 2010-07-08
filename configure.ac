@@ -177,6 +177,10 @@ else
   have_gtk3="no"
 fi
 
+if test "x$enable_gtk3" = "xyes" -a "x$have_gtk3" != "xyes"; then
+   AC_MSG_ERROR([Couldn't find gtk3 dependencies.])
+fi
+
 if test "x$have_gtk3" == "xyes"; then
   # GTK3 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
