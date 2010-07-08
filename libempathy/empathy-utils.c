@@ -582,15 +582,8 @@ empathy_folks_individual_contains_contact (FolksIndividual *individual)
   personas = folks_individual_get_personas (individual);
   for (l = personas; l != NULL; l = l->next)
     {
-      TpfPersona *persona = l->data;
-
-      if (TPF_IS_PERSONA (persona))
-        {
-          TpContact *contact = tpf_persona_get_contact (persona);
-
-          if (TP_IS_CONTACT (contact))
-            return TRUE;
-        }
+      if (TPF_IS_PERSONA (l->data))
+        return (tpf_persona_get_contact (TPF_PERSONA (l->data)) != NULL);
     }
 
   return FALSE;
