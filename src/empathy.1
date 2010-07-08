@@ -1,24 +1,46 @@
-.TH EMPATHY "1" "October 2007" "Telepathy project" "User Commands"
+.TH EMPATHY "1" "February 2010" "Telepathy project" "User Commands"
 .SH NAME
-empathy \- GNOME instant messaging client using Telepathy
+empathy \- GNOME multi-protocol chat and call client
 .SH SYNOPSIS
 empathy
 .SH DESCRIPTION
-Empathy consists of a rich set of reusable instant messaging widgets, and a
-GNOME client using those widgets.
-It uses Telepathy and Nokia's Mission Control, and reuses Gossip's UI.
+GNOME multi-protocol chat and call client
+Instant messaging program supporting text, voice, video, file transfers
+and inter-application communication over many different protocols,
+including: AIM, MSN, Google Talk (Jabber/XMPP), Facebook, Yahoo!, Salut,
+Gadu-Gadu, Groupwise, ICQ and QQ.
 .PP
 The main user interface consists of a contact list window and an icon in the
 notification area.
 .SH OPTIONS
-There are no command-line options.
+.TP
+.BR \-n ,\  \-\-no\-connect
+Don't connect on startup
+.TP
+.BR \-h ,\  \-\-start\-hidden
+Don't display the contact list or any other dialogs on startup
+.TP
+.BR \-v ,\  \-\-version
+Show version
 .SH ENVIRONMENT
 .TP
-\fBEMPATHY_LOGFILE\fR=\fIfilename\fR
+.BI EMPATHY_LOGFILE= filename
 If set, debug output will go to the given file rather than to stderr.
 .TP
-\fBEMPATHY_DEBUG\fR=\fItype\fR
+.BI EMPATHY_DEBUG= type
 May be set to "all" for full debug output, or various undocumented options
 (which may change from release to release) to filter the output.
+.SH AUTHOR
+This manual page was written by
+.MT bigon@debian.org
+Laurent Bigonville
+.ME ,
+for the Debian GNU/Linux system (but may be used by others).
 .SH SEE ALSO
-\fIhttp://telepathy.freedesktop.org/\fR, \fIhttp://live.gnome.org/Empathy\fR
+.BR empathy-accounts (1),
+.UR http://telepathy.freedesktop.org/
+The Telepathy project
+.UE ,
+.UR http://live.gnome.org/Empathy
+The Empathy project
+.UE .
