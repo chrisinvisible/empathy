@@ -37,6 +37,7 @@ GTK_REQUIRED=2.21.2
 KEYRING_REQUIRED=2.22
 LIBCANBERRA_GTK_REQUIRED=0.4
 LIBNOTIFY_REQUIRED=0.4.4
+LIBNOTIFY_REQUIRED_GTK3=0.5.1
 TELEPATHY_GLIB_REQUIRED=0.11.7
 TELEPATHY_LOGGER=0.1.2
 UNIQUE_REQUIRED=1.1.2
@@ -161,8 +162,6 @@ PKG_CHECK_MODULES(EMPATHY,
    x11
 ])
 
-PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
-
 # -----------------------------------------------------------
 # GTK+
 # -----------------------------------------------------------
@@ -178,6 +177,7 @@ if test "x$enable_gtk3" != "xno"; then
 
   # GTK3 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
 fi
 
 # ...if not use GTK+2
@@ -187,6 +187,7 @@ if test "x$enable_gtk3" == "xno"; then
 
   # GTK2 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
 
   # Enable GSEAL checks if needed
   if test $USE_MAINTAINER_MODE = yes; then
