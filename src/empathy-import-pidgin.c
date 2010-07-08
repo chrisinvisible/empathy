@@ -45,9 +45,9 @@
 /* Pidgin to CM map */
 typedef struct
 {
-  gchar *protocol;
-  gchar *pidgin_name;
-  gchar *cm_name;
+  const gchar *protocol;
+  const gchar *pidgin_name;
+  const gchar *cm_name;
 } PidginCmMapItem;
 
 static PidginCmMapItem pidgin_cm_map[] =

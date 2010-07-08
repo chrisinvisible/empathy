@@ -61,7 +61,7 @@ GtkBuilder *    empathy_builder_get_file                (const gchar      *filen
 							 ...);
 void            empathy_builder_connect                 (GtkBuilder       *gui,
 							 gpointer          user_data,
-							 gchar            *first_object,
+							 const gchar      *first_object,
 							 ...);
 GtkWidget     *empathy_builder_unref_and_keep_widget    (GtkBuilder       *gui,
 							 GtkWidget        *root);

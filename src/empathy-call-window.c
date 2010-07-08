@@ -376,7 +376,7 @@ empathy_call_window_create_dtmf (EmpathyCallWindow *self)
   int i;
   GQuark button_quark;
   struct {
-    gchar *label;
+    const gchar *label;
     TpDTMFEvent event;
   } dtmfbuttons[] = { { "1", TP_DTMF_EVENT_DIGIT_1 },
                       { "2", TP_DTMF_EVENT_DIGIT_2 },

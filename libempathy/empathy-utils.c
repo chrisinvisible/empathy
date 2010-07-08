@@ -57,7 +57,7 @@
 
 /* Translation between presence types and string */
 static struct {
-	gchar *name;
+	const gchar *name;
 	TpConnectionPresenceType type;
 } presence_types[] = {
 	{ "available", TP_CONNECTION_PRESENCE_TYPE_AVAILABLE },

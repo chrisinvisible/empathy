@@ -472,7 +472,7 @@ account_dialog_create_settings_widget (EmpathyAccountsDialog *dialog,
     EmpathyAccountSettings *settings)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  gchar                     *icon_name;
+  const gchar               *icon_name;
   TpAccount                 *account;
 
   priv->setting_widget_object =
@@ -2299,7 +2299,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
     gboolean hidden)
 {
   GError *error = NULL;
-  gchar *argv[4] = { NULL, };
+  const gchar *argv[4] = { NULL, };
   gint i = 0;
   gchar *account_option = NULL;
   gchar *path;
@@ -2341,7 +2341,7 @@ empathy_accounts_dialog_show_application (GdkScreen *screen,
     selected_account == NULL ? "<none selected>" :
       tp_proxy_get_object_path (TP_PROXY (selected_account)));
 
-  gdk_spawn_on_screen (screen, NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
+  gdk_spawn_on_screen (screen, NULL, (gchar**) argv, NULL, G_SPAWN_SEARCH_PATH,
       NULL, NULL, NULL, &error);
   if (error != NULL)
     {

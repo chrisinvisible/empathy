@@ -29,8 +29,8 @@
 G_DEFINE_TYPE(EmpathyGstVideoSrc, empathy_video_src, GST_TYPE_BIN)
 
 /* Keep in sync with EmpathyGstVideoSrcChannel */
-static gchar *channel_names[NR_EMPATHY_GST_VIDEO_SRC_CHANNELS] = { "contrast",
-  "brightness", "gamma" };
+static const gchar *channel_names[NR_EMPATHY_GST_VIDEO_SRC_CHANNELS] = {
+  "contrast", "brightness", "gamma" };
 
 /* signal enum */
 #if 0

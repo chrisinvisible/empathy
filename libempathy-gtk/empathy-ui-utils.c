@@ -129,9 +129,9 @@ empathy_builder_get_file (const gchar *filename,
 }
 
 void
-empathy_builder_connect (GtkBuilder *gui,
-			 gpointer    user_data,
-			 gchar      *first_object,
+empathy_builder_connect (GtkBuilder  *gui,
+			 gpointer     user_data,
+			 const gchar *first_object,
 			 ...)
 {
 	va_list      args;

@@ -781,7 +781,7 @@ individual_store_remove_individual_and_disconnect (
 
 static void
 individual_store_members_changed_cb (EmpathyIndividualManager *manager,
-    gchar *message,
+    const gchar *message,
     GList *added,
     GList *removed,
     guint reason,
@@ -902,7 +902,7 @@ individual_store_member_renamed_cb (EmpathyIndividualManager *manager,
     FolksIndividual *old_individual,
     FolksIndividual *new_individual,
     guint reason,
-    gchar *message,
+    const gchar *message,
     EmpathyIndividualStore *self)
 {
   EmpathyIndividualStorePriv *priv;

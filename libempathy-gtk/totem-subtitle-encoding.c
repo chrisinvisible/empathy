@@ -147,8 +147,8 @@ typedef struct
 {
   int index;
   gboolean valid;
-  char *charset;
-  char *name;
+  const char *charset;
+  const char *name;
 } SubtitleEncoding;
 
 
@@ -483,7 +483,7 @@ static GtkTreeModel *
 subtitle_encoding_create_store (void)
 {
   gchar *label;
-  gchar *lastlang = "";
+  const gchar *lastlang = "";
   GtkTreeIter iter, iter2;
   GtkTreeStore *store;
   int i;
