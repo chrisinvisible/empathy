@@ -597,7 +597,7 @@ empathy_folks_individual_contains_contact (FolksIndividual *individual)
  * within the given Individual. Note that this is a temporary convenience. See
  * the TODO above. */
 EmpathyContact *
-empathy_contact_from_folks_individual (FolksIndividual *individual)
+empathy_contact_dup_from_folks_individual (FolksIndividual *individual)
 {
   GList *personas, *l;
   EmpathyContact *contact = NULL;
@@ -627,7 +627,7 @@ empathy_contact_from_folks_individual (FolksIndividual *individual)
  * given EmpathyContact. Note that this is a temporary convenience. See
  * the TODO above. */
 FolksIndividual *
-folks_individual_from_empathy_contact (EmpathyContact *contact)
+folks_individual_dup_from_empathy_contact (EmpathyContact *contact)
 {
   EmpathyIndividualManager *manager;
   FolksIndividual *individual = NULL;
@@ -639,7 +639,7 @@ folks_individual_from_empathy_contact (EmpathyContact *contact)
   for (l = individuals; (l != NULL) && (individual == NULL); l = l->next)
     {
       FolksIndividual *i = FOLKS_INDIVIDUAL (l->data);
-      EmpathyContact *c = empathy_contact_from_folks_individual (i);
+      EmpathyContact *c = empathy_contact_dup_from_folks_individual (i);
 
       if (c == contact)
         individual = g_object_ref (i);

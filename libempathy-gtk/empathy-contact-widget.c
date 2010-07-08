@@ -579,7 +579,7 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
 
   if (group != NULL)
     {
-      FolksIndividual *individual = folks_individual_from_empathy_contact (
+      FolksIndividual *individual = folks_individual_dup_from_empathy_contact (
           information->contact);
 
       if (individual != NULL)
@@ -809,7 +809,7 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
       COL_ENABLED, TRUE,
       -1);
 
-  individual = folks_individual_from_empathy_contact (information->contact);
+  individual = folks_individual_dup_from_empathy_contact (information->contact);
 
   if (individual != NULL)
     {
@@ -1337,8 +1337,8 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          FolksIndividual *individual = folks_individual_from_empathy_contact (
-              information->contact);
+          FolksIndividual *individual =
+              folks_individual_dup_from_empathy_contact (information->contact);
 
           if (individual != NULL)
             {
@@ -1535,8 +1535,8 @@ contact_widget_contact_update (EmpathyContactWidget *information)
 
       if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_FAVOURITE)
         {
-          FolksIndividual *individual = folks_individual_from_empathy_contact (
-              information->contact);
+          FolksIndividual *individual =
+              folks_individual_dup_from_empathy_contact (information->contact);
 
           if (individual != NULL)
             {
@@ -1672,7 +1672,7 @@ static void
 favourite_toggled_cb (GtkToggleButton *button,
     EmpathyContactWidget *information)
 {
-  FolksIndividual *individual = folks_individual_from_empathy_contact (
+  FolksIndividual *individual = folks_individual_dup_from_empathy_contact (
       information->contact);
 
   if (individual != NULL)

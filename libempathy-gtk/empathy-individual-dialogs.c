@@ -125,7 +125,7 @@ empathy_new_individual_dialog_show_with_individual (GtkWindow *parent,
 
   /* Contact info widget */
   if (FOLKS_IS_INDIVIDUAL (individual))
-    contact = empathy_contact_from_folks_individual (individual);
+    contact = empathy_contact_dup_from_folks_individual (individual);
 
   contact_widget = empathy_contact_widget_new (contact,
       EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |

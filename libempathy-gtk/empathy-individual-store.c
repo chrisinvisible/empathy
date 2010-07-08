@@ -371,7 +371,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
     }
 
   manager = empathy_individual_manager_dup_singleton ();
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   connection = empathy_contact_get_connection (contact);
   flags = empathy_individual_manager_get_flags_for_connection (manager,
       connection);
@@ -1799,7 +1799,7 @@ individual_store_get_individual_status_icon_with_icon_name (
   show_protocols_here = priv->show_protocols && (contact_count == 1);
   if (show_protocols_here)
     {
-      contact = empathy_contact_from_folks_individual (individual);
+      contact = empathy_contact_dup_from_folks_individual (individual);
       protocol_name = empathy_protocol_name_for_contact (contact);
       icon_name = g_strdup_printf ("%s-%s", status_icon_name, protocol_name);
     }

@@ -296,7 +296,7 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
       goto OUT;
     }
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   g_object_unref (individual);
 
   if (contact == NULL)
@@ -484,7 +484,7 @@ individual_view_file_drag_received (GtkWidget *view,
       return FALSE;
     }
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_send_file_from_uri_list (contact, sel_data);
 
   g_object_unref (individual);
@@ -897,7 +897,7 @@ individual_view_row_activated (GtkTreeView *view,
   if (!individual)
     return;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   if (contact != NULL)
     {

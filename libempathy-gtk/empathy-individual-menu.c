@@ -191,7 +191,7 @@ empathy_individual_add_menu_item_new (FolksIndividual *individual)
     }
 
   manager = empathy_individual_manager_dup_singleton ();
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   connection = empathy_contact_get_connection (contact);
 
   flags = empathy_individual_manager_get_flags_for_connection (manager,
@@ -244,7 +244,7 @@ empathy_individual_chat_menu_item_activated (GtkMenuItem *item,
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -283,7 +283,7 @@ empathy_individual_audio_call_menu_item_activated (GtkMenuItem *item,
   EmpathyContact *contact;
   EmpathyCallFactory *factory;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -302,7 +302,7 @@ empathy_individual_audio_call_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -328,7 +328,7 @@ empathy_individual_video_call_menu_item_activated (GtkMenuItem *item,
   EmpathyContact *contact;
   EmpathyCallFactory *factory;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -347,7 +347,7 @@ empathy_individual_video_call_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -372,7 +372,7 @@ individual_log_menu_item_activate_cb (FolksIndividual *individual)
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -391,7 +391,7 @@ empathy_individual_log_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -420,7 +420,7 @@ individual_file_transfer_menu_item_activate_cb (FolksIndividual *individual)
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -438,7 +438,7 @@ empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -462,7 +462,7 @@ individual_share_my_desktop_menu_item_activate_cb (FolksIndividual *individual)
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -481,7 +481,7 @@ empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -530,7 +530,7 @@ individual_info_menu_item_activate_cb (FolksIndividual *individual)
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_contact_information_dialog_show (contact, NULL);
 }
 
@@ -562,7 +562,7 @@ individual_edit_menu_item_activate_cb (FolksIndividual *individual)
 {
   EmpathyContact *contact;
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_contact_edit_dialog_show (contact, NULL);
 }
 
@@ -577,7 +577,7 @@ empathy_individual_edit_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
@@ -653,7 +653,7 @@ room_sub_menu_activate_cb (GtkWidget *item,
       return;
     }
 
-  contact = empathy_contact_from_folks_individual (data->individual);
+  contact = empathy_contact_dup_from_folks_individual (data->individual);
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -693,7 +693,7 @@ empathy_individual_invite_menu_item_new (FolksIndividual *individual)
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_from_folks_individual (individual);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
