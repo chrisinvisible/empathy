@@ -32,7 +32,7 @@
 #include <folks/folks.h>
 #include <folks/folks-telepathy.h>
 
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
 #include <geoclue/geoclue-geocode.h>
 #endif
 
@@ -75,7 +75,7 @@ static void contact_get_property (GObject *object, guint param_id,
 static void contact_set_property (GObject *object, guint param_id,
     const GValue *value, GParamSpec *pspec);
 
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
 static void update_geocode (EmpathyContact *contact);
 #endif
 
@@ -1349,7 +1349,7 @@ empathy_contact_set_location (EmpathyContact *contact,
     g_hash_table_unref (priv->location);
 
   priv->location = g_hash_table_ref (location);
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
   update_geocode (contact);
 #endif
   g_object_notify (G_OBJECT (contact), "location");
@@ -1392,7 +1392,7 @@ empathy_contact_equal (gconstpointer contact1,
   return FALSE;
 }
 
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
 #define GEOCODE_SERVICE "org.freedesktop.Geoclue.Providers.Yahoo"
 #define GEOCODE_PATH "/org/freedesktop/Geoclue/Providers/Yahoo"
 

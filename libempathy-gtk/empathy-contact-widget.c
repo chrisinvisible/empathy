@@ -27,7 +27,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
 #endif
@@ -107,7 +107,7 @@ typedef struct
   GtkWidget *subvbox_location;
   GtkWidget *table_location;
   GtkWidget *label_location;
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
   GtkWidget *viewport_map;
   GtkWidget *map_view_embed;
   ChamplainView *map_view;
@@ -1033,7 +1033,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
       row++;
     }
 
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
   if (has_position &&
       !(information->flags & EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP))
     {
@@ -1055,7 +1055,7 @@ contact_widget_location_update (EmpathyContactWidget *information)
       return;
     }
 
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
   if (display_map)
     {
       ClutterActor *marker;
@@ -1868,7 +1868,7 @@ empathy_contact_widget_new (EmpathyContact *contact,
        "vbox_location", &information->vbox_location,
        "subvbox_location", &information->subvbox_location,
        "label_location", &information->label_location,
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
        "viewport_map", &information->viewport_map,
 #endif
        "vbox_groups", &information->vbox_groups,

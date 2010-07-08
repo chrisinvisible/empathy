@@ -932,7 +932,7 @@ empathy_preferences_init (EmpathyPreferences *preferences)
 	}
 
 	page = gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), 3);
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
 	gtk_widget_show (page);
 #else
 	gtk_widget_hide (page);

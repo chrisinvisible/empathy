@@ -32,7 +32,7 @@
 #include <gdk/gdkx.h>
 #include <unique/unique.h>
 
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
 #include <clutter-gtk/clutter-gtk.h>
 #endif
 
@@ -445,7 +445,7 @@ empathy_idle_set_auto_away_cb (GSettings *gsettings,
 int
 main (int argc, char *argv[])
 {
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
   EmpathyLocationManager *location_manager = NULL;
 #endif
   EmpathyStatusIcon *icon;
@@ -489,7 +489,7 @@ main (int argc, char *argv[])
 
   optcontext = g_option_context_new (N_("- Empathy IM Client"));
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
   g_option_context_add_group (optcontext, clutter_get_option_group ());
 #endif
   g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
@@ -593,7 +593,7 @@ main (int argc, char *argv[])
       G_CALLBACK (new_incoming_transfer_cb), NULL);
 
   /* Location mananger */
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
   location_manager = empathy_location_manager_dup_singleton ();
 #endif
 
@@ -613,7 +613,7 @@ main (int argc, char *argv[])
   g_object_unref (log_manager);
   g_object_unref (dispatcher);
   g_object_unref (chatroom_manager);
-#if HAVE_GEOCLUE
+#ifdef HAVE_GEOCLUE
   g_object_unref (location_manager);
 #endif
   g_object_unref (ft_factory);

@@ -940,7 +940,7 @@ static void
 main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 			      EmpathyMainWindow *window)
 {
-#if HAVE_LIBCHAMPLAIN
+#ifdef HAVE_LIBCHAMPLAIN
 	empathy_map_view_show ();
 #endif
 }
@@ -1600,7 +1600,7 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	g_object_ref (priv->ui_manager);
 	g_object_unref (gui);
 
-#if !HAVE_LIBCHAMPLAIN
+#ifndef HAVE_LIBCHAMPLAIN
 	gtk_action_set_visible (show_map_widget, FALSE);
 #endif
 
