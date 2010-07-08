@@ -612,11 +612,12 @@ out:
 }
 
 void
-empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual                     *individual,
-						    gint                                 width,
-						    gint                                 height,
-						    EmpathyPixbufAvatarFromIndividualCb  callback,
-						    gpointer                             user_data)
+empathy_pixbuf_avatar_from_individual_scaled_async (
+		FolksIndividual                     *individual,
+		gint                                 width,
+		gint                                 height,
+		EmpathyPixbufAvatarFromIndividualCb  callback,
+		gpointer                             user_data)
 {
 	GFile *avatar_file;
 	PixbufAvatarFromIndividualClosure *closure;
