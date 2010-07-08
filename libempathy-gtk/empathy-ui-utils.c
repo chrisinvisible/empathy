@@ -527,6 +527,27 @@ typedef struct {
 	guint height;
 } PixbufAvatarFromIndividualClosure;
 
+static PixbufAvatarFromIndividualClosure *
+pixbuf_avatar_from_individual_closure_new (FolksIndividual                     *individual,
+					   gint                                 width,
+					   gint                                 height,
+					   EmpathyPixbufAvatarFromIndividualCb  callback,
+					   gpointer                             user_data)
+{
+	PixbufAvatarFromIndividualClosure *closure;
+
+	g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+
+	closure = g_new0 (PixbufAvatarFromIndividualClosure, 1);
+	closure->individual = g_object_ref (individual);
+	closure->callback = callback;
+	closure->user_data = user_data;
+	closure->width = width;
+	closure->height = height;
+
+	return closure;
+}
+
 static void
 pixbuf_avatar_from_individual_closure_free (
 		PixbufAvatarFromIndividualClosure *closure)
@@ -601,22 +622,16 @@ empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual             
 	GFile *avatar_file;
 	PixbufAvatarFromIndividualClosure *closure;
 
-	if (!FOLKS_IS_INDIVIDUAL (individual)) {
-		DEBUG ("failed assertion: FOLKS_IS_INDIVIDUAL (individual)");
-		goto out;
-	}
-
 	avatar_file = folks_avatar_get_avatar (FOLKS_AVATAR (individual));
 	if (avatar_file == NULL) {
 		goto out;
 	}
 
-	closure = g_new0 (PixbufAvatarFromIndividualClosure, 1);
-	closure->individual = g_object_ref (individual);
-	closure->callback = callback;
-	closure->user_data = user_data;
-	closure->width = width;
-	closure->height = height;
+	closure = pixbuf_avatar_from_individual_closure_new (individual, width,
+							     height, callback,
+							     user_data);
+	if (closure == NULL)
+		goto out;
 
 	g_file_load_contents_async (avatar_file, NULL,
 			avatar_file_load_contents_cb, closure);
