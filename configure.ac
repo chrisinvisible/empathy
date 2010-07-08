@@ -172,16 +172,17 @@ AC_ARG_ENABLE(gtk3,
 # Try to use GTK+3 if available
 if test "x$enable_gtk3" != "xno"; then
   PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
-      enable_gtk3="yes", enable_gtk3="no")
+      have_gtk3="yes", have_gtk3="no")
+else
+  have_gtk3="no"
 fi
 
-if test "x$enable_gtk3" == "xyes"; then
+if test "x$have_gtk3" == "xyes"; then
   # GTK3 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
   PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
 else
-  enable_gtk3=no
   PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 
   # GTK2 specific deps
@@ -285,7 +286,7 @@ AC_ARG_ENABLE(webkit,
 
 if test "x$enable_webkit" != "xno"; then
 
-   if test "x$enable_gtk3" == "xno"; then
+   if test "x$have_gtk3" == "xno"; then
       PKG_CHECK_MODULES(WEBKIT, [webkit-1.0 >= $WEBKIT_REQUIRED],
           have_webkit="yes", have_webkit="no")
    else
@@ -353,7 +354,7 @@ AC_ARG_ENABLE(map,
 
 if test "x$enable_map" != "xno"; then
 
-   if test "x$enable_gtk3" == "xno"; then
+   if test "x$have_gtk3" == "xno"; then
       PKG_CHECK_MODULES(LIBCHAMPLAIN,
       [
          champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
@@ -445,7 +446,7 @@ AC_ARG_ENABLE(nautilus-sendto,
                              enable_nautilus_sendto=auto)
 
 if test "x$enable_nautilus_sendto" != "xno"; then
-   if test "x$enable_gtk3" == "xno"; then
+   if test "x$have_gtk3" == "xno"; then
       # Newer NST requires GTK+3 so we can't use it
       PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
           nautilus-sendto < 2.90.0],
@@ -532,7 +533,7 @@ Configure summary:
 	Compiler Flags..............:  ${CFLAGS} ${ERROR_CFLAGS}
 	Prefix......................:  ${prefix}
 	Coding style checks.........:  ${ENABLE_CODING_STYLE_CHECKS}
-	Use GTK+3...................:  ${enable_gtk3}
+	Use GTK+3...................:  ${have_gtk3}
 
     Features:
 	Spell checking (enchant)....:  ${have_enchant}
