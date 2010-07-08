@@ -228,6 +228,11 @@ unique_app_message_cb (UniqueApp *unique_app,
   return UNIQUE_RESPONSE_OK;
 }
 
+static gboolean show_version_cb (const char *option_name,
+    const char *value,
+    gpointer data,
+    GError **error) G_GNUC_NORETURN;
+
 static gboolean
 show_version_cb (const char *option_name,
     const char *value,
@@ -237,8 +242,6 @@ show_version_cb (const char *option_name,
   g_print ("%s\n", PACKAGE_STRING);
 
   exit (EXIT_SUCCESS);
-
-  return FALSE;
 }
 
 static void
