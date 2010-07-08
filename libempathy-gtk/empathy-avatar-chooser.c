@@ -1025,7 +1025,7 @@ avatar_chooser_clicked_cb (GtkWidget            *button,
  * Return value: a new #EmpathyAvatarChooser
  */
 GtkWidget *
-empathy_avatar_chooser_new ()
+empathy_avatar_chooser_new (void)
 {
 	return g_object_new (EMPATHY_TYPE_AVATAR_CHOOSER, NULL);
 }
