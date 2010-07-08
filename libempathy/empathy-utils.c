@@ -564,12 +564,14 @@ empathy_connect_new_account (TpAccount *account,
     }
 }
 
+/* Translate Folks' general presence type to the Tp presence type */
 TpConnectionPresenceType
 empathy_folks_presence_type_to_tp (FolksPresenceType type)
 {
   return (TpConnectionPresenceType) type;
 }
 
+/* Returns TRUE if the given Individual contains a TpContact */
 gboolean
 empathy_folks_individual_contains_contact (FolksIndividual *individual)
 {
@@ -597,6 +599,10 @@ empathy_folks_individual_contains_contact (FolksIndividual *individual)
 /* TODO: this needs to be eliminated (and replaced in some cases with user
  * prompts) when we break the assumption that FolksIndividuals are 1:1 with
  * TpContacts */
+
+/* Retrieve the EmpathyContact corresponding to the first TpContact contained
+ * within the given Individual. Note that this is a temporary convenience. See
+ * the TODO above. */
 EmpathyContact *
 empathy_contact_from_folks_individual (FolksIndividual *individual)
 {
@@ -623,6 +629,10 @@ empathy_contact_from_folks_individual (FolksIndividual *individual)
 }
 
 /* TODO: This also needs to be eliminated, and is horrifically slow. */
+
+/* Retrieve the first Individual containing a TpContact that corresponds to the
+ * given EmpathyContact. Note that this is a temporary convenience. See
+ * the TODO above. */
 FolksIndividual *
 folks_individual_from_empathy_contact (EmpathyContact *contact)
 {
