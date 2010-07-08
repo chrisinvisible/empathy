@@ -577,12 +577,12 @@ contact_widget_cell_toggled (GtkCellRendererToggle *cell,
   gtk_list_store_set (store, &iter, COL_ENABLED, !enabled, -1);
   gtk_tree_path_free (path);
 
-  if (group)
+  if (group != NULL)
     {
       FolksIndividual *individual = folks_individual_from_empathy_contact (
           information->contact);
 
-      if (individual)
+      if (individual != NULL)
         {
           folks_groups_change_group (FOLKS_GROUPS (individual), group, !enabled);
           g_object_unref (individual);
@@ -810,7 +810,7 @@ contact_widget_button_group_clicked_cb (GtkButton *button,
 
   individual = folks_individual_from_empathy_contact (information->contact);
 
-  if (individual)
+  if (individual != NULL)
     {
       folks_groups_change_group (FOLKS_GROUPS (individual), group, TRUE);
       g_object_unref (individual);
@@ -1339,7 +1339,7 @@ contact_widget_entry_alias_focus_event_cb (GtkEditable *editable,
           FolksIndividual *individual = folks_individual_from_empathy_contact (
               information->contact);
 
-          if (individual)
+          if (individual != NULL)
             {
               folks_alias_set_alias (FOLKS_ALIAS (individual), alias);
               g_object_unref (individual);
@@ -1537,7 +1537,7 @@ contact_widget_contact_update (EmpathyContactWidget *information)
           FolksIndividual *individual = folks_individual_from_empathy_contact (
               information->contact);
 
-          if (individual)
+          if (individual != NULL)
             {
               gboolean is_favourite = folks_favourite_get_is_favourite (
                   FOLKS_FAVOURITE (individual));
@@ -1674,7 +1674,7 @@ favourite_toggled_cb (GtkToggleButton *button,
   FolksIndividual *individual = folks_individual_from_empathy_contact (
       information->contact);
 
-  if (individual)
+  if (individual != NULL)
     {
       gboolean active = gtk_toggle_button_get_active (button);
       folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), active);

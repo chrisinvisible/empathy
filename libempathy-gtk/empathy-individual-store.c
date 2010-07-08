@@ -269,7 +269,7 @@ individual_store_find_contact_foreach (GtkTreeModel *model,
       fc->iters = g_list_append (fc->iters, gtk_tree_iter_copy (iter));
     }
 
-  if (individual)
+  if (individual != NULL)
     {
       g_object_unref (individual);
     }

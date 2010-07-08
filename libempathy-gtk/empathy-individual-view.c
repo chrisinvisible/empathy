@@ -899,7 +899,7 @@ individual_view_row_activated (GtkTreeView *view,
 
   contact = empathy_contact_from_folks_individual (individual);
 
-  if (contact)
+  if (contact != NULL)
     {
       DEBUG ("Starting a chat");
 
@@ -1985,7 +1985,7 @@ individual_view_group_remove_activate_cb (GtkMenuItem *menuitem,
   gchar *group;
 
   group = empathy_individual_view_get_selected_group (view, NULL);
-  if (group)
+  if (group != NULL)
     {
       gchar *text;
       GtkWindow *parent;
@@ -2073,7 +2073,7 @@ individual_view_remove_activate_cb (GtkMenuItem *menuitem,
 
   individual = empathy_individual_view_dup_selected (view);
 
-  if (individual)
+  if (individual != NULL)
     {
       gchar *text;
       GtkWindow *parent;

@@ -189,7 +189,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 
 	contact = empathy_contact_from_folks_individual (individual);
 	if (contact != data->event->contact) {
-		if (contact) {
+		if (contact != NULL) {
 			g_object_unref (contact);
 		}
 		return FALSE;
@@ -221,7 +221,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 	}
 
 	g_object_unref (individual);
-	if (contact)
+	if (contact != NULL)
 		g_object_unref (contact);
 
 	return FALSE;
@@ -355,7 +355,7 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 
 	g_object_unref (contact);
 OUT:
-	if (individual)
+	if (individual != NULL)
 		g_object_unref (individual);
 }
 
