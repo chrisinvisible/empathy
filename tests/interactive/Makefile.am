@@ -3,13 +3,15 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir)                          	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
 	$(EMPATHY_CFLAGS)				\
+	$(GTK_CFLAGS) \
 	$(WARN_CFLAGS)					\
 	$(DISABLE_DEPRECATED)
 
 LDADD =								\
 	$(top_builddir)/libempathy-gtk/libempathy-gtk.la	\
 	$(top_builddir)/libempathy/libempathy.la		\
-	$(EMPATHY_LIBS)
+	$(EMPATHY_LIBS) \
+	$(GTK_LIBS)
 
 noinst_PROGRAMS =			\
 	contact-manager			\

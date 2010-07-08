@@ -29,33 +29,36 @@ AC_COPYRIGHT([
 ])
 
 # Minimal version required
+
+# Hardp deps
+GCONF_REQUIRED=1.2.0
 GLIB_REQUIRED=2.25.9
 GTK_REQUIRED=2.21.2
-GCONF_REQUIRED=1.2.0
+KEYRING_REQUIRED=2.22
+LIBCANBERRA_GTK_REQUIRED=0.4
+LIBNOTIFY_REQUIRED=0.4.4
+LIBNOTIFY_REQUIRED_GTK3=0.5.1
 TELEPATHY_GLIB_REQUIRED=0.11.7
 TELEPATHY_LOGGER=0.1.2
-ENCHANT_REQUIRED=1.2.0
-ISO_CODES_REQUIRED=0.35
-LIBNOTIFY_REQUIRED=0.4.4
-LIBCANBERRA_GTK_REQUIRED=0.4
-LIBCHAMPLAIN_REQUIRED=0.4
-LIBCHAMPLAIN_GTK_REQUIRED=0.4
-CLUTTER_GTK_REQUIRED=0.10
-GEOCLUE_REQUIRED=0.11
-WEBKIT_REQUIRED=1.1.15
-KEYRING_REQUIRED=2.22
-NETWORK_MANAGER_REQUIRED=0.7.0
-NAUTILUS_SENDTO_REQUIRED=2.28.1
 UNIQUE_REQUIRED=1.1.2
+
+# Optionnal deps
+CLUTTER_GTK_REQUIRED=0.10
+ENCHANT_REQUIRED=1.2.0
+GEOCLUE_REQUIRED=0.11
+ISO_CODES_REQUIRED=0.35
+LIBCHAMPLAIN_GTK_REQUIRED=0.4
+LIBCHAMPLAIN_REQUIRED=0.4
+NAUTILUS_SENDTO_REQUIRED=2.28.1
+NAUTILUS_SENDTO_REQUIRED_GTK3=2.90.0
+NETWORK_MANAGER_REQUIRED=0.7.0
+WEBKIT_REQUIRED=1.1.15
 
 # Use --enable-maintainer-mode to disable deprecated symbols,
 # disable single include and enable GSEAL. If this is not a released empathy,
 # maintainer mode is forced
 ifelse(empathy_released, 1, [], [enable_maintainer_mode="yes"])
 GNOME_MAINTAINER_MODE_DEFINES
-if test $USE_MAINTAINER_MODE = yes; then
-  AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
-fi
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
@@ -139,70 +142,59 @@ AC_SUBST(ERROR_CFLAGS)
 # Pkg-Config dependency checks
 # -----------------------------------------------------------
 
-PKG_CHECK_MODULES(LIBEMPATHY,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gio-unix-2.0 >= $GLIB_REQUIRED
-   libxml-2.0
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   telepathy-farsight
-   farsight2-0.10
-   gstreamer-0.10
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
-PKG_CHECK_MODULES(LIBEMPATHYGTK,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gconf-2.0 >= $GCONF_REQUIRED
-   x11
-   gtk+-2.0 >= $GTK_REQUIRED
-   libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   farsight2-0.10
-   gstreamer-0.10
-   gstreamer-interfaces-0.10
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
 PKG_CHECK_MODULES(EMPATHY,
 [
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
-   gio-2.0 >= $GLIB_REQUIRED
-   gdk-x11-2.0
-   gtk+-2.0 >= $GTK_REQUIRED
-   libebook-1.2
    dbus-glib-1
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   telepathy-farsight
    farsight2-0.10
-   gstreamer-0.10
-   unique-1.0 >= $UNIQUE_REQUIRED
-   gnome-keyring-1 >= $KEYRING_REQUIRED
-   telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-])
-
-PKG_CHECK_MODULES(LIBEMPATHY_ACCOUNTS_PANEL,
-[
-   glib-2.0 >= $GLIB_REQUIRED
-   gobject-2.0
+   gconf-2.0 >= $GCONF_REQUIRED
    gio-2.0 >= $GLIB_REQUIRED
-   gdk-x11-2.0
-   gtk+-2.0 >= $GTK_REQUIRED
-   libebook-1.2
-   dbus-glib-1
-   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
-   unique-1.0 >= $UNIQUE_REQUIRED
+   gio-unix-2.0 >= $GLIB_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
+   gobject-2.0
+   gstreamer-0.10
+   gstreamer-interfaces-0.10
+   libebook-1.2
+   libxml-2.0
+   telepathy-farsight
+   telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-logger-0.1 >= $TELEPATHY_LOGGER
+   x11
 ])
 
-PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
+# -----------------------------------------------------------
+# GTK+
+# -----------------------------------------------------------
+AC_ARG_ENABLE(gtk3,
+              AS_HELP_STRING([--enable-gtk3=@<:@no/yes/auto@:>@],
+                             [build with GTK+3]), ,
+                             enable_gtk3=auto)
+
+# Try to use GTK+3 if available
+if test "x$enable_gtk3" != "xno"; then
+  PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
+      enable_gtk3="yes", enable_gtk3="no")
+
+  # GTK3 specific deps
+  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
+  PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
+fi
+
+# ...if not use GTK+2
+if test "x$enable_gtk3" == "xno"; then
+  enable_gtk3=no
+  PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
+
+  # GTK2 specific deps
+  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
+  PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
+
+  # Enable GSEAL checks if needed
+  if test $USE_MAINTAINER_MODE = yes; then
+    AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
+  fi
+fi
 
 # -----------------------------------------------------------
 # Enable debug
@@ -293,10 +285,14 @@ AC_ARG_ENABLE(webkit,
                              enable_webkit=auto)
 
 if test "x$enable_webkit" != "xno"; then
-   PKG_CHECK_MODULES(WEBKIT,
-   [
-      webkit-1.0 >= $WEBKIT_REQUIRED
-   ], have_webkit="yes", have_webkit="no")
+
+   if test "x$enable_gtk3" == "xno"; then
+      PKG_CHECK_MODULES(WEBKIT, [webkit-1.0 >= $WEBKIT_REQUIRED],
+          have_webkit="yes", have_webkit="no")
+   else
+      PKG_CHECK_MODULES(WEBKIT, [webkitgtk-3.0 >= $WEBKIT_REQUIRED],
+          have_webkit="yes", have_webkit="no")
+   fi
 
    if test "x$have_webkit" = "xyes"; then
       AC_DEFINE(HAVE_WEBKIT, 1, [Define if you have libwebkitgtk])
@@ -357,17 +353,23 @@ AC_ARG_ENABLE(map,
                              enable_map=auto)
 
 if test "x$enable_map" != "xno"; then
-   PKG_CHECK_MODULES(LIBCHAMPLAIN,
-   [
-      champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
-      champlain-gtk-0.4 >= $LIBCHAMPLAIN_GTK_REQUIRED
-      clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
-   ], have_libchamplain="yes", have_libchamplain="no")
+
+   if test "x$enable_gtk3" == "xno"; then
+      PKG_CHECK_MODULES(LIBCHAMPLAIN,
+      [
+         champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
+         champlain-gtk-0.4 >= $LIBCHAMPLAIN_GTK_REQUIRED
+         clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
+      ], have_libchamplain="yes", have_libchamplain="no")
+   else
+      have_libchamplain="no"
+   fi
 
    if test "x$have_libchamplain" = "xyes"; then
       AC_DEFINE(HAVE_LIBCHAMPLAIN, 1, [Define if you have libchamplain])
    fi
 else
+   # FIXME: check deps once clutter-gtk and champlain have been ported to GTK3
    have_libchamplain=no
 fi
 
@@ -444,10 +446,17 @@ AC_ARG_ENABLE(nautilus-sendto,
                              enable_nautilus_sendto=auto)
 
 if test "x$enable_nautilus_sendto" != "xno"; then
-   PKG_CHECK_MODULES(NST,
-   [
-      nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
-   ], have_nst="yes", have_nst="no")
+   if test "x$enable_gtk3" == "xno"; then
+      # Newer NST requires GTK+3 so we can't use it
+      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
+          nautilus-sendto < 2.90.0],
+          have_nst="yes", have_nst="no")
+
+      AC_DEFINE(HAVE_OLD_NST, [], [Legacy compat mode with old nautilus-sendto] )
+   else
+      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED_GTK3],
+          have_nst="yes", have_nst="no")
+   fi
 else
    have_nst=no
 fi
@@ -524,6 +533,7 @@ Configure summary:
 	Compiler Flags..............:  ${CFLAGS} ${ERROR_CFLAGS}
 	Prefix......................:  ${prefix}
 	Coding style checks.........:  ${ENABLE_CODING_STYLE_CHECKS}
+	Use GTK+3...................:  ${enable_gtk3}
 
     Features:
 	Spell checking (enchant)....:  ${have_enchant}

@@ -6,8 +6,10 @@ AM_CPPFLAGS =                                           \
 	-I$(top_srcdir)                                 \
 	-DDATADIR=\""$(datadir)"\"              	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
-	$(LIBEMPATHYGTK_CFLAGS)				\
+	$(EMPATHY_CFLAGS)				\
+	$(GTK_CFLAGS)				\
 	$(LIBNOTIFY_CFLAGS)				\
+	$(CANBERRA_CFLAGS) \
 	$(ENCHANT_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
 	$(GEOCLUE_CFLAGS)				\
@@ -129,8 +131,10 @@ nodist_libempathy_gtk_la_SOURCES =\
 	$(BUILT_SOURCES)
 
 libempathy_gtk_la_LIBADD =			\
-	$(LIBEMPATHYGTK_LIBS)			\
+	$(EMPATHY_LIBS)			\
+	$(GTK_LIBS)			\
 	$(LIBNOTIFY_LIBS)			\
+	$(CANBERRA_LIBS) \
 	$(ENCHANT_LIBS)				\
 	$(LIBCHAMPLAIN_LIBS)			\
 	$(GEOCLUE_LIBS)				\

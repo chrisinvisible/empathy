@@ -2,6 +2,7 @@ include $(top_srcdir)/tools/flymake.mk
 
 CPPFLAGS_COMMON =					\
 	$(EMPATHY_CFLAGS)				\
+	$(GTK_CFLAGS)				\
 	$(ERROR_CFLAGS)					\
 	-I$(top_srcdir)                          	\
 	-DG_LOG_DOMAIN=\"empathy\"			\
@@ -14,6 +15,7 @@ AM_LDFLAGS = -lm
 AM_CPPFLAGS =						\
 	$(CPPFLAGS_COMMON)				\
 	$(LIBNOTIFY_CFLAGS)				\
+	$(UNIQUE_CFLAGS) \
 	$(LIBCHAMPLAIN_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\
 	$(NULL)
@@ -23,7 +25,9 @@ LDADD =								\
 	$(top_builddir)/libempathy/libempathy.la		\
 	$(top_builddir)/extensions/libemp-extensions.la		\
 	$(LIBNOTIFY_LIBS)					\
+	$(UNIQUE_LIBS) \
 	$(EMPATHY_LIBS)						\
+	$(GTK_LIBS)						\
 	$(LIBCHAMPLAIN_LIBS)					\
 	$(WEBKIT_LIBS)
 
@@ -43,6 +47,7 @@ libempathy_accounts_common_la_SOURCES =					\
 libempathy_accounts_common_la_LIBADD =					\
         $(top_builddir)/libempathy-gtk/libempathy-gtk.la		\
         $(LIBNOTIFY_LIBS)						\
+        $(UNIQUE_LIBS) \
         $(EMPATHY_LIBS)							\
         $(LIBCHAMPLAIN_LIBS)						\
         $(WEBKIT_LIBS)							\
@@ -132,6 +137,7 @@ empathy_LDADD =								\
         $(top_builddir)/libempathy/libempathy.la			\
         $(top_builddir)/extensions/libemp-extensions.la			\
         $(LIBNOTIFY_LIBS)						\
+        $(UNIQUE_LIBS)						\
         $(EMPATHY_LIBS)							\
         $(LIBCHAMPLAIN_LIBS)						\
         $(WEBKIT_LIBS)							\
