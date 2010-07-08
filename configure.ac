@@ -25,7 +25,7 @@ AC_INIT(Empathy, empathy_version, http://bugzilla.gnome.org/browse.cgi?product=e
 AC_PREREQ(2.59)
 AC_COPYRIGHT([
   Copyright (C) 2003-2007 Imendio AB
-  Copyright (C) 2007-2008 Collabora Ltd.
+  Copyright (C) 2007-2010 Collabora Ltd.
 ])
 
 # Minimal version required
@@ -171,10 +171,12 @@ AC_ARG_ENABLE(gtk3,
 
 # Try to use GTK+3 if available
 if test "x$enable_gtk3" != "xno"; then
-  PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
-      have_gtk3="yes", have_gtk3="no")
+   PKG_CHECK_MODULES(GTK,
+   [
+      gtk+-3.0 >= $GTK_REQUIRED
+   ], have_gtk3="yes", have_gtk3="no")
 else
-  have_gtk3="no"
+   have_gtk3="no"
 fi
 
 if test "x$enable_gtk3" = "xyes" -a "x$have_gtk3" != "xyes"; then
@@ -182,22 +184,22 @@ if test "x$enable_gtk3" = "xyes" -a "x$have_gtk3" != "xyes"; then
 fi
 
 if test "x$have_gtk3" == "xyes"; then
-  # GTK3 specific deps
-  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
-  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
-  PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
+   # GTK3 specific deps
+   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
+   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
+   PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
 else
-  PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
+   PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 
-  # GTK2 specific deps
-  PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
-  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
-  PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
+   # GTK2 specific deps
+   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
+   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
+   PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
 
-  # Enable GSEAL checks if needed
-  if test $USE_MAINTAINER_MODE = yes; then
-    AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
-  fi
+   # Enable GSEAL checks if needed
+   if test $USE_MAINTAINER_MODE = yes; then
+      AC_DEFINE(GSEAL_ENABLE, [], [Seal public structs to force usage of accessors])
+   fi
 fi
 
 # -----------------------------------------------------------
@@ -356,6 +358,7 @@ if test "x$enable_map" != "xno"; then
          clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
       ], have_libchamplain="yes", have_libchamplain="no")
    else
+      # FIXME: check deps once clutter-gtk and champlain have been ported to GTK3
       have_libchamplain="no"
    fi
 
@@ -363,7 +366,6 @@ if test "x$enable_map" != "xno"; then
       AC_DEFINE(HAVE_LIBCHAMPLAIN, 1, [Define if you have libchamplain])
    fi
 else
-   # FIXME: check deps once clutter-gtk and champlain have been ported to GTK3
    have_libchamplain=no
 fi
 
@@ -442,14 +444,18 @@ AC_ARG_ENABLE(nautilus-sendto,
 if test "x$enable_nautilus_sendto" != "xno"; then
    if test "x$have_gtk3" == "xno"; then
       # Newer NST requires GTK+3 so we can't use it
-      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
-          nautilus-sendto < 2.90.0],
-          have_nst="yes", have_nst="no")
+      PKG_CHECK_MODULES(NST,
+      [
+         nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
+         nautilus-sendto < 2.90.0
+      ], have_nst="yes", have_nst="no")
 
       AC_DEFINE(HAVE_OLD_NST, [], [Legacy compat mode with old nautilus-sendto] )
    else
-      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED_GTK3],
-          have_nst="yes", have_nst="no")
+      PKG_CHECK_MODULES(NST,
+      [
+         nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED_GTK3
+      ], have_nst="yes", have_nst="no")
    fi
 else
    have_nst=no
