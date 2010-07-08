@@ -173,15 +173,14 @@ AC_ARG_ENABLE(gtk3,
 if test "x$enable_gtk3" != "xno"; then
   PKG_CHECK_MODULES(GTK, [gtk+-3.0 >= $GTK_REQUIRED],
       enable_gtk3="yes", enable_gtk3="no")
+fi
 
+if test "x$enable_gtk3" == "xyes"; then
   # GTK3 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
   PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
-fi
-
-# ...if not use GTK+2
-if test "x$enable_gtk3" == "xno"; then
+else
   enable_gtk3=no
   PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 
