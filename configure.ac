@@ -284,10 +284,14 @@ AC_ARG_ENABLE(webkit,
                              enable_webkit=auto)
 
 if test "x$enable_webkit" != "xno"; then
-   PKG_CHECK_MODULES(WEBKIT,
-   [
-      webkit-1.0 >= $WEBKIT_REQUIRED
-   ], have_webkit="yes", have_webkit="no")
+
+   if test "x$enable_gtk3" == "xno"; then
+      PKG_CHECK_MODULES(WEBKIT, [webkit-1.0 >= $WEBKIT_REQUIRED],
+          have_webkit="yes", have_webkit="no")
+   else
+      PKG_CHECK_MODULES(WEBKIT, [webkitgtk-3.0 >= $WEBKIT_REQUIRED],
+          have_webkit="yes", have_webkit="no")
+   fi
 
    if test "x$have_webkit" = "xyes"; then
       AC_DEFINE(HAVE_WEBKIT, 1, [Define if you have libwebkitgtk])
