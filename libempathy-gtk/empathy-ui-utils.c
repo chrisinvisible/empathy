@@ -583,7 +583,6 @@ avatar_file_load_contents_cb (GObject      *object,
 
 	loader = gdk_pixbuf_loader_new ();
 
-	/* XXX: this seems a bit racy, but apparently works well enough */
 	g_signal_connect (loader, "size-prepared",
 			  G_CALLBACK (pixbuf_from_avatar_size_prepared_cb),
 			  &size_data);
