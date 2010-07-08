@@ -50,6 +50,7 @@ ISO_CODES_REQUIRED=0.35
 LIBCHAMPLAIN_GTK_REQUIRED=0.4
 LIBCHAMPLAIN_REQUIRED=0.4
 NAUTILUS_SENDTO_REQUIRED=2.28.1
+NAUTILUS_SENDTO_REQUIRED_GTK3=2.90.0
 NETWORK_MANAGER_REQUIRED=0.7.0
 WEBKIT_REQUIRED=1.1.15
 
@@ -445,10 +446,17 @@ AC_ARG_ENABLE(nautilus-sendto,
                              enable_nautilus_sendto=auto)
 
 if test "x$enable_nautilus_sendto" != "xno"; then
-   PKG_CHECK_MODULES(NST,
-   [
-      nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
-   ], have_nst="yes", have_nst="no")
+   if test "x$enable_gtk3" == "xno"; then
+      # Newer NST requires GTK+3 so we can't use it
+      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
+          nautilus-sendto < 2.90.0],
+          have_nst="yes", have_nst="no")
+
+      AC_DEFINE(HAVE_OLD_NST, [], [Legacy compat mode with old nautilus-sendto] )
+   else
+      PKG_CHECK_MODULES(NST,[nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED_GTK3],
+          have_nst="yes", have_nst="no")
+   fi
 else
    have_nst=no
 fi
