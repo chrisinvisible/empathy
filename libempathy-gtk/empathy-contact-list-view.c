@@ -763,11 +763,9 @@ contact_list_view_drag_data_get (GtkWidget        *widget,
 	g_object_unref (contact);
 	str = g_strconcat (account_id, ":", contact_id, NULL);
 
-	switch (info) {
-	case DND_DRAG_TYPE_CONTACT_ID:
+	if (info == DND_DRAG_TYPE_CONTACT_ID) {
 		gtk_selection_data_set (selection, drag_atoms_source[info], 8,
 					(guchar *) str, strlen (str) + 1);
-		break;
 	}
 
 	g_free (str);

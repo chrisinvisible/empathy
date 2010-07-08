@@ -1017,6 +1017,9 @@ account_status_changed_cb (TpAccount  *account,
 		case TP_CONNECTION_STATUS_CONNECTED:
 			/* We can join the room */
 			break;
+
+		default:
+			g_assert_not_reached ();
 	}
 
 	join_chatroom (ctx->chatroom, ctx->timestamp);

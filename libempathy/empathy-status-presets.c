@@ -431,6 +431,8 @@ empathy_status_presets_is_valid (TpConnectionPresenceType state)
 		case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
 		case TP_CONNECTION_PRESENCE_TYPE_BUSY:
 			return TRUE;
+
+		default:
+			return FALSE;
 	}
-	return FALSE;
 }

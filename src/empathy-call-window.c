@@ -2377,6 +2377,10 @@ media_stream_error_to_txt (EmpathyCallWindow *self,
       case TP_MEDIA_STREAM_ERROR_MEDIA_ERROR:
         return g_strdup (_("There was a failure in the call engine"));
 
+      case TP_MEDIA_STREAM_ERROR_EOS:
+        return g_strdup (_("The end of the stream was reached"));
+
+      case TP_MEDIA_STREAM_ERROR_UNKNOWN:
       default:
         return NULL;
     }
@@ -2737,6 +2741,31 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
           g_error_free (error);
           g_free (debug);
         }
+      case GST_MESSAGE_UNKNOWN:
+      case GST_MESSAGE_EOS:
+      case GST_MESSAGE_WARNING:
+      case GST_MESSAGE_INFO:
+      case GST_MESSAGE_TAG:
+      case GST_MESSAGE_BUFFERING:
+      case GST_MESSAGE_STATE_DIRTY:
+      case GST_MESSAGE_STEP_DONE:
+      case GST_MESSAGE_CLOCK_PROVIDE:
+      case GST_MESSAGE_CLOCK_LOST:
+      case GST_MESSAGE_NEW_CLOCK:
+      case GST_MESSAGE_STRUCTURE_CHANGE:
+      case GST_MESSAGE_STREAM_STATUS:
+      case GST_MESSAGE_APPLICATION:
+      case GST_MESSAGE_ELEMENT:
+      case GST_MESSAGE_SEGMENT_START:
+      case GST_MESSAGE_SEGMENT_DONE:
+      case GST_MESSAGE_DURATION:
+      case GST_MESSAGE_LATENCY:
+      case GST_MESSAGE_ASYNC_START:
+      case GST_MESSAGE_ASYNC_DONE:
+      case GST_MESSAGE_REQUEST_STATE:
+      case GST_MESSAGE_STEP_START:
+      case GST_MESSAGE_QOS:
+      case GST_MESSAGE_ANY:
       default:
         break;
     }

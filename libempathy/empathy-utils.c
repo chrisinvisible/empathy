@@ -254,6 +254,7 @@ empathy_presence_get_default_message (TpConnectionPresenceType presence)
 		return _("Unknown");
 	case TP_CONNECTION_PRESENCE_TYPE_UNSET:
 	case TP_CONNECTION_PRESENCE_TYPE_ERROR:
+	default:
 		return NULL;
 	}
 
@@ -643,6 +644,12 @@ empathy_connect_new_account (TpAccount *account,
         g_free (message);
         break;
 
+       case TP_CONNECTION_PRESENCE_TYPE_AVAILABLE:
+       case TP_CONNECTION_PRESENCE_TYPE_AWAY:
+       case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
+       case TP_CONNECTION_PRESENCE_TYPE_HIDDEN:
+       case TP_CONNECTION_PRESENCE_TYPE_BUSY:
+       case TP_CONNECTION_PRESENCE_TYPE_ERROR:
        default:
         /* do nothing if the presence is not offline */
         break;

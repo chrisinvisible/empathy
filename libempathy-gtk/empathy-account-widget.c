@@ -600,6 +600,7 @@ accounts_widget_generic_setup (EmpathyAccountWidget *self,
             case 't': minint = 0;          maxint = G_MAXUINT64; break;
             case 'd': minint = G_MININT32; maxint = G_MAXINT32;
               step = 0.1; break;
+            default: g_assert_not_reached ();
             }
 
           str = g_strdup_printf (_("%s:"), param_name_formatted);

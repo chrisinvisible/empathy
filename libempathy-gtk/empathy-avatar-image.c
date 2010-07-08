@@ -132,8 +132,7 @@ avatar_image_filter_func (GdkXEvent  *gdkxevent,
 
 	priv = GET_PRIV (data);
 
-	switch (xevent->type) {
-	case PropertyNotify:
+	if (xevent->type == PropertyNotify) {
 		atom = gdk_x11_get_xatom_by_name ("_NET_CURRENT_DESKTOP");
 		if (xevent->xproperty.atom == atom) {
 			if (priv->popup) {
@@ -141,7 +140,6 @@ avatar_image_filter_func (GdkXEvent  *gdkxevent,
 				priv->popup = NULL;
 			}
 		}
-		break;
 	}
 
 	return GDK_FILTER_CONTINUE;

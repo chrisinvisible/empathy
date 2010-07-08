@@ -526,6 +526,9 @@ dispatcher_start_dispatching (EmpathyDispatcher *self,
           case EMPATHY_DISPATCHER_OPERATION_STATE_PENDING:
             dispatch_operation_ready_cb (operation, self);
             break;
+          case EMPATHY_DISPATCHER_OPERATION_STATE_DISPATCHING:
+          case EMPATHY_DISPATCHER_OPERATION_STATE_CLAIMED:
+          case EMPATHY_DISPATCHER_OPERATION_STATE_INVALIDATED:
           default:
             g_assert_not_reached ();
         }

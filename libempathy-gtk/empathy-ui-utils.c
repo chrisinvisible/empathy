@@ -206,6 +206,7 @@ empathy_icon_name_for_presence (TpConnectionPresenceType presence)
 	case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:
 		return EMPATHY_IMAGE_PENDING;
 	case TP_CONNECTION_PRESENCE_TYPE_UNSET:
+	default:
 		return NULL;
 	}
 

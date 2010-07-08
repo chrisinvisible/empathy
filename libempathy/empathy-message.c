@@ -603,6 +603,9 @@ empathy_message_type_to_str (TpChannelTextMessageType type)
 		return "notice";
 	case TP_CHANNEL_TEXT_MESSAGE_TYPE_AUTO_REPLY:
 		return "auto-reply";
+	case TP_CHANNEL_TEXT_MESSAGE_TYPE_DELIVERY_REPORT:
+		return "delivery-report";
+	case TP_CHANNEL_TEXT_MESSAGE_TYPE_NORMAL:
 	default:
 		return "normal";
 	}

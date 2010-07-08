@@ -255,6 +255,9 @@ reconnected_connection_ready_cb (TpConnection *connection,
 			empathy_dispatcher_join_muc (connection,
 				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
+		case TP_HANDLE_TYPE_NONE:
+		case TP_HANDLE_TYPE_LIST:
+		case TP_HANDLE_TYPE_GROUP:
 		default:
 			g_assert_not_reached ();
 			break;
@@ -1166,6 +1169,7 @@ chat_send_error_cb (EmpathyTpChat          *tp_chat,
 	case TP_CHANNEL_TEXT_SEND_ERROR_NOT_IMPLEMENTED:
 		error = _("not implemented");
 		break;
+	case TP_CHANNEL_TEXT_SEND_ERROR_UNKNOWN:
 	default:
 		error = _("unknown");
 		break;

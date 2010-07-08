@@ -712,6 +712,9 @@ empathy_contact_list_store_set_sort_criterium (EmpathyContactListStore     *stor
 						      EMPATHY_CONTACT_LIST_STORE_COL_NAME,
 						      GTK_SORT_ASCENDING);
 		break;
+
+	default:
+		g_assert_not_reached ();
 	}
 
 	g_object_notify (G_OBJECT (store), "sort-criterium");

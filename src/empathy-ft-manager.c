@@ -881,6 +881,8 @@ ft_manager_response_cb (GtkWidget *widget,
       case RESPONSE_STOP:
         ft_manager_stop (manager);
         break;
+      default:
+        g_assert_not_reached ();
     }
 }
 

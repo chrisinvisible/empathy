@@ -1651,6 +1651,9 @@ empathy_individual_store_set_sort_criterium (EmpathyIndividualStore *self,
       gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (self),
           EMPATHY_INDIVIDUAL_STORE_COL_NAME, GTK_SORT_ASCENDING);
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 
   g_object_notify (G_OBJECT (self), "sort-criterium");

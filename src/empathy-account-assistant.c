@@ -57,12 +57,12 @@ typedef enum {
   RESPONSE_CREATE_STOP = 2
 } CreateEnterPageResponse;
 
-enum {
+typedef enum {
   PAGE_INTRO = 0,
   PAGE_IMPORT = 1,
   PAGE_ENTER_CREATE = 2,
   PAGE_SALUT = 3,
-};
+} PageID;
 
 enum {
   PROP_PARENT = 1,
@@ -75,7 +75,7 @@ typedef struct {
   gboolean enter_create_forward;
   TpAccountManager *account_mgr;
   EmpathyConnectionManagers *connection_mgrs;
-  gint current_page_id;
+  PageID current_page_id;
 
   /* enter or create page */
   GtkWidget *enter_or_create_page;
@@ -933,12 +933,8 @@ impl_signal_prepare (GtkAssistant *assistant,
   gint current_idx;
 
   /* check from which page we are coming from */
-  switch (priv->current_page_id)
-    {
-      case PAGE_IMPORT:
-        empathy_import_widget_add_selected_accounts (priv->iw);
-        break;
-    }
+  if (priv->current_page_id == PAGE_IMPORT)
+    empathy_import_widget_add_selected_accounts (priv->iw);
 
   current_idx = gtk_assistant_get_current_page (assistant);
   priv->current_page_id = current_idx;

@@ -584,6 +584,7 @@ tp_file_hash_to_g_checksum (TpFileHashType type)
       case TP_FILE_HASH_TYPE_SHA256:
         retval = G_CHECKSUM_SHA256;
         break;
+      case TP_FILE_HASH_TYPE_NONE:
       default:
         g_assert_not_reached ();
         break;

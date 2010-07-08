@@ -130,10 +130,11 @@ empathy_dispatch_operation_set_property (GObject *object,
       case PROP_INCOMING:
         priv->incoming = g_value_get_boolean (value);
         break;
-
       case PROP_USER_ACTION_TIME:
         priv->user_action_time = g_value_get_int64 (value);
         break;
+      default:
+        g_assert_not_reached ();
     }
 }
 
@@ -167,6 +168,8 @@ empathy_dispatch_operation_get_property (GObject *object,
       case PROP_USER_ACTION_TIME:
         g_value_set_int64 (value, priv->user_action_time);
         break;
+      default:
+        g_assert_not_reached ();
     }
 }
 

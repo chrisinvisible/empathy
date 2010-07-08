@@ -783,12 +783,10 @@ individual_view_drag_data_get (GtkWidget *widget,
 
   individual_id = folks_individual_get_id (individual);
 
-  switch (info)
+  if (info == DND_DRAG_TYPE_INDIVIDUAL_ID)
     {
-    case DND_DRAG_TYPE_INDIVIDUAL_ID:
       gtk_selection_data_set (selection, drag_atoms_source[info], 8,
           (guchar *) individual_id, strlen (individual_id) + 1);
-      break;
     }
 
   g_object_unref (individual);
