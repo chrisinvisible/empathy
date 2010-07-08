@@ -235,6 +235,7 @@ if test "x$with_connectivity" = "xno"; then
    have_connman=no
 
 elif test "x$with_connectivity" = "xconnman"; then
+   have_nm=no
 
    PKG_CHECK_MODULES(CONNMAN,
    [
@@ -243,10 +244,10 @@ elif test "x$with_connectivity" = "xconnman"; then
 
    if test "x$have_connman" = "xyes"; then
       AC_DEFINE(HAVE_CONNMAN, 1, [Define if you have connman dependencies])
-      have_nm=no
    fi
 
 else
+   have_connman=no
 
    PKG_CHECK_MODULES(NETWORK_MANAGER,
    [
@@ -255,17 +256,6 @@ else
 
    if test "x$have_nm" = "xyes"; then
       AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
-      have_connman=no
-   else
-      PKG_CHECK_MODULES(NETWORK_MANAGER,
-      [
-          libnm-glib >= $NETWORK_MANAGER_REQUIRED
-      ], have_nm="yes", have_nm="no")
-
-      if test "x$have_nm" = "xyes"; then
-      AC_DEFINE(HAVE_NM, 1, [Define if you have libnm-glib])
-      have_connman=no
-      fi
    fi
 fi
 
