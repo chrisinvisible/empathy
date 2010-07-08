@@ -1011,10 +1011,7 @@ individual_view_pixbuf_cell_data_func (GtkTreeViewColumn *tree_column,
       "pixbuf", pixbuf,
       NULL);
 
-  if (pixbuf != NULL)
-    {
-      g_object_unref (pixbuf);
-    }
+  tp_clear_object (&pixbuf);
 
   individual_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -1054,8 +1051,7 @@ out:
       "pixbuf", pixbuf,
       NULL);
 
-  if (pixbuf != NULL)
-    g_object_unref (pixbuf);
+  tp_clear_object (&pixbuf);
 
   g_free (name);
 }
@@ -1108,10 +1104,7 @@ individual_view_avatar_cell_data_func (GtkTreeViewColumn *tree_column,
       "pixbuf", pixbuf,
       NULL);
 
-  if (pixbuf)
-    {
-      g_object_unref (pixbuf);
-    }
+  tp_clear_object (&pixbuf);
 
   individual_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -1683,26 +1676,10 @@ individual_view_dispose (GObject *object)
   EmpathyIndividualView *view = EMPATHY_INDIVIDUAL_VIEW (object);
   EmpathyIndividualViewPriv *priv = GET_PRIV (view);
 
-  if (priv->store != NULL)
-    {
-      g_object_unref (priv->store);
-      priv->store = NULL;
-    }
-  if (priv->filter != NULL)
-    {
-      g_object_unref (priv->filter);
-      priv->filter = NULL;
-    }
-  if (priv->tooltip_widget != NULL)
-    {
-      gtk_widget_destroy (priv->tooltip_widget);
-      priv->tooltip_widget = NULL;
-    }
-  if (priv->file_targets != NULL)
-    {
-      gtk_target_list_unref (priv->file_targets);
-      priv->file_targets = NULL;
-    }
+  tp_clear_object (&priv->store);
+  tp_clear_object (&priv->filter);
+  tp_clear_pointer (&priv->tooltip_widget, gtk_widget_destroy);
+  tp_clear_pointer (&priv->file_targets, gtk_target_list_unref);
 
   empathy_individual_view_set_live_search (view, NULL);
 

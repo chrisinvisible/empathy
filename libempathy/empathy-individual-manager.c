@@ -121,11 +121,8 @@ individual_manager_finalize (GObject *object)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
 
-  if (priv->contact_manager != NULL)
-    g_object_unref (priv->contact_manager);
-
-  if (priv->aggregator != NULL)
-    g_object_unref (priv->aggregator);
+  tp_clear_object (&priv->contact_manager);
+  tp_clear_object (&priv->aggregator);
 }
 
 static GObject *

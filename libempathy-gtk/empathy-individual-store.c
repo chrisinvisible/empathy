@@ -269,10 +269,7 @@ individual_store_find_contact_foreach (GtkTreeModel *model,
       fc->iters = g_list_append (fc->iters, gtk_tree_iter_copy (iter));
     }
 
-  if (individual != NULL)
-    {
-      g_object_unref (individual);
-    }
+  tp_clear_object (&individual);
 
   return FALSE;
 }
@@ -1271,16 +1268,8 @@ individual_store_state_sort_func (GtkTreeModel *model,
 free_and_out:
   g_free (name_a);
   g_free (name_b);
-
-  if (individual_a)
-    {
-      g_object_unref (individual_a);
-    }
-
-  if (individual_b)
-    {
-      g_object_unref (individual_b);
-    }
+  tp_clear_object (&individual_a);
+  tp_clear_object (&individual_b);
 
   return ret_val;
 }
@@ -1314,15 +1303,8 @@ individual_store_name_sort_func (GtkTreeModel *model,
   else
     ret_val = individual_store_contact_sort (individual_a, individual_b);
 
-  if (individual_a)
-    {
-      g_object_unref (individual_a);
-    }
-
-  if (individual_b)
-    {
-      g_object_unref (individual_b);
-    }
+  tp_clear_object (&individual_a);
+  tp_clear_object (&individual_b);
 
   return ret_val;
 }

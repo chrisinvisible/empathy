@@ -39,6 +39,7 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 
+#include <telepathy-glib/util.h>
 #include <folks/folks.h>
 
 #include "empathy-ui-utils.h"
@@ -606,8 +607,7 @@ avatar_file_load_contents_cb (GObject      *object,
 out:
 	g_clear_error (&error);
 	g_free (data);
-	if (loader != NULL)
-		g_object_unref (loader);
+	tp_clear_object (&loader);
 	pixbuf_avatar_from_individual_closure_free (closure);
 }
 
