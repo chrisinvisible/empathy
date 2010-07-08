@@ -791,7 +791,7 @@ main_window_view_sort_contacts_cb (GtkRadioAction    *action,
 	group = gtk_radio_action_get_group (action);
 
 	/* Get string from index */
-		type = empathy_individual_store_sort_get_type ();
+	type = empathy_individual_store_sort_get_type ();
 	enum_class = G_ENUM_CLASS (g_type_class_peek (type));
 	enum_value = g_enum_get_value (enum_class, g_slist_index (group, current));
 
