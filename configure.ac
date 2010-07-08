@@ -158,7 +158,6 @@ PKG_CHECK_MODULES(EMPATHY,
    telepathy-farsight
    telepathy-glib >= $TELEPATHY_GLIB_REQUIRED
    telepathy-logger-0.1 >= $TELEPATHY_LOGGER
-   unique-1.0 >= $UNIQUE_REQUIRED
    x11
 ])
 
@@ -178,6 +177,7 @@ if test "x$enable_gtk3" != "xno"; then
   # GTK3 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
+  PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
 fi
 
 # ...if not use GTK+2
@@ -188,6 +188,7 @@ if test "x$enable_gtk3" == "xno"; then
   # GTK2 specific deps
   PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk >= $LIBCANBERRA_GTK_REQUIRED)
   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED)
+  PKG_CHECK_MODULES(UNIQUE, unique-1.0 >= $UNIQUE_REQUIRED)
 
   # Enable GSEAL checks if needed
   if test $USE_MAINTAINER_MODE = yes; then
