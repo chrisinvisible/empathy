@@ -314,7 +314,7 @@ empathy_message_from_tpl_log_entry (TplEntry *logentry)
 			tpl_entry_get_timestamp (logentry));
 	empathy_message_set_id (retval,
 			tpl_entry_text_get_pending_msg_id (TPL_ENTRY_TEXT (logentry)));
-	empathy_message_set_is_backlog (retval, FALSE);
+	empathy_message_set_is_backlog (retval, TRUE);
 
 	g_free (body);
 

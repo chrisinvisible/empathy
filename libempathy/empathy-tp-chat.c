@@ -284,6 +284,9 @@ tp_chat_build_message (EmpathyTpChat *chat,
 	empathy_message_set_incoming (message, incoming);
 	empathy_message_set_flags (message, flags);
 
+	if (flags & TP_CHANNEL_TEXT_MESSAGE_FLAG_SCROLLBACK)
+		empathy_message_set_is_backlog (message, TRUE);
+
 	g_queue_push_tail (priv->messages_queue, message);
 
 	if (from_handle == 0) {
