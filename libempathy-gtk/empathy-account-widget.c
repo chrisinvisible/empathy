@@ -1361,7 +1361,7 @@ account_widget_switch_flipped_cb (MxGtkLightSwitch *sw,
     gboolean state,
     gpointer user_data)
 #else
-account_widget_enabled_released_cb (GtkToggleButton *toggle_button,
+account_widget_enabled_toggled_cb (GtkToggleButton *toggle_button,
     gpointer user_data)
 #endif /* HAVE_MEEGO */
 {
@@ -1587,8 +1587,8 @@ add_enable_checkbox (EmpathyAccountWidget *self,
   g_signal_connect (G_OBJECT (priv->enabled_checkbox), "switch-flipped",
       G_CALLBACK (account_widget_switch_flipped_cb), self);
 #else
-  g_signal_connect (G_OBJECT (priv->enabled_checkbox), "released",
-      G_CALLBACK (account_widget_enabled_released_cb), self);
+  g_signal_connect (G_OBJECT (priv->enabled_checkbox), "toggled",
+      G_CALLBACK (account_widget_enabled_toggled_cb), self);
 #endif /* HAVE_MEEGO */
 }
 
