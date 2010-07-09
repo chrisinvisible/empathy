@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 
 #include <telepathy-glib/account-manager.h>
+#include <telepathy-glib/util.h>
 #include <folks/folks.h>
 
 #include <libempathy/empathy-contact.h>
@@ -189,9 +190,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 
 	contact = empathy_contact_dup_from_folks_individual (individual);
 	if (contact != data->event->contact) {
-		if (contact != NULL) {
-			g_object_unref (contact);
-		}
+		tp_clear_object (&contact);
 		return FALSE;
 	}
 
@@ -221,8 +220,7 @@ main_window_flash_foreach (GtkTreeModel *model,
 	}
 
 	g_object_unref (individual);
-	if (contact != NULL)
-		g_object_unref (contact);
+	tp_clear_object (&contact);
 
 	return FALSE;
 }
@@ -355,8 +353,7 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 
 	g_object_unref (contact);
 OUT:
-	if (individual != NULL)
-		g_object_unref (individual);
+	tp_clear_object (&individual);
 }
 
 static void

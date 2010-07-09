@@ -232,8 +232,7 @@ empathy_individual_add_menu_item_new (FolksIndividual *individual)
       individual);
 
 out:
-  if (contact != NULL)
-    g_object_unref (contact);
+  tp_clear_object (&contact);
 
   return item;
 }
