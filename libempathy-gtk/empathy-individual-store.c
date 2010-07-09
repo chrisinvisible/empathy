@@ -148,9 +148,7 @@ individual_store_get_group_foreach (GtkTreeModel *model,
 
   /* Groups are only at the top level. */
   if (gtk_tree_path_get_depth (path) != 1)
-    {
-      return FALSE;
-    }
+    return FALSE;
 
   gtk_tree_model_get (model, iter,
       EMPATHY_INDIVIDUAL_STORE_COL_NAME, &str,
@@ -194,9 +192,7 @@ individual_store_get_group (EmpathyIndividualStore *self,
   if (!fg.found)
     {
       if (created)
-        {
-          *created = TRUE;
-        }
+        *created = TRUE;
 
       gtk_tree_store_insert_with_values (GTK_TREE_STORE (self), &iter_group,
           NULL, 0,
@@ -209,9 +205,7 @@ individual_store_get_group (EmpathyIndividualStore *self,
           -1);
 
       if (iter_group_to_set)
-        {
-          *iter_group_to_set = iter_group;
-        }
+        *iter_group_to_set = iter_group;
 
       gtk_tree_store_insert_with_values (GTK_TREE_STORE (self), &iter_separator,
           &iter_group, 0,
@@ -219,21 +213,15 @@ individual_store_get_group (EmpathyIndividualStore *self,
           -1);
 
       if (iter_separator_to_set)
-        {
-          *iter_separator_to_set = iter_separator;
-        }
+        *iter_separator_to_set = iter_separator;
     }
   else
     {
       if (created)
-        {
-          *created = FALSE;
-        }
+        *created = FALSE;
 
       if (iter_group_to_set)
-        {
-          *iter_group_to_set = fg.iter;
-        }
+        *iter_group_to_set = fg.iter;
 
       iter_separator = fg.iter;
 
@@ -245,9 +233,7 @@ individual_store_get_group (EmpathyIndividualStore *self,
               EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator, -1);
 
           if (is_separator && iter_separator_to_set)
-            {
-              *iter_separator_to_set = iter_separator;
-            }
+            *iter_separator_to_set = iter_separator;
         }
     }
 }
@@ -294,9 +280,7 @@ individual_store_find_contact (EmpathyIndividualStore *self,
       (GtkTreeModelForeachFunc) individual_store_find_contact_foreach, &fc);
 
   if (fc.found)
-    {
-      l = fc.iters;
-    }
+    l = fc.iters;
 
   return l;
 }
@@ -313,9 +297,7 @@ individual_store_remove_individual (EmpathyIndividualStore *self,
 
   iters = individual_store_find_contact (self, individual);
   if (iters == NULL)
-    {
-      return;
-    }
+    return;
 
   /* Clean up model */
   model = GTK_TREE_MODEL (self);
@@ -360,9 +342,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
 
   if (EMP_STR_EMPTY (folks_individual_get_alias (individual)) ||
       (!priv->show_offline && !folks_individual_is_online (individual)))
-    {
-      return;
-    }
+    return;
 
   if (priv->show_groups)
     {
@@ -387,9 +367,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
           "groups' is off is unimplemented");
 
       if (!priv->show_groups)
-        {
-          parent = NULL;
-        }
+        parent = NULL;
       else
         {
           individual_store_get_group (self,

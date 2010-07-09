@@ -268,22 +268,17 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
 
   /* Avoid an infinite loop. See GNOME bug #574377 */
   if (running > 0)
-    {
-      return FALSE;
-    }
+    return FALSE;
+
   running++;
 
   /* Don't show the tooltip if there's already a popup menu */
   if (gtk_menu_get_for_attach_widget (GTK_WIDGET (view)) != NULL)
-    {
-      goto OUT;
-    }
+    goto OUT;
 
   if (!gtk_tree_view_get_tooltip_context (GTK_TREE_VIEW (view), &x, &y,
           keyboard_mode, &model, &path, &iter))
-    {
-      goto OUT;
-    }
+    goto OUT;
 
   gtk_tree_view_set_tooltip_row (GTK_TREE_VIEW (view), tooltip, path);
   gtk_tree_path_free (path);
@@ -292,9 +287,7 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
       -1);
   if (individual == NULL)
-    {
-      goto OUT;
-    }
+    goto OUT;
 
   contact = empathy_contact_dup_from_folks_individual (individual);
   g_object_unref (individual);
@@ -314,9 +307,7 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
       gtk_widget_show (priv->tooltip_widget);
     }
   else
-    {
-      empathy_contact_widget_set_contact (priv->tooltip_widget, contact);
-    }
+    empathy_contact_widget_set_contact (priv->tooltip_widget, contact);
 
   gtk_tooltip_set_custom (tooltip, priv->tooltip_widget);
   ret = TRUE;
@@ -480,9 +471,7 @@ individual_view_file_drag_received (GtkWidget *view,
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
   if (individual == NULL)
-    {
-      return FALSE;
-    }
+    return FALSE;
 
   contact = empathy_contact_dup_from_folks_individual (individual);
   empathy_send_file_from_uri_list (contact, sel_data);
@@ -576,9 +565,7 @@ individual_view_drag_motion (GtkWidget *widget,
               && gtk_tree_path_compare (dm->path, path) != 0));
     }
   else
-    {
-      cleanup &= FALSE;
-    }
+    cleanup &= FALSE;
 
   if (path == NULL)
     {
@@ -661,9 +648,7 @@ individual_view_drag_motion (GtkWidget *widget,
     }
 
   if (!is_different && !cleanup)
-    {
-      return retval;
-    }
+    return retval;
 
   if (dm)
     {
@@ -709,9 +694,7 @@ individual_view_drag_begin (GtkWidget *widget,
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (widget));
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      return;
-    }
+    return;
 
   path = gtk_tree_model_get_path (model, &iter);
   priv->drag_row = gtk_tree_row_reference_new (model, path);
@@ -736,15 +719,11 @@ individual_view_drag_data_get (GtkWidget *widget,
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
   if (priv->drag_row == NULL)
-    {
-      return;
-    }
+    return;
 
   src_path = gtk_tree_row_reference_get_path (priv->drag_row);
   if (src_path == NULL)
-    {
-      return;
-    }
+    return;
 
   if (!gtk_tree_model_get_iter (model, &iter, src_path))
     {
@@ -757,9 +736,7 @@ individual_view_drag_data_get (GtkWidget *widget,
   individual =
       empathy_individual_view_dup_selected (EMPATHY_INDIVIDUAL_VIEW (widget));
   if (individual == NULL)
-    {
-      return;
-    }
+    return;
 
   individual_id = folks_individual_get_id (individual);
 
@@ -886,9 +863,7 @@ individual_view_row_activated (GtkTreeView *view,
   GtkTreeIter iter;
 
   if (!(priv->individual_features & EMPATHY_CONTACT_FEATURE_CHAT))
-    {
-      return;
-    }
+    return;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
   gtk_tree_model_get_iter (model, &iter, path);
@@ -986,9 +961,7 @@ individual_view_cell_set_background (EmpathyIndividualView *view,
       g_object_set (cell, "cell-background-gdk", &color, NULL);
     }
   else
-    {
-      g_object_set (cell, "cell-background-gdk", NULL, NULL);
-    }
+    g_object_set (cell, "cell-background-gdk", NULL, NULL);
 }
 
 static void
@@ -1159,9 +1132,7 @@ individual_view_expander_cell_data_func (GtkTreeViewColumn *column,
           NULL);
     }
   else
-    {
-      g_object_set (cell, "visible", FALSE, NULL);
-    }
+    g_object_set (cell, "visible", FALSE, NULL);
 
   individual_view_cell_set_background (view, cell, is_group, is_active);
 }
@@ -1858,9 +1829,7 @@ empathy_individual_view_dup_selected (EmpathyIndividualView *view)
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      return NULL;
-    }
+    return NULL;
 
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
@@ -1883,9 +1852,7 @@ empathy_individual_view_get_flags (EmpathyIndividualView *view)
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      return 0;
-    }
+    return 0;
 
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, &flags, -1);
@@ -1911,9 +1878,7 @@ empathy_individual_view_get_selected_group (EmpathyIndividualView *view,
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
   if (!gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      return NULL;
-    }
+    return NULL;
 
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
@@ -2001,9 +1966,7 @@ empathy_individual_view_get_group_menu (EmpathyIndividualView *view)
 
   if (!(priv->view_features & (EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_RENAME |
               EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_REMOVE)))
-    {
-      return NULL;
-    }
+    return NULL;
 
   group = empathy_individual_view_get_selected_group (view, &is_fake_group);
   if (!group || is_fake_group)
@@ -2090,9 +2053,7 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
 
   individual = empathy_individual_view_dup_selected (view);
   if (individual == NULL)
-    {
-      return NULL;
-    }
+    return NULL;
 
   flags = empathy_individual_view_get_flags (view);
 
@@ -2106,9 +2067,7 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
 
       /* create the menu if required, or just add a separator */
       if (menu == NULL)
-        {
-          menu = gtk_menu_new ();
-        }
+        menu = gtk_menu_new ();
       else
         {
           item = gtk_separator_menu_item_new ();
