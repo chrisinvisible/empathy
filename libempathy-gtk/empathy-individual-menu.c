@@ -472,7 +472,6 @@ individual_share_my_desktop_menu_item_activate_cb (FolksIndividual *individual)
   g_object_unref (contact);
 }
 
-/* FIXME  we should check if the individual supports vnc stream tube */
 GtkWidget *
 empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual)
 {
