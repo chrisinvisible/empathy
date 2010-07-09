@@ -54,7 +54,6 @@ typedef struct {
   gchar *alias;
   EmpathyAvatar *avatar;
   TpConnectionPresenceType presence;
-  gchar *presence_message;
   guint handle;
   EmpathyCapabilities capabilities;
   gboolean is_user;
@@ -136,8 +135,6 @@ tp_contact_notify_cb (TpContact *tp_contact,
     priv->presence = presence;
     g_object_notify (contact, "presence");
   }
-  else if (!tp_strdiff (param->name, "presence-message"))
-    g_object_notify (contact, "presence-message");
   else if (!tp_strdiff (param->name, "identifier"))
     g_object_notify (contact, "id");
   else if (!tp_strdiff (param->name, "handle"))
@@ -162,6 +159,15 @@ tp_contact_notify_cb (TpContact *tp_contact,
 }
 
 static void
+folks_persona_notify_cb (FolksPersona *folks_persona,
+                         GParamSpec *param,
+                         GObject *contact)
+{
+  if (!tp_strdiff (param->name, "presence-message"))
+    g_object_notify (contact, "presence-message");
+}
+
+static void
 contact_dispose (GObject *object)
 {
   EmpathyContactPriv *priv = GET_PRIV (object);
@@ -180,7 +186,11 @@ contact_dispose (GObject *object)
   priv->account = NULL;
 
   if (priv->persona)
-    g_object_unref (priv->persona);
+    {
+      g_signal_handlers_disconnect_by_func (priv->persona,
+          folks_persona_notify_cb, object);
+      g_object_unref (priv->persona);
+    }
   priv->persona = NULL;
 
   if (priv->avatar != NULL)
@@ -351,7 +361,6 @@ contact_finalize (GObject *object)
     g_hash_table_destroy (priv->groups);
   g_free (priv->alias);
   g_free (priv->id);
-  g_free (priv->presence_message);
 
   G_OBJECT_CLASS (empathy_contact_parent_class)->finalize (object);
 }
@@ -814,6 +823,9 @@ empathy_contact_set_persona (EmpathyContact *contact,
     g_object_unref (priv->persona);
   priv->persona = g_object_ref (persona);
 
+  g_signal_connect (priv->persona, "notify",
+    G_CALLBACK (folks_persona_notify_cb), contact);
+
   g_object_notify (G_OBJECT (contact), "persona");
 
   /* Set the persona's alias, since ours could've been set using
@@ -892,10 +904,10 @@ empathy_contact_get_presence_message (EmpathyContact *contact)
 
   priv = GET_PRIV (contact);
 
-  if (priv->tp_contact != NULL)
-    return tp_contact_get_presence_message (priv->tp_contact);
+  if (priv->persona != NULL)
+    return folks_presence_get_presence_message (FOLKS_PRESENCE (priv->persona));
 
-  return priv->presence_message;
+  return NULL;
 }
 
 void
@@ -906,13 +918,11 @@ empathy_contact_set_presence_message (EmpathyContact *contact,
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
-  if (!tp_strdiff (message, priv->presence_message))
-    return;
-
-  g_free (priv->presence_message);
-  priv->presence_message = g_strdup (message);
-
-  g_object_notify (G_OBJECT (contact), "presence-message");
+  if (priv->persona != NULL)
+    {
+      folks_presence_set_presence_message (FOLKS_PRESENCE (priv->persona),
+          message);
+    }
 }
 
 guint
