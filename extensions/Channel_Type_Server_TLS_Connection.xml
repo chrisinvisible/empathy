@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<node name="/Channel_Type_Server_TLS_Connection"
+    xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <tp:copyright> Copyright © 2010 Collabora Limited </tp:copyright>
+  <tp:license>
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+  </tp:license>
+
+  <interface name="org.freedesktop.Telepathy.Channel.Type.ServerTLSConnection.DRAFT"
+	     tp:causes-havoc="experimental">
+
+    <tp:requires interface="org.freedesktop.Telepathy.Channel"/>
+
+    <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
+      <p>
+      A channel type that carries a TLS certificate between a server
+      and a client connecting to it.<br/>
+      Channels of this kind are never requested, are anonymous, and SHOULD be
+      dispatched while the
+      <tp:dbus-ref
+      namespace="org.freedesktop.Telepathy">Connection</tp:dbus-ref>
+      owning it is in the CONNECTING state.</p>
+      <p>In this case, handlers SHOULD accept or reject the certificate, using
+      the relevant methods on the provided object, or MAY just close the channel before doing so, to fall
+      back to a non-interactive verification process done inside the CM.</p>
+      <p>For example, channels of this kind can pop up while a client is
+      connecting to an XMPP server.</p>
+    </tp:docstring>
+
+    <property name="ServerCertificate" type="o" access="read"
+	      tp:name-for-bindings="ServerCertificate">
+      <tp:docstring>
+	A <tp:dbus-ref
+	namespace="org.freedesktop.Telepathy.Authentication">TLSCertificate.DRAFT</tp:dbus-ref>
+	containing the certificate chain as sent by the server,
+	and other relevant information.
+      </tp:docstring>
+    </property>
+
+  </interface>
+</node>
+

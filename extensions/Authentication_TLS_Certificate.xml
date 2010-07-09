@@ -1,0 +1,191 @@
+<?xml version="1.0" ?>
+<node name="/Authentication_TLS_Certificate" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+  <tp:copyright>Copyright © 2010 Collabora Limited</tp:copyright>
+  <tp:license>
+    This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+  </tp:license>
+
+  <interface name="org.freedesktop.Telepathy.Authentication.TLSCertificate.DRAFT"
+	     tp:causes-havoc="experimental">
+
+    <tp:docstring>
+      This object represents a TLS certificate.
+    </tp:docstring>
+
+    <tp:simple-type name="Certificate_Data" array-name="Certificate_Data_List"
+		    type="ay">
+      <tp:docstring>
+	The raw data contained in a TLS certificate.
+      </tp:docstring>
+    </tp:simple-type>
+
+    <tp:enum type="u" name="TLS_Certificate_State">
+      <tp:docstring>
+	The possible states for a <tp:dbus-ref
+	namespace="org.freedesktop.Telepathy.Authentication">TLSCertificate.DRAFT</tp:dbus-ref>
+	object.
+      </tp:docstring>
+
+      <tp:enumvalue suffix="None" value="0">
+	<tp:docstring>
+	  The certificate has no state associated with it.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Verified" value="1">
+	<tp:docstring>
+	  The certificate has been verified.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Rejected" value="2">
+	<tp:docstring>
+	  The certificate has been rejected.
+	</tp:docstring>
+      </tp:enumvalue>
+    </tp:enum>
+
+    <tp:enum type="u" name="TLS_Certificate_Reject_Reason">
+      <tp:docstring>
+	Possible reasons to reject a TLS certificate.
+      </tp:docstring>
+
+      <tp:enumvalue suffix="None" value="0">
+	<tp:docstring>
+	  No reason specified.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Other" value="1">
+	<tp:docstring>
+	  The certificate has been rejected for another reason
+	  not listed in this enumeration.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Untrusted" value="2">
+	<tp:docstring>
+	  The certificate is not trusted.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Expired" value="3">
+	<tp:docstring>
+	  The certificate is expired.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Not_Activated" value="4">
+	<tp:docstring>
+	  The certificate is not active yet.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Hostname_Mismatch" value="5">
+	<tp:docstring>
+	  The hostname certified does not match the provided one.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Self_Signed" value="6">
+	<tp:docstring>
+	  The certificate is self-signed.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Revoked" value="7">
+	<tp:docstring>
+	  The certificate has been revoked.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Insecure_Algorithm" value="8">
+	<tp:docstring>
+	  The certificate uses an insecure cipher algorithm.
+	</tp:docstring>
+      </tp:enumvalue>
+    </tp:enum>
+
+    <property name="State" type="u" access="read"
+	      tp:type="TLS_Certificate_State"
+	      tp:name-for-bindings="State">
+      <tp:docstring>
+	The current state of this certificate.
+	State change notifications happen by means of the
+	<tp:member-ref>StateChanged</tp:member-ref> signal.
+      </tp:docstring>
+    </property>
+
+    <property name="RejectReason" type="u" access="read"
+	      tp:type="TLS_Certificate_Reject_Reason"
+	      tp:name-for-bindings="Reject_Reason">
+      <tp:docstring>
+	The reason why this certificate has been rejected.
+      </tp:docstring>
+    </property>
+
+    <property name="CertificateType" type="s" access="read"
+	      tp:name-for-bindings="Certificate_Type">
+      <tp:docstring>
+	The type of this TLS certificate (e.g. 'x509' or 'pgp').
+      </tp:docstring>
+    </property>
+
+    <property name="CertificateChainData" type="aay" access="read"
+	      tp:type="Certificate_Data[]" tp:name-for-bindings="Certificate_Chain_Data">
+      <tp:docstring>
+	The RAW PEM-encoded trust chain of this TLS certificate.
+      </tp:docstring>
+    </property>
+
+    <signal name="StateChanged"
+	    tp:name-for-bindings="State_Changed">
+      <tp:docstring>
+	The state of this TLS certificate has changed.
+      </tp:docstring>
+      <arg name="State" type="u" tp:type="TLS_Certificate_State">
+	<tp:docstring>
+	  The new state of the TLS certificate.
+	</tp:docstring>
+      </arg>
+      <arg name="Reason" type="u" tp:type="TLS_Certificate_Reject_Reason">
+	<tp:docstring>
+	  The reason why the state of the TLS certificate changed.
+	</tp:docstring>
+      </arg>
+    </signal>
+
+    <method name="Accept" tp:name-for-bindings="Accept">
+      <tp:docstring>
+	Accepts this certificate, i.e. marks it as verified.
+	This method doesn't do anything on local certificates.
+      </tp:docstring>
+    </method>
+
+    <method name="Reject" tp:name-for-bindings="Reject">
+      <tp:docstring>
+	Rejects this certificate. This method doesn't do anything
+	on local certificates.
+      </tp:docstring>
+      <arg direction="in" type="u" name="Reason"
+	   tp:type="TLS_Certificate_Reject_Reason">
+	<tp:docstring>
+	  The reason why this certificate is being rejected.
+	</tp:docstring>
+      </arg>
+    </method>
+
+  </interface>
+</node>
