@@ -888,6 +888,7 @@ approve_channels (TpSimpleApprover *approver,
           /* We are not invited, approve the channel right now */
           tp_add_dispatch_operation_context_accept (context);
 
+          approval->auto_approved = TRUE;
           event_manager_approval_approve (approval);
           return;
         }
