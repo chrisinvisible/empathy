@@ -245,7 +245,7 @@ empathy_individual_chat_menu_item_activated (GtkMenuItem *item,
 
   contact = empathy_contact_dup_from_folks_individual (individual);
 
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+  g_return_if_fail (contact != NULL);
 
   empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time (),
       NULL, NULL);
