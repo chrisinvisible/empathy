@@ -312,7 +312,7 @@ individual_store_remove_individual (EmpathyIndividualStore *self,
   priv = GET_PRIV (self);
 
   iters = individual_store_find_contact (self, individual);
-  if (!iters)
+  if (iters == NULL)
     {
       return;
     }
@@ -376,7 +376,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   flags = empathy_individual_manager_get_flags_for_connection (manager,
       connection);
 
-  if (!groups)
+  if (groups == NULL)
     {
       GtkTreeIter iter_group, *parent;
 

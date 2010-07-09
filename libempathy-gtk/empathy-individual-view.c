@@ -302,7 +302,7 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
   if (contact == NULL)
     goto OUT;
 
-  if (!priv->tooltip_widget)
+  if (priv->tooltip_widget == NULL)
     {
       priv->tooltip_widget = empathy_contact_widget_new (contact,
           EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP |
@@ -479,7 +479,7 @@ individual_view_file_drag_received (GtkWidget *view,
   gtk_tree_model_get_iter (model, &iter, path);
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
-  if (!individual)
+  if (individual == NULL)
     {
       return FALSE;
     }
@@ -567,12 +567,12 @@ individual_view_drag_motion (GtkWidget *widget,
   is_row = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
       x, y, &path, NULL, NULL, NULL);
 
-  cleanup &= (!dm);
+  cleanup &= (dm == NULL);
 
   if (is_row)
     {
       cleanup &= (dm && gtk_tree_path_compare (dm->path, path) != 0);
-      is_different = (!dm || (dm
+      is_different = ((dm == NULL) || ((dm != NULL)
               && gtk_tree_path_compare (dm->path, path) != 0));
     }
   else
@@ -735,13 +735,13 @@ individual_view_drag_data_get (GtkWidget *widget,
   priv = GET_PRIV (widget);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
-  if (!priv->drag_row)
+  if (priv->drag_row == NULL)
     {
       return;
     }
 
   src_path = gtk_tree_row_reference_get_path (priv->drag_row);
-  if (!src_path)
+  if (src_path == NULL)
     {
       return;
     }
@@ -756,7 +756,7 @@ individual_view_drag_data_get (GtkWidget *widget,
 
   individual =
       empathy_individual_view_dup_selected (EMPATHY_INDIVIDUAL_VIEW (widget));
-  if (!individual)
+  if (individual == NULL)
     {
       return;
     }
@@ -895,7 +895,7 @@ individual_view_row_activated (GtkTreeView *view,
   gtk_tree_model_get (model, &iter,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
 
-  if (!individual)
+  if (individual == NULL)
     return;
 
   contact = empathy_contact_dup_from_folks_individual (individual);
@@ -2089,10 +2089,11 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
   g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (view), NULL);
 
   individual = empathy_individual_view_dup_selected (view);
-  if (!individual)
+  if (individual == NULL)
     {
       return NULL;
     }
+
   flags = empathy_individual_view_get_flags (view);
 
   menu = empathy_individual_menu_new (individual, priv->individual_features);
@@ -2104,7 +2105,7 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
     {
 
       /* create the menu if required, or just add a separator */
-      if (!menu)
+      if (menu == NULL)
         {
           menu = gtk_menu_new ();
         }
