@@ -13,6 +13,10 @@ b-adapt=0
 cabac=0
 dct8x8=0
 bitrate=256
+# tuned for zero latency
+tune=0x4
+profile=0
+speed-preset=3
 
 [ffenc_h263]
 rtp-payload-size=1
