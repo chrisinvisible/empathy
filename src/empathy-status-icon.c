@@ -725,8 +725,12 @@ empathy_status_icon_new (GtkWindow *window, gboolean hide_contact_list)
 			  G_CALLBACK (status_icon_delete_event_cb),
 			  icon);
 
-	should_hide = g_settings_get_boolean (priv->gsettings_ui,
+	if (!hide_contact_list) {
+		should_hide = g_settings_get_boolean (priv->gsettings_ui,
 			EMPATHY_PREFS_UI_MAIN_WINDOW_HIDDEN);
+	} else {
+		should_hide = TRUE;
+	}
 
 	if (gtk_window_is_active (priv->window) == should_hide) {
 		status_icon_set_visibility (icon, !should_hide, FALSE);
