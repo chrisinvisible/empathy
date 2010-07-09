@@ -803,7 +803,7 @@ empathy_contact_set_persona (EmpathyContact *contact,
   EmpathyContactPriv *priv;
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-  g_return_if_fail (FOLKS_IS_PERSONA (persona));
+  g_return_if_fail (TPF_IS_PERSONA (persona));
 
   priv = GET_PRIV (contact);
 
@@ -824,9 +824,7 @@ empathy_contact_set_persona (EmpathyContact *contact,
   /* Set the persona's groups */
   if (priv->groups != NULL)
     {
-      if (FOLKS_IS_GROUPS (persona))
-        folks_groups_set_groups (FOLKS_GROUPS (persona), priv->groups);
-
+      folks_groups_set_groups (FOLKS_GROUPS (persona), priv->groups);
       g_hash_table_destroy (priv->groups);
       priv->groups = NULL;
     }
