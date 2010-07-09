@@ -109,7 +109,7 @@ empathy_new_individual_dialog_show_with_individual (GtkWindow *parent,
   dialog = gtk_dialog_new ();
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
-  gtk_window_set_title (GTK_WINDOW (dialog), _("New Individual"));
+  gtk_window_set_title (GTK_WINDOW (dialog), _("New Contact"));
 
   /* Cancel button */
   button = gtk_button_new_with_label (GTK_STOCK_CANCEL);
