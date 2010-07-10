@@ -143,9 +143,6 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
   EmpathyIndividualViewPriv *priv = GET_PRIV (self);
   EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
   const gchar *str;
-  const gchar *p;
-  gchar *dup_str = NULL;
-  gboolean visible;
   GList *personas, *l;
 
   g_assert (live != NULL);
@@ -159,6 +156,10 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
   personas = folks_individual_get_personas (individual);
   for (l = personas; l; l = l->next)
     {
+      const gchar *p;
+      gchar *dup_str = NULL;
+      gboolean visible;
+
       str = folks_persona_get_uid (l->data);
       p = strstr (str, "@");
       if (p != NULL)
