@@ -138,6 +138,8 @@ individual_manager_dispose (GObject *object)
 
   tp_clear_object (&priv->contact_manager);
   tp_clear_object (&priv->aggregator);
+
+  G_OBJECT_CLASS (empathy_individual_manager_parent_class)->dispose (object);
 }
 
 static GObject *
