@@ -1112,6 +1112,7 @@ empathy_avatar_unref (EmpathyAvatar *avatar)
       g_free (avatar->data);
       g_free (avatar->format);
       g_free (avatar->token);
+      g_free (avatar->filename);
       g_slice_free (EmpathyAvatar, avatar);
     }
 }
