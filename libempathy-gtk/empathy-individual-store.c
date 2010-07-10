@@ -1797,7 +1797,7 @@ individual_store_get_individual_status_icon_with_icon_name (
         break;
     }
 
-  show_protocols_here = priv->show_protocols && (contact_count == 1);
+  show_protocols_here = (priv->show_protocols && (contact_count == 1));
   if (show_protocols_here)
     {
       contact = empathy_contact_dup_from_folks_individual (individual);
