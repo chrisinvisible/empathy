@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-07-07 10:40+0000\n"
-"PO-Revision-Date: 2010-07-08 22:56+0200\n"
+"POT-Creation-Date: 2010-07-09 13:20+0000\n"
+"PO-Revision-Date: 2010-07-10 10:13+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,20 +19,20 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/empathy.desktop.in.in.h:1
+msgid "Chat on Google Talk, Facebook, MSN, and many other chat services"
+msgstr "Chatee en Google Talk, Facebook, MSN y muchos otros servicios de chat"
+
+#: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy"
 msgstr "Empathy"
 
-#: ../data/empathy.desktop.in.in.h:2
+#: ../data/empathy.desktop.in.in.h:3
 msgid "Empathy Internet Messaging"
 msgstr "Mensajería instantánea Empathy"
 
-#: ../data/empathy.desktop.in.in.h:3
+#: ../data/empathy.desktop.in.in.h:4
 msgid "IM Client"
 msgstr "Cliente de mensajería instantánea"
-
-#: ../data/empathy.desktop.in.in.h:4
-msgid "Send and receive messages"
-msgstr "Envíe y reciba mensajes instantáneos"
 
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:1
 msgid "Always open a separate chat window for new chats."
@@ -1271,7 +1271,7 @@ msgstr "Insertar emoticono"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1842
-#: ../libempathy-gtk/empathy-ui-utils.c:1618
+#: ../libempathy-gtk/empathy-ui-utils.c:1619
 msgid "_Send"
 msgstr "E_nviar"
 
@@ -1339,7 +1339,7 @@ msgstr "%s ha entrado en la sala"
 msgid "%s is now known as %s"
 msgstr "Ahora %s se llama %s"
 
-#: ../libempathy-gtk/empathy-chat.c:2282 ../src/empathy-call-window.c:1653
+#: ../libempathy-gtk/empathy-chat.c:2282 ../src/empathy-call-window.c:1655
 msgid "Disconnected"
 msgstr "Desconectado"
 
@@ -1794,7 +1794,7 @@ msgid "Set your presence and current status"
 msgstr "Establecer su presencia y estado actual"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1128
+#: ../libempathy-gtk/empathy-presence-chooser.c:1124
 msgid "Custom messages…"
 msgstr "Mensajes personalizados…"
 
@@ -1882,17 +1882,16 @@ msgstr "Limpio"
 msgid "Blue"
 msgstr "Azul"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1515
+#: ../libempathy-gtk/empathy-ui-utils.c:1516
 msgid "Unable to open URI"
 msgstr "No se pudo abrir el URI"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1610
+#: ../libempathy-gtk/empathy-ui-utils.c:1611
 msgid "Select a file"
 msgstr "Seleccionar un archivo"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1679
+#: ../libempathy-gtk/empathy-ui-utils.c:1680
 #, c-format
-#| msgid "Incoming call from %s"
 msgid "Incoming file from %s"
 msgstr "Archivo entrante de %s"
 
@@ -2075,7 +2074,8 @@ msgstr "El contacto seleccionado está desconectado."
 msgid "No error message"
 msgstr "Sin mensaje de eeror"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:244
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:259
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
@@ -2442,21 +2442,21 @@ msgstr "Llamada con %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:1309
+#: ../src/empathy-call-window.c:1311
 msgid "Call"
 msgstr "Llamar"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1966
+#: ../src/empathy-call-window.c:1968
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Conectado — %d:%02dm"
 
-#: ../src/empathy-call-window.c:2027
+#: ../src/empathy-call-window.c:2029
 msgid "Technical Details"
 msgstr "Detalles técnicos"
 
-#: ../src/empathy-call-window.c:2065
+#: ../src/empathy-call-window.c:2067
 #, c-format
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
@@ -2465,7 +2465,7 @@ msgstr ""
 "El software de «%s» no entiende ninguno de los formatos de vídeo soportados "
 "por su equipo"
 
-#: ../src/empathy-call-window.c:2070
+#: ../src/empathy-call-window.c:2072
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
@@ -2474,7 +2474,7 @@ msgstr ""
 "El software de «%s» no entiende ninguno de los formatos de vídeo soportados "
 "por su equipo"
 
-#: ../src/empathy-call-window.c:2076
+#: ../src/empathy-call-window.c:2078
 #, c-format
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
@@ -2483,25 +2483,25 @@ msgstr ""
 "No se puede establecer una conexión con %s. Uno de los dos puede estar en "
 "una red que no acepta conexiones directas."
 
-#: ../src/empathy-call-window.c:2082
+#: ../src/empathy-call-window.c:2084
 msgid "There was a failure on the network"
 msgstr "Hubo un fallo en la red"
 
-#: ../src/empathy-call-window.c:2086
+#: ../src/empathy-call-window.c:2088
 msgid ""
 "The audio formats necessary for this call are not installed on your computer"
 msgstr ""
 "No están instalados en su equipo los formatos de sonido necesarios para esta "
 "llamada"
 
-#: ../src/empathy-call-window.c:2089
+#: ../src/empathy-call-window.c:2091
 msgid ""
 "The video formats necessary for this call are not installed on your computer"
 msgstr ""
 "No están instalados en su equipo los formatos de vídeo necesarios para esta "
 "llamada"
 
-#: ../src/empathy-call-window.c:2099
+#: ../src/empathy-call-window.c:2101
 #, c-format
 msgid ""
 "Something unexpected happened in a Telepathy component. Please <a href=\"%s"
@@ -2512,15 +2512,15 @@ msgstr ""
 "\">Informe de este error</a> y añada los registros obtenidos de la ventana "
 "de «Depuración» en el menú de Ayuda."
 
-#: ../src/empathy-call-window.c:2107
+#: ../src/empathy-call-window.c:2109
 msgid "There was a failure in the call engine"
 msgstr "Hubo un fallo en el motor de llamadas"
 
-#: ../src/empathy-call-window.c:2146
+#: ../src/empathy-call-window.c:2148
 msgid "Can't establish audio stream"
 msgstr "No se puede establecer el flujo de voz"
 
-#: ../src/empathy-call-window.c:2156
+#: ../src/empathy-call-window.c:2158
 msgid "Can't establish video stream"
 msgstr "No se puede establecer el flujo de vídeo"
 
@@ -2653,7 +2653,6 @@ msgid "Move Tab _Right"
 msgstr "Mover solapa a la _derecha"
 
 #: ../src/empathy-chat-window.ui.h:8
-#| msgid "No error message"
 msgid "Notify for All Messages"
 msgstr "Notificar para todos los mensajes"
 
@@ -2759,7 +2758,6 @@ msgstr "Invitación a una sala"
 
 #: ../src/empathy-event-manager.c:700
 #, c-format
-#| msgid "%s invited you to join %s"
 msgid "Invitation to join %s"
 msgstr "Invitación para unirse a %s"
 
@@ -2787,12 +2785,12 @@ msgstr "%s le ha invitado a unirse a %s"
 msgid "Incoming file transfer from %s"
 msgstr "Transferencia de archivo entrante de %s"
 
-#: ../src/empathy-event-manager.c:985
+#: ../src/empathy-event-manager.c:986
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Petición de suscripción de %s"
 
-#: ../src/empathy-event-manager.c:989
+#: ../src/empathy-event-manager.c:990
 #, c-format
 msgid ""
 "\n"
@@ -2801,12 +2799,12 @@ msgstr ""
 "\n"
 "Mensaje: %s"
 
-#: ../src/empathy-event-manager.c:1032
+#: ../src/empathy-event-manager.c:1033
 #, c-format
 msgid "%s is now offline."
 msgstr "Ahora %s está desconectado."
 
-#: ../src/empathy-event-manager.c:1052
+#: ../src/empathy-event-manager.c:1053
 #, c-format
 msgid "%s is now online."
 msgstr "Ahora %s está conectado."
@@ -3322,63 +3320,63 @@ msgstr "_Salir"
 msgid "Contact Map View"
 msgstr "Vista del mapa de contactos"
 
-#: ../src/empathy-debug-window.c:1168
+#: ../src/empathy-debug-window.c:1219
 msgid "Save"
 msgstr "Guardar"
 
-#: ../src/empathy-debug-window.c:1344
+#: ../src/empathy-debug-window.c:1395
 msgid "Debug Window"
 msgstr "Depurar ventana"
 
-#: ../src/empathy-debug-window.c:1424
+#: ../src/empathy-debug-window.c:1475
 msgid "Pause"
 msgstr "Pausar"
 
-#: ../src/empathy-debug-window.c:1436
+#: ../src/empathy-debug-window.c:1487
 msgid "Level "
 msgstr "Nivel "
 
-#: ../src/empathy-debug-window.c:1456
+#: ../src/empathy-debug-window.c:1507
 msgid "Debug"
 msgstr "Depurar"
 
-#: ../src/empathy-debug-window.c:1462
+#: ../src/empathy-debug-window.c:1513
 msgid "Info"
 msgstr "Información"
 
-#: ../src/empathy-debug-window.c:1468 ../src/empathy-debug-window.c:1517
+#: ../src/empathy-debug-window.c:1519 ../src/empathy-debug-window.c:1568
 msgid "Message"
 msgstr "Mensaje"
 
-#: ../src/empathy-debug-window.c:1474
+#: ../src/empathy-debug-window.c:1525
 msgid "Warning"
 msgstr "Advertencia"
 
-#: ../src/empathy-debug-window.c:1480
+#: ../src/empathy-debug-window.c:1531
 msgid "Critical"
 msgstr "Crítico"
 
-#: ../src/empathy-debug-window.c:1486
+#: ../src/empathy-debug-window.c:1537
 msgid "Error"
 msgstr "Error"
 
-#: ../src/empathy-debug-window.c:1505
+#: ../src/empathy-debug-window.c:1556
 msgid "Time"
 msgstr "Hora"
 
-#: ../src/empathy-debug-window.c:1508
+#: ../src/empathy-debug-window.c:1559
 msgid "Domain"
 msgstr "Dominio"
 
-#: ../src/empathy-debug-window.c:1510
+#: ../src/empathy-debug-window.c:1561
 msgid "Category"
 msgstr "Categoría"
 
-#: ../src/empathy-debug-window.c:1512
+#: ../src/empathy-debug-window.c:1563
 msgid "Level"
 msgstr "Nivel"
 
-#: ../src/empathy-debug-window.c:1549
+#: ../src/empathy-debug-window.c:1600
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
@@ -3428,6 +3426,9 @@ msgstr "Cuentas en Empathy"
 #: ../src/empathy-debugger.c:40
 msgid "Empathy Debugger"
 msgstr "Depurador de Empathy"
+
+#~ msgid "Send and receive messages"
+#~ msgstr "Envíe y reciba mensajes instantáneos"
 
 #~ msgid "Select a destination"
 #~ msgstr "Seleccionar un destino"
