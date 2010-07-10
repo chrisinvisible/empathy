@@ -43,6 +43,12 @@
 #include "empathy-debug.h"
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIndividualManager)
+
+/* This class doesn't store or ref any of the individuals, since they're already
+ * stored and referenced in the aggregator.
+ *
+ * This class merely forwards along signals from the aggregator and individuals
+ * and wraps aggregator functions for other client code. */
 typedef struct
 {
   FolksIndividualAggregator *aggregator;
