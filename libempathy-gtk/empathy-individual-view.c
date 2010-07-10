@@ -243,8 +243,7 @@ individual_view_tooltip_destroy_cb (GtkWidget *widget,
   if (priv->tooltip_widget != NULL)
     {
       DEBUG ("Tooltip destroyed");
-      g_object_unref (priv->tooltip_widget);
-      priv->tooltip_widget = NULL;
+      tp_clear_object (&priv->tooltip_widget);
     }
 }
 
