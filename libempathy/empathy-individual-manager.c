@@ -313,7 +313,7 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
    * destroyed. */
   g_object_ref (contact);
 
-  DEBUG (G_STRLOC ": adding individual from contact %s (%s)",
+  DEBUG ("adding individual from contact %s (%s)",
       empathy_contact_get_id (contact), empathy_contact_get_name (contact));
 
   account = empathy_contact_get_account (contact);
@@ -346,7 +346,7 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
 
   priv = GET_PRIV (self);
 
-  DEBUG (G_STRLOC ": removing individual %s (%s)",
+  DEBUG ("removing individual %s (%s)",
       folks_individual_get_id (individual),
       folks_individual_get_alias (individual));
 
@@ -372,7 +372,7 @@ empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
 
   priv = GET_PRIV (manager);
 
-  DEBUG (G_STRLOC ": removing group %s", group);
+  DEBUG ("removing group %s", group);
 
   /* Remove every individual from the group */
   individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
