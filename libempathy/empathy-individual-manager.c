@@ -132,7 +132,7 @@ aggregator_individuals_removed_cb (FolksIndividualAggregator *aggregator,
 }
 
 static void
-individual_manager_finalize (GObject *object)
+individual_manager_dispose (GObject *object)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
 
@@ -186,7 +186,7 @@ empathy_individual_manager_class_init (EmpathyIndividualManagerClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = individual_manager_finalize;
+  object_class->dispose = individual_manager_dispose;
   object_class->constructor = individual_manager_constructor;
 
   signals[GROUPS_CHANGED] =
