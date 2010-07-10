@@ -354,7 +354,8 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
 }
 
 static void
-remove_group_cb (const gchar *id, FolksIndividual *individual,
+remove_group_cb (const gchar *id,
+    FolksIndividual *individual,
     const gchar *group)
 {
   folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE);
