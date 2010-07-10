@@ -49,6 +49,16 @@ typedef struct
   EmpathyContactManager *contact_manager;
 } EmpathyIndividualManagerPriv;
 
+enum
+{
+  FAVOURITES_CHANGED,
+  GROUPS_CHANGED,
+  MEMBERS_CHANGED,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 G_DEFINE_TYPE (EmpathyIndividualManager, empathy_individual_manager,
     G_TYPE_OBJECT);
 
@@ -60,7 +70,7 @@ individual_group_changed_cb (FolksIndividual *individual,
     gboolean is_member,
     EmpathyIndividualManager *self)
 {
-  g_signal_emit_by_name (self, "groups-changed", individual, group,
+  g_signal_emit (self, signals[GROUPS_CHANGED], 0, individual, group,
       is_member);
 }
 
@@ -71,7 +81,8 @@ individual_notify_is_favourite_cb (FolksIndividual *individual,
 {
   gboolean is_favourite = folks_favourite_get_is_favourite (
       FOLKS_FAVOURITE (individual));
-  g_signal_emit_by_name (self, "favourites-changed", individual, is_favourite);
+  g_signal_emit (self, signals[FAVOURITES_CHANGED], 0, individual,
+      is_favourite);
 }
 
 static void
@@ -90,9 +101,8 @@ aggregator_individuals_added_cb (FolksIndividualAggregator *aggregator,
     }
 
   /* TODO: don't hard-code the reason or message */
-  g_signal_emit_by_name (self, "members-changed",
-      "individual(s) added", individuals, NULL,
-      TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
+  g_signal_emit (self, signals[MEMBERS_CHANGED], 0, "individual(s) added",
+      individuals, NULL, TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
 }
 
 static void
@@ -111,9 +121,8 @@ aggregator_individuals_removed_cb (FolksIndividualAggregator *aggregator,
     }
 
   /* TODO: don't hard-code the reason or message */
-  g_signal_emit_by_name (self, "members-changed",
-      "individual(s) removed", NULL, individuals,
-      TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
+  g_signal_emit (self, signals[MEMBERS_CHANGED], 0, "individual(s) removed",
+      NULL, individuals, TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
 }
 
 static void
@@ -174,30 +183,33 @@ empathy_individual_manager_class_init (EmpathyIndividualManagerClass *klass)
   object_class->finalize = individual_manager_finalize;
   object_class->constructor = individual_manager_constructor;
 
-  g_signal_new ("groups-changed",
-      G_TYPE_FROM_CLASS (klass),
-      G_SIGNAL_RUN_LAST,
-      0,
-      NULL, NULL,
-      _empathy_marshal_VOID__OBJECT_STRING_BOOLEAN,
-      G_TYPE_NONE, 3, FOLKS_TYPE_INDIVIDUAL, G_TYPE_STRING, G_TYPE_BOOLEAN);
+  signals[GROUPS_CHANGED] =
+      g_signal_new ("groups-changed",
+          G_TYPE_FROM_CLASS (klass),
+          G_SIGNAL_RUN_LAST,
+          0,
+          NULL, NULL,
+          _empathy_marshal_VOID__OBJECT_STRING_BOOLEAN,
+          G_TYPE_NONE, 3, FOLKS_TYPE_INDIVIDUAL, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
-  g_signal_new ("favourites-changed",
-      G_TYPE_FROM_CLASS (klass),
-      G_SIGNAL_RUN_LAST,
-      0,
-      NULL, NULL,
-      _empathy_marshal_VOID__OBJECT_BOOLEAN,
-      G_TYPE_NONE, 2, FOLKS_TYPE_INDIVIDUAL, G_TYPE_BOOLEAN);
+  signals[FAVOURITES_CHANGED] =
+      g_signal_new ("favourites-changed",
+          G_TYPE_FROM_CLASS (klass),
+          G_SIGNAL_RUN_LAST,
+          0,
+          NULL, NULL,
+          _empathy_marshal_VOID__OBJECT_BOOLEAN,
+          G_TYPE_NONE, 2, FOLKS_TYPE_INDIVIDUAL, G_TYPE_BOOLEAN);
 
-  g_signal_new ("members-changed",
-      G_TYPE_FROM_CLASS (klass),
-      G_SIGNAL_RUN_LAST,
-      0,
-      NULL, NULL,
-      _empathy_marshal_VOID__STRING_OBJECT_OBJECT_UINT,
-      G_TYPE_NONE,
-      4, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_UINT);
+  signals[MEMBERS_CHANGED] =
+      g_signal_new ("members-changed",
+          G_TYPE_FROM_CLASS (klass),
+          G_SIGNAL_RUN_LAST,
+          0,
+          NULL, NULL,
+          _empathy_marshal_VOID__STRING_OBJECT_OBJECT_UINT,
+          G_TYPE_NONE,
+          4, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_UINT);
 
   g_type_class_add_private (object_class,
       sizeof (EmpathyIndividualManagerPriv));
