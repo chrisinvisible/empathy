@@ -1191,6 +1191,8 @@ individual_store_contact_sort (FolksIndividual *individual_a,
     FolksIndividual *individual_b)
 {
   gint ret_val;
+  EmpathyContact *contact_a = NULL, *contact_b = NULL;
+  TpAccount *account_a, *account_b;
 
   g_return_val_if_fail (individual_a != NULL || individual_b != NULL, 0);
 
@@ -1201,14 +1203,33 @@ individual_store_contact_sort (FolksIndividual *individual_a,
   if (ret_val != 0)
     goto out;
 
-  /* identifier */
-  ret_val = g_utf8_collate (folks_individual_get_id (individual_a),
-      folks_individual_get_id (individual_b));
+  contact_a = empathy_contact_dup_from_folks_individual (individual_a);
+  contact_b = empathy_contact_dup_from_folks_individual (individual_b);
+  account_a = empathy_contact_get_account (contact_a);
+  account_b = empathy_contact_get_account (contact_b);
+
+  /* protocol */
+  ret_val = g_strcmp0 (tp_account_get_protocol (account_a),
+      tp_account_get_protocol (account_b));
 
   if (ret_val != 0)
     goto out;
 
+  /* account ID */
+  ret_val = g_strcmp0 (tp_proxy_get_object_path (account_a),
+      tp_proxy_get_object_path (account_b));
+
+  if (ret_val != 0)
+    goto out;
+
+  /* identifier */
+  ret_val = g_utf8_collate (folks_individual_get_id (individual_a),
+      folks_individual_get_id (individual_b));
+
 out:
+  tp_clear_object (&contact_a);
+  tp_clear_object (&contact_b);
+
   return ret_val;
 }
 
