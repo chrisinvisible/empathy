@@ -524,10 +524,10 @@ log_manager_searched_new_cb (GObject *manager,
 					continue;
 			}
 
-			g_date_strftime (date_readable, sizeof(date_readable),
+			g_date_strftime (date_readable, sizeof (date_readable),
 				EMPATHY_TIME_FORMAT_DISPLAY_LONG, hit->date);
 
-			g_date_strftime (tmp, sizeof(tmp),
+			g_date_strftime (tmp, sizeof (tmp),
 				"%Y%m%d", hit->date);
 
 			account_name = tp_account_get_display_name (hit->account);
