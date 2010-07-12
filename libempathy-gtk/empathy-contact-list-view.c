@@ -1265,7 +1265,7 @@ contact_list_view_search_activate_cb (GtkWidget *search,
 {
 	GtkTreePath *path;
 	GtkTreeViewColumn *focus_column;
- 
+
 	gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &path, &focus_column);
 	if (path != NULL) {
 		gtk_tree_view_row_activated (GTK_TREE_VIEW (view), path,
