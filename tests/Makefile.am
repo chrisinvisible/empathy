@@ -13,6 +13,7 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir)                          	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
 	$(EMPATHY_CFLAGS)				\
+	$(GTK_CFLAGS)				\
 	$(WARN_CFLAGS)					\
 	$(DISABLE_DEPRECATED)
 
