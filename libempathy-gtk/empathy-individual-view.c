@@ -625,12 +625,23 @@ individual_view_drag_motion (GtkWidget *widget,
          not groups.
        */
       FolksIndividual *individual;
+      EmpathyCapabilities caps = EMPATHY_CAPABILITIES_NONE;
+
       gtk_tree_model_get (model, &iter,
           EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
+      if (individual != NULL)
+        {
+          EmpathyContact *contact = NULL;
+
+          contact = empathy_contact_dup_from_folks_individual (individual);
+          caps = empathy_contact_get_capabilities (contact);
+
+          tp_clear_object (&contact);
+        }
+
       if (individual != NULL &&
           folks_individual_is_online (individual) &&
-          (folks_individual_get_capabilities (individual) &
-              FOLKS_CAPABILITIES_FLAGS_FILE_TRANSFER))
+          (caps & EMPATHY_CAPABILITIES_FT))
         {
           gdk_drag_status (context, GDK_ACTION_COPY, time_);
           gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
