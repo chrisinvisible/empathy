@@ -49,7 +49,7 @@
 
 G_DEFINE_TYPE (EmpathyPreferences, empathy_preferences, GTK_TYPE_DIALOG);
 
-#define GET_PRIV(self) ((EmpathyPreferencesPriv*)((EmpathyPreferences*)self)->priv)
+#define GET_PRIV(self) ((EmpathyPreferencesPriv *)((EmpathyPreferences *) self)->priv)
 
 struct _EmpathyPreferencesPriv {
 	GtkWidget *notebook;
