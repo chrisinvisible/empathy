@@ -24,6 +24,7 @@
 #include <glib-object.h>
 
 #include <gst/gst.h>
+#include <gst/farsight/fs-conference-iface.h>
 
 #include <libempathy/empathy-tp-call.h>
 #include <libempathy/empathy-contact.h>
@@ -75,6 +76,12 @@ gboolean empathy_call_handler_has_initial_video (EmpathyCallHandler *handler);
 
 void empathy_call_handler_bus_message (EmpathyCallHandler *handler,
   GstBus *bus, GstMessage *message);
+
+FsCodec * empathy_call_handler_get_send_audio_codec (
+    EmpathyCallHandler *self);
+
+FsCodec * empathy_call_handler_get_send_video_codec (
+    EmpathyCallHandler *self);
 
 G_END_DECLS
 

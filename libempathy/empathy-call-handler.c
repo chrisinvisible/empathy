@@ -54,7 +54,9 @@ enum {
   PROP_GST_BUS,
   PROP_CONTACT,
   PROP_INITIAL_AUDIO,
-  PROP_INITIAL_VIDEO
+  PROP_INITIAL_VIDEO,
+  PROP_SEND_AUDIO_CODEC,
+  PROP_SEND_VIDEO_CODEC
 };
 
 /* private structure */
@@ -66,6 +68,9 @@ typedef struct {
   TfChannel *tfchannel;
   gboolean initial_audio;
   gboolean initial_video;
+
+  FsCodec *send_audio_codec;
+  FsCodec *send_video_codec;
 } EmpathyCallHandlerPriv;
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCallHandler)
@@ -106,7 +111,11 @@ empathy_call_handler_dispose (GObject *object)
 static void
 empathy_call_handler_finalize (GObject *object)
 {
-  /* free any data held directly by the object here */
+  EmpathyCallHandlerPriv *priv = GET_PRIV (object);
+
+  fs_codec_destroy (priv->send_audio_codec);
+  fs_codec_destroy (priv->send_video_codec);
+
   if (G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize)
     G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize (object);
 }
@@ -176,6 +185,12 @@ empathy_call_handler_get_property (GObject *object,
       case PROP_INITIAL_VIDEO:
         g_value_set_boolean (value, priv->initial_video);
         break;
+      case PROP_SEND_AUDIO_CODEC:
+        g_value_set_boxed (value, priv->send_audio_codec);
+        break;
+      case PROP_SEND_VIDEO_CODEC:
+        g_value_set_boxed (value, priv->send_video_codec);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -220,6 +235,20 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
     FALSE,
     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class, PROP_INITIAL_VIDEO,
+    param_spec);
+
+  param_spec = g_param_spec_boxed ("send-audio-codec",
+    "send audio codec", "Codec used to encode the outgoing video stream",
+    FS_TYPE_CODEC,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_SEND_AUDIO_CODEC,
+    param_spec);
+
+  param_spec = g_param_spec_boxed ("send-video-codec",
+    "send video codec", "Codec used to encode the outgoing video stream",
+    FS_TYPE_CODEC,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_SEND_VIDEO_CODEC,
     param_spec);
 
   signals[CONFERENCE_ADDED] =
@@ -288,14 +317,56 @@ empathy_call_handler_new_for_channel (EmpathyTpCall *call)
     NULL));
 }
 
+static void
+update_sending_codec (EmpathyCallHandler *self,
+    FsCodec *codec,
+    FsSession *session)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+  FsMediaType type;
+
+  if (codec == NULL || session == NULL)
+    return;
+
+  g_object_get (session, "media-type", &type, NULL);
+
+  if (type == FS_MEDIA_TYPE_AUDIO)
+    {
+      priv->send_audio_codec = fs_codec_copy (codec);
+      g_object_notify (G_OBJECT (self), "send-audio-codec");
+    }
+  else if (type == FS_MEDIA_TYPE_VIDEO)
+    {
+      priv->send_video_codec = fs_codec_copy (codec);
+      g_object_notify (G_OBJECT (self), "send-video-codec");
+    }
+}
+
 void
 empathy_call_handler_bus_message (EmpathyCallHandler *handler,
   GstBus *bus, GstMessage *message)
 {
   EmpathyCallHandlerPriv *priv = GET_PRIV (handler);
+  const GstStructure *s = gst_message_get_structure (message);
 
   if (priv->tfchannel == NULL)
     return;
+
+  if (s != NULL &&
+      gst_structure_has_name (s, "farsight-send-codec-changed"))
+    {
+      const GValue *val;
+      FsCodec *codec;
+      FsSession *session;
+
+      val = gst_structure_get_value (s, "codec");
+      codec = g_value_get_boxed (val);
+
+      val = gst_structure_get_value (s, "session");
+      session = g_value_get_object (val);
+
+      update_sending_codec (handler, codec, session);
+    }
 
   tf_channel_bus_message (priv->tfchannel, message);
 }
@@ -367,6 +438,8 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
   guint media_type;
   GstPad *spad;
   gboolean retval;
+  FsSession *session;
+  FsCodec *codec;
 
   g_signal_connect (stream, "src-pad-added",
       G_CALLBACK (empathy_call_handler_tf_stream_src_pad_added_cb), handler);
@@ -386,7 +459,15 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
       tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
           "Could not link source");
 
-  gst_object_unref (spad);
+ g_object_get (stream, "farsight-session", &session, NULL);
+ g_object_get (session, "current-send-codec", &codec, NULL);
+
+ update_sending_codec (handler, codec, session);
+
+ tp_clear_object (&session);
+ tp_clear_object (&codec);
+
+ gst_object_unref (spad);
 }
 
 static void
@@ -526,3 +607,18 @@ empathy_call_handler_has_initial_video (EmpathyCallHandler *handler)
   return priv->initial_video;
 }
 
+FsCodec *
+empathy_call_handler_get_send_audio_codec (EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->send_audio_codec;
+}
+
+FsCodec *
+empathy_call_handler_get_send_video_codec (EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->send_video_codec;
+}
