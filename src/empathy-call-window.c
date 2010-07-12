@@ -167,6 +167,11 @@ struct _EmpathyCallWindowPriv
 
   GtkWidget *dtmf_panel;
 
+  /* Details vbox */
+  GtkWidget *details_vbox;
+  GtkWidget *vcodec_encoding_label;
+  GtkWidget *acodec_encoding_label;
+
   GstElement *video_input;
   GstElement *audio_input;
   GstElement *audio_output;
@@ -1039,6 +1044,9 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "camera_on", &priv->tool_button_camera_on,
     "action_camera_off",  &priv->action_camera,
     "action_camera_preview",  &priv->action_camera_preview,
+    "details_vbox",  &priv->details_vbox,
+    "vcodec_encoding_label", &priv->vcodec_encoding_label,
+    "acodec_encoding_label", &priv->acodec_encoding_label,
     NULL);
   g_free (filename);
 
@@ -1163,6 +1171,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   gtk_widget_set_sensitive (priv->dtmf_panel, FALSE);
 
+  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Details"),
+    priv->details_vbox);
 
   gtk_widget_show_all (top_vbox);
 
@@ -1329,6 +1339,51 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
 }
 
 static void
+update_send_codec (EmpathyCallWindow *self,
+    gboolean audio)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  FsCodec *codec;
+  GtkWidget *widget;
+
+  if (audio)
+    {
+      codec = empathy_call_handler_get_send_audio_codec (priv->handler);
+      widget = priv->acodec_encoding_label;
+    }
+  else
+    {
+      codec = empathy_call_handler_get_send_video_codec (priv->handler);
+      widget = priv->vcodec_encoding_label;
+    }
+
+  if (codec == NULL)
+    return;
+
+  gtk_label_set_text (GTK_LABEL (widget), codec->encoding_name);
+}
+
+static void
+send_audio_codec_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_send_codec (self, TRUE);
+}
+
+static void
+send_video_codec_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_send_codec (self, FALSE);
+}
+
+static void
 empathy_call_window_constructed (GObject *object)
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
@@ -1352,6 +1407,14 @@ empathy_call_window_constructed (GObject *object)
     }
   /* If call has InitialVideo, the preview will be started once the call has
    * been started (start_call()). */
+
+  update_send_codec (self, TRUE);
+  update_send_codec (self, FALSE);
+
+  tp_g_signal_connect_object (priv->handler, "notify::send-audio-codec",
+      G_CALLBACK (send_audio_codec_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::send-video-codec",
+      G_CALLBACK (send_video_codec_notify_cb), self, 0);
 }
 
 static void empathy_call_window_dispose (GObject *object);
