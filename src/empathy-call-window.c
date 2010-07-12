@@ -171,6 +171,8 @@ struct _EmpathyCallWindowPriv
   GtkWidget *details_vbox;
   GtkWidget *vcodec_encoding_label;
   GtkWidget *acodec_encoding_label;
+  GtkWidget *vcodec_decoding_label;
+  GtkWidget *acodec_decoding_label;
 
   GstElement *video_input;
   GstElement *audio_input;
@@ -1047,6 +1049,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "details_vbox",  &priv->details_vbox,
     "vcodec_encoding_label", &priv->vcodec_encoding_label,
     "acodec_encoding_label", &priv->acodec_encoding_label,
+    "acodec_decoding_label", &priv->acodec_decoding_label,
+    "vcodec_decoding_label", &priv->vcodec_decoding_label,
     NULL);
   g_free (filename);
 
@@ -1384,6 +1388,70 @@ send_video_codec_notify_cb (GObject *object,
 }
 
 static void
+update_recv_codec (EmpathyCallWindow *self,
+    gboolean audio)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GList *codecs, *l;
+  GtkWidget *widget;
+  gchar *str = NULL;
+
+  if (audio)
+    {
+      codecs = empathy_call_handler_get_recv_audio_codecs (priv->handler);
+      widget = priv->acodec_decoding_label;
+    }
+  else
+    {
+      codecs = empathy_call_handler_get_recv_video_codecs (priv->handler);
+      widget = priv->vcodec_decoding_label;
+    }
+
+  if (codecs == NULL)
+    return;
+
+  for (l = codecs; l != NULL; l = g_list_next (l))
+    {
+      FsCodec *codec = l->data;
+
+      if (str == NULL)
+        {
+          str = g_strdup (codec->encoding_name);
+        }
+      else
+        {
+          gchar *tmp = str;
+
+          str = g_strdup_printf ("%s, %s", tmp, codec->encoding_name);
+          g_free (tmp);
+        }
+    }
+
+  gtk_label_set_text (GTK_LABEL (widget), str);
+  g_free (str);
+}
+
+static void
+recv_audio_codecs_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_recv_codec (self, TRUE);
+}
+
+static void
+recv_video_codecs_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_recv_codec (self, FALSE);
+}
+
+static void
 empathy_call_window_constructed (GObject *object)
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
@@ -1410,11 +1478,17 @@ empathy_call_window_constructed (GObject *object)
 
   update_send_codec (self, TRUE);
   update_send_codec (self, FALSE);
+  update_recv_codec (self, TRUE);
+  update_recv_codec (self, FALSE);
 
   tp_g_signal_connect_object (priv->handler, "notify::send-audio-codec",
       G_CALLBACK (send_audio_codec_notify_cb), self, 0);
   tp_g_signal_connect_object (priv->handler, "notify::send-video-codec",
       G_CALLBACK (send_video_codec_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::recv-audio-codecs",
+      G_CALLBACK (recv_audio_codecs_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::recv-video-codecs",
+      G_CALLBACK (recv_video_codecs_notify_cb), self, 0);
 }
 
 static void empathy_call_window_dispose (GObject *object);
