@@ -1,3 +1,55 @@
+NEW in 2.31.5 (12/07/2010)
+=============
+
+The "Please popup chats in my face!" release.
+
+Empathy finally gained an option to automatically present incoming events
+rather than making the status icon blink.
+
+The notifications bubbles now contain more buttons (if your notify server
+supports actions) allowing you to quickly accept or decline incoming events.
+
+The audio/video client now lives in its own process: 'empathy-av'.
+
+Empathy can now build with GTK+ 3. If GTK+ 3 is present during configure it
+will be used and Empathy will requier updated versions of other dependencies:
+  - libcanberra-gtk3 ≥ 0.25
+  - libnotify ≥ 0.5.1
+  - libunique ≥ 2.90.1
+  - WebKitGTK+ ≥ 1.3.2 (optional)
+  - nautilus-sendto ≥ 2.90.0 (optional)
+If GTK+ 3 is not detected or if --enable-gtk3=no is passed to configure, then
+GTK+ 2 is used and the other dependencies are unchanged.
+
+
+Bugs fixed:
+ - Fixed #585914, Notification icon must be clicked before user can see new messages (Guillaume Desmottes)
+ - Fixed #597124, Should make better use of libnotify actions (Guillaume Desmottes)
+ - Fixed #599161, Audio/Video client should be a separated process (Guillaume Desmottes)
+ - Fixed #617405, Empathy's short (menu) description should focus on its use, not the technology (Guillaume Desmottes)
+ - Fixed #621753, Should be able to build with GTK+3 (Guillaume Desmottes)
+ - Fixed #622729, duplicated messages when opening chat (Guillaume Desmottes)
+ - Fixed #623054, Should re-add data/org.gnome.Empathy.gschema.xml.in to POTFILES.in (Danielle Madeley)
+ - Fixed #623112, Bip backlog are not displayed any more (Guillaume Desmottes)
+ - Fixed #623117, Debug window should look for TP clients (Guillaume Desmottes)
+ - Fixed #623358, Use TpSimpleHandler to handle text channels (Guillaume Desmottes)
+ - Fixed #623396, Fixed some leaks (Guillaume Desmottes)
+ - Fixed #623679, /join broken (Guillaume Desmottes)
+ - Fixed #623756, empathy-CRITICAL **: empathy_chatroom_is_always_urgent: assertion `EMPATHY_IS_CHATROOM (chatroom)' failed (Sjoerd Simons)
+ - Fixed #623817, Sync man pages with Debian (Laurent Bigonville, Guillaume Desmottes)
+ - Fixed #623914, since tp-logger history is shown as normal messages in adium themes (Guillaume Desmottes)
+ - Fixed #623937, empathy -h does not start hidden (Guillaume Desmottes)
+ - Fixed #623972, Toggling [ ] Enabled in the accounts dialog with the keyboard doesn't work (Will Thompson)
+ - Fixed #624054, Fix a memory leak in EmpathyAvatar (Philip Withnall)
+
+Translations:
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated sl Translation (Matej Urbančič)
+
 NEW in 2.31.4 (28/06/2010)
 =============
 
