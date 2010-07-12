@@ -85,7 +85,7 @@
 
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 
-#define GET_PRIV(self) ((EmpathyMainWindowPriv*)((EmpathyMainWindow*)self)->priv)
+#define GET_PRIV(self) ((EmpathyMainWindowPriv *)((EmpathyMainWindow *) self)->priv)
 
 struct _EmpathyMainWindowPriv {
 	EmpathyContactListView  *list_view;
