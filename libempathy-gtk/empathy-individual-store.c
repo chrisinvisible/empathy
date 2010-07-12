@@ -121,20 +121,32 @@ add_individual_to_store (GtkTreeStore *self,
     FolksIndividual *individual,
     EmpathyIndividualManagerFlags flags)
 {
+  EmpathyContact *contact;
+
+  contact = empathy_contact_dup_from_folks_individual (individual);
+
   gtk_tree_store_insert_with_values (self, iter, parent, 0,
       EMPATHY_INDIVIDUAL_STORE_COL_NAME,
       folks_individual_get_alias (individual),
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, individual,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, FALSE,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE,
-      EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL,
-      folks_individual_get_capabilities (individual) &
-      FOLKS_CAPABILITIES_FLAGS_AUDIO,
-      EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
-      folks_individual_get_capabilities (individual) &
-      FOLKS_CAPABILITIES_FLAGS_VIDEO,
       EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, flags,
       -1);
+
+  if (contact != NULL)
+    {
+      gtk_tree_store_set (GTK_TREE_STORE (self), iter,
+          EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL,
+            empathy_contact_get_capabilities (contact) &
+              EMPATHY_CAPABILITIES_AUDIO,
+          EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
+            empathy_contact_get_capabilities (contact) &
+              EMPATHY_CAPABILITIES_VIDEO,
+          -1);
+    }
+
+  tp_clear_object (&contact);
 }
 
 static gboolean
@@ -544,6 +556,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   EmpathyIndividualStorePriv *priv;
   ShowActiveData *data;
   GtkTreeModel *model;
+  EmpathyContact *contact;
   GList *iters, *l;
   gboolean in_list;
   gboolean should_be_in_list;
@@ -559,6 +572,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   priv = GET_PRIV (self);
 
   model = GTK_TREE_MODEL (self);
+  contact = empathy_contact_dup_from_folks_individual (individual);
 
   iters = individual_store_find_contact (self, individual);
   if (!iters)
@@ -684,17 +698,23 @@ individual_store_contact_update (EmpathyIndividualStore *self,
             folks_individual_get_presence_type (individual),
           EMPATHY_INDIVIDUAL_STORE_COL_STATUS,
             folks_individual_get_presence_message (individual),
-          EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL,
-            folks_individual_get_capabilities (individual) &
-              FOLKS_CAPABILITIES_FLAGS_AUDIO,
-          EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
-            folks_individual_get_capabilities (individual) &
-              FOLKS_CAPABILITIES_FLAGS_VIDEO,
           EMPATHY_INDIVIDUAL_STORE_COL_COMPACT, priv->is_compact,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, FALSE,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, now_online,
           EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE,
           -1);
+
+      if (contact != NULL)
+        {
+          gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
+              EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL,
+                empathy_contact_get_capabilities (contact) &
+                  EMPATHY_CAPABILITIES_AUDIO,
+              EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL,
+                empathy_contact_get_capabilities (contact) &
+                  EMPATHY_CAPABILITIES_VIDEO,
+              -1);
+        }
     }
 
   if (priv->show_active && do_set_active)
@@ -719,6 +739,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
    */
   g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
   g_list_free (iters);
+  tp_clear_object (&contact);
 }
 
 static void
