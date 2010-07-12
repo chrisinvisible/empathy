@@ -83,6 +83,12 @@ FsCodec * empathy_call_handler_get_send_audio_codec (
 FsCodec * empathy_call_handler_get_send_video_codec (
     EmpathyCallHandler *self);
 
+GList * empathy_call_handler_get_recv_audio_codecs (
+    EmpathyCallHandler *self);
+
+GList * empathy_call_handler_get_recv_video_codecs (
+    EmpathyCallHandler *self);
+
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_CALL_HANDLER_H__*/

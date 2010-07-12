@@ -56,7 +56,9 @@ enum {
   PROP_INITIAL_AUDIO,
   PROP_INITIAL_VIDEO,
   PROP_SEND_AUDIO_CODEC,
-  PROP_SEND_VIDEO_CODEC
+  PROP_SEND_VIDEO_CODEC,
+  PROP_RECV_AUDIO_CODECS,
+  PROP_RECV_VIDEO_CODECS,
 };
 
 /* private structure */
@@ -71,6 +73,8 @@ typedef struct {
 
   FsCodec *send_audio_codec;
   FsCodec *send_video_codec;
+  GList *recv_audio_codecs;
+  GList *recv_video_codecs;
 } EmpathyCallHandlerPriv;
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCallHandler)
@@ -115,6 +119,8 @@ empathy_call_handler_finalize (GObject *object)
 
   fs_codec_destroy (priv->send_audio_codec);
   fs_codec_destroy (priv->send_video_codec);
+  fs_codec_list_destroy (priv->recv_audio_codecs);
+  fs_codec_list_destroy (priv->recv_video_codecs);
 
   if (G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize)
     G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize (object);
@@ -191,6 +197,12 @@ empathy_call_handler_get_property (GObject *object,
       case PROP_SEND_VIDEO_CODEC:
         g_value_set_boxed (value, priv->send_video_codec);
         break;
+      case PROP_RECV_AUDIO_CODECS:
+        g_value_set_boxed (value, priv->recv_audio_codecs);
+        break;
+      case PROP_RECV_VIDEO_CODECS:
+        g_value_set_boxed (value, priv->recv_video_codecs);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -249,6 +261,20 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
     FS_TYPE_CODEC,
     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class, PROP_SEND_VIDEO_CODEC,
+    param_spec);
+
+  param_spec = g_param_spec_boxed ("recv-audio-codecs",
+    "recvs audio codec", "Codecs used to decode the incoming audio stream",
+    FS_TYPE_CODEC_LIST,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_RECV_AUDIO_CODECS,
+    param_spec);
+
+  param_spec = g_param_spec_boxed ("recv-video-codecs",
+    "recvs video codec", "Codecs used to decode the incoming video stream",
+    FS_TYPE_CODEC_LIST,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class, PROP_RECV_VIDEO_CODECS,
     param_spec);
 
   signals[CONFERENCE_ADDED] =
@@ -342,6 +368,38 @@ update_sending_codec (EmpathyCallHandler *self,
     }
 }
 
+static void
+update_receiving_codec (EmpathyCallHandler *self,
+    GList *codecs,
+    FsStream *stream)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+  FsSession *session;
+  FsMediaType type;
+
+  if (codecs == NULL || stream == NULL)
+    return;
+
+  g_object_get (stream, "session", &session, NULL);
+  if (session == NULL)
+    return;
+
+  g_object_get (session, "media-type", &type, NULL);
+
+  if (type == FS_MEDIA_TYPE_AUDIO)
+    {
+      priv->recv_audio_codecs = fs_codec_list_copy (codecs);
+      g_object_notify (G_OBJECT (self), "recv-audio-codecs");
+    }
+  else if (type == FS_MEDIA_TYPE_VIDEO)
+    {
+      priv->recv_video_codecs = fs_codec_list_copy (codecs);
+      g_object_notify (G_OBJECT (self), "recv-video-codecs");
+    }
+
+  g_object_unref (session);
+}
+
 void
 empathy_call_handler_bus_message (EmpathyCallHandler *handler,
   GstBus *bus, GstMessage *message)
@@ -366,6 +424,21 @@ empathy_call_handler_bus_message (EmpathyCallHandler *handler,
       session = g_value_get_object (val);
 
       update_sending_codec (handler, codec, session);
+    }
+  else if (s != NULL &&
+      gst_structure_has_name (s, "farsight-recv-codecs-changed"))
+    {
+      const GValue *val;
+      GList *codecs;
+      FsStream *stream;
+
+      val = gst_structure_get_value (s, "codecs");
+      codecs = g_value_get_boxed (val);
+
+      val = gst_structure_get_value (s, "stream");
+      stream = g_value_get_object (val);
+
+      update_receiving_codec (handler, codecs, stream);
     }
 
   tf_channel_bus_message (priv->tfchannel, message);
@@ -438,6 +511,8 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
   guint media_type;
   GstPad *spad;
   gboolean retval;
+  FsStream *fs_stream;
+  GList *codecs;
   FsSession *session;
   FsCodec *codec;
 
@@ -459,6 +534,7 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
       tf_stream_error (stream, TP_MEDIA_STREAM_ERROR_MEDIA_ERROR,
           "Could not link source");
 
+ /* Get sending codec */
  g_object_get (stream, "farsight-session", &session, NULL);
  g_object_get (session, "current-send-codec", &codec, NULL);
 
@@ -466,6 +542,15 @@ empathy_call_handler_tf_channel_stream_created_cb (TfChannel *tfchannel,
 
  tp_clear_object (&session);
  tp_clear_object (&codec);
+
+ /* Get receiving codec */
+ g_object_get (stream, "farsight-stream", &fs_stream, NULL);
+ g_object_get (fs_stream, "current-recv-codecs", &codecs, NULL);
+
+ update_receiving_codec (handler, codecs, fs_stream);
+
+ fs_codec_list_destroy (codecs);
+ tp_clear_object (&fs_stream);
 
  gst_object_unref (spad);
 }
@@ -621,4 +706,20 @@ empathy_call_handler_get_send_video_codec (EmpathyCallHandler *self)
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
 
   return priv->send_video_codec;
+}
+
+GList *
+empathy_call_handler_get_recv_audio_codecs (EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->recv_audio_codecs;
+}
+
+GList *
+empathy_call_handler_get_recv_video_codecs (EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->recv_video_codecs;
 }
