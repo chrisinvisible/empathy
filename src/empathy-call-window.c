@@ -1756,6 +1756,17 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
     }
 }
 
+static void
+reset_details_pane (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  gtk_label_set_text (GTK_LABEL (priv->vcodec_encoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->acodec_encoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->vcodec_decoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->acodec_decoding_label), _("Unknown"));
+}
+
 static gboolean
 empathy_call_window_disconnected (EmpathyCallWindow *self,
     gboolean restart)
@@ -1822,6 +1833,8 @@ empathy_call_window_disconnected (EmpathyCallWindow *self,
       priv->video_output = NULL;
 
       gtk_widget_show (priv->remote_user_avatar_widget);
+
+      reset_details_pane (self);
 
       priv->sending_video = FALSE;
       priv->call_started = FALSE;
