@@ -186,6 +186,26 @@ account_chooser_ready_cb (EmpathyAccountChooser *chooser,
 				       window->selected_chat_id, window->selected_is_chatroom);
 }
 
+static void
+select_account_once_ready (EmpathyLogWindow *self,
+			   TpAccount *account,
+			   const gchar *chat_id,
+			   gboolean is_chatroom)
+{
+	EmpathyAccountChooser *account_chooser = EMPATHY_ACCOUNT_CHOOSER (self->account_chooser_chats);
+
+	self->selected_account = account;
+	self->selected_chat_id = g_strdup (chat_id);
+	self->selected_is_chatroom = is_chatroom;
+
+	if (empathy_account_chooser_is_ready (account_chooser))
+		account_chooser_ready_cb (account_chooser, self);
+	else
+		/* Chat will be selected once the account chooser is ready */
+		g_signal_connect (account_chooser, "ready",
+				  G_CALLBACK (account_chooser_ready_cb), self);
+}
+
 GtkWidget *
 empathy_log_window_show (TpAccount  *account,
 			const gchar *chat_id,
@@ -295,18 +315,8 @@ empathy_log_window_show (TpAccount  *account,
 	log_window_chats_setup (window);
 	log_window_chats_populate (window);
 
-	if (account && chat_id) {
-		window->selected_account = account;
-		window->selected_chat_id = g_strdup (chat_id);
-		window->selected_is_chatroom = is_chatroom;
-
-		if (empathy_account_chooser_is_ready (account_chooser))
-			account_chooser_ready_cb (account_chooser, window);
-		else
-			/* Chat will be selected once the account chooser is ready */
-			g_signal_connect (account_chooser, "ready",
-					  G_CALLBACK (account_chooser_ready_cb), window);
-	}
+	if (account && chat_id)
+		select_account_once_ready (window, account, chat_id, is_chatroom);
 
 	if (parent) {
 		gtk_window_set_transient_for (GTK_WINDOW (window->window),
