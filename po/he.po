@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-07-08 10:21+0300\n"
-"PO-Revision-Date: 2010-07-08 10:24+0200\n"
+"POT-Creation-Date: 2010-07-13 03:29+0300\n"
+"PO-Revision-Date: 2010-07-13 03:31+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,20 +17,20 @@ msgstr ""
 "X-Poedit-Language: Hebrew\n"
 
 #: ../data/empathy.desktop.in.in.h:1
+msgid "Chat on Google Talk, Facebook, MSN, and many other chat services"
+msgstr "ניתן לשוחח דרך Google Talk,‏ Facebook,‏ MSN ושירותי שיחה נוספים"
+
+#: ../data/empathy.desktop.in.in.h:2
 msgid "Empathy"
 msgstr "Empathy"
 
-#: ../data/empathy.desktop.in.in.h:2
+#: ../data/empathy.desktop.in.in.h:3
 msgid "Empathy Internet Messaging"
 msgstr "‏Empathy מסרים מידיים"
 
-#: ../data/empathy.desktop.in.in.h:3
+#: ../data/empathy.desktop.in.in.h:4
 msgid "IM Client"
 msgstr "לקוח מסרים מידיים"
-
-#: ../data/empathy.desktop.in.in.h:4
-msgid "Send and receive messages"
-msgstr "שליחה וקבלה של מסרים מידיים"
 
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:1
 msgid "Always open a separate chat window for new chats."
@@ -1230,7 +1230,7 @@ msgstr "הכנס סמיילי"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1842
-#: ../libempathy-gtk/empathy-ui-utils.c:1618
+#: ../libempathy-gtk/empathy-ui-utils.c:1619
 msgid "_Send"
 msgstr "_שלח"
 
@@ -1298,7 +1298,7 @@ msgstr "‏%s הצטרף לחדר"
 msgid "%s is now known as %s"
 msgstr "‏%s ידוע כעת כ-%s"
 
-#: ../libempathy-gtk/empathy-chat.c:2282 ../src/empathy-call-window.c:1653
+#: ../libempathy-gtk/empathy-chat.c:2282 ../src/empathy-call-window.c:1655
 msgid "Disconnected"
 msgstr "מנותק"
 
@@ -1753,7 +1753,7 @@ msgid "Set your presence and current status"
 msgstr "הגדרת הנוכחות והמצב הנוכחיים שלך"
 
 #. Custom messages
-#: ../libempathy-gtk/empathy-presence-chooser.c:1128
+#: ../libempathy-gtk/empathy-presence-chooser.c:1124
 msgid "Custom messages…"
 msgstr "הודעות מותאמות אישית..."
 
@@ -1841,15 +1841,15 @@ msgstr "נקי"
 msgid "Blue"
 msgstr "כחול"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1515
+#: ../libempathy-gtk/empathy-ui-utils.c:1516
 msgid "Unable to open URI"
 msgstr "לא ניתן לפתוח את הכתובת"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1610
+#: ../libempathy-gtk/empathy-ui-utils.c:1611
 msgid "Select a file"
 msgstr "בחירת קובץ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1679
+#: ../libempathy-gtk/empathy-ui-utils.c:1680
 #, c-format
 msgid "Incoming file from %s"
 msgstr "קובץ נכנס מ־%s"
@@ -2033,7 +2033,8 @@ msgstr "איש קשר הנבחר מנותק."
 msgid "No error message"
 msgstr "אין הודעת שגיאה"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:244
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:259
 msgid "Instant Message (Empathy)"
 msgstr "הודעה מיידית (Empathy)"
 
@@ -2400,35 +2401,35 @@ msgstr "שיחה עם %s"
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:1309
+#: ../src/empathy-call-window.c:1311
 msgid "Call"
 msgstr "שיחה"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:1966
+#: ../src/empathy-call-window.c:1968
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "מחובר — %d:%02d דק'"
 
-#: ../src/empathy-call-window.c:2027
+#: ../src/empathy-call-window.c:2029
 msgid "Technical Details"
 msgstr "פרטים טכניים"
 
-#: ../src/empathy-call-window.c:2065
+#: ../src/empathy-call-window.c:2067
 #, c-format
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
 "computer"
 msgstr "התכנה של %s אינה מבינה את מבני השמע הנתמכים על ידי המחשב שלך"
 
-#: ../src/empathy-call-window.c:2070
+#: ../src/empathy-call-window.c:2072
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
 "computer"
 msgstr "התכנה של %s אינה מבינה את מבני הווידאו הנתמכים על ידי המחשב שלך"
 
-#: ../src/empathy-call-window.c:2076
+#: ../src/empathy-call-window.c:2078
 #, c-format
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
@@ -2437,21 +2438,21 @@ msgstr ""
 "לא ניתן להפעיל את החיבור אל %s. כנראה אחד ממשתתפי השיחה מחובר לרשת שאינה "
 "מאפשרת חיבורים ישירים."
 
-#: ../src/empathy-call-window.c:2082
+#: ../src/empathy-call-window.c:2084
 msgid "There was a failure on the network"
 msgstr "ארעה שגיאה ברשת"
 
-#: ../src/empathy-call-window.c:2086
+#: ../src/empathy-call-window.c:2088
 msgid ""
 "The audio formats necessary for this call are not installed on your computer"
 msgstr "מבני השמע הדרושים לקיום שיחה זו אינם מותקנים במחשבך"
 
-#: ../src/empathy-call-window.c:2089
+#: ../src/empathy-call-window.c:2091
 msgid ""
 "The video formats necessary for this call are not installed on your computer"
 msgstr "מבני הווידאו הדרושים לקיום שיחה זו אינם מותקנים במחשבך"
 
-#: ../src/empathy-call-window.c:2099
+#: ../src/empathy-call-window.c:2101
 #, c-format
 msgid ""
 "Something unexpected happened in a Telepathy component. Please <a href=\"%s"
@@ -2461,15 +2462,15 @@ msgstr ""
 "משהו בלתי צפוי ארע ברכיב של Telepathy. נא <a href=\"%s\">לדווח על באג זה</a> "
 "ולהוסיף דוחות שנאספו מחלון 'ניפוי השגיאות' שבתפריט העזרה."
 
-#: ../src/empathy-call-window.c:2107
+#: ../src/empathy-call-window.c:2109
 msgid "There was a failure in the call engine"
 msgstr "ארעה שגיאה במנוע הקריאה"
 
-#: ../src/empathy-call-window.c:2146
+#: ../src/empathy-call-window.c:2148
 msgid "Can't establish audio stream"
 msgstr "לא ניתן לקיים תזרים שמע"
 
-#: ../src/empathy-call-window.c:2156
+#: ../src/empathy-call-window.c:2158
 msgid "Can't establish video stream"
 msgstr "לא ניתן לקיים תזרים וידאו"
 
@@ -2734,12 +2735,12 @@ msgstr "‏%s הזמין אותך להצטרף אל %s"
 msgid "Incoming file transfer from %s"
 msgstr "העברת קבצים נכנסת מ־%s"
 
-#: ../src/empathy-event-manager.c:985
+#: ../src/empathy-event-manager.c:986
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "בקשת ההצטרפות התבקשה על ידי %s"
 
-#: ../src/empathy-event-manager.c:989
+#: ../src/empathy-event-manager.c:990
 #, c-format
 msgid ""
 "\n"
@@ -2748,12 +2749,12 @@ msgstr ""
 "\n"
 "הודעה: %s"
 
-#: ../src/empathy-event-manager.c:1032
+#: ../src/empathy-event-manager.c:1033
 #, c-format
 msgid "%s is now offline."
 msgstr "‏%s מנותק כעת."
 
-#: ../src/empathy-event-manager.c:1052
+#: ../src/empathy-event-manager.c:1053
 #, c-format
 msgid "%s is now online."
 msgstr "‏%s מחובר כעת."
@@ -3262,63 +3263,63 @@ msgstr "יצי_אה"
 msgid "Contact Map View"
 msgstr "מפת אנשי קשר"
 
-#: ../src/empathy-debug-window.c:1168
+#: ../src/empathy-debug-window.c:1219
 msgid "Save"
 msgstr "שמירה"
 
-#: ../src/empathy-debug-window.c:1344
+#: ../src/empathy-debug-window.c:1395
 msgid "Debug Window"
 msgstr "חלון ניפוי שגיאות"
 
-#: ../src/empathy-debug-window.c:1424
+#: ../src/empathy-debug-window.c:1475
 msgid "Pause"
 msgstr "השהייה"
 
-#: ../src/empathy-debug-window.c:1436
+#: ../src/empathy-debug-window.c:1487
 msgid "Level "
 msgstr "רמה"
 
-#: ../src/empathy-debug-window.c:1456
+#: ../src/empathy-debug-window.c:1507
 msgid "Debug"
 msgstr "ניפוי שגיאות"
 
-#: ../src/empathy-debug-window.c:1462
+#: ../src/empathy-debug-window.c:1513
 msgid "Info"
 msgstr "מידע"
 
-#: ../src/empathy-debug-window.c:1468 ../src/empathy-debug-window.c:1517
+#: ../src/empathy-debug-window.c:1519 ../src/empathy-debug-window.c:1568
 msgid "Message"
 msgstr "הודעה"
 
-#: ../src/empathy-debug-window.c:1474
+#: ../src/empathy-debug-window.c:1525
 msgid "Warning"
 msgstr "אזהרה"
 
-#: ../src/empathy-debug-window.c:1480
+#: ../src/empathy-debug-window.c:1531
 msgid "Critical"
 msgstr "קריטי"
 
-#: ../src/empathy-debug-window.c:1486
+#: ../src/empathy-debug-window.c:1537
 msgid "Error"
 msgstr "שגיאה"
 
-#: ../src/empathy-debug-window.c:1505
+#: ../src/empathy-debug-window.c:1556
 msgid "Time"
 msgstr "זמן"
 
-#: ../src/empathy-debug-window.c:1508
+#: ../src/empathy-debug-window.c:1559
 msgid "Domain"
 msgstr "תחום"
 
-#: ../src/empathy-debug-window.c:1510
+#: ../src/empathy-debug-window.c:1561
 msgid "Category"
 msgstr "קטגוריה"
 
-#: ../src/empathy-debug-window.c:1512
+#: ../src/empathy-debug-window.c:1563
 msgid "Level"
 msgstr "רמה"
 
-#: ../src/empathy-debug-window.c:1549
+#: ../src/empathy-debug-window.c:1600
 msgid ""
 "The selected connection manager does not support the remote debugging "
 "extension."
@@ -3367,6 +3368,17 @@ msgstr "חשבונות Empathy"
 msgid "Empathy Debugger"
 msgstr "מנפה השגיאות של Empathy"
 
+#: ../src/empathy-av.c:133
+msgid "- Empathy Audio/Video Client"
+msgstr "- לקוח השמע/הווידאו Empathy"
+
+#: ../src/empathy-av.c:149
+msgid "Empathy Audio/Video Client"
+msgstr "לקוח השמע/הווידאו Empathy"
+
+#~ msgid "Send and receive messages"
+#~ msgstr "שליחה וקבלה של מסרים מידיים"
+
 #~ msgid "MC 4 accounts have been imported"
 #~ msgstr "MC 4 accounts have been imported"
 
@@ -3387,9 +3399,6 @@ msgstr "מנפה השגיאות של Empathy"
 
 #~ msgid "%s account"
 #~ msgstr "חשבון %s"
-
-#~ msgid "Empathy IM Client"
-#~ msgstr "לקוח המסרים המידיים Empathy"
 
 #~ msgid "Salut account is created"
 #~ msgstr "Salut account is created"
