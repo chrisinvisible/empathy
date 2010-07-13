@@ -293,6 +293,7 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   EmpathyIndividualManagerPriv *priv;
   GHashTable* details;
   TpAccount *account;
+  GValue value = {0};
   const gchar *store_id;
 
   g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self));
@@ -311,8 +312,9 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   store_id = tp_proxy_get_object_path (TP_PROXY (account));
 
   details = g_hash_table_new (g_str_hash, g_str_equal);
-  g_hash_table_insert (details, "contact",
-      (gchar*) empathy_contact_get_id (contact));
+  g_value_init (&value, G_TYPE_STRING);
+  g_value_set_string (&value, empathy_contact_get_id (contact));
+  g_hash_table_insert (details, "contact", &value);
 
   folks_individual_aggregator_add_persona_from_details (
       priv->aggregator, NULL, "telepathy", store_id, details,
