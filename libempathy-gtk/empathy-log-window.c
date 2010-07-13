@@ -102,10 +102,7 @@ static void     log_window_chats_populate                  (EmpathyLogWindow *wi
 static void     log_window_chats_setup                     (EmpathyLogWindow *window);
 static void     log_window_chats_accounts_changed_cb       (GtkWidget        *combobox,
 							    EmpathyLogWindow *window);
-static void     log_window_chats_set_selected              (EmpathyLogWindow *window,
-							    TpAccount        *account,
-							    const gchar      *chat_id,
-							    gboolean          is_chatroom);
+static void     log_window_chats_set_selected              (EmpathyLogWindow *window);
 static gboolean log_window_chats_get_selected              (EmpathyLogWindow *window,
 							    TpAccount       **account,
 							    gchar           **chat_id,
@@ -182,8 +179,7 @@ account_chooser_ready_cb (EmpathyAccountChooser *chooser,
 			EmpathyLogWindow *window)
 {
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (window->notebook), 1);
-	log_window_chats_set_selected (window, window->selected_account,
-				       window->selected_chat_id, window->selected_is_chatroom);
+	log_window_chats_set_selected (window);
 }
 
 static void
@@ -938,10 +934,7 @@ log_window_chats_accounts_changed_cb (GtkWidget       *combobox,
 }
 
 static void
-log_window_chats_set_selected  (EmpathyLogWindow *window,
-				TpAccount        *account,
-				const gchar     *chat_id,
-				gboolean         is_chatroom)
+log_window_chats_set_selected (EmpathyLogWindow *window)
 {
 	EmpathyAccountChooser *account_chooser;
 	GtkTreeView          *view;
@@ -952,7 +945,8 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 	gboolean              ok;
 
 	account_chooser = EMPATHY_ACCOUNT_CHOOSER (window->account_chooser_chats);
-	empathy_account_chooser_set_account (account_chooser, account);
+	empathy_account_chooser_set_account (account_chooser,
+		window->selected_account);
 
 	view = GTK_TREE_VIEW (window->treeview_chats);
 	model = gtk_tree_view_get_model (view);
@@ -973,9 +967,9 @@ log_window_chats_set_selected  (EmpathyLogWindow *window,
 				    COL_CHAT_IS_CHATROOM, &this_is_chatroom,
 				    -1);
 
-		if (this_account == account &&
-		    strcmp (this_chat_id, chat_id) == 0 &&
-		    this_is_chatroom == is_chatroom) {
+		if (this_account == window->selected_account &&
+		    strcmp (this_chat_id, window->selected_chat_id) == 0 &&
+		    this_is_chatroom == window->selected_is_chatroom) {
 			gtk_tree_selection_select_iter (selection, &iter);
 			path = gtk_tree_model_get_path (model, &iter);
 			gtk_tree_view_scroll_to_cell (view, path, NULL, TRUE, 0.5, 0.0);
