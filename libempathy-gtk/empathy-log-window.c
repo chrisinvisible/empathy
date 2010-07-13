@@ -223,8 +223,7 @@ empathy_log_window_show (TpAccount  *account,
 
 		if (account && chat_id) {
 			gtk_notebook_set_current_page (GTK_NOTEBOOK (log_window->notebook), 1);
-			log_window_chats_set_selected (log_window, account,
-						       chat_id, is_chatroom);
+			select_account_once_ready (log_window, account, chat_id, is_chatroom);
 		}
 
 		return log_window->window;
