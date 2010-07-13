@@ -1349,6 +1349,7 @@ update_send_codec (EmpathyCallWindow *self,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   FsCodec *codec;
   GtkWidget *widget;
+  gchar *tmp;
 
   if (audio)
     {
@@ -1364,7 +1365,9 @@ update_send_codec (EmpathyCallWindow *self,
   if (codec == NULL)
     return;
 
-  gtk_label_set_text (GTK_LABEL (widget), codec->encoding_name);
+  tmp = g_strdup_printf ("%s/%u", codec->encoding_name, codec->clock_rate);
+  gtk_label_set_text (GTK_LABEL (widget), tmp);
+  g_free (tmp);
 }
 
 static void
@@ -1394,7 +1397,7 @@ update_recv_codec (EmpathyCallWindow *self,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   GList *codecs, *l;
   GtkWidget *widget;
-  gchar *str = NULL;
+  GString *str = NULL;
 
   if (audio)
     {
@@ -1415,20 +1418,16 @@ update_recv_codec (EmpathyCallWindow *self,
       FsCodec *codec = l->data;
 
       if (str == NULL)
-        {
-          str = g_strdup (codec->encoding_name);
-        }
+        str = g_string_new (NULL);
       else
-        {
-          gchar *tmp = str;
+        g_string_append (str, ", ");
 
-          str = g_strdup_printf ("%s, %s", tmp, codec->encoding_name);
-          g_free (tmp);
-        }
+      g_string_append_printf (str, "%s/%u", codec->encoding_name,
+          codec->clock_rate);
     }
 
-  gtk_label_set_text (GTK_LABEL (widget), str);
-  g_free (str);
+  gtk_label_set_text (GTK_LABEL (widget), str->str);
+  g_string_free (str, TRUE);
 }
 
 static void
