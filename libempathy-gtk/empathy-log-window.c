@@ -194,7 +194,7 @@ select_account_once_ready (EmpathyLogWindow *self,
 {
 	EmpathyAccountChooser *account_chooser = EMPATHY_ACCOUNT_CHOOSER (self->account_chooser_chats);
 
-	self->selected_account = account;
+	self->selected_account = g_object_ref (account);
 	self->selected_chat_id = g_strdup (chat_id);
 	self->selected_is_chatroom = is_chatroom;
 
@@ -334,6 +334,7 @@ log_window_destroy_cb (GtkWidget       *widget,
 {
 	g_free (window->last_find);
 	g_object_unref (window->log_manager);
+	tp_clear_object (&window->selected_account);
 	g_free (window->selected_chat_id);
 
 	g_free (window);
