@@ -92,13 +92,17 @@ individual_notify_is_favourite_cb (FolksIndividual *individual,
 }
 
 static void
-aggregator_individuals_added_cb (FolksIndividualAggregator *aggregator,
-    GList *individuals,
+aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
+    GList *added,
+    GList *removed,
+    const char *message,
+    FolksPersona *actor,
+    guint reason,
     EmpathyIndividualManager *self)
 {
   GList *l;
 
-  for (l = individuals; l; l = l->next)
+  for (l = added; l; l = l->next)
     {
       g_signal_connect (l->data, "group-changed",
           G_CALLBACK (individual_group_changed_cb), self);
@@ -106,19 +110,7 @@ aggregator_individuals_added_cb (FolksIndividualAggregator *aggregator,
           G_CALLBACK (individual_notify_is_favourite_cb), self);
     }
 
-  /* TODO: don't hard-code the reason or message */
-  g_signal_emit (self, signals[MEMBERS_CHANGED], 0, "individual(s) added",
-      individuals, NULL, TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
-}
-
-static void
-aggregator_individuals_removed_cb (FolksIndividualAggregator *aggregator,
-    GList *individuals,
-    EmpathyIndividualManager *self)
-{
-  GList *l;
-
-  for (l = individuals; l; l = l->next)
+  for (l = removed; l; l = l->next)
     {
       g_signal_handlers_disconnect_by_func (l->data,
           individual_group_changed_cb, self);
@@ -126,9 +118,10 @@ aggregator_individuals_removed_cb (FolksIndividualAggregator *aggregator,
           individual_notify_is_favourite_cb, self);
     }
 
-  /* TODO: don't hard-code the reason or message */
-  g_signal_emit (self, signals[MEMBERS_CHANGED], 0, "individual(s) removed",
-      NULL, individuals, TP_CHANNEL_GROUP_CHANGE_REASON_NONE, TRUE);
+  g_signal_emit (self, signals[MEMBERS_CHANGED], 0, message,
+      added, removed,
+      tp_chanel_group_change_reason_from_folks_groups_change_reason (reason),
+      TRUE);
 }
 
 static void
@@ -233,10 +226,8 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
 
   priv->aggregator = folks_individual_aggregator_new ();
-  g_signal_connect (priv->aggregator, "individuals-added",
-      G_CALLBACK (aggregator_individuals_added_cb), self);
-  g_signal_connect (priv->aggregator, "individuals-removed",
-      G_CALLBACK (aggregator_individuals_removed_cb), self);
+  g_signal_connect (priv->aggregator, "individuals-changed",
+      G_CALLBACK (aggregator_individuals_changed_cb), self);
 }
 
 EmpathyIndividualManager *

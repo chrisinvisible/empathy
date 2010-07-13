@@ -652,3 +652,10 @@ folks_individual_dup_from_empathy_contact (EmpathyContact *contact)
 
   return individual;
 }
+
+TpChannelGroupChangeReason
+tp_chanel_group_change_reason_from_folks_groups_change_reason (
+    FolksGroupsChangeReason reason)
+{
+  return (TpChannelGroupChangeReason) reason;
+}
