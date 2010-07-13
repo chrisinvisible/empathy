@@ -253,7 +253,7 @@ else
 
    PKG_CHECK_MODULES(NETWORK_MANAGER,
    [
-      libnm_glib >= $NETWORK_MANAGER_REQUIRED
+      libnm-glib >= $NETWORK_MANAGER_REQUIRED
    ], have_nm="yes", have_nm="no")
 
    if test "x$have_nm" = "xyes"; then
