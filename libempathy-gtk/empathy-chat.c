@@ -632,6 +632,7 @@ typedef struct {
 	gchar *message;
 } ChatCommandMsgData;
 
+#if 0
 static void
 chat_command_msg_cb (EmpathyDispatchOperation *dispatch,
 			      const GError             *error,
@@ -661,6 +662,7 @@ OUT:
 	g_free (data->message);
 	g_slice_free (ChatCommandMsgData, data);
 }
+#endif
 
 static void
 chat_command_clear (EmpathyChat *chat,
@@ -722,6 +724,7 @@ chat_command_join (EmpathyChat *chat,
 	g_strfreev (rooms);
 }
 
+#if 0
 static void
 chat_command_msg_internal (EmpathyChat *chat,
 			   const gchar *contact_id,
@@ -758,6 +761,7 @@ chat_command_msg (EmpathyChat *chat,
 {
 	chat_command_msg_internal (chat, strv[1], strv[2]);
 }
+#endif
 
 static void
 chat_command_nick (EmpathyChat *chat,
@@ -829,11 +833,14 @@ static ChatCommandItem commands[] = {
 	{"j", 2, 2, chat_command_join,
 	 N_("/j <chat room ID>: join a new chat room")},
 
+#if 0
+/* FIXME: https://bugzilla.gnome.org/show_bug.cgi?id=623682 */
 	{"query", 2, 3, chat_command_query,
 	 N_("/query <contact ID> [<message>]: open a private chat")},
 
 	{"msg", 3, 3, chat_command_msg,
 	 N_("/msg <contact ID> <message>: open a private chat")},
+#endif
 
 	{"nick", 2, 2, chat_command_nick,
 	 N_("/nick <nickname>: change your nickname on the current server")},
