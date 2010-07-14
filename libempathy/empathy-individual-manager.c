@@ -284,6 +284,7 @@ aggregator_add_persona_from_details_cb (GObject *source,
 
   /* We can unref the contact now */
   g_object_unref (contact);
+  g_object_unref (persona);
 }
 
 void

@@ -143,7 +143,6 @@ empathy_individual_menu_new (FolksIndividual *individual,
       gtk_widget_show (item);
     }
 
-#if HAVE_FAVOURITE_CONTACTS
   /* Favorite checkbox */
   if (features & EMPATHY_INDIVIDUAL_FEATURE_FAVOURITE)
     {
@@ -151,7 +150,6 @@ empathy_individual_menu_new (FolksIndividual *individual,
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
     }
-#endif
 
   return menu;
 }
@@ -175,7 +173,7 @@ empathy_individual_add_menu_item_new (FolksIndividual *individual)
 {
   GtkWidget *item;
   GtkWidget *image;
-  EmpathyIndividualManager *manager;
+  EmpathyIndividualManager *manager = NULL;
   EmpathyContact *contact = NULL;
   TpConnection *connection;
   GList *l, *members;
@@ -215,7 +213,6 @@ empathy_individual_add_menu_item_new (FolksIndividual *individual)
         }
     }
   g_list_free (members);
-  g_object_unref (manager);
 
   if (found)
     {
@@ -233,6 +230,7 @@ empathy_individual_add_menu_item_new (FolksIndividual *individual)
 
 out:
   tp_clear_object (&contact);
+  tp_clear_object (&manager);
 
   return item;
 }

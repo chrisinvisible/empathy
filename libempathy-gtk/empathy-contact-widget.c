@@ -1460,9 +1460,9 @@ contact_widget_remove_contact (EmpathyContactWidget *information)
 
   if (information->details_cancellable != NULL)
     {
+      /* The cancellable will be unreffed and cleared in
+       * contact_widget_details_request_cb */
       g_cancellable_cancel (information->details_cancellable);
-      g_object_unref (information->details_cancellable);
-      information->details_cancellable = NULL;
     }
 }
 

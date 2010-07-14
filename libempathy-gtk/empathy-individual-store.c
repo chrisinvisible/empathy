@@ -345,7 +345,6 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   GtkTreeIter iter;
   GHashTable *group_set = NULL;
   GList *groups = NULL, *l;
-  EmpathyIndividualManager *manager;
   EmpathyContact *contact;
   TpConnection *connection;
   EmpathyIndividualManagerFlags flags = 0;
@@ -363,10 +362,9 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       groups = g_hash_table_get_keys (group_set);
     }
 
-  manager = empathy_individual_manager_dup_singleton ();
   contact = empathy_contact_dup_from_folks_individual (individual);
   connection = empathy_contact_get_connection (contact);
-  flags = empathy_individual_manager_get_flags_for_connection (manager,
+  flags = empathy_individual_manager_get_flags_for_connection (priv->manager,
       connection);
 
   tp_connection_parse_object_path (connection, &protocol_name, NULL);
@@ -481,8 +479,15 @@ individual_store_contact_active_new (EmpathyIndividualStore *self,
 
   data = g_slice_new0 (ShowActiveData);
 
-  data->self = g_object_ref (self);
-  data->individual = g_object_ref (individual);
+  /* We don't actually want to force either the IndividualStore or the
+   * Individual to stay alive, since the user could quit Empathy or disable
+   * the account before the contact_active timeout is fired. */
+  g_object_add_weak_pointer (G_OBJECT (self), (gpointer) &(data->self));
+  g_object_add_weak_pointer (G_OBJECT (individual),
+      (gpointer) &(data->individual));
+
+  data->self = self;
+  data->individual = individual;
   data->remove = remove_;
 
   return data;
@@ -491,9 +496,6 @@ individual_store_contact_active_new (EmpathyIndividualStore *self,
 static void
 individual_store_contact_active_free (ShowActiveData *data)
 {
-  g_object_unref (data->individual);
-  g_object_unref (data->self);
-
   g_slice_free (ShowActiveData, data);
 }
 
@@ -501,6 +503,15 @@ static gboolean
 individual_store_contact_active_cb (ShowActiveData *data)
 {
   EmpathyIndividualStorePriv *priv;
+
+  /* They're weak pointers, so may have been NULLified between ShowActiveData
+   * being created and the timeout being fired. We assume they can only be
+   * destroyed in this thread, so this isn't MT-safe. */
+  if (data->self == NULL || data->individual == NULL)
+    {
+      individual_store_contact_active_free (data);
+      return FALSE;
+    }
 
   priv = GET_PRIV (data->self);
 

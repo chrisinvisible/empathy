@@ -1623,6 +1623,8 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	individual_manager = empathy_individual_manager_dup_singleton ();
 	priv->individual_store = empathy_individual_store_new (
 			individual_manager);
+	g_object_unref (individual_manager);
+
 	priv->individual_view = empathy_individual_view_new (
 			priv->individual_store,
 			EMPATHY_INDIVIDUAL_VIEW_FEATURE_ALL,
