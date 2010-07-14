@@ -167,6 +167,13 @@ struct _EmpathyCallWindowPriv
 
   GtkWidget *dtmf_panel;
 
+  /* Details vbox */
+  GtkWidget *details_vbox;
+  GtkWidget *vcodec_encoding_label;
+  GtkWidget *acodec_encoding_label;
+  GtkWidget *vcodec_decoding_label;
+  GtkWidget *acodec_decoding_label;
+
   GstElement *video_input;
   GstElement *audio_input;
   GstElement *audio_output;
@@ -1039,6 +1046,11 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "camera_on", &priv->tool_button_camera_on,
     "action_camera_off",  &priv->action_camera,
     "action_camera_preview",  &priv->action_camera_preview,
+    "details_vbox",  &priv->details_vbox,
+    "vcodec_encoding_label", &priv->vcodec_encoding_label,
+    "acodec_encoding_label", &priv->acodec_encoding_label,
+    "acodec_decoding_label", &priv->acodec_decoding_label,
+    "vcodec_decoding_label", &priv->vcodec_decoding_label,
     NULL);
   g_free (filename);
 
@@ -1163,6 +1175,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
 
   gtk_widget_set_sensitive (priv->dtmf_panel, FALSE);
 
+  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Details"),
+    priv->details_vbox);
 
   gtk_widget_show_all (top_vbox);
 
@@ -1329,6 +1343,114 @@ empathy_call_window_setup_avatars (EmpathyCallWindow *self,
 }
 
 static void
+update_send_codec (EmpathyCallWindow *self,
+    gboolean audio)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  FsCodec *codec;
+  GtkWidget *widget;
+  gchar *tmp;
+
+  if (audio)
+    {
+      codec = empathy_call_handler_get_send_audio_codec (priv->handler);
+      widget = priv->acodec_encoding_label;
+    }
+  else
+    {
+      codec = empathy_call_handler_get_send_video_codec (priv->handler);
+      widget = priv->vcodec_encoding_label;
+    }
+
+  if (codec == NULL)
+    return;
+
+  tmp = g_strdup_printf ("%s/%u", codec->encoding_name, codec->clock_rate);
+  gtk_label_set_text (GTK_LABEL (widget), tmp);
+  g_free (tmp);
+}
+
+static void
+send_audio_codec_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_send_codec (self, TRUE);
+}
+
+static void
+send_video_codec_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_send_codec (self, FALSE);
+}
+
+static void
+update_recv_codec (EmpathyCallWindow *self,
+    gboolean audio)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  GList *codecs, *l;
+  GtkWidget *widget;
+  GString *str = NULL;
+
+  if (audio)
+    {
+      codecs = empathy_call_handler_get_recv_audio_codecs (priv->handler);
+      widget = priv->acodec_decoding_label;
+    }
+  else
+    {
+      codecs = empathy_call_handler_get_recv_video_codecs (priv->handler);
+      widget = priv->vcodec_decoding_label;
+    }
+
+  if (codecs == NULL)
+    return;
+
+  for (l = codecs; l != NULL; l = g_list_next (l))
+    {
+      FsCodec *codec = l->data;
+
+      if (str == NULL)
+        str = g_string_new (NULL);
+      else
+        g_string_append (str, ", ");
+
+      g_string_append_printf (str, "%s/%u", codec->encoding_name,
+          codec->clock_rate);
+    }
+
+  gtk_label_set_text (GTK_LABEL (widget), str->str);
+  g_string_free (str, TRUE);
+}
+
+static void
+recv_audio_codecs_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_recv_codec (self, TRUE);
+}
+
+static void
+recv_video_codecs_notify_cb (GObject *object,
+    GParamSpec *pspec,
+    gpointer user_data)
+{
+  EmpathyCallWindow *self = user_data;
+
+  update_recv_codec (self, FALSE);
+}
+
+static void
 empathy_call_window_constructed (GObject *object)
 {
   EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
@@ -1352,6 +1474,20 @@ empathy_call_window_constructed (GObject *object)
     }
   /* If call has InitialVideo, the preview will be started once the call has
    * been started (start_call()). */
+
+  update_send_codec (self, TRUE);
+  update_send_codec (self, FALSE);
+  update_recv_codec (self, TRUE);
+  update_recv_codec (self, FALSE);
+
+  tp_g_signal_connect_object (priv->handler, "notify::send-audio-codec",
+      G_CALLBACK (send_audio_codec_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::send-video-codec",
+      G_CALLBACK (send_video_codec_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::recv-audio-codecs",
+      G_CALLBACK (recv_audio_codecs_notify_cb), self, 0);
+  tp_g_signal_connect_object (priv->handler, "notify::recv-video-codecs",
+      G_CALLBACK (recv_video_codecs_notify_cb), self, 0);
 }
 
 static void empathy_call_window_dispose (GObject *object);
@@ -1619,6 +1755,17 @@ empathy_call_window_reset_pipeline (EmpathyCallWindow *self)
     }
 }
 
+static void
+reset_details_pane (EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  gtk_label_set_text (GTK_LABEL (priv->vcodec_encoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->acodec_encoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->vcodec_decoding_label), _("Unknown"));
+  gtk_label_set_text (GTK_LABEL (priv->acodec_decoding_label), _("Unknown"));
+}
+
 static gboolean
 empathy_call_window_disconnected (EmpathyCallWindow *self,
     gboolean restart)
@@ -1685,6 +1832,8 @@ empathy_call_window_disconnected (EmpathyCallWindow *self,
       priv->video_output = NULL;
 
       gtk_widget_show (priv->remote_user_avatar_widget);
+
+      reset_details_pane (self);
 
       priv->sending_video = FALSE;
       priv->call_started = FALSE;
