@@ -627,7 +627,7 @@ empathy_pixbuf_avatar_from_individual_scaled_async (
 
 	result = g_simple_async_result_new (G_OBJECT (individual),
 			callback, user_data,
-			empathy_pixbuf_avatar_from_individual_scaled_finish);
+			empathy_pixbuf_avatar_from_individual_scaled_async);
 
 	avatar_file = folks_avatar_get_avatar (FOLKS_AVATAR (individual));
 	if (avatar_file == NULL)
@@ -668,7 +668,7 @@ empathy_pixbuf_avatar_from_individual_scaled_finish (
 
 	result_valid = g_simple_async_result_is_valid (result,
 			G_OBJECT (individual),
-			empathy_pixbuf_avatar_from_individual_scaled_finish);
+			empathy_pixbuf_avatar_from_individual_scaled_async);
 	g_return_val_if_fail (result_valid, NULL);
 
 	return g_simple_async_result_get_op_res_gpointer (simple);
