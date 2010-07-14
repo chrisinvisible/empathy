@@ -773,8 +773,6 @@ log_manager_got_chats_cb (GObject *manager,
 	EmpathyLogWindow      *window = user_data;
 	GList                 *chats;
 	GList                 *l;
-	EmpathyAccountChooser *account_chooser;
-	TpAccount             *account;
 	GtkTreeView           *view;
 	GtkTreeModel          *model;
 	GtkTreeSelection      *selection;
@@ -792,9 +790,6 @@ log_manager_got_chats_cb (GObject *manager,
 			return;
 	}
 
-	account_chooser = EMPATHY_ACCOUNT_CHOOSER (window->account_chooser_chats);
-	account = empathy_account_chooser_dup_account (account_chooser);
-
 	view = GTK_TREE_VIEW (window->treeview_chats);
 	model = gtk_tree_view_get_model (view);
 	selection = gtk_tree_view_get_selection (view);
@@ -805,11 +800,14 @@ log_manager_got_chats_cb (GObject *manager,
 
 			hit = l->data;
 
+			if (hit->account == NULL)
+				continue;
+
 			gtk_list_store_append (store, &iter);
 			gtk_list_store_set (store, &iter,
 					COL_CHAT_ICON, "empathy-available", /* FIXME */
 					COL_CHAT_NAME, hit->chat_id,
-					COL_CHAT_ACCOUNT, account,
+					COL_CHAT_ACCOUNT, hit->account,
 					COL_CHAT_ID, hit->chat_id,
 					COL_CHAT_IS_CHATROOM, hit->is_chatroom,
 					-1);
@@ -825,8 +823,6 @@ log_manager_got_chats_cb (GObject *manager,
 	g_signal_handlers_unblock_by_func (selection,
 			log_window_chats_changed_cb,
 			window);
-
-	g_object_unref (account);
 }
 
 static void
