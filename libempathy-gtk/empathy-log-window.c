@@ -179,7 +179,11 @@ account_chooser_ready_cb (EmpathyAccountChooser *chooser,
 			EmpathyLogWindow *window)
 {
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (window->notebook), 1);
-	log_window_chats_set_selected (window);
+
+	/* We'll display the account once the model has been populate with the chats
+	 * of this account. */
+	empathy_account_chooser_set_account (EMPATHY_ACCOUNT_CHOOSER (
+		window->account_chooser_chats), window->selected_account);
 }
 
 static void
@@ -779,6 +783,7 @@ log_manager_got_chats_cb (GObject *manager,
 	GtkListStore          *store;
 	GtkTreeIter            iter;
 	GError                *error = NULL;
+	gboolean               select_account = FALSE;
 
 	if (log_window == NULL)
 		return;
@@ -812,6 +817,8 @@ log_manager_got_chats_cb (GObject *manager,
 					COL_CHAT_IS_CHATROOM, hit->is_chatroom,
 					-1);
 
+			select_account = (hit->account == window->selected_account);
+
 			/* FIXME: Update COL_CHAT_ICON/NAME */
 			if (hit->is_chatroom) {
 			} else {
@@ -823,6 +830,11 @@ log_manager_got_chats_cb (GObject *manager,
 	g_signal_handlers_unblock_by_func (selection,
 			log_window_chats_changed_cb,
 			window);
+
+	/* We display the selected account if we populate the model with chats from
+	 * this account. */
+	if (select_account)
+		log_window_chats_set_selected (window);
 }
 
 static void
@@ -932,17 +944,12 @@ log_window_chats_accounts_changed_cb (GtkWidget       *combobox,
 static void
 log_window_chats_set_selected (EmpathyLogWindow *window)
 {
-	EmpathyAccountChooser *account_chooser;
 	GtkTreeView          *view;
 	GtkTreeModel         *model;
 	GtkTreeSelection     *selection;
 	GtkTreeIter           iter;
 	GtkTreePath          *path;
 	gboolean              ok;
-
-	account_chooser = EMPATHY_ACCOUNT_CHOOSER (window->account_chooser_chats);
-	empathy_account_chooser_set_account (account_chooser,
-		window->selected_account);
 
 	view = GTK_TREE_VIEW (window->treeview_chats);
 	model = gtk_tree_view_get_model (view);
@@ -978,6 +985,9 @@ log_window_chats_set_selected (EmpathyLogWindow *window)
 		g_object_unref (this_account);
 		g_free (this_chat_id);
 	}
+
+	tp_clear_object (&window->selected_account);
+	tp_clear_pointer (&window->selected_chat_id, g_free);
 }
 
 static gboolean
