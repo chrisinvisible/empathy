@@ -241,7 +241,9 @@ event_manager_add (EmpathyEventManager *manager,
   if (!display_notify_area ())
     {
       /* Don't fire the 'event-added' signal as we activate the event now */
-      approval->auto_approved = TRUE;
+      if (approval != NULL)
+        approval->auto_approved = TRUE;
+
       empathy_event_activate (&event->public);
       return;
     }
