@@ -89,8 +89,6 @@ AC_PATH_PROG(DBUS_BINDING_TOOL, dbus-binding-tool)
 GLIB_GSETTINGS
 GLIB_GENMARSHAL=`$PKG_CONFIG glib-2.0 --variable=glib_genmarshal`
 AC_SUBST(GLIB_GENMARSHAL)
-CONTROL_CENTER_EXTENSIONDIR=`$PKG_CONFIG --variable=extensiondir libgnome-control-center-extension`
-AC_SUBST(CONTROL_CENTER_EXTENSIONDIR)
 
 AC_CHECK_PROGS([XSLTPROC], [xsltproc])
 if test -z "$XSLTPROC"; then
@@ -482,11 +480,20 @@ AC_ARG_ENABLE(control_center_embedding,
 if test "x$enable_control_center_embedding" != "xno"; then
    PKG_CHECK_MODULES(CONTROL_CENTER_EMBEDDING,
    [
-      libgnome-control-center-extension
+      libgnome-control-center
    ], have_control_center_embedding="yes", have_control_center_embedding="no")
 
    if test "x$have_control_center_embedding" = "xyes"; then
       AC_DEFINE(HAVE_CONTROL_CENTER_EMBEDDING, 1, [Define if you have the single-window control center])
+
+      AC_MSG_CHECKING([gnome-control-center extension dir])
+      CONTROL_CENTER_EXTENSIONDIR=`$PKG_CONFIG --variable=extensiondir libgnome-control-center`
+      if test "x$CONTROL_CENTER_EXTENSIONDIR" = "x"; then
+          AC_MSG_ERROR([Could not determine extensiondir])
+      else
+          AC_MSG_RESULT([$CONTROL_CENTER_EXTENSIONDIR])
+      fi
+      AC_SUBST(CONTROL_CENTER_EXTENSIONDIR)
    fi
 else
    have_control_center_embedding="no"
