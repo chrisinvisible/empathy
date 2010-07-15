@@ -184,7 +184,7 @@ else
 fi
 
 if test "x$enable_gtk3" = "xyes" -a "x$have_gtk3" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find gtk3 dependencies.])
+   AC_MSG_ERROR([Could not find gtk3 dependencies.])
 fi
 
 if test "x$have_gtk3" == "xyes"; then
@@ -302,7 +302,7 @@ else
 fi
 
 if test "x$enable_webkit" = "xyes" -a "x$have_webkit" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find webkit dependencies.])
+   AC_MSG_ERROR([Could not find webkit dependencies.])
 fi
 AM_CONDITIONAL(HAVE_WEBKIT, test "x$have_webkit" = "xyes")
 
@@ -339,7 +339,7 @@ else
 fi
 
 if test "x$enable_spell" = "xyes" -a "x$have_enchant" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find spell dependencies.])
+   AC_MSG_ERROR([Could not find spell dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_ENCHANT, test "x$have_enchant" = "xyes")
@@ -374,7 +374,7 @@ else
 fi
 
 if test "x$enable_map" = "xyes" -a "x$have_libchamplain" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find map view dependencies.])
+   AC_MSG_ERROR([Could not find map view dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_LIBCHAMPLAIN, test "x$have_libchamplain" = "xyes")
@@ -401,7 +401,7 @@ else
 fi
 
 if test "x$enable_location" = "xyes" -a "x$have_geoclue" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find location dependencies.])
+   AC_MSG_ERROR([Could not find location dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_GEOCLUE, test "x$have_geoclue" = "xyes")
@@ -430,7 +430,7 @@ else
 fi
 
 if test "x$enable_meego" = "xyes" -a "x$have_meego" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find meego dependencies.])
+   AC_MSG_ERROR([Could not find meego dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_MEEGO, test "x$have_meego" = "xyes")
@@ -466,7 +466,7 @@ else
 fi
 
 if test "x$enable_nautilus_sendto" = "xyes" -a "x$have_nst" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find nautilus-sendto dependencies.])
+   AC_MSG_ERROR([Could not find nautilus-sendto dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_NST, test "x$have_nst" = "xyes")
@@ -493,7 +493,7 @@ else
 fi
 
 if test "x$enable_control_center_embedding" = "xyes" -a "x$have_control_center_embedding" != "xyes"; then
-   AC_MSG_ERROR([Couldn't find single-window control center dependencies.])
+   AC_MSG_ERROR([Could not find single-window control center dependencies.])
 fi
 
 AM_CONDITIONAL(HAVE_CONTROL_CENTER_EMBEDDING, test "x$have_control_center_embedding" = "xyes")
@@ -505,7 +505,7 @@ AC_SUBST(CONTROL_CENTER_EMBEDDING_LIBS)
 # -----------------------------------------------------------
 AC_ARG_ENABLE(coding-style-checks,
   AC_HELP_STRING([--disable-coding-style-checks],
-                 [don't check coding style using grep]),
+                 [do not check coding style using grep]),
     [ENABLE_CODING_STYLE_CHECKS=$enableval], [ENABLE_CODING_STYLE_CHECKS=yes])
 
 AC_SUBST([ENABLE_CODING_STYLE_CHECKS])
