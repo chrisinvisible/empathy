@@ -1461,7 +1461,7 @@ chat_window_detach_hook (GtkNotebook *source,
 
 static void
 chat_window_page_switched_cb (GtkNotebook      *notebook,
-			      GtkNotebookPage  *page,
+			      gpointer          ignore, /* see note below */
 			      gint	        page_num,
 			      EmpathyChatWindow *window)
 {
@@ -1473,6 +1473,9 @@ chat_window_page_switched_cb (GtkNotebook      *notebook,
 
 	priv = GET_PRIV (window);
 
+	/* N.B. in GTK+ 3 child is passed as the first argument to the signal,
+	 * but we can't use that while trying to retain GTK+ 2.x compatibility.
+	 */
 	child = gtk_notebook_get_nth_page (notebook, page_num);
 	chat = EMPATHY_CHAT (child);
 
