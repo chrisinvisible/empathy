@@ -124,8 +124,6 @@ typedef struct {
    * EmpathyAccountsDialog object. */
   gboolean force_change_row;
   GtkTreeRowReference *destination_row;
-
-  gboolean dispose_has_run;
 } EmpathyAccountsDialogPriv;
 
 enum {
@@ -2120,38 +2118,12 @@ do_dispose (GObject *obj)
 {
   EmpathyAccountsDialog *dialog = EMPATHY_ACCOUNTS_DIALOG (obj);
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
-  GtkTreeModel *model;
 
-  if (priv->dispose_has_run)
-    return;
-
-  priv->dispose_has_run = TRUE;
-
-  /* Disconnect signals */
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->treeview));
-  g_signal_handlers_disconnect_by_func (model,
-      accounts_dialog_accounts_model_row_inserted_cb, dialog);
-  g_signal_handlers_disconnect_by_func (model,
-      accounts_dialog_accounts_model_row_deleted_cb, dialog);
-
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      accounts_dialog_account_validity_changed_cb,
-      dialog);
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      accounts_dialog_account_removed_cb,
-      dialog);
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      accounts_dialog_account_enabled_cb,
-      dialog);
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      accounts_dialog_account_disabled_cb,
-      dialog);
-  g_signal_handlers_disconnect_by_func (priv->account_manager,
-      accounts_dialog_manager_ready_cb,
-      dialog);
-
-  if (priv->connecting_id)
-    g_source_remove (priv->connecting_id);
+  if (priv->connecting_id != 0)
+    {
+      g_source_remove (priv->connecting_id);
+      priv->connecting_id = 0;
+    }
 
   if (priv->account_manager != NULL)
     {
@@ -2172,8 +2144,10 @@ do_dispose (GObject *obj)
     }
 
   if (priv->initial_selection != NULL)
-    g_object_unref (priv->initial_selection);
-  priv->initial_selection = NULL;
+    {
+      g_object_unref (priv->initial_selection);
+      priv->initial_selection = NULL;
+    }
 
   G_OBJECT_CLASS (empathy_accounts_dialog_parent_class)->dispose (obj);
 }
