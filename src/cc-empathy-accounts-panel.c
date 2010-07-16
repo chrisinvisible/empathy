@@ -26,90 +26,170 @@
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
 
+#include <telepathy-glib/telepathy-glib.h>
 #include <gconf/gconf-client.h>
 
+#include <libempathy/empathy-utils.h>
+#include <libempathy/empathy-connection-managers.h>
+#include <libempathy-gtk/empathy-ui-utils.h>
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT
 #include <libempathy/empathy-debug.h>
 
+#include "empathy-accounts-common.h"
+#include "empathy-account-assistant.h"
+#include "empathy-accounts-dialog.h"
+
 #include "cc-empathy-accounts-panel.h"
-#include "cc-empathy-accounts-page.h"
 
 #define CC_EMPATHY_ACCOUNTS_PANEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), CC_TYPE_EMPATHY_ACCOUNTS_PANEL, CcEmpathyAccountsPanelPrivate))
 
 struct CcEmpathyAccountsPanelPrivate
 {
-  CcPage *empathy_accounts_page;
+  /* the original window holding the dialog content; it needs to be retained and
+   * destroyed in our finalize(), since it invalidates its children (even if
+   * they've already been reparented by the time it is destroyed) */
+  GtkWidget *accounts_window;
+
+  GtkWidget *assistant;
 };
 
 G_DEFINE_DYNAMIC_TYPE (CcEmpathyAccountsPanel, cc_empathy_accounts_panel, CC_TYPE_PANEL)
 
 static void
-setup_panel (CcEmpathyAccountsPanel *panel)
+panel_pack_with_accounts_dialog (CcEmpathyAccountsPanel *panel)
 {
-  panel->priv->empathy_accounts_page = cc_empathy_accounts_page_new ();
+  GtkWidget *content;
+  GtkWidget *action_area;
 
-  gtk_container_add (GTK_CONTAINER (panel),
-      GTK_WIDGET (panel->priv->empathy_accounts_page));
+  if (panel->priv->accounts_window != NULL)
+    {
+      gtk_widget_destroy (panel->priv->accounts_window);
+      gtk_container_remove (GTK_CONTAINER (panel),
+          gtk_bin_get_child (GTK_BIN (panel)));
+    }
 
-  gtk_widget_show (GTK_WIDGET (panel->priv->empathy_accounts_page));
+    panel->priv->accounts_window = empathy_accounts_dialog_show (NULL, NULL);
+    gtk_widget_hide (panel->priv->accounts_window);
 
-  g_object_set (panel,
-      "current-page", panel->priv->empathy_accounts_page,
-      NULL);
+    content = gtk_dialog_get_content_area (
+        GTK_DIALOG (panel->priv->accounts_window));
+    action_area = gtk_dialog_get_action_area (
+        GTK_DIALOG (panel->priv->accounts_window));
+    gtk_widget_set_no_show_all (action_area, TRUE);
+    gtk_widget_hide (action_area);
+
+    gtk_widget_reparent (content, GTK_WIDGET (panel));
 }
 
 static void
-cc_empathy_accounts_panel_active_changed (CcPanel *self,
-    gboolean is_active)
+account_assistant_closed_cb (GtkWidget *widget,
+    gpointer user_data)
 {
-  DEBUG ("%s: active = %i", G_STRLOC, is_active);
+  CcEmpathyAccountsPanel *panel = CC_EMPATHY_ACCOUNTS_PANEL (user_data);
 
-  if (!is_active)
+  if (empathy_accounts_dialog_is_creating (
+      EMPATHY_ACCOUNTS_DIALOG (panel->priv->accounts_window)))
     {
-      /* why doesn't control-center call active-changed on the Page? */
-      cc_empathy_accounts_page_destroy_dialogs (
-          CC_EMPATHY_ACCOUNTS_PAGE (
-            CC_EMPATHY_ACCOUNTS_PANEL (self)->priv->empathy_accounts_page));
+      empathy_account_dialog_cancel (
+        EMPATHY_ACCOUNTS_DIALOG (panel->priv->accounts_window));
     }
 
-  CC_PANEL_CLASS (cc_empathy_accounts_panel_parent_class)->active_changed (
-      self, is_active);
+  gtk_widget_set_sensitive (GTK_WIDGET (panel), TRUE);
+  panel->priv->assistant = NULL;
 }
 
-static GObject *
-cc_empathy_accounts_panel_constructor (GType type,
-    guint n_construct_properties,
-    GObjectConstructParam *construct_properties)
+static void
+connection_managers_prepare (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
 {
-  CcEmpathyAccountsPanel *empathy_accounts_panel;
+  EmpathyConnectionManagers *cm_mgr = EMPATHY_CONNECTION_MANAGERS (source);
+  TpAccountManager *account_mgr;
+  CcEmpathyAccountsPanel *panel = CC_EMPATHY_ACCOUNTS_PANEL (user_data);
 
-  empathy_accounts_panel = CC_EMPATHY_ACCOUNTS_PANEL (
-      G_OBJECT_CLASS (cc_empathy_accounts_panel_parent_class)->constructor (
-          type, n_construct_properties, construct_properties));
+  account_mgr = TP_ACCOUNT_MANAGER (g_object_get_data (G_OBJECT (cm_mgr),
+      "account-manager"));
 
-  g_object_set (empathy_accounts_panel,
-      "display-name", _("Messaging and VoIP Accounts"),
-      "id", "empathy-accounts.desktop",
-      NULL);
+  if (!empathy_connection_managers_prepare_finish (cm_mgr, result, NULL))
+    goto out;
 
-  setup_panel (empathy_accounts_panel);
+  panel_pack_with_accounts_dialog (panel);
 
-  return G_OBJECT (empathy_accounts_panel);
+  empathy_accounts_import (account_mgr, cm_mgr);
+
+  if (!empathy_accounts_has_non_salut_accounts (account_mgr))
+    {
+      GtkWindow *parent;
+
+      parent = empathy_get_toplevel_window (GTK_WIDGET (panel));
+      panel->priv->assistant = empathy_account_assistant_show (parent, cm_mgr);
+
+      gtk_widget_set_sensitive (GTK_WIDGET (panel), FALSE);
+
+      tp_g_signal_connect_object (panel->priv->assistant, "hide",
+        G_CALLBACK (account_assistant_closed_cb),
+        panel, 0);
+    }
+
+out:
+  /* remove ref from active_changed() */
+  g_object_unref (account_mgr);
+  g_object_unref (cm_mgr);
+}
+
+static void
+account_manager_ready_for_accounts_cb (GObject *source_object,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  TpAccountManager *account_mgr = TP_ACCOUNT_MANAGER (source_object);
+  CcEmpathyAccountsPanel *panel = CC_EMPATHY_ACCOUNTS_PANEL (user_data);
+  GError *error = NULL;
+
+  if (!tp_account_manager_prepare_finish (account_mgr, result, &error))
+    {
+      g_warning ("Failed to prepare account manager: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  if (empathy_accounts_has_non_salut_accounts (account_mgr))
+    {
+      panel_pack_with_accounts_dialog (panel);
+
+      /* remove ref from active_changed() */
+      g_object_unref (account_mgr);
+    }
+  else
+    {
+      EmpathyConnectionManagers *cm_mgr;
+
+      cm_mgr = empathy_connection_managers_dup_singleton ();
+
+      g_object_set_data_full (G_OBJECT (cm_mgr), "account-manager",
+          g_object_ref (account_mgr), (GDestroyNotify) g_object_unref);
+
+      empathy_connection_managers_prepare_async (cm_mgr,
+          connection_managers_prepare, panel);
+    }
 }
 
 static void
 cc_empathy_accounts_panel_finalize (GObject *object)
 {
-  CcEmpathyAccountsPanel *empathy_accounts_panel;
+  CcEmpathyAccountsPanel *panel;
 
   g_return_if_fail (object != NULL);
   g_return_if_fail (CC_IS_EMPATHY_ACCOUNTS_PANEL (object));
 
-  empathy_accounts_panel = CC_EMPATHY_ACCOUNTS_PANEL (object);
+  panel = CC_EMPATHY_ACCOUNTS_PANEL (object);
 
-  g_return_if_fail (empathy_accounts_panel->priv != NULL);
+  g_return_if_fail (panel->priv != NULL);
 
-  g_object_unref (empathy_accounts_panel->priv->empathy_accounts_page);
+  gtk_widget_destroy (panel->priv->accounts_window);
+
+  if (panel->priv->assistant != NULL)
+    gtk_widget_destroy (panel->priv->assistant);
 
   G_OBJECT_CLASS (cc_empathy_accounts_panel_parent_class)->finalize (object);
 }
@@ -117,12 +197,8 @@ cc_empathy_accounts_panel_finalize (GObject *object)
 static void
 cc_empathy_accounts_panel_class_init (CcEmpathyAccountsPanelClass *klass)
 {
-  CcPanelClass *panel_class = CC_PANEL_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  panel_class->active_changed = cc_empathy_accounts_panel_active_changed;
-
-  object_class->constructor = cc_empathy_accounts_panel_constructor;
   object_class->finalize = cc_empathy_accounts_panel_finalize;
 
   g_type_class_add_private (klass, sizeof (CcEmpathyAccountsPanelPrivate));
@@ -137,8 +213,11 @@ static void
 cc_empathy_accounts_panel_init (CcEmpathyAccountsPanel *panel)
 {
   GConfClient *client;
+  TpAccountManager *account_manager;
 
   panel->priv = CC_EMPATHY_ACCOUNTS_PANEL_GET_PRIVATE (panel);
+
+  empathy_gtk_init ();
 
   client = gconf_client_get_default ();
   gconf_client_add_dir (client, "/desktop/gnome/peripherals/empathy_accounts",
@@ -146,6 +225,12 @@ cc_empathy_accounts_panel_init (CcEmpathyAccountsPanel *panel)
   gconf_client_add_dir (client, "/desktop/gnome/interface",
       GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
   g_object_unref (client);
+
+  /* unref'd in final endpoint callbacks */
+  account_manager = tp_account_manager_dup ();
+
+  tp_account_manager_prepare_async (account_manager, NULL,
+      account_manager_ready_for_accounts_cb, panel);
 }
 
 void
@@ -156,6 +241,6 @@ cc_empathy_accounts_panel_register (GIOModule *module)
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
   cc_empathy_accounts_panel_register_type (G_TYPE_MODULE (module));
-  g_io_extension_point_implement (CC_PANEL_EXTENSION_POINT_NAME,
+  g_io_extension_point_implement (CC_SHELL_PANEL_EXTENSION_POINT,
       CC_TYPE_EMPATHY_ACCOUNTS_PANEL, "empathy-accounts", 10);
 }

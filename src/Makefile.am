@@ -59,8 +59,6 @@ ccmodules_LTLIBRARIES = libempathy-accounts-panel.la
 
 libempathy_accounts_panel_la_SOURCES =				\
 	empathy-accounts-module.c				\
-	cc-empathy-accounts-page.c				\
-	cc-empathy-accounts-page.h				\
 	cc-empathy-accounts-panel.c				\
 	cc-empathy-accounts-panel.h				\
 	$(NULL)

@@ -22,7 +22,7 @@
 #define __CC_EMPATHY_ACCOUNTS_PANEL_H
 
 #include <gtk/gtk.h>
-#include <libgnome-control-center-extension/cc-panel.h>
+#include <libgnome-control-center/cc-panel.h>
 
 G_BEGIN_DECLS
 
