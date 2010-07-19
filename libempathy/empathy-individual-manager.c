@@ -44,8 +44,7 @@
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIndividualManager)
 
-/* This class doesn't store or ref any of the individuals, since they're already
- * stored and referenced in the aggregator.
+/* This class only stores and refs Individuals who contain an EmpathyContact.
  *
  * This class merely forwards along signals from the aggregator and individuals
  * and wraps aggregator functions for other client code. */
@@ -53,6 +52,7 @@ typedef struct
 {
   FolksIndividualAggregator *aggregator;
   EmpathyContactManager *contact_manager;
+  GHashTable *individuals; /* Individual.id -> Individual */
 } EmpathyIndividualManagerPriv;
 
 enum
@@ -92,6 +92,76 @@ individual_notify_is_favourite_cb (FolksIndividual *individual,
 }
 
 static void
+add_individual (EmpathyIndividualManager *self, FolksIndividual *individual)
+{
+  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+
+  g_hash_table_insert (priv->individuals,
+      (gpointer) folks_individual_get_id (individual),
+      g_object_ref (individual));
+
+  g_signal_connect (individual, "group-changed",
+      G_CALLBACK (individual_group_changed_cb), self);
+  g_signal_connect (individual, "notify::is-favourite",
+      G_CALLBACK (individual_notify_is_favourite_cb), self);
+}
+
+static void
+remove_individual (EmpathyIndividualManager *self, FolksIndividual *individual)
+{
+  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+
+  g_signal_handlers_disconnect_by_func (individual,
+      individual_group_changed_cb, self);
+  g_signal_handlers_disconnect_by_func (individual,
+      individual_notify_is_favourite_cb, self);
+
+  g_hash_table_remove (priv->individuals, folks_individual_get_id (individual));
+}
+
+/* This is emitted for *all* individuals in the individual aggregator (not
+ * just the ones we keep a reference to), to allow for the case where a new
+ * individual doesn't contain an EmpathyContact, but later has a persona added
+ * which does. */
+static void
+individual_notify_personas_cb (FolksIndividual *individual,
+    GParamSpec *pspec,
+    EmpathyIndividualManager *self)
+{
+  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+
+  const gchar *id = folks_individual_get_id (individual);
+  gboolean has_contact = empathy_folks_individual_contains_contact (individual);
+  gboolean had_contact = (g_hash_table_lookup (priv->individuals,
+      id) != NULL) ? TRUE : FALSE;
+
+  if (had_contact == TRUE && has_contact == FALSE)
+    {
+      GList *removed = NULL;
+
+      /* The Individual has lost its EmpathyContact */
+      removed = g_list_prepend (removed, individual);
+      g_signal_emit (self, signals[MEMBERS_CHANGED], 0, NULL, NULL, removed,
+          TP_CHANNEL_GROUP_CHANGE_REASON_NONE /* FIXME */);
+      g_list_free (removed);
+
+      remove_individual (self, individual);
+    }
+  else if (had_contact == FALSE && has_contact == TRUE)
+    {
+      GList *added = NULL;
+
+      /* The Individual has gained its first EmpathyContact */
+      add_individual (self, individual);
+
+      added = g_list_prepend (added, individual);
+      g_signal_emit (self, signals[MEMBERS_CHANGED], 0, NULL, added, NULL,
+          TP_CHANNEL_GROUP_CHANGE_REASON_NONE /* FIXME */);
+      g_list_free (added);
+    }
+}
+
+static void
 aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
     GList *added,
     GList *removed,
@@ -100,28 +170,53 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
     guint reason,
     EmpathyIndividualManager *self)
 {
-  GList *l;
+  EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
+  GList *l, *added_filtered = NULL, *removed_filtered = NULL;
 
+  /* Filter the individuals for ones which contain EmpathyContacts */
   for (l = added; l; l = l->next)
     {
-      g_signal_connect (l->data, "group-changed",
-          G_CALLBACK (individual_group_changed_cb), self);
-      g_signal_connect (l->data, "notify::is-favourite",
-          G_CALLBACK (individual_notify_is_favourite_cb), self);
+      FolksIndividual *ind = FOLKS_INDIVIDUAL (l->data);
+
+      g_signal_connect (ind, "notify::personas",
+          G_CALLBACK (individual_notify_personas_cb), self);
+
+      if (empathy_folks_individual_contains_contact (ind) == TRUE)
+        {
+          add_individual (self, ind);
+          added_filtered = g_list_prepend (added_filtered, ind);
+        }
     }
 
   for (l = removed; l; l = l->next)
     {
-      g_signal_handlers_disconnect_by_func (l->data,
-          individual_group_changed_cb, self);
-      g_signal_handlers_disconnect_by_func (l->data,
-          individual_notify_is_favourite_cb, self);
+      FolksIndividual *ind = FOLKS_INDIVIDUAL (l->data);
+
+      g_signal_handlers_disconnect_by_func (ind,
+          individual_notify_personas_cb, self);
+
+      if (g_hash_table_lookup (priv->individuals,
+          folks_individual_get_id (ind)) != NULL)
+        {
+          removed_filtered = g_list_prepend (removed_filtered, ind);
+          remove_individual (self, ind);
+        }
     }
 
+  /* Bail if we have no individuals left */
+  if (added_filtered == NULL && removed_filtered == NULL)
+    return;
+
+  added_filtered = g_list_reverse (added_filtered);
+  removed_filtered = g_list_reverse (removed_filtered);
+
   g_signal_emit (self, signals[MEMBERS_CHANGED], 0, message,
-      added, removed,
+      added_filtered, removed_filtered,
       tp_chanel_group_change_reason_from_folks_groups_change_reason (reason),
       TRUE);
+
+  g_list_free (added_filtered);
+  g_list_free (removed_filtered);
 }
 
 static void
@@ -129,6 +224,7 @@ individual_manager_dispose (GObject *object)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
 
+  g_hash_table_destroy (priv->individuals);
   tp_clear_object (&priv->contact_manager);
   tp_clear_object (&priv->aggregator);
 
@@ -224,6 +320,8 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
 
   self->priv = priv;
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
+  priv->individuals = g_hash_table_new_full (g_str_hash, g_str_equal,
+      NULL, g_object_unref);
 
   priv->aggregator = folks_individual_aggregator_new ();
   g_signal_connect (priv->aggregator, "individuals-changed",
@@ -241,12 +339,10 @@ GList *
 empathy_individual_manager_get_members (EmpathyIndividualManager *self)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
-  GHashTable *individuals;
 
   g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self), NULL);
 
-  individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
-  return individuals ? g_hash_table_get_values (individuals) : NULL;
+  return g_hash_table_get_values (priv->individuals);
 }
 
 FolksIndividual *
@@ -254,15 +350,10 @@ empathy_individual_manager_lookup_member (EmpathyIndividualManager *self,
     const gchar *id)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
-  GHashTable *individuals;
 
   g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self), NULL);
 
-  individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
-  if (individuals != NULL)
-    return g_hash_table_lookup (individuals, id);
-
-  return NULL;
+  return g_hash_table_lookup (priv->individuals, id);
 }
 
 static void
@@ -401,7 +492,6 @@ empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
     const gchar *group)
 {
   EmpathyIndividualManagerPriv *priv;
-  GHashTable *individuals;
 
   g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (manager));
   g_return_if_fail (group != NULL);
@@ -411,8 +501,7 @@ empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
   DEBUG ("removing group %s", group);
 
   /* Remove every individual from the group */
-  individuals = folks_individual_aggregator_get_individuals (priv->aggregator);
-  g_hash_table_foreach (individuals, (GHFunc) remove_group_cb,
+  g_hash_table_foreach (priv->individuals, (GHFunc) remove_group_cb,
       (gpointer) group);
 }
 

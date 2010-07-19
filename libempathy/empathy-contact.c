@@ -807,7 +807,8 @@ empathy_contact_get_persona (EmpathyContact *contact)
                   if (tp_contact == priv->tp_contact)
                     {
                       /* Found the right persona */
-                      priv->persona = g_object_ref (persona);
+                      empathy_contact_set_persona (contact,
+                          (FolksPersona*) persona);
                       goto finished;
                     }
                 }
