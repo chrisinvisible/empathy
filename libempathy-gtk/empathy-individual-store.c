@@ -349,6 +349,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   EmpathyContact *contact;
   TpConnection *connection;
   EmpathyIndividualManagerFlags flags = 0;
+  gchar *protocol_name;
 
   priv = GET_PRIV (self);
 
@@ -368,18 +369,23 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   flags = empathy_individual_manager_get_flags_for_connection (manager,
       connection);
 
+  tp_connection_parse_object_path (connection, &protocol_name, NULL);
+
   if (groups == NULL)
     {
       GtkTreeIter iter_group, *parent;
 
       parent = &iter_group;
 
-      /* TODO: implement */
-      DEBUG ("forcing the People Nearby group even when 'show "
-          "groups' is off is unimplemented");
-
       if (!priv->show_groups)
         parent = NULL;
+      else if (!tp_strdiff (protocol_name, "local-xmpp"))
+        {
+          /* these are People Nearby */
+          individual_store_get_group (self,
+              EMPATHY_INDIVIDUAL_STORE_PEOPLE_NEARBY, &iter_group, NULL, NULL,
+              TRUE);
+        }
       else
         {
           individual_store_get_group (self,
@@ -390,6 +396,8 @@ individual_store_add_individual (EmpathyIndividualStore *self,
       add_individual_to_store (GTK_TREE_STORE (self), &iter, parent,
           individual, flags);
     }
+
+  g_free (protocol_name);
 
   /* Else add to each group. */
   for (l = groups; l; l = l->next)
