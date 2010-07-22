@@ -84,7 +84,9 @@ stripped_char (gunichar ch)
     case G_UNICODE_CONTROL:
     case G_UNICODE_FORMAT:
     case G_UNICODE_UNASSIGNED:
+    case G_UNICODE_NON_SPACING_MARK:
     case G_UNICODE_COMBINING_MARK:
+    case G_UNICODE_ENCLOSING_MARK:
       /* Ignore those */
       break;
     default:
@@ -120,16 +122,14 @@ strip_utf8_string (const gchar *string)
       /* Strip this word */
       while (*p != '\0')
         {
-          gunichar c;
           gunichar sc;
 
-          c = g_utf8_get_char (p);
-          if (!g_unichar_isalnum (c))
-            break;
-
-          sc = stripped_char (c);
+          sc = stripped_char (g_utf8_get_char (p));
           if (sc != 0)
             {
+              if (!g_unichar_isalnum (sc))
+                break;
+
               if (str == NULL)
                 str = g_string_new (NULL);
               g_string_append_unichar (str, sc);

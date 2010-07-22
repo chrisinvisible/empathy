@@ -29,11 +29,16 @@ test_live_search (void)
       { "Hello-World", "wo", TRUE },
       { "HelloWorld", "wo", FALSE },
 
-      /* Test accentued letters */
+      /* Test composed chars (accentued letters) */
       { "Jörgen", "jor", TRUE },
       { "Gaëtan", "gaetan", TRUE },
       { "élève", "ele", TRUE },
       { "Azais", "AzaÏs", TRUE },
+
+      /* Test decomposed chars, they looks the same, but are actually
+       * composed of multiple unicodes */
+      { "Jorgen", "Jör", TRUE },
+      { "Jörgen", "jor", TRUE },
 
       /* Multi words */
       { "Xavier Claessens", "Xav Cla", TRUE },
