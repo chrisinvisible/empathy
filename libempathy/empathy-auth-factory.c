@@ -68,6 +68,7 @@ server_tls_handler_ready_cb (GObject *source,
     {
       g_signal_emit (self, signals[NEW_SERVER_TLS_HANDLER], 0,
           handler);
+      g_object_unref (handler);
     }
 }
 
