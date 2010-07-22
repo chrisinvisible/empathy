@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 
+#include <extensions/extensions.h>
+
 G_BEGIN_DECLS
 
 typedef struct _EmpathyTLSCertificate EmpathyTLSCertificate;
@@ -63,6 +65,10 @@ void empathy_tls_certificate_new_async (const gchar *bus_name,
 
 EmpathyTLSCertificate * empathy_tls_certificate_new_finish (GAsyncResult * res,
     GError **error);
+
+void empathy_tls_certificate_accept (EmpathyTLSCertificate *self);
+void empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
+    EmpTLSCertificateRejectReason reason);
 
 G_END_DECLS
 

@@ -35,6 +35,12 @@ static void async_initable_iface_init (GAsyncInitableIface *iface);
 enum {
   PROP_OBJECT_PATH = 1,
   PROP_BUS_NAME,
+
+  /* proxy properties */
+  PROP_CERT_TYPE,
+  PROP_CERT_DATA,
+  PROP_STATE,
+  PROP_REJECT_REASON,
   LAST_PROPERTY,
 };
 
@@ -204,6 +210,18 @@ empathy_tls_certificate_get_property (GObject *object,
     case PROP_BUS_NAME:
       g_value_set_string (value, priv->bus_name);
       break;
+    case PROP_CERT_TYPE:
+      g_value_set_string (value, priv->cert_type);
+      break;
+    case PROP_CERT_DATA:
+      g_value_set_boxed (value, priv->cert_data);
+      break;
+    case PROP_STATE:
+      g_value_set_uint (value, priv->state);
+      break;
+    case PROP_REJECT_REASON:
+      g_value_set_uint (value, priv->reject_reason);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -262,6 +280,57 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
       NULL,
       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_BUS_NAME, pspec);
+
+  pspec = g_param_spec_string ("cert-type", "Certificate type",
+      "The type of this certificate.",
+      NULL,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_CERT_TYPE, pspec);
+
+  pspec = g_param_spec_boxed ("cert-data", "Certificate chain data",
+      "The raw PEM-encoded certificate chain data.",
+      array_of_ay_get_type (),
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_CERT_DATA, pspec);
+
+  pspec = g_param_spec_uint ("state", "State",
+      "The state of this certificate.",
+      EMP_TLS_CERTIFICATE_STATE_NONE, NUM_EMP_TLS_CERTIFICATE_STATES -1,
+      EMP_TLS_CERTIFICATE_STATE_NONE,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_STATE, pspec);
+
+  pspec = g_param_spec_uint ("reject-reason", "Reject reason",
+      "The reason why this certificate was rejected.",
+      EMP_TLS_CERTIFICATE_REJECT_REASON_NONE,
+      NUM_EMP_TLS_CERTIFICATE_REJECT_REASONS -1,
+      EMP_TLS_CERTIFICATE_REJECT_REASON_NONE,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_REJECT_REASON, pspec);      
+}
+
+static void
+cert_proxy_accept_cb (TpProxy *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  DEBUG ("Callback for accept(), error %p", error);
+
+  if (error != NULL)
+    DEBUG ("Error was %s", error->message);
+}
+
+static void
+cert_proxy_reject_cb (TpProxy *proxy,
+    const GError *error,
+    gpointer user_data,
+    GObject *weak_object)
+{
+  DEBUG ("Callback for reject(), error %p", error);
+
+  if (error != NULL)
+    DEBUG ("Error was %s", error->message);
 }
 
 void
@@ -294,4 +363,31 @@ empathy_tls_certificate_new_finish (GAsyncResult *res,
     return EMPATHY_TLS_CERTIFICATE (object);
   else
     return NULL;
+}
+
+void
+empathy_tls_certificate_accept (EmpathyTLSCertificate *self)
+{
+  EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
+
+  g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
+
+  DEBUG ("Accepting TLS certificate");
+
+  emp_cli_authentication_tls_certificate_call_accept (priv->proxy,
+      -1, cert_proxy_accept_cb, NULL, NULL, G_OBJECT (self));
+}
+
+void
+empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
+    EmpTLSCertificateRejectReason reason)
+{
+  EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
+
+  g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
+
+  DEBUG ("Rejecting TLS certificate with reason %u", reason);
+
+  emp_cli_authentication_tls_certificate_call_reject (priv->proxy,
+      -1, reason, cert_proxy_reject_cb, NULL, NULL, G_OBJECT (self));
 }
