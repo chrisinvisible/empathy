@@ -22,6 +22,8 @@
 
 #include "empathy-tls-certificate.h"
 
+#include <telepathy-glib/proxy-subclass.h>
+
 #define DEBUG_FLAG EMPATHY_DEBUG_TLS
 #include "empathy-debug.h"
 #include "empathy-utils.h"
@@ -157,6 +159,9 @@ tls_certificate_init_async (GAsyncInitable *initable,
       "object-path", priv->object_path,
       "bus-name", priv->bus_name,
       "dbus-daemon", dbus, NULL);
+
+  tp_proxy_add_interface_by_id (priv->proxy,
+      EMP_IFACE_QUARK_AUTHENTICATION_TLS_CERTIFICATE);
 
   /* call GetAll() on the certificate */
   tp_cli_dbus_properties_call_get_all (priv->proxy,
