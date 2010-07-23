@@ -49,7 +49,6 @@ test_live_search (void)
       { NULL, NULL, FALSE }
     };
   guint i;
-  gboolean failed = FALSE;
 
   DEBUG ("Started");
   for (i = 0; tests[i].string != NULL; i ++)
@@ -60,13 +59,12 @@ test_live_search (void)
       match = empathy_live_search_match_string (tests[i].string, tests[i].prefix);
       ok = (match == tests[i].should_match);
 
-      DEBUG ("'%s' - '%s': %s", tests[i].string, tests[i].prefix, ok ? "OK" : "FAILED");
+      DEBUG ("'%s' - '%s' %s: %s", tests[i].string, tests[i].prefix,
+          tests[i].should_match ? "should match" : "should NOT match",
+          ok ? "OK" : "FAILED");
 
-      if (!ok)
-        failed = TRUE;
+      g_assert (ok);
     }
-
-  g_assert (!failed);
 }
 
 int
