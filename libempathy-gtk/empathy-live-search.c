@@ -102,10 +102,24 @@ stripped_char (gunichar ch)
   return retval;
 }
 
+static void
+append_word (GPtrArray **word_array,
+    GString **word)
+{
+  if (*word != NULL)
+    {
+      if (*word_array == NULL)
+        *word_array = g_ptr_array_new_with_free_func (g_free);
+      g_ptr_array_add (*word_array, g_string_free (*word, FALSE));
+      *word = NULL;
+    }
+}
+
 static GPtrArray *
 strip_utf8_string (const gchar *string)
 {
-  GPtrArray *words = NULL;
+  GPtrArray *word_array = NULL;
+  GString *word = NULL;
   const gchar *p;
 
   if (EMP_STR_EMPTY (string))
@@ -113,43 +127,30 @@ strip_utf8_string (const gchar *string)
 
   for (p = string; *p != '\0'; p = g_utf8_next_char (p))
     {
-      GString *str = NULL;
+      gunichar sc;
 
-      /* Search the start of the word (skip non alpha-num chars) */
-      while (*p != '\0' && !g_unichar_isalnum (g_utf8_get_char (p)))
-        p = g_utf8_next_char (p);
+      /* Make the char lower-case, remove its accentuation marks, and ignore it
+       * if it is just unicode marks */
+      sc = stripped_char (g_utf8_get_char (p));
+      if (sc == 0)
+        continue;
 
-      /* Strip this word */
-      while (*p != '\0')
+      /* If it is not alpha-num, it is separator between words */
+      if (!g_unichar_isalnum (sc))
         {
-          gunichar sc;
-
-          sc = stripped_char (g_utf8_get_char (p));
-          if (sc != 0)
-            {
-              if (!g_unichar_isalnum (sc))
-                break;
-
-              if (str == NULL)
-                str = g_string_new (NULL);
-              g_string_append_unichar (str, sc);
-            }
-
-          p = g_utf8_next_char (p);
+          append_word (&word_array, &word);
+          continue;
         }
 
-      if (str != NULL)
-        {
-          if (words == NULL)
-            words = g_ptr_array_new_with_free_func (g_free);
-          g_ptr_array_add (words, g_string_free (str, FALSE));
-        }
-
-      if (*p == '\0')
-        break;
+      /* It is alpha-num, append this char to current word, or start new word */
+      if (word == NULL)
+        word = g_string_new (NULL);
+      g_string_append_unichar (word, sc);
     }
 
-  return words;
+  append_word (&word_array, &word);
+
+  return word_array;
 }
 
 static gboolean
@@ -552,6 +553,8 @@ live_search_match_prefix (const gchar *string,
     const gchar *prefix)
 {
   const gchar *p;
+  const gchar *prefix_p;
+  gboolean next_word = FALSE;
 
   if (prefix == NULL || prefix[0] == 0)
     return TRUE;
@@ -559,41 +562,40 @@ live_search_match_prefix (const gchar *string,
   if (EMP_STR_EMPTY (string))
     return FALSE;
 
+  prefix_p = prefix;
   for (p = string; *p != '\0'; p = g_utf8_next_char (p))
     {
-      const gchar *prefix_p = prefix;
+      gunichar sc;
 
-      /* Search the start of the word (skip non alpha-num chars) */
-      while (*p != '\0' && !g_unichar_isalnum (g_utf8_get_char (p)))
-        p = g_utf8_next_char (p);
+      /* Make the char lower-case, remove its accentuation marks, and ignore it
+       * if it is just unicode marks */
+      sc = stripped_char (g_utf8_get_char (p));
+      if (sc == 0)
+        continue;
 
-      /* Check if this word match prefix */
-      while (*p != '\0')
+      /* If we want to go to next word, ignore alpha-num chars */
+      if (next_word && g_unichar_isalnum (sc))
+        continue;
+      next_word = FALSE;
+
+      /* Ignore word separators */
+      if (!g_unichar_isalnum (sc))
+        continue;
+
+      /* If this char does not match prefix_p, go to next word and start again
+       * from the beginning of prefix */
+      if (sc != g_utf8_get_char (prefix_p))
         {
-          gunichar sc;
-
-          sc = stripped_char (g_utf8_get_char (p));
-          if (sc != 0)
-            {
-              /* If the char does not match, stop */
-              if (sc != g_utf8_get_char (prefix_p))
-                break;
-
-              /* The char matched. If it was the last of prefix, stop */
-              prefix_p = g_utf8_next_char (prefix_p);
-              if (*prefix_p == '\0')
-                return TRUE;
-            }
-
-          p = g_utf8_next_char (p);
+          next_word = TRUE;
+          prefix_p = prefix;
+          continue;
         }
 
-      /* This word didn't match, go to next one (skip alpha-num chars) */
-      while (*p != '\0' && g_unichar_isalnum (g_utf8_get_char (p)))
-        p = g_utf8_next_char (p);
-
-      if (*p == '\0')
-        break;
+      /* prefix_p match, verify to next char. If this was the last of prefix,
+       * it means it completely machted and we are done. */
+      prefix_p = g_utf8_next_char (prefix_p);
+      if (*prefix_p == '\0')
+        return TRUE;
     }
 
   return FALSE;
