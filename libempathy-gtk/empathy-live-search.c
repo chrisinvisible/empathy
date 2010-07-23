@@ -154,6 +154,75 @@ strip_utf8_string (const gchar *string)
 }
 
 static gboolean
+live_search_match_prefix (const gchar *string,
+    const gchar *prefix)
+{
+  const gchar *p;
+  const gchar *prefix_p;
+  gboolean next_word = FALSE;
+
+  if (prefix == NULL || prefix[0] == 0)
+    return TRUE;
+
+  if (EMP_STR_EMPTY (string))
+    return FALSE;
+
+  prefix_p = prefix;
+  for (p = string; *p != '\0'; p = g_utf8_next_char (p))
+    {
+      gunichar sc;
+
+      /* Make the char lower-case, remove its accentuation marks, and ignore it
+       * if it is just unicode marks */
+      sc = stripped_char (g_utf8_get_char (p));
+      if (sc == 0)
+        continue;
+
+      /* If we want to go to next word, ignore alpha-num chars */
+      if (next_word && g_unichar_isalnum (sc))
+        continue;
+      next_word = FALSE;
+
+      /* Ignore word separators */
+      if (!g_unichar_isalnum (sc))
+        continue;
+
+      /* If this char does not match prefix_p, go to next word and start again
+       * from the beginning of prefix */
+      if (sc != g_utf8_get_char (prefix_p))
+        {
+          next_word = TRUE;
+          prefix_p = prefix;
+          continue;
+        }
+
+      /* prefix_p match, verify to next char. If this was the last of prefix,
+       * it means it completely machted and we are done. */
+      prefix_p = g_utf8_next_char (prefix_p);
+      if (*prefix_p == '\0')
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+live_search_match_words (const gchar *string,
+    GPtrArray *words)
+{
+  guint i;
+
+  if (words == NULL)
+    return TRUE;
+
+  for (i = 0; i < words->len; i++)
+    if (!live_search_match_prefix (string, g_ptr_array_index (words, i)))
+      return FALSE;
+
+  return TRUE;
+}
+
+static gboolean
 live_search_entry_key_pressed_cb (GtkEntry *entry,
     GdkEventKey *event,
     gpointer user_data)
@@ -546,75 +615,6 @@ empathy_live_search_set_text (EmpathyLiveSearch *self,
   g_return_if_fail (text != NULL);
 
   gtk_entry_set_text (GTK_ENTRY (priv->search_entry), text);
-}
-
-static gboolean
-live_search_match_prefix (const gchar *string,
-    const gchar *prefix)
-{
-  const gchar *p;
-  const gchar *prefix_p;
-  gboolean next_word = FALSE;
-
-  if (prefix == NULL || prefix[0] == 0)
-    return TRUE;
-
-  if (EMP_STR_EMPTY (string))
-    return FALSE;
-
-  prefix_p = prefix;
-  for (p = string; *p != '\0'; p = g_utf8_next_char (p))
-    {
-      gunichar sc;
-
-      /* Make the char lower-case, remove its accentuation marks, and ignore it
-       * if it is just unicode marks */
-      sc = stripped_char (g_utf8_get_char (p));
-      if (sc == 0)
-        continue;
-
-      /* If we want to go to next word, ignore alpha-num chars */
-      if (next_word && g_unichar_isalnum (sc))
-        continue;
-      next_word = FALSE;
-
-      /* Ignore word separators */
-      if (!g_unichar_isalnum (sc))
-        continue;
-
-      /* If this char does not match prefix_p, go to next word and start again
-       * from the beginning of prefix */
-      if (sc != g_utf8_get_char (prefix_p))
-        {
-          next_word = TRUE;
-          prefix_p = prefix;
-          continue;
-        }
-
-      /* prefix_p match, verify to next char. If this was the last of prefix,
-       * it means it completely machted and we are done. */
-      prefix_p = g_utf8_next_char (prefix_p);
-      if (*prefix_p == '\0')
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
-static gboolean
-live_search_match_words (const gchar *string,
-    GPtrArray *words)
-{
-  guint i;
-
-  if (words == NULL)
-    return TRUE;
-
-  for (i = 0; i < words->len; i++)
-    if (!live_search_match_prefix (string, g_ptr_array_index (words, i)))
-      return FALSE;
-
-  return TRUE;
 }
 
 /**
