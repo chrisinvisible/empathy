@@ -326,6 +326,23 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   g_hash_table_destroy (details);
 }
 
+static void
+aggregator_remove_individual_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksIndividualAggregator *aggregator = FOLKS_INDIVIDUAL_AGGREGATOR (source);
+  GError *error = NULL;
+
+  folks_individual_aggregator_remove_individual_finish (
+      aggregator, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to remove individual: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
 /**
  * Removes the inner contact from the server (and thus the Individual). Not
  * meant for de-shelling inner personas from an Individual.
@@ -346,7 +363,8 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
       folks_individual_get_id (individual),
       folks_individual_get_alias (individual));
 
-  folks_individual_aggregator_remove_individual (priv->aggregator, individual);
+  folks_individual_aggregator_remove_individual (priv->aggregator, individual,
+      aggregator_remove_individual_cb, self);
 }
 
 static void
