@@ -662,6 +662,22 @@ empathy_contact_set_alias (EmpathyContact *contact,
   g_object_unref (contact);
 }
 
+static void
+groups_change_group_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksGroups *groups = FOLKS_GROUPS (source);
+  GError *error = NULL;
+
+  folks_groups_change_group_finish (groups, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to change group: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
 void
 empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
     gboolean is_member)
@@ -679,7 +695,8 @@ empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
   if (persona != NULL)
     {
       if (FOLKS_IS_GROUPS (persona))
-        folks_groups_change_group (FOLKS_GROUPS (persona), group, is_member);
+        folks_groups_change_group (FOLKS_GROUPS (persona), group, is_member,
+          groups_change_group_cb, contact);
       return;
     }
 

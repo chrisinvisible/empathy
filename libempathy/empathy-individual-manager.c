@@ -368,11 +368,28 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
 }
 
 static void
+groups_change_group_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksGroups *groups = FOLKS_GROUPS (source);
+  GError *error = NULL;
+
+  folks_groups_change_group_finish (groups, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to change group: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
+static void
 remove_group_cb (const gchar *id,
     FolksIndividual *individual,
     const gchar *group)
 {
-  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE);
+  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE,
+      groups_change_group_cb, NULL);
 }
 
 void

@@ -320,6 +320,22 @@ OUT:
 }
 
 static void
+groups_change_group_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksGroups *groups = FOLKS_GROUPS (source);
+  GError *error = NULL;
+
+  folks_groups_change_group_finish (groups, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to change group: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
+static void
 individual_view_handle_drag (EmpathyIndividualView *self,
     FolksIndividual *individual,
     const gchar *old_group,
@@ -349,10 +365,12 @@ individual_view_handle_drag (EmpathyIndividualView *self,
     }
 
   if (new_group != NULL)
-    folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE);
+    folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE,
+        groups_change_group_cb, NULL);
 
   if (old_group != NULL && action == GDK_ACTION_MOVE)
-    folks_groups_change_group (FOLKS_GROUPS (individual), old_group, FALSE);
+    folks_groups_change_group (FOLKS_GROUPS (individual), old_group, FALSE,
+        groups_change_group_cb, NULL);
 }
 
 static gboolean
