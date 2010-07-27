@@ -53,6 +53,7 @@ enum
 enum
 {
   ACTIVATE,
+  KEYNAV,
   LAST_SIGNAL
 };
 
@@ -139,6 +140,14 @@ live_search_entry_key_pressed_cb (GtkEntry *entry,
       return TRUE;
     }
 
+  /* emit key navigation signal, so other widgets can respond to it properly */
+  if (event->keyval == GDK_Up || event->keyval == GDK_Down
+      || event->keyval == GDK_Left || event->keyval == GDK_Right)
+     {
+       g_signal_emit (self, signals[KEYNAV], 0, event);
+       return TRUE;
+     }
+
   return FALSE;
 }
 
@@ -197,10 +206,10 @@ live_search_key_press_event_cb (GtkWidget *widget,
       event->keyval == GDK_Control_R)
     return FALSE;
 
-  /* dont forward the arrow up/down key to the entry, it is needed for
-   * navigation in the treeview */
+  /* dont forward the up and down arrow keys to the entry, they are needed for
+   * navigation in the treeview and are not needed in the search entry */
    if (event->keyval == GDK_Up || event->keyval == GDK_Down)
-    return FALSE;
+     return FALSE;
 
   /* realize the widget if it is not realized yet */
   gtk_widget_realize (priv->search_entry);
@@ -350,7 +359,10 @@ live_search_grab_focus (GtkWidget *widget)
   EmpathyLiveSearchPriv *priv = GET_PRIV (self);
 
   if (!gtk_widget_has_focus (priv->search_entry))
-    gtk_widget_grab_focus (priv->search_entry);
+    {
+      gtk_widget_grab_focus (priv->search_entry);
+      gtk_editable_set_position (GTK_EDITABLE (priv->search_entry), -1);
+    }
 }
 
 static void
@@ -376,6 +388,14 @@ empathy_live_search_class_init (EmpathyLiveSearchClass *klass)
       NULL, NULL,
       g_cclosure_marshal_VOID__VOID,
       G_TYPE_NONE, 0);
+
+  signals[KEYNAV] = g_signal_new ("key-navigation",
+      G_TYPE_FROM_CLASS (object_class),
+      G_SIGNAL_RUN_LAST,
+      0,
+      NULL, NULL,
+      g_cclosure_marshal_VOID__POINTER,
+      G_TYPE_NONE, 1, G_TYPE_POINTER);
 
   param_spec = g_param_spec_object ("hook-widget", "Live Searchs Hook Widget",
       "The live search catches key-press-events on this widget",

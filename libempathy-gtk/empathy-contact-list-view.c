@@ -1277,6 +1277,24 @@ contact_list_view_search_activate_cb (GtkWidget *search,
 }
 
 static void
+contact_list_view_search_key_navigation_cb (GtkWidget *search,
+					    gpointer eventkey,
+					    EmpathyContactListView *view)
+{
+	GdkEventKey *event = ((GdkEventKey *) eventkey);
+	if (event->keyval == GDK_Up || event->keyval == GDK_Down) {
+		GdkEvent *new_event;
+
+		new_event = gdk_event_copy ((GdkEvent *) event);
+		gtk_widget_grab_focus (GTK_WIDGET (view));
+		gtk_widget_event (GTK_WIDGET (view), new_event);
+		gtk_widget_grab_focus (search);
+
+		gdk_event_free (new_event);
+	}
+}
+
+static void
 contact_list_view_search_hide_cb (EmpathyLiveSearch      *search,
 				  EmpathyContactListView *view)
 {
@@ -2144,6 +2162,9 @@ empathy_contact_list_view_set_live_search (EmpathyContactListView *view,
 			contact_list_view_search_activate_cb,
 			view);
 		g_signal_handlers_disconnect_by_func (priv->search_widget,
+			contact_list_view_search_key_navigation_cb,
+			view);
+		g_signal_handlers_disconnect_by_func (priv->search_widget,
 			contact_list_view_search_hide_cb,
 			view);
 		g_signal_handlers_disconnect_by_func (priv->search_widget,
@@ -2166,6 +2187,9 @@ empathy_contact_list_view_set_live_search (EmpathyContactListView *view,
 			view);
 		g_signal_connect (priv->search_widget, "activate",
 			G_CALLBACK (contact_list_view_search_activate_cb),
+			view);
+		g_signal_connect (priv->search_widget, "key-navigation",
+			G_CALLBACK (contact_list_view_search_key_navigation_cb),
 			view);
 		g_signal_connect (priv->search_widget, "hide",
 			G_CALLBACK (contact_list_view_search_hide_cb),
