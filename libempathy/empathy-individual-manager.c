@@ -228,6 +228,7 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
   priv->aggregator = folks_individual_aggregator_new ();
   g_signal_connect (priv->aggregator, "individuals-changed",
       G_CALLBACK (aggregator_individuals_changed_cb), self);
+  folks_individual_aggregator_prepare (priv->aggregator, NULL, NULL);
 }
 
 EmpathyIndividualManager *
@@ -325,6 +326,23 @@ empathy_individual_manager_add_from_contact (EmpathyIndividualManager *self,
   g_hash_table_destroy (details);
 }
 
+static void
+aggregator_remove_individual_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksIndividualAggregator *aggregator = FOLKS_INDIVIDUAL_AGGREGATOR (source);
+  GError *error = NULL;
+
+  folks_individual_aggregator_remove_individual_finish (
+      aggregator, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to remove individual: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
 /**
  * Removes the inner contact from the server (and thus the Individual). Not
  * meant for de-shelling inner personas from an Individual.
@@ -345,7 +363,24 @@ empathy_individual_manager_remove (EmpathyIndividualManager *self,
       folks_individual_get_id (individual),
       folks_individual_get_alias (individual));
 
-  folks_individual_aggregator_remove_individual (priv->aggregator, individual);
+  folks_individual_aggregator_remove_individual (priv->aggregator, individual,
+      aggregator_remove_individual_cb, self);
+}
+
+static void
+groups_change_group_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  FolksGroups *groups = FOLKS_GROUPS (source);
+  GError *error = NULL;
+
+  folks_groups_change_group_finish (groups, result, &error);
+  if (error != NULL)
+    {
+      g_warning ("failed to change group: %s", error->message);
+      g_clear_error (&error);
+    }
 }
 
 static void
@@ -353,7 +388,8 @@ remove_group_cb (const gchar *id,
     FolksIndividual *individual,
     const gchar *group)
 {
-  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE);
+  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE,
+      groups_change_group_cb, NULL);
 }
 
 void
