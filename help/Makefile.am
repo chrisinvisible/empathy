@@ -60,5 +60,5 @@ DOC_PAGES = \
 	status-icons.page \
 	video-call.page
 
-DOC_LINGUAS = ca cs de el en_GB es fi fr gl it ru sv
+DOC_LINGUAS = ca cs de el en_GB es fi fr gl it ru sv zh_CN
 dist-hook: doc-dist-hook
