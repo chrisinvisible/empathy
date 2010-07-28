@@ -244,8 +244,8 @@ live_search_hook_widget_destroy_cb (GtkObject *object,
   EmpathyLiveSearch *self = EMPATHY_LIVE_SEARCH (user_data);
 
   /* unref the hook widget and hide search */
-  live_search_release_hook_widget (self);
   gtk_widget_hide (GTK_WIDGET (self));
+  live_search_release_hook_widget (self);
 }
 
 static void
