@@ -1284,6 +1284,25 @@ individual_view_search_activate_cb (GtkWidget *search,
 }
 
 static void
+individual_view_search_key_navigation_cb (GtkWidget *search,
+  gpointer eventkey,
+  EmpathyIndividualView *view)
+{
+  GdkEventKey *event = ((GdkEventKey *) eventkey);
+  if (event->keyval == GDK_Up || event->keyval == GDK_Down)
+    {
+      GdkEvent *new_event;
+
+      new_event = gdk_event_copy ((GdkEvent *) event);
+      gtk_widget_grab_focus (GTK_WIDGET (view));
+      gtk_widget_event (GTK_WIDGET (view), new_event);
+      gtk_widget_grab_focus (search);
+
+      gdk_event_free (new_event);
+    }
+}
+
+static void
 individual_view_search_hide_cb (EmpathyLiveSearch *search,
     EmpathyIndividualView *view)
 {
@@ -2144,6 +2163,8 @@ empathy_individual_view_set_live_search (EmpathyIndividualView *view,
       g_signal_handlers_disconnect_by_func (priv->search_widget,
           individual_view_search_activate_cb, view);
       g_signal_handlers_disconnect_by_func (priv->search_widget,
+          individual_view_search_key_navigation_cb, view);
+      g_signal_handlers_disconnect_by_func (priv->search_widget,
           individual_view_search_hide_cb, view);
       g_signal_handlers_disconnect_by_func (priv->search_widget,
           individual_view_search_show_cb, view);
@@ -2163,6 +2184,8 @@ empathy_individual_view_set_live_search (EmpathyIndividualView *view,
           G_CALLBACK (individual_view_search_text_notify_cb), view);
       g_signal_connect (priv->search_widget, "activate",
           G_CALLBACK (individual_view_search_activate_cb), view);
+      g_signal_connect (priv->search_widget, "key-navigation",
+          G_CALLBACK (individual_view_search_key_navigation_cb), view);
       g_signal_connect (priv->search_widget, "hide",
           G_CALLBACK (individual_view_search_hide_cb), view);
       g_signal_connect (priv->search_widget, "show",
