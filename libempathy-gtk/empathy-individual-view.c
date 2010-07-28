@@ -1496,7 +1496,7 @@ individual_view_constructed (GObject *object)
   gtk_tree_model_filter_set_visible_func (priv->filter,
       individual_view_filter_visible_func, view, NULL);
 
-  g_signal_connect (priv->store, "row-has-child-toggled",
+  g_signal_connect (priv->filter, "row-has-child-toggled",
       G_CALLBACK (individual_view_row_has_child_toggled_cb), view);
   gtk_tree_view_set_model (GTK_TREE_VIEW (view),
       GTK_TREE_MODEL (priv->filter));
