@@ -1363,8 +1363,11 @@ individual_view_search_hide_cb (EmpathyLiveSearch *search,
 
   /* keep the selected contact visible */
   gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
-  gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view), cursor_path, NULL,
-      FALSE, 0, 0);
+
+  if (cursor_path != NULL)
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view), cursor_path, NULL,
+        FALSE, 0, 0);
+
   gtk_tree_path_free (cursor_path);
 }
 
