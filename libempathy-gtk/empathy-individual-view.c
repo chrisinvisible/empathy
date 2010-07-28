@@ -1289,6 +1289,7 @@ individual_view_search_hide_cb (EmpathyLiveSearch *search,
 {
   EmpathyIndividualViewPriv *priv = GET_PRIV (view);
   GtkTreeModel *model;
+  GtkTreePath *cursor_path;
   GtkTreeIter iter;
   gboolean valid = FALSE;
 
@@ -1340,6 +1341,12 @@ individual_view_search_hide_cb (EmpathyLiveSearch *search,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
   g_signal_handlers_unblock_by_func (view,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (FALSE));
+
+  /* keep the selected contact visible */
+  gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
+  gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view), cursor_path, NULL,
+      FALSE, 0, 0);
+  gtk_tree_path_free (cursor_path);
 }
 
 static void
