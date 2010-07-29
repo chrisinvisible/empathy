@@ -30,6 +30,7 @@
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-live-search.h"
+#include "empathy-gtk-marshal.h"
 
 G_DEFINE_TYPE (EmpathyLiveSearch, empathy_live_search, GTK_TYPE_HBOX)
 
@@ -132,6 +133,7 @@ live_search_entry_key_pressed_cb (GtkEntry *entry,
     gpointer user_data)
 {
   EmpathyLiveSearch *self = EMPATHY_LIVE_SEARCH (user_data);
+  gboolean ret;
 
   /* if esc key pressed, hide the search */
   if (event->keyval == GDK_Escape)
@@ -144,8 +146,8 @@ live_search_entry_key_pressed_cb (GtkEntry *entry,
   if (event->keyval == GDK_Up || event->keyval == GDK_Down
       || event->keyval == GDK_Left || event->keyval == GDK_Right)
      {
-       g_signal_emit (self, signals[KEYNAV], 0, event);
-       return TRUE;
+       g_signal_emit (self, signals[KEYNAV], 0, event, &ret);
+       return ret;
      }
 
   return FALSE;
@@ -393,9 +395,9 @@ empathy_live_search_class_init (EmpathyLiveSearchClass *klass)
       G_TYPE_FROM_CLASS (object_class),
       G_SIGNAL_RUN_LAST,
       0,
-      NULL, NULL,
-      g_cclosure_marshal_VOID__BOXED,
-      G_TYPE_NONE, 1, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+      g_signal_accumulator_true_handled, NULL,
+      _empathy_gtk_marshal_BOOLEAN__BOXED,
+      G_TYPE_BOOLEAN, 1, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 
   param_spec = g_param_spec_object ("hook-widget", "Live Searchs Hook Widget",
       "The live search catches key-press-events on this widget",

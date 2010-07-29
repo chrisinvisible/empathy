@@ -1283,23 +1283,27 @@ individual_view_search_activate_cb (GtkWidget *search,
     }
 }
 
-static void
+static gboolean
 individual_view_search_key_navigation_cb (GtkWidget *search,
   GdkEvent *event,
   EmpathyIndividualView *view)
 {
   GdkEventKey *eventkey = ((GdkEventKey *) event);
+  gboolean ret = FALSE;
+
   if (eventkey->keyval == GDK_Up || eventkey->keyval == GDK_Down)
     {
       GdkEvent *new_event;
 
       new_event = gdk_event_copy (event);
       gtk_widget_grab_focus (GTK_WIDGET (view));
-      gtk_widget_event (GTK_WIDGET (view), new_event);
+      ret = gtk_widget_event (GTK_WIDGET (view), new_event);
       gtk_widget_grab_focus (search);
 
       gdk_event_free (new_event);
     }
+
+  return ret;
 }
 
 static void
