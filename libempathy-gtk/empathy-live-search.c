@@ -394,8 +394,8 @@ empathy_live_search_class_init (EmpathyLiveSearchClass *klass)
       G_SIGNAL_RUN_LAST,
       0,
       NULL, NULL,
-      g_cclosure_marshal_VOID__POINTER,
-      G_TYPE_NONE, 1, G_TYPE_POINTER);
+      g_cclosure_marshal_VOID__BOXED,
+      G_TYPE_NONE, 1, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 
   param_spec = g_param_spec_object ("hook-widget", "Live Searchs Hook Widget",
       "The live search catches key-press-events on this widget",
