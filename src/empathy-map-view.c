@@ -347,13 +347,14 @@ map_view_key_press_cb (GtkWidget *widget,
 static gboolean
 map_view_tick (EmpathyMapView *window)
 {
-  GList *marker;
+  GList *marker, *l;
 
   marker = clutter_container_get_children (CLUTTER_CONTAINER (window->layer));
 
-  for (; marker; marker = marker->next)
-    map_view_contacts_update_label (marker->data);
+  for (l = marker; l != NULL; l = g_list_next (l))
+    map_view_contacts_update_label (l->data);
 
+  g_list_free (marker);
   return TRUE;
 }
 
