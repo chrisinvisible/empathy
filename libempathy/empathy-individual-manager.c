@@ -283,12 +283,16 @@ aggregator_add_persona_from_details_cb (GObject *source,
       g_clear_error (&error);
     }
 
-  /* Set the contact's persona */
-  empathy_contact_set_persona (contact, persona);
+  /* The persona can be NULL even if there wasn't an error, if the persona was
+   * already in the contact list */
+  if (persona != NULL)
+    {
+      /* Set the contact's persona */
+      empathy_contact_set_persona (contact, persona);
+      g_object_unref (persona);
+    }
 
-  /* We can unref the contact now */
   g_object_unref (contact);
-  g_object_unref (persona);
 }
 
 void
