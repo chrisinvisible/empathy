@@ -849,7 +849,8 @@ empathy_contact_set_persona (EmpathyContact *contact,
   /* Set the persona's alias, since ours could've been set using
    * empathy_contact_set_alias() before we had a persona; this happens when
    * adding a contact. */
-  empathy_contact_set_alias (contact, priv->alias);
+  if (priv->alias != NULL)
+    empathy_contact_set_alias (contact, priv->alias);
 
   /* Set the persona's groups */
   if (priv->groups != NULL)

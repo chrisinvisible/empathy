@@ -615,6 +615,7 @@ empathy_contact_dup_from_folks_individual (FolksIndividual *individual)
 
           tp_contact = tpf_persona_get_contact (persona);
           contact = empathy_contact_dup_from_tp_contact (tp_contact);
+          empathy_contact_set_persona (contact, FOLKS_PERSONA (persona));
         }
     }
 
