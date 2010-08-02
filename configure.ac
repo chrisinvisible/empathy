@@ -55,6 +55,7 @@ NAUTILUS_SENDTO_REQUIRED=2.28.1
 NAUTILUS_SENDTO_REQUIRED_GTK3=2.90.0
 NETWORK_MANAGER_REQUIRED=0.7.0
 WEBKIT_REQUIRED=1.1.15
+GNOME_CONTROL_CENTER_GTK3_REQUIRED=2.31.4
 
 # Use --enable-maintainer-mode to disable deprecated symbols,
 # disable single include and enable GSEAL. If this is not a released empathy,
@@ -478,10 +479,14 @@ AC_ARG_ENABLE(control_center_embedding,
                              , enable_control_center_embedding=auto)
 
 if test "x$enable_control_center_embedding" != "xno"; then
-   PKG_CHECK_MODULES(CONTROL_CENTER_EMBEDDING,
-   [
-      libgnome-control-center
-   ], have_control_center_embedding="yes", have_control_center_embedding="no")
+
+   if test "x$have_gtk3" == "xno"; then
+      PKG_CHECK_MODULES(CONTROL_CENTER_EMBEDDING, [libgnome-control-center < GNOME_CONTROL_CENTER_GTK3_REQUIRED],
+          have_control_center_embedding="yes", have_control_center_embedding="no")
+   else
+      PKG_CHECK_MODULES(CONTROL_CENTER_EMBEDDING, [libgnome-control-center >= GNOME_CONTROL_CENTER_GTK3_REQUIRED],
+          have_control_center_embedding="yes", have_control_center_embedding="no")
+   fi
 
    if test "x$have_control_center_embedding" = "xyes"; then
       AC_DEFINE(HAVE_CONTROL_CENTER_EMBEDDING, 1, [Define if you have the single-window control center])
