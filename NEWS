@@ -1,3 +1,43 @@
+NEW in 2.31.6 (02/08/2010)
+=============
+
+The « Oh, and the toilets are free. Mind the gap please. » release.
+
+Empathy now depends on libfolks ≥ 0.1.11. This doesn't introduce any
+user-visible changes yet, but is the first step towards introducing
+meta-contact support to Empathy.
+
+The audio/video window now has a "details" pane containing some information
+about the call.
+
+Bugs fixed:
+ - Fixed #599166, Add a "details" pane in the sidebar (Guillaume Desmottes)
+ - Fixed #621629, live-search: should select first matching contact (Felix Kaser)
+ - Fixed #623714, Rebase Empathy upon libfolks (Travis Treitter, Philip Withnall)
+ - Fixed #624268, Empathy crash when opening a chat (Guillaume Desmottes)
+ - Fixed #624462, Empathy segv in event_manager_add (Marc-Antoine Perennou)
+ - Fixed #624599, show the date in messages coming from history (Nicolò Chieffo)
+ - Fixed #624650, no more GtkNotebookPage in GTK+ 3.0 (Danielle Madeley)
+ - Fixed #625826, EmpathyMapView should be a GtkWindow (Guillaume Desmottes)
+ - Fixed #624412, control centre plugin no longer builds against recent gnome-c-c (Danielle Madeley)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated de Translation (Mario Blättermann)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated nn Translation (Torstein Adolf Winterseth)
+ - Updated sl Translation (Andrej Žnidaršič)
+ - Updated zh_CN Translation (Yunqiang Su, Aron Xu)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated gl Documentation translation (Fran Diéguez)
+ - Updated zh_CN Documentation translation (Aron Xu)
+
 NEW in 2.31.5.1 (13/07/2010)
 ===============
 
