@@ -525,7 +525,7 @@ log_manager_searched_new_cb (GObject *manager,
 			}
 
 			g_date_strftime (date_readable, sizeof (date_readable),
-				EMPATHY_TIME_FORMAT_DISPLAY_LONG, hit->date);
+				EMPATHY_DATE_FORMAT_DISPLAY_SHORT, hit->date);
 
 			g_date_strftime (tmp, sizeof (tmp),
 				"%Y%m%d", hit->date);

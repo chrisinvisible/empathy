@@ -324,7 +324,8 @@ theme_adium_append_html (EmpathyThemeAdium *theme,
 		         const gchar       *contact_id,
 		         const gchar       *service_name,
 		         const gchar       *message_classes,
-		         time_t             timestamp)
+		         time_t             timestamp,
+		         gboolean           is_backlog)
 {
 	GString     *string;
 	const gchar *cur = NULL;
@@ -380,8 +381,13 @@ theme_adium_append_html (EmpathyThemeAdium *theme,
 				cur++;
 			}
 
-			dup_replace = empathy_time_to_string_local (timestamp,
-				format ? format : EMPATHY_TIME_FORMAT_DISPLAY_SHORT);
+			if (is_backlog) {
+				dup_replace = empathy_time_to_string_local (timestamp,
+					format ? format : EMPATHY_TIME_DATE_FORMAT_DISPLAY_SHORT);
+			} else {
+				dup_replace = empathy_time_to_string_local (timestamp,
+					format ? format : EMPATHY_TIME_FORMAT_DISPLAY_SHORT);
+			}
 			replace = dup_replace;
 			g_free (format);
 		} else {
@@ -412,7 +418,7 @@ theme_adium_append_event_escaped (EmpathyChatView *view,
 					 priv->data->status_html,
 					 priv->data->status_len,
 					 escaped, NULL, NULL, NULL, NULL,
-					 "event", empathy_time_get_current ());
+					 "event", empathy_time_get_current (), FALSE);
 	}
 
 	/* There is no last contact */
@@ -596,7 +602,7 @@ theme_adium_append_message (EmpathyChatView *view,
 		theme_adium_append_html (theme, func, html, len, body_escaped,
 					 avatar_filename, name, contact_id,
 					 service_name, message_classes->str,
-					 timestamp);
+					 timestamp, is_backlog);
 	} else {
 		DEBUG ("Couldn't find HTML file for this message");
 	}
