@@ -25,6 +25,30 @@
 
 G_BEGIN_DECLS
 
+#define EMPATHY_TYPE_MAP_VIEW         (empathy_map_view_get_type ())
+#define EMPATHY_MAP_VIEW(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), EMPATHY_TYPE_MAP_VIEW, EmpathyMapView))
+#define EMPATHY_MAP_VIEW_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST ((k), EMPATHY_TYPE_MAP_VIEW, EmpathyMapViewClass))
+#define EMPATHY_IS_MAP_VIEW(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_MAP_VIEW))
+#define EMPATHY_IS_MAP_VIEW_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_MAP_VIEW))
+#define EMPATHY_MAP_VIEW_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_MAP_VIEW, EmpathyMapViewClass))
+
+typedef struct _EmpathyMapView EmpathyMapView;
+typedef struct _EmpathyMapViewClass EmpathyMapViewClass;
+typedef struct _EmpathyMapViewPriv EmpathyMapViewPriv;
+
+struct _EmpathyMapView
+{
+  GtkWindow parent;
+  gpointer priv;
+};
+
+struct _EmpathyMapViewClass
+{
+  GtkWindowClass parent_class;
+};
+
+GType empathy_map_view_get_type (void);
+
 GtkWidget *empathy_map_view_show (void);
 
 G_END_DECLS

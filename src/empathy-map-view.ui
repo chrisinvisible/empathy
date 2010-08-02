@@ -2,97 +2,88 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkWindow" id="map_view">
-    <property name="title" translatable="yes">Contact Map View</property>
-    <property name="role">map_view</property>
-    <property name="window_position">center</property>
-    <property name="default_width">512</property>
-    <property name="default_height">384</property>
+  <object class="GtkVBox" id="main_vbox">
+    <property name="visible">True</property>
     <child>
-      <object class="GtkVBox" id="main_vbox">
+      <object class="GtkToolbar" id="toolbar">
         <property name="visible">True</property>
         <child>
-          <object class="GtkToolbar" id="toolbar">
+          <object class="GtkToolButton" id="zoom_in">
+            <property name="visible">True</property>
+            <property name="stock_id">gtk-zoom-in</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="zoom_out">
+            <property name="visible">True</property>
+            <property name="stock_id">gtk-zoom-out</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolButton" id="zoom_fit">
+            <property name="visible">True</property>
+            <property name="stock_id">gtk-zoom-fit</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="homogeneous">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkToolItem" id="toolbutton1">
             <property name="visible">True</property>
             <child>
-              <object class="GtkToolButton" id="zoom_in">
-                <property name="visible">True</property>
-                <property name="stock_id">gtk-zoom-in</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="zoom_out">
-                <property name="visible">True</property>
-                <property name="stock_id">gtk-zoom-out</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolButton" id="zoom_fit">
-                <property name="visible">True</property>
-                <property name="stock_id">gtk-zoom-fit</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="homogeneous">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem" id="toolbutton1">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkAlignment" id="alignment1">
-                    <property name="visible">True</property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkToolItem" id="throbber">
+              <object class="GtkAlignment" id="alignment1">
                 <property name="visible">True</property>
                 <child>
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="expand">False</property>
-              </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
+            <property name="expand">True</property>
           </packing>
         </child>
         <child>
-          <object class="GtkFrame" id="map_scrolledwindow">
+          <object class="GtkToolItem" id="throbber">
             <property name="visible">True</property>
-            <property name="resize_mode">queue</property>
-            <property name="label_xalign">0</property>
-            <property name="shadow_type">in</property>
             <child>
               <placeholder/>
             </child>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="expand">False</property>
           </packing>
         </child>
       </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkFrame" id="map_scrolledwindow">
+        <property name="visible">True</property>
+        <property name="resize_mode">queue</property>
+        <property name="label_xalign">0</property>
+        <property name="shadow_type">in</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
     </child>
   </object>
 </interface>
