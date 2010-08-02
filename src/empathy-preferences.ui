@@ -453,7 +453,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="checkbutton_location_reduce_accuracy">
-                                <property name="label" translatable="yes">_Reduce location accuracy</property>
+                                <property name="label" translatable="yes" comments="To translators: The longitude and latitude are rounded to closest 0,1 degrees, so for example 146,2345° is rounded to round(146,2345*10)/10 = 146,2 degrees.">_Reduce location accuracy</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
