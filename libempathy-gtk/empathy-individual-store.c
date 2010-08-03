@@ -1408,7 +1408,7 @@ individual_store_setup (EmpathyIndividualStore *self)
 }
 
 static gboolean
-individual_store_inibit_active_cb (EmpathyIndividualStore *self)
+individual_store_inhibit_active_cb (EmpathyIndividualStore *self)
 {
   EmpathyIndividualStorePriv *priv;
 
@@ -1432,7 +1432,7 @@ empathy_individual_store_init (EmpathyIndividualStore *self)
   priv->show_protocols = FALSE;
   priv->inhibit_active =
       g_timeout_add_seconds (ACTIVE_USER_WAIT_TO_ENABLE_TIME,
-      (GSourceFunc) individual_store_inibit_active_cb, self);
+      (GSourceFunc) individual_store_inhibit_active_cb, self);
   priv->status_icons =
       g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
   individual_store_setup (self);
