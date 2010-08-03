@@ -89,6 +89,18 @@ GList * empathy_call_handler_get_recv_audio_codecs (
 GList * empathy_call_handler_get_recv_video_codecs (
     EmpathyCallHandler *self);
 
+FsCandidate * empathy_call_handler_get_audio_remote_candidate (
+    EmpathyCallHandler *self);
+
+FsCandidate * empathy_call_handler_get_audio_local_candidate (
+    EmpathyCallHandler *self);
+
+FsCandidate * empathy_call_handler_get_video_remote_candidate (
+    EmpathyCallHandler *self);
+
+FsCandidate * empathy_call_handler_get_video_local_candidate (
+    EmpathyCallHandler *self);
+
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_CALL_HANDLER_H__*/

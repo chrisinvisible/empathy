@@ -59,6 +59,10 @@ enum {
   PROP_SEND_VIDEO_CODEC,
   PROP_RECV_AUDIO_CODECS,
   PROP_RECV_VIDEO_CODECS,
+  PROP_AUDIO_REMOTE_CANDIDATE,
+  PROP_VIDEO_REMOTE_CANDIDATE,
+  PROP_AUDIO_LOCAL_CANDIDATE,
+  PROP_VIDEO_LOCAL_CANDIDATE,
 };
 
 /* private structure */
@@ -75,6 +79,10 @@ typedef struct {
   FsCodec *send_video_codec;
   GList *recv_audio_codecs;
   GList *recv_video_codecs;
+  FsCandidate *audio_remote_candidate;
+  FsCandidate *video_remote_candidate;
+  FsCandidate *audio_local_candidate;
+  FsCandidate *video_local_candidate;
 } EmpathyCallHandlerPriv;
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyCallHandler)
@@ -121,6 +129,10 @@ empathy_call_handler_finalize (GObject *object)
   fs_codec_destroy (priv->send_video_codec);
   fs_codec_list_destroy (priv->recv_audio_codecs);
   fs_codec_list_destroy (priv->recv_video_codecs);
+  fs_candidate_destroy (priv->audio_remote_candidate);
+  fs_candidate_destroy (priv->video_remote_candidate);
+  fs_candidate_destroy (priv->audio_local_candidate);
+  fs_candidate_destroy (priv->video_local_candidate);
 
   if (G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize)
     G_OBJECT_CLASS (empathy_call_handler_parent_class)->finalize (object);
@@ -203,6 +215,18 @@ empathy_call_handler_get_property (GObject *object,
       case PROP_RECV_VIDEO_CODECS:
         g_value_set_boxed (value, priv->recv_video_codecs);
         break;
+      case PROP_AUDIO_REMOTE_CANDIDATE:
+        g_value_set_boxed (value, priv->audio_remote_candidate);
+        break;
+      case PROP_VIDEO_REMOTE_CANDIDATE:
+        g_value_set_boxed (value, priv->video_remote_candidate);
+        break;
+      case PROP_AUDIO_LOCAL_CANDIDATE:
+        g_value_set_boxed (value, priv->audio_local_candidate);
+        break;
+      case PROP_VIDEO_LOCAL_CANDIDATE:
+        g_value_set_boxed (value, priv->video_local_candidate);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
     }
@@ -276,6 +300,38 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class, PROP_RECV_VIDEO_CODECS,
     param_spec);
+
+  param_spec = g_param_spec_boxed ("audio-remote-candidate",
+    "audio remote candidate",
+    "Remote candidate used for the audio stream",
+    FS_TYPE_CANDIDATE,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+      PROP_AUDIO_REMOTE_CANDIDATE, param_spec);
+
+  param_spec = g_param_spec_boxed ("video-remote-candidate",
+    "video remote candidate",
+    "Remote candidate used for the video stream",
+    FS_TYPE_CANDIDATE,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+      PROP_VIDEO_REMOTE_CANDIDATE, param_spec);
+
+  param_spec = g_param_spec_boxed ("audio-local-candidate",
+    "audio local candidate",
+    "Local candidate used for the audio stream",
+    FS_TYPE_CANDIDATE,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+      PROP_AUDIO_REMOTE_CANDIDATE, param_spec);
+
+  param_spec = g_param_spec_boxed ("video-local-candidate",
+    "video local candidate",
+    "Local candidate used for the video stream",
+    FS_TYPE_CANDIDATE,
+    G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (object_class,
+      PROP_VIDEO_REMOTE_CANDIDATE, param_spec);
 
   signals[CONFERENCE_ADDED] =
     g_signal_new ("conference-added", G_TYPE_FROM_CLASS (klass),
@@ -400,6 +456,57 @@ update_receiving_codec (EmpathyCallHandler *self,
   g_object_unref (session);
 }
 
+static void
+update_candidates (EmpathyCallHandler *self,
+    FsCandidate *remote_candidate,
+    FsCandidate *local_candidate,
+    FsStream *stream)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+  FsSession *session;
+  FsMediaType type;
+
+  if (stream == NULL)
+    return;
+
+  g_object_get (stream, "session", &session, NULL);
+  if (session == NULL)
+    return;
+
+  g_object_get (session, "media-type", &type, NULL);
+
+  if (type == FS_MEDIA_TYPE_AUDIO)
+    {
+      if (remote_candidate != NULL)
+        {
+          priv->audio_remote_candidate = fs_candidate_copy (remote_candidate);
+          g_object_notify (G_OBJECT (self), "audio-remote-candidate");
+        }
+
+      if (local_candidate != NULL)
+        {
+          priv->audio_local_candidate = fs_candidate_copy (local_candidate);
+          g_object_notify (G_OBJECT (self), "audio-local-candidate");
+        }
+    }
+  else if (type == FS_MEDIA_TYPE_VIDEO)
+    {
+      if (remote_candidate != NULL)
+        {
+          priv->video_remote_candidate = fs_candidate_copy (remote_candidate);
+          g_object_notify (G_OBJECT (self), "video-remote-candidate");
+        }
+
+      if (local_candidate != NULL)
+        {
+          priv->video_local_candidate = fs_candidate_copy (local_candidate);
+          g_object_notify (G_OBJECT (self), "video-local-candidate");
+        }
+    }
+
+  g_object_unref (session);
+}
+
 void
 empathy_call_handler_bus_message (EmpathyCallHandler *handler,
   GstBus *bus, GstMessage *message)
@@ -439,6 +546,24 @@ empathy_call_handler_bus_message (EmpathyCallHandler *handler,
       stream = g_value_get_object (val);
 
       update_receiving_codec (handler, codecs, stream);
+    }
+  else if (s != NULL &&
+      gst_structure_has_name (s, "farsight-new-active-candidate-pair"))
+    {
+      const GValue *val;
+      FsCandidate *remote_candidate, *local_candidate;
+      FsStream *stream;
+
+      val = gst_structure_get_value (s, "remote-candidate");
+      remote_candidate = g_value_get_boxed (val);
+
+      val = gst_structure_get_value (s, "local-candidate");
+      local_candidate = g_value_get_boxed (val);
+
+      val = gst_structure_get_value (s, "stream");
+      stream = g_value_get_object (val);
+
+      update_candidates (handler, remote_candidate, local_candidate, stream);
     }
 
   tf_channel_bus_message (priv->tfchannel, message);
@@ -722,4 +847,40 @@ empathy_call_handler_get_recv_video_codecs (EmpathyCallHandler *self)
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
 
   return priv->recv_video_codecs;
+}
+
+FsCandidate *
+empathy_call_handler_get_audio_remote_candidate (
+    EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->audio_remote_candidate;
+}
+
+FsCandidate *
+empathy_call_handler_get_audio_local_candidate (
+    EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->audio_local_candidate;
+}
+
+FsCandidate *
+empathy_call_handler_get_video_remote_candidate (
+    EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->video_remote_candidate;
+}
+
+FsCandidate *
+empathy_call_handler_get_video_local_candidate (
+    EmpathyCallHandler *self)
+{
+  EmpathyCallHandlerPriv *priv = GET_PRIV (self);
+
+  return priv->video_local_candidate;
 }
