@@ -418,7 +418,7 @@ main_window_error_close_clicked_cb (GtkButton         *button,
 static void
 main_window_error_display (EmpathyMainWindow *window,
 			   TpAccount         *account,
-			   const gchar       *message)
+			   TpConnectionStatusReason reason)
 {
 	EmpathyMainWindowPriv *priv = GET_PRIV (window);
 	GtkWidget *info_bar;
@@ -432,6 +432,9 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *action_table;
 	gchar     *str;
 	const gchar     *icon_name;
+	const gchar *message;
+
+	message = empathy_status_reason_get_default_message (reason);
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
 					       tp_account_get_display_name (account),
@@ -571,11 +574,7 @@ main_window_connection_changed_cb (TpAccount  *account,
 
 	if (current == TP_CONNECTION_STATUS_DISCONNECTED &&
 	    reason != TP_CONNECTION_STATUS_REASON_REQUESTED) {
-		const gchar *message;
-
-		message = empathy_status_reason_get_default_message (reason);
-
-		main_window_error_display (window, account, message);
+		main_window_error_display (window, account, reason);
 	}
 
 	if (current == TP_CONNECTION_STATUS_DISCONNECTED) {
