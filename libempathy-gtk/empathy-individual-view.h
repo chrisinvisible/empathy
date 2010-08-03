@@ -95,5 +95,12 @@ GtkWidget *empathy_individual_view_get_group_menu (EmpathyIndividualView *view);
 void empathy_individual_view_set_live_search (EmpathyIndividualView *view,
     EmpathyLiveSearch *search);
 
+gboolean empathy_individual_view_get_show_offline (
+    EmpathyIndividualView *view);
+
+void empathy_individual_view_set_show_offline (
+    EmpathyIndividualView *view,
+    gboolean show_offline);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_VIEW_H__ */

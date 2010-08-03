@@ -70,6 +70,8 @@ typedef struct
   GtkWidget *tooltip_widget;
   GtkTargetList *file_targets;
 
+  gboolean show_offline;
+
   GtkTreeModelFilter *filter;
   GtkWidget *search_widget;
 } EmpathyIndividualViewPriv;
@@ -94,6 +96,7 @@ enum
   PROP_STORE,
   PROP_VIEW_FEATURES,
   PROP_INDIVIDUAL_FEATURES,
+  PROP_SHOW_OFFLINE,
 };
 
 /* TODO: re-add DRAG_TYPE_CONTACT_ID, for the case that we're dragging around
@@ -187,15 +190,20 @@ individual_view_filter_visible_func (GtkTreeModel *model,
   FolksIndividual *individual = NULL;
   gboolean is_group, is_separator, valid;
   GtkTreeIter child_iter;
-  gboolean visible;
+  gboolean visible, show_offline, is_online;
+  gboolean is_searching = TRUE;
+
+  show_offline = empathy_individual_view_get_show_offline (self);
 
   if (priv->search_widget == NULL ||
       !gtk_widget_get_visible (priv->search_widget))
-    return TRUE;
+     is_searching = FALSE;
+
 
   gtk_tree_model_get (model, iter,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator,
+      EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
       -1);
 
@@ -203,7 +211,11 @@ individual_view_filter_visible_func (GtkTreeModel *model,
     {
       visible = individual_view_is_visible_individual (self, individual);
       g_object_unref (individual);
-      return visible;
+
+      if (is_searching)
+        return visible;
+      else
+        return (show_offline || is_online);
     }
 
   if (is_separator)
@@ -218,6 +230,7 @@ individual_view_filter_visible_func (GtkTreeModel *model,
     {
       gtk_tree_model_get (model, &child_iter,
         EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
+        EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
         -1);
 
       if (individual == NULL)
@@ -227,7 +240,8 @@ individual_view_filter_visible_func (GtkTreeModel *model,
       g_object_unref (individual);
 
       /* show group if it has at least one visible contact in it */
-      if (visible)
+      if ((is_searching && visible) ||
+          (!is_searching && (show_offline || is_online)))
         return TRUE;
     }
 
@@ -1734,6 +1748,9 @@ individual_view_get_property (GObject *object,
     case PROP_INDIVIDUAL_FEATURES:
       g_value_set_flags (value, priv->individual_features);
       break;
+    case PROP_SHOW_OFFLINE:
+      g_value_set_boolean (value, priv->show_offline);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -1759,6 +1776,10 @@ individual_view_set_property (GObject *object,
       break;
     case PROP_INDIVIDUAL_FEATURES:
       priv->individual_features = g_value_get_flags (value);
+      break;
+    case PROP_SHOW_OFFLINE:
+      empathy_individual_view_set_show_offline (view,
+          g_value_get_boolean (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -1820,6 +1841,12 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
           "Flags for all enabled features for the menu",
           EMPATHY_TYPE_INDIVIDUAL_FEATURE_FLAGS,
           EMPATHY_CONTACT_FEATURE_NONE, G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+      PROP_SHOW_OFFLINE,
+      g_param_spec_boolean ("show-offline",
+          "Show Offline",
+          "Whether contact list should display "
+          "offline contacts", FALSE, G_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (EmpathyIndividualViewPriv));
 }
@@ -2191,4 +2218,32 @@ empathy_individual_view_set_live_search (EmpathyIndividualView *view,
       g_signal_connect (priv->search_widget, "show",
           G_CALLBACK (individual_view_search_show_cb), view);
     }
+}
+
+gboolean
+empathy_individual_view_get_show_offline (EmpathyIndividualView *self)
+{
+  EmpathyIndividualViewPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self), FALSE);
+
+  priv = GET_PRIV (self);
+
+  return priv->show_offline;
+}
+
+void
+empathy_individual_view_set_show_offline (EmpathyIndividualView *self,
+    gboolean show_offline)
+{
+  EmpathyIndividualViewPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self));
+
+  priv = GET_PRIV (self);
+
+  priv->show_offline = show_offline;
+
+  g_object_notify (G_OBJECT (self), "show-offline");
+  gtk_tree_model_filter_refilter (priv->filter);
 }

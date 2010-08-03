@@ -61,7 +61,6 @@
 typedef struct
 {
   EmpathyIndividualManager *manager;
-  gboolean show_offline;
   gboolean show_avatars;
   gboolean show_groups;
   gboolean is_compact;
@@ -99,7 +98,6 @@ enum
 {
   PROP_0,
   PROP_INDIVIDUAL_MANAGER,
-  PROP_SHOW_OFFLINE,
   PROP_SHOW_AVATARS,
   PROP_SHOW_PROTOCOLS,
   PROP_SHOW_GROUPS,
@@ -352,8 +350,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
 
   priv = GET_PRIV (self);
 
-  if (EMP_STR_EMPTY (folks_individual_get_alias (individual)) ||
-      (!priv->show_offline && !folks_individual_is_online (individual)))
+  if (EMP_STR_EMPTY (folks_individual_get_alias (individual)))
     return;
 
   if (priv->show_groups)
@@ -515,8 +512,7 @@ individual_store_contact_active_cb (ShowActiveData *data)
 
   priv = GET_PRIV (data->self);
 
-  if (data->remove &&
-      !priv->show_offline && !folks_individual_is_online (data->individual))
+  if (data->remove)
     {
       DEBUG ("Individual'%s' active timeout, removing item",
           folks_individual_get_alias (data->individual));
@@ -578,7 +574,6 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   EmpathyContact *contact;
   GList *iters, *l;
   gboolean in_list;
-  gboolean should_be_in_list;
   gboolean was_online = TRUE;
   gboolean now_online = FALSE;
   gboolean set_model = FALSE;
@@ -606,46 +601,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   /* Get online state now. */
   now_online = folks_individual_is_online (individual);
 
-  if (priv->show_offline || now_online)
-    {
-      should_be_in_list = TRUE;
-    }
-  else
-    {
-      should_be_in_list = FALSE;
-    }
-
-  if (!in_list && !should_be_in_list)
-    {
-      /* Nothing to do. */
-      DEBUG ("Individual:'%s' in list:NO, should be:NO",
-          folks_individual_get_alias (individual));
-
-      g_list_foreach (iters, (GFunc) gtk_tree_iter_free, NULL);
-      g_list_free (iters);
-      return;
-    }
-  else if (in_list && !should_be_in_list)
-    {
-      DEBUG ("Individual:'%s' in list:YES, should be:NO",
-          folks_individual_get_alias (individual));
-
-      if (priv->show_active)
-        {
-          do_remove = TRUE;
-          do_set_active = TRUE;
-          do_set_refresh = TRUE;
-
-          set_model = TRUE;
-          DEBUG ("Remove item (after timeout)");
-        }
-      else
-        {
-          DEBUG ("Remove item (now)!");
-          individual_store_remove_individual (self, individual);
-        }
-    }
-  else if (!in_list && should_be_in_list)
+  if (!in_list)
     {
       DEBUG ("Individual'%s' in list:NO, should be:YES",
           folks_individual_get_alias (individual));
@@ -999,9 +955,6 @@ individual_store_get_property (GObject *object,
     case PROP_INDIVIDUAL_MANAGER:
       g_value_set_object (value, priv->manager);
       break;
-    case PROP_SHOW_OFFLINE:
-      g_value_set_boolean (value, priv->show_offline);
-      break;
     case PROP_SHOW_AVATARS:
       g_value_set_boolean (value, priv->show_avatars);
       break;
@@ -1038,10 +991,6 @@ individual_store_set_property (GObject *object,
     case PROP_INDIVIDUAL_MANAGER:
       individual_store_set_individual_manager (EMPATHY_INDIVIDUAL_STORE
           (object), g_value_get_object (value));
-      break;
-    case PROP_SHOW_OFFLINE:
-      empathy_individual_store_set_show_offline (EMPATHY_INDIVIDUAL_STORE
-          (object), g_value_get_boolean (value));
       break;
     case PROP_SHOW_AVATARS:
       empathy_individual_store_set_show_avatars (EMPATHY_INDIVIDUAL_STORE
@@ -1085,12 +1034,6 @@ empathy_individual_store_class_init (EmpathyIndividualStoreClass *klass)
           "The individual manager",
           EMPATHY_TYPE_INDIVIDUAL_MANAGER,
           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
-  g_object_class_install_property (object_class,
-      PROP_SHOW_OFFLINE,
-      g_param_spec_boolean ("show-offline",
-          "Show Offline",
-          "Whether contact list should display "
-          "offline contacts", FALSE, G_PARAM_READWRITE));
   g_object_class_install_property (object_class,
       PROP_SHOW_AVATARS,
       g_param_spec_boolean ("show-avatars",
@@ -1457,49 +1400,6 @@ empathy_individual_store_get_manager (EmpathyIndividualStore *self)
   priv = GET_PRIV (self);
 
   return priv->manager;
-}
-
-gboolean
-empathy_individual_store_get_show_offline (EmpathyIndividualStore *self)
-{
-  EmpathyIndividualStorePriv *priv;
-
-  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_STORE (self), FALSE);
-
-  priv = GET_PRIV (self);
-
-  return priv->show_offline;
-}
-
-void
-empathy_individual_store_set_show_offline (EmpathyIndividualStore *self,
-    gboolean show_offline)
-{
-  EmpathyIndividualStorePriv *priv;
-  GList *contacts, *l;
-  gboolean show_active;
-
-  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_STORE (self));
-
-  priv = GET_PRIV (self);
-
-  priv->show_offline = show_offline;
-  show_active = priv->show_active;
-
-  /* Disable temporarily. */
-  priv->show_active = FALSE;
-
-  contacts = empathy_individual_manager_get_members (priv->manager);
-  for (l = contacts; l; l = l->next)
-    {
-      individual_store_contact_update (self, l->data);
-    }
-  g_list_free (contacts);
-
-  /* Restore to original setting. */
-  priv->show_active = show_active;
-
-  g_object_notify (G_OBJECT (self), "show-offline");
 }
 
 gboolean

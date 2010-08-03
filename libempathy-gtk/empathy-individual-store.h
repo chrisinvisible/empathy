@@ -92,13 +92,6 @@ EmpathyIndividualStore *empathy_individual_store_new (
 EmpathyIndividualManager *empathy_individual_store_get_manager (
     EmpathyIndividualStore *store);
 
-gboolean empathy_individual_store_get_show_offline (
-    EmpathyIndividualStore *store);
-
-void empathy_individual_store_set_show_offline (
-    EmpathyIndividualStore *store,
-    gboolean show_offline);
-
 gboolean empathy_individual_store_get_show_avatars (
     EmpathyIndividualStore *store);
 

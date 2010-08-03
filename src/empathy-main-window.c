@@ -736,7 +736,7 @@ main_window_view_show_offline_cb (GtkToggleAction   *action,
 
 	/* Turn off sound just while we alter the contact list. */
 	// FIXME: empathy_sound_set_enabled (FALSE);
-	empathy_individual_store_set_show_offline (priv->individual_store,
+	empathy_individual_view_set_show_offline (priv->individual_view,
 			current);
 	//empathy_sound_set_enabled (TRUE);
 }
