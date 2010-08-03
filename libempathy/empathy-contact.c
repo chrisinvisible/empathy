@@ -808,7 +808,7 @@ empathy_contact_get_persona (EmpathyContact *contact)
                     {
                       /* Found the right persona */
                       empathy_contact_set_persona (contact,
-                          (FolksPersona*) persona);
+                          (FolksPersona *) persona);
                       goto finished;
                     }
                 }
