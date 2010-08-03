@@ -1541,13 +1541,6 @@ individual_view_constructed (GObject *object)
   tp_g_signal_connect_object (priv->store, "row-deleted",
       G_CALLBACK (individual_view_store_row_deleted_cb), view, 0);
 
-  tp_g_signal_connect_object (priv->store, "row-changed",
-    G_CALLBACK (individual_view_store_row_changed_cb), view, 0);
-  tp_g_signal_connect_object (priv->store, "row-inserted",
-    G_CALLBACK (individual_view_store_row_changed_cb), view, 0);
-  tp_g_signal_connect_object (priv->store, "row-deleted",
-    G_CALLBACK (individual_view_store_row_deleted_cb), view, 0);
-
   /* Setup view */
   /* Setting reorderable is a hack that gets us row previews as drag icons
      for free.  We override all the drag handlers.  It's tricky to get the
