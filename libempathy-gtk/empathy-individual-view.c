@@ -190,10 +190,8 @@ individual_view_filter_visible_func (GtkTreeModel *model,
   FolksIndividual *individual = NULL;
   gboolean is_group, is_separator, valid;
   GtkTreeIter child_iter;
-  gboolean visible, show_offline, is_online;
+  gboolean visible, is_online;
   gboolean is_searching = TRUE;
-
-  show_offline = empathy_individual_view_get_show_offline (self);
 
   if (priv->search_widget == NULL ||
       !gtk_widget_get_visible (priv->search_widget))
@@ -215,7 +213,7 @@ individual_view_filter_visible_func (GtkTreeModel *model,
       if (is_searching)
         return visible;
       else
-        return (show_offline || is_online);
+        return (priv->show_offline || is_online);
     }
 
   if (is_separator)
@@ -241,7 +239,7 @@ individual_view_filter_visible_func (GtkTreeModel *model,
 
       /* show group if it has at least one visible contact in it */
       if ((is_searching && visible) ||
-          (!is_searching && (show_offline || is_online)))
+          (!is_searching && (priv->show_offline || is_online)))
         return TRUE;
     }
 
