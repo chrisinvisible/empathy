@@ -148,7 +148,10 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
   const gchar *str;
   GList *personas, *l;
 
-  g_assert (live != NULL);
+  /* We're only giving the visibility wrt filtering here, not things like
+   * presence. */
+  if (live == NULL || gtk_widget_get_visible (GTK_WIDGET (live)) == FALSE)
+    return TRUE;
 
   /* check alias name */
   str = folks_individual_get_alias (individual);
@@ -196,7 +199,6 @@ individual_view_filter_visible_func (GtkTreeModel *model,
   if (priv->search_widget == NULL ||
       !gtk_widget_get_visible (priv->search_widget))
      is_searching = FALSE;
-
 
   gtk_tree_model_get (model, iter,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
