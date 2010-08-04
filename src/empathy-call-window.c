@@ -1478,6 +1478,27 @@ candidate_type_to_str (FsCandidate *candidate)
   return NULL;
 }
 
+static const gchar *
+candidate_type_to_desc (FsCandidate *candidate)
+{
+  switch (candidate->type)
+    {
+      case FS_CANDIDATE_TYPE_HOST:
+        return _("The IP address as seen by the machine");
+      case FS_CANDIDATE_TYPE_SRFLX:
+        return _("The IP address as seen by a server on the Internet");
+      case FS_CANDIDATE_TYPE_PRFLX:
+        return _("The IP address of the peer as seen by the other side");
+      case FS_CANDIDATE_TYPE_RELAY:
+        return _("The IP address of a relay server");
+      case FS_CANDIDATE_TYPE_MULTICAST:
+        return _("The IP address of the multicast group");
+    }
+
+  return NULL;
+}
+
+
 static void
 update_candidate (EmpathyCallWindow *self,
     gboolean video,
@@ -1528,6 +1549,8 @@ update_candidate (EmpathyCallWindow *self,
       candidate->port, candidate_type_to_str (candidate));
 
   gtk_label_set_text (GTK_LABEL (widget), str);
+  gtk_widget_set_tooltip_text (widget, candidate_type_to_desc (candidate));
+
   g_free (str);
 }
 
