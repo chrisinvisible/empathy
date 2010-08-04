@@ -44,6 +44,7 @@ enum {
   REQUEST_RESOURCE,
   CLOSED,
   STREAM_CLOSED,
+  CANDIDATES_CHANGED,
   LAST_SIGNAL
 };
 
@@ -373,6 +374,12 @@ empathy_call_handler_class_init (EmpathyCallHandlerClass *klass)
       G_SIGNAL_RUN_LAST, 0, NULL, NULL,
       g_cclosure_marshal_VOID__OBJECT,
       G_TYPE_NONE, 1, TF_TYPE_STREAM);
+
+  signals[CANDIDATES_CHANGED] =
+    g_signal_new ("candidates-changed", G_TYPE_FROM_CLASS (klass),
+      G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+      g_cclosure_marshal_VOID__UINT,
+      G_TYPE_NONE, 1, G_TYPE_UINT);
 }
 
 /**
@@ -490,6 +497,9 @@ update_candidates (EmpathyCallHandler *self,
           priv->audio_local_candidate = fs_candidate_copy (local_candidate);
           g_object_notify (G_OBJECT (self), "audio-local-candidate");
         }
+
+      g_signal_emit (G_OBJECT (self), signals[CANDIDATES_CHANGED], 0,
+          FS_MEDIA_TYPE_AUDIO);
     }
   else if (type == FS_MEDIA_TYPE_VIDEO)
     {
@@ -506,6 +516,9 @@ update_candidates (EmpathyCallHandler *self,
           priv->video_local_candidate = fs_candidate_copy (local_candidate);
           g_object_notify (G_OBJECT (self), "video-local-candidate");
         }
+
+      g_signal_emit (G_OBJECT (self), signals[CANDIDATES_CHANGED], 0,
+          FS_MEDIA_TYPE_VIDEO);
     }
 
   g_object_unref (session);
