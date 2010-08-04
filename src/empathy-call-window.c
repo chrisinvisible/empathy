@@ -1545,7 +1545,7 @@ update_candidate (EmpathyCallWindow *self,
     }
 
   g_assert (candidate != NULL);
-  str = g_strdup_printf ("%s:%u (%s)", candidate->ip,
+  str = g_strdup_printf ("%s %u (%s)", candidate->ip,
       candidate->port, candidate_type_to_str (candidate));
 
   gtk_label_set_text (GTK_LABEL (widget), str);
