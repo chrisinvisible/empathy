@@ -479,12 +479,14 @@ update_candidates (EmpathyCallHandler *self,
     {
       if (remote_candidate != NULL)
         {
+          fs_candidate_destroy (priv->audio_remote_candidate);
           priv->audio_remote_candidate = fs_candidate_copy (remote_candidate);
           g_object_notify (G_OBJECT (self), "audio-remote-candidate");
         }
 
       if (local_candidate != NULL)
         {
+          fs_candidate_destroy (priv->audio_local_candidate);
           priv->audio_local_candidate = fs_candidate_copy (local_candidate);
           g_object_notify (G_OBJECT (self), "audio-local-candidate");
         }
@@ -493,12 +495,14 @@ update_candidates (EmpathyCallHandler *self,
     {
       if (remote_candidate != NULL)
         {
+          fs_candidate_destroy (priv->video_remote_candidate);
           priv->video_remote_candidate = fs_candidate_copy (remote_candidate);
           g_object_notify (G_OBJECT (self), "video-remote-candidate");
         }
 
       if (local_candidate != NULL)
         {
+          fs_candidate_destroy (priv->video_local_candidate);
           priv->video_local_candidate = fs_candidate_copy (local_candidate);
           g_object_notify (G_OBJECT (self), "video-local-candidate");
         }
