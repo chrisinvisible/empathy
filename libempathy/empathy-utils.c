@@ -321,6 +321,50 @@ empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
 	}
 }
 
+static GHashTable *
+create_errors_to_message_hash (void)
+{
+	GHashTable *errors;
+
+	errors = g_hash_table_new (g_str_hash, g_str_equal);
+	g_hash_table_insert (errors, TP_ERROR_STR_NETWORK_ERROR, _("Network error"));
+	g_hash_table_insert (errors, TP_ERROR_STR_AUTHENTICATION_FAILED,
+		_("Authentication failed"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ENCRYPTION_ERROR,
+		_("Encryption error"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_NOT_PROVIDED,
+		_("Certificate not provided"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_UNTRUSTED,
+		_("Certificate untrusted"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_EXPIRED,
+		_("Certificate expired"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_NOT_ACTIVATED,
+		_("Certificate not activated"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_HOSTNAME_MISMATCH,
+		_("Certificate hostname mismatch"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_FINGERPRINT_MISMATCH,
+		_("Certificate fingerprint mismatch"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_SELF_SIGNED,
+		_("Certificate self-signed"));
+
+	return errors;
+}
+
+const gchar *
+empathy_dbus_error_name_get_default_message  (const gchar *error)
+{
+	static GHashTable *errors_to_message = NULL;
+
+	if (error == NULL)
+		return NULL;
+
+	if (G_UNLIKELY (errors_to_message == NULL)) {
+		errors_to_message = create_errors_to_message_hash ();
+	}
+
+	return g_hash_table_lookup (errors_to_message, error);
+}
+
 gchar *
 empathy_file_lookup (const gchar *filename, const gchar *subdir)
 {
