@@ -432,13 +432,10 @@ main_window_error_display (EmpathyMainWindow *window,
 	GtkWidget *action_table;
 	gchar     *str;
 	const gchar     *icon_name;
-	const gchar *message;
-
-	message = empathy_status_reason_get_default_message (reason);
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
 					       tp_account_get_display_name (account),
-					       message);
+					       empathy_account_get_error_message (account, reason));
 
 	info_bar = g_hash_table_lookup (priv->errors, account);
 	if (info_bar) {
