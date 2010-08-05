@@ -115,6 +115,8 @@ struct _EmpathyMainWindowPriv {
 	GtkWidget              *presence_chooser;
 	GtkWidget              *errors_vbox;
 	GtkWidget              *search_bar;
+	GtkWidget              *notebook;
+	GtkWidget              *no_entry_label;
 
 	GtkToggleAction        *show_protocols;
 	GtkRadioAction         *sort_by_name;
@@ -1511,6 +1513,8 @@ empathy_main_window_init (EmpathyMainWindow *window)
 				       "view_show_map", &show_map_widget,
 				       "room_join_favorites", &priv->room_join_favorites,
 				       "presence_toolbar", &priv->presence_toolbar,
+				       "notebook", &priv->notebook,
+				       "no_entry_label", &priv->no_entry_label,
 				       "roster_scrolledwindow", &sw,
 				       NULL);
 	g_free (filename);
@@ -1644,6 +1648,11 @@ empathy_main_window_init (EmpathyMainWindow *window)
 		FALSE, TRUE, 0);
 	g_signal_connect_swapped (window, "map",
 		G_CALLBACK (gtk_widget_grab_focus), priv->individual_view);
+
+	/* TODO: Set up the TreeView Notebook */
+	// have to detect when the contact list is empty (gtk_tree_model_get_iter_first)
+	//if we are searching display: no match found, otherwise: your contact list is empty
+	//hook to row-added and row removed? fire own signals when empty, not empty?
 
 	/* Load user-defined accelerators. */
 	main_window_accels_load ();
