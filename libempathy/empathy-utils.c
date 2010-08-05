@@ -371,7 +371,7 @@ create_errors_to_message_hash (void)
 	return errors;
 }
 
-const gchar *
+static const gchar *
 empathy_dbus_error_name_get_default_message  (const gchar *error)
 {
 	static GHashTable *errors_to_message = NULL;
@@ -384,6 +384,25 @@ empathy_dbus_error_name_get_default_message  (const gchar *error)
 	}
 
 	return g_hash_table_lookup (errors_to_message, error);
+}
+
+const gchar *
+empathy_account_get_error_message (TpAccount *account,
+				   TpConnectionStatusReason reason)
+{
+	const gchar *dbus_error;
+	const gchar *message;
+	const GHashTable *details = NULL;
+
+	dbus_error = tp_account_get_detailed_error (account, &details);
+	message = empathy_dbus_error_name_get_default_message (dbus_error);
+	if (message != NULL)
+		return message;
+
+	DEBUG ("Don't understand error '%s'; fallback to the status reason (%u)",
+		dbus_error, reason);
+
+	return empathy_status_reason_get_default_message (reason);
 }
 
 gchar *
