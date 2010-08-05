@@ -174,6 +174,15 @@ struct _EmpathyCallWindowPriv
   GtkWidget *vcodec_decoding_label;
   GtkWidget *acodec_decoding_label;
 
+  GtkWidget *audio_remote_candidate_label;
+  GtkWidget *audio_local_candidate_label;
+  GtkWidget *video_remote_candidate_label;
+  GtkWidget *video_local_candidate_label;
+  GtkWidget *video_remote_candidate_info_img;
+  GtkWidget *video_local_candidate_info_img;
+  GtkWidget *audio_remote_candidate_info_img;
+  GtkWidget *audio_local_candidate_info_img;
+
   GstElement *video_input;
   GstElement *audio_input;
   GstElement *audio_output;
@@ -1051,6 +1060,14 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "acodec_encoding_label", &priv->acodec_encoding_label,
     "acodec_decoding_label", &priv->acodec_decoding_label,
     "vcodec_decoding_label", &priv->vcodec_decoding_label,
+    "audio_remote_candidate_label", &priv->audio_remote_candidate_label,
+    "audio_local_candidate_label", &priv->audio_local_candidate_label,
+    "video_remote_candidate_label", &priv->video_remote_candidate_label,
+    "video_local_candidate_label", &priv->video_local_candidate_label,
+    "video_remote_candidate_info_img", &priv->video_remote_candidate_info_img,
+    "video_local_candidate_info_img", &priv->video_local_candidate_info_img,
+    "audio_remote_candidate_info_img", &priv->audio_remote_candidate_info_img,
+    "audio_local_candidate_info_img", &priv->audio_local_candidate_info_img,
     NULL);
   g_free (filename);
 
@@ -1450,6 +1467,106 @@ recv_video_codecs_notify_cb (GObject *object,
   update_recv_codec (self, FALSE);
 }
 
+static const gchar *
+candidate_type_to_str (FsCandidate *candidate)
+{
+  switch (candidate->type)
+    {
+      case FS_CANDIDATE_TYPE_HOST:
+        return "host";
+      case FS_CANDIDATE_TYPE_SRFLX:
+        return "server reflexive";
+      case FS_CANDIDATE_TYPE_PRFLX:
+        return "peer reflexive";
+      case FS_CANDIDATE_TYPE_RELAY:
+        return "relay";
+      case FS_CANDIDATE_TYPE_MULTICAST:
+        return "multicast";
+    }
+
+  return NULL;
+}
+
+static const gchar *
+candidate_type_to_desc (FsCandidate *candidate)
+{
+  switch (candidate->type)
+    {
+      case FS_CANDIDATE_TYPE_HOST:
+        return _("The IP address as seen by the machine");
+      case FS_CANDIDATE_TYPE_SRFLX:
+        return _("The IP address as seen by a server on the Internet");
+      case FS_CANDIDATE_TYPE_PRFLX:
+        return _("The IP address of the peer as seen by the other side");
+      case FS_CANDIDATE_TYPE_RELAY:
+        return _("The IP address of a relay server");
+      case FS_CANDIDATE_TYPE_MULTICAST:
+        return _("The IP address of the multicast group");
+    }
+
+  return NULL;
+}
+
+static void
+update_candidat_widget (EmpathyCallWindow *self,
+    GtkWidget *label,
+    GtkWidget *img,
+    FsCandidate *candidate)
+{
+  gchar *str;
+
+  g_assert (candidate != NULL);
+  str = g_strdup_printf ("%s %u (%s)", candidate->ip,
+      candidate->port, candidate_type_to_str (candidate));
+
+  gtk_label_set_text (GTK_LABEL (label), str);
+  gtk_widget_set_tooltip_text (img, candidate_type_to_desc (candidate));
+
+  g_free (str);
+}
+
+static void
+candidates_changed_cb (GObject *object,
+    FsMediaType type,
+    EmpathyCallWindow *self)
+{
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+  FsCandidate *candidate = NULL;
+
+  if (type == FS_MEDIA_TYPE_VIDEO)
+    {
+      /* Update remote candidate */
+      candidate = empathy_call_handler_get_video_remote_candidate (
+          priv->handler);
+
+      update_candidat_widget (self, priv->video_remote_candidate_label,
+          priv->video_remote_candidate_info_img, candidate);
+
+      /* Update local candidate */
+      candidate = empathy_call_handler_get_video_local_candidate (
+          priv->handler);
+
+      update_candidat_widget (self, priv->video_local_candidate_label,
+          priv->video_local_candidate_info_img, candidate);
+    }
+  else
+    {
+      /* Update remote candidate */
+      candidate = empathy_call_handler_get_audio_remote_candidate (
+          priv->handler);
+
+      update_candidat_widget (self, priv->audio_remote_candidate_label,
+          priv->audio_remote_candidate_info_img, candidate);
+
+      /* Update local candidate */
+      candidate = empathy_call_handler_get_audio_local_candidate (
+          priv->handler);
+
+      update_candidat_widget (self, priv->audio_local_candidate_label,
+          priv->audio_local_candidate_info_img, candidate);
+    }
+}
+
 static void
 empathy_call_window_constructed (GObject *object)
 {
@@ -1488,6 +1605,9 @@ empathy_call_window_constructed (GObject *object)
       G_CALLBACK (recv_audio_codecs_notify_cb), self, 0);
   tp_g_signal_connect_object (priv->handler, "notify::recv-video-codecs",
       G_CALLBACK (recv_video_codecs_notify_cb), self, 0);
+
+  tp_g_signal_connect_object (priv->handler, "candidates-changed",
+      G_CALLBACK (candidates_changed_cb), self, 0);
 }
 
 static void empathy_call_window_dispose (GObject *object);
