@@ -284,7 +284,7 @@ empathy_presence_from_str (const gchar *str)
 	return TP_CONNECTION_PRESENCE_TYPE_UNSET;
 }
 
-const gchar *
+static const gchar *
 empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
 {
 	switch (reason) {
