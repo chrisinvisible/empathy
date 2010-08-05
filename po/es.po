@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-05 10:07+0000\n"
-"PO-Revision-Date: 2010-08-05 12:21+0200\n"
+"POT-Creation-Date: 2010-08-05 12:49+0000\n"
+"PO-Revision-Date: 2010-08-05 16:28+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -572,19 +572,19 @@ msgstr "Desconocido"
 msgid "No reason specified"
 msgstr "No se especificó ninguna razón"
 
-#: ../libempathy/empathy-utils.c:294
+#: ../libempathy/empathy-utils.c:294 ../libempathy/empathy-utils.c:350
 msgid "Status is set to offline"
 msgstr "El estado se ha establecido a desconectado"
 
-#: ../libempathy/empathy-utils.c:296
+#: ../libempathy/empathy-utils.c:296 ../libempathy/empathy-utils.c:330
 msgid "Network error"
 msgstr "Error de red"
 
-#: ../libempathy/empathy-utils.c:298
+#: ../libempathy/empathy-utils.c:298 ../libempathy/empathy-utils.c:332
 msgid "Authentication failed"
 msgstr "Falló la autenticación"
 
-#: ../libempathy/empathy-utils.c:300
+#: ../libempathy/empathy-utils.c:300 ../libempathy/empathy-utils.c:334
 msgid "Encryption error"
 msgstr "Error de cifrado"
 
@@ -592,31 +592,31 @@ msgstr "Error de cifrado"
 msgid "Name in use"
 msgstr "Nombre en uso"
 
-#: ../libempathy/empathy-utils.c:304
+#: ../libempathy/empathy-utils.c:304 ../libempathy/empathy-utils.c:336
 msgid "Certificate not provided"
 msgstr "No se proporcionó el certificado"
 
-#: ../libempathy/empathy-utils.c:306
+#: ../libempathy/empathy-utils.c:306 ../libempathy/empathy-utils.c:338
 msgid "Certificate untrusted"
 msgstr "Certificado sin confianza"
 
-#: ../libempathy/empathy-utils.c:308
+#: ../libempathy/empathy-utils.c:308 ../libempathy/empathy-utils.c:340
 msgid "Certificate expired"
 msgstr "El certificado ha expirado"
 
-#: ../libempathy/empathy-utils.c:310
+#: ../libempathy/empathy-utils.c:310 ../libempathy/empathy-utils.c:342
 msgid "Certificate not activated"
 msgstr "El certificado no está activado"
 
-#: ../libempathy/empathy-utils.c:312
+#: ../libempathy/empathy-utils.c:312 ../libempathy/empathy-utils.c:344
 msgid "Certificate hostname mismatch"
 msgstr "El nombre del equipo del certificado no coincide"
 
-#: ../libempathy/empathy-utils.c:314
+#: ../libempathy/empathy-utils.c:314 ../libempathy/empathy-utils.c:346
 msgid "Certificate fingerprint mismatch"
 msgstr "La huella del certificado no coincide"
 
-#: ../libempathy/empathy-utils.c:316
+#: ../libempathy/empathy-utils.c:316 ../libempathy/empathy-utils.c:348
 msgid "Certificate self-signed"
 msgstr "Certificado firmado consigo mismo"
 
@@ -624,15 +624,60 @@ msgstr "Certificado firmado consigo mismo"
 msgid "Certificate error"
 msgstr "Error del certificado"
 
-#: ../libempathy/empathy-utils.c:435
+#: ../libempathy/empathy-utils.c:352
+msgid "Encryption is not available"
+msgstr "El cifrado no está disponible"
+
+#: ../libempathy/empathy-utils.c:354
+#| msgid "Certificate not activated"
+msgid "Certificate is invalid"
+msgstr "El certificado no es válido"
+
+#: ../libempathy/empathy-utils.c:356
+#| msgid "Connection managers should be used"
+msgid "Connection has been refused"
+msgstr "Se rechazó la conexión"
+
+#: ../libempathy/empathy-utils.c:358
+#| msgid "Connection managers should be used"
+msgid "Connection can't be established"
+msgstr "No se pudo establecer la conexión"
+
+#: ../libempathy/empathy-utils.c:360
+#| msgid "Connection managers should be used"
+msgid "Connection has been lost"
+msgstr "Se perdió la conexión"
+
+#: ../libempathy/empathy-utils.c:362
+#| msgid "This account already exists on the server"
+msgid "This resource is already connected to the server"
+msgstr "El recurso ya está conectado al servidor"
+
+#: ../libempathy/empathy-utils.c:364
+msgid ""
+"Connection has been replaced by a new connection using the same resource"
+msgstr ""
+"Se ha reemplazado la conexión por una conexión nueva usando el mismo recurso"
+
+#: ../libempathy/empathy-utils.c:367
+#| msgid "This account already exists on the server"
+msgid "The account already exists on the server"
+msgstr "La cuenta ya existe en el servidor"
+
+#: ../libempathy/empathy-utils.c:369
+msgid "Server is currently too busy to handle the connection"
+msgstr ""
+"Actualmente el servidor está demasiado ocupado para gestionar la conexión"
+
+#: ../libempathy/empathy-utils.c:520
 msgid "People Nearby"
 msgstr "Gente cerca"
 
-#: ../libempathy/empathy-utils.c:440
+#: ../libempathy/empathy-utils.c:525
 msgid "Yahoo! Japan"
 msgstr "Yahoo Japón"
 
-#: ../libempathy/empathy-utils.c:441
+#: ../libempathy/empathy-utils.c:526
 msgid "Facebook Chat"
 msgstr "Chat de Facebook"
 
@@ -1535,7 +1580,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:612
-#: ../src/empathy-main-window.c:1192
+#: ../src/empathy-main-window.c:1233
 msgid "Group"
 msgstr "Grupo"
 
@@ -3027,27 +3072,38 @@ msgstr "Protocolo"
 msgid "Source"
 msgstr "Origen"
 
-#: ../src/empathy-main-window.c:476
+#. Labels for empty contact list
+#: ../src/empathy-main-window.c:95
+#| msgid "Show contact list in rooms"
+msgid "Your contact list is empty"
+msgstr "Su lista de contactos está vacía"
+
+#: ../src/empathy-main-window.c:96
+#| msgid "No topic defined"
+msgid "No match found"
+msgstr "No se encontraró ninguna coincidencia"
+
+#: ../src/empathy-main-window.c:521
 msgid "Reconnect"
 msgstr "Reconectar"
 
-#: ../src/empathy-main-window.c:482
+#: ../src/empathy-main-window.c:527
 msgid "Edit Account"
 msgstr "Editar cuenta"
 
-#: ../src/empathy-main-window.c:488
+#: ../src/empathy-main-window.c:533
 msgid "Close"
 msgstr "Cerrar"
 
-#: ../src/empathy-main-window.c:1174
+#: ../src/empathy-main-window.c:1215
 msgid "Contact"
 msgstr "Contacto"
 
-#: ../src/empathy-main-window.c:1498
+#: ../src/empathy-main-window.c:1540
 msgid "Contact List"
 msgstr "Lista de contactos"
 
-#: ../src/empathy-main-window.c:1605
+#: ../src/empathy-main-window.c:1649
 msgid "Show and edit accounts"
 msgstr "Mostrar y editar cuentas"
 
