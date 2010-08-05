@@ -284,7 +284,7 @@ empathy_presence_from_str (const gchar *str)
 	return TP_CONNECTION_PRESENCE_TYPE_UNSET;
 }
 
-const gchar *
+static const gchar *
 empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
 {
 	switch (reason) {
@@ -319,6 +319,91 @@ empathy_status_reason_get_default_message (TpConnectionStatusReason reason)
 	default:
 		return _("Unknown reason");
 	}
+}
+
+static GHashTable *
+create_errors_to_message_hash (void)
+{
+	GHashTable *errors;
+
+	errors = g_hash_table_new (g_str_hash, g_str_equal);
+	g_hash_table_insert (errors, TP_ERROR_STR_NETWORK_ERROR, _("Network error"));
+	g_hash_table_insert (errors, TP_ERROR_STR_AUTHENTICATION_FAILED,
+		_("Authentication failed"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ENCRYPTION_ERROR,
+		_("Encryption error"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_NOT_PROVIDED,
+		_("Certificate not provided"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_UNTRUSTED,
+		_("Certificate untrusted"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_EXPIRED,
+		_("Certificate expired"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_NOT_ACTIVATED,
+		_("Certificate not activated"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_HOSTNAME_MISMATCH,
+		_("Certificate hostname mismatch"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_FINGERPRINT_MISMATCH,
+		_("Certificate fingerprint mismatch"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_SELF_SIGNED,
+		_("Certificate self-signed"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CANCELLED,
+		_("Status is set to offline"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ENCRYPTION_NOT_AVAILABLE,
+		_("Encryption is not available"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_INVALID,
+		_("Certificate is invalid"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_REFUSED,
+		_("Connection has been refused"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_FAILED,
+		_("Connection can't be established"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_LOST,
+		_("Connection has been lost"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ALREADY_CONNECTED,
+		_("This resource is already connected to the server"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_REPLACED,
+		_("Connection has been replaced by a new connection using the "
+						"same resource"));
+	g_hash_table_insert (errors, TP_ERROR_STR_REGISTRATION_EXISTS,
+		_("The account already exists on the server"));
+	g_hash_table_insert (errors, TP_ERROR_STR_SERVICE_BUSY,
+		_("Server is currently too busy to handle the connection"));
+
+	return errors;
+}
+
+static const gchar *
+empathy_dbus_error_name_get_default_message  (const gchar *error)
+{
+	static GHashTable *errors_to_message = NULL;
+
+	if (error == NULL)
+		return NULL;
+
+	if (G_UNLIKELY (errors_to_message == NULL)) {
+		errors_to_message = create_errors_to_message_hash ();
+	}
+
+	return g_hash_table_lookup (errors_to_message, error);
+}
+
+const gchar *
+empathy_account_get_error_message (TpAccount *account)
+{
+	const gchar *dbus_error;
+	const gchar *message;
+	TpConnectionStatusReason reason;
+
+	dbus_error = tp_account_get_detailed_error (account, NULL);
+	message = empathy_dbus_error_name_get_default_message (dbus_error);
+	if (message != NULL)
+		return message;
+
+	DEBUG ("Don't understand error '%s'; fallback to the status reason (%u)",
+		dbus_error, reason);
+
+	tp_account_get_connection_status (account, &reason);
+
+	return empathy_status_reason_get_default_message (reason);
 }
 
 gchar *

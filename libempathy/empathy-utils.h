@@ -75,7 +75,8 @@ guint        empathy_proxy_hash                     (gconstpointer    key);
 gboolean     empathy_check_available_state          (void);
 gint        empathy_uint_compare                    (gconstpointer a,
 						     gconstpointer b);
-const gchar * empathy_status_reason_get_default_message (TpConnectionStatusReason reason);
+
+const gchar * empathy_account_get_error_message (TpAccount *account);
 
 gchar *empathy_protocol_icon_name (const gchar *protocol);
 const gchar *empathy_protocol_name_to_display_name (const gchar *proto_name);
