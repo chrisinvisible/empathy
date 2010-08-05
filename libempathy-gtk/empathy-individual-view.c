@@ -108,22 +108,27 @@ enum DndDragType
   DND_DRAG_TYPE_STRING,
 };
 
+#define DRAG_TYPE(T,I) \
+  { (gchar *)T, 0, I }
+
 static const GtkTargetEntry drag_types_dest[] = {
-  {"text/path-list", 0, DND_DRAG_TYPE_URI_LIST},
-  {"text/uri-list", 0, DND_DRAG_TYPE_URI_LIST},
-  {"text/contact-id", 0, DND_DRAG_TYPE_INDIVIDUAL_ID},
-  {"text/plain", 0, DND_DRAG_TYPE_STRING},
-  {"STRING", 0, DND_DRAG_TYPE_STRING},
+  DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
+  DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
+  DRAG_TYPE ("text/contact-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
+  DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
+  DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
 };
 
 static const GtkTargetEntry drag_types_dest_file[] = {
-  {"text/path-list", 0, DND_DRAG_TYPE_URI_LIST},
-  {"text/uri-list", 0, DND_DRAG_TYPE_URI_LIST},
+  DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
+  DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
 };
 
 static const GtkTargetEntry drag_types_source[] = {
-  {"text/contact-id", 0, DND_DRAG_TYPE_INDIVIDUAL_ID},
+  DRAG_TYPE ("text/contact-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
 };
+
+#undef DRAG_TYPE
 
 static GdkAtom drag_atoms_dest[G_N_ELEMENTS (drag_types_dest)];
 static GdkAtom drag_atoms_source[G_N_ELEMENTS (drag_types_source)];
