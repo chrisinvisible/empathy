@@ -103,6 +103,7 @@ struct _EmpathyMainWindowPriv {
 	EmpathyEventManager     *event_manager;
 	guint                    flash_timeout_id;
 	gboolean                 flash_on;
+	gboolean                 empty;
 
 	GSettings              *gsettings_ui;
 	GSettings              *gsettings_contacts;
@@ -356,6 +357,42 @@ main_window_row_activated_cb (EmpathyContactListView *view,
 	g_object_unref (contact);
 OUT:
 	tp_clear_object (&individual);
+}
+
+static void
+main_window_row_deleted_cb (GtkTreeModel      *model,
+			    GtkTreePath       *path,
+			    EmpathyMainWindow *window)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (window);
+	GtkTreeIter help_iter;
+
+	if (!gtk_tree_model_get_iter_first (model, &help_iter)) {
+		priv->empty = TRUE;
+
+		/* TODO: check if we are searching or not */
+		gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
+				_("Your contact list is empty"));
+		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
+				1);
+		g_debug ("contact list empty");
+	}
+}
+
+static void
+main_window_row_inserted_cb (GtkTreeModel      *model,
+			     GtkTreePath       *path,
+			     GtkTreeIter       *iter,
+			     EmpathyMainWindow *window)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (window);
+
+	if (priv->empty) {
+		priv->empty = FALSE;
+		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
+				0);
+		g_debug ("contact list is not empty any more");
+	}
 }
 
 static void
@@ -1485,12 +1522,15 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	gboolean                  show_offline;
 	gchar                    *filename;
 	GSList                   *l;
+	GtkTreeModel             *model;
 
 	priv = window->priv = G_TYPE_INSTANCE_GET_PRIVATE (window,
 			EMPATHY_TYPE_MAIN_WINDOW, EmpathyMainWindowPriv);
 
 	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 	priv->gsettings_contacts = g_settings_new (EMPATHY_PREFS_CONTACTS_SCHEMA);
+
+	priv->empty = TRUE;
 
 	gtk_window_set_title (GTK_WINDOW (window), _("Contact List"));
 	gtk_window_set_role (GTK_WINDOW (window), "contact_list");
@@ -1649,10 +1689,14 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	g_signal_connect_swapped (window, "map",
 		G_CALLBACK (gtk_widget_grab_focus), priv->individual_view);
 
-	/* TODO: Set up the TreeView Notebook */
-	// have to detect when the contact list is empty (gtk_tree_model_get_iter_first)
-	//if we are searching display: no match found, otherwise: your contact list is empty
-	//hook to row-added and row removed? fire own signals when empty, not empty?
+	/* Connect to proper signals to check if contact list is empty or not */
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->individual_view));
+	g_signal_connect (model, "row-inserted",
+			  G_CALLBACK (main_window_row_inserted_cb),
+			  window);
+	g_signal_connect (model, "row-deleted",
+			  G_CALLBACK (main_window_row_deleted_cb),
+			  window);
 
 	/* Load user-defined accelerators. */
 	main_window_accels_load ();
