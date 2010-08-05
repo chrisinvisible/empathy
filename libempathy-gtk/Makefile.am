@@ -53,6 +53,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-contact-widget.c		\
 	empathy-geometry.c			\
 	empathy-individual-dialogs.c		\
+	empathy-individual-linker.c		\
 	empathy-individual-menu.c		\
 	empathy-individual-store.c		\
 	empathy-individual-view.c		\
@@ -107,6 +108,7 @@ libempathy_gtk_headers =			\
 	empathy-geometry.h			\
 	empathy-images.h			\
 	empathy-individual-dialogs.h		\
+	empathy-individual-linker.h		\
 	empathy-individual-menu.h		\
 	empathy-individual-store.h		\
 	empathy-individual-view.h		\
