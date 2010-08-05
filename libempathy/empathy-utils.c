@@ -392,9 +392,8 @@ empathy_account_get_error_message (TpAccount *account,
 {
 	const gchar *dbus_error;
 	const gchar *message;
-	const GHashTable *details = NULL;
 
-	dbus_error = tp_account_get_detailed_error (account, &details);
+	dbus_error = tp_account_get_detailed_error (account, NULL);
 	message = empathy_dbus_error_name_get_default_message (dbus_error);
 	if (message != NULL)
 		return message;
