@@ -417,8 +417,7 @@ main_window_error_close_clicked_cb (GtkButton         *button,
 
 static void
 main_window_error_display (EmpathyMainWindow *window,
-			   TpAccount         *account,
-			   TpConnectionStatusReason reason)
+			   TpAccount         *account)
 {
 	EmpathyMainWindowPriv *priv = GET_PRIV (window);
 	GtkWidget *info_bar;
@@ -571,7 +570,7 @@ main_window_connection_changed_cb (TpAccount  *account,
 
 	if (current == TP_CONNECTION_STATUS_DISCONNECTED &&
 	    reason != TP_CONNECTION_STATUS_REASON_REQUESTED) {
-		main_window_error_display (window, account, reason);
+		main_window_error_display (window, account);
 	}
 
 	if (current == TP_CONNECTION_STATUS_DISCONNECTED) {
