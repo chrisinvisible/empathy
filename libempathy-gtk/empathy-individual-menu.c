@@ -43,6 +43,7 @@
 #include "empathy-individual-dialogs.h"
 #include "empathy-ui-utils.h"
 #include "empathy-share-my-desktop.h"
+#include "empathy-linking-dialog.h"
 
 GtkWidget *
 empathy_individual_menu_new (FolksIndividual *individual,
@@ -120,7 +121,8 @@ empathy_individual_menu_new (FolksIndividual *individual,
   /* Separator */
   if (features & (EMPATHY_INDIVIDUAL_FEATURE_EDIT |
       EMPATHY_INDIVIDUAL_FEATURE_INFO |
-      EMPATHY_INDIVIDUAL_FEATURE_FAVOURITE))
+      EMPATHY_INDIVIDUAL_FEATURE_FAVOURITE |
+      EMPATHY_INDIVIDUAL_FEATURE_LINK))
     {
       item = gtk_separator_menu_item_new ();
       gtk_menu_shell_append (shell, item);
@@ -131,6 +133,14 @@ empathy_individual_menu_new (FolksIndividual *individual,
   if (features & EMPATHY_INDIVIDUAL_FEATURE_EDIT)
     {
       item = empathy_individual_edit_menu_item_new (individual);
+      gtk_menu_shell_append (shell, item);
+      gtk_widget_show (item);
+    }
+
+  /* Link */
+  if (features & EMPATHY_INDIVIDUAL_FEATURE_LINK)
+    {
+      item = empathy_individual_link_menu_item_new (individual);
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
     }
@@ -606,6 +616,33 @@ empathy_individual_edit_menu_item_new (FolksIndividual *individual)
       G_CALLBACK (individual_edit_menu_item_activate_cb), individual);
 
   g_object_unref (contact);
+
+  return item;
+}
+
+static void
+individual_link_menu_item_activate_cb (FolksIndividual *individual)
+{
+  empathy_linking_dialog_show (individual, NULL);
+}
+
+GtkWidget *
+empathy_individual_link_menu_item_new (FolksIndividual *individual)
+{
+  GtkWidget *item;
+  /*GtkWidget *image;*/
+
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+
+  item = gtk_image_menu_item_new_with_mnemonic (
+      C_("Link individual (contextual menu)", "_Link"));
+  /* TODO */
+  /*image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
+  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+  gtk_widget_show (image);*/
+
+  g_signal_connect_swapped (item, "activate",
+      G_CALLBACK (individual_link_menu_item_activate_cb), individual);
 
   return item;
 }
