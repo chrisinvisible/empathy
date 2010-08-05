@@ -92,6 +92,7 @@ typedef struct
   EmpathyIndividualStore *self;
   FolksIndividual *individual;
   gboolean remove;
+  guint timeout;
 } ShowActiveData;
 
 enum
@@ -464,6 +465,26 @@ individual_store_contact_set_active (EmpathyIndividualStore *self,
 
 }
 
+static void individual_store_contact_active_free (ShowActiveData *data);
+
+static void
+individual_store_contact_active_invalidated (ShowActiveData *data,
+    GObject *old_object)
+{
+  /* Remove the timeout and free the struct, since the individual or individual
+   * store has disappeared. */
+  g_source_remove (data->timeout);
+
+  if (old_object == (GObject *)data->self)
+    data->self = NULL;
+  else if (old_object == (GObject *)data->individual)
+    data->individual = NULL;
+  else
+    g_assert_not_reached ();
+
+  individual_store_contact_active_free (data);
+}
+
 static ShowActiveData *
 individual_store_contact_active_new (EmpathyIndividualStore *self,
     FolksIndividual *individual,
@@ -479,13 +500,15 @@ individual_store_contact_active_new (EmpathyIndividualStore *self,
   /* We don't actually want to force either the IndividualStore or the
    * Individual to stay alive, since the user could quit Empathy or disable
    * the account before the contact_active timeout is fired. */
-  g_object_add_weak_pointer (G_OBJECT (self), (gpointer) &(data->self));
-  g_object_add_weak_pointer (G_OBJECT (individual),
-      (gpointer) &(data->individual));
+  g_object_weak_ref (G_OBJECT (self),
+      (GWeakNotify) individual_store_contact_active_invalidated, data);
+  g_object_weak_ref (G_OBJECT (individual),
+      (GWeakNotify) individual_store_contact_active_invalidated, data);
 
   data->self = self;
   data->individual = individual;
   data->remove = remove_;
+  data->timeout = 0;
 
   return data;
 }
@@ -493,25 +516,24 @@ individual_store_contact_active_new (EmpathyIndividualStore *self,
 static void
 individual_store_contact_active_free (ShowActiveData *data)
 {
+  if (data->self != NULL)
+    {
+      g_object_weak_unref (G_OBJECT (data->self),
+          (GWeakNotify) individual_store_contact_active_invalidated, data);
+    }
+
+  if (data->individual != NULL)
+    {
+      g_object_weak_unref (G_OBJECT (data->individual),
+          (GWeakNotify) individual_store_contact_active_invalidated, data);
+    }
+
   g_slice_free (ShowActiveData, data);
 }
 
 static gboolean
 individual_store_contact_active_cb (ShowActiveData *data)
 {
-  EmpathyIndividualStorePriv *priv;
-
-  /* They're weak pointers, so may have been NULLified between ShowActiveData
-   * being created and the timeout being fired. We assume they can only be
-   * destroyed in this thread, so this isn't MT-safe. */
-  if (data->self == NULL || data->individual == NULL)
-    {
-      individual_store_contact_active_free (data);
-      return FALSE;
-    }
-
-  priv = GET_PRIV (data->self);
-
   if (data->remove)
     {
       DEBUG ("Individual'%s' active timeout, removing item",
@@ -702,7 +724,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
           data =
               individual_store_contact_active_new (self, individual,
               do_remove);
-          g_timeout_add_seconds (ACTIVE_USER_SHOW_TIME,
+          data->timeout = g_timeout_add_seconds (ACTIVE_USER_SHOW_TIME,
               (GSourceFunc) individual_store_contact_active_cb, data);
         }
     }
