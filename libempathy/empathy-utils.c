@@ -387,11 +387,11 @@ empathy_dbus_error_name_get_default_message  (const gchar *error)
 }
 
 const gchar *
-empathy_account_get_error_message (TpAccount *account,
-				   TpConnectionStatusReason reason)
+empathy_account_get_error_message (TpAccount *account)
 {
 	const gchar *dbus_error;
 	const gchar *message;
+	TpConnectionStatusReason reason;
 
 	dbus_error = tp_account_get_detailed_error (account, NULL);
 	message = empathy_dbus_error_name_get_default_message (dbus_error);
@@ -400,6 +400,8 @@ empathy_account_get_error_message (TpAccount *account,
 
 	DEBUG ("Don't understand error '%s'; fallback to the status reason (%u)",
 		dbus_error, reason);
+
+	tp_account_get_connection_status (account, &reason);
 
 	return empathy_status_reason_get_default_message (reason);
 }

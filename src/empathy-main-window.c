@@ -435,7 +435,7 @@ main_window_error_display (EmpathyMainWindow *window,
 
 	str = g_markup_printf_escaped ("<b>%s</b>\n%s",
 					       tp_account_get_display_name (account),
-					       empathy_account_get_error_message (account, reason));
+					       empathy_account_get_error_message (account));
 
 	info_bar = g_hash_table_lookup (priv->errors, account);
 	if (info_bar) {
