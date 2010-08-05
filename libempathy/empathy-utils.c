@@ -346,6 +346,27 @@ create_errors_to_message_hash (void)
 		_("Certificate fingerprint mismatch"));
 	g_hash_table_insert (errors, TP_ERROR_STR_CERT_SELF_SIGNED,
 		_("Certificate self-signed"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CANCELLED,
+		_("Status is set to offline"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ENCRYPTION_NOT_AVAILABLE,
+		_("Encryption is not available"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_INVALID,
+		_("Certificate is invalid"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_REFUSED,
+		_("Connection has been refused"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_FAILED,
+		_("Connection can't be established"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_LOST,
+		_("Connection has been lost"));
+	g_hash_table_insert (errors, TP_ERROR_STR_ALREADY_CONNECTED,
+		_("This resource is already connected to the server"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_REPLACED,
+		_("Connection has been replaced by a new connection using the "
+						"same resource"));
+	g_hash_table_insert (errors, TP_ERROR_STR_REGISTRATION_EXISTS,
+		_("The account already exists on the server"));
+	g_hash_table_insert (errors, TP_ERROR_STR_SERVICE_BUSY,
+		_("Server is currently too busy to handle the connection"));
 
 	return errors;
 }
