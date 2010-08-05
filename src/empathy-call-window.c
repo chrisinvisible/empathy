@@ -173,10 +173,15 @@ struct _EmpathyCallWindowPriv
   GtkWidget *acodec_encoding_label;
   GtkWidget *vcodec_decoding_label;
   GtkWidget *acodec_decoding_label;
+
   GtkWidget *audio_remote_candidate_label;
   GtkWidget *audio_local_candidate_label;
   GtkWidget *video_remote_candidate_label;
   GtkWidget *video_local_candidate_label;
+  GtkWidget *video_remote_candidate_info_img;
+  GtkWidget *video_local_candidate_info_img;
+  GtkWidget *audio_remote_candidate_info_img;
+  GtkWidget *audio_local_candidate_info_img;
 
   GstElement *video_input;
   GstElement *audio_input;
@@ -1059,6 +1064,10 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "audio_local_candidate_label", &priv->audio_local_candidate_label,
     "video_remote_candidate_label", &priv->video_remote_candidate_label,
     "video_local_candidate_label", &priv->video_local_candidate_label,
+    "video_remote_candidate_info_img", &priv->video_remote_candidate_info_img,
+    "video_local_candidate_info_img", &priv->video_local_candidate_info_img,
+    "audio_remote_candidate_info_img", &priv->audio_remote_candidate_info_img,
+    "audio_local_candidate_info_img", &priv->audio_local_candidate_info_img,
     NULL);
   g_free (filename);
 
@@ -1500,7 +1509,8 @@ candidate_type_to_desc (FsCandidate *candidate)
 
 static void
 update_candidat_widget (EmpathyCallWindow *self,
-    GtkWidget *widget,
+    GtkWidget *label,
+    GtkWidget *img,
     FsCandidate *candidate)
 {
   gchar *str;
@@ -1509,8 +1519,8 @@ update_candidat_widget (EmpathyCallWindow *self,
   str = g_strdup_printf ("%s %u (%s)", candidate->ip,
       candidate->port, candidate_type_to_str (candidate));
 
-  gtk_label_set_text (GTK_LABEL (widget), str);
-  gtk_widget_set_tooltip_text (widget, candidate_type_to_desc (candidate));
+  gtk_label_set_text (GTK_LABEL (label), str);
+  gtk_widget_set_tooltip_text (img, candidate_type_to_desc (candidate));
 
   g_free (str);
 }
@@ -1530,14 +1540,14 @@ candidates_changed_cb (GObject *object,
           priv->handler);
 
       update_candidat_widget (self, priv->video_remote_candidate_label,
-          candidate);
+          priv->video_remote_candidate_info_img, candidate);
 
       /* Update local candidate */
       candidate = empathy_call_handler_get_video_local_candidate (
           priv->handler);
 
       update_candidat_widget (self, priv->video_local_candidate_label,
-          candidate);
+          priv->video_local_candidate_info_img, candidate);
     }
   else
     {
@@ -1546,14 +1556,14 @@ candidates_changed_cb (GObject *object,
           priv->handler);
 
       update_candidat_widget (self, priv->audio_remote_candidate_label,
-          candidate);
+          priv->audio_remote_candidate_info_img, candidate);
 
       /* Update local candidate */
       candidate = empathy_call_handler_get_audio_local_candidate (
           priv->handler);
 
       update_candidat_widget (self, priv->audio_local_candidate_label,
-          candidate);
+          priv->audio_local_candidate_info_img, candidate);
     }
 }
 
