@@ -235,23 +235,6 @@ destroy (NstPlugin *plugin)
   return TRUE;
 }
 
-/* Legacy from old versions (< 2.90.0) */
-#ifdef HAVE_OLD_NST
-static
-NstPluginInfo plugin_info = {
-  "im",
-  "empathy",
-  N_("Instant Message (Empathy)"),
-  GETTEXT_PACKAGE,
-  TRUE,
-  NAUTILUS_CAPS_NONE,
-  init,
-  get_contacts_widget,
-  validate_destination,
-  send_files,
-  destroy
-};
-#else
 static
 NstPluginInfo plugin_info = {
   "im",
@@ -265,7 +248,6 @@ NstPluginInfo plugin_info = {
   send_files,
   destroy
 };
-#endif
 
 NST_INIT_PLUGIN (plugin_info)
 

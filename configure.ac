@@ -52,7 +52,7 @@ GEOCLUE_REQUIRED=0.11
 ISO_CODES_REQUIRED=0.35
 LIBCHAMPLAIN_GTK_REQUIRED=0.7.1
 LIBCHAMPLAIN_REQUIRED=0.7.1
-NAUTILUS_SENDTO_REQUIRED=2.28.1
+NAUTILUS_SENDTO_REQUIRED=2.31.7
 NAUTILUS_SENDTO_REQUIRED_GTK3=2.90.0
 NETWORK_MANAGER_REQUIRED=0.7.0
 WEBKIT_REQUIRED=1.1.15
@@ -466,8 +466,6 @@ if test "x$enable_nautilus_sendto" != "xno"; then
          nautilus-sendto >= $NAUTILUS_SENDTO_REQUIRED
          nautilus-sendto < 2.90.0
       ], have_nst="yes", have_nst="no")
-
-      AC_DEFINE(HAVE_OLD_NST, [], [Legacy compat mode with old nautilus-sendto] )
    else
       PKG_CHECK_MODULES(NST,
       [
