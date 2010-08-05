@@ -1559,14 +1559,8 @@ individual_view_constructed (GObject *object)
       G_CALLBACK (individual_view_store_row_deleted_cb), view, 0);
 
   /* Setup view */
-  /* Setting reorderable is a hack that gets us row previews as drag icons
-     for free.  We override all the drag handlers.  It's tricky to get the
-     position of the drag icon right in drag_begin.  GtkTreeView has special
-     voodoo for it, so we let it do the voodoo that he do.
-   */
   g_object_set (view,
       "headers-visible", FALSE,
-      "reorderable", TRUE,
       "show-expanders", FALSE,
       NULL);
 
@@ -1679,6 +1673,15 @@ individual_view_set_view_features (EmpathyIndividualView *view,
   g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (view));
 
   priv->view_features = features;
+
+  /* Setting reorderable is a hack that gets us row previews as drag icons
+     for free.  We override all the drag handlers.  It's tricky to get the
+     position of the drag icon right in drag_begin.  GtkTreeView has special
+     voodoo for it, so we let it do the voodoo that he do (but only if dragging
+     is enabled).
+   */
+  gtk_tree_view_set_reorderable (GTK_TREE_VIEW (view),
+      (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_DRAG));
 
   /* Update DnD source/dest */
   if (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_DRAG)
