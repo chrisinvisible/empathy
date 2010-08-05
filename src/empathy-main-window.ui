@@ -308,6 +308,15 @@
             <property name="show_tabs">False</property>
             <property name="show_border">False</property>
             <child>
+              <object class="GtkLabel" id="no_entry_label">
+                <property name="visible">True</property>
+                <property name="yalign">0.30000001192092896</property>
+              </object>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkScrolledWindow" id="roster_scrolledwindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -317,16 +326,6 @@
                 <child>
                   <placeholder/>
                 </child>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="no_entry_label">
-                <property name="visible">True</property>
-                <property name="yalign">0.30000001192092896</property>
-                <property name="label" translatable="yes">label</property>
               </object>
               <packing>
                 <property name="position">1</property>

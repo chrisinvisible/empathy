@@ -2221,6 +2221,19 @@ empathy_individual_view_set_live_search (EmpathyIndividualView *view,
 }
 
 gboolean
+empathy_individual_view_is_searching (EmpathyIndividualView *self)
+{
+  EmpathyIndividualViewPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self), FALSE);
+
+  priv = GET_PRIV (self);
+
+  return (priv->search_widget != NULL &&
+          gtk_widget_get_visible (priv->search_widget));
+}
+
+gboolean
 empathy_individual_view_get_show_offline (EmpathyIndividualView *self)
 {
   EmpathyIndividualViewPriv *priv;

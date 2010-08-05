@@ -91,6 +91,10 @@
 /* Name in the geometry file */
 #define GEOMETRY_NAME "main-window"
 
+/* Labels for empty contact list */
+#define CONTACT_LIST_EMPTY _("Your contact list is empty")
+#define NO_MATCH_FOUND _("No match found")
+
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 
 #define GET_PRIV(self) ((EmpathyMainWindowPriv *)((EmpathyMainWindow *) self)->priv)
@@ -370,12 +374,15 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 	if (!gtk_tree_model_get_iter_first (model, &help_iter)) {
 		priv->empty = TRUE;
 
-		/* TODO: check if we are searching or not */
-		gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-				_("Your contact list is empty"));
+		if (empathy_individual_view_is_searching (priv->individual_view))
+			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
+					NO_MATCH_FOUND);
+		else
+			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
+					CONTACT_LIST_EMPTY);
+
 		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
-				1);
-		g_debug ("contact list empty");
+				0);
 	}
 }
 
@@ -390,8 +397,8 @@ main_window_row_inserted_cb (GtkTreeModel      *model,
 	if (priv->empty) {
 		priv->empty = FALSE;
 		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
-				0);
-		g_debug ("contact list is not empty any more");
+				1);
+		gtk_widget_grab_focus (GTK_WIDGET (priv->individual_view));
 	}
 }
 
@@ -1530,8 +1537,6 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
 	priv->gsettings_contacts = g_settings_new (EMPATHY_PREFS_CONTACTS_SCHEMA);
 
-	priv->empty = TRUE;
-
 	gtk_window_set_title (GTK_WINDOW (window), _("Contact List"));
 	gtk_window_set_role (GTK_WINDOW (window), "contact_list");
 	gtk_window_set_default_size (GTK_WINDOW (window), 225, 325);
@@ -1688,6 +1693,11 @@ empathy_main_window_init (EmpathyMainWindow *window)
 		FALSE, TRUE, 0);
 	g_signal_connect_swapped (window, "map",
 		G_CALLBACK (gtk_widget_grab_focus), priv->individual_view);
+
+	/* Set up the Notebook for the TreeView */
+	priv->empty = TRUE;
+	gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
+			CONTACT_LIST_EMPTY);
 
 	/* Connect to proper signals to check if contact list is empty or not */
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->individual_view));

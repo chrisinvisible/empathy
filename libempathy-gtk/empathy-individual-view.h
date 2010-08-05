@@ -102,5 +102,8 @@ void empathy_individual_view_set_show_offline (
     EmpathyIndividualView *view,
     gboolean show_offline);
 
+gboolean empathy_individual_view_is_searching (
+    EmpathyIndividualView *view);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_VIEW_H__ */
