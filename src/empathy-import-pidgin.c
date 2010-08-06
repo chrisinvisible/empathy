@@ -177,7 +177,7 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
     }
 
   if (value)
-    g_hash_table_insert (data->settings, item->cm_name, value);
+    g_hash_table_insert (data->settings, (gpointer) item->cm_name, value);
 
   g_free (type);
   g_free (content);
@@ -278,13 +278,13 @@ empathy_import_pidgin_load (void)
                 /* Add the server setting */
                 value = tp_g_value_slice_new (G_TYPE_STRING);
                 g_value_set_string (value, nick_server[1]);
-                g_hash_table_insert (data->settings, "server", value);
+                g_hash_table_insert (data->settings, (gpointer) "server", value);
               }
 
               /* Add the account setting */
               value = tp_g_value_slice_new (G_TYPE_STRING);
               g_value_set_string (value, username);
-              g_hash_table_insert (data->settings, "account", value);
+              g_hash_table_insert (data->settings, (gpointer) "account", value);
 
               g_strfreev (name_resource);
               g_strfreev (nick_server);
@@ -302,7 +302,7 @@ empathy_import_pidgin_load (void)
               /* Add the password setting */
               value = tp_g_value_slice_new (G_TYPE_STRING);
               g_value_set_string (value, password);
-              g_hash_table_insert (data->settings, "password", value);
+              g_hash_table_insert (data->settings, (gpointer) "password", value);
 
               g_free (password);
             }
@@ -336,7 +336,7 @@ empathy_import_pidgin_load (void)
               GValue *value;
               value = tp_g_value_slice_new (G_TYPE_STRING);
               g_value_set_string (value, "");
-              g_hash_table_insert (data->settings, "password", value);
+              g_hash_table_insert (data->settings, (gpointer) "password", value);
             }
 
           accounts = g_list_prepend (accounts, data);
