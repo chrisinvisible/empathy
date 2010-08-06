@@ -740,7 +740,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
 }
 
 static void
-individual_store_contact_updated_cb (FolksIndividual *individual,
+individual_store_individual_updated_cb (FolksIndividual *individual,
     GParamSpec *param,
     EmpathyIndividualStore *self)
 {
@@ -751,19 +751,44 @@ individual_store_contact_updated_cb (FolksIndividual *individual,
 }
 
 static void
+individual_store_contact_updated_cb (EmpathyContact *contact,
+    GParamSpec *pspec,
+    EmpathyIndividualStore *self)
+{
+  FolksIndividual *individual;
+
+  DEBUG ("Contact '%s' updated, checking roster is in sync...",
+      empathy_contact_get_alias (contact));
+
+  individual = g_object_get_data (G_OBJECT (contact), "individual");
+  if (individual == NULL)
+    return;
+
+  individual_store_contact_update (self, individual);
+}
+
+static void
 individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
+  EmpathyContact *contact;
+
   g_signal_connect (individual, "notify::avatar",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
+      G_CALLBACK (individual_store_individual_updated_cb), self);
   g_signal_connect (individual, "notify::presence-type",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
+      G_CALLBACK (individual_store_individual_updated_cb), self);
   g_signal_connect (individual, "notify::presence-message",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
+      G_CALLBACK (individual_store_individual_updated_cb), self);
   g_signal_connect (individual, "notify::alias",
+      G_CALLBACK (individual_store_individual_updated_cb), self);
+
+  /* FIXME: libfolks hasn't grown capabilities support yet, so we have to go
+   * through the EmpathyContact for them. */
+  contact = empathy_contact_dup_from_folks_individual (individual);
+  g_object_set_data (G_OBJECT (contact), "individual", individual);
+  g_signal_connect (contact, "notify::capabilities",
       G_CALLBACK (individual_store_contact_updated_cb), self);
-  g_signal_connect (individual, "notify::capabilities",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
+  g_object_unref (contact);
 
   individual_store_add_individual (self, individual);
 }
@@ -773,6 +798,8 @@ individual_store_remove_individual_and_disconnect (
     EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
+  g_signal_handlers_disconnect_by_func (individual,
+      G_CALLBACK (individual_store_individual_updated_cb), self);
   g_signal_handlers_disconnect_by_func (individual,
       G_CALLBACK (individual_store_contact_updated_cb), self);
 
@@ -933,6 +960,8 @@ individual_store_dispose (GObject *object)
   contacts = empathy_individual_manager_get_members (priv->manager);
   for (l = contacts; l; l = l->next)
     {
+      g_signal_handlers_disconnect_by_func (l->data,
+          G_CALLBACK (individual_store_individual_updated_cb), object);
       g_signal_handlers_disconnect_by_func (l->data,
           G_CALLBACK (individual_store_contact_updated_cb), object);
     }
