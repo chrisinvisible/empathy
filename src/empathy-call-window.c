@@ -2759,12 +2759,6 @@ empathy_call_window_bus_message (GstBus *bus, GstMessage *message,
       case GST_MESSAGE_SEGMENT_START:
       case GST_MESSAGE_SEGMENT_DONE:
       case GST_MESSAGE_DURATION:
-      case GST_MESSAGE_LATENCY:
-      case GST_MESSAGE_ASYNC_START:
-      case GST_MESSAGE_ASYNC_DONE:
-      case GST_MESSAGE_REQUEST_STATE:
-      case GST_MESSAGE_STEP_START:
-      case GST_MESSAGE_QOS:
       case GST_MESSAGE_ANY:
       default:
         break;
