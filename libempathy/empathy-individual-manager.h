@@ -87,5 +87,8 @@ empathy_individual_manager_get_flags_for_connection (
     EmpathyIndividualManager *manager,
     TpConnection *connection);
 
+void empathy_individual_manager_link_personas (EmpathyIndividualManager *self,
+    GList *personas);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_MANAGER_H__ */

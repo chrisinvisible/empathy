@@ -534,3 +534,37 @@ empathy_individual_manager_get_flags_for_connection (
 
   return flags;
 }
+
+static void
+link_personas_cb (FolksIndividualAggregator *aggregator,
+    GAsyncResult *async_result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  folks_individual_aggregator_link_personas_finish (aggregator, async_result,
+      &error);
+
+  if (error != NULL)
+    {
+      g_warning ("Failed to link personas: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
+void
+empathy_individual_manager_link_personas (EmpathyIndividualManager *self,
+    GList *personas)
+{
+  EmpathyIndividualManagerPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self));
+  g_return_if_fail (personas != NULL);
+
+  priv = GET_PRIV (self);
+
+  DEBUG ("Linking %u personas", g_list_length (personas));
+
+  folks_individual_aggregator_link_personas (priv->aggregator, personas,
+      (GAsyncReadyCallback) link_personas_cb, NULL);
+}
