@@ -24,16 +24,20 @@
     <tp:requires interface="org.freedesktop.Telepathy.Channel"/>
 
     <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
-      <p>
-      A channel type that carries a TLS certificate between a server
-      and a client connecting to it.<br/>
-      Channels of this kind are never requested, are anonymous, and SHOULD be
-      dispatched while the
-      <tp:dbus-ref
-      namespace="org.freedesktop.Telepathy">Connection</tp:dbus-ref>
-      owning it is in the CONNECTING state.</p>
+      <p>A channel type that carries a TLS certificate between a server
+      and a client connecting to it.</p>
+      <p>Channels of this kind always have <tp:dbus-ref
+      namespace="org.freedesktop.Telepathy.Channel">Requested</tp:dbus-ref> = False,
+      <tp:dbus-ref namespace="org.freedesktop.Telepathy.Channel">TargetHandleType</tp:dbus-ref>
+      = None and <tp:dbus-ref namespace="org.freedesktop.Telepathy.Channel">TargetHandle</tp:dbus-ref>
+      = 0, and cannot be requested with methods such as <tp:dbus-ref
+      namespace="org.freedesktop.Telepathy.Connection.Interface.Requests">CreateChannel</tp:dbus-ref>.
+      Also, they SHOULD be dispatched while the
+      <tp:dbus-ref namespace="org.freedesktop.Telepathy">Connection</tp:dbus-ref>
+      owning them is in the CONNECTING state.</p>
       <p>In this case, handlers SHOULD accept or reject the certificate, using
-      the relevant methods on the provided object, or MAY just close the channel before doing so, to fall
+      the relevant methods on the provided object, or MAY just <tp:dbus-ref
+      namespace="org.freedesktop.Telepathy.Channel">Close</tp:dbus-ref> the channel before doing so, to fall
       back to a non-interactive verification process done inside the CM.</p>
       <p>For example, channels of this kind can pop up while a client is
       connecting to an XMPP server.</p>
@@ -42,10 +46,11 @@
     <property name="ServerCertificate" type="o" access="read"
 	      tp:name-for-bindings="ServerCertificate">
       <tp:docstring>
-	A <tp:dbus-ref
+	<p>A <tp:dbus-ref
 	namespace="org.freedesktop.Telepathy.Authentication">TLSCertificate.DRAFT</tp:dbus-ref>
 	containing the certificate chain as sent by the server,
-	and other relevant information.
+	and other relevant information.</p>
+	<p>This property is immutable.</p>
       </tp:docstring>
     </property>
 

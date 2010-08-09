@@ -26,8 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
     <tp:simple-type name="Certificate_Data" array-name="Certificate_Data_List"
 		    type="ay">
-      <tp:docstring>
-	The raw data contained in a TLS certificate.
+      <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
+	<p>The raw data contained in a TLS certificate.</p>
+
+	<p>For X.509 certificates (<tp:member-ref>CertificateType</tp:member-ref>
+	= "x509"), this MUST be in DER format, as defined by the
+	<a href="http://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf">X.690</a>
+	ITU standard.</p>
+
+	<p>For PGP certificates (<tp:member-ref>CertificateType</tp:member-ref>
+	= "pgp"), this MUST be a binary OpenPGP key as defined by section 11.1
+	of <a href="http://www.rfc-editor.org/rfc/4880.txt">RFC 4880</a>.</p>
       </tp:docstring>
     </tp:simple-type>
 
@@ -38,13 +47,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	object.
       </tp:docstring>
 
-      <tp:enumvalue suffix="None" value="0">
+      <tp:enumvalue suffix="Pending" value="0">
 	<tp:docstring>
-	  The certificate has no state associated with it.
+	  The certificate is currently waiting to be accepted or rejected.
 	</tp:docstring>
       </tp:enumvalue>
 
-      <tp:enumvalue suffix="Verified" value="1">
+      <tp:enumvalue suffix="Accepted" value="1">
 	<tp:docstring>
 	  The certificate has been verified.
 	</tp:docstring>
@@ -62,34 +71,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	Possible reasons to reject a TLS certificate.
       </tp:docstring>
 
-      <tp:enumvalue suffix="None" value="0">
-	<tp:docstring>
-	  No reason specified.
-	</tp:docstring>
-      </tp:enumvalue>
-
-      <tp:enumvalue suffix="Other" value="1">
+      <tp:enumvalue suffix="Unknown" value="0">
 	<tp:docstring>
 	  The certificate has been rejected for another reason
 	  not listed in this enumeration.
 	</tp:docstring>
       </tp:enumvalue>
 
-      <tp:enumvalue suffix="Untrusted" value="2">
+      <tp:enumvalue suffix="Untrusted" value="1">
 	<tp:docstring>
 	  The certificate is not trusted.
 	</tp:docstring>
       </tp:enumvalue>
 
-      <tp:enumvalue suffix="Expired" value="3">
+      <tp:enumvalue suffix="Expired" value="2">
 	<tp:docstring>
 	  The certificate is expired.
 	</tp:docstring>
       </tp:enumvalue>
 
-      <tp:enumvalue suffix="Not_Activated" value="4">
+      <tp:enumvalue suffix="Not_Activated" value="3">
 	<tp:docstring>
 	  The certificate is not active yet.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Fingerprint_Mismatch" value="4">
+	<tp:docstring>
+	  The certificate provided does not have the expected
+	  fingerprint.
 	</tp:docstring>
       </tp:enumvalue>
 
@@ -111,9 +121,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	</tp:docstring>
       </tp:enumvalue>
 
-      <tp:enumvalue suffix="Insecure_Algorithm" value="8">
+      <tp:enumvalue suffix="Insecure" value="8">
 	<tp:docstring>
-	  The certificate uses an insecure cipher algorithm.
+	  The certificate uses an insecure cipher algorithm, or is
+	  cryptographically weak.
+	</tp:docstring>
+      </tp:enumvalue>
+
+      <tp:enumvalue suffix="Limit_Exceeded" value="9">
+	<tp:docstring>
+	  The length in bytes of the certificate, or the depth of the
+	  certificate chain exceed the limits imposed by the crypto
+	  library.
 	</tp:docstring>
       </tp:enumvalue>
     </tp:enum>
@@ -124,7 +143,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
       <tp:docstring>
 	The current state of this certificate.
 	State change notifications happen by means of the
-	<tp:member-ref>StateChanged</tp:member-ref> signal.
+	<tp:member-ref>Accepted</tp:member-ref> and
+	<tp:member-ref>Rejected</tp:member-ref> signals.
+      </tp:docstring>
+    </property>
+
+    <property name="RejectError" type="s" access="read"
+	      tp:type="DBus_Error_Name"
+	      tp:name-for-bindings="Reject_Error">
+      <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
+	<p>If the <tp:member-ref>State</tp:member-ref> is Rejected,
+	the reason why the certificate was rejected; this MAY correspond to
+	the <tp:member-ref>RejectReason</tp:member-ref>, or MAY be a more
+	specific D-Bus error name, perhaps implementation-specific.</p>
+	<p>If the <tp:member-ref>State</tp:member-ref> is not Rejected,
+	this property is not meaningful, and SHOULD be set to an empty
+	string.</p>
+      </tp:docstring>
+    </property>
+
+    <property name="RejectDetails" type="a{sv}" access="read"
+	      tp:type="String_Variant_Map"
+	      tp:name-for-bindings="Reject_Details">
+      <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
+	<p>If the <tp:member-ref>State</tp:member-ref> is Rejected,
+	additional information about why the certificate was rejected.</p>
+	<p>If the <tp:member-ref>State</tp:member-ref> is not Rejected,
+	this property is not meaningful and SHOULD be set to an empty
+	map.</p>
+	<p>The additional information MAY also include
+	one or more of the following well-known keys:</p>
+	<dl>
+	  <dt>user-requested (b)</dt>
+	  <dd>True if the error was due to an user-requested rejection of
+	  the certificate; False if there was an unrecoverable error in the
+	  verification process.</dd>
+	  <dt>expected-hostname (s)</dt>
+	  <dd>If the rejection reason is Hostname_Mismatch, the hostname that
+	  the server certificate was expected to have.</dd>
+	  <dt>certificate-hostname (s)</dt>
+	  <dd>If the rejection reason is Hostname_Mismatch, the hostname of
+	  the certificate that was presented.
+	  <tp:rationale>
+	    <p>For instance, if you try to connect to gmail.com but are presented
+	    with a TLS certificate issued to evil.example.org, the error details
+	    for Hostname_Mismatch MAY include:</p>
+	    <pre>
+	      {
+	        'expected-hostname': 'gmail.com',
+	        'certificate-hostname': 'evil.example.org',
+	      }
+	    </pre>
+	  </tp:rationale>
+	  </dd>
+          <dt>debug-message (s)</dt>
+          <dd>Debugging information on the error, corresponding to the
+          message part of a D-Bus error message, which SHOULD NOT be
+          displayed to users under normal circumstances</dd>
+	</dl>
       </tp:docstring>
     </property>
 
@@ -132,7 +208,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	      tp:type="TLS_Certificate_Reject_Reason"
 	      tp:name-for-bindings="Reject_Reason">
       <tp:docstring>
-	The reason why this certificate has been rejected.
+	If the <tp:member-ref>State</tp:member-ref> is Rejected, the
+	reason why the certificate was rejected.
+	<tp:rationale>
+	  Clients that do not understand the <tp:member-ref>RejectError</tp:member-ref>,
+	  which may be implementation-specific, can use this property to
+	  classify rejection reasons into common categories.
+	</tp:rationale>
+	Otherwise, this property is not meaningful, and SHOULD be set to
+	Unknown.
       </tp:docstring>
     </property>
 
@@ -140,29 +224,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	      tp:name-for-bindings="Certificate_Type">
       <tp:docstring>
 	The type of this TLS certificate (e.g. 'x509' or 'pgp').
+	<p>This property is immutable</p>
       </tp:docstring>
     </property>
 
     <property name="CertificateChainData" type="aay" access="read"
 	      tp:type="Certificate_Data[]" tp:name-for-bindings="Certificate_Chain_Data">
-      <tp:docstring>
-	The RAW PEM-encoded trust chain of this TLS certificate.
+      <tp:docstring xmlns="http://www.w3.org/1999/xhtml">
+	<p>One or more TLS certificates forming a trust chain, each encoded as
+	specified by <tp:type>Certificate_Data</tp:type>.</p>
+	<p>The first certificate in the chain MUST be the server certificate,
+	followed by the issuer's certificate, followed by the issuer's issuer
+	and so on.</p>
       </tp:docstring>
     </property>
 
-    <signal name="StateChanged"
-	    tp:name-for-bindings="State_Changed">
+    <signal name="Accepted"
+	    tp:name-for-bindings="Accepted">
       <tp:docstring>
-	The state of this TLS certificate has changed.
+	The <tp:member-ref>State</tp:member-ref> of this certificate has changed to Accepted.
       </tp:docstring>
-      <arg name="State" type="u" tp:type="TLS_Certificate_State">
-	<tp:docstring>
-	  The new state of the TLS certificate.
-	</tp:docstring>
-      </arg>
+    </signal>
+
+    <signal name="Rejected"
+	    tp:name-for-bindings="Rejected">
+      <tp:docstring>
+	The <tp:member-ref>State</tp:member-ref> of this certificate has changed to Rejected.
+      </tp:docstring>
       <arg name="Reason" type="u" tp:type="TLS_Certificate_Reject_Reason">
 	<tp:docstring>
-	  The reason why the state of the TLS certificate changed.
+	  The new value of <tp:member-ref>RejectReason</tp:member-ref>.
+	</tp:docstring>
+      </arg>
+      <arg name="Error" type="s" tp:type="DBus_Error_Name">
+	<tp:docstring>
+	  The new value of <tp:member-ref>RejectError</tp:member-ref>.
+	</tp:docstring>
+      </arg>
+      <arg name="Details" type="a{sv}" tp:type="String_Variant_Map">
+	<tp:docstring>
+	  The new value of <tp:member-ref>RejectDetails</tp:member-ref>
 	</tp:docstring>
       </arg>
     </signal>
@@ -170,19 +271,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
     <method name="Accept" tp:name-for-bindings="Accept">
       <tp:docstring>
 	Accepts this certificate, i.e. marks it as verified.
-	This method doesn't do anything on local certificates.
       </tp:docstring>
     </method>
 
     <method name="Reject" tp:name-for-bindings="Reject">
       <tp:docstring>
-	Rejects this certificate. This method doesn't do anything
-	on local certificates.
+	Rejects this certificate.
       </tp:docstring>
       <arg direction="in" type="u" name="Reason"
 	   tp:type="TLS_Certificate_Reject_Reason">
 	<tp:docstring>
-	  The reason why this certificate is being rejected.
+	  The new value of <tp:member-ref>RejectReason</tp:member-ref>.
+	</tp:docstring>
+      </arg>
+      <arg direction="in" type="s" name="Error"
+	   tp:type="DBus_Error_Name">
+	<tp:docstring>
+	  The new value of <tp:member-ref>RejectError</tp:member-ref>.
+	</tp:docstring>
+      </arg>
+      <arg direction="in" type="a{sv}" name="Details"
+	   tp:type="String_Variant_Map">
+	<tp:docstring>
+	  The new value of <tp:member-ref>RejectDetails</tp:member-ref>.
 	</tp:docstring>
       </arg>
     </method>
