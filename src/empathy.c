@@ -488,13 +488,15 @@ main (int argc, char *argv[])
 
   /* Init */
   g_thread_init (NULL);
+
+#ifdef HAVE_LIBCHAMPLAIN
+  gtk_clutter_init (&argc, &argv);
+#endif
+
   empathy_init ();
 
   optcontext = g_option_context_new (N_("- Empathy IM Client"));
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
-#ifdef HAVE_LIBCHAMPLAIN
-  g_option_context_add_group (optcontext, clutter_get_option_group ());
-#endif
   g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
 
   if (!g_option_context_parse (optcontext, &argc, &argv, &error)) {
