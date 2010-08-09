@@ -30,9 +30,14 @@
 
 G_BEGIN_DECLS
 
-#define EMPATHY_TIME_FORMAT_DISPLAY_SHORT "%H:%M"
-#define EMPATHY_DATE_FORMAT_DISPLAY_SHORT  "%a %d %b %Y"
-#define EMPATHY_TIME_DATE_FORMAT_DISPLAY_SHORT "%c"
+/*
+ * Translators: use your locale preferred time format.
+ * The fields follow the strftime standard:
+ * look at the manual if you need help (man strftime)
+ */
+#define EMPATHY_TIME_FORMAT_DISPLAY_SHORT _("%H:%M")
+#define EMPATHY_DATE_FORMAT_DISPLAY_SHORT  _("%a %d %b %Y")
+#define EMPATHY_TIME_DATE_FORMAT_DISPLAY_SHORT _("%a %d %b %Y, %H:%M")
 
 time_t  empathy_time_get_current     (void);
 time_t  empathy_time_get_local_time  (struct tm   *tm);
