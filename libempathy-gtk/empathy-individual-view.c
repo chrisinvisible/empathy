@@ -109,7 +109,7 @@ enum DndDragType
 };
 
 #define DRAG_TYPE(T,I) \
-  { (gchar *)T, 0, I }
+  { (gchar *) T, 0, I }
 
 static const GtkTargetEntry drag_types_dest[] = {
   DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),

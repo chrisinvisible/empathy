@@ -475,9 +475,9 @@ individual_store_contact_active_invalidated (ShowActiveData *data,
    * store has disappeared. */
   g_source_remove (data->timeout);
 
-  if (old_object == (GObject *)data->self)
+  if (old_object == (GObject *) data->self)
     data->self = NULL;
-  else if (old_object == (GObject *)data->individual)
+  else if (old_object == (GObject *) data->individual)
     data->individual = NULL;
   else
     g_assert_not_reached ();
