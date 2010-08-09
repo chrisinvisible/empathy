@@ -92,7 +92,6 @@
 #define GEOMETRY_NAME "main-window"
 
 /* Labels for empty contact list */
-#define CONTACT_LIST_EMPTY _("Your contact list is empty")
 #define NO_MATCH_FOUND _("No match found")
 
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
@@ -374,15 +373,14 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 	if (!gtk_tree_model_get_iter_first (model, &help_iter)) {
 		priv->empty = TRUE;
 
-		if (empathy_individual_view_is_searching (priv->individual_view))
+		if (empathy_individual_view_is_searching (
+				priv->individual_view)) {
 			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
 					NO_MATCH_FOUND);
-		else
-			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-					CONTACT_LIST_EMPTY);
-
-		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
-				0);
+			gtk_notebook_set_current_page (
+					GTK_NOTEBOOK (priv->notebook),
+					0);
+		}
 	}
 }
 
@@ -1697,13 +1695,9 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	g_signal_connect_swapped (window, "map",
 		G_CALLBACK (gtk_widget_grab_focus), priv->individual_view);
 
-	/* Set up the Notebook for the TreeView */
-	priv->empty = TRUE;
-	gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-			CONTACT_LIST_EMPTY);
-
 	/* Connect to proper signals to check if contact list is empty or not */
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->individual_view));
+	priv->empty = TRUE;
 	g_signal_connect (model, "row-inserted",
 			  G_CALLBACK (main_window_row_inserted_cb),
 			  window);
