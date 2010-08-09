@@ -68,7 +68,8 @@ EmpathyTLSCertificate * empathy_tls_certificate_new_finish (GAsyncResult * res,
 
 void empathy_tls_certificate_accept (EmpathyTLSCertificate *self);
 void empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
-    EmpTLSCertificateRejectReason reason);
+    EmpTLSCertificateRejectReason reason,
+    gboolean user_requested);
 
 G_END_DECLS
 

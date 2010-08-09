@@ -295,16 +295,16 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
 
   pspec = g_param_spec_uint ("state", "State",
       "The state of this certificate.",
-      EMP_TLS_CERTIFICATE_STATE_NONE, NUM_EMP_TLS_CERTIFICATE_STATES -1,
-      EMP_TLS_CERTIFICATE_STATE_NONE,
+      EMP_TLS_CERTIFICATE_STATE_PENDING, NUM_EMP_TLS_CERTIFICATE_STATES -1,
+      EMP_TLS_CERTIFICATE_STATE_PENDING,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_STATE, pspec);
 
   pspec = g_param_spec_uint ("reject-reason", "Reject reason",
       "The reason why this certificate was rejected.",
-      EMP_TLS_CERTIFICATE_REJECT_REASON_NONE,
+      EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN,
       NUM_EMP_TLS_CERTIFICATE_REJECT_REASONS -1,
-      EMP_TLS_CERTIFICATE_REJECT_REASON_NONE,
+      EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_REJECT_REASON, pspec);      
 }
@@ -331,6 +331,54 @@ cert_proxy_reject_cb (TpProxy *proxy,
 
   if (error != NULL)
     DEBUG ("Error was %s", error->message);
+}
+
+static const gchar *
+reject_reason_get_dbus_error (EmpTLSCertificateRejectReason reason)
+{
+  const gchar *retval = NULL;
+
+  switch (reason)
+    {
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_INVALID);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_UNTRUSTED);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_EXPIRED:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_EXPIRED);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_NOT_ACTIVATED:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_NOT_ACTIVATED);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_FINGERPRINT_MISMATCH:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_FINGERPRINT_MISMATCH);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_HOSTNAME_MISMATCH);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_SELF_SIGNED:
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_SELF_SIGNED);
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_REVOKED:
+      /* FIXME */
+      retval = "org.freedesktop.Telepathy.Error.Cert.Revoked";
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_INSECURE:
+      /* FIXME */
+      retval = "org.freedesktop.Telepathy.Error.Cert.Insecure";
+      break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_LIMIT_EXCEEDED:
+      /* FIXME */
+      retval = "org.freedesktop.Telepathy.Error.Cert.LimitExceeded";
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  return retval;
 }
 
 void
@@ -380,14 +428,24 @@ empathy_tls_certificate_accept (EmpathyTLSCertificate *self)
 
 void
 empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
-    EmpTLSCertificateRejectReason reason)
+    EmpTLSCertificateRejectReason reason,
+    gboolean user_requested)
 {
+  GHashTable *details;
+  const gchar *dbus_error;
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
 
   g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
 
   DEBUG ("Rejecting TLS certificate with reason %u", reason);
 
+  dbus_error = reject_reason_get_dbus_error (reason);
+  details = tp_asv_new ("user-requested", G_TYPE_BOOLEAN, user_requested,
+      NULL);
+
   emp_cli_authentication_tls_certificate_call_reject (priv->proxy,
-      -1, reason, cert_proxy_reject_cb, NULL, NULL, G_OBJECT (self));
+      -1, reason, dbus_error, details,
+      cert_proxy_reject_cb, NULL, NULL, G_OBJECT (self));
+
+  g_hash_table_unref (details);
 }
