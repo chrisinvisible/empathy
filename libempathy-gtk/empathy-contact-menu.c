@@ -247,7 +247,7 @@ empathy_contact_audio_call_menu_item_activated (GtkMenuItem *item,
 {
 
 	empathy_call_factory_new_call_with_streams (contact, TRUE, FALSE,
-		gtk_get_current_event_time (), NULL, NULL);
+		gtk_get_current_event_time (), NULL);
 }
 
 GtkWidget *
@@ -277,7 +277,7 @@ empathy_contact_video_call_menu_item_activated (GtkMenuItem *item,
 	EmpathyContact *contact)
 {
 	empathy_call_factory_new_call_with_streams (contact, TRUE, TRUE,
-		gtk_get_current_event_time (), NULL, NULL);
+		gtk_get_current_event_time (), NULL);
 }
 
 GtkWidget *

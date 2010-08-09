@@ -284,7 +284,7 @@ empathy_individual_audio_call_menu_item_activated (GtkMenuItem *item,
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_call_factory_new_call_with_streams (contact, TRUE, FALSE,
-      gtk_get_current_event_time (), NULL, NULL);
+      gtk_get_current_event_time (), NULL);
   g_object_unref (contact);
 }
 
@@ -327,7 +327,7 @@ empathy_individual_video_call_menu_item_activated (GtkMenuItem *item,
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_call_factory_new_call_with_streams (contact, TRUE, TRUE,
-      gtk_get_current_event_time (), NULL, NULL);
+      gtk_get_current_event_time (), NULL);
   g_object_unref (contact);
 }
 

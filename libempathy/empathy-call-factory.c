@@ -220,7 +220,6 @@ empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
     gboolean initial_audio,
     gboolean initial_video,
     gint64 timestamp,
-    EmpathyDispatcherRequestCb callback,
     gpointer user_data)
 {
   EmpathyDispatcher *dispatcher;
@@ -232,7 +231,7 @@ empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
   dispatcher = empathy_dispatcher_dup_singleton ();
 
   empathy_dispatcher_create_channel (dispatcher,
-      empathy_contact_get_connection (contact), request, timestamp, callback,
+      empathy_contact_get_connection (contact), request, timestamp, NULL,
       user_data);
 
   g_object_unref (dispatcher);
