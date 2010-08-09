@@ -188,6 +188,24 @@ empathy_call_factory_get (void)
   return EMPATHY_CALL_FACTORY (call_factory);
 }
 
+GHashTable *
+empathy_call_factory_create_request (EmpathyContact *contact,
+    gboolean initial_audio,
+    gboolean initial_video)
+{
+  return tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_HANDLE, G_TYPE_UINT,
+        empathy_contact_get_handle (contact),
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN,
+        initial_audio,
+      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN,
+        initial_video,
+      NULL);
+}
+
 /**
  * empathy_call_factory_new_call_with_streams:
  * @factory: an #EmpathyCallFactory
@@ -208,17 +226,8 @@ empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
   EmpathyDispatcher *dispatcher;
   GHashTable *request;
 
-  request = tp_asv_new (
-      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
-        TP_IFACE_CHANNEL_TYPE_STREAMED_MEDIA,
-      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
-      TP_PROP_CHANNEL_TARGET_HANDLE, G_TYPE_UINT,
-        empathy_contact_get_handle (contact),
-      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_AUDIO, G_TYPE_BOOLEAN,
-        initial_audio,
-      TP_PROP_CHANNEL_TYPE_STREAMED_MEDIA_INITIAL_VIDEO, G_TYPE_BOOLEAN,
-        initial_video,
-      NULL);
+  request = empathy_call_factory_create_request (contact, initial_audio,
+      initial_video);
 
   dispatcher = empathy_dispatcher_dup_singleton ();
 
