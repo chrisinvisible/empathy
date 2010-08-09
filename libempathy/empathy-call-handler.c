@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <telepathy-glib/account-channel-request.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/interfaces.h>
 
@@ -30,9 +31,11 @@
 
 #include "empathy-call-handler.h"
 #include "empathy-call-factory.h"
-#include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
 #include "empathy-utils.h"
+
+#define DEBUG_FLAG EMPATHY_DEBUG_VOIP
+#include <libempathy/empathy-debug.h>
 
 G_DEFINE_TYPE(EmpathyCallHandler, empathy_call_handler, G_TYPE_OBJECT)
 
@@ -751,19 +754,23 @@ empathy_call_handler_start_tpfs (EmpathyCallHandler *self)
 }
 
 static void
-empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
-  const GError *error,
-  gpointer user_data)
+empathy_call_handler_request_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
 {
   EmpathyCallHandler *self = EMPATHY_CALL_HANDLER (user_data);
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
   TpChannel *channel;
+  GError *error = NULL;
 
-  if (error != NULL)
-    return;
-
-  channel = empathy_dispatch_operation_get_channel (operation);
-  g_assert (channel != NULL);
+  channel = tp_account_channel_request_create_and_handle_channel_finish (
+      TP_ACCOUNT_CHANNEL_REQUEST (source), result, NULL, &error);
+  if (channel == NULL)
+    {
+      DEBUG ("Failed to create the channel: %s", error->message);
+      g_error_free (error);
+      return;
+    }
 
   priv->call = empathy_tp_call_new (channel);
 
@@ -771,15 +778,17 @@ empathy_call_handler_request_cb (EmpathyDispatchOperation *operation,
 
   empathy_call_handler_start_tpfs (self);
 
-  empathy_dispatch_operation_claim (operation);
+  g_object_unref (channel);
 }
 
 void
 empathy_call_handler_start_call (EmpathyCallHandler *handler,
     gint64 timestamp)
 {
-
   EmpathyCallHandlerPriv *priv = GET_PRIV (handler);
+  TpAccountChannelRequest *req;
+  TpAccount *account;
+  GHashTable *request;
 
   if (priv->call != NULL)
     {
@@ -792,9 +801,17 @@ empathy_call_handler_start_call (EmpathyCallHandler *handler,
    * will be used to create a new EmpathyTpCall. */
   g_assert (priv->contact != NULL);
 
-  empathy_call_factory_new_call_with_streams (priv->contact,
-      priv->initial_audio, priv->initial_video, timestamp,
+  account = empathy_contact_get_account (priv->contact);
+  request = empathy_call_factory_create_request (priv->contact,
+      priv->initial_audio, priv->initial_video);
+
+  req = tp_account_channel_request_new (account, request, timestamp);
+
+  tp_account_channel_request_create_and_handle_channel_async (req, NULL,
       empathy_call_handler_request_cb, handler);
+
+  g_object_unref (req);
+  g_hash_table_unref (request);
 }
 
 /**
