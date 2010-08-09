@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-08 01:46+0300\n"
-"PO-Revision-Date: 2010-07-24 13:26+0200\n"
+"POT-Creation-Date: 2010-08-09 12:13+0300\n"
+"PO-Revision-Date: 2010-08-09 12:17+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -586,46 +586,40 @@ msgstr "שגיאת תעודה"
 
 #: ../libempathy/empathy-utils.c:353
 msgid "Encryption is not available"
-msgstr ""
+msgstr "אין הצפנה זמינה"
 
 #: ../libempathy/empathy-utils.c:355
-#, fuzzy
 msgid "Certificate is invalid"
-msgstr "התעודה אינה פעילה"
+msgstr "התעודה שגויה"
 
 #: ../libempathy/empathy-utils.c:357
-#, fuzzy
 msgid "Connection has been refused"
-msgstr "Connection managers should be used"
+msgstr "החיבור נתקל בסירוב"
 
 #: ../libempathy/empathy-utils.c:359
-#, fuzzy
 msgid "Connection can't be established"
-msgstr "Connection managers should be used"
+msgstr "לא ניתן לקיים את החיבור"
 
 #: ../libempathy/empathy-utils.c:361
-#, fuzzy
 msgid "Connection has been lost"
-msgstr "Connection managers should be used"
+msgstr "החיבור נקטע"
 
 #: ../libempathy/empathy-utils.c:363
-#, fuzzy
 msgid "This resource is already connected to the server"
-msgstr "חשבון זה כבר קיים על השרת"
+msgstr "המשאב כבר מחובר לשרת"
 
 #: ../libempathy/empathy-utils.c:365
 msgid ""
 "Connection has been replaced by a new connection using the same resource"
-msgstr ""
+msgstr "החיבור הוחלף בחיבור חדש באמצעות אותו המשאב"
 
 #: ../libempathy/empathy-utils.c:368
-#, fuzzy
 msgid "The account already exists on the server"
-msgstr "חשבון זה כבר קיים על השרת"
+msgstr "החשבון כבר קיים בשרת"
 
 #: ../libempathy/empathy-utils.c:370
 msgid "Server is currently too busy to handle the connection"
-msgstr ""
+msgstr "השרת עסוק מכדי לטפל בחיבור"
 
 #: ../libempathy/empathy-utils.c:521
 msgid "People Nearby"
@@ -2113,7 +2107,7 @@ msgstr "לא להתחבר בהפעלה"
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "אין להציג את רשימת אנשי הקשר או כל דו־שיח אחר בהפעלה"
 
-#: ../src/empathy.c:493
+#: ../src/empathy.c:498
 msgid "- Empathy IM Client"
 msgstr "- לקוח המסרים המידיים Empathy"
 
@@ -2486,23 +2480,23 @@ msgstr "שיחה"
 
 #: ../src/empathy-call-window.c:1496
 msgid "The IP address as seen by the machine"
-msgstr ""
+msgstr "כתובת ה־IP כפי שנראית על ידי המחשב"
 
 #: ../src/empathy-call-window.c:1498
 msgid "The IP address as seen by a server on the Internet"
-msgstr ""
+msgstr "כתובת ה־IP כפי שנראית על ידי שרת באינטרנט"
 
 #: ../src/empathy-call-window.c:1500
 msgid "The IP address of the peer as seen by the other side"
-msgstr ""
+msgstr "כתובת ה־IP כדי שנראית על ידי עמית מהצד השני"
 
 #: ../src/empathy-call-window.c:1502
 msgid "The IP address of a relay server"
-msgstr ""
+msgstr "כתובת ה־IP של שרת הממסר"
 
 #: ../src/empathy-call-window.c:1504
 msgid "The IP address of the multicast group"
-msgstr ""
+msgstr "כתובת ה־IP של קבוצת התשדורת"
 
 #. Translators: number of minutes:seconds the caller has been connected
 #: ../src/empathy-call-window.c:2237
@@ -2567,7 +2561,7 @@ msgstr "ארעה שגיאה במנוע הקריאה"
 
 #: ../src/empathy-call-window.c:2381
 msgid "The end of the stream was reached"
-msgstr ""
+msgstr "התזרים הגיע לסיומו"
 
 #: ../src/empathy-call-window.c:2421
 msgid "Can't establish audio stream"
@@ -2623,7 +2617,7 @@ msgstr "ניתוק השיחה הנוכחית"
 
 #: ../src/empathy-call-window.ui.h:12
 msgid "Local Candidate:"
-msgstr ""
+msgstr "מועמד מקומי:"
 
 #: ../src/empathy-call-window.ui.h:13
 msgid "Preview"
@@ -2635,7 +2629,7 @@ msgstr "חיוג חוזר"
 
 #: ../src/empathy-call-window.ui.h:15
 msgid "Remote Candidate:"
-msgstr ""
+msgstr "מועמד מרוחק:"
 
 #: ../src/empathy-call-window.ui.h:16
 msgid "Send Audio"
@@ -3023,14 +3017,12 @@ msgstr "מקור"
 
 #. Labels for empty contact list
 #: ../src/empathy-main-window.c:95
-#, fuzzy
 msgid "Your contact list is empty"
-msgstr "Show contact list in rooms"
+msgstr "רשימת אנשי הקשר שלך ריקה"
 
 #: ../src/empathy-main-window.c:96
-#, fuzzy
 msgid "No match found"
-msgstr "לא נקבע נושא"
+msgstr "לא נמצאה התאמה"
 
 #: ../src/empathy-main-window.c:521
 msgid "Reconnect"
