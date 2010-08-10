@@ -47,6 +47,7 @@
 #include "empathy-account-chooser.h"
 #include "empathy-avatar-chooser.h"
 #include "empathy-avatar-image.h"
+#include "empathy-groups-widget.h"
 #include "empathy-ui-utils.h"
 #include "empathy-string-parser.h"
 #include "empathy-kludge-label.h"
@@ -114,10 +115,7 @@ typedef struct
 #endif
 
   /* Groups */
-  GtkWidget *vbox_groups;
-  GtkWidget *entry_group;
-  GtkWidget *button_group;
-  GtkWidget *treeview_groups;
+  GtkWidget *groups_widget;
 
   /* Details */
   GtkWidget *vbox_details;
@@ -550,287 +548,27 @@ contact_widget_client_setup (EmpathyContactWidget *information)
 }
 
 static void
-contact_widget_cell_toggled (GtkCellRendererToggle *cell,
-                             gchar *path_string,
-                             EmpathyContactWidget *information)
-{
-  GtkTreeView *view;
-  GtkTreeModel *model;
-  GtkListStore *store;
-  GtkTreePath *path;
-  GtkTreeIter iter;
-  gboolean was_enabled;
-  gchar *group;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-  model = gtk_tree_view_get_model (view);
-  store = GTK_LIST_STORE (model);
-
-  path = gtk_tree_path_new_from_string (path_string);
-
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (model, &iter,
-      COL_ENABLED, &was_enabled,
-      COL_NAME, &group,
-      -1);
-
-  gtk_list_store_set (store, &iter, COL_ENABLED, !was_enabled, -1);
-  gtk_tree_path_free (path);
-
-  if (group != NULL)
-    {
-      empathy_contact_change_group (information->contact, group, !was_enabled);
-      g_free (group);
-    }
-}
-
-static void
-contact_widget_model_populate_columns (EmpathyContactWidget *information)
-{
-  GtkTreeView *view;
-  GtkTreeModel *model;
-  GtkTreeViewColumn *column;
-  GtkCellRenderer  *renderer;
-  guint col_offset;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-  model = gtk_tree_view_get_model (view);
-
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_signal_connect (renderer, "toggled",
-      G_CALLBACK (contact_widget_cell_toggled), information);
-
-  column = gtk_tree_view_column_new_with_attributes (_("Select"), renderer,
-      "active", COL_ENABLED, NULL);
-
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (column, 50);
-  gtk_tree_view_append_column (view, column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  col_offset = gtk_tree_view_insert_column_with_attributes (view,
-      -1, _("Group"),
-      renderer,
-      "text", COL_NAME,
-      /* "editable", COL_EDITABLE, */
-      NULL);
-
-  g_object_set_data (G_OBJECT (renderer),
-      "column", GINT_TO_POINTER (COL_NAME));
-
-  column = gtk_tree_view_get_column (view, col_offset - 1);
-  gtk_tree_view_column_set_sort_column_id (column, COL_NAME);
-  gtk_tree_view_column_set_resizable (column,FALSE);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-}
-
-static void
-contact_widget_model_setup (EmpathyContactWidget *information)
-{
-  GtkTreeView *view;
-  GtkListStore *store;
-  GtkTreeSelection *selection;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-
-  store = gtk_list_store_new (COL_COUNT,
-      G_TYPE_STRING,   /* name */
-      G_TYPE_BOOLEAN,  /* enabled */
-      G_TYPE_BOOLEAN); /* editable */
-
-  gtk_tree_view_set_model (view, GTK_TREE_MODEL (store));
-
-  selection = gtk_tree_view_get_selection (view);
-  gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
-
-  contact_widget_model_populate_columns (information);
-
-  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (store),
-      COL_NAME, GTK_SORT_ASCENDING);
-
-  g_object_unref (store);
-}
-
-static void
-contact_widget_groups_populate_data (EmpathyContactWidget *information)
-{
-  GtkTreeView *view;
-  GtkListStore *store;
-  GtkTreeIter iter;
-  GList *my_groups, *l;
-  GList *all_groups;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-  store = GTK_LIST_STORE (gtk_tree_view_get_model (view));
-  gtk_list_store_clear (store);
-
-  all_groups = empathy_contact_list_get_all_groups (
-      EMPATHY_CONTACT_LIST (information->manager));
-  my_groups = empathy_contact_list_get_groups (
-      EMPATHY_CONTACT_LIST (information->manager),
-      information->contact);
-
-  for (l = all_groups; l; l = l->next)
-    {
-      const gchar *group_str;
-      gboolean enabled;
-
-      group_str = l->data;
-
-      enabled = g_list_find_custom (my_groups,
-          group_str, (GCompareFunc) strcmp) != NULL;
-
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-          COL_NAME, group_str,
-          COL_EDITABLE, TRUE,
-          COL_ENABLED, enabled,
-          -1);
-    }
-
-  g_list_foreach (all_groups, (GFunc) g_free, NULL);
-  g_list_foreach (my_groups, (GFunc) g_free, NULL);
-  g_list_free (all_groups);
-  g_list_free (my_groups);
-}
-
-static gboolean
-contact_widget_model_find_name_foreach (GtkTreeModel *model,
-                                        GtkTreePath *path,
-                                        GtkTreeIter *iter,
-                                        FindName *data)
-{
-  gchar *name;
-
-  gtk_tree_model_get (model, iter,
-      COL_NAME, &name,
-      -1);
-
-  if (!name)
-      return FALSE;
-
-  if (data->name && strcmp (data->name, name) == 0)
-    {
-      data->found = TRUE;
-      data->found_iter = *iter;
-
-      g_free (name);
-
-      return TRUE;
-    }
-
-  g_free (name);
-
-  return FALSE;
-}
-
-static gboolean
-contact_widget_model_find_name (EmpathyContactWidget *information,
-                                const gchar *name,
-                                GtkTreeIter *iter)
-{
-  GtkTreeView *view;
-  GtkTreeModel *model;
-  FindName data;
-
-  if (EMP_STR_EMPTY (name))
-      return FALSE;
-
-  data.information = information;
-  data.name = name;
-  data.found = FALSE;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-  model = gtk_tree_view_get_model (view);
-
-  gtk_tree_model_foreach (model,
-      (GtkTreeModelForeachFunc) contact_widget_model_find_name_foreach,
-      &data);
-
-  if (data.found == TRUE)
-    {
-      *iter = data.found_iter;
-      return TRUE;
-    }
-
-  return FALSE;
-}
-
-static void
-contact_widget_entry_group_changed_cb (GtkEditable *editable,
-                                       EmpathyContactWidget *information)
-{
-  GtkTreeIter iter;
-  const gchar *group;
-
-  group = gtk_entry_get_text (GTK_ENTRY (information->entry_group));
-
-  if (contact_widget_model_find_name (information, group, &iter))
-      gtk_widget_set_sensitive (GTK_WIDGET (information->button_group), FALSE);
-  else
-      gtk_widget_set_sensitive (GTK_WIDGET (information->button_group),
-          !EMP_STR_EMPTY (group));
-}
-
-static void
-contact_widget_entry_group_activate_cb (GtkEntry *entry,
-                                        EmpathyContactWidget  *information)
-{
-  gtk_widget_activate (GTK_WIDGET (information->button_group));
-}
-
-static void
-contact_widget_button_group_clicked_cb (GtkButton *button,
-                                        EmpathyContactWidget *information)
-{
-  GtkTreeView *view;
-  GtkListStore *store;
-  GtkTreeIter iter;
-  const gchar *group;
-
-  view = GTK_TREE_VIEW (information->treeview_groups);
-  store = GTK_LIST_STORE (gtk_tree_view_get_model (view));
-
-  group = gtk_entry_get_text (GTK_ENTRY (information->entry_group));
-
-  gtk_list_store_append (store, &iter);
-  gtk_list_store_set (store, &iter,
-      COL_NAME, group,
-      COL_ENABLED, TRUE,
-      -1);
-
-  empathy_contact_change_group (information->contact, group, TRUE);
-}
-
-static void
-contact_widget_groups_notify_cb (EmpathyContactWidget *information)
-{
-  /* FIXME: not implemented */
-}
-
-static void
-contact_widget_groups_setup (EmpathyContactWidget *information)
-{
-  if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_GROUPS)
-    {
-      contact_widget_model_setup (information);
-    }
-}
-
-static void
 contact_widget_groups_update (EmpathyContactWidget *information)
 {
   if (information->flags & EMPATHY_CONTACT_WIDGET_EDIT_GROUPS &&
-      information->contact)
+      information->contact != NULL)
     {
-      g_signal_connect_swapped (information->contact, "notify::groups",
-          G_CALLBACK (contact_widget_groups_notify_cb), information);
-      contact_widget_groups_populate_data (information);
+      FolksPersona *persona =
+          empathy_contact_get_persona (information->contact);
 
-      gtk_widget_show (information->vbox_groups);
+      if (FOLKS_IS_GROUPS (persona))
+        {
+          empathy_groups_widget_set_groupable (
+              EMPATHY_GROUPS_WIDGET (information->groups_widget),
+              FOLKS_GROUPS (persona));
+          gtk_widget_show (information->groups_widget);
+
+          return;
+        }
     }
-  else
-      gtk_widget_hide (information->vbox_groups);
+
+  /* In case of failure */
+  gtk_widget_hide (information->groups_widget);
 }
 
 /* Converts the Location's GHashTable's key to a user readable string */
@@ -1421,8 +1159,6 @@ contact_widget_remove_contact (EmpathyContactWidget *information)
           contact_widget_presence_notify_cb, information);
       g_signal_handlers_disconnect_by_func (information->contact,
           contact_widget_avatar_notify_cb, information);
-      g_signal_handlers_disconnect_by_func (information->contact,
-          contact_widget_groups_notify_cb, information);
 
       tp_contact = empathy_contact_get_tp_contact (information->contact);
       if (tp_contact != NULL)
@@ -1871,10 +1607,7 @@ empathy_contact_widget_new (EmpathyContact *contact,
 #ifdef HAVE_LIBCHAMPLAIN
        "viewport_map", &information->viewport_map,
 #endif
-       "vbox_groups", &information->vbox_groups,
-       "entry_group", &information->entry_group,
-       "button_group", &information->button_group,
-       "treeview_groups", &information->treeview_groups,
+       "groups_widget", &information->groups_widget,
        "vbox_details", &information->vbox_details,
        "table_details", &information->table_details,
        "hbox_details_requested", &information->hbox_details_requested,
@@ -1886,9 +1619,6 @@ empathy_contact_widget_new (EmpathyContact *contact,
 
   empathy_builder_connect (gui, information,
       "vbox_contact_widget", "destroy", contact_widget_destroy_cb,
-      "entry_group", "changed", contact_widget_entry_group_changed_cb,
-      "entry_group", "activate", contact_widget_entry_group_activate_cb,
-      "button_group", "clicked", contact_widget_button_group_clicked_cb,
       NULL);
   information->table_location = NULL;
 
@@ -1900,7 +1630,6 @@ empathy_contact_widget_new (EmpathyContact *contact,
 
   /* Create widgets */
   contact_widget_contact_setup (information);
-  contact_widget_groups_setup (information);
   contact_widget_details_setup (information);
   contact_widget_client_setup (information);
 
