@@ -58,6 +58,21 @@ struct _EmpathyNewCallDialogPriv {
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), EMPATHY_TYPE_NEW_CALL_DIALOG, \
     EmpathyNewCallDialogPriv))
 
+static void
+create_media_channel_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  if (!tp_account_channel_request_create_channel_finish (
+        TP_ACCOUNT_CHANNEL_REQUEST (source), result, &error))
+    {
+      DEBUG ("Failed to create media channel: %s", error->message);
+      g_error_free (error);
+    }
+}
+
 /**
  * SECTION:empathy-new-call-dialog
  * @title: EmpathyNewCallDialog
@@ -69,13 +84,13 @@ struct _EmpathyNewCallDialogPriv {
  */
 
 static void
-call_contact (TpConnection *connection,
+call_contact (TpAccount *account,
     const gchar *contact_id,
     gboolean video,
     gint64 timestamp)
 {
-  EmpathyDispatcher *dispatcher;
   GHashTable *request;
+  TpAccountChannelRequest *req;
 
   request = tp_asv_new (
       TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
@@ -88,12 +103,12 @@ call_contact (TpConnection *connection,
         video,
       NULL);
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
+  req = tp_account_channel_request_new (account, request, timestamp);
 
-  empathy_dispatcher_create_channel (dispatcher, connection, request,
-      timestamp, NULL, NULL);
+  tp_account_channel_request_create_channel_async (req, NULL, NULL,
+      create_media_channel_cb, NULL);
 
-  g_object_unref (dispatcher);
+  g_object_unref (req);
 }
 
 static void
@@ -101,21 +116,21 @@ empathy_new_call_dialog_response (GtkDialog *dialog, int response_id)
 {
   EmpathyNewCallDialogPriv *priv = GET_PRIV (dialog);
   gboolean video;
-  TpConnection *connection;
+  TpAccount *account;
   const gchar *contact_id;
 
   if (response_id != GTK_RESPONSE_ACCEPT) goto out;
 
   contact_id = empathy_contact_selector_dialog_get_selected (
-      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), &connection, NULL);
+      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL, &account);
 
-  if (EMP_STR_EMPTY (contact_id) || connection == NULL) goto out;
+  if (EMP_STR_EMPTY (contact_id) || account == NULL) goto out;
 
   /* check if video is enabled now because the dialog will be destroyed once
    * we return from this function. */
   video = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->check_video));
 
-  call_contact (connection, contact_id, video, gtk_get_current_event_time ());
+  call_contact (account, contact_id, video, gtk_get_current_event_time ());
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));
