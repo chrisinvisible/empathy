@@ -934,7 +934,7 @@ chat_window_invite_participant_activate_cb (GtkAction         *action,
 		const char *id;
 
 		id = empathy_contact_selector_dialog_get_selected (
-				EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL);
+				EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL, NULL);
 		if (EMP_STR_EMPTY (id)) goto out;
 
 		connection = tp_channel_borrow_connection (channel);

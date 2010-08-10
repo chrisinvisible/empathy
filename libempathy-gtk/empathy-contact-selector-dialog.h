@@ -55,7 +55,8 @@ struct _EmpathyContactSelectorDialog {
 GType empathy_contact_selector_dialog_get_type (void);
 const gchar *empathy_contact_selector_dialog_get_selected (
     EmpathyContactSelectorDialog *self,
-    TpConnection **connection);
+    TpConnection **connection,
+    TpAccount **account);
 void empathy_contact_selector_dialog_set_show_account_chooser (
     EmpathyContactSelectorDialog *self,
     gboolean show_account_chooser);

@@ -66,7 +66,7 @@ empathy_new_message_dialog_response (GtkDialog *dialog, int response_id)
   if (response_id != GTK_RESPONSE_ACCEPT) goto out;
 
   contact_id = empathy_contact_selector_dialog_get_selected (
-      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), &connection);
+      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), &connection, NULL);
 
   if (EMP_STR_EMPTY (contact_id) || connection == NULL) goto out;
 

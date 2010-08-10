@@ -492,7 +492,8 @@ empathy_contact_selector_dialog_class_init (
 const gchar *
 empathy_contact_selector_dialog_get_selected (
     EmpathyContactSelectorDialog *self,
-    TpConnection **connection)
+    TpConnection **connection,
+    TpAccount **account)
 {
   EmpathyContactSelectorDialogPriv *priv;
   const char *id;
@@ -501,7 +502,7 @@ empathy_contact_selector_dialog_get_selected (
 
   priv = GET_PRIV (self);
 
-  if (connection)
+  if (connection != NULL)
     {
       if (priv->show_account_chooser)
         *connection = empathy_account_chooser_get_connection (
@@ -509,6 +510,16 @@ empathy_contact_selector_dialog_get_selected (
       else
         *connection = NULL;
     }
+
+  if (account != NULL)
+    {
+      if (priv->show_account_chooser)
+        *account = empathy_account_chooser_get_account (
+            EMPATHY_ACCOUNT_CHOOSER (priv->account_chooser));
+      else
+        *account = NULL;
+    }
+
 
   id = gtk_entry_get_text (GTK_ENTRY (priv->entry_id));
   return id;
