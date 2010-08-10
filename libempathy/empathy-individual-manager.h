@@ -90,5 +90,9 @@ empathy_individual_manager_get_flags_for_connection (
 void empathy_individual_manager_link_personas (EmpathyIndividualManager *self,
     GList *personas);
 
+void empathy_individual_manager_unlink_individual (
+    EmpathyIndividualManager *self,
+    FolksIndividual *individual);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_MANAGER_H__ */

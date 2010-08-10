@@ -568,3 +568,37 @@ empathy_individual_manager_link_personas (EmpathyIndividualManager *self,
   folks_individual_aggregator_link_personas (priv->aggregator, personas,
       (GAsyncReadyCallback) link_personas_cb, NULL);
 }
+
+static void
+unlink_individual_cb (FolksIndividualAggregator *aggregator,
+    GAsyncResult *async_result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  folks_individual_aggregator_unlink_individual_finish (aggregator,
+      async_result, &error);
+
+  if (error != NULL)
+    {
+      g_warning ("Failed to unlink individual: %s", error->message);
+      g_clear_error (&error);
+    }
+}
+
+void
+empathy_individual_manager_unlink_individual (EmpathyIndividualManager *self,
+    FolksIndividual *individual)
+{
+  EmpathyIndividualManagerPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_MANAGER (self));
+  g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
+
+  priv = GET_PRIV (self);
+
+  DEBUG ("Unlinking individual '%s'", folks_individual_get_id (individual));
+
+  folks_individual_aggregator_unlink_individual (priv->aggregator, individual,
+      (GAsyncReadyCallback) unlink_individual_cb, NULL);
+}
