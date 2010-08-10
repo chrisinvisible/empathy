@@ -111,6 +111,20 @@ tp_chat_async_cb (TpChannel *proxy,
 }
 
 static void
+create_conference_cb (GObject *source,
+		      GAsyncResult *result,
+		      gpointer user_data)
+{
+	GError *error = NULL;
+
+	if (!tp_account_channel_request_create_channel_finish (
+			TP_ACCOUNT_CHANNEL_REQUEST (source), result, &error)) {
+		DEBUG ("Failed to create conference channel: %s", error->message);
+		g_error_free (error);
+	}
+}
+
+static void
 tp_chat_add (EmpathyContactList *list,
 	     EmpathyContact     *contact,
 	     const gchar        *message)
@@ -129,13 +143,11 @@ tp_chat_add (EmpathyContactList *list,
 		tp_cli_channel_interface_group_call_add_members (priv->channel,
 			-1, &handles, NULL, NULL, NULL, NULL, NULL);
 	} else if (priv->can_upgrade_to_muc) {
-		EmpathyDispatcher *dispatcher;
+		TpAccountChannelRequest *req;
 		GHashTable        *props;
 		const char        *object_path;
 		GPtrArray          channels = { (gpointer *) &object_path, 1 };
 		const char        *invitees[2] = { NULL, };
-
-		dispatcher = empathy_dispatcher_dup_singleton ();
 
 		invitees[0] = empathy_contact_get_id (contact);
 		object_path = tp_proxy_get_object_path (priv->channel);
@@ -152,13 +164,17 @@ tp_chat_add (EmpathyContactList *list,
 		    /* FIXME: InvitationMessage ? */
 		    NULL);
 
-		/* Although this is a MUC, it's anonymous, so CreateChannel is
-		 * valid.
-		 * props now belongs to EmpathyDispatcher, don't free it */
-		empathy_dispatcher_create_channel (dispatcher, priv->connection,
-				props, EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
+		req = tp_account_channel_request_new (
+			empathy_get_account_for_connection (priv->connection), props,
+			EMPATHY_DISPATCHER_NON_USER_ACTION);
 
-		g_object_unref (dispatcher);
+		/* Although this is a MUC, it's anonymous, so CreateChannel is
+		 * valid. */
+		tp_account_channel_request_create_channel_async (req, NULL, NULL,
+			create_conference_cb, NULL);
+
+		g_object_unref (req);
+		g_hash_table_unref (props);
 	} else {
 		g_warning ("Cannot add to this channel");
 	}
