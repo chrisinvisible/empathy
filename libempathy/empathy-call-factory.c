@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <telepathy-glib/account-channel-request.h>
 #include <telepathy-glib/simple-handler.h>
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
@@ -30,6 +31,9 @@
 #include "empathy-marshal.h"
 #include "empathy-call-factory.h"
 #include "empathy-utils.h"
+
+#define DEBUG_FLAG EMPATHY_DEBUG_VOIP
+#include <libempathy/empathy-debug.h>
 
 G_DEFINE_TYPE(EmpathyCallFactory, empathy_call_factory, G_TYPE_OBJECT)
 
@@ -206,6 +210,21 @@ empathy_call_factory_create_request (EmpathyContact *contact,
       NULL);
 }
 
+static void
+create_media_channel_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  if (!tp_account_channel_request_create_channel_finish (
+        TP_ACCOUNT_CHANNEL_REQUEST (source), result, &error))
+    {
+      DEBUG ("Failed to create media channel: %s", error->message);
+      g_error_free (error);
+    }
+}
+
 /**
  * empathy_call_factory_new_call_with_streams:
  * @factory: an #EmpathyCallFactory
@@ -222,19 +241,21 @@ empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
     gint64 timestamp,
     gpointer user_data)
 {
-  EmpathyDispatcher *dispatcher;
   GHashTable *request;
+  TpAccount *account;
+  TpAccountChannelRequest *req;
 
   request = empathy_call_factory_create_request (contact, initial_audio,
       initial_video);
 
-  dispatcher = empathy_dispatcher_dup_singleton ();
+  account = empathy_contact_get_account (contact);
 
-  empathy_dispatcher_create_channel (dispatcher,
-      empathy_contact_get_connection (contact), request, timestamp, NULL,
-      user_data);
+  req = tp_account_channel_request_new (account, request, timestamp);
 
-  g_object_unref (dispatcher);
+  tp_account_channel_request_create_channel_async (req, NULL, NULL,
+      create_media_channel_cb, NULL);
+
+  g_object_unref (req);
 }
 
 static void
