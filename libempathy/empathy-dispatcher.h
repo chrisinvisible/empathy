@@ -28,7 +28,6 @@
 #include <telepathy-glib/channel.h>
 
 #include "empathy-contact.h"
-#include "empathy-handler.h"
 #include "empathy-dispatch-operation.h"
 
 G_BEGIN_DECLS
@@ -57,22 +56,10 @@ struct _EmpathyDispatcherClass
  GObjectClass parent_class;
 };
 
-/* Will be called when the channel is ready for dispatching. The requestor
- * handle the channel itself by calling empathy_dispatch_operation_handles */
-typedef void (EmpathyDispatcherRequestCb) (
-  EmpathyDispatchOperation *dispatch,  const GError *error,
-  gpointer user_data);
 typedef void (EmpathyDispatcherFindChannelClassCb) (
   GList *channel_classes, gpointer user_data);
 
 GType empathy_dispatcher_get_type (void) G_GNUC_CONST;
-
-void empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
-  TpConnection *connection,
-  GHashTable *request,
-  gint64 timestamp,
-  EmpathyDispatcherRequestCb *callback,
-  gpointer user_data);
 
 /* Requesting 1 to 1 text channels */
 void empathy_dispatcher_chat_with_contact_id (TpAccount *account,
@@ -97,21 +84,6 @@ GList * empathy_dispatcher_find_requestable_channel_classes
     (EmpathyDispatcher *dispatcher, TpConnection *connection,
      const gchar *channel_type, guint handle_type,
      const char *first_property_name, ...);
-
-/* Create the dispatcher singleton */
-EmpathyDispatcher * empathy_dispatcher_new (const gchar *name,
-  GPtrArray *filters,
-  GStrv capabilities);
-
-EmpathyHandler *
-empathy_dispatcher_add_handler (EmpathyDispatcher *dispatcher,
-    const gchar *name,
-    GPtrArray *filters,
-    GStrv capabilities);
-
-void
-empathy_dispatcher_remove_handler (EmpathyDispatcher *dispatcher,
-  EmpathyHandler *handler);
 
 /* Get the dispatcher singleton */
 EmpathyDispatcher *    empathy_dispatcher_dup_singleton (void);
