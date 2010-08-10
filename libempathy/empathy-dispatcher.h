@@ -85,12 +85,6 @@ void  empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   EmpathyDispatcherRequestCb *callback,
   gpointer user_data);
 
-/* Request a file channel to a specific contact */
-void empathy_dispatcher_send_file_to_contact (EmpathyContact *contact,
-  const gchar *filename, guint64 size, guint64 date,
-  const gchar *content_type, EmpathyDispatcherRequestCb *callback,
-  gpointer user_data);
-
 /* Request a muc channel */
 void empathy_dispatcher_join_muc (TpConnection *connection,
   const gchar *roomname,
