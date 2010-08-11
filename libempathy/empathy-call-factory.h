@@ -23,7 +23,6 @@
 
 #include <glib-object.h>
 
-#include <libempathy/empathy-dispatch-operation.h>
 #include <libempathy/empathy-call-handler.h>
 #include <libempathy/empathy-dispatcher.h>
 

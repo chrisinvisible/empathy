@@ -29,7 +29,6 @@
 
 #include "empathy-contact.h"
 #include "empathy-ft-handler.h"
-#include "empathy-dispatch-operation.h"
 
 G_BEGIN_DECLS
 

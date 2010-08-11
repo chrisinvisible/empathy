@@ -28,7 +28,6 @@
 #include <telepathy-glib/channel.h>
 
 #include "empathy-contact.h"
-#include "empathy-dispatch-operation.h"
 
 G_BEGIN_DECLS
 

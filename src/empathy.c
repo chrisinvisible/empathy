@@ -54,7 +54,6 @@
 #include <libempathy/empathy-connectivity.h>
 #include <libempathy/empathy-connection-managers.h>
 #include <libempathy/empathy-dispatcher.h>
-#include <libempathy/empathy-dispatch-operation.h>
 #include <libempathy/empathy-ft-factory.h>
 #include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-tp-chat.h>
