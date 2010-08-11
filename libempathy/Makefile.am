@@ -42,7 +42,6 @@ libempathy_headers =				\
 	empathy-ft-factory.h			\
 	empathy-ft-handler.h			\
 	empathy-gsettings.h			\
-	empathy-handler.h			\
 	empathy-idle.h				\
 	empathy-individual-manager.h		\
 	empathy-irc-network-manager.h		\
@@ -79,7 +78,6 @@ libempathy_la_SOURCES =					\
 	empathy-dispatcher.c				\
 	empathy-ft-factory.c				\
 	empathy-ft-handler.c				\
-	empathy-handler.c				\
 	empathy-idle.c					\
 	empathy-individual-manager.c			\
 	empathy-irc-network-manager.c			\
