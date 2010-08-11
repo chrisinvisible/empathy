@@ -1738,14 +1738,8 @@ chat_window_drag_data_received (GtkWidget        *widget,
 		}
 
 		if (!chat) {
-			TpConnection *connection;
-
-			connection = tp_account_get_connection (account);
-
-			if (connection) {
-				empathy_dispatcher_chat_with_contact_id (
-					connection, contact_id, gtk_get_current_event_time (), NULL, NULL);
-			}
+			empathy_dispatcher_chat_with_contact_id (
+				account, contact_id, gtk_get_current_event_time ());
 
 			g_strfreev (strv);
 			return;

@@ -60,18 +60,18 @@ G_DEFINE_TYPE(EmpathyNewMessageDialog, empathy_new_message_dialog,
 static void
 empathy_new_message_dialog_response (GtkDialog *dialog, int response_id)
 {
-  TpConnection *connection;
+  TpAccount *account;
   const gchar *contact_id;
 
   if (response_id != GTK_RESPONSE_ACCEPT) goto out;
 
   contact_id = empathy_contact_selector_dialog_get_selected (
-      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), &connection, NULL);
+      EMPATHY_CONTACT_SELECTOR_DIALOG (dialog), NULL, &account);
 
-  if (EMP_STR_EMPTY (contact_id) || connection == NULL) goto out;
+  if (EMP_STR_EMPTY (contact_id) || account == NULL) goto out;
 
-  empathy_dispatcher_chat_with_contact_id (connection, contact_id,
-      gtk_get_current_event_time (), NULL, NULL);
+  empathy_dispatcher_chat_with_contact_id (account, contact_id,
+      gtk_get_current_event_time ());
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));

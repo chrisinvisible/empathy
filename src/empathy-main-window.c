@@ -948,16 +948,13 @@ join_chatroom (EmpathyChatroom *chatroom,
 	       gint64 timestamp)
 {
 	TpAccount      *account;
-	TpConnection   *connection;
 	const gchar    *room;
 
 	account = empathy_chatroom_get_account (chatroom);
-	connection = tp_account_get_connection (account);
-	g_assert (connection != NULL);
 	room = empathy_chatroom_get_room (chatroom);
 
 	DEBUG ("Requesting channel for '%s'", room);
-	empathy_dispatcher_join_muc (connection, room, timestamp);
+	empathy_dispatcher_join_muc (account, room, timestamp);
 }
 
 typedef struct

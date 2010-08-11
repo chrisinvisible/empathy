@@ -75,18 +75,15 @@ void empathy_dispatcher_create_channel (EmpathyDispatcher *dispatcher,
   gpointer user_data);
 
 /* Requesting 1 to 1 text channels */
-void empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
+void empathy_dispatcher_chat_with_contact_id (TpAccount *account,
   const gchar *contact_id,
-  gint64 timestamp,
-  EmpathyDispatcherRequestCb *callback,
-  gpointer user_data);
+  gint64 timestamp);
+
 void  empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
-  gint64 timestamp,
-  EmpathyDispatcherRequestCb *callback,
-  gpointer user_data);
+  gint64 timestamp);
 
 /* Request a muc channel */
-void empathy_dispatcher_join_muc (TpConnection *connection,
+void empathy_dispatcher_join_muc (TpAccount *account,
   const gchar *roomname,
   gint64 timestamp);
 

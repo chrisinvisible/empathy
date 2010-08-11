@@ -925,7 +925,7 @@ individual_view_row_activated (GtkTreeView *view,
       DEBUG ("Starting a chat");
 
       empathy_dispatcher_chat_with_contact (contact,
-          gtk_get_current_event_time (), NULL, NULL);
+          gtk_get_current_event_time ());
     }
 
   g_object_unref (individual);
