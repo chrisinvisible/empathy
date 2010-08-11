@@ -93,6 +93,7 @@ typedef struct {
   EmpathyTpFileOperationCallback op_callback;
   gpointer op_user_data;
 
+  gboolean is_closing;
   gboolean is_closed;
 
   gboolean dispose_run;
@@ -241,15 +242,17 @@ splice_stream_ready_cb (GObject *source,
     gpointer user_data)
 {
   EmpathyTpFile *tp_file;
+  EmpathyTpFilePriv *priv;
   GError *error = NULL;
 
   tp_file = user_data;
+  priv = GET_PRIV (tp_file);
 
   g_output_stream_splice_finish (G_OUTPUT_STREAM (source), res, &error);
 
   DEBUG ("Splice stream ready cb, error %p", error);
 
-  if (error != NULL)
+  if (error != NULL && !priv->is_closing)
     {
       ft_operation_close_with_error (tp_file, error);
       g_clear_error (&error);
@@ -591,7 +594,7 @@ file_read_async_cb (GObject *source,
 
   in_stream = g_file_read_finish (G_FILE (source), res, &error);
 
-  if (error != NULL)
+  if (error != NULL && !priv->is_closing)
     {
       ft_operation_close_with_error (tp_file, error);
       g_clear_error (&error);
@@ -673,6 +676,8 @@ close_channel_internal (EmpathyTpFile *tp_file,
 
   DEBUG ("Closing channel, should cancel %s", cancel ?
          "True" : "False");
+
+  priv->is_closing = TRUE;
 
   tp_cli_channel_call_close (priv->channel, -1,
     channel_closed_cb, GINT_TO_POINTER (cancel), NULL, G_OBJECT (tp_file));
