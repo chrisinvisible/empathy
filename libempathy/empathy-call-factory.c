@@ -255,6 +255,7 @@ empathy_call_factory_new_call_with_streams (EmpathyContact *contact,
   tp_account_channel_request_create_channel_async (req, NULL, NULL,
       create_media_channel_cb, NULL);
 
+  g_hash_table_unref (request);
   g_object_unref (req);
 }
 
