@@ -31,15 +31,11 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/enums.h>
 #include <telepathy-glib/connection.h>
-#include <telepathy-glib/channel-dispatcher.h>
-#include <telepathy-glib/channel-request.h>
 #include <telepathy-glib/util.h>
 #include <telepathy-glib/dbus.h>
 #include <telepathy-glib/proxy-subclass.h>
 #include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/defs.h>
-#include <telepathy-glib/svc-client.h>
-#include <telepathy-glib/svc-generic.h>
 #include <telepathy-glib/interfaces.h>
 
 #include <extensions/extensions.h>
@@ -62,19 +58,11 @@ typedef struct
   /* connection to connection data mapping */
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
-  gpointer token;
-
-  /* channels which the dispatcher is listening "invalidated" */
-  GList *channels;
-  GPtrArray *array;
 
   GHashTable *request_channel_class_async_ids;
   /* reffed (TpAccount *) => gulong
    * Signal handler ID of the "status-changed" signal */
   GHashTable *status_changed_handlers;
-
-  TpChannelDispatcher *channel_dispatcher;
-  TpDBusDaemon *dbus;
 } EmpathyDispatcherPriv;
 
 G_DEFINE_TYPE (EmpathyDispatcher, empathy_dispatcher, G_TYPE_OBJECT);
@@ -98,9 +86,6 @@ typedef struct
 
 typedef struct
 {
-  /* ObjectPath -> EmpathyDispatchOperations */
-  GHashTable *dispatching_channels;
-
   /* List of requestable channel classes */
   GPtrArray *requestable_channels;
 } ConnectionData;
@@ -119,20 +104,13 @@ typedef struct
 static ConnectionData *
 new_connection_data (void)
 {
-  ConnectionData *cd = g_slice_new0 (ConnectionData);
-
-  cd->dispatching_channels = g_hash_table_new_full (g_str_hash, g_str_equal,
-      g_free, g_object_unref);
-
-  return cd;
+  return g_slice_new0 (ConnectionData);
 }
 
 static void
 free_connection_data (ConnectionData *cd)
 {
   guint i;
-
-  g_hash_table_destroy (cd->dispatching_channels);
 
   if (cd->requestable_channels  != NULL)
     {
@@ -178,35 +156,6 @@ dispatcher_connection_invalidated_cb (TpConnection *connection,
   DEBUG ("Error: %s", message);
 
   g_hash_table_remove (priv->connections, connection);
-}
-
-static void
-dispatcher_channel_invalidated_cb (TpProxy *proxy,
-                                   guint domain,
-                                   gint code,
-                                   gchar *message,
-                                   EmpathyDispatcher *self)
-{
-  /* Channel went away... */
-  EmpathyDispatcherPriv *priv = GET_PRIV (self);
-  TpConnection *connection;
-  ConnectionData *cd;
-  const gchar *object_path;
-
-  connection = tp_channel_borrow_connection (TP_CHANNEL (proxy));
-
-  priv->channels = g_list_remove (priv->channels, proxy);
-
-  cd = g_hash_table_lookup (priv->connections, connection);
-  /* Connection itself invalidated? */
-  if (cd == NULL)
-    return;
-
-  object_path = tp_proxy_get_object_path (proxy);
-
-  DEBUG ("Channel %s invalidated", object_path);
-
-  g_hash_table_remove (cd->dispatching_channels, object_path);
 }
 
 static void
@@ -368,14 +317,6 @@ dispatcher_dispose (GObject *object)
   g_hash_table_destroy (priv->connections);
   priv->connections = NULL;
 
-  if (priv->channel_dispatcher != NULL)
-    g_object_unref (priv->channel_dispatcher);
-  priv->channel_dispatcher = NULL;
-
-  if (priv->dbus != NULL)
-    g_object_unref (priv->dbus);
-  priv->dbus = NULL;
-
   G_OBJECT_CLASS (empathy_dispatcher_parent_class)->dispose (object);
 }
 
@@ -383,7 +324,6 @@ static void
 dispatcher_finalize (GObject *object)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (object);
-  GList *l;
   GHashTableIter iter;
   gpointer connection;
   GList *list;
@@ -395,14 +335,6 @@ dispatcher_finalize (GObject *object)
         remove_idle_handlers, NULL);
       g_hash_table_destroy (priv->request_channel_class_async_ids);
     }
-
-  for (l = priv->channels; l; l = l->next)
-    {
-      g_signal_handlers_disconnect_by_func (l->data,
-          dispatcher_channel_invalidated_cb, object);
-    }
-
-  g_list_free (priv->channels);
 
   g_hash_table_iter_init (&iter, priv->outstanding_classes_requests);
   while (g_hash_table_iter_next (&iter, &connection, (gpointer *) &list))
@@ -534,8 +466,6 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
   priv->outstanding_classes_requests = g_hash_table_new_full (g_direct_hash,
     g_direct_equal, g_object_unref, NULL);
 
-  priv->channels = NULL;
-
   tp_account_manager_prepare_async (priv->account_manager, NULL,
       account_manager_prepared_cb, self);
 
@@ -547,9 +477,6 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
     g_direct_equal);
   priv->status_changed_handlers = g_hash_table_new_full (NULL, NULL,
       (GDestroyNotify) g_object_unref, NULL);
-
-  priv->dbus = tp_dbus_daemon_dup (NULL);
-  priv->channel_dispatcher = tp_channel_dispatcher_new (priv->dbus);
 }
 
 EmpathyDispatcher *
