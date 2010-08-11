@@ -40,7 +40,6 @@ enum {
   PROP_CERT_TYPE,
   PROP_CERT_DATA,
   PROP_STATE,
-  PROP_REJECT_REASON,
   LAST_PROPERTY,
 };
 
@@ -56,7 +55,6 @@ typedef struct {
   gchar *cert_type;
   GPtrArray *cert_data;
   EmpTLSCertificateState state;
-  EmpTLSCertificateRejectReason reject_reason;
 } EmpathyTLSCertificatePriv;
 
 G_DEFINE_TYPE_WITH_CODE (EmpathyTLSCertificate, empathy_tls_certificate,
@@ -117,7 +115,6 @@ tls_certificate_got_all_cb (TpProxy *proxy,
   priv->cert_type = g_strdup (tp_asv_get_string (properties,
           "CertificateType"));
   priv->state = tp_asv_get_uint32 (properties, "State", NULL);
-  priv->reject_reason = tp_asv_get_uint32 (properties, "RejectReason", NULL);
 
   cert_data = tp_asv_get_boxed (properties, "CertificateChainData",
       array_of_ay_get_type ());
@@ -219,9 +216,6 @@ empathy_tls_certificate_get_property (GObject *object,
     case PROP_STATE:
       g_value_set_uint (value, priv->state);
       break;
-    case PROP_REJECT_REASON:
-      g_value_set_uint (value, priv->reject_reason);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -288,7 +282,7 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
   g_object_class_install_property (oclass, PROP_CERT_TYPE, pspec);
 
   pspec = g_param_spec_boxed ("cert-data", "Certificate chain data",
-      "The raw PEM-encoded certificate chain data.",
+      "The raw DER-encoded certificate chain data.",
       array_of_ay_get_type (),
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_CERT_DATA, pspec);
@@ -299,14 +293,6 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
       EMP_TLS_CERTIFICATE_STATE_PENDING,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_STATE, pspec);
-
-  pspec = g_param_spec_uint ("reject-reason", "Reject reason",
-      "The reason why this certificate was rejected.",
-      EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN,
-      NUM_EMP_TLS_CERTIFICATE_REJECT_REASONS -1,
-      EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN,
-      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
-  g_object_class_install_property (oclass, PROP_REJECT_REASON, pspec);      
 }
 
 static void
@@ -340,9 +326,6 @@ reject_reason_get_dbus_error (EmpTLSCertificateRejectReason reason)
 
   switch (reason)
     {
-    case EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN:
-      retval = tp_error_get_dbus_name (TP_ERROR_CERT_INVALID);
-      break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED:
       retval = tp_error_get_dbus_name (TP_ERROR_CERT_UNTRUSTED);
       break;
@@ -362,19 +345,17 @@ reject_reason_get_dbus_error (EmpTLSCertificateRejectReason reason)
       retval = tp_error_get_dbus_name (TP_ERROR_CERT_SELF_SIGNED);
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_REVOKED:
-      /* FIXME */
-      retval = "org.freedesktop.Telepathy.Error.Cert.Revoked";
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_REVOKED);
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_INSECURE:
-      /* FIXME */
-      retval = "org.freedesktop.Telepathy.Error.Cert.Insecure";
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_INSECURE);
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_LIMIT_EXCEEDED:
-      /* FIXME */
-      retval = "org.freedesktop.Telepathy.Error.Cert.LimitExceeded";
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_LIMIT_EXCEEDED);
       break;
+    case EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN:
     default:
-      g_assert_not_reached ();
+      retval = tp_error_get_dbus_name (TP_ERROR_CERT_INVALID);
       break;
     }
 
