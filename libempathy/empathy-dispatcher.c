@@ -266,15 +266,19 @@ dispatcher_connection_got_all (TpProxy *proxy,
 }
 
 static void
-connection_ready_cb (TpConnection *connection,
-    const GError *error,
+connection_prepare_cb (GObject *source,
+    GAsyncResult *result,
     gpointer user_data)
 {
   EmpathyDispatcher *self = EMPATHY_DISPATCHER (user_data);
+  GError *error = NULL;
+  TpConnection *connection = (TpConnection *) source;
 
-  if (error != NULL)
+  if (!tp_proxy_prepare_finish (source, result, &error))
     {
       DEBUG ("Error: %s", error->message);
+
+      g_error_free (error);
       goto out;
     }
 
@@ -291,6 +295,8 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
     TpConnection *connection)
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
+  GQuark features[] = { TP_CONNECTION_FEATURE_CORE,
+         0 };
 
   if (g_hash_table_lookup (priv->connections, connection) != NULL)
     return;
@@ -301,10 +307,10 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
   g_signal_connect (connection, "invalidated",
     G_CALLBACK (dispatcher_connection_invalidated_cb), self);
 
-  /* Ensure to keep the self object alive while the call_when_ready is
-   * running */
+  /* Ensure to keep the self object alive while preparing the connection */
   g_object_ref (self);
-  tp_connection_call_when_ready (connection, connection_ready_cb, self);
+
+  tp_proxy_prepare_async (connection, features, connection_prepare_cb, self);
 }
 
 static void
