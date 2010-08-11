@@ -363,7 +363,7 @@ create_errors_to_message_hash (void)
 		_("This resource is already connected to the server"));
 	g_hash_table_insert (errors, TP_ERROR_STR_CONNECTION_REPLACED,
 		_("Connection has been replaced by a new connection using the "
-						"same resource"));
+		"same resource"));
 	g_hash_table_insert (errors, TP_ERROR_STR_REGISTRATION_EXISTS,
 		_("The account already exists on the server"));
 	g_hash_table_insert (errors, TP_ERROR_STR_SERVICE_BUSY,
