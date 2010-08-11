@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-09 00:28+0000\n"
-"PO-Revision-Date: 2010-08-09 10:05+0100\n"
+"POT-Creation-Date: 2010-08-11 10:20+0000\n"
+"PO-Revision-Date: 2010-08-11 13:31+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -415,51 +415,51 @@ msgstr "Upravljanje s sporočanjem in računi VoIP"
 msgid "Messaging and VoIP Accounts"
 msgstr "Sporočanje in računi VoIP"
 
-#: ../libempathy/empathy-ft-handler.c:844
+#: ../libempathy/empathy-ft-handler.c:851
 msgid "The hash of the received file and the sent one do not match"
 msgstr "Razpršili prejete in poslane datoteke se ne skladata"
 
-#: ../libempathy/empathy-ft-handler.c:1104
+#: ../libempathy/empathy-ft-handler.c:1111
 msgid "File transfer not supported by remote contact"
 msgstr "Prenos datotek s strani oddaljenega stika ni podprt"
 
-#: ../libempathy/empathy-ft-handler.c:1162
+#: ../libempathy/empathy-ft-handler.c:1169
 msgid "The selected file is not a regular file"
 msgstr "Izbrana datoteka ni običajna datoteka"
 
-#: ../libempathy/empathy-ft-handler.c:1171
+#: ../libempathy/empathy-ft-handler.c:1178
 msgid "The selected file is empty"
 msgstr "Izbrana datoteka je prazna"
 
-#: ../libempathy/empathy-tp-file.c:281
+#: ../libempathy/empathy-tp-file.c:280
 msgid "Socket type not supported"
 msgstr "Vrsta vtičnice ni podprta"
 
-#: ../libempathy/empathy-tp-file.c:400
+#: ../libempathy/empathy-tp-file.c:399
 msgid "No reason was specified"
 msgstr "Ni navedenega vzroka"
 
-#: ../libempathy/empathy-tp-file.c:403
+#: ../libempathy/empathy-tp-file.c:402
 msgid "The change in state was requested"
 msgstr "Zahtevana je bila zamenjava stanja"
 
-#: ../libempathy/empathy-tp-file.c:406
+#: ../libempathy/empathy-tp-file.c:405
 msgid "You canceled the file transfer"
 msgstr "Prenos datoteke ste preklicali"
 
-#: ../libempathy/empathy-tp-file.c:409
+#: ../libempathy/empathy-tp-file.c:408
 msgid "The other participant canceled the file transfer"
 msgstr "Drug uporabnik je preklical prenos datoteke"
 
-#: ../libempathy/empathy-tp-file.c:412
+#: ../libempathy/empathy-tp-file.c:411
 msgid "Error while trying to transfer the file"
 msgstr "Prišlo je do napake med prenosom datoteke"
 
-#: ../libempathy/empathy-tp-file.c:415
+#: ../libempathy/empathy-tp-file.c:414
 msgid "The other participant is unable to transfer the file"
 msgstr "Drug uporabnik ne more prenesti datoteke"
 
-#: ../libempathy/empathy-tp-file.c:418
+#: ../libempathy/empathy-tp-file.c:417
 #: ../libempathy/empathy-utils.c:321
 msgid "Unknown reason"
 msgstr "Neznan vzrok"
@@ -596,15 +596,27 @@ msgstr "Račun na strežniku že obstaja"
 msgid "Server is currently too busy to handle the connection"
 msgstr "Strežnik je trenutno preveč zaposlen za upravljanje s povezavo."
 
-#: ../libempathy/empathy-utils.c:521
+#: ../libempathy/empathy-utils.c:372
+msgid "Certificate has been revoked"
+msgstr "Potrdilo je preklicano"
+
+#: ../libempathy/empathy-utils.c:374
+msgid "Certificate uses an insecure cipher algorithm or is cryptographically weak"
+msgstr "Potrdilo ne uporablja varnega algoritma ali pa je šibko šifriranje."
+
+#: ../libempathy/empathy-utils.c:377
+msgid "The length of the server certificate, or the depth of the server certificate chain exceed the limits imposed by the crypto library"
+msgstr "Dolžina potrdila strežnika ali pa globina ravni potrdila presega omejitev, ki je določena s šifrirno knjižnico."
+
+#: ../libempathy/empathy-utils.c:530
 msgid "People Nearby"
 msgstr "Uporabniki v bližini"
 
-#: ../libempathy/empathy-utils.c:526
+#: ../libempathy/empathy-utils.c:535
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
-#: ../libempathy/empathy-utils.c:527
+#: ../libempathy/empathy-utils.c:536
 msgid "Facebook Chat"
 msgstr "Facebook klepetanje"
 
@@ -822,7 +834,7 @@ msgstr "Kakšno je vaše geslo ICQ?"
 msgid "_Character set:"
 msgstr "_Znakovni nabor:"
 
-#: ../libempathy-gtk/empathy-account-widget-irc.c:245
+#: ../libempathy-gtk/empathy-account-widget-irc.c:246
 msgid "New Network"
 msgstr "Novo omrežje"
 
@@ -1426,41 +1438,41 @@ msgid "_Chat"
 msgstr "_Klepet"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:261
-#: ../libempathy-gtk/empathy-individual-menu.c:306
+#: ../libempathy-gtk/empathy-individual-menu.c:304
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Zvočni klic"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:291
-#: ../libempathy-gtk/empathy-individual-menu.c:351
+#: ../libempathy-gtk/empathy-individual-menu.c:347
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Video klic"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:331
-#: ../libempathy-gtk/empathy-individual-menu.c:403
+#: ../libempathy-gtk/empathy-individual-menu.c:399
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Previous Conversations"
 msgstr "Predhodni po_govori"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:353
-#: ../libempathy-gtk/empathy-individual-menu.c:444
+#: ../libempathy-gtk/empathy-individual-menu.c:440
 msgid "Send File"
 msgstr "Pošlji datoteko"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:376
-#: ../libempathy-gtk/empathy-individual-menu.c:486
+#: ../libempathy-gtk/empathy-individual-menu.c:482
 msgid "Share My Desktop"
 msgstr "Souporaba namizja"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:416
 #: ../libempathy-gtk/empathy-contact-widget.c:1801
-#: ../libempathy-gtk/empathy-individual-menu.c:515
+#: ../libempathy-gtk/empathy-individual-menu.c:511
 msgid "Favorite"
 msgstr "Priljubljeno"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:445
-#: ../libempathy-gtk/empathy-individual-menu.c:547
+#: ../libempathy-gtk/empathy-individual-menu.c:543
 msgid "Infor_mation"
 msgstr "_Podrobnosti"
 
@@ -1470,13 +1482,13 @@ msgid "_Edit"
 msgstr "_Uredi"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:545
-#: ../libempathy-gtk/empathy-individual-menu.c:664
+#: ../libempathy-gtk/empathy-individual-menu.c:660
 #: ../src/empathy-chat-window.c:903
 msgid "Inviting you to this room"
 msgstr "Vabila v klepetalnico"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:576
-#: ../libempathy-gtk/empathy-individual-menu.c:702
+#: ../libempathy-gtk/empathy-individual-menu.c:698
 msgid "_Invite to Chat Room"
 msgstr "_Povabi v klepetalnico"
 
@@ -1509,7 +1521,7 @@ msgid "Select"
 msgstr "Izberi"
 
 #: ../libempathy-gtk/empathy-contact-widget.c:612
-#: ../src/empathy-main-window.c:1236
+#: ../src/empathy-main-window.c:1234
 msgid "Group"
 msgstr "Skupina"
 
@@ -1679,7 +1691,7 @@ msgstr "Različica:"
 msgid "_Add Group"
 msgstr "_Dodaj skupino"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:603
+#: ../libempathy-gtk/empathy-individual-menu.c:599
 msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "_Uredi"
@@ -2073,15 +2085,15 @@ msgstr "Ni sporočil o napakah"
 msgid "Instant Message (Empathy)"
 msgstr "Hipno sporočanje (Empathy)"
 
-#: ../src/empathy.c:477
+#: ../src/empathy.c:418
 msgid "Don't connect on startup"
 msgstr "Brez samodejne povezave ob zagonu"
 
-#: ../src/empathy.c:481
+#: ../src/empathy.c:422
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "Ne prikaži seznama stikov in drugih pogovornih oken ob zagonu"
 
-#: ../src/empathy.c:493
+#: ../src/empathy.c:439
 msgid "- Empathy IM Client"
 msgstr "- Empathy sporočilnik"
 
@@ -2895,15 +2907,15 @@ msgstr "Preverjanje celovitosti \"%s\""
 msgid "Hashing \"%s\""
 msgstr "Ustvarjanje razpršila \"%s\""
 
-#: ../src/empathy-ft-manager.c:992
+#: ../src/empathy-ft-manager.c:996
 msgid "%"
 msgstr "%"
 
-#: ../src/empathy-ft-manager.c:1004
+#: ../src/empathy-ft-manager.c:1008
 msgid "File"
 msgstr "Datoteka"
 
-#: ../src/empathy-ft-manager.c:1026
+#: ../src/empathy-ft-manager.c:1030
 msgid "Remaining"
 msgstr "Preostalo"
 
@@ -2938,34 +2950,30 @@ msgstr "Vir"
 
 #. Labels for empty contact list
 #: ../src/empathy-main-window.c:95
-msgid "Your contact list is empty"
-msgstr "Seznam stikov je prazen"
-
-#: ../src/empathy-main-window.c:96
 msgid "No match found"
 msgstr "Ni najdenih zadetkov."
 
-#: ../src/empathy-main-window.c:521
+#: ../src/empathy-main-window.c:519
 msgid "Reconnect"
 msgstr "Ponovno se poveži"
 
-#: ../src/empathy-main-window.c:527
+#: ../src/empathy-main-window.c:525
 msgid "Edit Account"
 msgstr "Uredi račun"
 
-#: ../src/empathy-main-window.c:533
+#: ../src/empathy-main-window.c:531
 msgid "Close"
 msgstr "Zapri"
 
-#: ../src/empathy-main-window.c:1218
+#: ../src/empathy-main-window.c:1216
 msgid "Contact"
 msgstr "Stik"
 
-#: ../src/empathy-main-window.c:1543
+#: ../src/empathy-main-window.c:1541
 msgid "Contact List"
 msgstr "Seznam stikov"
 
-#: ../src/empathy-main-window.c:1652
+#: ../src/empathy-main-window.c:1650
 msgid "Show and edit accounts"
 msgstr "Pokaži in uredi račune"
 
@@ -3405,6 +3413,9 @@ msgstr "Empathy računi"
 #: ../src/empathy-debugger.c:40
 msgid "Empathy Debugger"
 msgstr "Empathy razhroščevalnik"
+
+#~ msgid "Your contact list is empty"
+#~ msgstr "Seznam stikov je prazen"
 
 #~ msgid "Send and receive messages"
 #~ msgstr "Pošiljanje in prejemanje hipnih sporočil"
