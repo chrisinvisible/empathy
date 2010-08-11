@@ -210,59 +210,45 @@ dispatcher_channel_invalidated_cb (TpProxy *proxy,
 }
 
 static void
-dispatcher_connection_got_all (TpProxy *proxy,
-                               GHashTable *properties,
-                               const GError *error,
-                               gpointer user_data,
-                               GObject *object)
+got_connection_rcc (EmpathyDispatcher *self,
+    TpConnection *connection)
 {
-  EmpathyDispatcher *self = EMPATHY_DISPATCHER (object);
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
-  GPtrArray *requestable_channels;
+  TpCapabilities *caps;
+  ConnectionData *cd;
+  GList *requests, *l;
+  FindChannelRequest *request;
+  GList *retval;
 
-  if (error) {
-    DEBUG ("Error: %s", error->message);
-    return;
-  }
+  caps = tp_connection_get_capabilities (connection);
+  g_assert (caps != NULL);
 
-  requestable_channels = tp_asv_get_boxed (properties,
-    "RequestableChannelClasses", TP_ARRAY_TYPE_REQUESTABLE_CHANNEL_CLASS_LIST);
+  cd = g_hash_table_lookup (priv->connections, connection);
+  g_assert (cd != NULL);
 
-  if (requestable_channels == NULL)
-    DEBUG ("No RequestableChannelClasses property !?! on connection");
-  else
+  cd->requestable_channels = g_boxed_copy (
+    TP_ARRAY_TYPE_REQUESTABLE_CHANNEL_CLASS_LIST,
+    tp_capabilities_get_channel_classes (caps));
+
+  requests = g_hash_table_lookup (priv->outstanding_classes_requests,
+      connection);
+
+  for (l = requests; l != NULL; l = l->next)
     {
-      ConnectionData *cd;
-      GList *requests, *l;
-      FindChannelRequest *request;
-      GList *retval;
+      request = l->data;
 
-      cd = g_hash_table_lookup (priv->connections, proxy);
-      g_assert (cd != NULL);
+      retval = empathy_dispatcher_find_channel_classes (self,
+          connection, request->channel_type,
+          request->handle_type, request->properties);
+      request->callback (retval, request->user_data);
 
-      cd->requestable_channels = g_boxed_copy (
-        TP_ARRAY_TYPE_REQUESTABLE_CHANNEL_CLASS_LIST, requestable_channels);
-
-      requests = g_hash_table_lookup (priv->outstanding_classes_requests,
-          proxy);
-
-      for (l = requests; l != NULL; l = l->next)
-        {
-          request = l->data;
-
-          retval = empathy_dispatcher_find_channel_classes (self,
-              TP_CONNECTION (proxy), request->channel_type,
-              request->handle_type, request->properties);
-          request->callback (retval, request->user_data);
-
-          free_find_channel_request (request);
-          g_list_free (retval);
-        }
-
-      g_list_free (requests);
-
-      g_hash_table_remove (priv->outstanding_classes_requests, proxy);
+      free_find_channel_request (request);
+      g_list_free (retval);
     }
+
+  g_list_free (requests);
+
+  g_hash_table_remove (priv->outstanding_classes_requests, connection);
 }
 
 static void
@@ -282,9 +268,7 @@ connection_prepare_cb (GObject *source,
       goto out;
     }
 
-  tp_cli_dbus_properties_call_get_all (connection, -1,
-      TP_IFACE_CONNECTION_INTERFACE_REQUESTS, dispatcher_connection_got_all,
-      NULL, NULL, G_OBJECT (self));
+  got_connection_rcc (self, connection);
 
 out:
   g_object_unref (self);
@@ -296,6 +280,7 @@ dispatcher_init_connection_if_needed (EmpathyDispatcher *self,
 {
   EmpathyDispatcherPriv *priv = GET_PRIV (self);
   GQuark features[] = { TP_CONNECTION_FEATURE_CORE,
+         TP_CONNECTION_FEATURE_CAPABILITIES,
          0 };
 
   if (g_hash_table_lookup (priv->connections, connection) != NULL)
