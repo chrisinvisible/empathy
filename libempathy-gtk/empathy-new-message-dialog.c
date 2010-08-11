@@ -71,7 +71,7 @@ empathy_new_message_dialog_response (GtkDialog *dialog, int response_id)
   if (EMP_STR_EMPTY (contact_id) || connection == NULL) goto out;
 
   empathy_dispatcher_chat_with_contact_id (connection, contact_id,
-      gtk_get_current_event_time (), NULL, NULL);
+      gtk_get_current_event_time ());
 
 out:
   gtk_widget_destroy (GTK_WIDGET (dialog));

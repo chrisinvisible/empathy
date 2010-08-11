@@ -1744,7 +1744,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 			if (connection) {
 				empathy_dispatcher_chat_with_contact_id (
-					connection, contact_id, gtk_get_current_event_time (), NULL, NULL);
+					connection, contact_id, gtk_get_current_event_time ());
 			}
 
 			g_strfreev (strv);

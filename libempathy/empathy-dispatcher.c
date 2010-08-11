@@ -1309,9 +1309,7 @@ dispatcher_chat_with_contact_id_cb (TpConnection            *connection,
 void
 empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
                                          const gchar *contact_id,
-                                         gint64 timestamp,
-                                         EmpathyDispatcherRequestCb *callback,
-                                         gpointer user_data)
+                                         gint64 timestamp)
 {
   EmpathyDispatcher *self;
   ChatWithContactIdData *data;
@@ -1322,8 +1320,8 @@ empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
   self = empathy_dispatcher_dup_singleton ();
   data = g_slice_new0 (ChatWithContactIdData);
   data->dispatcher = self;
-  data->callback = callback;
-  data->user_data = user_data;
+  data->callback = NULL;
+  data->user_data = NULL;
   data->timestamp = timestamp;
   empathy_tp_contact_factory_get_from_id (connection, contact_id,
       dispatcher_chat_with_contact_id_cb, data, NULL, NULL);

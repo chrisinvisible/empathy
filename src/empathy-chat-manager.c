@@ -392,7 +392,7 @@ connection_ready_cb (TpConnection *connection,
           EMPATHY_DISPATCHER_NON_USER_ACTION);
       else
         empathy_dispatcher_chat_with_contact_id (connection, data->id,
-            EMPATHY_DISPATCHER_NON_USER_ACTION, NULL, NULL);
+            EMPATHY_DISPATCHER_NON_USER_ACTION);
 
       g_signal_emit (self, signals[CHATS_CHANGED], 0,
           g_queue_get_length (priv->queue));
