@@ -236,7 +236,7 @@ real_start_verification (EmpathyTLSVerifier *self)
   if (priv->trusted_ca_list->len > 0)
     {
       res = verify_last_certificate (self,
-          g_ptr_array_index (priv->cert_chain, num_certs),
+          g_ptr_array_index (priv->cert_chain, num_certs - 1),
           &reason);
     }
 
