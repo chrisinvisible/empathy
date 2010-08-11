@@ -186,6 +186,8 @@ empathy_tls_certificate_finalize (GObject *object)
 {
   EmpathyTLSCertificatePriv *priv = GET_PRIV (object);
 
+  DEBUG ("%p", object);
+
   g_free (priv->object_path);
 
   G_OBJECT_CLASS (empathy_tls_certificate_parent_class)->finalize (object);
