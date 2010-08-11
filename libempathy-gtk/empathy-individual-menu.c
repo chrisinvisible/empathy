@@ -635,7 +635,7 @@ empathy_individual_link_menu_item_new (FolksIndividual *individual)
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (
-      C_("Link individual (contextual menu)", "_Link"));
+      C_("Link individual (contextual menu)", "_Link…"));
   /* TODO */
   /*image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
