@@ -20,6 +20,8 @@
 
 #include "empathy-server-tls-handler.h"
 
+#include <telepathy-glib/util.h>
+
 #define DEBUG_FLAG EMPATHY_DEBUG_TLS
 #include "empathy-debug.h"
 #include "empathy-tls-certificate.h"
@@ -74,6 +76,7 @@ tls_certificate_constructed_cb (GObject *source,
     }
 
   g_simple_async_result_complete_in_idle (priv->async_init_res);
+  g_object_unref (priv->async_init_res);
 }
 
 static void
@@ -90,6 +93,7 @@ server_tls_channel_got_all_cb (TpProxy *proxy,
     {
       g_simple_async_result_set_from_error (priv->async_init_res, error);
       g_simple_async_result_complete_in_idle (priv->async_init_res);
+      g_object_unref (priv->async_init_res);
     }
   else
     {
@@ -163,9 +167,9 @@ empathy_server_tls_handler_finalize (GObject *object)
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (object);
 
   DEBUG ("%p", object);
-  
-  if (priv->channel != NULL)
-    g_object_unref (priv->channel);
+
+  tp_clear_object (&priv->channel);
+  tp_clear_object (&priv->certificate);
 
   G_OBJECT_CLASS (empathy_server_tls_handler_parent_class)->finalize (object);
 }

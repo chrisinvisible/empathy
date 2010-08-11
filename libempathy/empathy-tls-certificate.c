@@ -109,6 +109,8 @@ tls_certificate_got_all_cb (TpProxy *proxy,
       g_simple_async_result_set_from_error (priv->async_init_res, error);
       g_simple_async_result_complete_in_idle (priv->async_init_res);
 
+      g_object_unref (priv->async_init_res);
+
       return;
     }
 
@@ -125,6 +127,7 @@ tls_certificate_got_all_cb (TpProxy *proxy,
       priv->cert_data->len, priv->cert_type);
 
   g_simple_async_result_complete_in_idle (priv->async_init_res);
+  g_object_unref (priv->async_init_res);
 }
 
 static void
@@ -152,6 +155,7 @@ tls_certificate_init_async (GAsyncInitable *initable,
       g_simple_async_result_complete_in_idle (priv->async_init_res);
 
       g_error_free (error);
+      g_object_unref (priv->async_init_res);
       return;
     }
 
