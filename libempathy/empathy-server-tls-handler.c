@@ -31,6 +31,8 @@ static void async_initable_iface_init (GAsyncInitableIface *iface);
 
 enum {
   PROP_CHANNEL = 1,
+  PROP_TLS_CERTIFICATE,
+  PROP_HOSTNAME,
   LAST_PROPERTY,
 };
 
@@ -38,6 +40,7 @@ typedef struct {
   TpChannel *channel;
 
   EmpathyTLSCertificate *certificate;
+  gchar *hostname;
 
   GSimpleAsyncResult *async_init_res;
 } EmpathyServerTLSHandlerPriv;
@@ -91,6 +94,7 @@ server_tls_channel_got_all_cb (TpProxy *proxy,
   else
     {
       const gchar *cert_object_path;
+      const gchar *hostname;
 
       cert_object_path = tp_asv_get_object_path (properties,
           "ServerCertificate");
@@ -102,6 +106,11 @@ server_tls_channel_got_all_cb (TpProxy *proxy,
           tp_proxy_get_bus_name (proxy),
           cert_object_path,
           tls_certificate_constructed_cb, self);
+
+      hostname = tp_asv_get_string (properties, "Hostname");
+      priv->hostname = g_strdup (hostname);
+
+      DEBUG ("Received hostname: %s", hostname);
     }
 }
 
@@ -153,6 +162,8 @@ empathy_server_tls_handler_finalize (GObject *object)
 {
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (object);
 
+  DEBUG ("%p", object);
+  
   if (priv->channel != NULL)
     g_object_unref (priv->channel);
 
@@ -171,6 +182,12 @@ empathy_server_tls_handler_get_property (GObject *object,
     {
     case PROP_CHANNEL:
       g_value_set_object (value, priv->channel);
+      break;
+    case PROP_TLS_CERTIFICATE:
+      g_value_set_object (value, priv->certificate);
+      break;
+    case PROP_HOSTNAME:
+      g_value_set_string (value, priv->hostname);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -214,6 +231,18 @@ empathy_server_tls_handler_class_init (EmpathyServerTLSHandlerClass *klass)
       TP_TYPE_CHANNEL,
       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_CHANNEL, pspec);
+
+  pspec = g_param_spec_object ("certificate", "The EmpathyTLSCertificate",
+      "The EmpathyTLSCertificate carried by the channel.",
+      EMPATHY_TYPE_TLS_CERTIFICATE,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_TLS_CERTIFICATE, pspec);
+
+  pspec = g_param_spec_string ("hostname", "The hostname",
+      "The hostname which should be certified by the server certificate.",
+      NULL,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_HOSTNAME, pspec);
 }
 
 static void
