@@ -38,7 +38,16 @@ auth_factory_new_handler_cb (EmpathyAuthFactory *factory,
     EmpathyServerTLSHandler *handler,
     gpointer user_data)
 {
+  EmpathyTLSCertificate *certificate;
+
   DEBUG ("New TLS server handler received from the factory");
+
+  certificate = g_object_ref (
+      empathy_server_tls_handler_get_certificate (handler));
+
+  empathy_tls_certificate_accept (certificate);
+
+  g_object_unref (certificate);
 }
 
 int
