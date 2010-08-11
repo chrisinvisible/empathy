@@ -68,7 +68,6 @@ EmpathyServerTLSHandler * empathy_server_tls_handler_new_finish (
 EmpathyTLSCertificate * empathy_server_tls_handler_get_certificate (
     EmpathyServerTLSHandler *self);
 
-
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_SERVER_TLS_HANDLER_H__*/
