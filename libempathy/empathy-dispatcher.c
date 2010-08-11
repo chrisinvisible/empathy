@@ -1307,15 +1307,20 @@ dispatcher_chat_with_contact_id_cb (TpConnection            *connection,
 }
 
 void
-empathy_dispatcher_chat_with_contact_id (TpConnection *connection,
-                                         const gchar *contact_id,
-                                         gint64 timestamp)
+empathy_dispatcher_chat_with_contact_id (TpAccount *account,
+    const gchar *contact_id,
+    gint64 timestamp)
 {
   EmpathyDispatcher *self;
   ChatWithContactIdData *data;
+  TpConnection *connection;
 
-  g_return_if_fail (TP_IS_CONNECTION (connection));
+  g_return_if_fail (TP_IS_ACCOUNT (account));
   g_return_if_fail (!EMP_STR_EMPTY (contact_id));
+
+  connection = tp_account_get_connection (account);
+  if (connection == NULL)
+    return;
 
   self = empathy_dispatcher_dup_singleton ();
   data = g_slice_new0 (ChatWithContactIdData);

@@ -21,6 +21,7 @@
 
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-dispatcher.h>
+#include <libempathy/empathy-utils.h>
 
 #include "empathy-chat-window.h"
 
@@ -385,13 +386,16 @@ connection_ready_cb (TpConnection *connection,
 
   priv = GET_PRIV (self);
 
+  /* FIXME: Once empathy_dispatcher_join_muc will take a TpAccount instead of
+   * a TpConnection we won't have to prepare the connection any more. */
   if (error == NULL)
     {
       if (data->room)
         empathy_dispatcher_join_muc (connection, data->id,
           EMPATHY_DISPATCHER_NON_USER_ACTION);
       else
-        empathy_dispatcher_chat_with_contact_id (connection, data->id,
+        empathy_dispatcher_chat_with_contact_id (
+            empathy_get_account_for_connection (connection), data->id,
             EMPATHY_DISPATCHER_NON_USER_ACTION);
 
       g_signal_emit (self, signals[CHATS_CHANGED], 0,

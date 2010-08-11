@@ -228,17 +228,10 @@ chat_set_property (GObject      *object,
 }
 
 static void
-reconnected_connection_ready_cb (TpConnection *connection,
-			const GError *error,
-			gpointer user_data)
+account_reconnected (EmpathyChat *chat,
+			TpAccount *account)
 {
-	EmpathyChat *chat = user_data;
 	EmpathyChatPriv *priv = GET_PRIV (chat);
-
-	if (error != NULL) {
-		DEBUG ("connection is not ready: %s", error->message);
-		goto out;
-	}
 
 	DEBUG ("Account reconnected, request a new Text channel");
 
@@ -248,10 +241,10 @@ reconnected_connection_ready_cb (TpConnection *connection,
 	switch (priv->handle_type) {
 		case TP_HANDLE_TYPE_CONTACT:
 			empathy_dispatcher_chat_with_contact_id (
-				connection, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
+				account, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_ROOM:
-			empathy_dispatcher_join_muc (connection,
+			empathy_dispatcher_join_muc (tp_account_get_connection (account),
 				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_NONE:
@@ -262,7 +255,6 @@ reconnected_connection_ready_cb (TpConnection *connection,
 			break;
 	}
 
-out:
 	g_object_unref (chat);
 }
 
@@ -289,8 +281,8 @@ chat_new_connection_cb (TpAccount   *account,
 		return;
 
 	g_object_ref (chat);
-	tp_connection_call_when_ready (connection, reconnected_connection_ready_cb,
-				   chat);
+
+	account_reconnected (chat, account);
 }
 
 static void
