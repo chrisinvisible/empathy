@@ -368,6 +368,15 @@ create_errors_to_message_hash (void)
 		_("The account already exists on the server"));
 	g_hash_table_insert (errors, TP_ERROR_STR_SERVICE_BUSY,
 		_("Server is currently too busy to handle the connection"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_REVOKED,
+		_("Certificate has been revoked"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_INSECURE,
+		_("Certificate uses an insecure cipher algorithm or is "
+		"cryptographically weak"));
+	g_hash_table_insert (errors, TP_ERROR_STR_CERT_LIMIT_EXCEEDED,
+		_("The length of the server certificate, or the depth of the "
+		"server certificate chain exceed the limits imposed by the "
+		"crypto library"));
 
 	return errors;
 }
