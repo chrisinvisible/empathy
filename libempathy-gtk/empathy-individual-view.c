@@ -176,7 +176,6 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
   GtkTreePath *path;
   static gint running = 0;
   gboolean ret = FALSE;
-  EmpathyContact *contact;
 
   priv = GET_PRIV (view);
 
@@ -203,17 +202,11 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
   if (individual == NULL)
     goto OUT;
 
-  contact = empathy_contact_dup_from_folks_individual (individual);
-  g_object_unref (individual);
-
-  if (contact == NULL)
-    goto OUT;
-
   if (priv->tooltip_widget == NULL)
     {
-      priv->tooltip_widget = empathy_contact_widget_new (contact,
-          EMPATHY_CONTACT_WIDGET_FOR_TOOLTIP |
-          EMPATHY_CONTACT_WIDGET_SHOW_LOCATION);
+      priv->tooltip_widget = empathy_individual_widget_new (individual,
+          EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP |
+          EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION);
       gtk_container_set_border_width (GTK_CONTAINER (priv->tooltip_widget), 8);
       g_object_ref (priv->tooltip_widget);
       g_signal_connect (priv->tooltip_widget, "destroy",
@@ -221,12 +214,15 @@ individual_view_query_tooltip_cb (EmpathyIndividualView *view,
       gtk_widget_show (priv->tooltip_widget);
     }
   else
-    empathy_contact_widget_set_contact (priv->tooltip_widget, contact);
+    {
+      empathy_individual_widget_set_individual (
+        EMPATHY_INDIVIDUAL_WIDGET (priv->tooltip_widget), individual);
+    }
 
   gtk_tooltip_set_custom (tooltip, priv->tooltip_widget);
   ret = TRUE;
 
-  g_object_unref (contact);
+  g_object_unref (individual);
 OUT:
   running--;
 
