@@ -1270,40 +1270,19 @@ out:
   g_object_unref (self);
 }
 
-typedef struct
-{
-  EmpathyDispatcher *dispatcher;
-  EmpathyDispatcherRequestCb *callback;
-  gpointer user_data;
-  gint64 timestamp;
-} ChatWithContactIdData;
-
 static void
-dispatcher_chat_with_contact_id_cb (TpConnection            *connection,
-                                    EmpathyContact          *contact,
-                                    const GError            *error,
-                                    gpointer                 user_data,
-                                    GObject                 *weak_object)
+ensure_text_channel_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
 {
-  ChatWithContactIdData *data = user_data;
+  GError *error = NULL;
 
-  if (error)
+  if (!tp_account_channel_request_ensure_channel_finish (
+        TP_ACCOUNT_CHANNEL_REQUEST (source), result, &error))
     {
-      DEBUG ("Error: %s", error->message);
-
-      if (data->callback != NULL)
-        {
-          data->callback (NULL, error, data->user_data);
-        }
+      DEBUG ("Failed to ensure text channel: %s", error->message);
+      g_error_free (error);
     }
-  else
-    {
-      empathy_dispatcher_chat_with_contact (contact, data->timestamp,
-          data->callback, data->user_data);
-    }
-
-  g_object_unref (data->dispatcher);
-  g_slice_free (ChatWithContactIdData, data);
 }
 
 void
@@ -1311,25 +1290,23 @@ empathy_dispatcher_chat_with_contact_id (TpAccount *account,
     const gchar *contact_id,
     gint64 timestamp)
 {
-  EmpathyDispatcher *self;
-  ChatWithContactIdData *data;
-  TpConnection *connection;
+  GHashTable *request;
+  TpAccountChannelRequest *req;
 
-  g_return_if_fail (TP_IS_ACCOUNT (account));
-  g_return_if_fail (!EMP_STR_EMPTY (contact_id));
+  request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_TEXT,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, contact_id,
+      NULL);
 
-  connection = tp_account_get_connection (account);
-  if (connection == NULL)
-    return;
+  req = tp_account_channel_request_new (account, request, timestamp);
 
-  self = empathy_dispatcher_dup_singleton ();
-  data = g_slice_new0 (ChatWithContactIdData);
-  data->dispatcher = self;
-  data->callback = NULL;
-  data->user_data = NULL;
-  data->timestamp = timestamp;
-  empathy_tp_contact_factory_get_from_id (connection, contact_id,
-      dispatcher_chat_with_contact_id_cb, data, NULL, NULL);
+  tp_account_channel_request_ensure_channel_async (req, NULL, NULL,
+      ensure_text_channel_cb, NULL);
+
+  g_hash_table_unref (request);
+  g_object_unref (req);
 }
 
 static void
