@@ -1225,49 +1225,11 @@ dispatcher_request_channel (DispatcherRequestData *request_data)
 
 void
 empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
-                                      gint64 timestamp,
-                                      EmpathyDispatcherRequestCb *callback,
-                                      gpointer user_data)
+    gint64 timestamp)
 {
-  EmpathyDispatcher *self;
-  EmpathyDispatcherPriv *priv;
-  TpConnection *connection;
-  ConnectionData *connection_data;
-  DispatcherRequestData *request_data;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  self = empathy_dispatcher_dup_singleton ();
-  priv = GET_PRIV (self);
-
-  connection = empathy_contact_get_connection (contact);
-  connection_data = g_hash_table_lookup (priv->connections, connection);
-  if (connection_data == NULL)
-    {
-      /* Connection has been invalidated */
-      if (callback != NULL)
-        {
-          GError error = { TP_DBUS_ERRORS, TP_DBUS_ERROR_PROXY_UNREFERENCED,
-              "Connection has been invalidated" };
-          callback (NULL, &error, user_data);
-        }
-      goto out;
-    }
-
-  /* The contact handle might not be known yet */
-  request_data = new_dispatcher_request_data (self, connection,
-    TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_CONTACT,
-    empathy_contact_get_handle (contact), NULL, timestamp, contact,
-    callback, user_data);
-  request_data->should_ensure = TRUE;
-
-  connection_data->outstanding_requests = g_list_prepend
-    (connection_data->outstanding_requests, request_data);
-
-  dispatcher_request_channel (request_data);
-
-out:
-  g_object_unref (self);
+  empathy_dispatcher_chat_with_contact_id (
+      empathy_contact_get_account (contact), empathy_contact_get_id (contact),
+      timestamp);
 }
 
 static void

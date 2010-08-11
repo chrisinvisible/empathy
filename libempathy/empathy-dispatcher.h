@@ -80,9 +80,7 @@ void empathy_dispatcher_chat_with_contact_id (TpAccount *account,
   gint64 timestamp);
 
 void  empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
-  gint64 timestamp,
-  EmpathyDispatcherRequestCb *callback,
-  gpointer user_data);
+  gint64 timestamp);
 
 /* Request a muc channel */
 void empathy_dispatcher_join_muc (TpConnection *connection,

@@ -245,8 +245,7 @@ empathy_individual_chat_menu_item_activated (GtkMenuItem *item,
 
   g_return_if_fail (contact != NULL);
 
-  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time (),
-      NULL, NULL);
+  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time ());
 
   g_object_unref (contact);
 }

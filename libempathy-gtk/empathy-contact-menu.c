@@ -216,8 +216,7 @@ static void
 empathy_contact_chat_menu_item_activated (GtkMenuItem *item,
 	EmpathyContact *contact)
 {
-  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time (),
-      NULL, NULL);
+  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time ());
 }
 
 GtkWidget *

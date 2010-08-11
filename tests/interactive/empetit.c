@@ -12,25 +12,6 @@
 static GtkWidget *window = NULL;
 
 static void
-chat_cb (EmpathyDispatchOperation *dispatch,
-         const GError *error,
-         gpointer user_data)
-{
-  GtkWidget *dialog;
-
-  if (error != NULL)
-    {
-      dialog = gtk_message_dialog_new (GTK_WINDOW (window), GTK_DIALOG_MODAL,
-          GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s",
-          error->message ? error->message : "No error message");
-
-      gtk_dialog_run (GTK_DIALOG (dialog));
-    }
-
-  gtk_widget_destroy (window);
-}
-
-static void
 clicked_cb (GtkButton *button,
             gpointer data)
 {
@@ -42,8 +23,7 @@ clicked_cb (GtkButton *button,
   if (!contact)
     return;
 
-  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time (),
-      chat_cb, NULL);
+  empathy_dispatcher_chat_with_contact (contact, gtk_get_current_event_time ());
 
   g_object_unref (contact);
 }
