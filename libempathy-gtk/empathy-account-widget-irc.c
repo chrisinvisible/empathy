@@ -40,6 +40,7 @@
 #include <libempathy/empathy-debug.h>
 
 #define IRC_NETWORKS_FILENAME "irc-networks.xml"
+#define DEFAULT_IRC_NETWORK "irc.gimp.org"
 
 typedef struct {
   EmpathyAccountWidget *self;
@@ -414,6 +415,11 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
         }
     }
 
+  if (network == NULL)
+    {
+      network = empathy_irc_network_manager_find_network_by_address (
+          settings->network_manager, DEFAULT_IRC_NETWORK);
+    }
 
   fill_networks_model (settings, network);
 }
