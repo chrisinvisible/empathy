@@ -83,7 +83,7 @@ void  empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
   gint64 timestamp);
 
 /* Request a muc channel */
-void empathy_dispatcher_join_muc (TpConnection *connection,
+void empathy_dispatcher_join_muc (TpAccount *account,
   const gchar *roomname,
   gint64 timestamp);
 

@@ -298,13 +298,10 @@ account_status_changed_cb (TpAccount *account,
     GHashTable *details,
     EmpathyChatroom *room)
 {
-  TpConnection *conn;
-
-  conn = tp_account_get_connection (account);
-  if (conn == NULL)
+  if (new_status != TP_CONNECTION_STATUS_CONNECTED)
     return;
 
-  empathy_dispatcher_join_muc (conn,
+  empathy_dispatcher_join_muc (account,
       empathy_chatroom_get_room (room), EMPATHY_DISPATCHER_NON_USER_ACTION);
 }
 
@@ -352,7 +349,7 @@ account_manager_chatroom_ready_cb (GObject *source_object,
             }
           else
             {
-              empathy_dispatcher_join_muc (conn,
+              empathy_dispatcher_join_muc (account,
                   empathy_chatroom_get_room (room),
                   EMPATHY_DISPATCHER_NON_USER_ACTION);
             }

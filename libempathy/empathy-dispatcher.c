@@ -1305,9 +1305,9 @@ dispatcher_request_handles_cb (TpConnection *connection,
 }
 
 void
-empathy_dispatcher_join_muc (TpConnection *connection,
-                             const gchar *roomname,
-                             gint64 timestamp)
+empathy_dispatcher_join_muc (TpAccount *account,
+    const gchar *roomname,
+    gint64 timestamp)
 {
   EmpathyDispatcher *self;
   EmpathyDispatcherPriv *priv;
@@ -1315,12 +1315,17 @@ empathy_dispatcher_join_muc (TpConnection *connection,
   ConnectionData *connection_data;
   const gchar *names[] = { roomname, NULL };
   TpProxyPendingCall *call;
+  TpConnection *connection;
 
-  g_return_if_fail (TP_IS_CONNECTION (connection));
+  g_return_if_fail (TP_IS_ACCOUNT (account));
   g_return_if_fail (!EMP_STR_EMPTY (roomname));
 
   self = empathy_dispatcher_dup_singleton ();
   priv = GET_PRIV (self);
+
+  connection = tp_account_get_connection (account);
+  if (connection == NULL)
+    return;
 
   connection_data = g_hash_table_lookup (priv->connections, connection);
   g_assert (connection_data != NULL);

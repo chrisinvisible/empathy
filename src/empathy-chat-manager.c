@@ -369,53 +369,11 @@ empathy_chat_manager_closed_chat (EmpathyChatManager *self,
       g_queue_get_length (priv->queue));
 }
 
-static void
-connection_ready_cb (TpConnection *connection,
-    const GError *error,
-    gpointer user_data)
-{
-  ChatData *data = user_data;
-  EmpathyChatManager *self = chat_manager_singleton;
-  EmpathyChatManagerPriv *priv;
-
-  /* Extremely unlikely to happen, but I don't really want to keep refs to the
-   * chat manager in the ChatData structs as it'll then prevent the manager
-   * from being finalized. */
-  if (G_UNLIKELY (self == NULL))
-    goto out;
-
-  priv = GET_PRIV (self);
-
-  /* FIXME: Once empathy_dispatcher_join_muc will take a TpAccount instead of
-   * a TpConnection we won't have to prepare the connection any more. */
-  if (error == NULL)
-    {
-      if (data->room)
-        empathy_dispatcher_join_muc (connection, data->id,
-          EMPATHY_DISPATCHER_NON_USER_ACTION);
-      else
-        empathy_dispatcher_chat_with_contact_id (
-            empathy_get_account_for_connection (connection), data->id,
-            EMPATHY_DISPATCHER_NON_USER_ACTION);
-
-      g_signal_emit (self, signals[CHATS_CHANGED], 0,
-          g_queue_get_length (priv->queue));
-    }
-  else
-    {
-      DEBUG ("Error readying connection, no chat: %s", error->message);
-    }
-
-out:
-  chat_data_free (data);
-}
-
 void
 empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
 {
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
   ChatData *data;
-  TpConnection *connection;
 
   data = g_queue_pop_tail (priv->queue);
 
@@ -425,17 +383,17 @@ empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
   DEBUG ("Removing %s from queue and starting a chat with: %s",
       data->room ? "room" : "contact", data->id);
 
-  connection = tp_account_get_connection (data->account);
-
-  if (connection != NULL)
-    {
-      tp_connection_call_when_ready (connection, connection_ready_cb, data);
-    }
+  if (data->room)
+    empathy_dispatcher_join_muc (data->account, data->id,
+        EMPATHY_DISPATCHER_NON_USER_ACTION);
   else
-    {
-      DEBUG ("No connection, no chat.");
-      chat_data_free (data);
-    }
+    empathy_dispatcher_chat_with_contact_id (data->account, data->id,
+        EMPATHY_DISPATCHER_NON_USER_ACTION);
+
+  g_signal_emit (self, signals[CHATS_CHANGED], 0,
+      g_queue_get_length (priv->queue));
+
+  chat_data_free (data);
 }
 
 guint

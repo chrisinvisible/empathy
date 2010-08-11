@@ -244,8 +244,8 @@ account_reconnected (EmpathyChat *chat,
 				account, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_ROOM:
-			empathy_dispatcher_join_muc (tp_account_get_connection (account),
-				priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
+			empathy_dispatcher_join_muc (account, priv->id,
+				EMPATHY_DISPATCHER_NON_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_NONE:
 		case TP_HANDLE_TYPE_LIST:
@@ -710,8 +710,9 @@ chat_command_join (EmpathyChat *chat,
 			TpConnection *connection;
 
 			connection = empathy_tp_chat_get_connection (priv->tp_chat);
-			empathy_dispatcher_join_muc (connection, rooms[i],
-						     gtk_get_current_event_time ());
+			empathy_dispatcher_join_muc (
+				empathy_get_account_for_connection (connection), rooms[i],
+				gtk_get_current_event_time ());
 		}
 		i++;
 	}
