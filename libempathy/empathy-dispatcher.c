@@ -1203,26 +1203,6 @@ dispatcher_request_failed (EmpathyDispatcher *self,
   free_dispatcher_request_data (request_data);
 }
 
-static void
-dispatcher_request_channel (DispatcherRequestData *request_data)
-{
-  /* Extend the request_data to be a valid request */
-  g_assert (request_data->request == NULL);
-  request_data->request = tp_asv_new (
-      TP_IFACE_CHANNEL ".ChannelType",
-        G_TYPE_STRING, request_data->channel_type,
-      TP_IFACE_CHANNEL ".TargetHandleType",
-        G_TYPE_UINT, request_data->handle_type,
-      NULL);
-
-  if (request_data->handle_type != TP_HANDLE_TYPE_NONE)
-    tp_asv_set_uint32 (request_data->request, TP_IFACE_CHANNEL ".TargetHandle",
-        request_data->handle);
-
-  empathy_dispatcher_call_create_or_ensure_channel (request_data->dispatcher,
-      request_data);
-}
-
 void
 empathy_dispatcher_chat_with_contact (EmpathyContact *contact,
     gint64 timestamp)
@@ -1271,83 +1251,28 @@ empathy_dispatcher_chat_with_contact_id (TpAccount *account,
   g_object_unref (req);
 }
 
-static void
-dispatcher_request_handles_cb (TpConnection *connection,
-                               const GArray *handles,
-                               const GError *error,
-                               gpointer user_data,
-                               GObject *object)
-{
-  DispatcherRequestData *request_data = (DispatcherRequestData *) user_data;
-
-  request_data->pending_call = NULL;
-
-  if (error != NULL)
-    {
-      EmpathyDispatcher *self = request_data->dispatcher;
-      EmpathyDispatcherPriv *priv = GET_PRIV (self);
-      ConnectionData *cd;
-
-      cd = g_hash_table_lookup (priv->connections, request_data->connection);
-
-      if (request_data->cb)
-        request_data->cb (NULL, error, request_data->user_data);
-
-      cd->outstanding_requests = g_list_remove (cd->outstanding_requests,
-        request_data);
-
-      free_dispatcher_request_data (request_data);
-      return;
-    }
-
-  request_data->handle = g_array_index (handles, guint, 0);
-  dispatcher_request_channel (request_data);
-}
-
 void
 empathy_dispatcher_join_muc (TpAccount *account,
-    const gchar *roomname,
+    const gchar *room_name,
     gint64 timestamp)
 {
-  EmpathyDispatcher *self;
-  EmpathyDispatcherPriv *priv;
-  DispatcherRequestData *request_data;
-  ConnectionData *connection_data;
-  const gchar *names[] = { roomname, NULL };
-  TpProxyPendingCall *call;
-  TpConnection *connection;
+  GHashTable *request;
+  TpAccountChannelRequest *req;
 
-  g_return_if_fail (TP_IS_ACCOUNT (account));
-  g_return_if_fail (!EMP_STR_EMPTY (roomname));
+  request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_TEXT,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_ROOM,
+      TP_PROP_CHANNEL_TARGET_ID, G_TYPE_STRING, room_name,
+      NULL);
 
-  self = empathy_dispatcher_dup_singleton ();
-  priv = GET_PRIV (self);
+  req = tp_account_channel_request_new (account, request, timestamp);
 
-  connection = tp_account_get_connection (account);
-  if (connection == NULL)
-    return;
+  tp_account_channel_request_ensure_channel_async (req, NULL, NULL,
+      ensure_text_channel_cb, NULL);
 
-  connection_data = g_hash_table_lookup (priv->connections, connection);
-  g_assert (connection_data != NULL);
-
-  /* Don't know the room handle yet */
-  request_data  = new_dispatcher_request_data (self, connection,
-    TP_IFACE_CHANNEL_TYPE_TEXT, TP_HANDLE_TYPE_ROOM, 0, NULL, timestamp,
-    NULL, NULL, NULL);
-  request_data->should_ensure = TRUE;
-
-  connection_data->outstanding_requests = g_list_prepend
-    (connection_data->outstanding_requests, request_data);
-
-  call = tp_cli_connection_call_request_handles (
-    connection, -1,
-    TP_HANDLE_TYPE_ROOM, names,
-    dispatcher_request_handles_cb, request_data, NULL, NULL);
-
-  if (call != NULL)
-    request_data->pending_call = call;
-
-  g_object_unref (self);
+  g_hash_table_unref (request);
+  g_object_unref (req);
 }
 
 static void
