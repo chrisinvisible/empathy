@@ -213,10 +213,39 @@ abort_verification (EmpathyTLSVerifier *self,
   tp_clear_object (&priv->verify_result);
 }
 
+static gchar *
+get_certified_hostname (gnutls_x509_crt_t cert)
+{
+  gchar dns_name[256];
+  gsize dns_name_size;
+  gint idx;
+  gint res = 0;
+
+  /* this is taken from GnuTLS */
+  for (idx = 0; res >= 0; idx++)
+    {
+      dns_name_size = sizeof (dns_name);
+      res = gnutls_x509_crt_get_subject_alt_name (cert, idx,
+          dns_name, &dns_name_size, NULL);
+
+      if (res == GNUTLS_SAN_DNSNAME || res == GNUTLS_SAN_IPADDRESS)
+        return g_strndup (dns_name, dns_name_size);
+    }
+
+  dns_name_size = sizeof (dns_name);
+  res = gnutls_x509_crt_get_dn_by_oid (cert, GNUTLS_OID_X520_COMMON_NAME,
+      0, 0, dns_name, &dns_name_size);
+
+  if (res >= 0)
+    return g_strndup (dns_name, dns_name_size);
+
+  return NULL;
+}
+
 static void
 real_start_verification (EmpathyTLSVerifier *self)
 {
-  gnutls_x509_crt_t last_cert;
+  gnutls_x509_crt_t first_cert, last_cert;
   gint idx;
   gboolean res = FALSE;
   gint num_certs;
@@ -224,14 +253,34 @@ real_start_verification (EmpathyTLSVerifier *self)
     EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN;
   EmpathyTLSVerifierPriv *priv = GET_PRIV (self);
 
-  num_certs = priv->cert_chain->len;
-
   DEBUG ("Starting verification");
+
+  /* check if the certificate matches the hostname first. */
+  first_cert = g_ptr_array_index (priv->cert_chain, 0);
+  if (gnutls_x509_crt_check_hostname (first_cert, priv->hostname) == 0)
+    {
+      gchar *certified_hostname;
+
+      certified_hostname = get_certified_hostname (first_cert);
+      DEBUG ("Hostname mismatch: got %s but expected %s",
+          certified_hostname, priv->hostname);
+
+      /* TODO: pass-through the expected hostname in the reject details */
+      reason = EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH;
+
+      g_free (certified_hostname);
+      goto out;
+    }
+
+  DEBUG ("Hostname matched");
+
+  num_certs = priv->cert_chain->len;
 
   if (priv->trusted_ca_list->len > 0)
     {
-      /* if the last certificate is self-signed, ignore it, as we want to check
-       * the chain against our trusted CA list first.
+      /* if the last certificate is self-signed, and we have a list of
+       * trusted CAs, ignore it, as we want to check the chain against our
+       * trusted CAs list first.
        */
       last_cert = g_ptr_array_index (priv->cert_chain, num_certs - 1);
 
