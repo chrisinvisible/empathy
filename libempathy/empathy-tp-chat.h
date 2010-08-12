@@ -60,10 +60,12 @@ typedef struct {
 } EmpathyTpChatProperty;
 
 GType          empathy_tp_chat_get_type             (void) G_GNUC_CONST;
-EmpathyTpChat *empathy_tp_chat_new                  (TpChannel          *channel);
+EmpathyTpChat *empathy_tp_chat_new                  (TpAccount *account,
+						     TpChannel *channel);
 const gchar *  empathy_tp_chat_get_id               (EmpathyTpChat      *chat);
 EmpathyContact *empathy_tp_chat_get_remote_contact   (EmpathyTpChat      *chat);
 TpChannel *    empathy_tp_chat_get_channel          (EmpathyTpChat      *chat);
+TpAccount    * empathy_tp_chat_get_account          (EmpathyTpChat      *chat);
 TpConnection * empathy_tp_chat_get_connection       (EmpathyTpChat      *chat);
 gboolean       empathy_tp_chat_is_ready             (EmpathyTpChat      *chat);
 void           empathy_tp_chat_send                 (EmpathyTpChat      *chat,

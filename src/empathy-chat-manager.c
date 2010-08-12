@@ -218,7 +218,7 @@ handle_channels (TpSimpleHandler *handler,
       TpChannel *channel = l->data;
       EmpathyTpChat *tp_chat;
 
-      tp_chat = empathy_tp_chat_new (channel);
+      tp_chat = empathy_tp_chat_new (account, channel);
 
       if (empathy_tp_chat_is_ready (tp_chat))
         {
