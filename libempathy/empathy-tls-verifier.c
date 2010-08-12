@@ -139,11 +139,34 @@ verify_last_certificate (EmpathyTLSVerifier *self,
   gnutls_x509_crt_t *trusted_ca_list;
   EmpathyTLSVerifierPriv *priv = GET_PRIV (self);
 
-  trusted_ca_list = ptr_array_to_x509_crt_list (priv->trusted_ca_list);
-  res = gnutls_x509_crt_verify (cert, trusted_ca_list,
-      priv->trusted_ca_list->len, 0, &verify_output);
+  if (priv->trusted_ca_list->len > 0)
+    {
+      trusted_ca_list = ptr_array_to_x509_crt_list (priv->trusted_ca_list);
+      res = gnutls_x509_crt_verify (cert, trusted_ca_list,
+          priv->trusted_ca_list->len, 0, &verify_output);
 
-  g_free (trusted_ca_list);
+      DEBUG ("Checking last certificate %p against trusted CAs, output %u",
+          cert, verify_output);
+
+      g_free (trusted_ca_list);
+    }
+  else
+    {
+      /* check it against itself to see if it's structurally valid */
+      res = gnutls_x509_crt_verify (cert, &cert, 1, 0, &verify_output);
+
+      DEBUG ("Checking last certificate %p against itself, output %u", cert,
+          verify_output);
+
+      /* if it's valid, return the SelfSigned error, so that we can add it
+       * later to our trusted CAs whitelist.
+       */
+      if (res == GNUTLS_E_SUCCESS)
+        {
+          *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_SELF_SIGNED;
+          return FALSE;
+        }
+    }
 
   return verification_output_to_reason (res, verify_output, reason);
 }
@@ -233,13 +256,13 @@ real_start_verification (EmpathyTLSVerifier *self)
         }
     }
 
-  if (priv->trusted_ca_list->len > 0)
-    {
-      res = verify_last_certificate (self,
-          g_ptr_array_index (priv->cert_chain, num_certs - 1),
-          &reason);
-    }
+  res = verify_last_certificate (self,
+      g_ptr_array_index (priv->cert_chain, num_certs - 1),
+      &reason);
 
+  DEBUG ("Last verification gave result %d with reason %u", res, reason);
+
+ out:
   if (!res)
     {
       abort_verification (self, reason);
