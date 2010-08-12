@@ -194,8 +194,12 @@ select_account_once_ready (EmpathyLogWindow *self,
 {
 	EmpathyAccountChooser *account_chooser = EMPATHY_ACCOUNT_CHOOSER (self->account_chooser_chats);
 
+	tp_clear_object (&self->selected_account);
 	self->selected_account = g_object_ref (account);
+
+	g_free (self->selected_chat_id);
 	self->selected_chat_id = g_strdup (chat_id);
+
 	self->selected_is_chatroom = is_chatroom;
 
 	if (empathy_account_chooser_is_ready (account_chooser))
