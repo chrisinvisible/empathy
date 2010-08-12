@@ -710,8 +710,7 @@ chat_command_join (EmpathyChat *chat,
 			TpConnection *connection;
 
 			connection = empathy_tp_chat_get_connection (priv->tp_chat);
-			empathy_dispatcher_join_muc (
-				empathy_get_account_for_connection (connection), rooms[i],
+			empathy_dispatcher_join_muc (priv->account, rooms[i],
 				gtk_get_current_event_time ());
 		}
 		i++;
@@ -3013,7 +3012,7 @@ empathy_chat_set_tp_chat (EmpathyChat   *chat,
 
 	priv->tp_chat = g_object_ref (tp_chat);
 	connection = empathy_tp_chat_get_connection (priv->tp_chat);
-	priv->account = g_object_ref (empathy_get_account_for_connection (connection));
+	priv->account = g_object_ref (empathy_tp_chat_get_account (priv->tp_chat));
 
 	g_signal_connect (tp_chat, "destroy",
 			  G_CALLBACK (chat_destroy_cb),
