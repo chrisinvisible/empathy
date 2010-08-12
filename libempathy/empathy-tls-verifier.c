@@ -182,6 +182,8 @@ verify_certificate (EmpathyTLSVerifier *self,
 
   res = gnutls_x509_crt_verify (cert, &issuer, 1, 0, &verify_output);
 
+  DEBUG ("Verifying %p against %p, output %u", cert, issuer, verify_output);
+
   return verification_output_to_reason (res, verify_output, reason);
 }
 
@@ -368,20 +370,21 @@ get_number_and_type_of_certificates (gnutls_datum_t *datum,
     gnutls_x509_crt_fmt_t *format)
 {
   gnutls_x509_crt_t fake;
-  gint retval = 1;
+  guint retval = 1;
   gint res;
 
-  res = gnutls_x509_crt_list_import (&fake, (guint *) &retval, datum,
-      GNUTLS_X509_FMT_PEM, 0);
+  res = gnutls_x509_crt_list_import (&fake, &retval, datum,
+      GNUTLS_X509_FMT_PEM, GNUTLS_X509_CRT_LIST_IMPORT_FAIL_IF_EXCEED);
 
   if (res == GNUTLS_E_SHORT_MEMORY_BUFFER || res > 0)
     {
+      DEBUG ("Found PEM, with %u certificates", retval);
       *format = GNUTLS_X509_FMT_PEM;
       return retval;
     }
 
   /* try DER */
-  res = gnutls_x509_crt_list_import (&fake, (guint *) &retval, datum,
+  res = gnutls_x509_crt_list_import (&fake, &retval, datum,
       GNUTLS_X509_FMT_DER, 0);
 
   if (res > 0)
