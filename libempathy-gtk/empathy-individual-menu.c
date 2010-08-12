@@ -699,7 +699,9 @@ room_sub_menu_activate_cb (GtkWidget *item,
          RoomSubMenuData *data)
 {
   EmpathyTpChat *chat;
-  EmpathyContact *contact;
+  EmpathyChatroomManager *mgr;
+  EmpathyContact *contact = NULL;
+  GList *personas, *l;
 
   chat = empathy_chatroom_get_tp_chat (data->chatroom);
   if (chat == NULL)
@@ -708,7 +710,40 @@ room_sub_menu_activate_cb (GtkWidget *item,
       return;
     }
 
-  contact = empathy_contact_dup_from_folks_individual (data->individual);
+  mgr = empathy_chatroom_manager_dup_singleton (NULL);
+
+  /* find the first of this Individual's contacts who can join this room */
+  personas = folks_individual_get_personas (data->individual);
+  for (l = personas; l != NULL && contact == NULL; l = g_list_next (l))
+    {
+      TpfPersona *persona = l->data;
+      TpContact *tp_contact;
+      GList *rooms;
+
+      if (!TPF_IS_PERSONA (persona))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (persona);
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+
+      rooms = empathy_chatroom_manager_get_chatrooms (mgr,
+          empathy_contact_get_account (contact));
+
+      if (g_list_find (rooms, data->chatroom) == NULL)
+        tp_clear_object (&contact);
+
+      /* if contact != NULL here, we've found our match */
+
+      g_list_free (rooms);
+    }
+
+  g_object_unref (mgr);
+
+  if (contact == NULL)
+    {
+      /* contact disappeared. Ignoring */
+      return;
+    }
 
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
@@ -742,15 +777,19 @@ empathy_individual_invite_menu_item_new (FolksIndividual *individual)
   GtkWidget *image;
   GtkWidget *room_item;
   EmpathyChatroomManager *mgr;
-  GList *rooms, *l;
+  GList *personas;
+  GList *rooms = NULL;
+  GList *names = NULL;
+  GList *l;
   GtkWidget *submenu = NULL;
-  EmpathyContact *contact;
+  /* map of chat room names to their objects; just a utility to remove
+   * duplicates and to make construction of the alphabetized list easier */
+  GHashTable *name_room_map;
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
+  name_room_map = g_hash_table_new_full (g_str_hash, g_str_equal, NULL,
+      g_object_unref);
 
   item = gtk_image_menu_item_new_with_mnemonic (_("_Invite to Chat Room"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_GROUP_MESSAGE,
@@ -758,22 +797,65 @@ empathy_individual_invite_menu_item_new (FolksIndividual *individual)
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 
   mgr = empathy_chatroom_manager_dup_singleton (NULL);
-  rooms = empathy_chatroom_manager_get_chatrooms (mgr,
-      empathy_contact_get_account (contact));
 
+  /* collect the rooms from amongst all accounts for this Individual */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = g_list_next (l))
+    {
+      TpfPersona *persona = l->data;
+      GList *rooms_cur;
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+
+      if (!TPF_IS_PERSONA (persona))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (persona);
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+
+      rooms_cur = empathy_chatroom_manager_get_chatrooms (mgr,
+          empathy_contact_get_account (contact));
+      rooms = g_list_concat (rooms, rooms_cur);
+
+      g_object_unref (contact);
+    }
+
+  /* alphabetize the rooms */
   for (l = rooms; l != NULL; l = g_list_next (l))
     {
       EmpathyChatroom *chatroom = l->data;
+      gboolean existed;
 
       if (empathy_chatroom_get_tp_chat (chatroom) != NULL)
         {
-          if (G_UNLIKELY (submenu == NULL))
-            submenu = gtk_menu_new ();
+          const gchar *name;
 
-          room_item = create_room_sub_menu (individual, chatroom);
-          gtk_menu_shell_append ((GtkMenuShell *) submenu, room_item);
-          gtk_widget_show (room_item);
+          name = empathy_chatroom_get_name (chatroom);
+          existed = (g_hash_table_lookup (name_room_map, name) != NULL);
+          g_hash_table_insert (name_room_map, (gpointer) name,
+              g_object_ref (chatroom));
+
+          /* this will take care of duplicates in rooms */
+          if (!existed)
+            {
+              names = g_list_insert_sorted (names, (gpointer) name,
+                  (GCompareFunc) g_strcmp0);
+            }
         }
+    }
+
+  for (l = names; l != NULL; l = g_list_next (l))
+    {
+      const gchar *name = l->data;
+      EmpathyChatroom *chatroom;
+
+      if (G_UNLIKELY (submenu == NULL))
+        submenu = gtk_menu_new ();
+
+      chatroom = g_hash_table_lookup (name_room_map, name);
+      room_item = create_room_sub_menu (individual, chatroom);
+      gtk_menu_shell_append ((GtkMenuShell *) submenu, room_item);
+      gtk_widget_show (room_item);
     }
 
   if (submenu)
@@ -783,8 +865,9 @@ empathy_individual_invite_menu_item_new (FolksIndividual *individual)
 
   gtk_widget_show (image);
 
-  g_object_unref (contact);
+  g_hash_table_destroy (name_room_map);
   g_object_unref (mgr);
+  g_list_free (names);
   g_list_free (rooms);
 
   return item;
