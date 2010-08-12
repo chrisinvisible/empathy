@@ -488,17 +488,12 @@ empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual)
 }
 
 static void
-individual_share_my_desktop_menu_item_activate_cb (FolksIndividual *individual)
+empathy_individual_share_my_desktop_menu_item_activated (GtkMenuItem *item,
+    EmpathyContact *contact)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_share_my_desktop_share_with_contact (contact);
-
-  g_object_unref (contact);
 }
 
 GtkWidget *
@@ -506,26 +501,17 @@ empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual)
 {
   GtkWidget *item;
   GtkWidget *image;
-  EmpathyContact *contact;
 
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
-
   item = gtk_image_menu_item_new_with_mnemonic (_("Share My Desktop"));
   image = gtk_image_new_from_icon_name (GTK_STOCK_NETWORK, GTK_ICON_SIZE_MENU);
-  gtk_widget_set_sensitive (item,
-      empathy_contact_can_use_rfb_stream_tube (contact));
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 
-  g_signal_connect_swapped (item, "activate",
-      G_CALLBACK (individual_share_my_desktop_menu_item_activate_cb),
-      individual);
-
-  g_object_unref (contact);
+  menu_item_set_first_contact (item, individual,
+      G_CALLBACK (empathy_individual_share_my_desktop_menu_item_activated),
+      empathy_contact_can_use_rfb_stream_tube);
 
   return item;
 }
