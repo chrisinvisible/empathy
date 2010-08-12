@@ -314,7 +314,7 @@ handle_channels_cb (TpSimpleHandler *handler,
           TP_IFACE_QUARK_CHANNEL_TYPE_STREAMED_MEDIA)
         continue;
 
-      call = empathy_tp_call_new (channel);
+      call = empathy_tp_call_new (account, channel);
 
       if (empathy_tp_call_get_status (call) <= EMPATHY_TP_CALL_STATUS_READYING)
         {

@@ -39,6 +39,7 @@
 typedef struct
 {
   gboolean dispose_has_run;
+  TpAccount *account;
   TpChannel *channel;
   EmpathyContact *contact;
   gboolean is_incoming;
@@ -60,6 +61,7 @@ static guint signals[LAST_SIGNAL] = {0};
 enum
 {
   PROP_0,
+  PROP_ACCOUNT,
   PROP_CHANNEL,
   PROP_CONTACT,
   PROP_STATUS,
@@ -444,6 +446,8 @@ tp_call_dispose (GObject *object)
   if (priv->contact != NULL)
       g_object_unref (priv->contact);
 
+  tp_clear_object (&priv->account);
+
   if (G_OBJECT_CLASS (empathy_tp_call_parent_class)->dispose)
     G_OBJECT_CLASS (empathy_tp_call_parent_class)->dispose (object);
 }
@@ -471,6 +475,9 @@ tp_call_set_property (GObject *object,
 
   switch (prop_id)
     {
+    case PROP_ACCOUNT:
+      priv->account = g_value_dup_object (value);
+      break;
     case PROP_CHANNEL:
       priv->channel = g_value_dup_object (value);
       break;
@@ -490,6 +497,9 @@ tp_call_get_property (GObject *object,
 
   switch (prop_id)
     {
+    case PROP_ACCOUNT:
+      g_value_set_object (value, priv->channel);
+      break;
     case PROP_CHANNEL:
       g_value_set_object (value, priv->channel);
       break;
@@ -524,23 +534,33 @@ empathy_tp_call_class_init (EmpathyTpCallClass *klass)
 
   g_type_class_add_private (klass, sizeof (EmpathyTpCallPriv));
 
+  g_object_class_install_property (object_class, PROP_ACCOUNT,
+      g_param_spec_object ("account", "TpAccount", "TpAccount",
+      TP_TYPE_ACCOUNT,
+      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE |
+      G_PARAM_STATIC_STRINGS));
+
   g_object_class_install_property (object_class, PROP_CHANNEL,
       g_param_spec_object ("channel", "channel", "channel",
       TP_TYPE_CHANNEL,
       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE |
       G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (object_class, PROP_CONTACT,
       g_param_spec_object ("contact", "Call contact", "Call contact",
       EMPATHY_TYPE_CONTACT,
       G_PARAM_READABLE | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (object_class, PROP_STATUS,
       g_param_spec_uint ("status", "Call status",
       "Call status", 0, 255, 0, G_PARAM_READABLE | G_PARAM_STATIC_NICK |
       G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (object_class, PROP_AUDIO_STREAM,
       g_param_spec_pointer ("audio-stream", "Audio stream data",
       "Audio stream data",
       G_PARAM_READABLE | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB));
+
   g_object_class_install_property (object_class, PROP_VIDEO_STREAM,
       g_param_spec_pointer ("video-stream", "Video stream data",
       "Video stream data",
@@ -581,11 +601,13 @@ empathy_tp_call_init (EmpathyTpCall *call)
 }
 
 EmpathyTpCall *
-empathy_tp_call_new (TpChannel *channel)
+empathy_tp_call_new (TpAccount *account,
+    TpChannel *channel)
 {
   g_return_val_if_fail (TP_IS_CHANNEL (channel), NULL);
 
   return g_object_new (EMPATHY_TYPE_TP_CALL,
+      "account", account,
       "channel", channel,
       NULL);
 }
@@ -839,4 +861,12 @@ empathy_tp_call_get_status (EmpathyTpCall *self)
   EmpathyTpCallPriv *priv = GET_PRIV (self);
 
   return priv->status;
+}
+
+TpAccount *
+empathy_tp_call_get_account (EmpathyTpCall *self)
+{
+  EmpathyTpCallPriv *priv = GET_PRIV (self);
+
+  return priv->account;
 }

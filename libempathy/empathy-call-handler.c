@@ -762,9 +762,11 @@ empathy_call_handler_request_cb (GObject *source,
   EmpathyCallHandlerPriv *priv = GET_PRIV (self);
   TpChannel *channel;
   GError *error = NULL;
+  TpAccountChannelRequest *req = TP_ACCOUNT_CHANNEL_REQUEST (source);
+  TpAccount *account;
 
-  channel = tp_account_channel_request_create_and_handle_channel_finish (
-      TP_ACCOUNT_CHANNEL_REQUEST (source), result, NULL, &error);
+  channel = tp_account_channel_request_create_and_handle_channel_finish (req,
+      result, NULL, &error);
   if (channel == NULL)
     {
       DEBUG ("Failed to create the channel: %s", error->message);
@@ -772,7 +774,9 @@ empathy_call_handler_request_cb (GObject *source,
       return;
     }
 
-  priv->call = empathy_tp_call_new (channel);
+  account = tp_account_channel_request_get_account (req);
+
+  priv->call = empathy_tp_call_new (account, channel);
 
   g_object_notify (G_OBJECT (self), "tp-call");
 

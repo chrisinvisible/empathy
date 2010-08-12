@@ -73,7 +73,8 @@ typedef struct
 } EmpathyTpCallStream;
 
 GType empathy_tp_call_get_type (void) G_GNUC_CONST;
-EmpathyTpCall *empathy_tp_call_new (TpChannel *channel);
+EmpathyTpCall *empathy_tp_call_new (TpAccount *account,
+    TpChannel *channel);
 void empathy_tp_call_close (EmpathyTpCall *call);
 
 void empathy_tp_call_accept_incoming_call (EmpathyTpCall *call);
@@ -92,6 +93,8 @@ gboolean empathy_tp_call_has_initial_video (EmpathyTpCall *self);
 void empathy_tp_call_leave (EmpathyTpCall *self);
 
 EmpathyTpCallStatus empathy_tp_call_get_status (EmpathyTpCall *self);
+
+TpAccount * empathy_tp_call_get_account (EmpathyTpCall *self);
 
 G_END_DECLS
 
