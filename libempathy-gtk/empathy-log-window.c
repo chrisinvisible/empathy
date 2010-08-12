@@ -821,7 +821,9 @@ log_manager_got_chats_cb (GObject *manager,
 					COL_CHAT_IS_CHATROOM, hit->is_chatroom,
 					-1);
 
-			select_account = (hit->account == window->selected_account);
+			if (!tp_strdiff (tp_proxy_get_object_path (hit->account),
+			    tp_proxy_get_object_path (window->selected_account)))
+				select_account = TRUE;
 
 			/* FIXME: Update COL_CHAT_ICON/NAME */
 			if (hit->is_chatroom) {
