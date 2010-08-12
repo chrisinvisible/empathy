@@ -346,7 +346,8 @@ build_gnutls_cert_list (EmpathyTLSVerifier *self)
       NULL);
   num_certs = certificate_data->len;
 
-  priv->cert_chain = g_ptr_array_sized_new (num_certs);
+  priv->cert_chain = g_ptr_array_new_with_free_func (
+      (GDestroyNotify) gnutls_x509_crt_deinit);
 
   for (idx = 0; idx < num_certs; idx++)
     {
@@ -402,10 +403,14 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
     gpointer user_data)
 {
   gint idx;
+  gchar *user_certs_dir;
+  GDir *dir;
+  GError *error = NULL;
   EmpathyTLSVerifier *self = user_data;
   EmpathyTLSVerifierPriv *priv = GET_PRIV (self);
 
-  priv->trusted_ca_list = g_ptr_array_new ();
+  priv->trusted_ca_list = g_ptr_array_new_with_free_func
+    ((GDestroyNotify) gnutls_x509_crt_deinit);
 
   for (idx = 0; idx < (gint) G_N_ELEMENTS (system_ca_paths) - 1; idx++)
     {
@@ -416,15 +421,15 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
       gnutls_x509_crt_t *cert_list;
       gnutls_datum_t datum = { NULL, 0 };
       gnutls_x509_crt_fmt_t format = 0;
-      GError *error = NULL;
 
       path = system_ca_paths[idx];
       g_file_get_contents (path, &contents, &length, &error);
 
       if (error != NULL)
         {
-          DEBUG ("Unable to read system CAs from path %s", path);
-          g_error_free (error);
+          DEBUG ("Unable to read system CAs from path %s: %s", path,
+              error->message);
+          g_clear_error (&error);
           continue;
         }
 
@@ -462,7 +467,67 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
         g_ptr_array_add (priv->trusted_ca_list, cert_list[idx]);
 
       g_free (contents);
+      g_free (cert_list);
     }
+
+  /* user certs */
+  user_certs_dir = g_build_filename (g_get_user_config_dir (),
+      "telepathy", "certs", NULL);
+  dir = g_dir_open (user_certs_dir, 0, &error);
+
+  if (error != NULL)
+    {
+      DEBUG ("Can't open the user certs dir at %s: %s", user_certs_dir,
+          error->message);
+
+      g_error_free (error);
+    }
+  else
+    {
+      const gchar *cert_path;
+
+      while ((cert_path = g_dir_read_name (dir)) != NULL)
+        {
+          gchar *contents = NULL;
+          gsize length = 0;
+          gint res;
+          gnutls_datum_t datum = { NULL, 0 };
+          gnutls_x509_crt_t cert;
+
+          g_file_get_contents (cert_path, &contents, &length, &error);
+
+          if (error != NULL)
+            {
+              DEBUG ("Can't open the certificate file at path %s: %s",
+                  cert_path, error->message);
+
+              g_clear_error (&error);
+              continue;
+            }
+
+          datum.data = (guchar *) contents;
+          datum.size = length;
+
+          gnutls_x509_crt_init (&cert);
+          res = gnutls_x509_crt_import (cert, &datum, GNUTLS_X509_FMT_PEM);
+
+          if (res != GNUTLS_E_SUCCESS)
+            {
+              DEBUG ("Can't import the certificate at path %s: "
+                  "GnuTLS returned %d", cert_path, res);
+            }
+          else
+            {
+              g_ptr_array_add (priv->trusted_ca_list, cert);
+            }
+
+          g_free (contents);
+        }
+
+      g_dir_close (dir);
+    }
+
+  g_free (user_certs_dir);
 
   /* TODO: do the CRL too */
 
@@ -537,7 +602,13 @@ empathy_tls_verifier_finalize (GObject *object)
   EmpathyTLSVerifierPriv *priv = GET_PRIV (object);
 
   DEBUG ("%p", object);
-  
+
+  if (priv->trusted_ca_list != NULL)
+    g_ptr_array_unref (priv->trusted_ca_list);
+
+  if (priv->cert_chain != NULL)
+    g_ptr_array_unref (priv->cert_chain);
+
   g_free (priv->hostname);
 
   G_OBJECT_CLASS (empathy_tls_verifier_parent_class)->finalize (object);
