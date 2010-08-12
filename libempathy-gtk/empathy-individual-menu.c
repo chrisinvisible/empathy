@@ -206,12 +206,12 @@ empathy_individual_menu_new (FolksIndividual *individual,
   if (features & EMPATHY_INDIVIDUAL_FEATURE_CALL)
     {
       /* Audio Call */
-      item = empathy_individual_audio_call_menu_item_new (individual);
+      item = empathy_individual_audio_call_menu_item_new (individual, NULL);
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
 
       /* Video Call */
-      item = empathy_individual_video_call_menu_item_new (individual);
+      item = empathy_individual_video_call_menu_item_new (individual, NULL);
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
     }
@@ -490,21 +490,33 @@ empathy_individual_audio_call_menu_item_activated (GtkMenuItem *item,
 }
 
 GtkWidget *
-empathy_individual_audio_call_menu_item_new (FolksIndividual *individual)
+empathy_individual_audio_call_menu_item_new (FolksIndividual *individual,
+    EmpathyContact *contact)
 {
   GtkWidget *item;
   GtkWidget *image;
 
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual) ||
+      EMPATHY_IS_CONTACT (contact),
+      NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (C_("menu item", "_Audio Call"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VOIP, GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 
-  menu_item_set_first_contact (item, individual,
-      G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
-      empathy_contact_can_voip_audio);
+  if (contact != NULL)
+    {
+      menu_item_set_contact (item, contact,
+          G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
+          empathy_contact_can_voip_audio);
+    }
+  else
+    {
+      menu_item_set_first_contact (item, individual,
+          G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
+          empathy_contact_can_voip_audio);
+    }
 
   return item;
 }
@@ -520,12 +532,15 @@ empathy_individual_video_call_menu_item_activated (GtkMenuItem *item,
 }
 
 GtkWidget *
-empathy_individual_video_call_menu_item_new (FolksIndividual *individual)
+empathy_individual_video_call_menu_item_new (FolksIndividual *individual,
+    EmpathyContact *contact)
 {
   GtkWidget *item;
   GtkWidget *image;
 
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual) ||
+      EMPATHY_IS_CONTACT (contact),
+      NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (C_("menu item", "_Video Call"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_VIDEO_CALL,
@@ -533,9 +548,18 @@ empathy_individual_video_call_menu_item_new (FolksIndividual *individual)
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 
-  menu_item_set_first_contact (item, individual,
-      G_CALLBACK (empathy_individual_video_call_menu_item_activated),
-      empathy_contact_can_voip_video);
+  if (contact != NULL)
+    {
+      menu_item_set_contact (item, contact,
+          G_CALLBACK (empathy_individual_video_call_menu_item_activated),
+          empathy_contact_can_voip_video);
+    }
+  else
+    {
+      menu_item_set_first_contact (item, individual,
+          G_CALLBACK (empathy_individual_video_call_menu_item_activated),
+          empathy_contact_can_voip_video);
+    }
 
   return item;
 }
