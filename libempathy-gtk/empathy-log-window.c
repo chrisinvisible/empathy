@@ -358,7 +358,7 @@ log_window_entry_find_changed_cb (GtkWidget       *entry,
 	is_sensitive &= !EMP_STR_EMPTY (str);
 	is_sensitive &=
 		!window->last_find ||
-		(window->last_find && strcmp (window->last_find, str) != 0);
+		(window->last_find && tp_strdiff (window->last_find, str));
 
 	gtk_widget_set_sensitive (window->button_find, is_sensitive);
 }
@@ -691,7 +691,7 @@ start_find_search (EmpathyLogWindow *window)
 	str = gtk_entry_get_text (GTK_ENTRY (window->entry_find));
 
 	/* Don't find the same crap again */
-	if (window->last_find && strcmp (window->last_find, str) == 0) {
+	if (window->last_find && !tp_strdiff (window->last_find, str)) {
 		return;
 	}
 
@@ -975,7 +975,7 @@ log_window_chats_set_selected (EmpathyLogWindow *window)
 				    -1);
 
 		if (this_account == window->selected_account &&
-		    strcmp (this_chat_id, window->selected_chat_id) == 0 &&
+		    !tp_strdiff (this_chat_id, window->selected_chat_id) &&
 		    this_is_chatroom == window->selected_is_chatroom) {
 			gtk_tree_selection_select_iter (selection, &iter);
 			path = gtk_tree_model_get_path (model, &iter);
