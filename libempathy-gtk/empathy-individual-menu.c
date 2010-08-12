@@ -230,7 +230,7 @@ empathy_individual_menu_new (FolksIndividual *individual,
   gtk_widget_show (item);
 
   /* File transfer */
-  item = empathy_individual_file_transfer_menu_item_new (individual);
+  item = empathy_individual_file_transfer_menu_item_new (individual, NULL);
   gtk_menu_shell_append (shell, item);
   gtk_widget_show (item);
 
@@ -624,12 +624,15 @@ empathy_individual_file_transfer_menu_item_activated (GtkMenuItem *item,
 }
 
 GtkWidget *
-empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual)
+empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual,
+    EmpathyContact *contact)
 {
   GtkWidget *item;
   GtkWidget *image;
 
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual) ||
+      EMPATHY_IS_CONTACT (contact),
+      NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (_("Send File"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_DOCUMENT_SEND,
@@ -637,9 +640,18 @@ empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual)
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);
 
-  menu_item_set_first_contact (item, individual,
-      G_CALLBACK (empathy_individual_file_transfer_menu_item_activated),
-      empathy_contact_can_send_files);
+  if (contact != NULL)
+    {
+      menu_item_set_contact (item, contact,
+          G_CALLBACK (empathy_individual_file_transfer_menu_item_activated),
+          empathy_contact_can_send_files);
+    }
+  else
+    {
+      menu_item_set_first_contact (item, individual,
+          G_CALLBACK (empathy_individual_file_transfer_menu_item_activated),
+          empathy_contact_can_send_files);
+    }
 
   return item;
 }
