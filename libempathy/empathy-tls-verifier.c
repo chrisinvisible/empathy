@@ -110,9 +110,9 @@ verification_output_to_reason (gint res,
       retval = FALSE;
 
       if (verify_output & GNUTLS_CERT_SIGNER_NOT_FOUND)
-        *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED;
-      else if (verify_output & GNUTLS_CERT_SIGNER_NOT_CA)
         *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_SELF_SIGNED;
+      else if (verify_output & GNUTLS_CERT_SIGNER_NOT_CA)
+        *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED;
       else if (verify_output & GNUTLS_CERT_INSECURE_ALGORITHM)
         *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_INSECURE;
       else if (verify_output & GNUTLS_CERT_NOT_ACTIVATED)
