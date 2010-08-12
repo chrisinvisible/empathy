@@ -422,6 +422,7 @@ account_widget_irc_setup (EmpathyAccountWidgetIrc *settings)
     }
 
   fill_networks_model (settings, network);
+  update_server_params (settings);
 }
 
 void
