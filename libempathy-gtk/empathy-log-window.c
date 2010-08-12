@@ -222,10 +222,10 @@ empathy_log_window_show (TpAccount  *account,
 	gchar                  *filename;
 	EmpathyLogWindow       *window;
 
-	if (log_window) {
+	if (log_window != NULL) {
 		gtk_window_present (GTK_WINDOW (log_window->window));
 
-		if (account && chat_id) {
+		if (account != NULL && chat_id != NULL) {
 			gtk_notebook_set_current_page (GTK_NOTEBOOK (log_window->notebook), 1);
 			select_account_once_ready (log_window, account, chat_id, is_chatroom);
 		}
@@ -318,10 +318,10 @@ empathy_log_window_show (TpAccount  *account,
 	log_window_chats_setup (window);
 	log_window_chats_populate (window);
 
-	if (account && chat_id)
+	if (account != NULL && chat_id != NULL)
 		select_account_once_ready (window, account, chat_id, is_chatroom);
 
-	if (parent) {
+	if (parent != NULL) {
 		gtk_window_set_transient_for (GTK_WINDOW (window->window),
 					      GTK_WINDOW (parent));
 	}
@@ -534,7 +534,7 @@ log_manager_searched_new_cb (GObject *manager,
 			hit = l->data;
 
 			/* Protect against invalid data (corrupt or old log files. */
-			if (!hit->account || !hit->chat_id) {
+			if (hit->account == NULL || hit->chat_id == NULL) {
 					continue;
 			}
 
@@ -565,7 +565,7 @@ log_manager_searched_new_cb (GObject *manager,
 			}
 	}
 
-	if (hits) {
+	if (hits != NULL) {
 			tpl_log_manager_search_free (hits);
 	}
 }
@@ -1022,12 +1022,12 @@ log_window_chats_get_selected (EmpathyLogWindow  *window,
 			    COL_CHAT_IS_CHATROOM, &room,
 			    -1);
 
-	if (chat_id) {
+	if (chat_id != NULL) {
 		*chat_id = id;
 	} else {
 		g_free (id);
 	}
-	if (account) {
+	if (account != NULL) {
 		*account = acc;
 	} else {
 		g_object_unref (acc);
@@ -1177,7 +1177,7 @@ log_manager_got_dates_cb (GObject *manager,
       log_window_calendar_chats_day_selected_cb,
       window);
 
-  if (date) {
+  if (date != NULL) {
       /* Show messages of the most recent date */
       log_window_get_messages_for_date (window, date);
   }
@@ -1358,7 +1358,7 @@ log_window_entry_chats_changed_cb (GtkWidget       *entry,
 	str = gtk_entry_get_text (GTK_ENTRY (window->entry_chats));
 	empathy_chat_view_highlight (window->chatview_chats, str, FALSE);
 
-	if (str) {
+	if (str != NULL) {
 		empathy_chat_view_find_next (window->chatview_chats,
 					    str,
 					    TRUE,
@@ -1374,7 +1374,7 @@ log_window_entry_chats_activate_cb (GtkWidget       *entry,
 
 	str = gtk_entry_get_text (GTK_ENTRY (window->entry_chats));
 
-	if (str) {
+	if (str != NULL) {
 		empathy_chat_view_find_next (window->chatview_chats,
 					    str,
 					    FALSE,
