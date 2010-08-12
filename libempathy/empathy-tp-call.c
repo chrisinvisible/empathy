@@ -604,6 +604,7 @@ EmpathyTpCall *
 empathy_tp_call_new (TpAccount *account,
     TpChannel *channel)
 {
+  g_return_val_if_fail (TP_IS_ACCOUNT (account), NULL);
   g_return_val_if_fail (TP_IS_CHANNEL (channel), NULL);
 
   return g_object_new (EMPATHY_TYPE_TP_CALL,
