@@ -42,7 +42,8 @@ typedef enum {
 GtkWidget * empathy_individual_menu_new (FolksIndividual *individual,
     EmpathyIndividualFeatureFlags features);
 GtkWidget * empathy_individual_add_menu_item_new  (FolksIndividual *individual);
-GtkWidget * empathy_individual_chat_menu_item_new (FolksIndividual *individual);
+GtkWidget * empathy_individual_chat_menu_item_new (FolksIndividual *individual,
+    EmpathyContact *contact);
 GtkWidget * empathy_individual_audio_call_menu_item_new (
     FolksIndividual *individual);
 GtkWidget * empathy_individual_video_call_menu_item_new (
@@ -56,7 +57,8 @@ GtkWidget * empathy_individual_invite_menu_item_new (
 GtkWidget * empathy_individual_file_transfer_menu_item_new (
     FolksIndividual *individual);
 GtkWidget * empathy_individual_share_my_desktop_menu_item_new (
-    FolksIndividual *individual);
+    FolksIndividual *individual,
+    EmpathyContact *contact);
 GtkWidget * empathy_individual_favourite_menu_item_new (
     FolksIndividual *individual);
 
