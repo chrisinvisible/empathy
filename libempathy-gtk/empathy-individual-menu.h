@@ -55,7 +55,8 @@ GtkWidget * empathy_individual_info_menu_item_new (FolksIndividual *individual);
 GtkWidget * empathy_individual_edit_menu_item_new (FolksIndividual *individual);
 GtkWidget * empathy_individual_link_menu_item_new (FolksIndividual *individual);
 GtkWidget * empathy_individual_invite_menu_item_new (
-    FolksIndividual *individual);
+    FolksIndividual *individual,
+    EmpathyContact *contact);
 GtkWidget * empathy_individual_file_transfer_menu_item_new (
     FolksIndividual *individual,
     EmpathyContact *contact);
