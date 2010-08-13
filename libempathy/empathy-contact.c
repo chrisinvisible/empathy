@@ -502,7 +502,7 @@ contact_set_property (GObject *object,
     };
 }
 
-EmpathyContact *
+static EmpathyContact *
 empathy_contact_new (TpContact *tp_contact)
 {
   g_return_val_if_fail (TP_IS_CONTACT (tp_contact), NULL);

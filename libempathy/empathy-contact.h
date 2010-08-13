@@ -71,7 +71,6 @@ typedef enum {
 } EmpathyCapabilities;
 
 GType empathy_contact_get_type (void) G_GNUC_CONST;
-EmpathyContact * empathy_contact_new (TpContact *tp_contact);
 EmpathyContact * empathy_contact_from_tpl_contact (TpAccount *account,
     TplEntity *tpl_contact);
 EmpathyContact * empathy_contact_new_for_log (TpAccount *account,
