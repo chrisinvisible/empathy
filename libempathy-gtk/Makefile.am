@@ -6,6 +6,7 @@ AM_CPPFLAGS =                                           \
 	-I$(top_srcdir)                                 \
 	-DDATADIR=\""$(datadir)"\"              	\
 	-DPKGDATADIR=\""$(pkgdatadir)"\"		\
+	-DGCR_API_SUBJECT_TO_CHANGE			\
 	$(EMPATHY_CFLAGS)				\
 	$(GTK_CFLAGS)				\
 	$(LIBNOTIFY_CFLAGS)				\
