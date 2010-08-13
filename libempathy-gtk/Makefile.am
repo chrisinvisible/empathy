@@ -80,6 +80,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-theme-boxes.c			\
 	empathy-theme-irc.c			\
 	empathy-theme-manager.c			\
+	empathy-tls-dialog.c			\
 	empathy-ui-utils.c			\
 	empathy-video-src.c			\
 	empathy-video-widget.c
@@ -136,6 +137,7 @@ libempathy_gtk_headers =			\
 	empathy-theme-boxes.h			\
 	empathy-theme-irc.h			\
 	empathy-theme-manager.h			\
+	empathy-tls-dialog.h			\
 	empathy-ui-utils.h			\
 	empathy-video-src.h			\
 	empathy-video-widget.h
