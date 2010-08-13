@@ -40,6 +40,7 @@ G_DEFINE_TYPE (EmpathyTLSDialog, empathy_tls_dialog,
 enum {
   PROP_TLS_CERTIFICATE = 1,
   PROP_REASON,
+  PROP_REMEMBER,
 
   LAST_PROPERTY,
 };
@@ -47,6 +48,8 @@ enum {
 typedef struct {
   EmpathyTLSCertificate *certificate;
   EmpTLSCertificateRejectReason reason;
+
+  gboolean remember;
 
   gboolean dispose_run;
 } EmpathyTLSDialogPriv;
@@ -66,6 +69,9 @@ empathy_tls_dialog_get_property (GObject *object,
       break;
     case PROP_REASON:
       g_value_set_uint (value, priv->reason);
+      break;
+    case PROP_REMEMBER:
+      g_value_set_boolean (value, priv->remember);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -189,9 +195,20 @@ build_gcr_widget (EmpathyTLSDialog *self)
 }
 
 static void
+checkbox_toggled_cb (GtkToggleButton *checkbox,
+    gpointer user_data)
+{
+  EmpathyTLSDialog *self = user_data;
+  EmpathyTLSDialogPriv *priv = GET_PRIV (self);
+
+  priv->remember = gtk_toggle_button_get_active (checkbox);
+  g_object_notify (G_OBJECT (self), "remember");
+}
+
+static void
 empathy_tls_dialog_constructed (GObject *object)
 {
-  GtkWidget *content_area, *expander, *details;
+  GtkWidget *content_area, *expander, *details, *checkbox;
   gchar *text;
   EmpathyTLSDialog *self = EMPATHY_TLS_DIALOG (object);
   GtkMessageDialog *message_dialog = GTK_MESSAGE_DIALOG (self);
@@ -214,10 +231,18 @@ empathy_tls_dialog_constructed (GObject *object)
   g_free (text);
 
   content_area = gtk_dialog_get_content_area (dialog);
+
+  checkbox = gtk_check_button_new_with_label (_("Remember this choice"));
+  gtk_box_pack_end (GTK_BOX (content_area), checkbox, FALSE, FALSE, 0);
+  gtk_widget_show (checkbox);
+
+  g_signal_connect (checkbox, "toggled",
+      G_CALLBACK (checkbox_toggled_cb), self);
+
   text = g_strdup_printf ("<b>%s</b>", _("Certificate Details"));
   expander = gtk_expander_new (text);
   gtk_expander_set_use_markup (GTK_EXPANDER (expander), TRUE);
-  gtk_box_pack_end (GTK_BOX (content_area), expander, TRUE, TRUE, 6);
+  gtk_box_pack_end (GTK_BOX (content_area), expander, TRUE, TRUE, 0);
   gtk_widget_show (expander);
 
   g_free (text);
@@ -259,6 +284,12 @@ empathy_tls_dialog_class_init (EmpathyTLSDialogClass *klass)
       EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN,
       G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_REASON, pspec);
+
+  pspec = g_param_spec_boolean ("remember", "Whether to remember the decision",
+      "Whether we should remember the decision for this certificate.",
+      FALSE,
+      G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_REMEMBER, pspec);
 }
 
 GtkWidget *
