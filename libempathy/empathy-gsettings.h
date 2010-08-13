@@ -89,6 +89,9 @@ G_BEGIN_DECLS
 
 #define EMPATHY_PREFS_ACCOUNTS_SCHEMA EMPATHY_PREFS_SCHEMA ".accounts"
 
+#define EMPATHY_PREFS_LOGGER_SCHEMA "org.freedesktop.Telepathy.Logger"
+#define EMPATHY_PREFS_LOGGER_ENABLED "enabled"
+
 G_END_DECLS
 
 #endif /* __EMPATHY_GSETTINGS_H__ */

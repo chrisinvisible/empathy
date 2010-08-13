@@ -60,6 +60,7 @@ struct _EmpathyPreferencesPriv {
 	GtkWidget *checkbutton_separate_chat_windows;
 	GtkWidget *checkbutton_events_notif_area;
 	GtkWidget *checkbutton_autoconnect;
+	GtkWidget *checkbutton_logging;
 
 	GtkWidget *checkbutton_sounds_enabled;
 	GtkWidget *checkbutton_sounds_disabled_away;
@@ -85,6 +86,7 @@ struct _EmpathyPreferencesPriv {
 	GSettings *gsettings_notify;
 	GSettings *gsettings_sound;
 	GSettings *gsettings_ui;
+	GSettings *gsettings_logger;
 };
 
 static void     preferences_setup_widgets                (EmpathyPreferences      *preferences);
@@ -294,6 +296,12 @@ preferences_setup_widgets (EmpathyPreferences *preferences)
 			 priv->checkbutton_location_reduce_accuracy,
 			 "sensitive",
 			 G_SETTINGS_BIND_GET);
+
+	g_settings_bind (priv->gsettings_logger,
+			 EMPATHY_PREFS_LOGGER_ENABLED,
+			 priv->checkbutton_logging,
+			 "active",
+			 G_SETTINGS_BIND_DEFAULT);
 }
 
 static void
@@ -837,6 +845,7 @@ empathy_preferences_finalize (GObject *self)
 	g_object_unref (priv->gsettings_notify);
 	g_object_unref (priv->gsettings_sound);
 	g_object_unref (priv->gsettings_ui);
+	g_object_unref (priv->gsettings_logger);
 
 	G_OBJECT_CLASS (empathy_preferences_parent_class)->finalize (self);
 }
@@ -886,6 +895,7 @@ empathy_preferences_init (EmpathyPreferences *preferences)
 		"checkbutton_separate_chat_windows", &priv->checkbutton_separate_chat_windows,
 		"checkbutton_events_notif_area", &priv->checkbutton_events_notif_area,
 		"checkbutton_autoconnect", &priv->checkbutton_autoconnect,
+		"checkbutton_logging", &priv->checkbutton_logging,
 		"checkbutton_notifications_enabled", &priv->checkbutton_notifications_enabled,
 		"checkbutton_notifications_disabled_away", &priv->checkbutton_notifications_disabled_away,
 		"checkbutton_notifications_focus", &priv->checkbutton_notifications_focus,
@@ -914,6 +924,7 @@ empathy_preferences_init (EmpathyPreferences *preferences)
 	priv->gsettings_notify = g_settings_new (EMPATHY_PREFS_NOTIFICATIONS_SCHEMA);
 	priv->gsettings_sound = g_settings_new (EMPATHY_PREFS_SOUNDS_SCHEMA);
 	priv->gsettings_ui = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
+	priv->gsettings_logger = g_settings_new (EMPATHY_PREFS_LOGGER_SCHEMA);
 
 	preferences_themes_setup (preferences);
 
