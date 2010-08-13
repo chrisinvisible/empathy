@@ -484,15 +484,17 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
     }
   else
     {
-      const gchar *cert_path;
+      const gchar *cert_name;
 
-      while ((cert_path = g_dir_read_name (dir)) != NULL)
+      while ((cert_name = g_dir_read_name (dir)) != NULL)
         {
-          gchar *contents = NULL;
+          gchar *contents = NULL, *cert_path = NULL;
           gsize length = 0;
           gint res;
           gnutls_datum_t datum = { NULL, 0 };
           gnutls_x509_crt_t cert;
+
+          cert_path = g_build_filename (user_certs_dir, cert_name, NULL);
 
           g_file_get_contents (cert_path, &contents, &length, &error);
 
@@ -502,6 +504,7 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
                   cert_path, error->message);
 
               g_clear_error (&error);
+              g_free (cert_path);
               continue;
             }
 
@@ -522,6 +525,7 @@ build_gnutls_ca_and_crl_lists (GIOSchedulerJob *job,
             }
 
           g_free (contents);
+          g_free (cert_path);
         }
 
       g_dir_close (dir);
