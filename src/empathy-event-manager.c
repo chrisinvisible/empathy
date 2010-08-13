@@ -29,7 +29,6 @@
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/simple-approver.h>
 
-#include <libempathy/empathy-dispatcher.h>
 #include <libempathy/empathy-idle.h>
 #include <libempathy/empathy-tp-contact-factory.h>
 #include <libempathy/empathy-contact-manager.h>
@@ -76,7 +75,6 @@ typedef struct {
 } EventManagerApproval;
 
 typedef struct {
-  EmpathyDispatcher *dispatcher;
   TpBaseClient *approver;
   EmpathyContactManager *contact_manager;
   GSList *events;
@@ -1118,7 +1116,6 @@ event_manager_finalize (GObject *object)
   g_slist_foreach (priv->approvals, (GFunc) event_manager_approval_free, NULL);
   g_slist_free (priv->approvals);
   g_object_unref (priv->contact_manager);
-  g_object_unref (priv->dispatcher);
   g_object_unref (priv->approver);
 }
 
@@ -1172,7 +1169,6 @@ empathy_event_manager_init (EmpathyEventManager *manager)
 
   manager->priv = priv;
 
-  priv->dispatcher = empathy_dispatcher_dup_singleton ();
   priv->contact_manager = empathy_contact_manager_dup_singleton ();
   g_signal_connect (priv->contact_manager, "pendings-changed",
     G_CALLBACK (event_manager_pendings_changed_cb), manager);
