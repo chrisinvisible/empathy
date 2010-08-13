@@ -291,7 +291,7 @@ add_persona (EmpathyPersonaStore *self,
   if (EMP_STR_EMPTY (alias))
     return;
 
-  contact = empathy_contact_new (tpf_persona_get_contact (
+  contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
       TPF_PERSONA (persona)));
 
   gtk_list_store_insert_with_values (GTK_LIST_STORE (self), &iter, 0,
@@ -352,7 +352,7 @@ get_persona_status_icon (EmpathyPersonaStore *self,
   GdkPixbuf *pixbuf_status = NULL;
   const gchar *status_icon_name = NULL;
 
-  contact = empathy_contact_new (tpf_persona_get_contact (
+  contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
       TPF_PERSONA (persona)));
 
   status_icon_name = empathy_icon_name_for_contact (contact);
@@ -460,7 +460,7 @@ update_persona (EmpathyPersonaStore *self,
         }
 
       /* We still need to use EmpathyContact for the capabilities stuff */
-      contact = empathy_contact_new (tpf_persona_get_contact (
+      contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
           TPF_PERSONA (persona)));
 
       pixbuf_avatar = empathy_pixbuf_avatar_from_contact_scaled (contact,
@@ -578,12 +578,12 @@ sort_personas (FolksPersona *persona_a,
   if (ret_val != 0)
     goto out;
 
-  contact = empathy_contact_new (tpf_persona_get_contact (
+  contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
       TPF_PERSONA (persona_a)));
   account_a = empathy_contact_get_account (contact);
   g_object_unref (contact);
 
-  contact = empathy_contact_new (tpf_persona_get_contact (
+  contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
       TPF_PERSONA (persona_b)));
   account_b = empathy_contact_get_account (contact);
   g_object_unref (contact);
