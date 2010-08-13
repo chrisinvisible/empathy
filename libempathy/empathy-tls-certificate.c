@@ -22,6 +22,13 @@
 
 #include "empathy-tls-certificate.h"
 
+#include <errno.h>
+
+#include <glib/gstdio.h>
+
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
+
 #include <telepathy-glib/proxy-subclass.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_TLS
@@ -435,4 +442,116 @@ empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
       cert_proxy_reject_cb, NULL, NULL, G_OBJECT (self));
 
   g_hash_table_unref (details);
+}
+
+static gsize
+get_exported_size (gnutls_x509_crt_t cert)
+{
+  gsize retval;
+  guchar fake;
+
+  /* fake an export so we get the size to allocate */
+  gnutls_x509_crt_export (cert, GNUTLS_X509_FMT_PEM,
+      &fake, &retval);
+
+  DEBUG ("Should allocate %lu bytes", (gulong) retval);
+
+  return retval;
+}
+
+void
+empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
+{
+  GArray *last_cert;
+  gnutls_x509_crt_t cert;
+  gnutls_datum_t datum = { NULL, 0 };
+  gsize exported_len;
+  guchar *exported_cert = NULL;
+  gint res;
+  gchar *user_certs_dir = NULL, *filename = NULL, *path = NULL;
+  GError *error = NULL;
+  EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
+
+  last_cert = g_ptr_array_index (priv->cert_data, priv->cert_data->len - 1);
+  datum.data = (guchar *) last_cert->data;
+  datum.size = last_cert->len;
+
+  gnutls_x509_crt_init (&cert);
+  gnutls_x509_crt_import (cert, &datum, GNUTLS_X509_FMT_DER);
+
+  /* make sure it's self-signed, otherwise it's not a CA */
+  if (gnutls_x509_crt_check_issuer (cert, cert) <= 0)
+    {
+      DEBUG ("Can't import the CA, as it's not self-signed");
+      gnutls_x509_crt_deinit (cert);
+
+      return;
+    }
+
+  if (gnutls_x509_crt_get_ca_status (cert, NULL) <= 0)
+    {
+      DEBUG ("Can't import the CA, it's not a valid CA certificate");
+      gnutls_x509_crt_deinit (cert);
+
+      goto out;
+    }
+
+  exported_len = get_exported_size (cert);
+  exported_cert = g_malloc (sizeof (guchar) * exported_len);
+
+  res = gnutls_x509_crt_export (cert, GNUTLS_X509_FMT_PEM,
+      exported_cert, &exported_len);
+
+  if (res < 0)
+    {
+      DEBUG ("Failed to export the CA certificate; GnuTLS returned %d", res);
+      gnutls_x509_crt_deinit (cert);
+
+      goto out;
+    }
+
+  gnutls_x509_crt_deinit (cert);
+
+  /* write the file */
+  user_certs_dir = g_build_filename (g_get_user_config_dir (),
+      "telepathy", "certs", NULL);
+
+  res = g_mkdir_with_parents (user_certs_dir, S_IRWXU | S_IRWXG);
+
+  if (res < 0)
+    {
+      DEBUG ("Failed to create the user certificate directory: %s",
+          g_strerror (errno));
+
+      goto out;
+    }
+  
+  do
+    {
+      g_free (path);
+
+      filename = g_strdup_printf ("cert-%p", cert);
+      path = g_build_filename (user_certs_dir, filename, NULL);
+
+      g_free (filename);
+    }
+  while (g_file_test (path, G_FILE_TEST_EXISTS));
+
+  DEBUG ("Will save to %s", path);
+
+  g_file_set_contents (path, (const gchar *) exported_cert, exported_len,
+      &error);
+
+  if (error != NULL)
+    {
+      DEBUG ("Can't save the CA certificate to %s: %s",
+          path, error->message);
+
+      g_error_free (error);
+    }
+
+ out:
+  g_free (path);
+  g_free (exported_cert);
+  g_free (user_certs_dir);
 }
