@@ -219,7 +219,7 @@ empathy_individual_menu_new (FolksIndividual *individual,
   /* Log */
   if (features & EMPATHY_INDIVIDUAL_FEATURE_LOG)
     {
-      item = empathy_individual_log_menu_item_new (individual);
+      item = empathy_individual_log_menu_item_new (individual, NULL);
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
     }
@@ -565,34 +565,20 @@ empathy_individual_video_call_menu_item_new (FolksIndividual *individual,
 }
 
 static void
-individual_log_menu_item_activate_cb (FolksIndividual *individual)
+empathy_individual_log_menu_item_activated (GtkMenuItem *item,
+  EmpathyContact *contact)
 {
-  EmpathyContact *contact;
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
   g_return_if_fail (EMPATHY_IS_CONTACT (contact));
 
   empathy_log_window_show (empathy_contact_get_account (contact),
       empathy_contact_get_id (contact), FALSE, NULL);
-
-  g_object_unref (contact);
 }
 
-GtkWidget *
-empathy_individual_log_menu_item_new (FolksIndividual *individual)
+static gboolean
+contact_has_log (EmpathyContact *contact)
 {
   TplLogManager *manager;
   gboolean have_log;
-  GtkWidget *item;
-  GtkWidget *image;
-  EmpathyContact *contact;
-
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
-
-  contact = empathy_contact_dup_from_folks_individual (individual);
-
-  g_return_val_if_fail (EMPATHY_IS_CONTACT (contact), NULL);
 
   manager = tpl_log_manager_dup_singleton ();
   have_log = tpl_log_manager_exists (manager,
@@ -600,16 +586,37 @@ empathy_individual_log_menu_item_new (FolksIndividual *individual)
       FALSE);
   g_object_unref (manager);
 
+  return have_log;
+}
+
+GtkWidget *
+empathy_individual_log_menu_item_new (FolksIndividual *individual,
+    EmpathyContact *contact)
+{
+  GtkWidget *item;
+  GtkWidget *image;
+
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual) ||
+      EMPATHY_IS_CONTACT (contact),
+      NULL);
+
   item = gtk_image_menu_item_new_with_mnemonic (_("_Previous Conversations"));
   image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_LOG, GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-  gtk_widget_set_sensitive (item, have_log);
   gtk_widget_show (image);
 
-  g_signal_connect_swapped (item, "activate",
-      G_CALLBACK (individual_log_menu_item_activate_cb), individual);
-
-  g_object_unref (contact);
+  if (contact != NULL)
+    {
+      menu_item_set_contact (item, contact,
+          G_CALLBACK (empathy_individual_log_menu_item_activated),
+          contact_has_log);
+    }
+  else
+    {
+      menu_item_set_first_contact (item, individual,
+          G_CALLBACK (empathy_individual_log_menu_item_activated),
+          contact_has_log);
+    }
 
   return item;
 }
