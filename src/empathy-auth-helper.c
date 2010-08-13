@@ -32,11 +32,51 @@
 #include <libempathy/empathy-server-tls-handler.h>
 #include <libempathy/empathy-tls-verifier.h>
 
+#include <libempathy-gtk/empathy-tls-dialog.h>
 #include <libempathy-gtk/empathy-ui-utils.h>
 
 #include <gnutls/gnutls.h>
 
 #include <extensions/extensions.h>
+
+static void
+tls_dialog_response_cb (GtkDialog *dialog,
+    gint response_id,
+    gpointer user_data)
+{
+  EmpathyTLSCertificate *certificate = NULL;
+  EmpTLSCertificateRejectReason reason = 0;
+  EmpathyTLSDialog *tls_dialog = EMPATHY_TLS_DIALOG (dialog);
+
+  DEBUG ("Response %d", response_id);
+
+  g_object_get (tls_dialog,
+      "certificate", &certificate,
+      "reason", &reason,
+      NULL);
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+
+  if (response_id == GTK_RESPONSE_YES)
+    empathy_tls_certificate_accept (certificate);
+  else
+    empathy_tls_certificate_reject (certificate, reason, TRUE);
+
+  g_object_unref (certificate);
+}
+
+static void
+display_interactive_dialog (EmpathyTLSCertificate *certificate,
+    EmpTLSCertificateRejectReason reason)
+{
+  GtkWidget *tls_dialog;
+
+  tls_dialog = empathy_tls_dialog_new (certificate, reason);
+  g_signal_connect (tls_dialog, "response",
+      G_CALLBACK (tls_dialog_response_cb), NULL);
+
+  gtk_widget_show (tls_dialog);
+}
 
 static void
 verifier_verify_cb (GObject *source,
@@ -58,7 +98,7 @@ verifier_verify_cb (GObject *source,
   if (error != NULL)
     {
       DEBUG ("Error: %s", error->message);
-      empathy_tls_certificate_reject (certificate, reason, FALSE);
+      display_interactive_dialog (certificate, reason);
 
       g_error_free (error);
     }
