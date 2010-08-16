@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-16 10:29+0200\n"
-"PO-Revision-Date: 2010-08-16 10:31+0200\n"
+"POT-Creation-Date: 2010-08-16 18:16+0200\n"
+"PO-Revision-Date: 2010-08-16 18:17+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <gnome-gl-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1639,55 +1639,55 @@ msgstr "Eliminando o contacto"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:203
-#: ../libempathy-gtk/empathy-individual-menu.c:233
+#: ../libempathy-gtk/empathy-individual-menu.c:359
 #: ../src/empathy-main-window.ui.h:13
 msgid "_Add Contact…"
 msgstr "Eng_adir un contacto..."
 
 #: ../libempathy-gtk/empathy-contact-menu.c:230
-#: ../libempathy-gtk/empathy-individual-menu.c:273
+#: ../libempathy-gtk/empathy-individual-menu.c:462
 #: ../src/empathy-main-window.ui.h:14
 msgid "_Chat"
 msgstr "_Conversa"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:260
-#: ../libempathy-gtk/empathy-individual-menu.c:313
+#: ../libempathy-gtk/empathy-individual-menu.c:503
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Audiochamada"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:290
-#: ../libempathy-gtk/empathy-individual-menu.c:356
+#: ../libempathy-gtk/empathy-individual-menu.c:545
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Videochamada"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:330
-#: ../libempathy-gtk/empathy-individual-menu.c:408
+#: ../libempathy-gtk/empathy-individual-menu.c:603
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Previous Conversations"
 msgstr "Conversas _previas"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:352
-#: ../libempathy-gtk/empathy-individual-menu.c:449
+#: ../libempathy-gtk/empathy-individual-menu.c:644
 msgid "Send File"
 msgstr "Enviar ficheiro"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:375
-#: ../libempathy-gtk/empathy-individual-menu.c:491
+#: ../libempathy-gtk/empathy-individual-menu.c:686
 msgid "Share My Desktop"
 msgstr "Compartir o meu escritorio"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:415
 #: ../libempathy-gtk/empathy-contact-widget.c:1801
-#: ../libempathy-gtk/empathy-individual-menu.c:520
+#: ../libempathy-gtk/empathy-individual-menu.c:720
 msgid "Favorite"
 msgstr "Favorito"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:444
-#: ../libempathy-gtk/empathy-individual-menu.c:552
+#: ../libempathy-gtk/empathy-individual-menu.c:747
 msgid "Infor_mation"
 msgstr "Infor_mación"
 
@@ -1698,14 +1698,14 @@ msgstr "_Editar"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:544
-#: ../libempathy-gtk/empathy-individual-menu.c:696
+#: ../libempathy-gtk/empathy-individual-menu.c:938
 #: ../src/empathy-chat-window.c:903
 msgid "Inviting you to this room"
 msgstr "Invítao a vostede a esta sala"
 
 # rever
 #: ../libempathy-gtk/empathy-contact-menu.c:575
-#: ../libempathy-gtk/empathy-individual-menu.c:734
+#: ../libempathy-gtk/empathy-individual-menu.c:985
 msgid "_Invite to Chat Room"
 msgstr "Conv_idar a sala de conversa"
 
@@ -1928,12 +1928,17 @@ msgstr "Seleccione os contactos a ligar"
 msgid "New contact preview"
 msgstr "Vista previa do contacto novo"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:608
+#: ../libempathy-gtk/empathy-individual-menu.c:107
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: ../libempathy-gtk/empathy-individual-menu.c:803
 msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "_Editar"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:638
+#: ../libempathy-gtk/empathy-individual-menu.c:833
 msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Ligar..."
@@ -1979,19 +1984,27 @@ msgstr "Data"
 msgid "Conversations"
 msgstr "Conversas"
 
-# rever
 #: ../libempathy-gtk/empathy-log-window.ui.h:3
+msgid "Find next"
+msgstr "Buscar seguinte"
+
+#: ../libempathy-gtk/empathy-log-window.ui.h:4
+msgid "Find previous"
+msgstr "Buscar anterior"
+
+# rever
+#: ../libempathy-gtk/empathy-log-window.ui.h:5
 msgid "Previous Conversations"
 msgstr "Conversas previas"
 
 #. Tab Label
-#: ../libempathy-gtk/empathy-log-window.ui.h:5
+#: ../libempathy-gtk/empathy-log-window.ui.h:7
 msgid "Search"
 msgstr "Buscar"
 
 # rever
 #. Searching *for* something
-#: ../libempathy-gtk/empathy-log-window.ui.h:7
+#: ../libempathy-gtk/empathy-log-window.ui.h:9
 msgid "_For:"
 msgstr "_Por:"
 
