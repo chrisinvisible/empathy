@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<!--*- mode: xml -*-->
 <interface>
+  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="log_window">
     <property name="title" translatable="yes">Previous Conversations</property>
     <property name="role">log</property>
@@ -24,13 +25,14 @@
                 <child>
                   <object class="GtkLabel" id="label628">
                     <property name="visible">True</property>
-                    <property comments="Searching *for* something" name="label" translatable="yes">_For:</property>
+                    <property name="label" translatable="yes" comments="Searching *for* something">_For:</property>
                     <property name="use_underline">True</property>
                     <property name="mnemonic_widget">entry_find</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -46,12 +48,13 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="button_find">
+                    <property name="label">gtk-find</property>
                     <property name="visible">True</property>
                     <property name="sensitive">False</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
                     <property name="has_default">True</property>
-                    <property name="label">gtk-find</property>
+                    <property name="receives_default">False</property>
                     <property name="use_stock">True</property>
                     <property name="focus_on_click">False</property>
                   </object>
@@ -65,6 +68,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -76,9 +80,9 @@
                   <object class="GtkScrolledWindow" id="scrolledwindow14">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="shadow_type">in</property>
                     <child>
                       <object class="GtkTreeView" id="treeview_find">
                         <property name="visible">True</property>
@@ -100,12 +104,15 @@
                       <object class="GtkScrolledWindow" id="scrolledwindow_find">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                        <property name="shadow_type">GTK_SHADOW_IN</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <property name="shadow_type">in</property>
                         <child>
                           <placeholder/>
                         </child>
                       </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbox171">
@@ -115,34 +122,36 @@
                           <placeholder/>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button_previous">
+                          <object class="GtkButton" id="button_next">
+                            <property name="label">gtk-go-forward</property>
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
-                            <property name="label">gtk-go-back</property>
+                            <property name="receives_default">False</property>
                             <property name="use_stock">True</property>
                             <property name="focus_on_click">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="pack_type">GTK_PACK_END</property>
+                            <property name="pack_type">end</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="button_next">
+                          <object class="GtkButton" id="button_previous">
+                            <property name="label">gtk-go-back</property>
                             <property name="visible">True</property>
                             <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
-                            <property name="label">gtk-go-forward</property>
+                            <property name="receives_default">False</property>
                             <property name="use_stock">True</property>
                             <property name="focus_on_click">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="pack_type">GTK_PACK_END</property>
+                            <property name="pack_type">end</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -169,7 +178,7 @@
         <child type="tab">
           <object class="GtkLabel" id="label595">
             <property name="visible">True</property>
-            <property comments="Tab Label" name="label" translatable="yes">Search</property>
+            <property name="label" translatable="yes" comments="Tab Label">Search</property>
           </object>
           <packing>
             <property name="tab_fill">False</property>
@@ -200,8 +209,8 @@
               <object class="GtkScrolledWindow" id="scrolledwindow_chats">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                <property name="shadow_type">GTK_SHADOW_IN</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="shadow_type">in</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -222,9 +231,9 @@
                     <property name="width_request">150</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="shadow_type">GTK_SHADOW_IN</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <property name="shadow_type">in</property>
                     <child>
                       <object class="GtkTreeView" id="treeview_chats">
                         <property name="visible">True</property>
@@ -233,6 +242,9 @@
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
                 <child>
                   <object class="GtkCalendar" id="calendar_chats">
@@ -264,6 +276,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -285,11 +298,14 @@
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
         </child>
         <child type="tab">
           <object class="GtkLabel" id="label596">
             <property name="visible">True</property>
-            <property comments="Tab Label" name="label" translatable="yes">Conversations</property>
+            <property name="label" translatable="yes" comments="Tab Label">Conversations</property>
           </object>
           <packing>
             <property name="position">1</property>
