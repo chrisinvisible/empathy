@@ -241,11 +241,11 @@ account_reconnected (EmpathyChat *chat,
 	switch (priv->handle_type) {
 		case TP_HANDLE_TYPE_CONTACT:
 			empathy_dispatcher_chat_with_contact_id (
-				account, priv->id, EMPATHY_DISPATCHER_NON_USER_ACTION);
+				account, priv->id, TP_USER_ACTION_TIME_NOT_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_ROOM:
 			empathy_dispatcher_join_muc (account, priv->id,
-				EMPATHY_DISPATCHER_NON_USER_ACTION);
+				TP_USER_ACTION_TIME_NOT_USER_ACTION);
 			break;
 		case TP_HANDLE_TYPE_NONE:
 		case TP_HANDLE_TYPE_LIST:

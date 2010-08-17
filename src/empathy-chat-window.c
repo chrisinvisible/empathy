@@ -1761,7 +1761,7 @@ chat_window_drag_data_received (GtkWidget        *widget,
 
 		/* Added to take care of any outstanding chat events */
 		empathy_chat_window_present_chat (chat,
-			EMPATHY_DISPATCHER_NON_USER_ACTION);
+			TP_USER_ACTION_TIME_NOT_USER_ACTION);
 
 		/* We should return TRUE to remove the data when doing
 		 * GDK_ACTION_MOVE, but we don't here otherwise it has
@@ -2355,12 +2355,12 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	/* Don't force the window to show itself when it wasn't
 	 * an action by the user
 	 */
-	if (timestamp == EMPATHY_DISPATCHER_NON_USER_ACTION)
+	if (timestamp == TP_USER_ACTION_TIME_NOT_USER_ACTION)
 		return;
 
 	priv = GET_PRIV (window);
 
-	if (timestamp == EMPATHY_DISPATCHER_CURRENT_TIME) {
+	if (timestamp == TP_USER_ACTION_TIME_CURRENT_TIME) {
 		x_timestamp = GDK_CURRENT_TIME;
 	} else {
 		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);

@@ -761,7 +761,7 @@ ft_handler_push_to_dispatcher (EmpathyFTHandler *handler)
   account = empathy_contact_get_account (priv->contact);
 
   req = tp_account_channel_request_new (account, priv->request,
-      EMPATHY_DISPATCHER_NON_USER_ACTION);
+      TP_USER_ACTION_TIME_NOT_USER_ACTION);
 
   tp_account_channel_request_create_and_handle_channel_async (req, NULL,
       ft_handler_create_channel_cb, handler);

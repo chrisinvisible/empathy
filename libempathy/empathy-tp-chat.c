@@ -167,7 +167,7 @@ tp_chat_add (EmpathyContactList *list,
 		    NULL);
 
 		req = tp_account_channel_request_new (priv->account, props,
-			EMPATHY_DISPATCHER_NON_USER_ACTION);
+			TP_USER_ACTION_TIME_NOT_USER_ACTION);
 
 		/* Although this is a MUC, it's anonymous, so CreateChannel is
 		 * valid. */

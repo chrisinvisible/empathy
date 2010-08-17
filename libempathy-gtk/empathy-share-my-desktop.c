@@ -77,7 +77,7 @@ empathy_share_my_desktop_share_with_contact (EmpathyContact *contact)
       NULL);
 
   req = tp_account_channel_request_new (empathy_contact_get_account (contact),
-      request, EMPATHY_DISPATCHER_CURRENT_TIME);
+      request, TP_USER_ACTION_TIME_CURRENT_TIME);
 
   tp_account_channel_request_create_channel_async (req, NULL, NULL,
       create_tube_channel_cb, NULL);

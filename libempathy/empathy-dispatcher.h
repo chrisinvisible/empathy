@@ -38,9 +38,6 @@ G_BEGIN_DECLS
 #define EMPATHY_IS_DISPATCHER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_DISPATCHER))
 #define EMPATHY_DISPATCHER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_DISPATCHER, EmpathyDispatcherClass))
 
-#define EMPATHY_DISPATCHER_NON_USER_ACTION  (G_GINT64_CONSTANT (0))
-#define EMPATHY_DISPATCHER_CURRENT_TIME  G_MAXINT64
-
 typedef struct _EmpathyDispatcher      EmpathyDispatcher;
 typedef struct _EmpathyDispatcherClass EmpathyDispatcherClass;
 

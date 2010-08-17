@@ -385,10 +385,10 @@ empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
 
   if (data->room)
     empathy_dispatcher_join_muc (data->account, data->id,
-        EMPATHY_DISPATCHER_NON_USER_ACTION);
+        TP_USER_ACTION_TIME_NOT_USER_ACTION);
   else
     empathy_dispatcher_chat_with_contact_id (data->account, data->id,
-        EMPATHY_DISPATCHER_NON_USER_ACTION);
+        TP_USER_ACTION_TIME_NOT_USER_ACTION);
 
   g_signal_emit (self, signals[CHATS_CHANGED], 0,
       g_queue_get_length (priv->queue));
