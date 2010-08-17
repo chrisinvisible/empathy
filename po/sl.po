@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-16 08:40+0000\n"
-"PO-Revision-Date: 2010-08-16 13:51+0100\n"
+"POT-Creation-Date: 2010-08-16 23:00+0000\n"
+"PO-Revision-Date: 2010-08-17 12:39+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -1426,53 +1426,53 @@ msgid "Removing contact"
 msgstr "Odstranjevanje stika"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:203
-#: ../libempathy-gtk/empathy-individual-menu.c:233
+#: ../libempathy-gtk/empathy-individual-menu.c:359
 #: ../src/empathy-main-window.ui.h:13
 msgid "_Add Contact…"
 msgstr "_Dodaj stik ..."
 
 #: ../libempathy-gtk/empathy-contact-menu.c:230
-#: ../libempathy-gtk/empathy-individual-menu.c:273
+#: ../libempathy-gtk/empathy-individual-menu.c:462
 #: ../src/empathy-main-window.ui.h:14
 msgid "_Chat"
 msgstr "_Klepet"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:260
-#: ../libempathy-gtk/empathy-individual-menu.c:313
+#: ../libempathy-gtk/empathy-individual-menu.c:503
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Zvočni klic"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:290
-#: ../libempathy-gtk/empathy-individual-menu.c:356
+#: ../libempathy-gtk/empathy-individual-menu.c:545
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Video klic"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:330
-#: ../libempathy-gtk/empathy-individual-menu.c:408
+#: ../libempathy-gtk/empathy-individual-menu.c:603
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Previous Conversations"
 msgstr "Predhodni po_govori"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:352
-#: ../libempathy-gtk/empathy-individual-menu.c:449
+#: ../libempathy-gtk/empathy-individual-menu.c:644
 msgid "Send File"
 msgstr "Pošlji datoteko"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:375
-#: ../libempathy-gtk/empathy-individual-menu.c:491
+#: ../libempathy-gtk/empathy-individual-menu.c:686
 msgid "Share My Desktop"
 msgstr "Souporaba namizja"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:415
 #: ../libempathy-gtk/empathy-contact-widget.c:1801
-#: ../libempathy-gtk/empathy-individual-menu.c:520
+#: ../libempathy-gtk/empathy-individual-menu.c:720
 msgid "Favorite"
 msgstr "Priljubljeno"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:444
-#: ../libempathy-gtk/empathy-individual-menu.c:552
+#: ../libempathy-gtk/empathy-individual-menu.c:747
 msgid "Infor_mation"
 msgstr "_Podrobnosti"
 
@@ -1482,13 +1482,13 @@ msgid "_Edit"
 msgstr "_Uredi"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:544
-#: ../libempathy-gtk/empathy-individual-menu.c:696
+#: ../libempathy-gtk/empathy-individual-menu.c:938
 #: ../src/empathy-chat-window.c:903
 msgid "Inviting you to this room"
 msgstr "Vabila v klepetalnico"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:575
-#: ../libempathy-gtk/empathy-individual-menu.c:734
+#: ../libempathy-gtk/empathy-individual-menu.c:985
 msgid "_Invite to Chat Room"
 msgstr "_Povabi v klepetalnico"
 
@@ -1699,12 +1699,17 @@ msgstr "Izbor stikov za povezovanje"
 msgid "New contact preview"
 msgstr "Nov predogled stika"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:608
+#: ../libempathy-gtk/empathy-individual-menu.c:107
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: ../libempathy-gtk/empathy-individual-menu.c:803
 msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "_Uredi"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:638
+#: ../libempathy-gtk/empathy-individual-menu.c:833
 msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Poveži ..."
