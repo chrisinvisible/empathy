@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-16 16:15+0000\n"
-"PO-Revision-Date: 2010-08-16 23:34+0200\n"
+"POT-Creation-Date: 2010-08-17 11:24+0000\n"
+"PO-Revision-Date: 2010-08-17 17:36+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1778,7 +1778,6 @@ msgstr "Vista previa del contacto nuevo"
 
 #: ../libempathy-gtk/empathy-individual-menu.c:107
 #, c-format
-#| msgid " (%s)"
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
@@ -3305,39 +3304,39 @@ msgstr "Lista de salas"
 msgid "_Room:"
 msgstr "_Sala:"
 
-#: ../src/empathy-preferences.c:136
+#: ../src/empathy-preferences.c:138
 msgid "Message received"
 msgstr "Mensaje recibido"
 
-#: ../src/empathy-preferences.c:137
+#: ../src/empathy-preferences.c:139
 msgid "Message sent"
 msgstr "Mensaje enviado"
 
-#: ../src/empathy-preferences.c:138
+#: ../src/empathy-preferences.c:140
 msgid "New conversation"
 msgstr "Conversación nueva"
 
-#: ../src/empathy-preferences.c:139
+#: ../src/empathy-preferences.c:141
 msgid "Contact goes online"
 msgstr "El contacto se conecta"
 
-#: ../src/empathy-preferences.c:140
+#: ../src/empathy-preferences.c:142
 msgid "Contact goes offline"
 msgstr "El contacto se desconecta"
 
-#: ../src/empathy-preferences.c:141
+#: ../src/empathy-preferences.c:143
 msgid "Account connected"
 msgstr "Cuenta conectada"
 
-#: ../src/empathy-preferences.c:142
+#: ../src/empathy-preferences.c:144
 msgid "Account disconnected"
 msgstr "Cuenta desconectada"
 
-#: ../src/empathy-preferences.c:437
+#: ../src/empathy-preferences.c:445
 msgid "Language"
 msgstr "Idioma"
 
-#: ../src/empathy-preferences.c:873
+#: ../src/empathy-preferences.c:882
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -3390,18 +3389,23 @@ msgid "Location sources:"
 msgstr "Orígenes de las ubicaciones:"
 
 #: ../src/empathy-preferences.ui.h:14
+#| msgid "Conversations"
+msgid "Log conversations"
+msgstr "Registrar conversaciones"
+
+#: ../src/empathy-preferences.ui.h:15
 msgid "Notifications"
 msgstr "Notificaciones"
 
-#: ../src/empathy-preferences.ui.h:15
+#: ../src/empathy-preferences.ui.h:16
 msgid "Play sound for events"
 msgstr "Reproducir sonido para eventos"
 
-#: ../src/empathy-preferences.ui.h:16
+#: ../src/empathy-preferences.ui.h:17
 msgid "Privacy"
 msgstr "Privacidad"
 
-#: ../src/empathy-preferences.ui.h:17
+#: ../src/empathy-preferences.ui.h:18
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
@@ -3411,23 +3415,23 @@ msgstr ""
 "preciso que su ciudad, estado y país. Las coordenadas GPS tendrán un valor "
 "aleatorio añadido 1 lugar decimal."
 
-#: ../src/empathy-preferences.ui.h:18
+#: ../src/empathy-preferences.ui.h:19
 msgid "Show _smileys as images"
 msgstr "Mostrar los _emoticonos como imágenes"
 
-#: ../src/empathy-preferences.ui.h:19
+#: ../src/empathy-preferences.ui.h:20
 msgid "Show contact _list in rooms"
 msgstr "Mostrar _lista de contactos en salas"
 
-#: ../src/empathy-preferences.ui.h:20
+#: ../src/empathy-preferences.ui.h:21
 msgid "Sounds"
 msgstr "Sonidos"
 
-#: ../src/empathy-preferences.ui.h:21
+#: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
 msgstr "Revisión ortográfica"
 
-#: ../src/empathy-preferences.ui.h:22
+#: ../src/empathy-preferences.ui.h:23
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
@@ -3435,44 +3439,44 @@ msgstr ""
 "La lista de idiomas refleja sólo los idiomas para los cuales tiene un "
 "diccionario instalado."
 
-#: ../src/empathy-preferences.ui.h:23
+#: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
 msgstr "Temas"
 
-#: ../src/empathy-preferences.ui.h:24
+#: ../src/empathy-preferences.ui.h:25
 msgid "_Automatically connect on startup"
 msgstr "C_onectarse automáticamente al inicio"
 
-#: ../src/empathy-preferences.ui.h:25
+#: ../src/empathy-preferences.ui.h:26
 msgid "_Cellphone"
 msgstr "Teléfono _móvil"
 
-#: ../src/empathy-preferences.ui.h:26
+#: ../src/empathy-preferences.ui.h:27
 msgid "_Enable bubble notifications"
 msgstr "_Activar notificaciones de burbuja"
 
-#: ../src/empathy-preferences.ui.h:27
+#: ../src/empathy-preferences.ui.h:28
 msgid "_Enable sound notifications"
 msgstr "_Activar notificaciones de sonido"
 
-#: ../src/empathy-preferences.ui.h:28
+#: ../src/empathy-preferences.ui.h:29
 msgid "_GPS"
 msgstr "_GPS"
 
-#: ../src/empathy-preferences.ui.h:29
+#: ../src/empathy-preferences.ui.h:30
 msgid "_Network (IP, Wi-Fi)"
 msgstr "_Red (IP, Wi-Fi)"
 
-#: ../src/empathy-preferences.ui.h:30
+#: ../src/empathy-preferences.ui.h:31
 msgid "_Open new chats in separate windows"
 msgstr "_Abrir charlas nuevas en ventanas separadas"
 
-#: ../src/empathy-preferences.ui.h:31
+#: ../src/empathy-preferences.ui.h:32
 msgid "_Publish location to my contacts"
 msgstr "_Publicar mi ubicación a mis contactos"
 
 #. To translators: The longitude and latitude are rounded to closest 0,1 degrees, so for example 146,2345° is rounded to round(146,2345*10)/10 = 146,2 degrees.
-#: ../src/empathy-preferences.ui.h:33
+#: ../src/empathy-preferences.ui.h:34
 msgid "_Reduce location accuracy"
 msgstr "_Reducir la precisión de la ubicación"
 
