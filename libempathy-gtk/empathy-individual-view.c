@@ -74,6 +74,10 @@ typedef struct
 
   GtkTreeModelFilter *filter;
   GtkWidget *search_widget;
+
+  guint expand_groups_idle_handler;
+  /* owned string (group name) -> bool (whether to expand/contract) */
+  GHashTable *expand_groups;
 } EmpathyIndividualViewPriv;
 
 typedef struct
@@ -1298,41 +1302,72 @@ individual_view_search_show_cb (EmpathyLiveSearch *search,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
 }
 
-typedef struct {
-  EmpathyIndividualView *view;
-  GtkTreeRowReference *row_ref;
-  gboolean expand;
-} ExpandData;
+static gboolean
+expand_idle_foreach_cb (GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkTreeIter *iter,
+    EmpathyIndividualView *self)
+{
+  EmpathyIndividualViewPriv *priv;
+  gboolean is_group;
+  gpointer should_expand;
+  gchar *name;
+
+  /* We only want groups */
+  if (gtk_tree_path_get_depth (path) > 1)
+    return FALSE;
+
+  gtk_tree_model_get (model, iter,
+      EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
+      EMPATHY_INDIVIDUAL_STORE_COL_NAME, &name,
+      -1);
+
+  if (is_group == FALSE)
+    {
+      g_free (name);
+      return FALSE;
+    }
+
+  priv = GET_PRIV (self);
+
+  if (g_hash_table_lookup_extended (priv->expand_groups, name, NULL,
+      &should_expand) == TRUE)
+    {
+      if (GPOINTER_TO_INT (should_expand) == TRUE)
+        gtk_tree_view_expand_row (GTK_TREE_VIEW (self), path, FALSE);
+      else
+        gtk_tree_view_collapse_row (GTK_TREE_VIEW (self), path);
+
+      g_hash_table_remove (priv->expand_groups, name);
+    }
+
+  g_free (name);
+
+  return FALSE;
+}
 
 static gboolean
-individual_view_expand_idle_cb (gpointer user_data)
+individual_view_expand_idle_cb (EmpathyIndividualView *self)
 {
-  ExpandData *data = user_data;
-  GtkTreePath *path;
+  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
 
-  path = gtk_tree_row_reference_get_path (data->row_ref);
-  if (path == NULL)
-    goto done;
+  DEBUG ("individual_view_expand_idle_cb");
 
-  g_signal_handlers_block_by_func (data->view,
-    individual_view_row_expand_or_collapse_cb,
-    GINT_TO_POINTER (data->expand));
+  g_signal_handlers_block_by_func (self,
+    individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
+  g_signal_handlers_block_by_func (self,
+    individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (FALSE));
 
-  if (data->expand)
-    gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), path, FALSE);
-  else
-    gtk_tree_view_collapse_row (GTK_TREE_VIEW (data->view), path);
+  gtk_tree_model_foreach (GTK_TREE_MODEL (priv->filter),
+      (GtkTreeModelForeachFunc) expand_idle_foreach_cb, self);
 
-  gtk_tree_path_free (path);
+  g_signal_handlers_unblock_by_func (self,
+      individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (FALSE));
+  g_signal_handlers_unblock_by_func (self,
+      individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
 
-  g_signal_handlers_unblock_by_func (data->view,
-      individual_view_row_expand_or_collapse_cb,
-      GINT_TO_POINTER (data->expand));
-
-done:
-  g_object_unref (data->view);
-  gtk_tree_row_reference_free (data->row_ref);
-  g_slice_free (ExpandData, data);
+  g_object_unref (self);
+  priv->expand_groups_idle_handler = 0;
 
   return FALSE;
 }
@@ -1344,9 +1379,9 @@ individual_view_row_has_child_toggled_cb (GtkTreeModel *model,
     EmpathyIndividualView *view)
 {
   EmpathyIndividualViewPriv *priv = GET_PRIV (view);
-  gboolean is_group = FALSE;
+  gboolean should_expand, is_group = FALSE;
   gchar *name = NULL;
-  ExpandData *data;
+  gpointer will_expand;
 
   gtk_tree_model_get (model, iter,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
@@ -1359,19 +1394,30 @@ individual_view_row_has_child_toggled_cb (GtkTreeModel *model,
       return;
     }
 
-  data = g_slice_new0 (ExpandData);
-  data->view = g_object_ref (view);
-  data->row_ref = gtk_tree_row_reference_new (model, path);
-  data->expand =
-      (priv->view_features &
+  should_expand = (priv->view_features &
           EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_SAVE) == 0 ||
       (priv->search_widget != NULL &&
           gtk_widget_get_visible (priv->search_widget)) ||
       empathy_contact_group_get_expanded (name);
 
   /* FIXME: It doesn't work to call gtk_tree_view_expand_row () from within
-   * gtk_tree_model_filter_refilter () */
-  g_idle_add (individual_view_expand_idle_cb, data);
+   * gtk_tree_model_filter_refilter (). We add the rows to expand/contract to
+   * a hash table, and expand or contract them as appropriate all at once in
+   * an idle handler which iterates over all the group rows. */
+  if (g_hash_table_lookup_extended (priv->expand_groups, name, NULL,
+      &will_expand) == FALSE &&
+      GPOINTER_TO_INT (will_expand) != should_expand)
+    {
+      g_hash_table_insert (priv->expand_groups, g_strdup (name),
+          GINT_TO_POINTER (should_expand));
+
+      if (priv->expand_groups_idle_handler == 0)
+        {
+          priv->expand_groups_idle_handler =
+              g_idle_add ((GSourceFunc) individual_view_expand_idle_cb,
+                  g_object_ref (view));
+        }
+    }
 
   g_free (name);
 }
@@ -1744,6 +1790,16 @@ individual_view_dispose (GObject *object)
 }
 
 static void
+individual_view_finalize (GObject *object)
+{
+  EmpathyIndividualViewPriv *priv = GET_PRIV (object);
+
+  g_hash_table_destroy (priv->expand_groups);
+
+  G_OBJECT_CLASS (empathy_individual_view_parent_class)->finalize (object);
+}
+
+static void
 individual_view_get_property (GObject *object,
     guint param_id,
     GValue *value,
@@ -1812,6 +1868,7 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
 
   object_class->constructed = individual_view_constructed;
   object_class->dispose = individual_view_dispose;
+  object_class->finalize = individual_view_finalize;
   object_class->get_property = individual_view_get_property;
   object_class->set_property = individual_view_set_property;
 
@@ -1876,6 +1933,9 @@ empathy_individual_view_init (EmpathyIndividualView *view)
   view->priv = priv;
   /* Get saved group states. */
   empathy_contact_groups_get_all ();
+
+  priv->expand_groups = g_hash_table_new_full (g_str_hash, g_str_equal,
+      (GDestroyNotify) g_free, NULL);
 
   gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (view),
       empathy_individual_store_row_separator_func, NULL, NULL);
