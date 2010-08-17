@@ -312,10 +312,7 @@ event_manager_approval_approve (EventManagerApproval *approval)
     }
   else
     {
-      timestamp = gtk_get_current_event_time ();
-
-      if (timestamp == GDK_CURRENT_TIME)
-        timestamp = TP_USER_ACTION_TIME_CURRENT_TIME;
+      timestamp = tp_user_action_time_from_x11 (gtk_get_current_event_time ());
     }
 
   g_assert (approval->operation != NULL);
@@ -334,9 +331,9 @@ static void
 event_text_channel_process_func (EventPriv *event)
 {
   EmpathyTpChat *tp_chat;
-  gint64 timestamp = gtk_get_current_event_time ();
-  if (timestamp == GDK_CURRENT_TIME)
-    timestamp = TP_USER_ACTION_TIME_CURRENT_TIME;
+  gint64 timestamp;
+
+  timestamp = tp_user_action_time_from_x11 (gtk_get_current_event_time ());
 
   if (event->approval->handler != 0)
     {
