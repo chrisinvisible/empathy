@@ -1376,6 +1376,7 @@ individual_view_row_has_child_toggled_cb (GtkTreeModel *model,
   g_free (name);
 }
 
+/* FIXME: This is a workaround for bgo#621076 */
 static void
 individual_view_verify_group_visibility (EmpathyIndividualView *view,
     GtkTreePath *path)
@@ -1493,13 +1494,22 @@ individual_view_filter_visible_func (GtkTreeModel *model,
 
   if (individual != NULL)
     {
-      visible = individual_view_is_visible_individual (self, individual);
+      if (is_searching == TRUE)
+        visible = individual_view_is_visible_individual (self, individual);
+      else
+        visible = (priv->show_offline || is_online);
+
       g_object_unref (individual);
 
-      if (is_searching)
-        return visible;
-      else
-        return (priv->show_offline || is_online);
+      /* FIXME: Work around bgo#626552/bgo#621076 */
+      if (visible == TRUE)
+        {
+          GtkTreePath *path = gtk_tree_model_get_path (model, iter);
+          individual_view_verify_group_visibility (self, path);
+          gtk_tree_path_free (path);
+        }
+
+      return visible;
     }
 
   if (is_separator)
