@@ -1319,7 +1319,7 @@ individual_view_expand_idle_cb (gpointer user_data)
     GINT_TO_POINTER (data->expand));
 
   if (data->expand)
-    gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), path, TRUE);
+    gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), path, FALSE);
   else
     gtk_tree_view_collapse_row (GTK_TREE_VIEW (data->view), path);
 
