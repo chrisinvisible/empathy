@@ -2355,15 +2355,12 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	/* Don't force the window to show itself when it wasn't
 	 * an action by the user
 	 */
-	if (timestamp == TP_USER_ACTION_TIME_NOT_USER_ACTION)
+	if (!tp_user_action_time_should_present (timestamp, &x_timestamp))
 		return;
 
 	priv = GET_PRIV (window);
 
-	if (timestamp == TP_USER_ACTION_TIME_CURRENT_TIME) {
-		x_timestamp = GDK_CURRENT_TIME;
-	} else {
-		x_timestamp = CLAMP (timestamp, 0, G_MAXUINT32);
+	if (x_timestamp != GDK_CURRENT_TIME) {
 		/* Don't present or switch tab if the action was earlier than the
 		 * last actions X time, accounting for overflow and the first ever
 		* presentation */
