@@ -144,115 +144,6 @@ static guint signals[LAST_SIGNAL];
 G_DEFINE_TYPE (EmpathyIndividualView, empathy_individual_view,
     GTK_TYPE_TREE_VIEW);
 
-static gboolean
-individual_view_is_visible_individual (EmpathyIndividualView *self,
-    FolksIndividual *individual)
-{
-  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
-  EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
-  const gchar *str;
-  GList *personas, *l;
-
-  /* We're only giving the visibility wrt filtering here, not things like
-   * presence. */
-  if (live == NULL || gtk_widget_get_visible (GTK_WIDGET (live)) == FALSE)
-    return TRUE;
-
-  /* check alias name */
-  str = folks_individual_get_alias (individual);
-  if (empathy_live_search_match (live, str))
-    return TRUE;
-
-  /* check contact id, remove the @server.com part */
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l; l = l->next)
-    {
-      const gchar *p;
-      gchar *dup_str = NULL;
-      gboolean visible;
-
-      str = folks_persona_get_uid (l->data);
-      p = strstr (str, "@");
-      if (p != NULL)
-        str = dup_str = g_strndup (str, p - str);
-
-      visible = empathy_live_search_match (live, str);
-      g_free (dup_str);
-      if (visible)
-        return TRUE;
-    }
-
-  /* FIXME: Add more rules here, we could check phone numbers in
-   * contact's vCard for example. */
-
-  return FALSE;
-}
-
-static gboolean
-individual_view_filter_visible_func (GtkTreeModel *model,
-    GtkTreeIter *iter,
-    gpointer user_data)
-{
-  EmpathyIndividualView *self = EMPATHY_INDIVIDUAL_VIEW (user_data);
-  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
-  FolksIndividual *individual = NULL;
-  gboolean is_group, is_separator, valid;
-  GtkTreeIter child_iter;
-  gboolean visible, is_online;
-  gboolean is_searching = TRUE;
-
-  if (priv->search_widget == NULL ||
-      !gtk_widget_get_visible (priv->search_widget))
-     is_searching = FALSE;
-
-  gtk_tree_model_get (model, iter,
-      EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
-      EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator,
-      EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
-      EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
-      -1);
-
-  if (individual != NULL)
-    {
-      visible = individual_view_is_visible_individual (self, individual);
-      g_object_unref (individual);
-
-      if (is_searching)
-        return visible;
-      else
-        return (priv->show_offline || is_online);
-    }
-
-  if (is_separator)
-    return TRUE;
-
-  /* Not a contact, not a separator, must be a group */
-  g_return_val_if_fail (is_group, FALSE);
-
-  /* only show groups which are not empty */
-  for (valid = gtk_tree_model_iter_children (model, &child_iter, iter);
-       valid; valid = gtk_tree_model_iter_next (model, &child_iter))
-    {
-      gtk_tree_model_get (model, &child_iter,
-        EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
-        EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
-        -1);
-
-      if (individual == NULL)
-        continue;
-
-      visible = individual_view_is_visible_individual (self, individual);
-      g_object_unref (individual);
-
-      /* show group if it has at least one visible contact in it */
-      if ((is_searching && visible) ||
-          (!is_searching && (priv->show_offline || is_online)))
-        return TRUE;
-    }
-
-  return FALSE;
-}
-
 static void
 individual_view_tooltip_destroy_cb (GtkWidget *widget,
     EmpathyIndividualView *view)
@@ -1530,6 +1421,115 @@ individual_view_store_row_deleted_cb (GtkTreeModel *model,
   EmpathyIndividualView *view)
 {
   individual_view_verify_group_visibility (view, path);
+}
+
+static gboolean
+individual_view_is_visible_individual (EmpathyIndividualView *self,
+    FolksIndividual *individual)
+{
+  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
+  EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
+  const gchar *str;
+  GList *personas, *l;
+
+  /* We're only giving the visibility wrt filtering here, not things like
+   * presence. */
+  if (live == NULL || gtk_widget_get_visible (GTK_WIDGET (live)) == FALSE)
+    return TRUE;
+
+  /* check alias name */
+  str = folks_individual_get_alias (individual);
+  if (empathy_live_search_match (live, str))
+    return TRUE;
+
+  /* check contact id, remove the @server.com part */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l; l = l->next)
+    {
+      const gchar *p;
+      gchar *dup_str = NULL;
+      gboolean visible;
+
+      str = folks_persona_get_uid (l->data);
+      p = strstr (str, "@");
+      if (p != NULL)
+        str = dup_str = g_strndup (str, p - str);
+
+      visible = empathy_live_search_match (live, str);
+      g_free (dup_str);
+      if (visible)
+        return TRUE;
+    }
+
+  /* FIXME: Add more rules here, we could check phone numbers in
+   * contact's vCard for example. */
+
+  return FALSE;
+}
+
+static gboolean
+individual_view_filter_visible_func (GtkTreeModel *model,
+    GtkTreeIter *iter,
+    gpointer user_data)
+{
+  EmpathyIndividualView *self = EMPATHY_INDIVIDUAL_VIEW (user_data);
+  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
+  FolksIndividual *individual = NULL;
+  gboolean is_group, is_separator, valid;
+  GtkTreeIter child_iter;
+  gboolean visible, is_online;
+  gboolean is_searching = TRUE;
+
+  if (priv->search_widget == NULL ||
+      !gtk_widget_get_visible (priv->search_widget))
+     is_searching = FALSE;
+
+  gtk_tree_model_get (model, iter,
+      EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group,
+      EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, &is_separator,
+      EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
+      EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
+      -1);
+
+  if (individual != NULL)
+    {
+      visible = individual_view_is_visible_individual (self, individual);
+      g_object_unref (individual);
+
+      if (is_searching)
+        return visible;
+      else
+        return (priv->show_offline || is_online);
+    }
+
+  if (is_separator)
+    return TRUE;
+
+  /* Not a contact, not a separator, must be a group */
+  g_return_val_if_fail (is_group, FALSE);
+
+  /* only show groups which are not empty */
+  for (valid = gtk_tree_model_iter_children (model, &child_iter, iter);
+       valid; valid = gtk_tree_model_iter_next (model, &child_iter))
+    {
+      gtk_tree_model_get (model, &child_iter,
+        EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
+        EMPATHY_INDIVIDUAL_STORE_COL_IS_ONLINE, &is_online,
+        -1);
+
+      if (individual == NULL)
+        continue;
+
+      visible = individual_view_is_visible_individual (self, individual);
+      g_object_unref (individual);
+
+      /* show group if it has at least one visible contact in it */
+      if ((is_searching && visible) ||
+          (!is_searching && (priv->show_offline || is_online)))
+        return TRUE;
+    }
+
+  return FALSE;
 }
 
 static void
