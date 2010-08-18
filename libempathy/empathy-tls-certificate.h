@@ -75,7 +75,7 @@ gboolean empathy_tls_certificate_accept_finish (EmpathyTLSCertificate *self,
 
 void empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
     EmpTLSCertificateRejectReason reason,
-    gboolean user_requested,
+    GHashTable *details,
     GAsyncReadyCallback callback,
     gpointer user_data);
 gboolean empathy_tls_certificate_reject_finish (EmpathyTLSCertificate *self,

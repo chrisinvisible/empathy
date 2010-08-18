@@ -457,11 +457,10 @@ empathy_tls_certificate_accept_finish (EmpathyTLSCertificate *self,
 void
 empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
     EmpTLSCertificateRejectReason reason,
-    gboolean user_requested,
+    GHashTable *details,
     GAsyncReadyCallback callback,
     gpointer user_data)
 {
-  GHashTable *details;
   const gchar *dbus_error;
   GSimpleAsyncResult *reject_result;
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
@@ -471,16 +470,12 @@ empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
   DEBUG ("Rejecting TLS certificate with reason %u", reason);
 
   dbus_error = reject_reason_get_dbus_error (reason);
-  details = tp_asv_new ("user-requested", G_TYPE_BOOLEAN, user_requested,
-      NULL);
   reject_result = g_simple_async_result_new (G_OBJECT (self),
       callback, user_data, empathy_tls_certificate_reject_async);
 
   emp_cli_authentication_tls_certificate_call_reject (priv->proxy,
       -1, reason, dbus_error, details, cert_proxy_reject_cb,
       reject_result, g_object_unref, G_OBJECT (self));
-
-  g_hash_table_unref (details);
 }
 
 gboolean
