@@ -22,6 +22,7 @@
 
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/simple-handler.h>
+#include <telepathy-glib/util.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_TLS
 #include "empathy-debug.h"
@@ -34,6 +35,9 @@ G_DEFINE_TYPE (EmpathyAuthFactory, empathy_auth_factory, G_TYPE_OBJECT);
 
 typedef struct {
   TpBaseClient *handler;
+  TpHandleChannelsContext *context;
+
+  gboolean dispose_run;
 } EmpathyAuthFactoryPriv;
 
 enum {
@@ -52,9 +56,10 @@ server_tls_handler_ready_cb (GObject *source,
     GAsyncResult *res,
     gpointer user_data)
 {
-  EmpathyAuthFactory *self = user_data;
-  GError *error = NULL;
   EmpathyServerTLSHandler *handler;
+  GError *error = NULL;
+  EmpathyAuthFactory *self = user_data;
+  EmpathyAuthFactoryPriv *priv = GET_PRIV (self);
 
   handler = empathy_server_tls_handler_new_finish (res, &error);
 
@@ -62,14 +67,20 @@ server_tls_handler_ready_cb (GObject *source,
     {
       DEBUG ("Failed to create a server TLS handler; error %s",
           error->message);
+      tp_handle_channels_context_fail (priv->context, error);
+
       g_error_free (error);
     }
   else
     {
+      tp_handle_channels_context_accept (priv->context);
       g_signal_emit (self, signals[NEW_SERVER_TLS_HANDLER], 0,
           handler);
+
       g_object_unref (handler);
     }
+
+  tp_clear_object (&priv->context);
 }
 
 static void
@@ -83,30 +94,56 @@ handle_channels_cb (TpSimpleHandler *handler,
     gpointer user_data)
 {
   TpChannel *channel;
+  const GError *dbus_error;
+  GError *error = NULL;
   EmpathyAuthFactory *self = user_data;
+  EmpathyAuthFactoryPriv *priv = GET_PRIV (self);
 
   DEBUG ("Handle TLS carrier channels.");
 
   /* there can't be more than one ServerTLSConnection channels
    * at the same time, for the same connection/account.
    */
-  g_assert (g_list_length (channels) == 1);
+  if (g_list_length (channels) != 1)
+    {
+      g_set_error_literal (&error, TP_ERROR, TP_ERROR_INVALID_ARGUMENT,
+          "Can't handle more than one ServerTLSConnection channel "
+          "for the same connection.");
+
+      goto error;
+    }
 
   channel = channels->data;
 
-  if (tp_proxy_get_invalidated (channel) != NULL)
-    goto out;
-
   if (tp_channel_get_channel_type_id (channel) !=
       EMP_IFACE_QUARK_CHANNEL_TYPE_SERVER_TLS_CONNECTION)
-    goto out;
+    {
+      g_set_error (&error, TP_ERROR, TP_ERROR_INVALID_ARGUMENT,
+          "Can only handle ServerTLSConnection channels, this was a %s "
+          "channel", tp_channel_get_channel_type (channel));
+
+      goto error;
+    }
+
+  dbus_error = tp_proxy_get_invalidated (channel);
+
+  if (dbus_error != NULL)
+    {
+      error = g_error_copy (dbus_error);
+      goto error;
+    }
 
   /* create a handler */
+  priv->context = g_object_ref (context);
+  tp_handle_channels_context_delay (context);
   empathy_server_tls_handler_new_async (channel, server_tls_handler_ready_cb,
       self);
 
- out:
-  tp_handle_channels_context_accept (context);
+  return;
+
+ error:
+  tp_handle_channels_context_fail (context, error);
+  g_clear_error (&error);
 }
 
 static GObject *
@@ -163,14 +200,19 @@ empathy_auth_factory_init (EmpathyAuthFactory *self)
 }
 
 static void
-empathy_auth_factory_finalize (GObject *object)
+empathy_auth_factory_dispose (GObject *object)
 {
   EmpathyAuthFactoryPriv *priv = GET_PRIV (object);
 
-  if (priv->handler != NULL)
-    g_object_unref (priv->handler);
+  if (priv->dispose_run)
+    return;
 
-  G_OBJECT_CLASS (empathy_auth_factory_parent_class)->finalize (object);
+  priv->dispose_run = TRUE;
+
+  tp_clear_object (&priv->handler);
+  tp_clear_object (&priv->context);
+
+  G_OBJECT_CLASS (empathy_auth_factory_parent_class)->dispose (object);
 }
 
 static void
@@ -179,7 +221,7 @@ empathy_auth_factory_class_init (EmpathyAuthFactoryClass *klass)
   GObjectClass *oclass = G_OBJECT_CLASS (klass);
 
   oclass->constructor = empathy_auth_factory_constructor;
-  oclass->finalize = empathy_auth_factory_finalize;
+  oclass->dispose = empathy_auth_factory_dispose;
 
   g_type_class_add_private (klass, sizeof (EmpathyAuthFactoryPriv));
 
