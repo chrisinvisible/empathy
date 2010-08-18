@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * Some snippets are taken from GnuTLS 2.8.6, which is distributed under the
+ * same GNU Lesser General Public License 2.1 (or later) version. See
+ * get_certified_hostname ().
  */
 
 #include <config.h>
@@ -225,7 +229,9 @@ get_certified_hostname (gnutls_x509_crt_t cert)
   gint idx;
   gint res = 0;
 
-  /* this is taken from GnuTLS */
+  /* this snippet is taken from GnuTLS.
+   * see gnutls/lib/x509/rfc2818_hostname.c
+   */
   for (idx = 0; res >= 0; idx++)
     {
       dns_name_size = sizeof (dns_name);
