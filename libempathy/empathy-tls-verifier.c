@@ -619,14 +619,10 @@ empathy_tls_verifier_finalize (GObject *object)
 
   DEBUG ("%p", object);
 
-  if (priv->trusted_ca_list != NULL)
-    g_ptr_array_unref (priv->trusted_ca_list);
-
-  if (priv->cert_chain != NULL)
-    g_ptr_array_unref (priv->cert_chain);
-
-  g_free (priv->hostname);
+  tp_clear_pointer (&priv->trusted_ca_list, g_ptr_array_unref);
+  tp_clear_pointer (&priv->cert_chain, g_ptr_array_unref);
   tp_clear_boxed (G_TYPE_HASH_TABLE, &priv->details);
+  g_free (priv->hostname);
 
   G_OBJECT_CLASS (empathy_tls_verifier_parent_class)->finalize (object);
 }
