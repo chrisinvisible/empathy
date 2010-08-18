@@ -203,7 +203,7 @@ complete_verification (EmpathyTLSVerifier *self)
 
   g_simple_async_result_complete_in_idle (priv->verify_result);
 
-  tp_clear_object (&priv->verify_result);  
+  tp_clear_object (&priv->verify_result);
 }
 
 static void
@@ -633,7 +633,7 @@ empathy_tls_verifier_constructed (GObject *object)
   EmpathyTLSVerifier *self = EMPATHY_TLS_VERIFIER (object);
 
   build_gnutls_cert_list (self);
-  
+
   if (G_OBJECT_CLASS (empathy_tls_verifier_parent_class)->constructed != NULL)
     G_OBJECT_CLASS (empathy_tls_verifier_parent_class)->constructed (object);
 }

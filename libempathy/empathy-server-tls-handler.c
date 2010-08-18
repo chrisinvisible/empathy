@@ -270,6 +270,6 @@ empathy_server_tls_handler_get_certificate (EmpathyServerTLSHandler *self)
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
 
   g_assert (priv->certificate != NULL);
-  
+
   return priv->certificate;
 }

@@ -82,7 +82,7 @@ tls_certificate_init_finish (GAsyncInitable *initable,
   if (g_simple_async_result_propagate_error (priv->async_init_res, error))
     retval = FALSE;
 
-  return retval;  
+  return retval;
 }
 
 static GType
@@ -273,7 +273,7 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
   oclass->get_property = empathy_tls_certificate_get_property;
   oclass->set_property = empathy_tls_certificate_set_property;
   oclass->finalize = empathy_tls_certificate_finalize;
-  
+
   g_type_class_add_private (klass, sizeof (EmpathyTLSCertificatePriv));
 
   pspec = g_param_spec_string ("object-path", "The object path",
@@ -576,7 +576,7 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
 
       goto out;
     }
-  
+
   do
     {
       g_free (path);
