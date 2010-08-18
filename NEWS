@@ -1,3 +1,72 @@
+NEW in 2.31.90 (18/08/2010)
+==============
+
+The "Dissociative identity disorder" release.
+
+Dependencies:
+
+ • telepathy-glib ≥ 0.11.13
+ • telepathy-logger ≥ 0.1.5
+ • folks ≥ 0.1.13
+
+Thanks to the hard work of Philip Withnall and Travis Treitter, Empathy
+finally gained meta-contacts support! There is still lots of work to do but
+most the pieces are now in place. You can use the linking dialogue to
+merge similar contacts together.
+
+This is still in very early stage so some regressions have to be expected. If you
+experience any please check for existing bug reports before reporting.
+Most of the them should be filed using the 'Meta Contacts' component [1].
+
+But meta-contacts support is the not the only new feature in this release!
+Empathy should now report more useful error messages when failing to connect.
+The preferences window gained an option to disable logging of chats
+and the 'Details' pane of the call UI now displays information about the
+candidates used to stream the audio/video data.
+
+[1] https://bugzilla.gnome.org/buglist.cgi?product=empathy&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&component=Meta%20Contacts
+
+Bugs fixed:
+ - Fixed #523895, Use ConnectionError for better error reporting (Guillaume Desmottes)
+ - Fixed #567858, Logging should be optional (Guillaume Desmottes)
+ - Fixed #621090, Live search does not show offline contacts (Felix Kaser)
+ - Fixed #621642, live search should display "no match found" if thats the case (Felix Kaser)
+ - Fixed #621643, the treeview should have the default focus (Felix Kaser)
+ - Fixed #622714, 'previous conversations' on a contact brings up generic dialog (Guillaume Desmottes)
+ - Fixed #623139, Should use TpSimpleHandler to handle FT channels (Guillaume Desmottes)
+ - Fixed #623934, follow LC_TIME preferred time format when printing time and date (Nicolò Chieffo)
+ - Fixed #624062, GPS data precision (Guillaume Desmottes)
+ - Fixed #624344, details pane: display FsCandidate info (Guillaume Desmottes)
+ - Fixed #625641, Crash in g_value_array_free, valuearray_simple_free at dbus-gvalue-utils.c line 790 (Philip Withnall)
+ - Fixed #625675, freenode should be the default irc network when creating an irc account (Bilal Akhtar)
+ - Fixed #625828, No custom presence message in tooltip (Philip Withnall)
+ - Fixed #625950, Remove "Ubuntu servers" from irc channel list (Brian Curtis)
+ - Fixed #626009, [PATCH] Allow selection of persona to chat to (Philip Withnall)
+ - Fixed #626041, Fix an assertion failure in the filtering code due to show-offline changes (Philip Withnall)
+ - Fixed #626114, gcc warning fixes (Philip Withnall)
+ - Fixed #626130, Add linking UI for Individuals (Philip Withnall)
+ - Fixed #626162, No audio/video icon in the contact list (Philip Withnall)
+ - Fixed #626552, Sporadic tree model warnings upon initial fill in Empathy (Philip Withnall)
+ - Fixed #626600, Make use of TpAccountChannelRequest (Guillaume Desmottes)
+ - Fixed #626602, Add support for new errors (Guillaume Desmottes)
+ - Fixed #626620, Log In button is not enabled after all details are entered while creating IRC account (Guillaume Desmottes)
+ - Fixed #626630, Use TpAccountChannelRequest to request text channels (Guillaume Desmottes)
+ - Fixed #626636, Should use TpCapabilities to get RCC (Guillaume Desmottes)
+ - Fixed #626992, Back and Forward buttons in Previous conservations window are reversed (Guillaume Desmottes)
+ - Fixed #626994, Rename Back and Forward buttons,in Previous Conservations > Search Tab, to Previous and Next (Guillaume Desmottes)
+ - Fixed #627165, Use tp-glib's user action API (Guillaume Desmottes)
+
+Translations:
+ - Updated es Translation (Jorge González)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated ru Translation (Leonid Kanter)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated zh_CN Translation (Funda Wang)
+
 NEW in 2.31.6 (02/08/2010)
 =============
 
