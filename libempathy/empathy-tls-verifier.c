@@ -83,6 +83,8 @@ verification_output_to_reason (gint res,
 {
   gboolean retval = TRUE;
 
+  g_assert (reason != NULL);
+
   if (res != GNUTLS_E_SUCCESS)
     {
       retval = FALSE;
