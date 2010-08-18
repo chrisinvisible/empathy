@@ -39,6 +39,47 @@
 
 #include <extensions/extensions.h>
 
+#define TIMEOUT 60
+
+static gboolean use_timer = TRUE;
+static guint timeout_id = 0;
+static guint num_windows = 0;
+
+static gboolean
+timeout_cb (gpointer p)
+{
+  DEBUG ("Timeout reached; exiting...");
+
+  gtk_main_quit ();
+  return FALSE;
+}
+
+static void
+start_timer (void)
+{
+  if (!use_timer)
+    return;
+
+  if (timeout_id != 0)
+    return;
+
+  DEBUG ("Start timer");
+
+  timeout_id = g_timeout_add_seconds (TIMEOUT, timeout_cb, NULL);
+}
+
+static void
+stop_timer (void)
+{
+  if (timeout_id == 0)
+    return;
+
+  DEBUG ("Stop timer");
+
+  g_source_remove (timeout_id);
+  timeout_id = 0;
+}
+
 static void
 tls_dialog_response_cb (GtkDialog *dialog,
     gint response_id,
@@ -69,6 +110,14 @@ tls_dialog_response_cb (GtkDialog *dialog,
     empathy_tls_certificate_store_ca (certificate);
 
   g_object_unref (certificate);
+
+  /* restart the timeout */
+  num_windows--;
+
+  if (num_windows > 0)
+    return;
+
+  start_timer ();
 }
 
 static void
@@ -77,6 +126,10 @@ display_interactive_dialog (EmpathyTLSCertificate *certificate,
     GHashTable *details)
 {
   GtkWidget *tls_dialog;
+
+  /* stop the timeout */
+  num_windows++;
+  stop_timer ();
 
   tls_dialog = empathy_tls_dialog_new (certificate, reason, details);
   g_signal_connect (tls_dialog, "response",
@@ -188,7 +241,16 @@ main (int argc,
       return EXIT_FAILURE;
     }
 
-  DEBUG ("Empathy auth client started.");  
+  DEBUG ("Empathy auth client started.");
+
+  if (g_getenv ("EMPATHY_PERSIST") != NULL)
+    {
+      DEBUG ("Timed-exit disabled");
+
+      use_timer = FALSE;
+    }
+
+  start_timer ();
 
   gtk_main ();
 
