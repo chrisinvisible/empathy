@@ -114,7 +114,7 @@ tls_certificate_got_all_cb (TpProxy *proxy,
   if (error != NULL)
     {
       g_simple_async_result_set_from_error (priv->async_init_res, error);
-      g_simple_async_result_complete_in_idle (priv->async_init_res);
+      g_simple_async_result_complete (priv->async_init_res);
 
       g_object_unref (priv->async_init_res);
 
@@ -133,7 +133,7 @@ tls_certificate_got_all_cb (TpProxy *proxy,
   DEBUG ("Got a certificate chain long %u, of type %s",
       priv->cert_data->len, priv->cert_type);
 
-  g_simple_async_result_complete_in_idle (priv->async_init_res);
+  g_simple_async_result_complete (priv->async_init_res);
   g_object_unref (priv->async_init_res);
 }
 
