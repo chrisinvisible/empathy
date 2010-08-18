@@ -79,45 +79,6 @@ tls_certificate_constructed_cb (GObject *source,
   g_object_unref (priv->async_init_res);
 }
 
-static void
-server_tls_channel_got_all_cb (TpProxy *proxy,
-    GHashTable *properties,
-    const GError *error,
-    gpointer user_data,
-    GObject *weak_object)
-{
-  EmpathyServerTLSHandler *self = EMPATHY_SERVER_TLS_HANDLER (weak_object);
-  EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
-  
-  if (error != NULL)
-    {
-      g_simple_async_result_set_from_error (priv->async_init_res, error);
-      g_simple_async_result_complete_in_idle (priv->async_init_res);
-      g_object_unref (priv->async_init_res);
-    }
-  else
-    {
-      const gchar *cert_object_path;
-      const gchar *hostname;
-
-      cert_object_path = tp_asv_get_object_path (properties,
-          "ServerCertificate");
-
-      DEBUG ("Creating an EmpathyTLSCertificate for path %s, bus name %s",
-          cert_object_path, tp_proxy_get_bus_name (proxy));
-
-      empathy_tls_certificate_new_async (
-          tp_proxy_get_bus_name (proxy),
-          cert_object_path,
-          tls_certificate_constructed_cb, self);
-
-      hostname = tp_asv_get_string (properties, "Hostname");
-      priv->hostname = g_strdup (hostname);
-
-      DEBUG ("Received hostname: %s", hostname);
-    }
-}
-
 static gboolean
 tls_handler_init_finish (GAsyncInitable *initable,
     GAsyncResult *res,
@@ -140,18 +101,34 @@ tls_handler_init_async (GAsyncInitable *initable,
     GAsyncReadyCallback callback,
     gpointer user_data)
 {
+  GHashTable *properties;
+  const gchar *cert_object_path;
+  const gchar *hostname;
+  const gchar *bus_name;
   EmpathyServerTLSHandler *self = EMPATHY_SERVER_TLS_HANDLER (initable);
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
 
   g_assert (priv->channel != NULL);
 
   priv->async_init_res = g_simple_async_result_new (G_OBJECT (self),
-      callback, user_data, NULL);
+      callback, user_data, empathy_tls_certificate_new_async);
+  properties = tp_channel_borrow_immutable_properties (priv->channel);
 
-  /* call GetAll() on the channel properties */
-  tp_cli_dbus_properties_call_get_all (priv->channel,
-      -1, EMP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION,
-      server_tls_channel_got_all_cb, NULL, NULL, G_OBJECT (self));
+  hostname = tp_asv_get_string (properties,
+      EMP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION ".Hostname");
+  priv->hostname = g_strdup (hostname);
+
+  DEBUG ("Received hostname: %s", hostname);
+
+  cert_object_path = tp_asv_get_object_path (properties,
+      EMP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION ".ServerCertificate");
+  bus_name = tp_proxy_get_bus_name (TP_PROXY (priv->channel));
+
+  DEBUG ("Creating an EmpathyTLSCertificate for path %s, bus name %s",
+      cert_object_path, bus_name);
+
+  empathy_tls_certificate_new_async (bus_name, cert_object_path,
+      tls_certificate_constructed_cb, self);
 }
 
 static void
