@@ -73,11 +73,12 @@ tls_dialog_response_cb (GtkDialog *dialog,
 
 static void
 display_interactive_dialog (EmpathyTLSCertificate *certificate,
-    EmpTLSCertificateRejectReason reason)
+    EmpTLSCertificateRejectReason reason,
+    GHashTable *details)
 {
   GtkWidget *tls_dialog;
 
-  tls_dialog = empathy_tls_dialog_new (certificate, reason);
+  tls_dialog = empathy_tls_dialog_new (certificate, reason, details);
   g_signal_connect (tls_dialog, "response",
       G_CALLBACK (tls_dialog_response_cb), NULL);
 
@@ -93,18 +94,19 @@ verifier_verify_cb (GObject *source,
   EmpTLSCertificateRejectReason reason;
   GError *error = NULL;
   EmpathyTLSCertificate *certificate = NULL;
+  GHashTable *details = NULL;
 
   g_object_get (source,
       "certificate", &certificate,
       NULL);
 
   res = empathy_tls_verifier_verify_finish (EMPATHY_TLS_VERIFIER (source),
-      result, &reason, &error);
+      result, &reason, &details, &error);
 
   if (error != NULL)
     {
       DEBUG ("Error: %s", error->message);
-      display_interactive_dialog (certificate, reason);
+      display_interactive_dialog (certificate, reason, details);
 
       g_error_free (error);
     }
