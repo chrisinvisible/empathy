@@ -153,7 +153,7 @@ tls_certificate_init_async (GAsyncInitable *initable,
   g_assert (priv->bus_name != NULL);
 
   priv->async_init_res = g_simple_async_result_new (G_OBJECT (self),
-      callback, user_data, NULL);
+      callback, user_data, empathy_tls_certificate_new_async);
   dbus = tp_dbus_daemon_dup (&error);
 
   if (error != NULL)
@@ -314,10 +314,17 @@ cert_proxy_accept_cb (TpProxy *proxy,
     gpointer user_data,
     GObject *weak_object)
 {
+  GSimpleAsyncResult *accept_result = user_data;
+
   DEBUG ("Callback for accept(), error %p", error);
 
   if (error != NULL)
-    DEBUG ("Error was %s", error->message);
+    {
+      DEBUG ("Error was %s", error->message);
+      g_simple_async_result_set_from_error (accept_result, error);
+    }
+
+  g_simple_async_result_complete (accept_result);
 }
 
 static void
@@ -326,10 +333,17 @@ cert_proxy_reject_cb (TpProxy *proxy,
     gpointer user_data,
     GObject *weak_object)
 {
+  GSimpleAsyncResult *reject_result = user_data;
+
   DEBUG ("Callback for reject(), error %p", error);
 
   if (error != NULL)
-    DEBUG ("Error was %s", error->message);
+    {
+      DEBUG ("Error was %s", error->message);
+      g_simple_async_result_set_from_error (reject_result, error);
+    }
+
+  g_simple_async_result_complete (reject_result);
 }
 
 static const gchar *
@@ -408,25 +422,48 @@ empathy_tls_certificate_new_finish (GAsyncResult *res,
 }
 
 void
-empathy_tls_certificate_accept (EmpathyTLSCertificate *self)
+empathy_tls_certificate_accept_async (EmpathyTLSCertificate *self,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
+  GSimpleAsyncResult *accept_result;
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
 
   g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
 
   DEBUG ("Accepting TLS certificate");
 
+  accept_result = g_simple_async_result_new (G_OBJECT (self),
+      callback, user_data, empathy_tls_certificate_accept_async);
+
   emp_cli_authentication_tls_certificate_call_accept (priv->proxy,
-      -1, cert_proxy_accept_cb, NULL, NULL, G_OBJECT (self));
+      -1, cert_proxy_accept_cb,
+      accept_result, g_object_unref,
+      G_OBJECT (self));
+}
+
+gboolean
+empathy_tls_certificate_accept_finish (EmpathyTLSCertificate *self,
+    GAsyncResult *result,
+    GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error))
+    return FALSE;
+
+  return TRUE;
 }
 
 void
-empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
+empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
     EmpTLSCertificateRejectReason reason,
-    gboolean user_requested)
+    gboolean user_requested,
+    GAsyncReadyCallback callback,
+    gpointer user_data)
 {
   GHashTable *details;
   const gchar *dbus_error;
+  GSimpleAsyncResult *reject_result;
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
 
   g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
@@ -436,12 +473,26 @@ empathy_tls_certificate_reject (EmpathyTLSCertificate *self,
   dbus_error = reject_reason_get_dbus_error (reason);
   details = tp_asv_new ("user-requested", G_TYPE_BOOLEAN, user_requested,
       NULL);
+  reject_result = g_simple_async_result_new (G_OBJECT (self),
+      callback, user_data, empathy_tls_certificate_reject_async);
 
   emp_cli_authentication_tls_certificate_call_reject (priv->proxy,
-      -1, reason, dbus_error, details,
-      cert_proxy_reject_cb, NULL, NULL, G_OBJECT (self));
+      -1, reason, dbus_error, details, cert_proxy_reject_cb,
+      reject_result, g_object_unref, G_OBJECT (self));
 
   g_hash_table_unref (details);
+}
+
+gboolean
+empathy_tls_certificate_reject_finish (EmpathyTLSCertificate *self,
+    GAsyncResult *result,
+    GError **error)
+{
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result),
+          error))
+    return FALSE;
+
+  return TRUE;
 }
 
 static gsize
