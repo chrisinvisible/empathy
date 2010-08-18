@@ -771,12 +771,12 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
 
   if (error != NULL)
     {
-      /* FIXME: We should probably still display the event */
       DEBUG ("Error: %s", error->message);
-      return;
     }
-
-  approval->contact = g_object_ref (contact);
+  else
+    {
+      approval->contact = g_object_ref (contact);
+    }
 
   display_invite_room_dialog (approval);
 }
@@ -890,9 +890,16 @@ approve_channels (TpSimpleApprover *approver,
               DEBUG ("Have been invited to %s. Ask user if he wants to accept",
                   tp_channel_get_identifier (channel));
 
-              empathy_tp_contact_factory_get_from_handle (connection,
-                  inviter, event_manager_muc_invite_got_contact_cb,
-                  approval, NULL, G_OBJECT (self));
+              if (inviter != 0)
+                {
+                  empathy_tp_contact_factory_get_from_handle (connection,
+                      inviter, event_manager_muc_invite_got_contact_cb,
+                      approval, NULL, G_OBJECT (self));
+                }
+              else
+                {
+                  display_invite_room_dialog (approval);
+                }
 
               goto out;
             }
