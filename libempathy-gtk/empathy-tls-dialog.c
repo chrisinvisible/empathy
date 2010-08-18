@@ -135,12 +135,17 @@ empathy_tls_dialog_finalize (GObject *object)
 }
 
 static gchar *
-reason_to_string (EmpTLSCertificateRejectReason reason)
+reason_to_string (EmpathyTLSDialog *self)
 {
   GString *str;
   const gchar *reason_str;
+  EmpTLSCertificateRejectReason reason;
+  GHashTable *details;
+  EmpathyTLSDialogPriv *priv = GET_PRIV (self);
 
   str = g_string_new (NULL);
+  reason = priv->reason;
+  details = priv->details;
 
   g_string_append (str, _("The identity provided by the chat server cannot be "
           "verified.\n"));
@@ -183,7 +188,27 @@ reason_to_string (EmpTLSCertificateRejectReason reason)
       break;
     }
 
-  g_string_append (str, reason_str);
+  g_string_append_printf (str, "%s.", reason_str);
+
+  /* add more information in case of HOSTNAME_MISMATCH */
+  if (reason == EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH)
+    {
+      const gchar *expected_hostname, *certificate_hostname;
+
+      expected_hostname = tp_asv_get_string (details, "expected-hostname");
+      certificate_hostname = tp_asv_get_string (details,
+          "certificate-hostname");
+
+      if (expected_hostname != NULL && certificate_hostname != NULL)
+        {
+          g_string_append (str, "\n");
+          g_string_append_printf (str, _("Expected hostname: %s"),
+              expected_hostname);
+          g_string_append (str, "\n");
+          g_string_append_printf (str, _("Certificate hostname: %s"),
+              certificate_hostname);
+        }
+    }
 
   return g_string_free (str, FALSE);
 }
@@ -238,7 +263,7 @@ empathy_tls_dialog_constructed (GObject *object)
       _("Continue"), GTK_RESPONSE_YES,
       NULL);
 
-  text = reason_to_string (priv->reason);
+  text = reason_to_string (self);
 
   g_object_set (message_dialog,
       "text", _("This connection is untrusted, would you like to "
