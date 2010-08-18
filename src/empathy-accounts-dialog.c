@@ -310,7 +310,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                 gchar *message;
 
                 message = g_strdup_printf (_("Offline — %s"),
-                    empathy_account_get_error_message (account));
+                    empathy_account_get_error_message (account, NULL));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_WARNING);
 
@@ -322,7 +322,7 @@ accounts_dialog_update_status_infobar (EmpathyAccountsDialog *dialog,
                 gchar *message;
 
                 message = g_strdup_printf (_("Disconnected — %s"),
-                    empathy_account_get_error_message (account));
+                    empathy_account_get_error_message (account, NULL));
                 gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->infobar),
                     GTK_MESSAGE_ERROR);
 
