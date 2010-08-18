@@ -727,26 +727,12 @@ event_room_channel_process_func (EventPriv *event)
 }
 
 static void
-event_manager_muc_invite_got_contact_cb (TpConnection *connection,
-                                         EmpathyContact *contact,
-                                         const GError *error,
-                                         gpointer user_data,
-                                         GObject *object)
+display_invite_room_dialog (EventManagerApproval *approval)
 {
-  EventManagerApproval *approval = (EventManagerApproval *) user_data;
   GtkWidget *window = empathy_main_window_dup ();
   const gchar *invite_msg;
   gchar *msg;
   TpHandle self_handle;
-
-  if (error != NULL)
-    {
-      /* FIXME: We should probably still display the event */
-      DEBUG ("Error: %s", error->message);
-      return;
-    }
-
-  approval->contact = g_object_ref (contact);
 
   self_handle = tp_channel_group_get_self_handle (approval->main_channel);
   tp_channel_group_get_local_pending_info (approval->main_channel, self_handle,
@@ -764,6 +750,27 @@ event_manager_muc_invite_got_contact_cb (TpConnection *connection,
 
   g_free (msg);
   g_object_unref (window);
+}
+
+static void
+event_manager_muc_invite_got_contact_cb (TpConnection *connection,
+                                         EmpathyContact *contact,
+                                         const GError *error,
+                                         gpointer user_data,
+                                         GObject *object)
+{
+  EventManagerApproval *approval = (EventManagerApproval *) user_data;
+
+  if (error != NULL)
+    {
+      /* FIXME: We should probably still display the event */
+      DEBUG ("Error: %s", error->message);
+      return;
+    }
+
+  approval->contact = g_object_ref (contact);
+
+  display_invite_room_dialog (approval);
 }
 
 static void
