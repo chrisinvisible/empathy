@@ -396,13 +396,24 @@ empathy_dbus_error_name_get_default_message  (const gchar *error)
 }
 
 const gchar *
-empathy_account_get_error_message (TpAccount *account)
+empathy_account_get_error_message (TpAccount *account,
+    gboolean *user_requested)
 {
 	const gchar *dbus_error;
 	const gchar *message;
+        const GHashTable *details = NULL;
 	TpConnectionStatusReason reason;
 
-	dbus_error = tp_account_get_detailed_error (account, NULL);
+	dbus_error = tp_account_get_detailed_error (account, &details);
+
+        if (user_requested != NULL)
+          {
+            if (tp_asv_get_boolean (details, "user-requested", NULL))
+              *user_requested = TRUE;
+            else
+              *user_requested = FALSE;
+          }
+
 	message = empathy_dbus_error_name_get_default_message (dbus_error);
 	if (message != NULL)
 		return message;
