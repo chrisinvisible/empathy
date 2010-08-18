@@ -77,9 +77,10 @@ GdkPixbuf *   empathy_pixbuf_from_data_and_mime         (gchar            *data,
 							 gsize             data_size,
 							 gchar           **mime_type);
 void empathy_pixbuf_avatar_from_individual_scaled_async (FolksIndividual     *individual,
-							 GAsyncReadyCallback  callback,
 							 gint                 width,
 							 gint                 height,
+							 GCancellable        *cancellable,
+							 GAsyncReadyCallback  callback,
 							 gpointer             user_data);
 GdkPixbuf * empathy_pixbuf_avatar_from_individual_scaled_finish (
 							 FolksIndividual  *individual,

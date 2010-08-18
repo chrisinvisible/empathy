@@ -71,6 +71,8 @@ typedef struct
   guint setup_idle_id;
   gboolean dispose_has_run;
   GHashTable *status_icons;
+  /* List of owned GCancellables for each pending avatar load operation */
+  GList *avatar_cancellables;
 } EmpathyIndividualStorePriv;
 
 typedef struct
@@ -552,13 +554,16 @@ individual_store_contact_active_cb (ShowActiveData *data)
   return FALSE;
 }
 
+typedef struct {
+  EmpathyIndividualStore *store; /* weak */
+  GCancellable *cancellable; /* owned */
+} LoadAvatarData;
+
 static void
-individual_avatar_pixbuf_received_cb (GObject *object,
+individual_avatar_pixbuf_received_cb (FolksIndividual *individual,
     GAsyncResult *result,
-    gpointer user_data)
+    LoadAvatarData *data)
 {
-  FolksIndividual *individual = FOLKS_INDIVIDUAL (object);
-  EmpathyIndividualStore *self = user_data;
   GError *error = NULL;
   GdkPixbuf *pixbuf;
 
@@ -572,18 +577,32 @@ individual_avatar_pixbuf_received_cb (GObject *object,
           error->message);
       g_clear_error (&error);
     }
-  else
+  else if (data->store != NULL)
     {
       GList *iters, *l;
 
-      iters = individual_store_find_contact (self, individual);
+      iters = individual_store_find_contact (data->store, individual);
       for (l = iters; l; l = l->next)
         {
-          gtk_tree_store_set (GTK_TREE_STORE (self), l->data,
+          gtk_tree_store_set (GTK_TREE_STORE (data->store), l->data,
               EMPATHY_INDIVIDUAL_STORE_COL_PIXBUF_AVATAR, pixbuf,
               -1);
         }
     }
+
+  /* Free things */
+  if (data->store != NULL)
+    {
+      EmpathyIndividualStorePriv *priv = GET_PRIV (data->store);
+
+      g_object_remove_weak_pointer (G_OBJECT (data->store),
+          (gpointer *) &data->store);
+      priv->avatar_cancellables = g_list_remove (priv->avatar_cancellables,
+          data->cancellable);
+    }
+
+  g_object_unref (data->cancellable);
+  g_slice_free (LoadAvatarData, data);
 }
 
 static void
@@ -604,6 +623,7 @@ individual_store_contact_update (EmpathyIndividualStore *self,
   gboolean do_set_refresh = FALSE;
   gboolean show_avatar = FALSE;
   GdkPixbuf *pixbuf_status;
+  LoadAvatarData *load_avatar_data;
 
   priv = GET_PRIV (self);
 
@@ -678,8 +698,19 @@ individual_store_contact_update (EmpathyIndividualStore *self,
       show_avatar = TRUE;
     }
 
-  empathy_pixbuf_avatar_from_individual_scaled_async (individual,
-      individual_avatar_pixbuf_received_cb, 32, 32, self);
+  /* Load the avatar asynchronously */
+  load_avatar_data = g_slice_new (LoadAvatarData);
+  load_avatar_data->store = self;
+  g_object_add_weak_pointer (G_OBJECT (self),
+      (gpointer *) &load_avatar_data->store);
+  load_avatar_data->cancellable = g_cancellable_new ();
+
+  priv->avatar_cancellables = g_list_prepend (priv->avatar_cancellables,
+      load_avatar_data->cancellable);
+  empathy_pixbuf_avatar_from_individual_scaled_async (individual, 32, 32,
+      load_avatar_data->cancellable,
+      (GAsyncReadyCallback) individual_avatar_pixbuf_received_cb,
+      load_avatar_data);
 
   pixbuf_status =
       empathy_individual_store_get_individual_status_icon (self, individual);
@@ -956,6 +987,14 @@ individual_store_dispose (GObject *object)
   if (priv->dispose_has_run)
     return;
   priv->dispose_has_run = TRUE;
+
+  /* Cancel any pending avatar load operations */
+  for (l = priv->avatar_cancellables; l != NULL; l = l->next)
+    {
+      /* The cancellables are freed in individual_avatar_pixbuf_received_cb() */
+      g_cancellable_cancel (G_CANCELLABLE (l->data));
+    }
+  g_list_free (priv->avatar_cancellables);
 
   contacts = empathy_individual_manager_get_members (priv->manager);
   for (l = contacts; l; l = l->next)

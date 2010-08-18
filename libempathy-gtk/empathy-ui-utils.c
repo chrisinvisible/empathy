@@ -564,7 +564,7 @@ avatar_file_load_contents_cb (GObject      *object,
 {
 	GFile *file = G_FILE (object);
 	PixbufAvatarFromIndividualClosure *closure = user_data;
-	char *data;
+	char *data = NULL;
 	gsize data_size;
 	struct SizeData size_data;
 	GError *error = NULL;
@@ -617,9 +617,10 @@ out:
 void
 empathy_pixbuf_avatar_from_individual_scaled_async (
 		FolksIndividual     *individual,
-		GAsyncReadyCallback  callback,
 		gint                 width,
 		gint                 height,
+		GCancellable        *cancellable,
+		GAsyncReadyCallback  callback,
 		gpointer             user_data)
 {
 	GFile *avatar_file;
@@ -639,7 +640,7 @@ empathy_pixbuf_avatar_from_individual_scaled_async (
 	if (closure == NULL)
 		goto out;
 
-	g_file_load_contents_async (avatar_file, NULL,
+	g_file_load_contents_async (avatar_file, cancellable,
 			avatar_file_load_contents_cb, closure);
 
 	g_object_unref (result);
