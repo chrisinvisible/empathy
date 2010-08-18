@@ -60,9 +60,10 @@ tls_dialog_response_cb (GtkDialog *dialog,
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
   if (response_id == GTK_RESPONSE_YES)
-    empathy_tls_certificate_accept (certificate);
+    empathy_tls_certificate_accept_async (certificate, NULL, NULL);
   else
-    empathy_tls_certificate_reject (certificate, reason, TRUE);
+    empathy_tls_certificate_reject_async (certificate, reason, TRUE,
+        NULL, NULL);
 
   if (remember)
     empathy_tls_certificate_store_ca (certificate);
@@ -109,7 +110,7 @@ verifier_verify_cb (GObject *source,
     }
   else
     {
-      empathy_tls_certificate_accept (certificate);
+      empathy_tls_certificate_accept_async (certificate, NULL, NULL);
     }
 
   g_object_unref (certificate);
