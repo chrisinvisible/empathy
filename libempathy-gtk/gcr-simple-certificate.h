@@ -2,6 +2,9 @@
  * gnome-keyring
  * 
  * Copyright (C) 2008 Stefan Walter
+ *
+ * This file is copied from the gnome-keyring gcr library, which can be
+ * found at git://git.gnome.org/gnome-keyring
  * 
  * This program is free software; you can redistribute it and/or modify 
  * it under the terms of the GNU Lesser General Public License as
