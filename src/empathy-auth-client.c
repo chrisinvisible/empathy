@@ -153,7 +153,7 @@ main (int argc,
 
   g_thread_init (NULL);
 
-  context = g_option_context_new (N_(" - Empathy authentication helper"));
+  context = g_option_context_new (N_(" - Empathy authentication client"));
   g_option_context_add_group (context, gtk_get_option_group (TRUE));
   g_option_context_set_translation_domain (context, GETTEXT_PACKAGE);
 
@@ -161,7 +161,7 @@ main (int argc,
     {
       g_print ("%s\nRun '%s --help' to see a full list of available command "
           "line options.\n", error->message, argv[0]);
-      g_warning ("Error in empathy-auth-helper init: %s", error->message);
+      g_warning ("Error in empathy-auth-client init: %s", error->message);
       return EXIT_FAILURE;
     }
 
@@ -169,7 +169,7 @@ main (int argc,
 
   empathy_gtk_init ();
   gnutls_global_init ();
-  g_set_application_name (_("Empathy authentication helper"));
+  g_set_application_name (_("Empathy authentication client"));
 
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);

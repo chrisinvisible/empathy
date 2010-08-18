@@ -86,7 +86,7 @@ bin_PROGRAMS =			\
 
 libexec_PROGRAMS = \
 	empathy-av \
-	empathy-auth-helper
+	empathy-auth-client
 
 BUILT_SOURCES=
 
@@ -111,8 +111,8 @@ empathy_av_SOURCES =						\
 	empathy-sidebar.c empathy-sidebar.h \
 	$(NULL)
 
-empathy_auth_helper_SOURCES =						\
-	empathy-auth-helper.c
+empathy_auth_client_SOURCES =						\
+	empathy-auth-client.c
 
 empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
