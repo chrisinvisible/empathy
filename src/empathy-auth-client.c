@@ -87,6 +87,7 @@ tls_dialog_response_cb (GtkDialog *dialog,
 {
   EmpathyTLSCertificate *certificate = NULL;
   EmpTLSCertificateRejectReason reason = 0;
+  GHashTable *details = NULL;
   EmpathyTLSDialog *tls_dialog = EMPATHY_TLS_DIALOG (dialog);
   gboolean remember = FALSE;
 
@@ -96,20 +97,27 @@ tls_dialog_response_cb (GtkDialog *dialog,
       "certificate", &certificate,
       "reason", &reason,
       "remember", &remember,
+      "details", &details,
       NULL);
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
   if (response_id == GTK_RESPONSE_YES)
-    empathy_tls_certificate_accept_async (certificate, NULL, NULL);
+    {
+      empathy_tls_certificate_accept_async (certificate, NULL, NULL);
+    }
   else
-    empathy_tls_certificate_reject_async (certificate, reason, TRUE,
-        NULL, NULL);
+    {
+      tp_asv_set_boolean (details, "user-requested", TRUE);
+      empathy_tls_certificate_reject_async (certificate, reason, details,
+          NULL, NULL);
+    }
 
   if (remember)
     empathy_tls_certificate_store_ca (certificate);
 
   g_object_unref (certificate);
+  g_hash_table_unref (details);
 
   /* restart the timeout */
   num_windows--;
