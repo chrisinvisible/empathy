@@ -41,6 +41,7 @@ enum {
   PROP_TLS_CERTIFICATE = 1,
   PROP_REASON,
   PROP_REMEMBER,
+  PROP_DETAILS,
 
   LAST_PROPERTY,
 };
@@ -48,6 +49,7 @@ enum {
 typedef struct {
   EmpathyTLSCertificate *certificate;
   EmpTLSCertificateRejectReason reason;
+  GHashTable *details;
 
   gboolean remember;
 
@@ -73,6 +75,9 @@ empathy_tls_dialog_get_property (GObject *object,
     case PROP_REMEMBER:
       g_value_set_boolean (value, priv->remember);
       break;
+    case PROP_DETAILS:
+      g_value_set_boxed (value, priv->details);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -95,6 +100,9 @@ empathy_tls_dialog_set_property (GObject *object,
     case PROP_REASON:
       priv->reason = g_value_get_uint (value);
       break;
+    case PROP_DETAILS:
+      priv->details = g_value_dup_boxed (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
       break;
@@ -114,6 +122,16 @@ empathy_tls_dialog_dispose (GObject *object)
   tp_clear_object (&priv->certificate);
 
   G_OBJECT_CLASS (empathy_tls_dialog_parent_class)->dispose (object);
+}
+
+static void
+empathy_tls_dialog_finalize (GObject *object)
+{
+  EmpathyTLSDialogPriv *priv = GET_PRIV (object);
+
+  tp_clear_boxed (G_TYPE_HASH_TABLE, &priv->details);
+
+  G_OBJECT_CLASS (empathy_tls_dialog_parent_class)->finalize (object);
 }
 
 static gchar *
@@ -279,6 +297,7 @@ empathy_tls_dialog_class_init (EmpathyTLSDialogClass *klass)
   oclass->set_property = empathy_tls_dialog_set_property;
   oclass->get_property = empathy_tls_dialog_get_property;
   oclass->dispose = empathy_tls_dialog_dispose;
+  oclass->finalize = empathy_tls_dialog_finalize;
   oclass->constructed = empathy_tls_dialog_constructed;
 
   pspec = g_param_spec_object ("certificate", "The EmpathyTLSCertificate",
@@ -299,11 +318,18 @@ empathy_tls_dialog_class_init (EmpathyTLSDialogClass *klass)
       FALSE,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_REMEMBER, pspec);
+
+  pspec = g_param_spec_boxed ("details", "Rejection details",
+      "Additional details about the rejection of this certificate.",
+      G_TYPE_HASH_TABLE,
+      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+  g_object_class_install_property (oclass, PROP_DETAILS, pspec);
 }
 
 GtkWidget *
 empathy_tls_dialog_new (EmpathyTLSCertificate *certificate,
-    EmpTLSCertificateRejectReason reason)
+    EmpTLSCertificateRejectReason reason,
+    GHashTable *details)
 {
   g_assert (EMPATHY_IS_TLS_CERTIFICATE (certificate));
 
@@ -311,5 +337,6 @@ empathy_tls_dialog_new (EmpathyTLSCertificate *certificate,
       "message-type", GTK_MESSAGE_WARNING,
       "certificate", certificate,
       "reason", reason,
+      "details", details,
       NULL);
 }

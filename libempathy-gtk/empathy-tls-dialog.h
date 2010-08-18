@@ -61,7 +61,8 @@ GType empathy_tls_dialog_get_type (void);
   EmpathyTLSDialogClass))
 
 GtkWidget * empathy_tls_dialog_new (EmpathyTLSCertificate *certificate,
-    EmpTLSCertificateRejectReason reason);
+    EmpTLSCertificateRejectReason reason,
+    GHashTable *details);
 
 G_END_DECLS
 
