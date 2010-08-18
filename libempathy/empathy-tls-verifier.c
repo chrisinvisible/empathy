@@ -62,6 +62,7 @@ typedef struct {
   gchar *hostname;
 
   GSimpleAsyncResult *verify_result;
+  GHashTable *details;
 
   gboolean dispose_run;
 } EmpathyTLSVerifierPriv;
@@ -271,12 +272,15 @@ real_start_verification (EmpathyTLSVerifier *self)
     {
       gchar *certified_hostname;
 
+      reason = EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH;
       certified_hostname = get_certified_hostname (first_cert);
+      tp_asv_set_string (priv->details,
+          "expected-hostname", priv->hostname);
+      tp_asv_set_string (priv->details,
+          "certificate-hostname", certified_hostname);
+
       DEBUG ("Hostname mismatch: got %s but expected %s",
           certified_hostname, priv->hostname);
-
-      /* TODO: pass-through the expected hostname in the reject details */
-      reason = EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH;
 
       g_free (certified_hostname);
       goto out;
@@ -622,6 +626,7 @@ empathy_tls_verifier_finalize (GObject *object)
     g_ptr_array_unref (priv->cert_chain);
 
   g_free (priv->hostname);
+  tp_clear_boxed (G_TYPE_HASH_TABLE, &priv->details);
 
   G_OBJECT_CLASS (empathy_tls_verifier_parent_class)->finalize (object);
 }
@@ -640,8 +645,11 @@ empathy_tls_verifier_constructed (GObject *object)
 static void
 empathy_tls_verifier_init (EmpathyTLSVerifier *self)
 {
-  self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
+  EmpathyTLSVerifierPriv *priv;
+
+  priv = self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
       EMPATHY_TYPE_TLS_VERIFIER, EmpathyTLSVerifierPriv);
+  priv->details = tp_asv_new (NULL, NULL);
 }
 
 static void
@@ -702,15 +710,30 @@ gboolean
 empathy_tls_verifier_verify_finish (EmpathyTLSVerifier *self,
     GAsyncResult *res,
     EmpTLSCertificateRejectReason *reason,
+    GHashTable **details,
     GError **error)
 {
+  EmpathyTLSVerifierPriv *priv = GET_PRIV (self);
+
   if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res),
           error))
     {
-      *reason = (*error)->code;
+      if (reason != NULL)
+        *reason = (*error)->code;
+
+      if (details != NULL)
+        {
+          *details = tp_asv_new (NULL, NULL);
+          tp_g_hash_table_update (*details, priv->details,
+              (GBoxedCopyFunc) g_strdup,
+              (GBoxedCopyFunc) tp_g_value_slice_dup);
+        }
+
       return FALSE;
     }
 
-  *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN;
+  if (reason != NULL)
+    *reason = EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN;
+
   return TRUE;
 }

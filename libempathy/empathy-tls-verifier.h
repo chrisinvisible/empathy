@@ -71,6 +71,7 @@ void empathy_tls_verifier_verify_async (EmpathyTLSVerifier *self,
 gboolean empathy_tls_verifier_verify_finish (EmpathyTLSVerifier *self,
     GAsyncResult *res,
     EmpTLSCertificateRejectReason *reason,
+    GHashTable **details,
     GError **error);
 
 G_END_DECLS
