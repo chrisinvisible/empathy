@@ -738,9 +738,17 @@ display_invite_room_dialog (EventManagerApproval *approval)
   tp_channel_group_get_local_pending_info (approval->main_channel, self_handle,
       NULL, NULL, &invite_msg);
 
-  msg = g_strdup_printf (_("%s invited you to join %s"),
-      empathy_contact_get_alias (approval->contact),
-      tp_channel_get_identifier (approval->main_channel));
+  if (approval->contact != NULL)
+    {
+      msg = g_strdup_printf (_("%s invited you to join %s"),
+          empathy_contact_get_alias (approval->contact),
+          tp_channel_get_identifier (approval->main_channel));
+    }
+  else
+    {
+      msg = g_strdup_printf (_("You have been invited to join %s"),
+          tp_channel_get_identifier (approval->main_channel));
+    }
 
   event_manager_add (approval->manager, approval->contact,
       EMPATHY_EVENT_TYPE_INVITATION, EMPATHY_IMAGE_GROUP_MESSAGE, msg,
