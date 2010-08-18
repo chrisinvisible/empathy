@@ -695,6 +695,8 @@ empathy_tls_verifier_verify_async (EmpathyTLSVerifier *self,
 {
   EmpathyTLSVerifierPriv *priv = GET_PRIV (self);
 
+  g_return_if_fail (priv->verify_result == NULL);
+
   priv->verify_result = g_simple_async_result_new (G_OBJECT (self),
       callback, user_data, NULL);
 
