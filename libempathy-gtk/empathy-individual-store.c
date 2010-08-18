@@ -802,7 +802,7 @@ static void
 individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
-  EmpathyContact *contact;
+  GList *personas, *l;
 
   g_signal_connect (individual, "notify::avatar",
       G_CALLBACK (individual_store_individual_updated_cb), self);
@@ -814,14 +814,59 @@ individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
       G_CALLBACK (individual_store_individual_updated_cb), self);
 
   /* FIXME: libfolks hasn't grown capabilities support yet, so we have to go
-   * through the EmpathyContact for them. */
-  contact = empathy_contact_dup_from_folks_individual (individual);
-  g_object_set_data (G_OBJECT (contact), "individual", individual);
-  g_signal_connect (contact, "notify::capabilities",
-      G_CALLBACK (individual_store_contact_updated_cb), self);
-  g_object_unref (contact);
+   * through the EmpathyContacts for them. */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+
+      if (!TPF_IS_PERSONA (l->data))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+      empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
+
+      g_object_set_data (G_OBJECT (contact), "individual", individual);
+      g_signal_connect (contact, "notify::capabilities",
+          G_CALLBACK (individual_store_contact_updated_cb), self);
+
+      g_object_unref (contact);
+    }
 
   individual_store_add_individual (self, individual);
+}
+
+static void
+individual_store_disconnect_individual (EmpathyIndividualStore *self,
+    FolksIndividual *individual)
+{
+  GList *personas, *l;
+
+  g_signal_handlers_disconnect_by_func (individual,
+      G_CALLBACK (individual_store_individual_updated_cb), self);
+
+  /* FIXME: libfolks hasn't grown capabilities support yet, so we have to go
+   * through the EmpathyContacts for them. */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+
+      if (!TPF_IS_PERSONA (l->data))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+      empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
+
+      g_signal_handlers_disconnect_by_func (contact,
+          G_CALLBACK (individual_store_contact_updated_cb), self);
+
+      g_object_unref (contact);
+    }
 }
 
 static void
@@ -829,11 +874,7 @@ individual_store_remove_individual_and_disconnect (
     EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
-  g_signal_handlers_disconnect_by_func (individual,
-      G_CALLBACK (individual_store_individual_updated_cb), self);
-  g_signal_handlers_disconnect_by_func (individual,
-      G_CALLBACK (individual_store_contact_updated_cb), self);
-
+  individual_store_disconnect_individual (self, individual);
   individual_store_remove_individual (self, individual);
 }
 
@@ -982,7 +1023,7 @@ static void
 individual_store_dispose (GObject *object)
 {
   EmpathyIndividualStorePriv *priv = GET_PRIV (object);
-  GList *contacts, *l;
+  GList *individuals, *l;
 
   if (priv->dispose_has_run)
     return;
@@ -996,15 +1037,13 @@ individual_store_dispose (GObject *object)
     }
   g_list_free (priv->avatar_cancellables);
 
-  contacts = empathy_individual_manager_get_members (priv->manager);
-  for (l = contacts; l; l = l->next)
+  individuals = empathy_individual_manager_get_members (priv->manager);
+  for (l = individuals; l; l = l->next)
     {
-      g_signal_handlers_disconnect_by_func (l->data,
-          G_CALLBACK (individual_store_individual_updated_cb), object);
-      g_signal_handlers_disconnect_by_func (l->data,
-          G_CALLBACK (individual_store_contact_updated_cb), object);
+      individual_store_disconnect_individual (EMPATHY_INDIVIDUAL_STORE (object),
+          FOLKS_INDIVIDUAL (l->data));
     }
-  g_list_free (contacts);
+  g_list_free (individuals);
 
   g_signal_handlers_disconnect_by_func (priv->manager,
       G_CALLBACK (individual_store_member_renamed_cb), object);
