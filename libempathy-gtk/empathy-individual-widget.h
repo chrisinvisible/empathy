@@ -31,40 +31,38 @@ G_BEGIN_DECLS
 
 /**
  * EmpathyIndividualWidgetFlags:
- * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_NONE: Don't show any widgets to edit any
- * details of the individual. This should be the option for widgets that merely
- * display information about an individual.
+ * @EMPATHY_INDIVIDUAL_WIDGET_NONE: Don't show any widgets to edit any
+ * details of the individual, or to display any extended details of the
+ * individual. This should be the option for widgets that merely display basic
+ * information about an individual.
  * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_ALIAS: Show a #GtkEntry allowing changes to
  * the individual's alias.
- * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_AVATAR: Show an #EmpathyAvatarChooser
- * allowing changes to the individual's avatar.
- * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_ACCOUNT: Show an #EmpathyAccountChooser
- * allowing changes to the individual's account.
- * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_ID: Show a #GtkEntry allowing changes to the
- * individual's identifier.
+ * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE: Show a checkbutton
+ * allowing changes to the individual's favourite status.
  * @EMPATHY_INDIVIDUAL_WIDGET_EDIT_GROUPS: Show a widget to change the groups
  * the individual is in.
  * @EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP: Make widgets more designed for a
- * tooltip. For example, make widgets not selectable.
+ * tooltip. For example, make labels not selectable.
+ * @EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION: Display the individual's current
+ * location textually or using a map (if compiled with libchamplain support).
+ * @EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS: Fetch and display extended vCard
+ * details of the individual, if the individual has them.
+ * @EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS: List the #FolksPersona<!-- -->s
+ * contained in the individual.
  *
  * Flags used when creating an #EmpathyIndividualWidget to specify which
  * features should be available.
  */
 typedef enum
 {
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_NONE    = 0,
+  EMPATHY_INDIVIDUAL_WIDGET_NONE = 0,
   EMPATHY_INDIVIDUAL_WIDGET_EDIT_ALIAS   = 1 << 0,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_AVATAR  = 1 << 1,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_ACCOUNT = 1 << 2,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_ID      = 1 << 3,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_GROUPS  = 1 << 4,
-  EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP  = 1 << 5,
-  EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION  = 1 << 6,
-  EMPATHY_INDIVIDUAL_WIDGET_NO_SET_ALIAS = 1 << 7,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE = 1 << 8,
-  EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS = 1 << 9,
-  EMPATHY_INDIVIDUAL_WIDGET_EDIT_DETAILS = 1 << 10,
-  EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS = 1 << 11,
+  EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE = 1 << 1,
+  EMPATHY_INDIVIDUAL_WIDGET_EDIT_GROUPS  = 1 << 2,
+  EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP  = 1 << 3,
+  EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION  = 1 << 4,
+  EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS = 1 << 5,
+  EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS = 1 << 6,
 } EmpathyIndividualWidgetFlags;
 
 #define EMPATHY_TYPE_INDIVIDUAL_WIDGET (empathy_individual_widget_get_type ())

@@ -188,7 +188,8 @@ ui_DATA = 					\
 	empathy-log-window.ui			\
 	empathy-chat.ui				\
 	empathy-contact-selector-dialog.ui      \
-	empathy-search-bar.ui
+	empathy-search-bar.ui			\
+	empathy-individual-widget.ui
 
 empathy-gtk-marshal.list: $(libempathy_gtk_la_SOURCES) Makefile.am
 	$(AM_V_GEN)( cd $(srcdir) && \
