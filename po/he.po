@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-17 01:58+0300\n"
-"PO-Revision-Date: 2010-08-17 02:00+0200\n"
+"POT-Creation-Date: 2010-08-19 09:24+0300\n"
+"PO-Revision-Date: 2010-08-19 09:25+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1286,7 +1286,7 @@ msgstr "הכנס סמיילי"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1844
-#: ../libempathy-gtk/empathy-ui-utils.c:1800
+#: ../libempathy-gtk/empathy-ui-utils.c:1801
 msgid "_Send"
 msgstr "_שלח"
 
@@ -1423,33 +1423,33 @@ msgid "Subscription Request"
 msgstr "בקשת הצטרפות"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
-#: ../libempathy-gtk/empathy-individual-view.c:2025
+#: ../libempathy-gtk/empathy-individual-view.c:2095
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "האם להסיר את הקבוצה '%s'?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2006
-#: ../libempathy-gtk/empathy-individual-view.c:2028
+#: ../libempathy-gtk/empathy-individual-view.c:2098
 msgid "Removing group"
 msgstr "הקבוצה מוסרת"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:2055
 #: ../libempathy-gtk/empathy-contact-list-view.c:2132
-#: ../libempathy-gtk/empathy-individual-view.c:2082
-#: ../libempathy-gtk/empathy-individual-view.c:2167
+#: ../libempathy-gtk/empathy-individual-view.c:2152
+#: ../libempathy-gtk/empathy-individual-view.c:2237
 #: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "ה_סרה"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2085
-#: ../libempathy-gtk/empathy-individual-view.c:2113
+#: ../libempathy-gtk/empathy-individual-view.c:2183
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "להסיר את איש הקשר '%s'?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2087
-#: ../libempathy-gtk/empathy-individual-view.c:2115
+#: ../libempathy-gtk/empathy-individual-view.c:2185
 msgid "Removing contact"
 msgstr "מסיר איש קשר"
 
@@ -1958,15 +1958,15 @@ msgstr "נקי"
 msgid "Blue"
 msgstr "כחול"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1697
+#: ../libempathy-gtk/empathy-ui-utils.c:1698
 msgid "Unable to open URI"
 msgstr "לא ניתן לפתוח את הכתובת"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1792
+#: ../libempathy-gtk/empathy-ui-utils.c:1793
 msgid "Select a file"
 msgstr "בחירת קובץ"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1861
+#: ../libempathy-gtk/empathy-ui-utils.c:1862
 #, c-format
 msgid "Incoming file from %s"
 msgstr "קובץ נכנס מ־%s"
@@ -2843,81 +2843,86 @@ msgstr "חיבור אוטומטי"
 msgid "Manage Favorite Rooms"
 msgstr "ניהול חדרי שיחה מועדפים"
 
-#: ../src/empathy-event-manager.c:471
+#: ../src/empathy-event-manager.c:468
 msgid "Incoming video call"
 msgstr "שיחה קולית נכנסת"
 
-#: ../src/empathy-event-manager.c:471
+#: ../src/empathy-event-manager.c:468
 msgid "Incoming call"
 msgstr "שיחה נכנסת"
 
-#: ../src/empathy-event-manager.c:475
+#: ../src/empathy-event-manager.c:472
 #, c-format
 msgid "%s is video calling you. Do you want to answer?"
 msgstr "‏%s מתקשר אליך עם וידאו, האם ברצונך לענות?"
 
-#: ../src/empathy-event-manager.c:476
+#: ../src/empathy-event-manager.c:473
 #, c-format
 msgid "%s is calling you. Do you want to answer?"
 msgstr "‏%s מתקשר אליך, האם ברצונך לענות?"
 
-#: ../src/empathy-event-manager.c:479 ../src/empathy-event-manager.c:621
+#: ../src/empathy-event-manager.c:476 ../src/empathy-event-manager.c:618
 #, c-format
 msgid "Incoming call from %s"
 msgstr "שיחה נכנסת מ־%s"
 
-#: ../src/empathy-event-manager.c:504
+#: ../src/empathy-event-manager.c:501
 msgid "_Reject"
 msgstr "_דחייה"
 
-#: ../src/empathy-event-manager.c:510
+#: ../src/empathy-event-manager.c:507
 msgid "_Answer"
 msgstr "_מענה"
 
-#: ../src/empathy-event-manager.c:621
+#: ../src/empathy-event-manager.c:618
 #, c-format
 msgid "Incoming video call from %s"
 msgstr "שיחת וידאו נכנסת מ־%s"
 
-#: ../src/empathy-event-manager.c:698
+#: ../src/empathy-event-manager.c:695
 msgid "Room invitation"
 msgstr "הזמנה לחדר"
 
-#: ../src/empathy-event-manager.c:700
+#: ../src/empathy-event-manager.c:697
 #, c-format
 msgid "Invitation to join %s"
 msgstr "הזמנה להצטרף ל־%s"
 
-#: ../src/empathy-event-manager.c:707
+#: ../src/empathy-event-manager.c:704
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "‏%s מזמין אותך להצטרף אל %s"
 
-#: ../src/empathy-event-manager.c:715
+#: ../src/empathy-event-manager.c:712
 msgid "_Decline"
 msgstr "_סירוב"
 
-#: ../src/empathy-event-manager.c:720
+#: ../src/empathy-event-manager.c:717
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "ה_צטרפות"
 
-#: ../src/empathy-event-manager.c:758
+#: ../src/empathy-event-manager.c:743
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "‏%s הזמין אותך להצטרף אל %s"
 
-#: ../src/empathy-event-manager.c:785
+#: ../src/empathy-event-manager.c:749
+#, c-format
+msgid "You have been invited to join %s"
+msgstr "הוזמנת להצטרף אל %s"
+
+#: ../src/empathy-event-manager.c:797
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "העברת קבצים נכנסת מ־%s"
 
-#: ../src/empathy-event-manager.c:986
+#: ../src/empathy-event-manager.c:1005
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "בקשת ההצטרפות התבקשה על ידי %s"
 
-#: ../src/empathy-event-manager.c:990
+#: ../src/empathy-event-manager.c:1009
 #, c-format
 msgid ""
 "\n"
@@ -2926,12 +2931,12 @@ msgstr ""
 "\n"
 "הודעה: %s"
 
-#: ../src/empathy-event-manager.c:1033
+#: ../src/empathy-event-manager.c:1052
 #, c-format
 msgid "%s is now offline."
 msgstr "‏%s מנותק כעת."
 
-#: ../src/empathy-event-manager.c:1053
+#: ../src/empathy-event-manager.c:1072
 #, c-format
 msgid "%s is now online."
 msgstr "‏%s מחובר כעת."
@@ -3246,39 +3251,39 @@ msgstr "רשימת חדרים"
 msgid "_Room:"
 msgstr "_חדר:"
 
-#: ../src/empathy-preferences.c:136
+#: ../src/empathy-preferences.c:138
 msgid "Message received"
 msgstr "התקבלה הודעה"
 
-#: ../src/empathy-preferences.c:137
+#: ../src/empathy-preferences.c:139
 msgid "Message sent"
 msgstr "הודעה נשלחה"
 
-#: ../src/empathy-preferences.c:138
+#: ../src/empathy-preferences.c:140
 msgid "New conversation"
 msgstr "שיחה חדשה"
 
-#: ../src/empathy-preferences.c:139
+#: ../src/empathy-preferences.c:141
 msgid "Contact goes online"
 msgstr "איש קשר מתחבר"
 
-#: ../src/empathy-preferences.c:140
+#: ../src/empathy-preferences.c:142
 msgid "Contact goes offline"
 msgstr "איש קשר מתנתק"
 
-#: ../src/empathy-preferences.c:141
+#: ../src/empathy-preferences.c:143
 msgid "Account connected"
 msgstr "חשבון מחובר"
 
-#: ../src/empathy-preferences.c:142
+#: ../src/empathy-preferences.c:144
 msgid "Account disconnected"
 msgstr "חשבון התנתק"
 
-#: ../src/empathy-preferences.c:437
+#: ../src/empathy-preferences.c:445
 msgid "Language"
 msgstr "שפה"
 
-#: ../src/empathy-preferences.c:873
+#: ../src/empathy-preferences.c:882
 msgid "Preferences"
 msgstr "העדפות"
 
@@ -3331,18 +3336,22 @@ msgid "Location sources:"
 msgstr "מקורות המיקומים:"
 
 #: ../src/empathy-preferences.ui.h:14
+msgid "Log conversations"
+msgstr "רישום השיחות"
+
+#: ../src/empathy-preferences.ui.h:15
 msgid "Notifications"
 msgstr "התרעות"
 
-#: ../src/empathy-preferences.ui.h:15
+#: ../src/empathy-preferences.ui.h:16
 msgid "Play sound for events"
 msgstr "השמעת צליל עבור אירועים"
 
-#: ../src/empathy-preferences.ui.h:16
+#: ../src/empathy-preferences.ui.h:17
 msgid "Privacy"
 msgstr "פרטיות"
 
-#: ../src/empathy-preferences.ui.h:17
+#: ../src/empathy-preferences.ui.h:18
 msgid ""
 "Reduced location accuracy means that nothing more precise than your city, "
 "state and country will be published.  GPS coordinates will be accurate to 1 "
@@ -3351,66 +3360,66 @@ msgstr ""
 "הפחתת רמת הדיוק של המיקום אומרת שהמידע המדויק ביותר שיפורסם הוא העיר, המדינה "
 "והארץ שלך. הדיוק של נקודות ציון מ־GPS יהיו עם מספר עשרוני 1."
 
-#: ../src/empathy-preferences.ui.h:18
+#: ../src/empathy-preferences.ui.h:19
 msgid "Show _smileys as images"
 msgstr "הצגת _סמיילים כתמונות"
 
-#: ../src/empathy-preferences.ui.h:19
+#: ../src/empathy-preferences.ui.h:20
 msgid "Show contact _list in rooms"
 msgstr "הצגת _רשימת אנשי קשר בחדרים"
 
-#: ../src/empathy-preferences.ui.h:20
+#: ../src/empathy-preferences.ui.h:21
 msgid "Sounds"
 msgstr "צלילים"
 
-#: ../src/empathy-preferences.ui.h:21
+#: ../src/empathy-preferences.ui.h:22
 msgid "Spell Checking"
 msgstr "בדיקת איות"
 
-#: ../src/empathy-preferences.ui.h:22
+#: ../src/empathy-preferences.ui.h:23
 msgid ""
 "The list of languages reflects only the languages for which you have a "
 "dictionary installed."
 msgstr "ברשימת השפות מוצגות שפות שעבורן מותקנים אצלך מילונים."
 
-#: ../src/empathy-preferences.ui.h:23
+#: ../src/empathy-preferences.ui.h:24
 msgid "Themes"
 msgstr "ערכות נושא"
 
-#: ../src/empathy-preferences.ui.h:24
+#: ../src/empathy-preferences.ui.h:25
 msgid "_Automatically connect on startup"
 msgstr "התחברות _אוטומטית עם ההפעלה"
 
-#: ../src/empathy-preferences.ui.h:25
+#: ../src/empathy-preferences.ui.h:26
 msgid "_Cellphone"
 msgstr "טלפון _סלולרי"
 
-#: ../src/empathy-preferences.ui.h:26
+#: ../src/empathy-preferences.ui.h:27
 msgid "_Enable bubble notifications"
 msgstr "ה_פעלת התרעות בתוך בועה"
 
-#: ../src/empathy-preferences.ui.h:27
+#: ../src/empathy-preferences.ui.h:28
 msgid "_Enable sound notifications"
 msgstr "ה_פעלת התרעות קוליות"
 
-#: ../src/empathy-preferences.ui.h:28
+#: ../src/empathy-preferences.ui.h:29
 msgid "_GPS"
 msgstr "_GPS"
 
-#: ../src/empathy-preferences.ui.h:29
+#: ../src/empathy-preferences.ui.h:30
 msgid "_Network (IP, Wi-Fi)"
 msgstr "_רשת (IP, אלחוטית)"
 
-#: ../src/empathy-preferences.ui.h:30
+#: ../src/empathy-preferences.ui.h:31
 msgid "_Open new chats in separate windows"
 msgstr "_פתיחת שיחות חדשות בחלונות נפרדים"
 
-#: ../src/empathy-preferences.ui.h:31
+#: ../src/empathy-preferences.ui.h:32
 msgid "_Publish location to my contacts"
 msgstr "_פרסום המיקום שלי לאנשי הקשר שלי"
 
 #. To translators: The longitude and latitude are rounded to closest 0,1 degrees, so for example 146,2345° is rounded to round(146,2345*10)/10 = 146,2 degrees.
-#: ../src/empathy-preferences.ui.h:33
+#: ../src/empathy-preferences.ui.h:34
 msgid "_Reduce location accuracy"
 msgstr "ה_פחתת דיוק המיקום"
 
