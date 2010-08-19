@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-17 11:24+0000\n"
-"PO-Revision-Date: 2010-08-17 17:36+0200\n"
+"POT-Creation-Date: 2010-08-19 18:21+0000\n"
+"PO-Revision-Date: 2010-08-19 21:11+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -759,8 +759,10 @@ msgstr "Nombre de usuario:"
 msgid "L_og in"
 msgstr "Iniciar _sesión"
 
+#. Account and Identifier
 #: ../libempathy-gtk/empathy-account-widget.c:1548
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
+#: ../libempathy-gtk/empathy-individual-widget.c:1387
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
 #: ../src/empathy-new-chatroom-dialog.ui.h:1
@@ -1331,7 +1333,7 @@ msgstr "Insertar emoticono"
 
 #. send button
 #: ../libempathy-gtk/empathy-chat.c:1844
-#: ../libempathy-gtk/empathy-ui-utils.c:1800
+#: ../libempathy-gtk/empathy-ui-utils.c:1801
 msgid "_Send"
 msgstr "E_nviar"
 
@@ -1468,33 +1470,33 @@ msgid "Subscription Request"
 msgstr "Petición de suscripción"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
-#: ../libempathy-gtk/empathy-individual-view.c:2025
+#: ../libempathy-gtk/empathy-individual-view.c:2091
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "¿Realmente quiere quitar el grupo «%s»?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2006
-#: ../libempathy-gtk/empathy-individual-view.c:2028
+#: ../libempathy-gtk/empathy-individual-view.c:2094
 msgid "Removing group"
 msgstr "Quitando grupo"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:2055
 #: ../libempathy-gtk/empathy-contact-list-view.c:2132
-#: ../libempathy-gtk/empathy-individual-view.c:2082
-#: ../libempathy-gtk/empathy-individual-view.c:2167
+#: ../libempathy-gtk/empathy-individual-view.c:2148
+#: ../libempathy-gtk/empathy-individual-view.c:2233
 #: ../src/empathy-accounts-dialog.ui.h:6
 msgid "_Remove"
 msgstr "_Quitar"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2085
-#: ../libempathy-gtk/empathy-individual-view.c:2113
+#: ../libempathy-gtk/empathy-individual-view.c:2179
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "¿Realmente quiere quitar el contacto «%s»?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2087
-#: ../libempathy-gtk/empathy-individual-view.c:2115
+#: ../libempathy-gtk/empathy-individual-view.c:2181
 msgid "Removing contact"
 msgstr "Quitando el contacto"
 
@@ -1539,8 +1541,9 @@ msgid "Share My Desktop"
 msgstr "Compartir mi escritorio"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:415
-#: ../libempathy-gtk/empathy-contact-widget.c:1801
+#: ../libempathy-gtk/empathy-contact-widget.c:1537
 #: ../libempathy-gtk/empathy-individual-menu.c:720
+#: ../libempathy-gtk/empathy-individual-widget.c:1280
 msgid "Favorite"
 msgstr "Favorita"
 
@@ -1569,149 +1572,174 @@ msgstr "_Invitar a sala de chat"
 msgid "Select a contact"
 msgstr "Seleccionar un contacto"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:219
+#: ../libempathy-gtk/empathy-contact-widget.c:217
+#: ../libempathy-gtk/empathy-individual-widget.c:145
 msgid "Full name:"
 msgstr "Nombre completo:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:220
+#: ../libempathy-gtk/empathy-contact-widget.c:218
+#: ../libempathy-gtk/empathy-individual-widget.c:146
 msgid "Phone number:"
 msgstr "Número de teléfono:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:221
+#: ../libempathy-gtk/empathy-contact-widget.c:219
+#: ../libempathy-gtk/empathy-individual-widget.c:147
 msgid "E-mail address:"
 msgstr "Dirección de correo-e:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:222
+#: ../libempathy-gtk/empathy-contact-widget.c:220
+#: ../libempathy-gtk/empathy-individual-widget.c:148
 msgid "Website:"
 msgstr "Página web:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:223
+#: ../libempathy-gtk/empathy-contact-widget.c:221
+#: ../libempathy-gtk/empathy-individual-widget.c:149
 msgid "Birthday:"
 msgstr "Cumpleaños:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:603
-msgid "Select"
-msgstr "Seleccionar"
-
-#: ../libempathy-gtk/empathy-contact-widget.c:612
-#: ../src/empathy-main-window.c:1231
-msgid "Group"
-msgstr "Grupo"
-
-#: ../libempathy-gtk/empathy-contact-widget.c:841
+#: ../libempathy-gtk/empathy-contact-widget.c:579
+#: ../libempathy-gtk/empathy-individual-widget.c:448
 msgid "Country ISO Code:"
 msgstr "Código ISO de país:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:843
+#: ../libempathy-gtk/empathy-contact-widget.c:581
+#: ../libempathy-gtk/empathy-individual-widget.c:450
 msgid "Country:"
 msgstr "País:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:845
+#: ../libempathy-gtk/empathy-contact-widget.c:583
+#: ../libempathy-gtk/empathy-individual-widget.c:452
 msgid "State:"
 msgstr "Estado:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:847
+#: ../libempathy-gtk/empathy-contact-widget.c:585
+#: ../libempathy-gtk/empathy-individual-widget.c:454
 msgid "City:"
 msgstr "Ciudad:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:849
+#: ../libempathy-gtk/empathy-contact-widget.c:587
+#: ../libempathy-gtk/empathy-individual-widget.c:456
 msgid "Area:"
 msgstr "Área:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:851
+#: ../libempathy-gtk/empathy-contact-widget.c:589
+#: ../libempathy-gtk/empathy-individual-widget.c:458
 msgid "Postal Code:"
 msgstr "Código postal:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:853
+#: ../libempathy-gtk/empathy-contact-widget.c:591
+#: ../libempathy-gtk/empathy-individual-widget.c:460
 msgid "Street:"
 msgstr "Calle:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:855
+#: ../libempathy-gtk/empathy-contact-widget.c:593
+#: ../libempathy-gtk/empathy-individual-widget.c:462
 msgid "Building:"
 msgstr "Edificio:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:857
+#: ../libempathy-gtk/empathy-contact-widget.c:595
+#: ../libempathy-gtk/empathy-individual-widget.c:464
 msgid "Floor:"
 msgstr "Planta:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:859
+#: ../libempathy-gtk/empathy-contact-widget.c:597
+#: ../libempathy-gtk/empathy-individual-widget.c:466
 msgid "Room:"
 msgstr "Habitación:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:861
+#: ../libempathy-gtk/empathy-contact-widget.c:599
+#: ../libempathy-gtk/empathy-individual-widget.c:468
 msgid "Text:"
 msgstr "Texto:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:863
+#: ../libempathy-gtk/empathy-contact-widget.c:601
+#: ../libempathy-gtk/empathy-individual-widget.c:470
 msgid "Description:"
 msgstr "Descripción:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:865
+#: ../libempathy-gtk/empathy-contact-widget.c:603
+#: ../libempathy-gtk/empathy-individual-widget.c:472
 msgid "URI:"
 msgstr "URI:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:867
+#: ../libempathy-gtk/empathy-contact-widget.c:605
+#: ../libempathy-gtk/empathy-individual-widget.c:474
 msgid "Accuracy Level:"
 msgstr "Nivel de precisión:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:869
+#: ../libempathy-gtk/empathy-contact-widget.c:607
+#: ../libempathy-gtk/empathy-individual-widget.c:476
 msgid "Error:"
 msgstr "Error:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:871
+#: ../libempathy-gtk/empathy-contact-widget.c:609
+#: ../libempathy-gtk/empathy-individual-widget.c:478
 msgid "Vertical Error (meters):"
 msgstr "Error vertical (metros):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:873
+#: ../libempathy-gtk/empathy-contact-widget.c:611
+#: ../libempathy-gtk/empathy-individual-widget.c:480
 msgid "Horizontal Error (meters):"
 msgstr "Error horizontal (metros):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:875
+#: ../libempathy-gtk/empathy-contact-widget.c:613
+#: ../libempathy-gtk/empathy-individual-widget.c:482
 msgid "Speed:"
 msgstr "Velocidad:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:877
+#: ../libempathy-gtk/empathy-contact-widget.c:615
+#: ../libempathy-gtk/empathy-individual-widget.c:484
 msgid "Bearing:"
 msgstr "Retardo:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:879
+#: ../libempathy-gtk/empathy-contact-widget.c:617
+#: ../libempathy-gtk/empathy-individual-widget.c:486
 msgid "Climb Speed:"
 msgstr "Velocidad de ascenso:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:881
+#: ../libempathy-gtk/empathy-contact-widget.c:619
+#: ../libempathy-gtk/empathy-individual-widget.c:488
 msgid "Last Updated on:"
 msgstr "Actualizado por última vez:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:883
+#: ../libempathy-gtk/empathy-contact-widget.c:621
+#: ../libempathy-gtk/empathy-individual-widget.c:490
 msgid "Longitude:"
 msgstr "Longitud_"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:885
+#: ../libempathy-gtk/empathy-contact-widget.c:623
+#: ../libempathy-gtk/empathy-individual-widget.c:492
 msgid "Latitude:"
 msgstr "Latitud:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:887
+#: ../libempathy-gtk/empathy-contact-widget.c:625
+#: ../libempathy-gtk/empathy-individual-widget.c:494
 msgid "Altitude:"
 msgstr "Altitud:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:950
+#: ../libempathy-gtk/empathy-contact-widget.c:688
+#: ../libempathy-gtk/empathy-individual-widget.c:575
 #: ../src/empathy-preferences.ui.h:12
 msgid "Location"
 msgstr "Ubicación geográfica"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:966
+#: ../libempathy-gtk/empathy-contact-widget.c:704
+#: ../libempathy-gtk/empathy-individual-widget.c:591
 msgid "<b>Location</b>, "
 msgstr "<b>Ubicación</b>, "
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1017
+#: ../libempathy-gtk/empathy-contact-widget.c:755
+#: ../libempathy-gtk/empathy-individual-widget.c:639
 msgid "%B %e, %Y at %R UTC"
 msgstr "%e de %B de %Y a las %R UTC"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1100
+#: ../libempathy-gtk/empathy-contact-widget.c:838
+#: ../libempathy-gtk/empathy-individual-widget.c:829
 msgid "Save Avatar"
 msgstr "Guardar avatar"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:1156
+#: ../libempathy-gtk/empathy-contact-widget.c:894
+#: ../libempathy-gtk/empathy-individual-widget.c:887
 msgid "Unable to save avatar"
 msgstr "No se pudo guardar el avatar"
 
@@ -1719,7 +1747,9 @@ msgstr "No se pudo guardar el avatar"
 msgid "<b>Location</b> at (date)\t"
 msgstr "<b>Ubicación</b> en (fecha)\t"
 
+#. Alias
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:3
+#: ../libempathy-gtk/empathy-individual-widget.c:1215
 msgid "Alias:"
 msgstr "Apodo:"
 
@@ -1732,27 +1762,35 @@ msgid "Client:"
 msgstr "Cliente:"
 
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:6
+#: ../libempathy-gtk/empathy-individual-widget.ui.h:2
 msgid "Contact Details"
 msgstr "Detalles del contacto"
 
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:7
-msgid "Groups"
-msgstr "Grupos"
-
 #. Identifier to connect to Instant Messaging network
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:9
+#. Translators: Identifier to connect to Instant Messaging network
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:8
+#: ../libempathy-gtk/empathy-individual-widget.c:1416
 msgid "Identifier:"
 msgstr "Identificador:"
 
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:10
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:9
+#: ../libempathy-gtk/empathy-individual-widget.ui.h:3
 msgid "Information requested…"
 msgstr "Información solicitadas"
 
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:11
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:10
 msgid "OS:"
 msgstr "SO:"
 
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:12
+#: ../libempathy-gtk/empathy-contact-widget.ui.h:11
+msgid "Version:"
+msgstr "Versión:"
+
+#: ../libempathy-gtk/empathy-groups-widget.c:332
+msgid "Groups"
+msgstr "Grupos"
+
+#: ../libempathy-gtk/empathy-groups-widget.c:344
 msgid ""
 "Select the groups you want this contact to appear in.  Note that you can "
 "select more than one group or no groups."
@@ -1760,13 +1798,18 @@ msgstr ""
 "Seleccione los grupos en los que quiere que este contacto aparezca, Note que "
 "puede seleccionar más de un grupo o ningún grupo."
 
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:13
-msgid "Version:"
-msgstr "Versión:"
-
-#: ../libempathy-gtk/empathy-contact-widget.ui.h:14
+#: ../libempathy-gtk/empathy-groups-widget.c:363
 msgid "_Add Group"
 msgstr "_Añadir grupo"
+
+#: ../libempathy-gtk/empathy-groups-widget.c:397
+msgid "Select"
+msgstr "Seleccionar"
+
+#: ../libempathy-gtk/empathy-groups-widget.c:407
+#: ../src/empathy-main-window.c:1231
+msgid "Group"
+msgstr "Grupo"
 
 #: ../libempathy-gtk/empathy-individual-linker.c:250
 msgid "Select contacts to link"
@@ -1790,6 +1833,18 @@ msgstr "_Editar"
 msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Enlazar…"
+
+#: ../libempathy-gtk/empathy-individual-widget.c:1544
+#, c-format
+msgid "Meta-contact containing %u contact"
+msgid_plural "Meta-contact containing %u contacts"
+msgstr[0] "Metacontacto que contiene %u contacto"
+msgstr[1] "Metacontacto que contiene %u contactos"
+
+#: ../libempathy-gtk/empathy-individual-widget.ui.h:1
+#| msgid "<b>Location</b> at (date)\t"
+msgid "<b>Location</b> at (date)"
+msgstr "<b>Ubicación</b> en (fecha)"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:280
 msgid "new server"
@@ -2003,15 +2058,15 @@ msgstr "Limpio"
 msgid "Blue"
 msgstr "Azul"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1697
+#: ../libempathy-gtk/empathy-ui-utils.c:1698
 msgid "Unable to open URI"
 msgstr "No se pudo abrir el URI"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1792
+#: ../libempathy-gtk/empathy-ui-utils.c:1793
 msgid "Select a file"
 msgstr "Seleccionar un archivo"
 
-#: ../libempathy-gtk/empathy-ui-utils.c:1861
+#: ../libempathy-gtk/empathy-ui-utils.c:1862
 #, c-format
 msgid "Incoming file from %s"
 msgstr "Archivo entrante de %s"
@@ -2897,81 +2952,87 @@ msgstr "Autoconectar"
 msgid "Manage Favorite Rooms"
 msgstr "Gestionar salas favoritas"
 
-#: ../src/empathy-event-manager.c:471
+#: ../src/empathy-event-manager.c:468
 msgid "Incoming video call"
 msgstr "Llamada de vídeo entrante"
 
-#: ../src/empathy-event-manager.c:471
+#: ../src/empathy-event-manager.c:468
 msgid "Incoming call"
 msgstr "Llamada entrante"
 
-#: ../src/empathy-event-manager.c:475
+#: ../src/empathy-event-manager.c:472
 #, c-format
 msgid "%s is video calling you. Do you want to answer?"
 msgstr "%s le está llamando con vídeo. ¿Quiere responder?"
 
-#: ../src/empathy-event-manager.c:476
+#: ../src/empathy-event-manager.c:473
 #, c-format
 msgid "%s is calling you. Do you want to answer?"
 msgstr "%s le está llamando. ¿Quiere responder?"
 
-#: ../src/empathy-event-manager.c:479 ../src/empathy-event-manager.c:621
+#: ../src/empathy-event-manager.c:476 ../src/empathy-event-manager.c:618
 #, c-format
 msgid "Incoming call from %s"
 msgstr "Llamada entrante de %s"
 
-#: ../src/empathy-event-manager.c:504
+#: ../src/empathy-event-manager.c:501
 msgid "_Reject"
 msgstr "_Rechazar"
 
-#: ../src/empathy-event-manager.c:510
+#: ../src/empathy-event-manager.c:507
 msgid "_Answer"
 msgstr "Re_spuesta"
 
-#: ../src/empathy-event-manager.c:621
+#: ../src/empathy-event-manager.c:618
 #, c-format
 msgid "Incoming video call from %s"
 msgstr "Llamada de vídeo entrante de %s"
 
-#: ../src/empathy-event-manager.c:698
+#: ../src/empathy-event-manager.c:695
 msgid "Room invitation"
 msgstr "Invitación a una sala"
 
-#: ../src/empathy-event-manager.c:700
+#: ../src/empathy-event-manager.c:697
 #, c-format
 msgid "Invitation to join %s"
 msgstr "Invitación para unirse a %s"
 
-#: ../src/empathy-event-manager.c:707
+#: ../src/empathy-event-manager.c:704
 #, c-format
 msgid "%s is inviting you to join %s"
 msgstr "%s le está invitando a unirse a %s"
 
-#: ../src/empathy-event-manager.c:715
+#: ../src/empathy-event-manager.c:712
 msgid "_Decline"
 msgstr "_Rechazar"
 
-#: ../src/empathy-event-manager.c:720
+#: ../src/empathy-event-manager.c:717
 #: ../src/empathy-new-chatroom-dialog.ui.h:7
 msgid "_Join"
 msgstr "_Unirse"
 
-#: ../src/empathy-event-manager.c:758
+#: ../src/empathy-event-manager.c:743
 #, c-format
 msgid "%s invited you to join %s"
 msgstr "%s le ha invitado a unirse a %s"
 
-#: ../src/empathy-event-manager.c:785
+#: ../src/empathy-event-manager.c:749
+#, c-format
+#| msgid "You have been invited to join a chat conference."
+msgid "You have been invited to join %s"
+msgstr "Le han invitado a unirse a %s"
+
+#: ../src/empathy-event-manager.c:797
 #, c-format
 msgid "Incoming file transfer from %s"
 msgstr "Transferencia de archivo entrante de %s"
 
-#: ../src/empathy-event-manager.c:986
+#: ../src/empathy-event-manager.c:1005
 #, c-format
 msgid "Subscription requested by %s"
 msgstr "Petición de suscripción de %s"
 
-#: ../src/empathy-event-manager.c:990
+#: ../src/empathy-event-manager.c:1009
 #, c-format
 msgid ""
 "\n"
@@ -2980,12 +3041,12 @@ msgstr ""
 "\n"
 "Mensaje: %s"
 
-#: ../src/empathy-event-manager.c:1033
+#: ../src/empathy-event-manager.c:1052
 #, c-format
 msgid "%s is now offline."
 msgstr "Ahora %s está desconectado."
 
-#: ../src/empathy-event-manager.c:1053
+#: ../src/empathy-event-manager.c:1072
 #, c-format
 msgid "%s is now online."
 msgstr "Ahora %s está conectado."
@@ -3389,7 +3450,6 @@ msgid "Location sources:"
 msgstr "Orígenes de las ubicaciones:"
 
 #: ../src/empathy-preferences.ui.h:14
-#| msgid "Conversations"
 msgid "Log conversations"
 msgstr "Registrar conversaciones"
 
@@ -4030,9 +4090,6 @@ msgstr "Depurador de Empathy"
 
 #~ msgid "Invitation _message:"
 #~ msgstr "_Mensaje de invitación:"
-
-#~ msgid "You have been invited to join a chat conference."
-#~ msgstr "Le han invitado a unirse a una conferencia por chat."
 
 #~ msgid "Edit Favorite Room"
 #~ msgstr "Editar sala de favoritos"
