@@ -32,9 +32,11 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
-#include <folks/folks.h>
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
+
+#include <folks/folks.h>
+#include <folks/folks-telepathy.h>
 
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-individual-manager.h>
@@ -1482,6 +1484,7 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
 
   /* check alias name */
   str = folks_individual_get_alias (individual);
+
   if (empathy_live_search_match (live, str))
     return TRUE;
 
@@ -1493,7 +1496,10 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
       gchar *dup_str = NULL;
       gboolean visible;
 
-      str = folks_persona_get_uid (l->data);
+      if (!TPF_IS_PERSONA (l->data))
+        continue;
+
+      str = folks_persona_get_display_id (l->data);
       p = strstr (str, "@");
       if (p != NULL)
         str = dup_str = g_strndup (str, p - str);
@@ -1588,27 +1594,9 @@ static void
 individual_view_constructed (GObject *object)
 {
   EmpathyIndividualView *view = EMPATHY_INDIVIDUAL_VIEW (object);
-  EmpathyIndividualViewPriv *priv = GET_PRIV (view);
   GtkCellRenderer *cell;
   GtkTreeViewColumn *col;
   guint i;
-
-  priv->filter = GTK_TREE_MODEL_FILTER (gtk_tree_model_filter_new (
-      GTK_TREE_MODEL (priv->store), NULL));
-  gtk_tree_model_filter_set_visible_func (priv->filter,
-      individual_view_filter_visible_func, view, NULL);
-
-  g_signal_connect (priv->filter, "row-has-child-toggled",
-      G_CALLBACK (individual_view_row_has_child_toggled_cb), view);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (view),
-      GTK_TREE_MODEL (priv->filter));
-
-  tp_g_signal_connect_object (priv->store, "row-changed",
-      G_CALLBACK (individual_view_store_row_changed_cb), view, 0);
-  tp_g_signal_connect_object (priv->store, "row-inserted",
-      G_CALLBACK (individual_view_store_row_changed_cb), view, 0);
-  tp_g_signal_connect_object (priv->store, "row-deleted",
-      G_CALLBACK (individual_view_store_row_deleted_cb), view, 0);
 
   /* Setup view */
   g_object_set (view,
@@ -1837,7 +1825,7 @@ individual_view_set_property (GObject *object,
   switch (param_id)
     {
     case PROP_STORE:
-      priv->store = g_value_dup_object (value);
+      empathy_individual_view_set_store (view, g_value_get_object (value));
       break;
     case PROP_VIEW_FEATURES:
       individual_view_set_view_features (view, g_value_get_flags (value));
@@ -1895,7 +1883,7 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
           "The store of the view",
           "The store of the view",
           EMPATHY_TYPE_INDIVIDUAL_STORE,
-          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
+          G_PARAM_READWRITE));
   g_object_class_install_property (object_class,
       PROP_VIEW_FEATURES,
       g_param_spec_flags ("view-features",
@@ -2331,4 +2319,67 @@ empathy_individual_view_set_show_offline (EmpathyIndividualView *self,
 
   g_object_notify (G_OBJECT (self), "show-offline");
   gtk_tree_model_filter_refilter (priv->filter);
+}
+
+EmpathyIndividualStore *
+empathy_individual_view_get_store (EmpathyIndividualView *self)
+{
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self), NULL);
+
+  return GET_PRIV (self)->store;
+}
+
+void
+empathy_individual_view_set_store (EmpathyIndividualView *self,
+    EmpathyIndividualStore *store)
+{
+  EmpathyIndividualViewPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self));
+  g_return_if_fail (store == NULL || EMPATHY_IS_INDIVIDUAL_STORE (store));
+
+  priv = GET_PRIV (self);
+
+  /* Destroy the old filter and remove the old store */
+  if (priv->store != NULL)
+    {
+      g_signal_handlers_disconnect_by_func (priv->store,
+          individual_view_store_row_changed_cb, self);
+      g_signal_handlers_disconnect_by_func (priv->store,
+          individual_view_store_row_deleted_cb, self);
+
+      g_signal_handlers_disconnect_by_func (priv->filter,
+          individual_view_row_has_child_toggled_cb, self);
+
+      gtk_tree_view_set_model (GTK_TREE_VIEW (self), NULL);
+    }
+
+  tp_clear_object (&priv->filter);
+  tp_clear_object (&priv->store);
+
+  /* Set the new store */
+  priv->store = store;
+
+  if (store != NULL)
+    {
+      g_object_ref (store);
+
+      /* Create a new filter */
+      priv->filter = GTK_TREE_MODEL_FILTER (gtk_tree_model_filter_new (
+          GTK_TREE_MODEL (priv->store), NULL));
+      gtk_tree_model_filter_set_visible_func (priv->filter,
+          individual_view_filter_visible_func, self, NULL);
+
+      g_signal_connect (priv->filter, "row-has-child-toggled",
+          G_CALLBACK (individual_view_row_has_child_toggled_cb), self);
+      gtk_tree_view_set_model (GTK_TREE_VIEW (self),
+          GTK_TREE_MODEL (priv->filter));
+
+      tp_g_signal_connect_object (priv->store, "row-changed",
+          G_CALLBACK (individual_view_store_row_changed_cb), self, 0);
+      tp_g_signal_connect_object (priv->store, "row-inserted",
+          G_CALLBACK (individual_view_store_row_changed_cb), self, 0);
+      tp_g_signal_connect_object (priv->store, "row-deleted",
+          G_CALLBACK (individual_view_store_row_deleted_cb), self, 0);
+    }
 }

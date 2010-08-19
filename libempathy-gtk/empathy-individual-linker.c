@@ -557,8 +557,8 @@ empathy_individual_linker_set_start_individual (EmpathyIndividualLinker *self,
       priv->start_individual = g_object_ref (individual);
       priv->new_individual = folks_individual_new (
           folks_individual_get_personas (individual));
-      gtk_tree_view_set_model (GTK_TREE_VIEW (priv->individual_view),
-          GTK_TREE_MODEL (priv->individual_store));
+      empathy_individual_view_set_store (priv->individual_view,
+          priv->individual_store);
     }
   else
     {
@@ -567,7 +567,7 @@ empathy_individual_linker_set_start_individual (EmpathyIndividualLinker *self,
 
       /* We only display Individuals in the individual view if we have a
        * new_individual to link them into */
-      gtk_tree_view_set_model (GTK_TREE_VIEW (priv->individual_view), NULL);
+      empathy_individual_view_set_store (priv->individual_view, NULL);
     }
 
   empathy_individual_widget_set_individual (

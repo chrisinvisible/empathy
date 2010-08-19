@@ -105,5 +105,10 @@ void empathy_individual_view_set_show_offline (
 gboolean empathy_individual_view_is_searching (
     EmpathyIndividualView *view);
 
+EmpathyIndividualStore *empathy_individual_view_get_store (
+    EmpathyIndividualView *self);
+void empathy_individual_view_set_store (EmpathyIndividualView *self,
+    EmpathyIndividualStore *store);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_VIEW_H__ */
