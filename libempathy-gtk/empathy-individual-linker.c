@@ -301,7 +301,7 @@ set_up (EmpathyIndividualLinker *self)
 
   /* New individual preview */
   priv->preview_widget = empathy_individual_widget_new (priv->new_individual,
-      EMPATHY_CONTACT_WIDGET_SHOW_DETAILS);
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS);
   gtk_box_pack_start (vbox, priv->preview_widget, FALSE, TRUE, 0);
   gtk_widget_show (priv->preview_widget);
 
