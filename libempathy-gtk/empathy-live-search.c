@@ -522,7 +522,7 @@ empathy_live_search_class_init (EmpathyLiveSearchClass *klass)
       _empathy_gtk_marshal_BOOLEAN__BOXED,
       G_TYPE_BOOLEAN, 1, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 
-  param_spec = g_param_spec_object ("hook-widget", "Live Searchs Hook Widget",
+  param_spec = g_param_spec_object ("hook-widget", "Live Search Hook Widget",
       "The live search catches key-press-events on this widget",
       GTK_TYPE_WIDGET, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (object_class, PROP_HOOK_WIDGET,
