@@ -110,6 +110,9 @@ individual_information_dialog_set_individual (
 {
   EmpathyIndividualInformationDialogPriv *priv;
   GtkWidget *individual_widget;
+  GtkBox *content_area;
+  GList *personas, *l;
+  guint num_personas = 0;
 
   g_return_if_fail (EMPATHY_INDIVIDUAL_INFORMATION_DIALOG (dialog));
   g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
@@ -119,13 +122,42 @@ individual_information_dialog_set_individual (
   gtk_window_set_title (GTK_WINDOW (dialog),
       folks_individual_get_alias (individual));
 
+  content_area = GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog)));
+
+  /* Determine how many personas we have, because we only want to display the
+   * label if we have more than one persona. */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      if (TPF_IS_PERSONA (l->data))
+        num_personas++;
+    }
+
+  /* Label */
+  if (num_personas > 1)
+    {
+      gchar *label_string;
+      GtkWidget *label;
+
+      /* Translators: the heading at the top of the Information dialogue */
+      label_string = g_strdup_printf ("<b>%s</b>", _("Linked Contacts"));
+      label = gtk_label_new (NULL);
+      gtk_label_set_markup (GTK_LABEL (label), label_string);
+      g_free (label_string);
+
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_misc_set_padding (GTK_MISC (label), 6, 6);
+      gtk_box_pack_start (content_area, label, FALSE, TRUE, 0);
+      gtk_widget_show (label);
+    }
+
+  /* Individual widget */
   individual_widget = empathy_individual_widget_new (individual,
       EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION |
       EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS |
       EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS);
-  gtk_container_set_border_width (GTK_CONTAINER (individual_widget), 8);
-  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (
-      GTK_DIALOG (dialog))), individual_widget, TRUE, TRUE, 0);
+  gtk_container_set_border_width (GTK_CONTAINER (individual_widget), 6);
+  gtk_box_pack_start (content_area, individual_widget, TRUE, TRUE, 0);
   gtk_widget_show (individual_widget);
 
   priv->individual = g_object_ref (individual);
