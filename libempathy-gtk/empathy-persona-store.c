@@ -279,6 +279,7 @@ add_persona (EmpathyPersonaStore *self,
   EmpathyPersonaStorePriv *priv;
   GtkTreeIter iter;
   GtkTreePath *path;
+  FolksPersonaStore *store;
   EmpathyContact *contact;
   const gchar *alias;
 
@@ -293,9 +294,12 @@ add_persona (EmpathyPersonaStore *self,
 
   contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
       TPF_PERSONA (persona)));
+  store = folks_persona_get_store (persona);
 
   gtk_list_store_insert_with_values (GTK_LIST_STORE (self), &iter, 0,
       EMPATHY_PERSONA_STORE_COL_NAME, alias,
+      EMPATHY_PERSONA_STORE_COL_ACCOUNT_NAME,
+          folks_persona_store_get_display_name (store),
       EMPATHY_PERSONA_STORE_COL_DISPLAY_ID,
           folks_persona_get_display_id (persona),
       EMPATHY_PERSONA_STORE_COL_PERSONA, persona,
@@ -419,6 +423,7 @@ update_persona (EmpathyPersonaStore *self,
     }
   else
     {
+      FolksPersonaStore *store;
       EmpathyContact *contact;
       GtkTreeIter iter;
       GdkPixbuf *pixbuf_avatar;
@@ -462,6 +467,7 @@ update_persona (EmpathyPersonaStore *self,
       /* We still need to use EmpathyContact for the capabilities stuff */
       contact = empathy_contact_dup_from_tp_contact (tpf_persona_get_contact (
           TPF_PERSONA (persona)));
+      store = folks_persona_get_store (persona);
 
       pixbuf_avatar = empathy_pixbuf_avatar_from_contact_scaled (contact,
           32, 32);
@@ -472,6 +478,8 @@ update_persona (EmpathyPersonaStore *self,
           EMPATHY_PERSONA_STORE_COL_PIXBUF_AVATAR, pixbuf_avatar,
           EMPATHY_PERSONA_STORE_COL_PIXBUF_AVATAR_VISIBLE, priv->show_avatars,
           EMPATHY_PERSONA_STORE_COL_NAME, alias,
+          EMPATHY_PERSONA_STORE_COL_ACCOUNT_NAME,
+              folks_persona_store_get_display_name (store),
           EMPATHY_PERSONA_STORE_COL_DISPLAY_ID,
               folks_persona_get_display_id (persona),
           EMPATHY_PERSONA_STORE_COL_PRESENCE_TYPE,
@@ -734,6 +742,7 @@ set_up (EmpathyPersonaStore *self)
     GDK_TYPE_PIXBUF,      /* Avatar pixbuf */
     G_TYPE_BOOLEAN,       /* Avatar pixbuf visible */
     G_TYPE_STRING,        /* Name */
+    G_TYPE_STRING,        /* Account name */
     G_TYPE_STRING,        /* Display ID */
     G_TYPE_UINT,          /* Presence type */
     G_TYPE_STRING,        /* Status string */
