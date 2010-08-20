@@ -1356,8 +1356,12 @@ individual_view_expand_idle_cb (EmpathyIndividualView *self)
   g_signal_handlers_block_by_func (self,
     individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (FALSE));
 
-  gtk_tree_model_foreach (GTK_TREE_MODEL (priv->filter),
-      (GtkTreeModelForeachFunc) expand_idle_foreach_cb, self);
+  /* The store/filter could've been removed while we were in the idle queue */
+  if (priv->filter != NULL)
+    {
+      gtk_tree_model_foreach (GTK_TREE_MODEL (priv->filter),
+          (GtkTreeModelForeachFunc) expand_idle_foreach_cb, self);
+    }
 
   g_signal_handlers_unblock_by_func (self,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (FALSE));
