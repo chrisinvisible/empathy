@@ -88,6 +88,8 @@ typedef struct {
 
   /* Individual */
   GtkWidget *hbox_presence;
+  GtkWidget *scrolled_window_individual;
+  GtkWidget *viewport_individual;
   GtkWidget *vbox_individual;
 
   /* Location */
@@ -1787,6 +1789,8 @@ empathy_individual_widget_init (EmpathyIndividualWidget *self)
   filename = empathy_file_lookup ("empathy-individual-widget.ui",
       "libempathy-gtk");
   gui = empathy_builder_get_file (filename,
+      "scrolled_window_individual", &priv->scrolled_window_individual,
+      "viewport_individual", &priv->viewport_individual,
       "vbox_individual_widget", &vbox_individual_widget,
       "vbox_individual", &priv->vbox_individual,
       "vbox_location", &priv->vbox_location,
@@ -1814,6 +1818,40 @@ empathy_individual_widget_init (EmpathyIndividualWidget *self)
   details_set_up (self);
 
   g_object_unref (gui);
+}
+
+static void
+constructed (GObject *object)
+{
+  GObjectClass *klass = G_OBJECT_CLASS (empathy_individual_widget_parent_class);
+  EmpathyIndividualWidgetPriv *priv = GET_PRIV (object);
+  GtkScrolledWindow *scrolled_window =
+      GTK_SCROLLED_WINDOW (priv->scrolled_window_individual);
+
+  /* Allow scrolling of the list of Personas if we're showing Personas. */
+  if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS)
+    {
+      gtk_scrolled_window_set_shadow_type (scrolled_window, GTK_SHADOW_IN);
+      gtk_scrolled_window_set_policy (scrolled_window,
+          GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+
+      gtk_container_set_border_width (GTK_CONTAINER (priv->viewport_individual),
+          6);
+      gtk_widget_set_size_request (GTK_WIDGET (scrolled_window), -1, 100);
+    }
+  else
+    {
+      gtk_scrolled_window_set_shadow_type (scrolled_window, GTK_SHADOW_NONE);
+      gtk_scrolled_window_set_policy (scrolled_window,
+          GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+
+      gtk_container_set_border_width (GTK_CONTAINER (priv->viewport_individual),
+          0);
+    }
+
+  /* Chain up */
+  if (klass->constructed != NULL)
+    klass->constructed (object);
 }
 
 static void
@@ -1884,6 +1922,7 @@ empathy_individual_widget_class_init (EmpathyIndividualWidgetClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+  object_class->constructed = constructed;
   object_class->get_property = get_property;
   object_class->set_property = set_property;
   object_class->dispose = dispose;
