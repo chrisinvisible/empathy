@@ -176,7 +176,7 @@ individual_information_dialog_constructed (GObject *object)
   GtkWidget *button;
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-  gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+  gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
 
   /* Close button */
   button = gtk_button_new_with_label (GTK_STOCK_CLOSE);
