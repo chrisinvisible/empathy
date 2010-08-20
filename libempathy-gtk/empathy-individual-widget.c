@@ -88,6 +88,7 @@ typedef struct {
 
   /* Individual */
   GtkWidget *hbox_presence;
+  GtkWidget *vbox_individual_widget;
   GtkWidget *scrolled_window_individual;
   GtkWidget *viewport_individual;
   GtkWidget *vbox_individual;
@@ -1309,7 +1310,7 @@ alias_presence_avatar_favourite_set_up (EmpathyIndividualWidget *self,
   gtk_container_add (GTK_CONTAINER (alignment), avatar);
   gtk_widget_show (avatar);
 
-  gtk_table_attach (table, alignment, 2, 3, 0, current_row + 1,
+  gtk_table_attach (table, alignment, 2, 3, 0, current_row,
       GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 6, 6);
   gtk_widget_show (alignment);
 }
@@ -1559,7 +1560,7 @@ individual_table_set_up (EmpathyIndividualWidget *self)
 
   /* Display the table */
   gtk_box_pack_start (GTK_BOX (priv->vbox_individual), GTK_WIDGET (table),
-      TRUE, TRUE, 0);
+      FALSE, TRUE, 0);
   gtk_widget_show (GTK_WIDGET (table));
 
   priv->individual_table = table;
@@ -1776,7 +1777,6 @@ empathy_individual_widget_init (EmpathyIndividualWidget *self)
 {
   EmpathyIndividualWidgetPriv *priv;
   GtkBuilder *gui;
-  GtkWidget *vbox_individual_widget;
   gchar *filename;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
@@ -1791,7 +1791,7 @@ empathy_individual_widget_init (EmpathyIndividualWidget *self)
   gui = empathy_builder_get_file (filename,
       "scrolled_window_individual", &priv->scrolled_window_individual,
       "viewport_individual", &priv->viewport_individual,
-      "vbox_individual_widget", &vbox_individual_widget,
+      "vbox_individual_widget", &priv->vbox_individual_widget,
       "vbox_individual", &priv->vbox_individual,
       "vbox_location", &priv->vbox_location,
       "subvbox_location", &priv->subvbox_location,
@@ -1808,8 +1808,9 @@ empathy_individual_widget_init (EmpathyIndividualWidget *self)
 
   priv->table_location = NULL;
 
-  gtk_box_pack_start (GTK_BOX (self), vbox_individual_widget, TRUE, TRUE, 0);
-  gtk_widget_show (vbox_individual_widget);
+  gtk_box_pack_start (GTK_BOX (self), priv->vbox_individual_widget, TRUE, TRUE,
+      0);
+  gtk_widget_show (priv->vbox_individual_widget);
 
   priv->persona_tables = g_hash_table_new (NULL, NULL);
   priv->individual_table = NULL;
@@ -1834,6 +1835,8 @@ constructed (GObject *object)
       gtk_scrolled_window_set_shadow_type (scrolled_window, GTK_SHADOW_IN);
       gtk_scrolled_window_set_policy (scrolled_window,
           GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+      gtk_box_set_child_packing (GTK_BOX (priv->vbox_individual_widget),
+          priv->scrolled_window_individual, TRUE, TRUE, 0, GTK_PACK_START);
 
       gtk_container_set_border_width (GTK_CONTAINER (priv->viewport_individual),
           6);
@@ -1844,6 +1847,8 @@ constructed (GObject *object)
       gtk_scrolled_window_set_shadow_type (scrolled_window, GTK_SHADOW_NONE);
       gtk_scrolled_window_set_policy (scrolled_window,
           GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+      gtk_box_set_child_packing (GTK_BOX (priv->vbox_individual_widget),
+          priv->scrolled_window_individual, FALSE, TRUE, 0, GTK_PACK_START);
 
       gtk_container_set_border_width (GTK_CONTAINER (priv->viewport_individual),
           0);
