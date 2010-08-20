@@ -356,6 +356,8 @@ constructed (GObject *object)
   gtk_tree_view_column_set_cell_data_func (col, cell,
       (GtkTreeCellDataFunc) text_cell_data_func, self, NULL);
 
+  /* We (ab)use the name and status properties here to display display ID and
+   * account name, respectively. Harmless. */
   gtk_tree_view_column_add_attribute (col, cell,
       "name", EMPATHY_PERSONA_STORE_COL_DISPLAY_ID);
   gtk_tree_view_column_add_attribute (col, cell,
@@ -363,7 +365,7 @@ constructed (GObject *object)
   gtk_tree_view_column_add_attribute (col, cell,
       "presence-type", EMPATHY_PERSONA_STORE_COL_PRESENCE_TYPE);
   gtk_tree_view_column_add_attribute (col, cell,
-      "status", EMPATHY_PERSONA_STORE_COL_STATUS);
+      "status", EMPATHY_PERSONA_STORE_COL_ACCOUNT_NAME);
 
   /* Audio Call Icon */
   cell = empathy_cell_renderer_activatable_new ();
