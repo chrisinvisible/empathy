@@ -241,6 +241,7 @@ set_up (EmpathyIndividualLinker *self)
   GtkBox *vbox;
   EmpathyPersonaView *persona_view;
   gchar *tmp;
+  GtkWidget *alignment;
 
   priv = GET_PRIV (self);
 
@@ -250,6 +251,10 @@ set_up (EmpathyIndividualLinker *self)
   paned = GTK_PANED (gtk_hpaned_new ());
 
   /* Left column heading */
+  alignment = gtk_alignment_new (0.5, 0.5, 1, 1);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 0, 0, 0, 6);
+  gtk_widget_show (alignment);
+
   vbox = GTK_BOX (gtk_vbox_new (FALSE, 6));
   label = gtk_label_new (NULL);
   tmp = g_strdup_printf ("<b>%s</b>", _("Select contacts to link"));
@@ -297,10 +302,15 @@ set_up (EmpathyIndividualLinker *self)
 
   gtk_box_pack_end (vbox, search_bar, FALSE, TRUE, 0);
 
-  gtk_paned_pack1 (paned, GTK_WIDGET (vbox), TRUE, FALSE);
+  gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (vbox));
+  gtk_paned_pack1 (paned, alignment, TRUE, FALSE);
   gtk_widget_show (GTK_WIDGET (vbox));
 
   /* Right column heading */
+  alignment = gtk_alignment_new (0.5, 0.5, 1, 1);
+  gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 0, 0, 6, 0);
+  gtk_widget_show (alignment);
+
   vbox = GTK_BOX (gtk_vbox_new (FALSE, 6));
   label = gtk_label_new (NULL);
   tmp = g_strdup_printf ("<b>%s</b>", _("New contact preview"));
@@ -334,7 +344,8 @@ set_up (EmpathyIndividualLinker *self)
   gtk_box_pack_start (vbox, scrolled_window, TRUE, TRUE, 0);
   gtk_widget_show (scrolled_window);
 
-  gtk_paned_pack2 (paned, GTK_WIDGET (vbox), TRUE, FALSE);
+  gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (vbox));
+  gtk_paned_pack2 (paned, alignment, TRUE, FALSE);
   gtk_widget_show (GTK_WIDGET (vbox));
 
   gtk_widget_show (GTK_WIDGET (paned));
