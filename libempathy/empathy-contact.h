@@ -83,8 +83,6 @@ void empathy_contact_set_alias (EmpathyContact *contact, const gchar *alias);
 void empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
     gboolean is_member);
 EmpathyAvatar * empathy_contact_get_avatar (EmpathyContact *contact);
-void empathy_contact_set_avatar (EmpathyContact *contact,
-    EmpathyAvatar *avatar);
 TpAccount * empathy_contact_get_account (EmpathyContact *contact);
 FolksPersona * empathy_contact_get_persona (EmpathyContact *contact);
 void empathy_contact_set_persona (EmpathyContact *contact,

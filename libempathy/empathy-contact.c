@@ -85,6 +85,8 @@ static void empathy_contact_set_location (EmpathyContact *contact,
 static void set_capabilities_from_tp_caps (EmpathyContact *self,
     TpCapabilities *caps);
 
+static void contact_set_avatar (EmpathyContact *contact,
+    EmpathyAvatar *avatar);
 static void contact_set_avatar_from_tp_contact (EmpathyContact *contact);
 
 G_DEFINE_TYPE (EmpathyContact, empathy_contact, G_TYPE_OBJECT);
@@ -266,7 +268,7 @@ empathy_contact_class_init (EmpathyContactClass *class)
         "Avatar image",
         "The avatar image",
         EMPATHY_TYPE_AVATAR,
-        G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+        G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
 
   g_object_class_install_property (object_class,
       PROP_PRESENCE,
@@ -477,9 +479,6 @@ contact_set_property (GObject *object,
         break;
       case PROP_ALIAS:
         empathy_contact_set_alias (contact, g_value_get_string (value));
-        break;
-      case PROP_AVATAR:
-        empathy_contact_set_avatar (contact, g_value_get_boxed (value));
         break;
       case PROP_PRESENCE:
         empathy_contact_set_presence (contact, g_value_get_uint (value));
@@ -724,9 +723,9 @@ empathy_contact_get_avatar (EmpathyContact *contact)
   return priv->avatar;
 }
 
-void
-empathy_contact_set_avatar (EmpathyContact *contact,
-                            EmpathyAvatar *avatar)
+static void
+contact_set_avatar (EmpathyContact *contact,
+                    EmpathyAvatar *avatar)
 {
   EmpathyContactPriv *priv;
 
@@ -1199,7 +1198,7 @@ empathy_contact_load_avatar_cache (EmpathyContact *contact,
       DEBUG ("Avatar loaded from %s", filename);
       avatar = empathy_avatar_new ((guchar *) data, len, NULL, g_strdup (token),
           filename);
-      empathy_contact_set_avatar (contact, avatar);
+      contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);
     }
   else
@@ -1668,12 +1667,12 @@ contact_set_avatar_from_tp_contact (EmpathyContact *contact)
       g_file_load_contents (file, NULL, &data, &len, NULL, NULL);
       avatar = empathy_avatar_new ((guchar *) data, len, g_strdup (mime), g_strdup (token),
           g_file_get_path (file));
-      empathy_contact_set_avatar (contact, avatar);
+      contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);
     }
   else
     {
-      empathy_contact_set_avatar (contact, NULL);
+      contact_set_avatar (contact, NULL);
     }
 }
 
