@@ -235,6 +235,7 @@ set_up (EmpathyIndividualLinker *self)
   EmpathyIndividualLinkerPriv *priv;
   EmpathyIndividualManager *individual_manager;
   GtkCellRenderer *cell_renderer;
+  GtkWidget *top_vbox;
   GtkPaned *paned;
   GtkWidget *label, *scrolled_window, *search_bar;
   GtkBox *vbox;
@@ -242,6 +243,8 @@ set_up (EmpathyIndividualLinker *self)
   gchar *tmp;
 
   priv = GET_PRIV (self);
+
+  top_vbox = gtk_vbox_new (FALSE, 6);
 
   /* Layout panes */
   paned = GTK_PANED (gtk_hpaned_new ());
@@ -334,9 +337,22 @@ set_up (EmpathyIndividualLinker *self)
   gtk_paned_pack2 (paned, GTK_WIDGET (vbox), TRUE, FALSE);
   gtk_widget_show (GTK_WIDGET (vbox));
 
-  /* Add the panes to the bin */
-  gtk_container_add (GTK_CONTAINER (self), GTK_WIDGET (paned));
   gtk_widget_show (GTK_WIDGET (paned));
+
+  /* Footer label */
+  label = gtk_label_new (NULL);
+  tmp = g_strdup_printf ("<i>%s</i>",
+      _("Contacts selected in the list on the left will be linked together."));
+  gtk_label_set_markup (GTK_LABEL (label), tmp);
+  g_free (tmp);
+  gtk_widget_show (label);
+
+  gtk_box_pack_start (GTK_BOX (top_vbox), GTK_WIDGET (paned), TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (top_vbox), label, FALSE, TRUE, 0);
+
+  /* Add the main vbox to the bin */
+  gtk_container_add (GTK_CONTAINER (self), GTK_WIDGET (top_vbox));
+  gtk_widget_show (GTK_WIDGET (top_vbox));
 }
 
 static void
