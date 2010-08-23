@@ -415,7 +415,7 @@ empathy_sidebar_init (EmpathySidebar *sidebar)
 
   select_hbox = gtk_hbox_new (FALSE, 0);
 
-  sidebar->priv->label = gtk_label_new ("");
+  sidebar->priv->label = gtk_label_new (NULL);
 
   gtk_box_pack_start (GTK_BOX (select_hbox),
       sidebar->priv->label,

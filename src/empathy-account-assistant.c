@@ -1120,7 +1120,7 @@ account_assistant_build_salut_page (EmpathyAccountAssistant *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), hbox_1, TRUE, TRUE, 0);
   gtk_widget_show (hbox_1);
 
-  w = gtk_label_new ("");
+  w = gtk_label_new (NULL);
   markup = g_strdup_printf ("%s (<span style=\"italic\">%s</span>).",
       _("Empathy can automatically discover and chat with the people "
         "connected on the same network as you. "
