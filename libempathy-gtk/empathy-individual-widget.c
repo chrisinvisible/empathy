@@ -1524,10 +1524,7 @@ individual_table_set_up (EmpathyIndividualWidget *self)
 {
   EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
   GtkTable *table;
-  GtkWidget *label;
-  gchar *message;
-  GList *personas, *l;
-  guint num_personas = 0, current_row = 0;
+  guint current_row = 0;
 
   if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
     table = GTK_TABLE (gtk_table_new (4, 3, FALSE));
@@ -1536,25 +1533,34 @@ individual_table_set_up (EmpathyIndividualWidget *self)
   gtk_table_set_row_spacings (table, 6);
   gtk_table_set_col_spacings (table, 6);
 
-  /* Meta-contacts message displaying how many Telepathy personas we have */
-  personas = folks_individual_get_personas (priv->individual);
-  for (l = personas; l != NULL; l = l->next)
+  /* We only display the number of personas in tooltips */
+  if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP)
     {
-      if (TPF_IS_PERSONA (l->data))
-        num_personas++;
+      gchar *message;
+      GtkWidget *label;
+      GList *personas, *l;
+      guint num_personas = 0;
+
+      /* Meta-contacts message displaying how many Telepathy personas we have */
+      personas = folks_individual_get_personas (priv->individual);
+      for (l = personas; l != NULL; l = l->next)
+        {
+          if (TPF_IS_PERSONA (l->data))
+            num_personas++;
+        }
+
+      message = g_strdup_printf (ngettext ("Meta-contact containing %u contact",
+          "Meta-contact containing %u contacts", num_personas), num_personas);
+      label = gtk_label_new (message);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      g_free (message);
+
+      gtk_table_attach (table, label, 0, 2, current_row, current_row + 1,
+          GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+      gtk_widget_show (label);
+
+      current_row++;
     }
-
-  message = g_strdup_printf (ngettext ("Meta-contact containing %u contact",
-      "Meta-contact containing %u contacts", num_personas), num_personas);
-  label = gtk_label_new (message);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  g_free (message);
-
-  gtk_table_attach (table, label, 0, 2, current_row, current_row + 1,
-      GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
-  gtk_widget_show (label);
-
-  current_row++;
 
   alias_presence_avatar_favourite_set_up (self, table, current_row);
 
