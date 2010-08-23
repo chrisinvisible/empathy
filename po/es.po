@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-20 15:46+0000\n"
-"PO-Revision-Date: 2010-08-21 12:16+0200\n"
+"POT-Creation-Date: 2010-08-23 12:42+0000\n"
+"PO-Revision-Date: 2010-08-23 17:36+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1813,24 +1813,28 @@ msgid "Group"
 msgstr "Grupo"
 
 #: ../libempathy-gtk/empathy-individual-edit-dialog.c:253
-#| msgid "_Link"
 msgctxt "Unlink individual (button)"
 msgid "_Unlink"
 msgstr "_Desenlazar"
 
 #. Translators: the heading at the top of the Information dialogue
 #: ../libempathy-gtk/empathy-individual-information-dialog.c:143
-#| msgid "Link Contacts"
 msgid "Linked Contacts"
 msgstr "Contactos enlazados"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:250
+#: ../libempathy-gtk/empathy-individual-linker.c:255
 msgid "Select contacts to link"
 msgstr "Seleccionar contactos para enlazar"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:298
+#: ../libempathy-gtk/empathy-individual-linker.c:306
 msgid "New contact preview"
 msgstr "Vista previa del contacto nuevo"
+
+#: ../libempathy-gtk/empathy-individual-linker.c:345
+msgid "Contacts selected in the list on the left will be linked together."
+msgstr ""
+"Se enlazarán entre sí los contactos seleccionados en la lista de la "
+"izquierda."
 
 #: ../libempathy-gtk/empathy-individual-menu.c:108
 #, c-format
@@ -1847,7 +1851,7 @@ msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Enlazar…"
 
-#: ../libempathy-gtk/empathy-individual-widget.c:1547
+#: ../libempathy-gtk/empathy-individual-widget.c:1556
 #, c-format
 msgid "Meta-contact containing %u contact"
 msgid_plural "Meta-contact containing %u contacts"
