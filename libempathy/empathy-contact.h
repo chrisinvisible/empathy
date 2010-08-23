@@ -73,8 +73,6 @@ typedef enum {
 GType empathy_contact_get_type (void) G_GNUC_CONST;
 EmpathyContact * empathy_contact_from_tpl_contact (TpAccount *account,
     TplEntity *tpl_contact);
-EmpathyContact * empathy_contact_new_for_log (TpAccount *account,
-    const gchar *id, const gchar *alias, gboolean is_user);
 TpContact * empathy_contact_get_tp_contact (EmpathyContact *contact);
 const gchar * empathy_contact_get_id (EmpathyContact *contact);
 void empathy_contact_set_id (EmpathyContact *contact, const gchar *id);

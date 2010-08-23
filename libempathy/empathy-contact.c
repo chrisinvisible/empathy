@@ -538,23 +538,6 @@ empathy_contact_from_tpl_contact (TpAccount *account,
   return retval;
 }
 
-EmpathyContact *
-empathy_contact_new_for_log (TpAccount *account,
-                             const gchar *id,
-                             const gchar *alias,
-                             gboolean is_user)
-{
-  g_return_val_if_fail (id != NULL, NULL);
-  g_assert (account != NULL);
-
-  return g_object_new (EMPATHY_TYPE_CONTACT,
-      "account", account,
-      "id", id,
-      "alias", alias,
-      "is-user", is_user,
-      NULL);
-}
-
 TpContact *
 empathy_contact_get_tp_contact (EmpathyContact *contact)
 {
