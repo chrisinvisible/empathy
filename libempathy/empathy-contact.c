@@ -822,7 +822,11 @@ empathy_contact_set_persona (EmpathyContact *contact,
     return;
 
   if (priv->persona != NULL)
-    g_object_unref (priv->persona);
+    {
+      g_signal_handlers_disconnect_by_func (priv->persona,
+          folks_persona_notify_cb, contact);
+      g_object_unref (priv->persona);
+    }
   priv->persona = g_object_ref (persona);
 
   g_signal_connect (priv->persona, "notify",
