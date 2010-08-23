@@ -1525,11 +1525,15 @@ individual_table_set_up (EmpathyIndividualWidget *self)
   EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
   GtkTable *table;
   guint current_row = 0;
+  guint nb_rows = 2;
 
   if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
-    table = GTK_TABLE (gtk_table_new (4, 3, FALSE));
-  else
-    table = GTK_TABLE (gtk_table_new (3, 3, FALSE));
+    nb_rows++;
+
+  if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP)
+    nb_rows++;
+
+  table = GTK_TABLE (gtk_table_new (nb_rows, 3, FALSE));
   gtk_table_set_row_spacings (table, 6);
   gtk_table_set_col_spacings (table, 6);
 
