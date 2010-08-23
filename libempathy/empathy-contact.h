@@ -109,8 +109,6 @@ gboolean empathy_contact_can_voip_audio (EmpathyContact *contact);
 gboolean empathy_contact_can_voip_video (EmpathyContact *contact);
 gboolean empathy_contact_can_send_files (EmpathyContact *contact);
 gboolean empathy_contact_can_use_rfb_stream_tube (EmpathyContact *contact);
-gboolean empathy_contact_load_avatar_cache (EmpathyContact *contact,
-    const gchar *token);
 
 
 #define EMPATHY_TYPE_AVATAR (empathy_avatar_get_type ())

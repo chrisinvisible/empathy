@@ -88,6 +88,8 @@ static void set_capabilities_from_tp_caps (EmpathyContact *self,
 static void contact_set_avatar (EmpathyContact *contact,
     EmpathyAvatar *avatar);
 static void contact_set_avatar_from_tp_contact (EmpathyContact *contact);
+static gboolean contact_load_avatar_cache (EmpathyContact *contact,
+    const gchar *token);
 
 G_DEFINE_TYPE (EmpathyContact, empathy_contact, G_TYPE_OBJECT);
 
@@ -530,7 +532,7 @@ empathy_contact_from_tpl_contact (TpAccount *account,
       NULL);
 
   if (!EMP_STR_EMPTY (tpl_entity_get_avatar_token (tpl_entity)))
-    empathy_contact_load_avatar_cache (retval,
+    contact_load_avatar_cache (retval,
         tpl_entity_get_avatar_token (tpl_entity));
 
   return retval;
@@ -1168,9 +1170,9 @@ contact_get_avatar_filename (EmpathyContact *contact,
   return avatar_file;
 }
 
-gboolean
-empathy_contact_load_avatar_cache (EmpathyContact *contact,
-                                   const gchar *token)
+static gboolean
+contact_load_avatar_cache (EmpathyContact *contact,
+                           const gchar *token)
 {
   EmpathyAvatar *avatar = NULL;
   gchar *filename;
