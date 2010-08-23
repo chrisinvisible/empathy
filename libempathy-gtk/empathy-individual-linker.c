@@ -239,6 +239,7 @@ set_up (EmpathyIndividualLinker *self)
   GtkWidget *label, *scrolled_window, *search_bar;
   GtkBox *vbox;
   EmpathyPersonaView *persona_view;
+  gchar *tmp;
 
   priv = GET_PRIV (self);
 
@@ -247,7 +248,10 @@ set_up (EmpathyIndividualLinker *self)
 
   /* Left column heading */
   vbox = GTK_BOX (gtk_vbox_new (FALSE, 6));
-  label = gtk_label_new (_("Select contacts to link"));
+  label = gtk_label_new (NULL);
+  tmp = g_strdup_printf ("<b>%s</b>", _("Select contacts to link"));
+  gtk_label_set_markup (GTK_LABEL (label), tmp);
+  g_free (tmp);
   gtk_box_pack_start (vbox, label, FALSE, TRUE, 0);
   gtk_widget_show (label);
 
@@ -295,7 +299,10 @@ set_up (EmpathyIndividualLinker *self)
 
   /* Right column heading */
   vbox = GTK_BOX (gtk_vbox_new (FALSE, 6));
-  label = gtk_label_new (_("New contact preview"));
+  label = gtk_label_new (NULL);
+  tmp = g_strdup_printf ("<b>%s</b>", _("New contact preview"));
+  gtk_label_set_markup (GTK_LABEL (label), tmp);
+  g_free (tmp);
   gtk_box_pack_start (vbox, label, FALSE, TRUE, 0);
   gtk_widget_show (label);
 
