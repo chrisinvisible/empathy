@@ -1181,8 +1181,7 @@ contact_load_avatar_cache (EmpathyContact *contact,
   if (data)
     {
       DEBUG ("Avatar loaded from %s", filename);
-      avatar = empathy_avatar_new ((guchar *) data, len, NULL, g_strdup (token),
-          filename);
+      avatar = empathy_avatar_new ((guchar *) data, len, NULL, filename);
       contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);
     }
@@ -1214,11 +1213,10 @@ empathy_avatar_get_type (void)
  * @data: the avatar data
  * @len: the size of avatar data
  * @format: the mime type of the avatar image
- * @token: the token of the avatar
  * @filename: the filename where the avatar is stored in cache
  *
  * Create a #EmpathyAvatar from the provided data. This function takes the
- * ownership of @data, @format, @token and @filename.
+ * ownership of @data, @format and @filename.
  *
  * Returns: a new #EmpathyAvatar
  */
@@ -1226,7 +1224,6 @@ EmpathyAvatar *
 empathy_avatar_new (guchar *data,
                     gsize len,
                     gchar *format,
-                    gchar *token,
                     gchar *filename)
 {
   EmpathyAvatar *avatar;
@@ -1235,7 +1232,6 @@ empathy_avatar_new (guchar *data,
   avatar->data = data;
   avatar->len = len;
   avatar->format = format;
-  avatar->token = token;
   avatar->filename = filename;
   avatar->refcount = 1;
 
@@ -1252,7 +1248,6 @@ empathy_avatar_unref (EmpathyAvatar *avatar)
     {
       g_free (avatar->data);
       g_free (avatar->format);
-      g_free (avatar->token);
       g_free (avatar->filename);
       g_slice_free (EmpathyAvatar, avatar);
     }
@@ -1636,10 +1631,8 @@ contact_set_avatar_from_tp_contact (EmpathyContact *contact)
 {
   EmpathyContactPriv *priv = GET_PRIV (contact);
   const gchar *mime;
-  const gchar *token;
   GFile *file;
 
-  token = tp_contact_get_avatar_token (priv->tp_contact);
   mime = tp_contact_get_avatar_mime_type (priv->tp_contact);
   file = tp_contact_get_avatar_file (priv->tp_contact);
 
@@ -1650,7 +1643,7 @@ contact_set_avatar_from_tp_contact (EmpathyContact *contact)
       gsize len;
 
       g_file_load_contents (file, NULL, &data, &len, NULL, NULL);
-      avatar = empathy_avatar_new ((guchar *) data, len, g_strdup (mime), g_strdup (token),
+      avatar = empathy_avatar_new ((guchar *) data, len, g_strdup (mime),
           g_file_get_path (file));
       contact_set_avatar (contact, avatar);
       empathy_avatar_unref (avatar);

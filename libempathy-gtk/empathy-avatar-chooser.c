@@ -567,7 +567,7 @@ avatar_chooser_maybe_convert_and_scale (EmpathyAvatarChooser *chooser,
 
 	/* Takes ownership of new_mime_type and best_image_data */
 	avatar = empathy_avatar_new ((guchar *) best_image_data,
-		best_image_size, new_mime_type, NULL, NULL);
+		best_image_size, new_mime_type, NULL);
 
 	return avatar;
 }
@@ -612,7 +612,7 @@ avatar_chooser_set_image_from_data (EmpathyAvatarChooser *chooser,
 	}
 
 	/* avatar takes ownership of data and mime_type */
-	avatar = empathy_avatar_new ((guchar *) data, size, mime_type, NULL, NULL);
+	avatar = empathy_avatar_new ((guchar *) data, size, mime_type, NULL);
 
 	avatar_chooser_set_image (chooser, avatar, pixbuf, set_locally);
 }
