@@ -106,7 +106,7 @@ theme_boxes_pad_to_size (GdkPixbuf *pixbuf,
 
 typedef struct {
 	GdkPixbuf *pixbuf;
-	gchar     *token;
+	gchar     *filename;
 } AvatarData;
 
 static void
@@ -115,7 +115,7 @@ theme_boxes_avatar_cache_data_free (gpointer ptr)
 	AvatarData *data = ptr;
 
 	g_object_unref (data->pixbuf);
-	g_free (data->token);
+	g_free (data->filename);
 	g_slice_free (AvatarData, data);
 }
 
@@ -131,7 +131,7 @@ theme_boxes_get_avatar_pixbuf_with_cache (EmpathyContact *contact)
 	avatar = empathy_contact_get_avatar (contact);
 	data = g_object_get_data (G_OBJECT (contact), "chat-view-avatar-cache");
 	if (data) {
-		if (avatar && !tp_strdiff (avatar->token, data->token)) {
+		if (avatar && !tp_strdiff (avatar->filename, data->filename)) {
 			/* We have the avatar in cache */
 			return data->pixbuf;
 		}
@@ -147,9 +147,11 @@ theme_boxes_get_avatar_pixbuf_with_cache (EmpathyContact *contact)
 		return NULL;
 	}
 
-	/* Insert new pixbuf in cache */
+	/* Insert new pixbuf in cache. We store the filename as it's unique
+	 * for each version of an avatar, so we can use it to perform change
+	 * detection (as above). */
 	data = g_slice_new0 (AvatarData);
-	data->token = g_strdup (avatar->token);
+	data->filename = g_strdup (avatar->filename);
 	data->pixbuf = pixbuf;
 
 	g_object_set_data_full (G_OBJECT (contact), "chat-view-avatar-cache",
