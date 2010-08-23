@@ -524,42 +524,20 @@ update_persona (EmpathyPersonaStore *self,
 }
 
 static void
-individual_notify_personas_cb (GObject *object,
-    GParamSpec *pspec,
+individual_personas_changed_cb (GObject *object,
+    GList *added,
+    GList *removed,
     EmpathyPersonaStore *self)
 {
-  EmpathyPersonaStorePriv *priv = GET_PRIV (self);
-  GList *old_personas, *new_personas, *removed_personas, *l;
+  GList *l;
 
-  /* Remove old personas which are no longer in the individual.
-   * Build a list of such personas to remove from our hash table.
-   * This is slow. */
-  old_personas = g_hash_table_get_keys (priv->personas);
-  new_personas = folks_individual_get_personas (FOLKS_INDIVIDUAL (object));
-  removed_personas = NULL;
-
-  for (l = old_personas; l != NULL; l = l->next)
-    {
-      GList *i = g_list_find (new_personas, l->data);
-      if (i == NULL)
-        removed_personas = g_list_prepend (removed_personas, l->data);
-    }
-  g_list_free (old_personas);
-
-  /* Remove the removed personas. We can't do this from inside the above loop,
-   * as old_personas is only valid until the hash table is modified. */
-  for (l = removed_personas; l != NULL; l = l->next)
+  /* Remove the old personas. */
+  for (l = removed; l != NULL; l = l->next)
     remove_persona_and_disconnect (self, FOLKS_PERSONA (l->data));
-  g_list_free (removed_personas);
 
   /* Add each of the new personas to the tree model */
-  for (l = new_personas; l != NULL; l = l->next)
-    {
-      FolksPersona *persona = FOLKS_PERSONA (l->data);
-
-      if (g_hash_table_lookup (priv->personas, persona) == NULL)
-        add_persona_and_connect (self, persona);
-    }
+  for (l = added; l != NULL; l = l->next)
+    add_persona_and_connect (self, FOLKS_PERSONA (l->data));
 }
 
 static gint
@@ -1009,7 +987,7 @@ empathy_persona_store_set_individual (EmpathyPersonaStore *self,
       GList *personas, *l;
 
       g_signal_handlers_disconnect_by_func (priv->individual,
-          (GCallback) individual_notify_personas_cb, self);
+          (GCallback) individual_personas_changed_cb, self);
 
       /* Disconnect from and remove all personas belonging to this individual */
       personas = folks_individual_get_personas (priv->individual);
@@ -1028,8 +1006,8 @@ empathy_persona_store_set_individual (EmpathyPersonaStore *self,
 
       g_object_ref (individual);
 
-      g_signal_connect (individual, "notify::personas",
-          (GCallback) individual_notify_personas_cb, self);
+      g_signal_connect (individual, "personas-changed",
+          (GCallback) individual_personas_changed_cb, self);
 
       /* Add pre-existing Personas */
       personas = folks_individual_get_personas (individual);
