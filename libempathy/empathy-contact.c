@@ -1048,8 +1048,10 @@ empathy_contact_is_online (EmpathyContact *contact)
       case TP_CONNECTION_PRESENCE_TYPE_OFFLINE:
       case TP_CONNECTION_PRESENCE_TYPE_UNKNOWN:
       case TP_CONNECTION_PRESENCE_TYPE_ERROR:
-      case TP_CONNECTION_PRESENCE_TYPE_UNSET:
         return FALSE;
+      /* Contacts without presence are considered online so we can display IRC
+       * contacts in rooms. */
+      case TP_CONNECTION_PRESENCE_TYPE_UNSET:
       case TP_CONNECTION_PRESENCE_TYPE_AVAILABLE:
       case TP_CONNECTION_PRESENCE_TYPE_AWAY:
       case TP_CONNECTION_PRESENCE_TYPE_EXTENDED_AWAY:
