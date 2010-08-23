@@ -1364,6 +1364,8 @@ update_persona (EmpathyIndividualWidget *self, FolksPersona *persona)
 
   if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
     notify_is_favourite_cb (persona, NULL, self);
+
+  g_object_unref (contact);
 }
 
 static void
