@@ -1602,76 +1602,78 @@ individual_table_destroy (EmpathyIndividualWidget *self)
 }
 
 static void
-notify_personas_cb (FolksIndividual *individual,
-    GParamSpec *pspec,
+personas_changed_cb (FolksIndividual *individual,
+    GList *added,
+    GList *removed,
     EmpathyIndividualWidget *self)
 {
   EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
-  GList *personas, *l, *children, *remove_personas = NULL;
-  GHashTableIter iter;
-  FolksPersona *persona;
-  GtkTable *table;
-  gboolean is_last;
+  GList *personas, *l, *children;
+  gboolean show_personas, was_showing_personas, will_show_personas, is_last;
   guint old_num_personas, new_num_personas;
 
   personas = folks_individual_get_personas (individual);
+
+  /* Note that old_num_personas is the number of persona tables we were
+   * displaying, not the number of Personas which were in the Individual
+   * before. */
   old_num_personas = g_hash_table_size (priv->persona_tables);
   new_num_personas = g_list_length (personas);
 
-  /* Remove Personas */
-  g_hash_table_iter_init (&iter, priv->persona_tables);
-  while (g_hash_table_iter_next (&iter, (gpointer *) &persona,
-      (gpointer *) &table))
+  /*
+   * What we display for various conditions:
+   *  - "Personas": display the alias, avatar, presence account and identifier
+   *                for each of the Individual's Personas. (i.e. One table per
+   *                Persona.)
+   *  - "Individual": display the alias, avatar and presence for the Individual,
+   *                  and a label saying "Meta-contact containing x contacts".
+   *                  (i.e. One table in total.)
+   *
+   *              | SHOW_PERSONAS | !SHOW_PERSONAS
+   * -------------+---------------+---------------
+   * > 1 Persona  | Personas      | Individual
+   * -------------+---------------+---------------
+   * == 1 Persona | Personas      | Personas
+   */
+  show_personas = (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS) != 0;
+  was_showing_personas = show_personas || old_num_personas == 1;
+  will_show_personas = show_personas || new_num_personas == 1;
+
+  /* If both @added and @removed are NULL, we're being called manually, and we
+   * need to set up the tables for the first time. We do this simply by
+   * ensuring was_showing_personas and will_show_personas are different so that
+   * the code resets the UI.
+   */
+  if (added == NULL && removed == NULL)
+    was_showing_personas = !will_show_personas;
+
+  if (was_showing_personas && will_show_personas)
     {
-      /* FIXME: This is slow. bgo#626725 */
-      /* Old persona or we were displaying all personas and now just want to
-       * display the individual table.
-       * We can't remove the persona inside this loop, as that would invalidate
-       * the hash table iter. */
-      if (g_list_find (personas, persona) == NULL ||
-          (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS) &&
-           new_num_personas > 1))
-        {
-          remove_personas = g_list_prepend (remove_personas, persona);
-        }
+      /* Remove outdated Personas */
+      for (l = removed; l != NULL; l = l->next)
+        remove_persona (self, FOLKS_PERSONA (l->data));
+
+      /* Add new Personas */
+      for (l = added; l != NULL; l = l->next)
+        add_persona (self, FOLKS_PERSONA (l->data));
     }
-
-  for (l = remove_personas; l != NULL; l = l->next)
-    remove_persona (self, FOLKS_PERSONA (l->data));
-  g_list_free (remove_personas);
-
-  individual_table_destroy (self);
-
-  /* If we're !SHOW_PERSONAS and have more than one Persona, we only display
-   * the Individual's alias, avatar and presence, and a label saying
-   * "Meta-contact containing x contacts". (i.e. One table.)
-   * If we're SHOW_PERSONAS or have only one Persona, we display the
-   * alias, avatar, presence, account and identifier for each of the
-   * Individual's Personas. (i.e. One table per Persona.) */
-  if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS) &&
-      new_num_personas > 1)
+  else if (!was_showing_personas && will_show_personas)
     {
-      individual_table_set_up (self);
-    }
-  else
-    {
-      /* Add Personas */
+      /* Remove the old Individual table */
+      individual_table_destroy (self);
+
+      /* Set up all the Persona tables instead */
       for (l = personas; l != NULL; l = l->next)
-        {
-          persona = FOLKS_PERSONA (l->data);
+        add_persona (self, FOLKS_PERSONA (l->data));
+    }
+  else if (was_showing_personas && !will_show_personas)
+    {
+      /* Remove all Personas */
+      for (l = personas; l != NULL; l = l->next)
+        remove_persona (self, FOLKS_PERSONA (l->data));
 
-          if (!TPF_IS_PERSONA (persona))
-            continue;
-
-          /* New persona or we were displaying the individual table and we
-           * now want to display all personas */
-          if ((!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS) &&
-               new_num_personas <= 1) ||
-              g_hash_table_lookup (priv->persona_tables, persona) == NULL)
-            {
-              add_persona (self, persona);
-            }
-        }
+      /* Set up the Individual table instead */
+      individual_table_set_up (self);
     }
 
   /* Hide the last separator and show the others */
@@ -1706,7 +1708,7 @@ remove_individual (EmpathyIndividualWidget *self)
       g_signal_handlers_disconnect_by_func (priv->individual,
           notify_avatar_cb, self);
       g_signal_handlers_disconnect_by_func (priv->individual,
-          notify_personas_cb, self);
+          personas_changed_cb, self);
 
       if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
         {
@@ -1717,6 +1719,7 @@ remove_individual (EmpathyIndividualWidget *self)
       personas = folks_individual_get_personas (priv->individual);
       for (l = personas; l != NULL; l = l->next)
         remove_persona (self, FOLKS_PERSONA (l->data));
+      individual_table_destroy (self);
 
       if (priv->contact_info_contact != NULL)
         {
@@ -1750,8 +1753,8 @@ individual_update (EmpathyIndividualWidget *self)
           (GCallback) notify_presence_cb, self);
       g_signal_connect (priv->individual, "notify::avatar",
           (GCallback) notify_avatar_cb, self);
-      g_signal_connect (priv->individual, "notify::personas",
-          (GCallback) notify_personas_cb, self);
+      g_signal_connect (priv->individual, "personas-changed",
+          (GCallback) personas_changed_cb, self);
 
       if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
         {
@@ -1760,7 +1763,7 @@ individual_update (EmpathyIndividualWidget *self)
         }
 
       /* Update individual table */
-      notify_personas_cb (priv->individual, NULL, self);
+      personas_changed_cb (priv->individual, NULL, NULL, self);
     }
 
   if (priv->individual == NULL)
