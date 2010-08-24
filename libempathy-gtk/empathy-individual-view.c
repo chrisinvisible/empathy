@@ -68,7 +68,7 @@ typedef struct
   EmpathyIndividualStore *store;
   GtkTreeRowReference *drag_row;
   EmpathyIndividualViewFeatureFlags view_features;
-  EmpathyContactFeatureFlags individual_features;
+  EmpathyIndividualFeatureFlags individual_features;
   GtkWidget *tooltip_widget;
   GtkTargetList *file_targets;
 
@@ -822,7 +822,7 @@ individual_view_row_activated (GtkTreeView *view,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  if (!(priv->individual_features & EMPATHY_CONTACT_FEATURE_CHAT))
+  if (!(priv->individual_features & EMPATHY_INDIVIDUAL_FEATURE_CHAT))
     return;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
@@ -1919,10 +1919,10 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
   g_object_class_install_property (object_class,
       PROP_INDIVIDUAL_FEATURES,
       g_param_spec_flags ("individual-features",
-          "Features of the contact menu",
+          "Features of the individual menu",
           "Flags for all enabled features for the menu",
           EMPATHY_TYPE_INDIVIDUAL_FEATURE_FLAGS,
-          EMPATHY_CONTACT_FEATURE_NONE, G_PARAM_READWRITE));
+          EMPATHY_INDIVIDUAL_FEATURE_NONE, G_PARAM_READWRITE));
   g_object_class_install_property (object_class,
       PROP_SHOW_OFFLINE,
       g_param_spec_boolean ("show-offline",
