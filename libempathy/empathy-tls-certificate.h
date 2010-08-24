@@ -24,6 +24,8 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 
+#include <telepathy-glib/proxy-subclass.h>
+
 #include <extensions/extensions.h>
 
 G_BEGIN_DECLS
@@ -32,11 +34,11 @@ typedef struct _EmpathyTLSCertificate EmpathyTLSCertificate;
 typedef struct _EmpathyTLSCertificateClass EmpathyTLSCertificateClass;
 
 struct _EmpathyTLSCertificateClass {
-    GObjectClass parent_class;
+    TpProxyClass parent_class;
 };
 
 struct _EmpathyTLSCertificate {
-    GObject parent;
+    TpProxy parent;
     gpointer priv;
 };
 
@@ -58,12 +60,16 @@ GType empathy_tls_certificate_get_type (void);
   (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_TLS_CERTIFICATE, \
   EmpathyTLSCertificateClass))
 
-void empathy_tls_certificate_new_async (const gchar *bus_name,
+EmpathyTLSCertificate * empathy_tls_certificate_new (TpDBusDaemon *dbus,
+    const gchar *bus_name,
     const gchar *object_path,
+    GError **error);
+
+void empathy_tls_certificate_prepare_async (EmpathyTLSCertificate *self,
     GAsyncReadyCallback callback,
     gpointer user_data);
-
-EmpathyTLSCertificate * empathy_tls_certificate_new_finish (GAsyncResult * res,
+gboolean empathy_tls_certificate_prepare_finish (EmpathyTLSCertificate *self,
+    GAsyncResult *result,
     GError **error);
 
 void empathy_tls_certificate_accept_async (EmpathyTLSCertificate *self,
