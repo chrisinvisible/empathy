@@ -73,6 +73,12 @@ struct _EmpathyIndividualView
 struct _EmpathyIndividualViewClass
 {
   GtkTreeViewClass parent_class;
+
+  void (* drag_individual_received) (EmpathyIndividualView *self,
+      GdkDragAction action,
+      FolksIndividual *individual,
+      const gchar *new_group,
+      const gchar *old_group);
 };
 
 GType empathy_individual_view_get_type (void) G_GNUC_CONST;

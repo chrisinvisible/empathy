@@ -141,7 +141,7 @@ static GdkAtom drag_atoms_source[G_N_ELEMENTS (drag_types_source)];
 
 enum
 {
-  DRAG_CONTACT_RECEIVED,
+  DRAG_INDIVIDUAL_RECEIVED,
   LAST_SIGNAL
 };
 
@@ -341,39 +341,11 @@ individual_view_contact_drag_received (GtkWidget *self,
   /* FIXME: We should probably wait for the cb before calling
    * gtk_drag_finish */
 
-  DEBUG ("individual %s dragged from '%s' to '%s'",
-      folks_individual_get_id (individual), old_group, new_group);
-
-  if (!tp_strdiff (new_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
-    {
-      /* Mark contact as favourite */
-      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), TRUE);
-    }
-  else
-    {
-      if (!tp_strdiff (old_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
-        {
-          /* Remove contact as favourite */
-          folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual),
-              FALSE);
-
-          /* Don't try to remove it */
-          old_group = NULL;
-        }
-
-      if (new_group != NULL)
-        {
-          folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE,
-              groups_change_group_cb, NULL);
-        }
-
-      if (old_group != NULL &&
-          gdk_drag_context_get_selected_action (context) == GDK_ACTION_MOVE)
-        {
-          folks_groups_change_group (FOLKS_GROUPS (individual), old_group,
-              FALSE, groups_change_group_cb, NULL);
-        }
-    }
+  /* Emit a signal notifying of the drag. We change the Individual's groups in
+   * the default signal handler. */
+  g_signal_emit (self, signals[DRAG_INDIVIDUAL_RECEIVED], 0,
+      gdk_drag_context_get_selected_action (context), individual, new_group,
+      old_group);
 
   retval = TRUE;
 
@@ -383,6 +355,45 @@ finished:
   g_free (new_group);
 
   return retval;
+}
+
+static void
+real_drag_individual_received_cb (EmpathyIndividualView *self,
+    GdkDragAction action,
+    FolksIndividual *individual,
+    const gchar *new_group,
+    const gchar *old_group)
+{
+  DEBUG ("individual %s dragged from '%s' to '%s'",
+      folks_individual_get_id (individual), old_group, new_group);
+
+  if (!tp_strdiff (new_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
+    {
+      /* Mark contact as favourite */
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), TRUE);
+      return;
+    }
+
+  if (!tp_strdiff (old_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
+    {
+      /* Remove contact as favourite */
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), FALSE);
+
+      /* Don't try to remove it */
+      old_group = NULL;
+    }
+
+  if (new_group != NULL)
+    {
+      folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE,
+          groups_change_group_cb, NULL);
+    }
+
+  if (old_group != NULL && action == GDK_ACTION_MOVE)
+    {
+      folks_groups_change_group (FOLKS_GROUPS (individual), old_group,
+          FALSE, groups_change_group_cb, NULL);
+    }
 }
 
 static gboolean
@@ -1893,14 +1904,17 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
    * won't be called. */
   tree_view_class->row_activated = individual_view_row_activated;
 
-  signals[DRAG_CONTACT_RECEIVED] =
-      g_signal_new ("drag-contact-received",
+  klass->drag_individual_received = real_drag_individual_received_cb;
+
+  signals[DRAG_INDIVIDUAL_RECEIVED] =
+      g_signal_new ("drag-individual-received",
       G_OBJECT_CLASS_TYPE (klass),
       G_SIGNAL_RUN_LAST,
-      0,
+      G_STRUCT_OFFSET (EmpathyIndividualViewClass, drag_individual_received),
       NULL, NULL,
-      _empathy_gtk_marshal_VOID__OBJECT_STRING_STRING,
-      G_TYPE_NONE, 3, EMPATHY_TYPE_CONTACT, G_TYPE_STRING, G_TYPE_STRING);
+      _empathy_gtk_marshal_VOID__UINT_OBJECT_STRING_STRING,
+      G_TYPE_NONE, 4, G_TYPE_UINT, FOLKS_TYPE_INDIVIDUAL,
+      G_TYPE_STRING, G_TYPE_STRING);
 
   g_object_class_install_property (object_class,
       PROP_STORE,
