@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy-master-po-gl-57278_.merged\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-23 02:16+0200\n"
-"PO-Revision-Date: 2010-08-23 02:16+0200\n"
+"POT-Creation-Date: 2010-08-24 20:45+0200\n"
+"PO-Revision-Date: 2010-08-24 21:02+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <gnome-gl-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -789,16 +789,16 @@ msgstr ""
 "certificado do servidor excede os límites impostos pola biblioteca crypto."
 
 # rever
-#: ../libempathy/empathy-utils.c:529
+#: ../libempathy/empathy-utils.c:540
 msgid "People Nearby"
 msgstr "Persoas próximas"
 
 # rever
-#: ../libempathy/empathy-utils.c:534
+#: ../libempathy/empathy-utils.c:545
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
-#: ../libempathy/empathy-utils.c:535
+#: ../libempathy/empathy-utils.c:546
 msgid "Facebook Chat"
 msgstr "Chat de Facebook"
 
@@ -869,7 +869,7 @@ msgstr "Iniciar sesi_ón"
 #. Account and Identifier
 #: ../libempathy-gtk/empathy-account-widget.c:1548
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-individual-widget.c:1390
+#: ../libempathy-gtk/empathy-individual-widget.c:1392
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
 #: ../src/empathy-new-chatroom-dialog.ui.h:1
@@ -1920,7 +1920,7 @@ msgstr "Detalles do contacto"
 #. Identifier to connect to Instant Messaging network
 #. Translators: Identifier to connect to Instant Messaging network
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:8
-#: ../libempathy-gtk/empathy-individual-widget.c:1419
+#: ../libempathy-gtk/empathy-individual-widget.c:1421
 msgid "Identifier:"
 msgstr "Identificador:"
 
@@ -1959,7 +1959,7 @@ msgid "Select"
 msgstr "Seleccionar"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:407
-#: ../src/empathy-main-window.c:1231
+#: ../src/empathy-main-window.c:1240
 msgid "Group"
 msgstr "Grupo"
 
@@ -1975,13 +1975,17 @@ msgid "Linked Contacts"
 msgstr "contactos ligados"
 
 # rever
-#: ../libempathy-gtk/empathy-individual-linker.c:250
+#: ../libempathy-gtk/empathy-individual-linker.c:260
 msgid "Select contacts to link"
 msgstr "Seleccione os contactos a ligar"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:298
+#: ../libempathy-gtk/empathy-individual-linker.c:316
 msgid "New contact preview"
 msgstr "Vista previa do contacto novo"
+
+#: ../libempathy-gtk/empathy-individual-linker.c:356
+msgid "Contacts selected in the list on the left will be linked together."
+msgstr "Ligaranse entre si os contactos seleccionados na lista da esquerda"
 
 #: ../libempathy-gtk/empathy-individual-menu.c:108
 #, c-format
@@ -1998,7 +2002,7 @@ msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Ligar..."
 
-#: ../libempathy-gtk/empathy-individual-widget.c:1547
+#: ../libempathy-gtk/empathy-individual-widget.c:1558
 #, c-format
 msgid "Meta-contact containing %u contact"
 msgid_plural "Meta-contact containing %u contacts"
@@ -2234,6 +2238,85 @@ msgstr "Limpo"
 #: ../libempathy-gtk/empathy-theme-manager.c:70
 msgid "Blue"
 msgstr "Azul"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:150
+msgid "The identity provided by the chat server cannot be verified.\n"
+msgstr "A identidade fornecida polo servidor de chat non pode verificarse.\n"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:156
+msgid "The certrificate is not signed by a Certification Authority"
+msgstr "O certificado non está asinado por unha Autoridade Certificadora"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:160
+msgid "The certificate is expired"
+msgstr "O certificado caducou"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:163
+msgid "The certificate hasn't yet been activated"
+msgstr "O certificado non está activado aínda"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:166
+msgid "The certificate does not have the expected fingerprint"
+msgstr "O certificado non ten a pegada dixital esperada"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:169
+msgid "The hostname verified by the certificate doesn't match the server name"
+msgstr ""
+"O nome de servidor verificado polo certificado non coincide co nome do "
+"servidor"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:173
+msgid "The certificate is self-signed"
+msgstr "O certificado está autoasinado."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:176
+msgid "The certificate has been revoked by the issuing Certification Authority"
+msgstr "O certificado foi revocado pola Autoridade Certificadora"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:180
+msgid "The certificate is cryptographically weak"
+msgstr "O certificado é cripotograficamente débil."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:183
+msgid "The certificate length exceeds verifiable limits"
+msgstr "A lonxitude do certificado excede os límites verificábeis"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:187
+msgid "The certificate is malformed"
+msgstr "O certificado está mal formado"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:205
+#, c-format
+msgid "Expected hostname: %s"
+msgstr "Nome do servidor esperado: %s"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:208
+#, c-format
+msgid "Certificate hostname: %s"
+msgstr "Nome do servidor do certificado: %s"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:263
+msgid "Continue"
+msgstr "Continuar"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:269
+msgid "This connection is untrusted, would you like to continue anyway?"
+msgstr "A conexión non confiábel, desexa continuar de todas formas?"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:286
+msgid "Remember this choice for future connections"
+msgstr "Lembrar esta elección para futuras conexións"
+
+# rever
+#: ../libempathy-gtk/empathy-tls-dialog.c:294
+msgid "Certificate Details"
+msgstr "Detalles do certificado"
 
 #: ../libempathy-gtk/empathy-ui-utils.c:1698
 msgid "Unable to open URI"
@@ -2776,6 +2859,15 @@ msgstr "Eng_adir..."
 #: ../src/empathy-accounts-dialog.ui.h:5
 msgid "_Import…"
 msgstr "_Importar..."
+
+# rever
+#: ../src/empathy-auth-client.c:217
+msgid " - Empathy authentication client"
+msgstr "- Cliente de autenticación Empathy"
+
+#: ../src/empathy-auth-client.c:233
+msgid "Empathy authentication client"
+msgstr "Cliente de autenticación Empathy"
 
 # rever
 #: ../src/empathy-auto-salut-account-helper.c:78
@@ -3441,28 +3533,28 @@ msgstr "Orixe"
 msgid "No match found"
 msgstr "Non se encontrou ningunha coincidencia."
 
-#: ../src/empathy-main-window.c:519
+#: ../src/empathy-main-window.c:528
 msgid "Reconnect"
 msgstr "Reconectar"
 
-#: ../src/empathy-main-window.c:525
+#: ../src/empathy-main-window.c:534
 msgid "Edit Account"
 msgstr "Editar a conta"
 
-#: ../src/empathy-main-window.c:531
+#: ../src/empathy-main-window.c:540
 msgid "Close"
 msgstr "Pechar"
 
-#: ../src/empathy-main-window.c:1213
+#: ../src/empathy-main-window.c:1222
 msgid "Contact"
 msgstr "Contacto"
 
-#: ../src/empathy-main-window.c:1538
+#: ../src/empathy-main-window.c:1547
 msgid "Contact List"
 msgstr "Lista de contactos"
 
 # rever
-#: ../src/empathy-main-window.c:1647
+#: ../src/empathy-main-window.c:1656
 msgid "Show and edit accounts"
 msgstr "Mostrar e editar contas"
 
