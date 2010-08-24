@@ -529,8 +529,8 @@ individual_view_drag_motion (GtkWidget *widget,
          We only highlight things if the contact is from a different Individual
          view, or if this Individual view has FEATURE_GROUPS_CHANGE. This
          prevents highlighting in Individual views which don't have
-         FEATURE_GROUPS_CHANGE, but do have FEATURE_CONTACT_DRAG and
-         FEATURE_CONTACT_DROP.
+         FEATURE_GROUPS_CHANGE, but do have FEATURE_INDIVIDUAL_DRAG and
+         FEATURE_INDIVIDUAL_DROP.
        */
       GtkTreeIter group_iter;
       gboolean is_group;
@@ -1746,10 +1746,10 @@ individual_view_set_view_features (EmpathyIndividualView *view,
      is enabled).
    */
   gtk_tree_view_set_reorderable (GTK_TREE_VIEW (view),
-      (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_DRAG));
+      (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_DRAG));
 
   /* Update DnD source/dest */
-  if (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_DRAG)
+  if (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_DRAG)
     {
       gtk_drag_source_set (GTK_WIDGET (view),
           GDK_BUTTON1_MASK,
@@ -1763,7 +1763,7 @@ individual_view_set_view_features (EmpathyIndividualView *view,
 
     }
 
-  if (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_DROP)
+  if (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_DROP)
     {
       gtk_drag_dest_set (GTK_WIDGET (view),
           GTK_DEST_DEFAULT_ALL,
@@ -1778,7 +1778,7 @@ individual_view_set_view_features (EmpathyIndividualView *view,
 
   /* Update has-tooltip */
   has_tooltip =
-      (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_TOOLTIP) != 0;
+      (features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_TOOLTIP) != 0;
   gtk_widget_set_has_tooltip (GTK_WIDGET (view), has_tooltip);
 }
 
@@ -2228,7 +2228,7 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
 
   /* Remove contact */
   if (priv->view_features &
-      EMPATHY_INDIVIDUAL_VIEW_FEATURE_CONTACT_REMOVE &&
+      EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_REMOVE &&
       flags & EMPATHY_INDIVIDUAL_MANAGER_CAN_REMOVE)
     {
 
