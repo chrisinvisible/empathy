@@ -37,6 +37,7 @@
 #include <folks/folks.h>
 #include <folks/folks-telepathy.h>
 
+#include <libempathy/empathy-individual-manager.h>
 #include <libempathy/empathy-utils.h>
 
 #include "empathy-persona-view.h"
@@ -45,6 +46,7 @@
 #include "empathy-cell-renderer-text.h"
 #include "empathy-cell-renderer-activatable.h"
 #include "empathy-gtk-enum-types.h"
+#include "empathy-gtk-marshal.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
 #include <libempathy/empathy-debug.h>
@@ -80,6 +82,39 @@ enum
   PROP_SHOW_OFFLINE,
   PROP_FEATURES,
 };
+
+enum DndDragType
+{
+  DND_DRAG_TYPE_INDIVIDUAL_ID,
+  DND_DRAG_TYPE_PERSONA_ID,
+  DND_DRAG_TYPE_STRING,
+};
+
+#define DRAG_TYPE(T,I) \
+  { (gchar *) T, 0, I }
+
+static const GtkTargetEntry drag_types_dest[] = {
+  DRAG_TYPE ("text/individual-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
+  DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
+  DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
+};
+
+static const GtkTargetEntry drag_types_source[] = {
+  DRAG_TYPE ("text/persona-id", DND_DRAG_TYPE_PERSONA_ID),
+};
+
+#undef DRAG_TYPE
+
+static GdkAtom drag_atoms_dest[G_N_ELEMENTS (drag_types_dest)];
+static GdkAtom drag_atoms_source[G_N_ELEMENTS (drag_types_source)];
+
+enum
+{
+  DRAG_INDIVIDUAL_RECEIVED,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
 
 G_DEFINE_TYPE (EmpathyPersonaView, empathy_persona_view, GTK_TYPE_TREE_VIEW);
 
@@ -314,6 +349,139 @@ text_cell_data_func (GtkTreeViewColumn *tree_column,
   cell_set_background (self, cell, is_active);
 }
 
+static gboolean
+individual_drag_received (EmpathyPersonaView *self,
+    GdkDragContext *context,
+    GtkSelectionData *selection)
+{
+  EmpathyPersonaViewPriv *priv;
+  EmpathyIndividualManager *manager = NULL;
+  FolksIndividual *individual;
+  const gchar *individual_id;
+  gboolean success = FALSE;
+
+  priv = GET_PRIV (self);
+
+  individual_id = (const gchar *) gtk_selection_data_get_data (selection);
+  manager = empathy_individual_manager_dup_singleton ();
+  individual = empathy_individual_manager_lookup_member (manager,
+      individual_id);
+
+  if (individual == NULL)
+    {
+      DEBUG ("Failed to find drag event individual with ID '%s'",
+          individual_id);
+      g_object_unref (manager);
+      return FALSE;
+    }
+
+  /* Emit a signal notifying of the drag. */
+  g_signal_emit (self, signals[DRAG_INDIVIDUAL_RECEIVED], 0,
+      gdk_drag_context_get_selected_action (context), individual, &success);
+
+  g_object_unref (manager);
+
+  return success;
+}
+
+static void
+drag_data_received (GtkWidget *widget,
+    GdkDragContext *context,
+    gint x,
+    gint y,
+    GtkSelectionData *selection,
+    guint info,
+    guint time_)
+{
+  EmpathyPersonaView *self = EMPATHY_PERSONA_VIEW (widget);
+  gboolean success = TRUE;
+
+  if (info == DND_DRAG_TYPE_INDIVIDUAL_ID || info == DND_DRAG_TYPE_STRING)
+    success = individual_drag_received (self, context, selection);
+
+  gtk_drag_finish (context, success, FALSE, GDK_CURRENT_TIME);
+}
+
+static gboolean
+drag_motion (GtkWidget *widget,
+    GdkDragContext *context,
+    gint x,
+    gint y,
+    guint time_)
+{
+  EmpathyPersonaView *self = EMPATHY_PERSONA_VIEW (widget);
+  EmpathyPersonaViewPriv *priv;
+  GdkAtom target;
+
+  priv = GET_PRIV (self);
+
+  target = gtk_drag_dest_find_target (GTK_WIDGET (self), context, NULL);
+
+  if (target == drag_atoms_dest[DND_DRAG_TYPE_INDIVIDUAL_ID])
+    {
+      GtkTreePath *path;
+
+      /* FIXME: It doesn't make sense for us to highlight a specific row or
+       * position to drop an Individual in, so just highlight the entire
+       * widget.
+       * Since I can't find a way to do this, just highlight the first possible
+       * position in the tree. */
+      gdk_drag_status (context, gdk_drag_context_get_suggested_action (context),
+          time_);
+
+      path = gtk_tree_path_new_first ();
+      gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (self), path,
+          GTK_TREE_VIEW_DROP_BEFORE);
+      gtk_tree_path_free (path);
+
+      return TRUE;
+    }
+
+  /* Unknown or unhandled drag target */
+  gdk_drag_status (context, GDK_ACTION_DEFAULT, time_);
+  gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (self), NULL, 0);
+
+  return FALSE;
+}
+
+static void
+drag_data_get (GtkWidget *widget,
+    GdkDragContext *context,
+    GtkSelectionData *selection,
+    guint info,
+    guint time_)
+{
+  EmpathyPersonaView *self = EMPATHY_PERSONA_VIEW (widget);
+  EmpathyPersonaViewPriv *priv;
+  FolksPersona *persona;
+  const gchar *persona_uid;
+
+  if (info != DND_DRAG_TYPE_PERSONA_ID)
+    return;
+
+  priv = GET_PRIV (self);
+
+  persona = empathy_persona_view_dup_selected (self);
+  if (persona == NULL)
+    return;
+
+  persona_uid = folks_persona_get_uid (persona);
+  gtk_selection_data_set (selection, drag_atoms_source[info], 8,
+      (guchar *) persona_uid, strlen (persona_uid) + 1);
+
+  g_object_unref (persona);
+}
+
+static gboolean
+drag_drop (GtkWidget *widget,
+    GdkDragContext *drag_context,
+    gint x,
+    gint y,
+    guint time_)
+{
+  return FALSE;
+}
+
 static void
 set_features (EmpathyPersonaView *self,
     EmpathyPersonaViewFeatureFlags features)
@@ -321,6 +489,40 @@ set_features (EmpathyPersonaView *self,
   EmpathyPersonaViewPriv *priv = GET_PRIV (self);
 
   priv->features = features;
+
+  /* Setting reorderable is a hack that gets us row previews as drag icons
+     for free.  We override all the drag handlers.  It's tricky to get the
+     position of the drag icon right in drag_begin.  GtkTreeView has special
+     voodoo for it, so we let it do the voodoo that he do (but only if dragging
+     is enabled). */
+  gtk_tree_view_set_reorderable (GTK_TREE_VIEW (self),
+      (features & EMPATHY_PERSONA_VIEW_FEATURE_PERSONA_DRAG));
+
+  /* Update DnD source/dest */
+  if (features & EMPATHY_PERSONA_VIEW_FEATURE_PERSONA_DRAG)
+    {
+      gtk_drag_source_set (GTK_WIDGET (self),
+          GDK_BUTTON1_MASK,
+          drag_types_source,
+          G_N_ELEMENTS (drag_types_source),
+          GDK_ACTION_MOVE | GDK_ACTION_COPY);
+    }
+  else
+    {
+      gtk_drag_source_unset (GTK_WIDGET (self));
+    }
+
+  if (features & EMPATHY_PERSONA_VIEW_FEATURE_PERSONA_DROP)
+    {
+      gtk_drag_dest_set (GTK_WIDGET (self),
+          GTK_DEST_DEFAULT_ALL,
+          drag_types_dest,
+          G_N_ELEMENTS (drag_types_dest), GDK_ACTION_MOVE | GDK_ACTION_COPY);
+    }
+  else
+    {
+      gtk_drag_dest_unset (GTK_WIDGET (self));
+    }
 
   g_object_notify (G_OBJECT (self), "features");
 }
@@ -343,6 +545,7 @@ constructed (GObject *object)
   EmpathyPersonaView *self = EMPATHY_PERSONA_VIEW (object);
   GtkCellRenderer *cell;
   GtkTreeViewColumn *col;
+  guint i;
 
   /* Set up view */
   g_object_set (self,
@@ -407,6 +610,13 @@ constructed (GObject *object)
 
   /* Actually add the column now we have added all cell renderers */
   gtk_tree_view_append_column (GTK_TREE_VIEW (self), col);
+
+  /* Drag & Drop. */
+  for (i = 0; i < G_N_ELEMENTS (drag_types_dest); ++i)
+    drag_atoms_dest[i] = gdk_atom_intern (drag_types_dest[i].target, FALSE);
+
+  for (i = 0; i < G_N_ELEMENTS (drag_types_source); ++i)
+    drag_atoms_source[i] = gdk_atom_intern (drag_types_source[i].target, FALSE);
 }
 
 static void
@@ -479,11 +689,26 @@ static void
 empathy_persona_view_class_init (EmpathyPersonaViewClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
   object_class->constructed = constructed;
   object_class->dispose = dispose;
   object_class->get_property = get_property;
   object_class->set_property = set_property;
+
+  widget_class->drag_data_received = drag_data_received;
+  widget_class->drag_drop = drag_drop;
+  widget_class->drag_data_get = drag_data_get;
+  widget_class->drag_motion = drag_motion;
+
+  signals[DRAG_INDIVIDUAL_RECEIVED] =
+      g_signal_new ("drag-individual-received",
+      G_OBJECT_CLASS_TYPE (klass),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (EmpathyPersonaViewClass, drag_individual_received),
+      NULL, NULL,
+      _empathy_gtk_marshal_BOOLEAN__UINT_OBJECT,
+      G_TYPE_BOOLEAN, 2, G_TYPE_UINT, FOLKS_TYPE_INDIVIDUAL);
 
   /* We override the "model" property so that we can wrap it in a
    * GtkTreeModelFilter for showing/hiding offline personas. */

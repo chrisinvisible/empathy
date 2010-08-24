@@ -39,7 +39,9 @@ G_BEGIN_DECLS
 typedef enum
 {
   EMPATHY_PERSONA_VIEW_FEATURE_NONE = 0,
-  EMPATHY_PERSONA_VIEW_FEATURE_ALL = (1 << 0) - 1,
+  EMPATHY_PERSONA_VIEW_FEATURE_PERSONA_DRAG = 1 << 0,
+  EMPATHY_PERSONA_VIEW_FEATURE_PERSONA_DROP = 1 << 1,
+  EMPATHY_PERSONA_VIEW_FEATURE_ALL = (1 << 2) - 1,
 } EmpathyPersonaViewFeatureFlags;
 
 #define EMPATHY_TYPE_PERSONA_VIEW (empathy_persona_view_get_type ())
@@ -63,6 +65,10 @@ typedef struct
 typedef struct
 {
   GtkTreeViewClass parent_class;
+
+  void (* drag_individual_received) (EmpathyPersonaView *self,
+      GdkDragAction action,
+      FolksIndividual *individual);
 } EmpathyPersonaViewClass;
 
 GType empathy_persona_view_get_type (void) G_GNUC_CONST;
