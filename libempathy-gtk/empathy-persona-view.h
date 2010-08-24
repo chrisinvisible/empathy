@@ -36,6 +36,12 @@
 
 G_BEGIN_DECLS
 
+typedef enum
+{
+  EMPATHY_PERSONA_VIEW_FEATURE_NONE = 0,
+  EMPATHY_PERSONA_VIEW_FEATURE_ALL = (1 << 0) - 1,
+} EmpathyPersonaViewFeatureFlags;
+
 #define EMPATHY_TYPE_PERSONA_VIEW (empathy_persona_view_get_type ())
 #define EMPATHY_PERSONA_VIEW(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), \
     EMPATHY_TYPE_PERSONA_VIEW, EmpathyPersonaView))
@@ -61,7 +67,8 @@ typedef struct
 
 GType empathy_persona_view_get_type (void) G_GNUC_CONST;
 
-EmpathyPersonaView *empathy_persona_view_new (EmpathyPersonaStore *store);
+EmpathyPersonaView *empathy_persona_view_new (EmpathyPersonaStore *store,
+    EmpathyPersonaViewFeatureFlags features);
 
 FolksPersona *empathy_persona_view_dup_selected (EmpathyPersonaView *self);
 

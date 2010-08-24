@@ -322,7 +322,8 @@ set_up (EmpathyIndividualLinker *self)
 
   priv->persona_store = empathy_persona_store_new (priv->new_individual);
   empathy_persona_store_set_show_protocols (priv->persona_store, TRUE);
-  persona_view = empathy_persona_view_new (priv->persona_store);
+  persona_view = empathy_persona_view_new (priv->persona_store,
+      EMPATHY_PERSONA_VIEW_FEATURE_NONE);
   empathy_persona_view_set_show_offline (persona_view, TRUE);
 
   gtk_container_add (GTK_CONTAINER (scrolled_window),

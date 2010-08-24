@@ -44,6 +44,7 @@
 #include "empathy-images.h"
 #include "empathy-cell-renderer-text.h"
 #include "empathy-cell-renderer-activatable.h"
+#include "empathy-gtk-enum-types.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
 #include <libempathy/empathy-debug.h>
@@ -69,6 +70,7 @@ typedef struct
   GtkTreeModelFilter *filter;
   GtkWidget *tooltip_widget;
   gboolean show_offline;
+  EmpathyPersonaViewFeatureFlags features;
 } EmpathyPersonaViewPriv;
 
 enum
@@ -76,6 +78,7 @@ enum
   PROP_0,
   PROP_MODEL,
   PROP_SHOW_OFFLINE,
+  PROP_FEATURES,
 };
 
 G_DEFINE_TYPE (EmpathyPersonaView, empathy_persona_view, GTK_TYPE_TREE_VIEW);
@@ -312,6 +315,17 @@ text_cell_data_func (GtkTreeViewColumn *tree_column,
 }
 
 static void
+set_features (EmpathyPersonaView *self,
+    EmpathyPersonaViewFeatureFlags features)
+{
+  EmpathyPersonaViewPriv *priv = GET_PRIV (self);
+
+  priv->features = features;
+
+  g_object_notify (G_OBJECT (self), "features");
+}
+
+static void
 empathy_persona_view_init (EmpathyPersonaView *self)
 {
   EmpathyPersonaViewPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
@@ -411,6 +425,9 @@ get_property (GObject *object,
       case PROP_SHOW_OFFLINE:
         g_value_set_boolean (value, priv->show_offline);
         break;
+      case PROP_FEATURES:
+        g_value_set_flags (value, priv->features);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
         break;
@@ -433,6 +450,9 @@ set_property (GObject *object,
       case PROP_SHOW_OFFLINE:
         empathy_persona_view_set_show_offline (self,
             g_value_get_boolean (value));
+        break;
+      case PROP_FEATURES:
+        set_features (self, g_value_get_flags (value));
         break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -481,12 +501,27 @@ empathy_persona_view_class_init (EmpathyPersonaViewClass *klass)
           FALSE,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+  /**
+   * EmpathyPersonaStore:features:
+   *
+   * Features of the view, such as whether drag and drop is enabled.
+   */
+  g_object_class_install_property (object_class, PROP_FEATURES,
+      g_param_spec_flags ("features",
+          "Features",
+          "Flags for all enabled features.",
+          EMPATHY_TYPE_PERSONA_VIEW_FEATURE_FLAGS,
+          EMPATHY_PERSONA_VIEW_FEATURE_NONE,
+          G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
   g_type_class_add_private (object_class, sizeof (EmpathyPersonaViewPriv));
 }
 
 /**
  * empathy_persona_view_new:
  * @store: an #EmpathyPersonaStore
+ * @features: a set of flags specifying the view's functionality, or
+ * %EMPATHY_PERSONA_VIEW_FEATURE_NONE
  *
  * Create a new #EmpathyPersonaView displaying the personas in
  * #EmpathyPersonaStore.
@@ -494,11 +529,15 @@ empathy_persona_view_class_init (EmpathyPersonaViewClass *klass)
  * Return value: a new #EmpathyPersonaView
  */
 EmpathyPersonaView *
-empathy_persona_view_new (EmpathyPersonaStore *store)
+empathy_persona_view_new (EmpathyPersonaStore *store,
+    EmpathyPersonaViewFeatureFlags features)
 {
   g_return_val_if_fail (EMPATHY_IS_PERSONA_STORE (store), NULL);
 
-  return g_object_new (EMPATHY_TYPE_PERSONA_VIEW, "model", store, NULL);
+  return g_object_new (EMPATHY_TYPE_PERSONA_VIEW,
+      "model", store,
+      "features", features,
+      NULL);
 }
 
 /**
