@@ -276,13 +276,13 @@ individual_view_contact_drag_received (GtkWidget *self,
     GtkSelectionData *selection)
 {
   EmpathyIndividualViewPriv *priv;
-  EmpathyIndividualManager *manager;
+  EmpathyIndividualManager *manager = NULL;
   FolksIndividual *individual;
   GtkTreePath *source_path;
   const gchar *sel_data;
   gchar *new_group = NULL;
   gchar *old_group = NULL;
-  gboolean new_group_is_fake, old_group_is_fake = TRUE;
+  gboolean new_group_is_fake, old_group_is_fake = TRUE, retval = FALSE;
 
   priv = GET_PRIV (self);
 
@@ -291,7 +291,7 @@ individual_view_contact_drag_received (GtkWidget *self,
       NULL, &new_group_is_fake);
 
   if (!group_can_be_modified (new_group, new_group_is_fake, TRUE))
-    return FALSE;
+    goto finished;
 
   /* Get source group information. */
   if (priv->drag_row)
@@ -307,14 +307,10 @@ individual_view_contact_drag_received (GtkWidget *self,
     }
 
   if (!group_can_be_modified (old_group, old_group_is_fake, FALSE))
-    return FALSE;
+    goto finished;
 
   if (!tp_strdiff (old_group, new_group))
-    {
-      g_free (new_group);
-      g_free (old_group);
-      return FALSE;
-    }
+    goto finished;
 
   /* XXX: for contacts, we used to ensure the account, create the contact
    * factory, and then wait on the contacts. But they should already be
@@ -326,10 +322,7 @@ individual_view_contact_drag_received (GtkWidget *self,
   if (individual == NULL)
     {
       DEBUG ("failed to find drag event individual with ID '%s'", sel_data);
-
-      g_object_unref (manager);
-
-      return FALSE;
+      goto finished;
     }
 
   /* FIXME: We should probably wait for the cb before calling
@@ -369,11 +362,14 @@ individual_view_contact_drag_received (GtkWidget *self,
         }
     }
 
-  g_object_unref (G_OBJECT (manager));
+  retval = TRUE;
+
+finished:
+  tp_clear_object (&manager);
   g_free (old_group);
   g_free (new_group);
 
-  return TRUE;
+  return retval;
 }
 
 static gboolean
