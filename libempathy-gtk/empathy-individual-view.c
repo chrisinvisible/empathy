@@ -120,7 +120,7 @@ enum DndDragType
 static const GtkTargetEntry drag_types_dest[] = {
   DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
   DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
-  DRAG_TYPE ("text/contact-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
+  DRAG_TYPE ("text/individual-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
   DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
   DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
 };
@@ -131,7 +131,7 @@ static const GtkTargetEntry drag_types_dest_file[] = {
 };
 
 static const GtkTargetEntry drag_types_source[] = {
-  DRAG_TYPE ("text/contact-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
+  DRAG_TYPE ("text/individual-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
 };
 
 #undef DRAG_TYPE
