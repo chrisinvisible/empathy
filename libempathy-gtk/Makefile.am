@@ -64,6 +64,7 @@ libempathy_gtk_handwritten_source =            	\
 	empathy-individual-view.c		\
 	empathy-individual-widget.c		\
 	empathy-irc-network-chooser.c \
+	empathy-irc-network-chooser-dialog.c \
 	empathy-irc-network-dialog.c		\
 	empathy-kludge-label.c			\
 	empathy-log-window.c			\
@@ -125,6 +126,7 @@ libempathy_gtk_headers =			\
 	empathy-individual-view.h		\
 	empathy-individual-widget.h		\
 	empathy-irc-network-chooser.h \
+	empathy-irc-network-chooser-dialog.h \
 	empathy-irc-network-dialog.h		\
 	empathy-kludge-label.h			\
 	empathy-log-window.h			\
