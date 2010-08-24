@@ -148,7 +148,8 @@ empathy_tls_certificate_finalize (GObject *object)
 
   DEBUG ("%p", object);
 
-  g_free (priv->object_path);
+  g_free (priv->cert_type);
+  tp_clear_boxed (array_of_ay_get_type (), &priv->cert_data);
 
   G_OBJECT_CLASS (empathy_tls_certificate_parent_class)->finalize (object);
 }
