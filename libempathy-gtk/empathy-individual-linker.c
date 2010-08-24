@@ -177,7 +177,7 @@ toggle_individual_row (EmpathyIndividualLinker *self,
   GtkTreeModel *tree_model;
   gboolean individual_added;
 
-  tree_model = GTK_TREE_MODEL (priv->individual_store);
+  tree_model = gtk_tree_view_get_model (GTK_TREE_VIEW (priv->individual_view));
 
   gtk_tree_model_get_iter (tree_model, &iter, path);
   gtk_tree_model_get (tree_model, &iter,
