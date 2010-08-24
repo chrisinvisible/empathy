@@ -33,6 +33,7 @@
 
 #include "empathy-irc-network-dialog.h"
 #include "empathy-ui-utils.h"
+#include "empathy-irc-network-chooser-dialog.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT | EMPATHY_DEBUG_IRC
 #include <libempathy/empathy-debug.h>
@@ -47,10 +48,18 @@ enum {
     PROP_SETTINGS = 1
 };
 
+enum {
+    SIG_CHANGED,
+    LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 typedef struct {
     EmpathyAccountSettings *settings;
 
     EmpathyIrcNetworkManager *network_manager;
+    GtkWidget *dialog;
     /* Displayed network */
     EmpathyIrcNetwork *network;
 } EmpathyIrcNetworkChooserPriv;
@@ -224,10 +233,53 @@ set_label_from_settings (EmpathyIrcNetworkChooser *self)
 }
 
 static void
+dialog_response_cb (GtkDialog *dialog,
+    gint response,
+    EmpathyIrcNetworkChooser *self)
+{
+  EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (self);
+  EmpathyIrcNetworkChooserDialog *chooser =
+    EMPATHY_IRC_NETWORK_CHOOSER_DIALOG (priv->dialog);
+
+  if (response != GTK_RESPONSE_CLOSE &&
+      response != GTK_RESPONSE_DELETE_EVENT)
+    return;
+
+  if (empathy_irc_network_chooser_dialog_get_changed (chooser))
+    {
+      tp_clear_object (&priv->network);
+
+      priv->network = g_object_ref (
+          empathy_irc_network_chooser_dialog_get_network (chooser));
+
+      update_server_params (self);
+      set_label (self);
+
+      g_signal_emit (self, signals[SIG_CHANGED], 0);
+    }
+
+  gtk_widget_destroy (priv->dialog);
+  priv->dialog = NULL;
+}
+
+static void
 clicked_cb (GtkButton *button,
     gpointer user_data)
 {
-  /* TODO: open edit dialog */
+  EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (button);
+
+  if (priv->dialog != NULL)
+    goto out;
+
+  priv->dialog = empathy_irc_network_chooser_dialog_new (priv->settings,
+      priv->network);
+  gtk_widget_show_all (priv->dialog);
+
+  tp_g_signal_connect_object (priv->dialog, "response",
+      G_CALLBACK (dialog_response_cb), button, 0);
+
+out:
+  empathy_window_present (GTK_WINDOW (priv->dialog));
 }
 
 static void
@@ -273,6 +325,15 @@ empathy_irc_network_chooser_class_init (EmpathyIrcNetworkChooserClass *klass)
       "The EmpathyAccountSettings to show and edit",
       EMPATHY_TYPE_ACCOUNT_SETTINGS,
       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+  signals[SIG_CHANGED] = g_signal_new ("changed",
+      G_OBJECT_CLASS_TYPE (object_class),
+      G_SIGNAL_RUN_LAST,
+      0,
+      NULL, NULL,
+      g_cclosure_marshal_VOID__VOID,
+      G_TYPE_NONE,
+      0);
 
   g_type_class_add_private (object_class,
       sizeof (EmpathyIrcNetworkChooserPriv));
