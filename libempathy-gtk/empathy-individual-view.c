@@ -293,8 +293,14 @@ individual_view_contact_drag_received (GtkWidget *self,
   if (!group_can_be_modified (new_group, new_group_is_fake, TRUE))
     goto finished;
 
-  /* Get source group information. */
-  if (priv->drag_row)
+  /* Get source group information iff the view has the FEATURE_GROUPS_CHANGE
+   * feature. Otherwise, we just add the dropped contact to whichever group
+   * they were dropped in, and don't remove them from their old group. This
+   * allows for Individual views which shouldn't allow Individuals to have
+   * their groups changed, and also for dragging Individuals between Individual
+   * views. */
+  if ((priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_CHANGE) &&
+      priv->drag_row != NULL)
     {
       source_path = gtk_tree_row_reference_get_path (priv->drag_row);
       if (source_path)
@@ -304,13 +310,20 @@ individual_view_contact_drag_received (GtkWidget *self,
               NULL, &old_group_is_fake);
           gtk_tree_path_free (source_path);
         }
+
+      if (!group_can_be_modified (old_group, old_group_is_fake, FALSE))
+        goto finished;
+
+      if (!tp_strdiff (old_group, new_group))
+        goto finished;
     }
-
-  if (!group_can_be_modified (old_group, old_group_is_fake, FALSE))
-    goto finished;
-
-  if (!tp_strdiff (old_group, new_group))
-    goto finished;
+  else if (priv->drag_row != NULL)
+    {
+      /* We don't allow changing Individuals' groups, and this Individual was
+       * dragged from another group in *this* Individual view, so we disallow
+       * the drop. */
+      goto finished;
+    }
 
   /* XXX: for contacts, we used to ensure the account, create the contact
    * factory, and then wait on the contacts. But they should already be
@@ -503,7 +516,9 @@ individual_view_drag_motion (GtkWidget *widget,
   target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
   gtk_tree_model_get_iter (model, &iter, path);
 
-  if (target == GDK_NONE)
+  if (target == GDK_NONE &&
+      (priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_CHANGE ||
+       priv->drag_row == NULL))
     {
       /* If target == GDK_NONE, then we don't have a target that can be
          dropped on a contact.  This means a contact drag.  If we're
@@ -511,6 +526,11 @@ individual_view_drag_motion (GtkWidget *widget,
          we're pointing to is in a group, highlight that.  Otherwise,
          set the drag position to before the first row for a drag into
          the "non-group" at the top.
+         We only highlight things if the contact is from a different Individual
+         view, or if this Individual view has FEATURE_GROUPS_CHANGE. This
+         prevents highlighting in Individual views which don't have
+         FEATURE_GROUPS_CHANGE, but do have FEATURE_CONTACT_DRAG and
+         FEATURE_CONTACT_DROP.
        */
       GtkTreeIter group_iter;
       gboolean is_group;
@@ -543,7 +563,7 @@ individual_view_drag_motion (GtkWidget *widget,
               group_path, GTK_TREE_VIEW_DROP_BEFORE);
         }
     }
-  else
+  else if (target != GDK_NONE)
     {
       /* This is a file drag, and it can only be dropped on contacts,
        * not groups.
