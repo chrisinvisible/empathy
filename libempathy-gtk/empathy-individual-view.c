@@ -110,6 +110,7 @@ enum
 enum DndDragType
 {
   DND_DRAG_TYPE_INDIVIDUAL_ID,
+  DND_DRAG_TYPE_PERSONA_ID,
   DND_DRAG_TYPE_URI_LIST,
   DND_DRAG_TYPE_STRING,
 };
@@ -121,6 +122,7 @@ static const GtkTargetEntry drag_types_dest[] = {
   DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
   DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
   DRAG_TYPE ("text/individual-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
+  DRAG_TYPE ("text/persona-id", DND_DRAG_TYPE_PERSONA_ID),
   DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
   DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
 };
@@ -142,6 +144,7 @@ static GdkAtom drag_atoms_source[G_N_ELEMENTS (drag_types_source)];
 enum
 {
   DRAG_INDIVIDUAL_RECEIVED,
+  DRAG_PERSONA_RECEIVED,
   LAST_SIGNAL
 };
 
@@ -269,7 +272,7 @@ group_can_be_modified (const gchar *name,
 }
 
 static gboolean
-individual_view_contact_drag_received (GtkWidget *self,
+individual_view_individual_drag_received (GtkWidget *self,
     GdkDragContext *context,
     GtkTreeModel *model,
     GtkTreePath *path,
@@ -397,6 +400,71 @@ real_drag_individual_received_cb (EmpathyIndividualView *self,
 }
 
 static gboolean
+individual_view_persona_drag_received (GtkWidget *self,
+    GdkDragContext *context,
+    GtkTreeModel *model,
+    GtkTreePath *path,
+    GtkSelectionData *selection)
+{
+  EmpathyIndividualViewPriv *priv;
+  EmpathyIndividualManager *manager = NULL;
+  FolksIndividual *individual = NULL;
+  FolksPersona *persona = NULL;
+  const gchar *persona_uid;
+  GList *individuals, *l;
+  gboolean retval = FALSE;
+
+  priv = GET_PRIV (self);
+
+  persona_uid = (const gchar *) gtk_selection_data_get_data (selection);
+
+  /* FIXME: This is slow, but the only way to find the Persona we're having
+   * dropped on us. */
+  manager = empathy_individual_manager_dup_singleton ();
+  individuals = empathy_individual_manager_get_members (manager);
+
+  for (l = individuals; l != NULL; l = l->next)
+    {
+      GList *personas, *p;
+
+      personas = folks_individual_get_personas (FOLKS_INDIVIDUAL (l->data));
+
+      for (p = personas; p != NULL; p = p->next)
+        {
+          if (!tp_strdiff (folks_persona_get_uid (FOLKS_PERSONA (p->data)),
+              persona_uid))
+            {
+              persona = g_object_ref (p->data);
+              individual = g_object_ref (l->data);
+              goto got_persona;
+            }
+        }
+    }
+
+got_persona:
+  g_list_free (individuals);
+
+  if (persona == NULL || individual == NULL)
+    {
+      DEBUG ("Failed to find drag event persona with UID '%s'", persona_uid);
+    }
+  else
+    {
+      /* Emit a signal notifying of the drag. We change the Individual's groups in
+       * the default signal handler. */
+      g_signal_emit (self, signals[DRAG_PERSONA_RECEIVED], 0,
+          gdk_drag_context_get_selected_action (context), persona, individual,
+          &retval);
+    }
+
+  tp_clear_object (&manager);
+  tp_clear_object (&persona);
+  tp_clear_object (&individual);
+
+  return retval;
+}
+
+static gboolean
 individual_view_file_drag_received (GtkWidget *view,
     GdkDragContext *context,
     GtkTreeModel *model,
@@ -452,8 +520,13 @@ individual_view_drag_data_received (GtkWidget *view,
   else if (info == DND_DRAG_TYPE_INDIVIDUAL_ID
       || info == DND_DRAG_TYPE_STRING)
     {
-      success = individual_view_contact_drag_received (view,
+      success = individual_view_individual_drag_received (view,
           context, model, path, selection);
+    }
+  else if (info == DND_DRAG_TYPE_PERSONA_ID)
+    {
+      success = individual_view_persona_drag_received (view, context, model,
+          path, selection);
     }
   else if (info == DND_DRAG_TYPE_URI_LIST)
     {
@@ -1915,6 +1988,15 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
       _empathy_gtk_marshal_VOID__UINT_OBJECT_STRING_STRING,
       G_TYPE_NONE, 4, G_TYPE_UINT, FOLKS_TYPE_INDIVIDUAL,
       G_TYPE_STRING, G_TYPE_STRING);
+
+  signals[DRAG_PERSONA_RECEIVED] =
+      g_signal_new ("drag-persona-received",
+      G_OBJECT_CLASS_TYPE (klass),
+      G_SIGNAL_RUN_LAST,
+      G_STRUCT_OFFSET (EmpathyIndividualViewClass, drag_persona_received),
+      NULL, NULL,
+      _empathy_gtk_marshal_BOOLEAN__UINT_OBJECT_OBJECT,
+      G_TYPE_BOOLEAN, 3, G_TYPE_UINT, FOLKS_TYPE_PERSONA, FOLKS_TYPE_INDIVIDUAL);
 
   g_object_class_install_property (object_class,
       PROP_STORE,

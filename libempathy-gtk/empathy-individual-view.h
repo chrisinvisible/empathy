@@ -79,6 +79,11 @@ struct _EmpathyIndividualViewClass
       FolksIndividual *individual,
       const gchar *new_group,
       const gchar *old_group);
+
+  void (* drag_persona_received) (EmpathyIndividualView *self,
+      GdkDragAction action,
+      FolksPersona *persona,
+      FolksIndividual *individual);
 };
 
 GType empathy_individual_view_get_type (void) G_GNUC_CONST;
