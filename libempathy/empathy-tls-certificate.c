@@ -52,6 +52,8 @@ typedef struct {
   gchar *cert_type;
   GPtrArray *cert_data;
   EmpTLSCertificateState state;
+
+  gboolean is_prepared;
 } EmpathyTLSCertificatePriv;
 
 G_DEFINE_TYPE (EmpathyTLSCertificate, empathy_tls_certificate,
@@ -106,6 +108,8 @@ tls_certificate_got_all_cb (TpProxy *proxy,
   DEBUG ("Got a certificate chain long %u, of type %s",
       priv->cert_data->len, priv->cert_type);
 
+  priv->is_prepared = TRUE;
+
   g_simple_async_result_complete (priv->async_prepare_res);
   tp_clear_object (&priv->async_prepare_res);
 }
@@ -116,6 +120,28 @@ empathy_tls_certificate_prepare_async (EmpathyTLSCertificate *self,
     gpointer user_data)
 {
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
+
+  /* emit an error if we're already preparing the object */
+  if (priv->async_prepare_res != NULL)
+    {
+      g_simple_async_report_error_in_idle (G_OBJECT (self),
+          callback, user_data,
+          G_IO_ERROR, G_IO_ERROR_PENDING,
+          "%s",
+          "Prepare operation already in progress on the TLS certificate.");
+
+      return;
+    }
+                     
+
+  /* if the object is already prepared, just complete in idle */
+  if (priv->is_prepared)
+    {    
+      tp_simple_async_report_success_in_idle (G_OBJECT (self),
+          callback, user_data, empathy_tls_certificate_prepare_async);
+
+      return;
+    }
 
   priv->async_prepare_res = g_simple_async_result_new (G_OBJECT (self),
       callback, user_data, empathy_tls_certificate_prepare_async);
