@@ -54,29 +54,25 @@ G_DEFINE_TYPE_WITH_CODE (EmpathyServerTLSHandler, empathy_server_tls_handler,
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyServerTLSHandler);
 
 static void
-tls_certificate_constructed_cb (GObject *source,
+tls_certificate_prepared_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
-  EmpathyTLSCertificate *certificate;
+  EmpathyTLSCertificate *certificate = EMPATHY_TLS_CERTIFICATE (source);
   EmpathyServerTLSHandler *self = user_data;
   GError *error = NULL;
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
 
-  certificate = empathy_tls_certificate_new_finish (result, &error);
+  empathy_tls_certificate_prepare_finish (certificate, result, &error);
 
   if (error != NULL)
     {
       g_simple_async_result_set_from_error (priv->async_init_res, error);
       g_error_free (error);
     }
-  else
-    {
-      priv->certificate = certificate;
-    }
 
   g_simple_async_result_complete_in_idle (priv->async_init_res);
-  g_object_unref (priv->async_init_res);
+  tp_clear_object (&priv->async_init_res);
 }
 
 static gboolean
@@ -85,10 +81,9 @@ tls_handler_init_finish (GAsyncInitable *initable,
     GError **error)
 {
   gboolean retval = TRUE;
-  EmpathyServerTLSHandler *self = EMPATHY_SERVER_TLS_HANDLER (initable);
-  EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
 
-  if (g_simple_async_result_propagate_error (priv->async_init_res, error))
+  if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (res),
+          error))
     retval = FALSE;
 
   return retval;
@@ -105,13 +100,15 @@ tls_handler_init_async (GAsyncInitable *initable,
   const gchar *cert_object_path;
   const gchar *hostname;
   const gchar *bus_name;
+  TpDBusDaemon *dbus;
+  GError *error = NULL;
   EmpathyServerTLSHandler *self = EMPATHY_SERVER_TLS_HANDLER (initable);
   EmpathyServerTLSHandlerPriv *priv = GET_PRIV (self);
 
   g_assert (priv->channel != NULL);
 
   priv->async_init_res = g_simple_async_result_new (G_OBJECT (self),
-      callback, user_data, empathy_tls_certificate_new_async);
+      callback, user_data, empathy_server_tls_handler_new_async);
   properties = tp_channel_borrow_immutable_properties (priv->channel);
 
   hostname = tp_asv_get_string (properties,
@@ -123,12 +120,30 @@ tls_handler_init_async (GAsyncInitable *initable,
   cert_object_path = tp_asv_get_object_path (properties,
       EMP_IFACE_CHANNEL_TYPE_SERVER_TLS_CONNECTION ".ServerCertificate");
   bus_name = tp_proxy_get_bus_name (TP_PROXY (priv->channel));
+  dbus = tp_proxy_get_dbus_daemon (TP_PROXY (priv->channel));
 
   DEBUG ("Creating an EmpathyTLSCertificate for path %s, bus name %s",
       cert_object_path, bus_name);
 
-  empathy_tls_certificate_new_async (bus_name, cert_object_path,
-      tls_certificate_constructed_cb, self);
+  priv->certificate = empathy_tls_certificate_new (dbus, bus_name,
+      cert_object_path, &error);
+
+  if (error != NULL)
+    {
+      DEBUG ("Unable to create the EmpathyTLSCertificate: error %s",
+          error->message);
+
+      g_simple_async_result_set_from_error (priv->async_init_res, error);
+      g_simple_async_result_complete_in_idle (priv->async_init_res);
+
+      g_error_free (error);
+      tp_clear_object (&priv->async_init_res);
+
+      return;
+    }
+
+  empathy_tls_certificate_prepare_async (priv->certificate,
+      tls_certificate_prepared_cb, self);
 }
 
 static void
