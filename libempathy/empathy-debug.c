@@ -52,6 +52,7 @@ static GDebugKey keys[] = {
   { "ImportMc4Accounts", EMPATHY_DEBUG_IMPORT_MC4_ACCOUNTS },
   { "Tests", EMPATHY_DEBUG_TESTS },
   { "Voip", EMPATHY_DEBUG_VOIP },
+  { "Tls", EMPATHY_DEBUG_TLS },
   { 0, }
 };
 

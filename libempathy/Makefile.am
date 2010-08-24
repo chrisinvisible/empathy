@@ -26,6 +26,7 @@ noinst_LTLIBRARIES = libempathy.la
 
 libempathy_headers =				\
 	empathy-account-settings.h		\
+	empathy-auth-factory.h			\
 	empathy-call-factory.h			\
 	empathy-call-handler.h			\
 	empathy-chatroom-manager.h		\
@@ -48,8 +49,11 @@ libempathy_headers =				\
 	empathy-irc-server.h			\
 	empathy-location.h			\
 	empathy-message.h			\
+	empathy-server-tls-handler.h		\
 	empathy-status-presets.h		\
 	empathy-time.h				\
+	empathy-tls-certificate.h		\
+	empathy-tls-verifier.h			\
 	empathy-tp-call.h			\
 	empathy-tp-chat.h			\
 	empathy-tp-contact-factory.h		\
@@ -62,6 +66,7 @@ libempathy_headers =				\
 libempathy_la_SOURCES =					\
 	$(libempathy_headers)				\
 	empathy-account-settings.c			\
+	empathy-auth-factory.c				\
 	empathy-call-factory.c				\
 	empathy-call-handler.c				\
 	empathy-chatroom-manager.c			\
@@ -82,8 +87,11 @@ libempathy_la_SOURCES =					\
 	empathy-irc-network.c				\
 	empathy-irc-server.c				\
 	empathy-message.c				\
+	empathy-server-tls-handler.c			\
 	empathy-status-presets.c			\
 	empathy-time.c					\
+	empathy-tls-certificate.c			\
+	empathy-tls-verifier.c				\
 	empathy-tp-call.c				\
 	empathy-tp-chat.c				\
 	empathy-tp-contact-factory.c			\
