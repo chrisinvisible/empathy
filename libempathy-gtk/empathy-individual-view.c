@@ -247,44 +247,6 @@ groups_change_group_cb (GObject *source,
     }
 }
 
-static void
-individual_view_handle_drag (EmpathyIndividualView *self,
-    FolksIndividual *individual,
-    const gchar *old_group,
-    const gchar *new_group,
-    GdkDragAction action)
-{
-  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self));
-  g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
-
-  DEBUG ("individual %s dragged from '%s' to '%s'",
-      folks_individual_get_id (individual), old_group, new_group);
-
-  if (!tp_strdiff (new_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
-    {
-      /* Mark contact as favourite */
-      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), TRUE);
-      return;
-    }
-
-  if (!tp_strdiff (old_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
-    {
-      /* Remove contact as favourite */
-      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), FALSE);
-
-      /* Don't try to remove it */
-      old_group = NULL;
-    }
-
-  if (new_group != NULL)
-    folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE,
-        groups_change_group_cb, NULL);
-
-  if (old_group != NULL && action == GDK_ACTION_MOVE)
-    folks_groups_change_group (FOLKS_GROUPS (individual), old_group, FALSE,
-        groups_change_group_cb, NULL);
-}
-
 static gboolean
 group_can_be_modified (const gchar *name,
     gboolean is_fake_group,
@@ -373,8 +335,39 @@ individual_view_contact_drag_received (GtkWidget *self,
   /* FIXME: We should probably wait for the cb before calling
    * gtk_drag_finish */
 
-  individual_view_handle_drag (EMPATHY_INDIVIDUAL_VIEW (self), individual,
-      old_group, new_group, gdk_drag_context_get_selected_action (context));
+  DEBUG ("individual %s dragged from '%s' to '%s'",
+      folks_individual_get_id (individual), old_group, new_group);
+
+  if (!tp_strdiff (new_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
+    {
+      /* Mark contact as favourite */
+      folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual), TRUE);
+    }
+  else
+    {
+      if (!tp_strdiff (old_group, EMPATHY_INDIVIDUAL_STORE_FAVORITE))
+        {
+          /* Remove contact as favourite */
+          folks_favourite_set_is_favourite (FOLKS_FAVOURITE (individual),
+              FALSE);
+
+          /* Don't try to remove it */
+          old_group = NULL;
+        }
+
+      if (new_group != NULL)
+        {
+          folks_groups_change_group (FOLKS_GROUPS (individual), new_group, TRUE,
+              groups_change_group_cb, NULL);
+        }
+
+      if (old_group != NULL &&
+          gdk_drag_context_get_selected_action (context) == GDK_ACTION_MOVE)
+        {
+          folks_groups_change_group (FOLKS_GROUPS (individual), old_group,
+              FALSE, groups_change_group_cb, NULL);
+        }
+    }
 
   g_object_unref (G_OBJECT (manager));
   g_free (old_group);
