@@ -156,6 +156,7 @@ PKG_CHECK_MODULES(EMPATHY,
    gio-unix-2.0 >= $GLIB_REQUIRED
    gnome-keyring-1 >= $KEYRING_REQUIRED
    gnutls >= $GNUTLS_REQUIRED
+   gmodule-export-2.0
    gobject-2.0
    gstreamer-0.10
    gstreamer-interfaces-0.10
