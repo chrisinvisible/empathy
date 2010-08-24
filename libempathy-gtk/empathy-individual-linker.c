@@ -216,6 +216,78 @@ row_toggled_cb (GtkCellRendererToggle *cell_renderer,
   gtk_tree_path_free (tree_path);
 }
 
+static gboolean
+individual_view_drag_motion_cb (GtkWidget *widget,
+    GdkDragContext *context,
+    gint x,
+    gint y,
+    guint time_)
+{
+  EmpathyIndividualView *view = EMPATHY_INDIVIDUAL_VIEW (widget);
+  GdkAtom target;
+
+  target = gtk_drag_dest_find_target (GTK_WIDGET (view), context, NULL);
+
+  if (target == gdk_atom_intern_static_string ("text/persona-id"))
+    {
+      GtkTreePath *path;
+
+      /* FIXME: It doesn't make sense for us to highlight a specific row or
+       * position to drop a Persona in, so just highlight the entire widget.
+       * Since I can't find a way to do this, just highlight the first possible
+       * position in the tree. */
+      gdk_drag_status (context, gdk_drag_context_get_suggested_action (context),
+          time_);
+
+      path = gtk_tree_path_new_first ();
+      gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (view), path,
+          GTK_TREE_VIEW_DROP_BEFORE);
+      gtk_tree_path_free (path);
+
+      return TRUE;
+    }
+
+  /* Unknown or unhandled drag target */
+  gdk_drag_status (context, GDK_ACTION_DEFAULT, time_);
+  gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (view), NULL, 0);
+
+  return FALSE;
+}
+
+static gboolean
+individual_view_drag_persona_received_cb (EmpathyIndividualView *view,
+    GdkDragAction action,
+    FolksPersona *persona,
+    FolksIndividual *individual,
+    EmpathyIndividualLinker *self)
+{
+  EmpathyIndividualLinkerPriv *priv = GET_PRIV (self);
+
+  /* A Persona has been dragged onto the EmpathyIndividualView (from the
+   * EmpathyPersonaView), so we try to remove the Individual which contains
+   * the Persona from the link. */
+  if (individual != priv->start_individual)
+    {
+      unlink_individual (self, individual);
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+static gboolean
+persona_view_drag_individual_received_cb (EmpathyPersonaView *view,
+    GdkDragAction action,
+    FolksIndividual *individual,
+    EmpathyIndividualLinker *self)
+{
+  /* An Individual has been dragged onto the EmpathyPersonaView (from the
+   * EmpathyIndividualView), so we try to add the Individual to the link. */
+  link_individual (self, individual);
+
+  return TRUE;
+}
+
 static void
 set_up (EmpathyIndividualLinker *self)
 {
@@ -258,11 +330,18 @@ set_up (EmpathyIndividualLinker *self)
   empathy_individual_store_set_show_protocols (priv->individual_store, FALSE);
 
   priv->individual_view = empathy_individual_view_new (priv->individual_store,
-      EMPATHY_INDIVIDUAL_VIEW_FEATURE_NONE, EMPATHY_INDIVIDUAL_FEATURE_NONE);
+      EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_DRAG |
+      EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_DROP |
+      EMPATHY_INDIVIDUAL_VIEW_FEATURE_PERSONA_DROP,
+      EMPATHY_INDIVIDUAL_FEATURE_NONE);
   empathy_individual_view_set_show_offline (priv->individual_view, TRUE);
 
   g_signal_connect (priv->individual_view, "row-activated",
       (GCallback) row_activated_cb, self);
+  g_signal_connect (priv->individual_view, "drag-motion",
+      (GCallback) individual_view_drag_motion_cb, self);
+  g_signal_connect (priv->individual_view, "drag-persona-received",
+      (GCallback) individual_view_drag_persona_received_cb, self);
 
   /* Add a checkbox column to the selector */
   cell_renderer = gtk_cell_renderer_toggle_new ();
@@ -323,8 +402,11 @@ set_up (EmpathyIndividualLinker *self)
   priv->persona_store = empathy_persona_store_new (priv->new_individual);
   empathy_persona_store_set_show_protocols (priv->persona_store, TRUE);
   persona_view = empathy_persona_view_new (priv->persona_store,
-      EMPATHY_PERSONA_VIEW_FEATURE_NONE);
+      EMPATHY_PERSONA_VIEW_FEATURE_ALL);
   empathy_persona_view_set_show_offline (persona_view, TRUE);
+
+  g_signal_connect (persona_view, "drag-individual-received",
+      (GCallback) persona_view_drag_individual_received_cb, self);
 
   gtk_container_add (GTK_CONTAINER (scrolled_window),
       GTK_WIDGET (persona_view));
