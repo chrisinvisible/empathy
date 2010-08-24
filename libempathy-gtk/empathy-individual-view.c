@@ -557,13 +557,19 @@ individual_view_drag_motion (GtkWidget *widget,
   else
     {
       /* This is a file drag, and it can only be dropped on contacts,
-         not groups.
-       */
-      FolksIndividual *individual;
+       * not groups.
+       * If we don't have FEATURE_FILE_DROP, disallow the drop completely,
+       * even if we have a valid target. */
+      FolksIndividual *individual = NULL;
       EmpathyCapabilities caps = EMPATHY_CAPABILITIES_NONE;
 
-      gtk_tree_model_get (model, &iter,
-          EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual, -1);
+      if (priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_FILE_DROP)
+        {
+          gtk_tree_model_get (model, &iter,
+              EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
+              -1);
+        }
+
       if (individual != NULL)
         {
           EmpathyContact *contact = NULL;
