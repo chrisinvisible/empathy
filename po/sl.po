@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-20 23:33+0000\n"
-"PO-Revision-Date: 2010-08-21 08:34+0100\n"
+"POT-Creation-Date: 2010-08-25 01:47+0000\n"
+"PO-Revision-Date: 2010-08-25 08:33+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -608,15 +608,15 @@ msgstr "Potrdilo ne uporablja varnega algoritma ali pa uporablja šibko šifrira
 msgid "The length of the server certificate, or the depth of the server certificate chain exceed the limits imposed by the crypto library"
 msgstr "Dolžina potrdila strežnika ali pa globina ravni potrdila presega omejitev, ki je določena s šifrirno knjižnico."
 
-#: ../libempathy/empathy-utils.c:529
+#: ../libempathy/empathy-utils.c:540
 msgid "People Nearby"
 msgstr "Uporabniki v bližini"
 
-#: ../libempathy/empathy-utils.c:534
+#: ../libempathy/empathy-utils.c:545
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
-#: ../libempathy/empathy-utils.c:535
+#: ../libempathy/empathy-utils.c:546
 msgid "Facebook Chat"
 msgstr "Facebook klepetanje"
 
@@ -699,7 +699,7 @@ msgstr "_Prijava"
 #. Account and Identifier
 #: ../libempathy-gtk/empathy-account-widget.c:1548
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
-#: ../libempathy-gtk/empathy-individual-widget.c:1390
+#: ../libempathy-gtk/empathy-individual-widget.c:1392
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
 #: ../src/empathy-chatrooms-window.ui.h:1
 #: ../src/empathy-new-chatroom-dialog.ui.h:1
@@ -1697,7 +1697,7 @@ msgstr "Podrobnosti stika"
 #. Identifier to connect to Instant Messaging network
 #. Translators: Identifier to connect to Instant Messaging network
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:8
-#: ../libempathy-gtk/empathy-individual-widget.c:1419
+#: ../libempathy-gtk/empathy-individual-widget.c:1421
 msgid "Identifier:"
 msgstr "Določilo:"
 
@@ -1731,7 +1731,7 @@ msgid "Select"
 msgstr "Izberi"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:407
-#: ../src/empathy-main-window.c:1231
+#: ../src/empathy-main-window.c:1240
 msgid "Group"
 msgstr "Skupina"
 
@@ -1745,13 +1745,17 @@ msgstr "_Odstrani povezavo"
 msgid "Linked Contacts"
 msgstr "Povezani stiki"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:250
+#: ../libempathy-gtk/empathy-individual-linker.c:260
 msgid "Select contacts to link"
 msgstr "Izbor stikov za povezovanje"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:298
+#: ../libempathy-gtk/empathy-individual-linker.c:316
 msgid "New contact preview"
 msgstr "Nov predogled stika"
+
+#: ../libempathy-gtk/empathy-individual-linker.c:356
+msgid "Contacts selected in the list on the left will be linked together."
+msgstr "Stiki izbrani na seznamu na levi, bodo povezani skupaj."
 
 #: ../libempathy-gtk/empathy-individual-menu.c:108
 #, c-format
@@ -1768,7 +1772,7 @@ msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Poveži ..."
 
-#: ../libempathy-gtk/empathy-individual-widget.c:1547
+#: ../libempathy-gtk/empathy-individual-widget.c:1558
 #, c-format
 msgid "Meta-contact containing %u contact"
 msgid_plural "Meta-contact containing %u contacts"
@@ -1991,6 +1995,76 @@ msgstr "Čista"
 #: ../libempathy-gtk/empathy-theme-manager.c:70
 msgid "Blue"
 msgstr "Modro"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:150
+msgid "The identity provided by the chat server cannot be verified.\n"
+msgstr "Istovetnosti strežnika klepetalnice ni mogoče preveriti."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:156
+msgid "The certrificate is not signed by a Certification Authority"
+msgstr "Potrdilo je brez ustreznega podpisa overitelja potrdil."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:160
+msgid "The certificate is expired"
+msgstr "Potrdilo je preteklo."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:163
+msgid "The certificate hasn't yet been activated"
+msgstr "Potrdilo še ni omogočeno."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:166
+msgid "The certificate does not have the expected fingerprint"
+msgstr "Potrdilo nima pričakovanega prstnega odtisa."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:169
+msgid "The hostname verified by the certificate doesn't match the server name"
+msgstr "Ime overjenega strežnika gostitelja ni skladno z imenom strežnika."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:173
+msgid "The certificate is self-signed"
+msgstr "Potrdilo je samo-podpisano."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:176
+msgid "The certificate has been revoked by the issuing Certification Authority"
+msgstr "Potrdilo je preklicano s strani izdajatelja in overitelja potrdila."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:180
+msgid "The certificate is cryptographically weak"
+msgstr "Potrdilo uporablja šibko šifriranje."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:183
+msgid "The certificate length exceeds verifiable limits"
+msgstr "Dolžina potrdila presega preverljivo območje."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:187
+msgid "The certificate is malformed"
+msgstr "Potrdilo je nepravilno oblikovano."
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:205
+#, c-format
+msgid "Expected hostname: %s"
+msgstr "Pričakovan gostitelj: %s"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:208
+#, c-format
+msgid "Certificate hostname: %s"
+msgstr "Gostitelj potrdila: %s"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:263
+msgid "Continue"
+msgstr "Nadaljuj"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:269
+msgid "This connection is untrusted, would you like to continue anyway?"
+msgstr "Povezava ni varna. Ali želite vseeno nadaljevati?"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:286
+msgid "Remember this choice for future connections"
+msgstr "Zapomni si izbor za prihodnje povezave"
+
+#: ../libempathy-gtk/empathy-tls-dialog.c:294
+msgid "Certificate Details"
+msgstr "Podrobnosti potrdila"
 
 #: ../libempathy-gtk/empathy-ui-utils.c:1698
 msgid "Unable to open URI"
@@ -2454,7 +2528,15 @@ msgstr "_Dodaj ..."
 msgid "_Import…"
 msgstr "_Uvozi ..."
 
-#: ../src/empathy-auto-salut-account-helper.c:78
+#: ../src/empathy-auth-client.c:217
+msgid " - Empathy authentication client"
+msgstr "- Empathy odjemalec overitve"
+
+#: ../src/empathy-auth-client.c:233
+msgid "Empathy authentication client"
+msgstr "Empathy odjemalec overitve"
+
+#: ../src/empathy-auto-salut-account-helper.c:83
 msgid "People nearby"
 msgstr "Uporabniki v bližini"
 
@@ -3066,27 +3148,27 @@ msgstr "Vir"
 msgid "No match found"
 msgstr "Ni najdenih zadetkov."
 
-#: ../src/empathy-main-window.c:519
+#: ../src/empathy-main-window.c:528
 msgid "Reconnect"
 msgstr "Ponovno se poveži"
 
-#: ../src/empathy-main-window.c:525
+#: ../src/empathy-main-window.c:534
 msgid "Edit Account"
 msgstr "Uredi račun"
 
-#: ../src/empathy-main-window.c:531
+#: ../src/empathy-main-window.c:540
 msgid "Close"
 msgstr "Zapri"
 
-#: ../src/empathy-main-window.c:1213
+#: ../src/empathy-main-window.c:1222
 msgid "Contact"
 msgstr "Stik"
 
-#: ../src/empathy-main-window.c:1538
+#: ../src/empathy-main-window.c:1547
 msgid "Contact List"
 msgstr "Seznam stikov"
 
-#: ../src/empathy-main-window.c:1647
+#: ../src/empathy-main-window.c:1656
 msgid "Show and edit accounts"
 msgstr "Pokaži in uredi račune"
 
@@ -3533,46 +3615,59 @@ msgstr "Empathy razhroščevalnik"
 
 #~ msgid "Your contact list is empty"
 #~ msgstr "Seznam stikov je prazen"
+
 #~ msgid "Send and receive messages"
 #~ msgstr "Pošiljanje in prejemanje hipnih sporočil"
+
 #~ msgid "Failed to reconnect this chat"
 #~ msgstr "Ponovna povezava s tem klepetom ni bila uspešna"
+
 #~ msgid "Failed to join chat room"
 #~ msgstr "Napaka med pridruževanjem klepetalnici"
+
 #~ msgid "Select a destination"
 #~ msgstr "Izbor cilja"
+
 #~ msgid "Important Room"
 #~ msgstr "Pomembna klepetalnica"
+
 #~ msgid "MC 4 accounts have been imported"
 #~ msgstr "MC 4 računi so boli uvoženi"
+
 #~ msgid "MC 4 accounts have been imported."
 #~ msgstr "MC 4 računi so bili uvoženi."
+
 #~ msgid "Hostname of the proxy for outbound requests."
 #~ msgstr "Ime gostitelja posredniškega strežnika odhodnih zahtev."
+
 #~ msgid ""
 #~ "Look up the DNS SRV record at the service's domain for the host name of a "
 #~ "STUN server."
 #~ msgstr ""
 #~ "Preglej vpis DNS SRV domene storitve  za ime gostitelja strežnika STUN."
+
 #~ msgid "Port of the proxy for outbound requests."
 #~ msgstr "Ime gostitelja posredniškega strežnika odhodnih zahtev."
+
 #~ msgid ""
 #~ "The username for SIP authentication, if different from the SIP URI\n"
 #~ "username."
 #~ msgstr ""
 #~ "Uporabniško ime za SIP overitev v kolikor, da je drugačno od SIP URI\n"
 #~ "uporabniškega imena."
+
 #~ msgid ""
 #~ "Update the registration binding if the external address for the client is "
 #~ "discovered to be different from the local binding."
 #~ msgstr ""
 #~ "Posodobi povezavo vpisnika v primeru, da je zunanji naslov odjemalca "
 #~ "drugačen od  krajevne povezave."
+
 #~ msgid ""
 #~ "Use the loose routing behavior and the Route header as recommended in RFC "
 #~ "3261."
 #~ msgstr ""
 #~ "Uporabi ohlapno usmerjanje in glavo usmerjevalnika kot priporoča RFC 3261."
+
 #~ msgid "%s account"
 #~ msgstr "%s račun"
-
