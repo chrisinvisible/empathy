@@ -383,8 +383,14 @@ search_text_notify_cb (EmpathyLiveSearch *search,
     EmpathyIrcNetworkChooserDialog *self)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
+  GtkTreeIter iter;
 
   gtk_tree_model_filter_refilter (priv->filter);
+
+  /* Select first matching network */
+  if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->filter), &iter))
+    select_iter (self, &iter, TRUE);
+  /* TODO: else unsensitive the close button */
 }
 
 static void
