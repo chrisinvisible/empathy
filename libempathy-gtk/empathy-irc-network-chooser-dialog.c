@@ -162,19 +162,15 @@ treeview_changed_cb (GtkTreeView *treeview,
   priv->changed = TRUE;
 }
 
+/* Take a filter iterator as argument */
 static void
 scroll_to_iter (EmpathyIrcNetworkChooserDialog *self,
-    GtkTreeIter *iter)
+    GtkTreeIter *filter_iter)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   GtkTreePath *path;
-  GtkTreeIter filter_iter;
 
-  /* Convert to a filter iter */
-  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
-      iter);
-
-  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->filter), &filter_iter);
+  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->filter), filter_iter);
 
   if (path != NULL)
     {
@@ -185,27 +181,23 @@ scroll_to_iter (EmpathyIrcNetworkChooserDialog *self,
     }
 }
 
+/* Take a filter iterator as argument */
 static void
 select_iter (EmpathyIrcNetworkChooserDialog *self,
-    GtkTreeIter *iter,
+    GtkTreeIter *filter_iter,
     gboolean emulate_changed)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   GtkTreeSelection *selection;
-  GtkTreeIter filter_iter;
 
   /* Select the network */
   selection = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (priv->treeview));
 
-  /* Convert to a filter iter */
-  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
-      iter);
-
-  gtk_tree_selection_select_iter (selection, &filter_iter);
+  gtk_tree_selection_select_iter (selection, filter_iter);
 
   /* Scroll to the selected network */
-  scroll_to_iter (self, iter);
+  scroll_to_iter (self, filter_iter);
 
   if (emulate_changed)
     {
@@ -235,7 +227,15 @@ fill_store (EmpathyIrcNetworkChooserDialog *self)
           -1);
 
       if (network == priv->network)
-        select_iter (self, &iter, FALSE);
+        {
+          GtkTreeIter filter_iter;
+
+          /* Convert to a filter iter */
+          gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
+              &filter_iter, &iter);
+
+          select_iter (self, &filter_iter, FALSE);
+        }
 
       g_object_unref (network);
     }
@@ -249,7 +249,7 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
-  GtkTreeIter iter;
+  GtkTreeIter iter, filter_iter;
 
   priv->changed = TRUE;
 
@@ -260,6 +260,10 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
   /* name could be changed */
   gtk_list_store_set (GTK_LIST_STORE (priv->store), &iter,
       COL_NETWORK_NAME, empathy_irc_network_get_name (network), -1);
+
+  /* Convert to a filter iter */
+  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
+      &iter);
 
   scroll_to_iter (self, &iter);
 
@@ -297,7 +301,7 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
-  GtkTreeIter iter;
+  GtkTreeIter iter, filter_iter;
 
   network = empathy_irc_network_new (_("New Network"));
   empathy_irc_network_manager_add (priv->network_manager, network);
@@ -307,7 +311,11 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
       COL_NETWORK_NAME, empathy_irc_network_get_name (network),
       -1);
 
-  select_iter (self, &iter, TRUE);
+  /* Convert to a filter iter */
+  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
+      &iter);
+
+  select_iter (self, &filter_iter, TRUE);
 
   display_irc_network_dialog (self, network);
 
