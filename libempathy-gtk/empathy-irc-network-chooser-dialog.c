@@ -276,7 +276,7 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
   g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
         &filter_iter, &iter));
 
-  scroll_to_iter (self, &iter);
+  scroll_to_iter (self, &filter_iter);
 
   g_object_unref (network);
 }
