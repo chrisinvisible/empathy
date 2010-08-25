@@ -70,7 +70,6 @@ typedef struct
   EmpathyIndividualViewFeatureFlags view_features;
   EmpathyIndividualFeatureFlags individual_features;
   GtkWidget *tooltip_widget;
-  GtkTargetList *file_targets;
 
   gboolean show_offline;
 
@@ -119,17 +118,12 @@ enum DndDragType
   { (gchar *) T, 0, I }
 
 static const GtkTargetEntry drag_types_dest[] = {
-  DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
-  DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
   DRAG_TYPE ("text/individual-id", DND_DRAG_TYPE_INDIVIDUAL_ID),
   DRAG_TYPE ("text/persona-id", DND_DRAG_TYPE_PERSONA_ID),
-  DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
-  DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
-};
-
-static const GtkTargetEntry drag_types_dest_file[] = {
   DRAG_TYPE ("text/path-list", DND_DRAG_TYPE_URI_LIST),
   DRAG_TYPE ("text/uri-list", DND_DRAG_TYPE_URI_LIST),
+  DRAG_TYPE ("text/plain", DND_DRAG_TYPE_STRING),
+  DRAG_TYPE ("STRING", DND_DRAG_TYPE_STRING),
 };
 
 static const GtkTargetEntry drag_types_source[] = {
@@ -597,57 +591,11 @@ individual_view_drag_motion (GtkWidget *widget,
       gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget), NULL, 0);
       return FALSE;
     }
-  target = gtk_drag_dest_find_target (widget, context, priv->file_targets);
+  target = gtk_drag_dest_find_target (widget, context, NULL);
   gtk_tree_model_get_iter (model, &iter, path);
 
-  if (target == GDK_NONE &&
-      (priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_CHANGE ||
-       priv->drag_row == NULL))
-    {
-      /* If target == GDK_NONE, then we don't have a target that can be
-         dropped on a contact.  This means a contact drag.  If we're
-         pointing to a group, highlight it.  Otherwise, if the contact
-         we're pointing to is in a group, highlight that.  Otherwise,
-         set the drag position to before the first row for a drag into
-         the "non-group" at the top.
-         We only highlight things if the contact is from a different Individual
-         view, or if this Individual view has FEATURE_GROUPS_CHANGE. This
-         prevents highlighting in Individual views which don't have
-         FEATURE_GROUPS_CHANGE, but do have FEATURE_INDIVIDUAL_DRAG and
-         FEATURE_INDIVIDUAL_DROP.
-       */
-      GtkTreeIter group_iter;
-      gboolean is_group;
-      GtkTreePath *group_path;
-      gtk_tree_model_get (model, &iter,
-          EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group, -1);
-      if (is_group)
-        {
-          group_iter = iter;
-        }
-      else
-        {
-          if (gtk_tree_model_iter_parent (model, &group_iter, &iter))
-            gtk_tree_model_get (model, &group_iter,
-                EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group, -1);
-        }
-      if (is_group)
-        {
-          gdk_drag_status (context, GDK_ACTION_MOVE, time_);
-          group_path = gtk_tree_model_get_path (model, &group_iter);
-          gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
-              group_path, GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
-          gtk_tree_path_free (group_path);
-        }
-      else
-        {
-          group_path = gtk_tree_path_new_first ();
-          gdk_drag_status (context, GDK_ACTION_MOVE, time_);
-          gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
-              group_path, GTK_TREE_VIEW_DROP_BEFORE);
-        }
-    }
-  else if (target != GDK_NONE)
+  if (target == drag_atoms_dest[DND_DRAG_TYPE_URI_LIST] ||
+      target == drag_atoms_dest[DND_DRAG_TYPE_STRING])
     {
       /* This is a file drag, and it can only be dropped on contacts,
        * not groups.
@@ -690,6 +638,58 @@ individual_view_drag_motion (GtkWidget *widget,
 
       if (individual != NULL)
         g_object_unref (individual);
+    }
+  else if (((target == drag_atoms_dest[DND_DRAG_TYPE_STRING] ||
+       target == drag_atoms_dest[DND_DRAG_TYPE_INDIVIDUAL_ID]) &&
+      (priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_CHANGE ||
+       priv->drag_row == NULL)) ||
+      (target == drag_atoms_dest[DND_DRAG_TYPE_PERSONA_ID] &&
+       priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_PERSONA_DROP))
+    {
+      /* If target != GDK_NONE, then we have a contact (individual or persona)
+         drag.  If we're pointing to a group, highlight it.  Otherwise, if the
+         contact we're pointing to is in a group, highlight that.  Otherwise,
+         set the drag position to before the first row for a drag into
+         the "non-group" at the top.
+         If it's an Individual:
+           We only highlight things if the contact is from a different
+           Individual view, or if this Individual view has
+           FEATURE_GROUPS_CHANGE. This prevents highlighting in Individual views
+           which don't have FEATURE_GROUPS_CHANGE, but do have
+           FEATURE_INDIVIDUAL_DRAG and FEATURE_INDIVIDUAL_DROP.
+         If it's a Persona:
+           We only highlight things if we have FEATURE_PERSONA_DROP.
+       */
+      GtkTreeIter group_iter;
+      gboolean is_group;
+      GtkTreePath *group_path;
+      gtk_tree_model_get (model, &iter,
+          EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group, -1);
+      if (is_group)
+        {
+          group_iter = iter;
+        }
+      else
+        {
+          if (gtk_tree_model_iter_parent (model, &group_iter, &iter))
+            gtk_tree_model_get (model, &group_iter,
+                EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, &is_group, -1);
+        }
+      if (is_group)
+        {
+          gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+          group_path = gtk_tree_model_get_path (model, &group_iter);
+          gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+              group_path, GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+          gtk_tree_path_free (group_path);
+        }
+      else
+        {
+          group_path = gtk_tree_path_new_first ();
+          gdk_drag_status (context, GDK_ACTION_MOVE, time_);
+          gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
+              group_path, GTK_TREE_VIEW_DROP_BEFORE);
+        }
     }
 
   if (!is_different && !cleanup)
@@ -1875,7 +1875,6 @@ individual_view_dispose (GObject *object)
   tp_clear_object (&priv->store);
   tp_clear_object (&priv->filter);
   tp_clear_pointer (&priv->tooltip_widget, gtk_widget_destroy);
-  tp_clear_pointer (&priv->file_targets, gtk_target_list_unref);
 
   empathy_individual_view_set_live_search (view, NULL);
 
@@ -2044,10 +2043,6 @@ empathy_individual_view_init (EmpathyIndividualView *view)
 
   gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (view),
       empathy_individual_store_row_separator_func, NULL, NULL);
-
-  /* Set up drag target lists. */
-  priv->file_targets = gtk_target_list_new (drag_types_dest_file,
-      G_N_ELEMENTS (drag_types_dest_file));
 
   /* Connect to tree view signals rather than override. */
   g_signal_connect (view, "button-press-event",

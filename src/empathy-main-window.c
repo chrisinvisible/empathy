@@ -1673,9 +1673,12 @@ empathy_main_window_init (EmpathyMainWindow *window)
 			individual_manager);
 	g_object_unref (individual_manager);
 
+	/* For the moment, we disallow Persona drops onto the main contact list (e.g. from things such as
+	 * the EmpathyPersonaView in the linking dialogue). No code is hooked up to do anything on a Persona
+	 * drop, so allowing them would achieve nothing except confusion. */
 	priv->individual_view = empathy_individual_view_new (
 			priv->individual_store,
-			EMPATHY_INDIVIDUAL_VIEW_FEATURE_ALL,
+			EMPATHY_INDIVIDUAL_VIEW_FEATURE_ALL ^ EMPATHY_INDIVIDUAL_VIEW_FEATURE_PERSONA_DROP,
 			EMPATHY_INDIVIDUAL_FEATURE_ALL);
 
 	priv->butterfly_log_migration_members_changed_id = g_signal_connect (
