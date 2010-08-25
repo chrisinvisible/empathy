@@ -421,7 +421,7 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
 
   g_assert (priv->settings != NULL);
 
-  gtk_window_set_title (GTK_WINDOW (self), _("IRC Networks"));
+  gtk_window_set_title (GTK_WINDOW (self), _("Choose an IRC network"));
 
   /* Create store and treeview */
   priv->store = gtk_list_store_new (2, G_TYPE_OBJECT, G_TYPE_STRING);
