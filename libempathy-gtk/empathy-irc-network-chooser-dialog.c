@@ -190,12 +190,22 @@ select_iter (EmpathyIrcNetworkChooserDialog *self,
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   GtkTreeSelection *selection;
+  GtkTreePath *path;
 
   /* Select the network */
   selection = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (priv->treeview));
 
   gtk_tree_selection_select_iter (selection, filter_iter);
+
+  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->filter), filter_iter);
+  if (path != NULL)
+    {
+      gtk_tree_view_set_cursor (GTK_TREE_VIEW (priv->treeview), path,
+          NULL, FALSE);
+
+      gtk_tree_path_free (path);
+    }
 
   /* Scroll to the selected network */
   scroll_to_iter (self, filter_iter);
