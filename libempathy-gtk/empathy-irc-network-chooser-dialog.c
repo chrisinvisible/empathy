@@ -33,6 +33,7 @@
 
 #include "empathy-irc-network-dialog.h"
 #include "empathy-ui-utils.h"
+#include "empathy-live-search.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_ACCOUNT | EMPATHY_DEBUG_IRC
 #include <libempathy/empathy-debug.h>
@@ -55,6 +56,10 @@ typedef struct {
 
     GtkWidget *treeview;
     GtkListStore *store;
+    GtkTreeModelFilter *filter;
+    GtkWidget *search;
+
+    gulong search_sig;
 } EmpathyIrcNetworkChooserDialogPriv;
 
 enum {
@@ -109,6 +114,7 @@ empathy_irc_network_chooser_dialog_get_property (GObject *object,
     }
 }
 
+/* The iter returned by *it is a priv->store iter (not a filter one) */
 static EmpathyIrcNetwork *
 dup_selected_network (EmpathyIrcNetworkChooserDialog *self,
     GtkTreeIter *it)
@@ -120,13 +126,17 @@ dup_selected_network (EmpathyIrcNetworkChooserDialog *self,
   GtkTreeModel *model;
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
-  gtk_tree_selection_get_selected (selection, &model, &iter);
+  if (!gtk_tree_selection_get_selected (selection, &model, &iter))
+    return NULL;
 
   gtk_tree_model_get (model, &iter, COL_NETWORK_OBJ, &network, -1);
   g_assert (network != NULL);
 
   if (it != NULL)
-    *it = iter;
+    {
+      gtk_tree_model_filter_convert_iter_to_child_iter (priv->filter, it,
+          &iter);
+    }
 
   return network;
 }
@@ -158,8 +168,13 @@ scroll_to_iter (EmpathyIrcNetworkChooserDialog *self,
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   GtkTreePath *path;
+  GtkTreeIter filter_iter;
 
-  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->store), iter);
+  /* Convert to a filter iter */
+  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
+      iter);
+
+  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->filter), &filter_iter);
 
   if (path != NULL)
     {
@@ -177,12 +192,17 @@ select_iter (EmpathyIrcNetworkChooserDialog *self,
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   GtkTreeSelection *selection;
+  GtkTreeIter filter_iter;
 
   /* Select the network */
   selection = gtk_tree_view_get_selection (
       GTK_TREE_VIEW (priv->treeview));
 
-  gtk_tree_selection_select_iter (selection, iter);
+  /* Convert to a filter iter */
+  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
+      iter);
+
+  gtk_tree_selection_select_iter (selection, &filter_iter);
 
   /* Scroll to the selected network */
   scroll_to_iter (self, iter);
@@ -236,7 +256,11 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
   gchar *name;
   GtkTreeIter iter;
 
+  priv->changed = TRUE;
+
   network = dup_selected_network (self, &iter);
+  if (network == NULL)
+    return;
 
   /* name could be changed */
   g_object_get (network, "name", &name, NULL);
@@ -244,8 +268,6 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
       COL_NETWORK_NAME, name, -1);
 
   scroll_to_iter (self, &iter);
-
-  priv->changed = TRUE;
 
   g_object_unref (network);
   g_free (name);
@@ -269,6 +291,9 @@ edit_network (EmpathyIrcNetworkChooserDialog *self)
   EmpathyIrcNetwork *network;
 
   network = dup_selected_network (self, NULL);
+  if (network == NULL)
+    return;
+
   display_irc_network_dialog (self, network);
 
   g_object_unref (network);
@@ -309,6 +334,8 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
   gchar *name;
 
   network = dup_selected_network (self, &iter);
+  if (network == NULL)
+    return;
 
   g_object_get (network, "name", &name, NULL);
   DEBUG ("Remove network %s", name);
@@ -337,6 +364,44 @@ dialog_response_cb (GtkDialog *dialog,
     remove_network (self);
 }
 
+static gboolean
+filter_visible_func (GtkTreeModel *model,
+    GtkTreeIter *iter,
+    gpointer user_data)
+{
+  EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (user_data);
+  EmpathyIrcNetwork *network;
+  gboolean visible;
+
+  gtk_tree_model_get (model, iter, COL_NETWORK_OBJ, &network, -1);
+
+  visible = empathy_live_search_match (EMPATHY_LIVE_SEARCH (priv->search),
+      empathy_irc_network_get_name (network));
+
+  g_object_unref (network);
+  return visible;
+}
+
+
+static void
+search_text_notify_cb (EmpathyLiveSearch *search,
+    GParamSpec *pspec,
+    EmpathyIrcNetworkChooserDialog *self)
+{
+  EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
+
+  gtk_tree_model_filter_refilter (priv->filter);
+}
+
+static void
+dialog_destroy_cb (GtkWidget *widget,
+    EmpathyIrcNetworkChooserDialog *self)
+{
+  EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
+
+  g_signal_handler_disconnect (priv->search, priv->search_sig);
+}
+
 static void
 empathy_irc_network_chooser_dialog_constructed (GObject *object)
 {
@@ -359,7 +424,7 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
       COL_NETWORK_NAME,
       GTK_SORT_ASCENDING);
 
-  priv->treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (priv->store));
+  priv->treeview = gtk_tree_view_new ();
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (priv->treeview), FALSE);
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (priv->treeview), FALSE);
 
@@ -383,6 +448,22 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
   gtk_container_add (GTK_CONTAINER (scroll), priv->treeview);
   gtk_box_pack_start (GTK_BOX (vbox), scroll, TRUE, TRUE, 6);
 
+  /* Live search */
+  priv->search = empathy_live_search_new (priv->treeview);
+
+  gtk_box_pack_start (GTK_BOX (vbox), priv->search, FALSE, TRUE, 0);
+
+  priv->filter = GTK_TREE_MODEL_FILTER (gtk_tree_model_filter_new (
+          GTK_TREE_MODEL (priv->store), NULL));
+  gtk_tree_model_filter_set_visible_func (priv->filter,
+          filter_visible_func, self, NULL);
+
+  gtk_tree_view_set_model (GTK_TREE_VIEW (priv->treeview),
+          GTK_TREE_MODEL (priv->filter));
+
+  priv->search_sig = g_signal_connect (priv->search, "notify::text",
+      G_CALLBACK (search_text_notify_cb), self);
+
   /* Add buttons */
   gtk_dialog_add_buttons (dialog,
       GTK_STOCK_ADD, GTK_RESPONSE_OK,
@@ -398,6 +479,8 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
 
   g_signal_connect (self, "response",
       G_CALLBACK (dialog_response_cb), self);
+  g_signal_connect (self, "destroy",
+      G_CALLBACK (dialog_destroy_cb), self);
 
   /* Request a side ensuring to display at least some networks */
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 300);
@@ -413,6 +496,7 @@ empathy_irc_network_chooser_dialog_dispose (GObject *object)
   tp_clear_object (&priv->network);
   tp_clear_object (&priv->network_manager);
   tp_clear_object (&priv->store);
+  tp_clear_object (&priv->filter);
 
   if (G_OBJECT_CLASS (empathy_irc_network_chooser_dialog_parent_class)->dispose)
     G_OBJECT_CLASS (empathy_irc_network_chooser_dialog_parent_class)->dispose (object);
