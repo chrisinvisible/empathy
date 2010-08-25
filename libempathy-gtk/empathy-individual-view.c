@@ -1577,7 +1577,9 @@ individual_view_store_row_deleted_cb (GtkTreeModel *model,
 
 static gboolean
 individual_view_is_visible_individual (EmpathyIndividualView *self,
-    FolksIndividual *individual)
+    FolksIndividual *individual,
+    gboolean is_online,
+    gboolean is_searching)
 {
   EmpathyIndividualViewPriv *priv = GET_PRIV (self);
   EmpathyLiveSearch *live = EMPATHY_LIVE_SEARCH (priv->search_widget);
@@ -1586,8 +1588,8 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
 
   /* We're only giving the visibility wrt filtering here, not things like
    * presence. */
-  if (live == NULL || gtk_widget_get_visible (GTK_WIDGET (live)) == FALSE)
-    return TRUE;
+  if (is_searching == FALSE)
+    return (priv->show_offline || is_online);
 
   /* check alias name */
   str = folks_individual_get_alias (individual);
@@ -1649,10 +1651,8 @@ individual_view_filter_visible_func (GtkTreeModel *model,
 
   if (individual != NULL)
     {
-      if (is_searching == TRUE)
-        visible = individual_view_is_visible_individual (self, individual);
-      else
-        visible = (priv->show_offline || is_online);
+      visible = individual_view_is_visible_individual (self, individual,
+          is_online, is_searching);
 
       g_object_unref (individual);
 
@@ -1685,12 +1685,12 @@ individual_view_filter_visible_func (GtkTreeModel *model,
       if (individual == NULL)
         continue;
 
-      visible = individual_view_is_visible_individual (self, individual);
+      visible = individual_view_is_visible_individual (self, individual,
+          is_online, is_searching);
       g_object_unref (individual);
 
       /* show group if it has at least one visible contact in it */
-      if ((is_searching && visible) ||
-          (!is_searching && (priv->show_offline || is_online)))
+      if (visible == TRUE)
         return TRUE;
     }
 
