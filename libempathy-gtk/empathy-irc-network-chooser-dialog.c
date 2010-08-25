@@ -218,6 +218,19 @@ select_iter (EmpathyIrcNetworkChooserDialog *self,
     }
 }
 
+static GtkTreeIter
+iter_to_filter_iter (EmpathyIrcNetworkChooserDialog *self,
+    GtkTreeIter *iter)
+{
+  EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
+  GtkTreeIter filter_iter;
+
+  g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
+        &filter_iter, iter));
+
+  return filter_iter;
+}
+
 static void
 fill_store (EmpathyIrcNetworkChooserDialog *self)
 {
@@ -239,11 +252,7 @@ fill_store (EmpathyIrcNetworkChooserDialog *self)
 
       if (network == priv->network)
         {
-          GtkTreeIter filter_iter;
-
-          /* Convert to a filter iter */
-          g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (
-                priv->filter, &filter_iter, &iter));
+          GtkTreeIter filter_iter = iter_to_filter_iter (self, &iter);
 
           select_iter (self, &filter_iter, FALSE);
         }
@@ -272,10 +281,7 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
   gtk_list_store_set (GTK_LIST_STORE (priv->store), &iter,
       COL_NETWORK_NAME, empathy_irc_network_get_name (network), -1);
 
-  /* Convert to a filter iter */
-  g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
-        &filter_iter, &iter));
-
+  filter_iter = iter_to_filter_iter (self, &iter);
   scroll_to_iter (self, &filter_iter);
 
   g_object_unref (network);
@@ -322,10 +328,7 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
       COL_NETWORK_NAME, empathy_irc_network_get_name (network),
       -1);
 
-  /* Convert to a filter iter */
-  g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
-        &filter_iter, &iter));
-
+  filter_iter = iter_to_filter_iter (self, &iter);
   select_iter (self, &filter_iter, TRUE);
 
   display_irc_network_dialog (self, network);
@@ -351,7 +354,11 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
 
   /* Select next network */
   if (gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->store), &iter))
-    select_iter (self, &iter, TRUE);
+    {
+      GtkTreeIter filter_iter = iter_to_filter_iter (self, &iter);
+
+      select_iter (self, &filter_iter, TRUE);
+    }
 
   g_object_unref (network);
 }
