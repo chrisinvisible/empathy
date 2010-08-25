@@ -72,6 +72,7 @@ typedef struct
   GtkWidget *tooltip_widget;
 
   gboolean show_offline;
+  gboolean show_untrusted;
 
   GtkTreeModelFilter *filter;
   GtkWidget *search_widget;
@@ -102,6 +103,7 @@ enum
   PROP_VIEW_FEATURES,
   PROP_INDIVIDUAL_FEATURES,
   PROP_SHOW_OFFLINE,
+  PROP_SHOW_UNTRUSTED,
 };
 
 /* TODO: re-add DRAG_TYPE_CONTACT_ID, for the case that we're dragging around
@@ -1588,6 +1590,12 @@ individual_view_is_visible_individual (EmpathyIndividualView *self,
 
   /* We're only giving the visibility wrt filtering here, not things like
    * presence. */
+  if (priv->show_untrusted == FALSE &&
+      folks_individual_get_trust_level (individual) == FOLKS_TRUST_LEVEL_NONE)
+    {
+      return FALSE;
+    }
+
   if (is_searching == FALSE)
     return (priv->show_offline || is_online);
 
@@ -1913,6 +1921,9 @@ individual_view_get_property (GObject *object,
     case PROP_SHOW_OFFLINE:
       g_value_set_boolean (value, priv->show_offline);
       break;
+    case PROP_SHOW_UNTRUSTED:
+      g_value_set_boolean (value, priv->show_untrusted);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -1941,6 +1952,10 @@ individual_view_set_property (GObject *object,
       break;
     case PROP_SHOW_OFFLINE:
       empathy_individual_view_set_show_offline (view,
+          g_value_get_boolean (value));
+      break;
+    case PROP_SHOW_UNTRUSTED:
+      empathy_individual_view_set_show_untrusted (view,
           g_value_get_boolean (value));
       break;
     default:
@@ -2022,6 +2037,13 @@ empathy_individual_view_class_init (EmpathyIndividualViewClass *klass)
           "Show Offline",
           "Whether contact list should display "
           "offline contacts", FALSE, G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+      PROP_SHOW_UNTRUSTED,
+      g_param_spec_boolean ("show-untrusted",
+          "Show Untrusted Individuals",
+          "Whether the view should display untrusted individuals; "
+          "those who could not be who they say they are.",
+          TRUE, G_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (EmpathyIndividualViewPriv));
 }
@@ -2033,6 +2055,9 @@ empathy_individual_view_init (EmpathyIndividualView *view)
       EMPATHY_TYPE_INDIVIDUAL_VIEW, EmpathyIndividualViewPriv);
 
   view->priv = priv;
+
+  priv->show_untrusted = TRUE;
+
   /* Get saved group states. */
   empathy_contact_groups_get_all ();
 
@@ -2432,6 +2457,30 @@ empathy_individual_view_set_show_offline (EmpathyIndividualView *self,
   priv->show_offline = show_offline;
 
   g_object_notify (G_OBJECT (self), "show-offline");
+  gtk_tree_model_filter_refilter (priv->filter);
+}
+
+gboolean
+empathy_individual_view_get_show_untrusted (EmpathyIndividualView *self)
+{
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self), FALSE);
+
+  return GET_PRIV (self)->show_untrusted;
+}
+
+void
+empathy_individual_view_set_show_untrusted (EmpathyIndividualView *self,
+    gboolean show_untrusted)
+{
+  EmpathyIndividualViewPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self));
+
+  priv = GET_PRIV (self);
+
+  priv->show_untrusted = show_untrusted;
+
+  g_object_notify (G_OBJECT (self), "show-untrusted");
   gtk_tree_model_filter_refilter (priv->filter);
 }
 

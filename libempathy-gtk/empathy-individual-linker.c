@@ -335,6 +335,7 @@ set_up (EmpathyIndividualLinker *self)
       EMPATHY_INDIVIDUAL_VIEW_FEATURE_PERSONA_DROP,
       EMPATHY_INDIVIDUAL_FEATURE_NONE);
   empathy_individual_view_set_show_offline (priv->individual_view, TRUE);
+  empathy_individual_view_set_show_untrusted (priv->individual_view, FALSE);
 
   g_signal_connect (priv->individual_view, "row-activated",
       (GCallback) row_activated_cb, self);

@@ -118,6 +118,12 @@ void empathy_individual_view_set_show_offline (
     EmpathyIndividualView *view,
     gboolean show_offline);
 
+gboolean empathy_individual_view_get_show_untrusted (
+    EmpathyIndividualView *self);
+
+void empathy_individual_view_set_show_untrusted (EmpathyIndividualView *self,
+    gboolean show_untrusted);
+
 gboolean empathy_individual_view_is_searching (
     EmpathyIndividualView *view);
 
