@@ -320,6 +320,8 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
   EmpathyIrcNetwork *network;
   GtkTreeIter iter, filter_iter;
 
+  gtk_widget_hide (priv->search);
+
   network = empathy_irc_network_new (_("New Network"));
   empathy_irc_network_manager_add (priv->network_manager, network);
 
@@ -342,6 +344,8 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
   GtkTreeIter iter;
+
+  gtk_widget_hide (priv->search);
 
   network = dup_selected_network (self, &iter);
   if (network == NULL)
