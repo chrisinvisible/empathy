@@ -121,14 +121,13 @@ update_server_params (EmpathyIrcNetworkChooser *self)
 {
   EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (self);
   GSList *servers;
-  gchar *charset;
+  const gchar *charset;
 
   g_assert (priv->network != NULL);
 
-  g_object_get (priv->network, "charset", &charset, NULL);
+  charset = empathy_irc_network_get_charset (priv->network);
   DEBUG ("Setting charset to %s", charset);
   empathy_account_settings_set_string (priv->settings, "charset", charset);
-  g_free (charset);
 
   servers = empathy_irc_network_get_servers (priv->network);
   if (g_slist_length (servers) > 0)
@@ -168,13 +167,11 @@ static void
 set_label (EmpathyIrcNetworkChooser *self)
 {
   EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (self);
-  gchar *name;
 
   g_assert (priv->network != NULL);
-  g_object_get (priv->network, "name", &name, NULL);
 
-  gtk_button_set_label (GTK_BUTTON (self), name);
-  g_free (name);
+  gtk_button_set_label (GTK_BUTTON (self),
+      empathy_irc_network_get_name (priv->network));
 }
 
 static void
