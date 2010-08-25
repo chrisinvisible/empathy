@@ -832,6 +832,11 @@ empathy_individual_link_menu_item_new (FolksIndividual *individual)
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
   gtk_widget_show (image);*/
 
+  /* Only allow trusted Individuals to be linked */
+  gtk_widget_set_sensitive (item,
+      folks_individual_get_trust_level (individual) ==
+          FOLKS_TRUST_LEVEL_PERSONAS);
+
   g_signal_connect_swapped (item, "activate",
       G_CALLBACK (individual_link_menu_item_activate_cb), individual);
 
