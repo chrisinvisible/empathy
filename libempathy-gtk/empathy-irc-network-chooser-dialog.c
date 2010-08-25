@@ -401,15 +401,16 @@ search_text_notify_cb (EmpathyLiveSearch *search,
     EmpathyIrcNetworkChooserDialog *self)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
-  GtkTreeIter iter;
+  GtkTreeIter filter_iter;
   gboolean sensitive = FALSE;
 
   gtk_tree_model_filter_refilter (priv->filter);
 
   /* Select first matching network */
-  if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->filter), &iter))
+  if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->filter),
+        &filter_iter))
     {
-      select_iter (self, &iter, TRUE);
+      select_iter (self, &filter_iter, TRUE);
       sensitive = TRUE;
     }
 
