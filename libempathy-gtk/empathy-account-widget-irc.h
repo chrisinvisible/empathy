@@ -30,6 +30,9 @@ void empathy_account_widget_irc_build (EmpathyAccountWidget *self,
     const char *filename,
     GtkWidget **table_common_settings);
 
+void empathy_account_widget_irc_build_simple (EmpathyAccountWidget *self,
+    const char *filename);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_ACCOUNT_WIDGET_IRC_H__ */

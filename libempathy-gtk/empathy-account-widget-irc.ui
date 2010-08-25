@@ -392,4 +392,67 @@
       </packing>
     </child>
   </object>
+  <object class="GtkVBox" id="vbox_irc_simple">
+    <property name="visible">True</property>
+    <child>
+      <object class="GtkLabel" id="label_network_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">Which IRC network?</property>
+      </object>
+      <packing>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment_network_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.34999999403953552</property>
+        <property name="top_padding">6</property>
+        <property name="bottom_padding">3</property>
+        <property name="left_padding">12</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="label_nick_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="label" translatable="yes">What is your IRC nick?</property>
+      </object>
+      <packing>
+        <property name="position">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkAlignment" id="alignment_nick_simple">
+        <property name="visible">True</property>
+        <property name="xalign">0</property>
+        <property name="yalign">0</property>
+        <property name="xscale">0.34999999403953552</property>
+        <property name="yscale">0.34999999403953552</property>
+        <property name="top_padding">6</property>
+        <property name="bottom_padding">3</property>
+        <property name="left_padding">12</property>
+        <child>
+          <object class="GtkEntry" id="entry_nick_simple">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="invisible_char">&#x2022;</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="position">3</property>
+      </packing>
+    </child>
+  </object>
 </interface>
