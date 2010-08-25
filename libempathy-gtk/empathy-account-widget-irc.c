@@ -111,7 +111,7 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
   settings->self = self;
 
   self->ui_details->gui = empathy_builder_get_file (filename,
-      "table_irc_settings", &table_common_settings,
+      "table_irc_settings", table_common_settings,
       "vbox_irc", &self->ui_details->widget,
       "table_irc_settings", &settings->vbox_settings,
       NULL);
@@ -124,7 +124,7 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
   g_signal_connect (settings->network_chooser, "changed",
       G_CALLBACK (network_changed_cb), settings);
 
-  gtk_table_attach (GTK_TABLE (table_common_settings),
+  gtk_table_attach (GTK_TABLE (*table_common_settings),
       settings->network_chooser, 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, 0, 0, 0);
 
   gtk_widget_show (settings->network_chooser);
