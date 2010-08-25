@@ -488,7 +488,7 @@ dispose (GObject *object)
 {
   EmpathyGroupsWidgetPriv *priv = GET_PRIV (object);
 
-  tp_clear_object (&priv->groupable);
+  empathy_groups_widget_set_groupable (EMPATHY_GROUPS_WIDGET (object), NULL);
   tp_clear_object (&priv->group_store);
 
   G_OBJECT_CLASS (empathy_groups_widget_parent_class)->dispose (object);
