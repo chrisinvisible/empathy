@@ -242,8 +242,8 @@ fill_store (EmpathyIrcNetworkChooserDialog *self)
           GtkTreeIter filter_iter;
 
           /* Convert to a filter iter */
-          gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
-              &filter_iter, &iter);
+          g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (
+                priv->filter, &filter_iter, &iter));
 
           select_iter (self, &filter_iter, FALSE);
         }
@@ -273,8 +273,8 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
       COL_NETWORK_NAME, empathy_irc_network_get_name (network), -1);
 
   /* Convert to a filter iter */
-  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
-      &iter);
+  g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
+        &filter_iter, &iter));
 
   scroll_to_iter (self, &iter);
 
@@ -323,8 +323,8 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
       -1);
 
   /* Convert to a filter iter */
-  gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter, &filter_iter,
-      &iter);
+  g_assert (gtk_tree_model_filter_convert_child_iter_to_iter (priv->filter,
+        &filter_iter, &iter));
 
   select_iter (self, &filter_iter, TRUE);
 
