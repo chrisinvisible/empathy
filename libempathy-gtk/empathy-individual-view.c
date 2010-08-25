@@ -511,8 +511,7 @@ individual_view_drag_data_received (GtkWidget *view,
     {
       success = FALSE;
     }
-  else if (info == DND_DRAG_TYPE_INDIVIDUAL_ID
-      || info == DND_DRAG_TYPE_STRING)
+  else if (info == DND_DRAG_TYPE_INDIVIDUAL_ID)
     {
       success = individual_view_individual_drag_received (view,
           context, model, path, selection);
@@ -522,7 +521,7 @@ individual_view_drag_data_received (GtkWidget *view,
       success = individual_view_persona_drag_received (view, context, model,
           path, selection);
     }
-  else if (info == DND_DRAG_TYPE_URI_LIST)
+  else if (info == DND_DRAG_TYPE_URI_LIST || info == DND_DRAG_TYPE_STRING)
     {
       success = individual_view_file_drag_received (view,
           context, model, path, selection);
@@ -639,8 +638,7 @@ individual_view_drag_motion (GtkWidget *widget,
       if (individual != NULL)
         g_object_unref (individual);
     }
-  else if (((target == drag_atoms_dest[DND_DRAG_TYPE_STRING] ||
-       target == drag_atoms_dest[DND_DRAG_TYPE_INDIVIDUAL_ID]) &&
+  else if ((target == drag_atoms_dest[DND_DRAG_TYPE_INDIVIDUAL_ID] &&
       (priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_GROUPS_CHANGE ||
        priv->drag_row == NULL)) ||
       (target == drag_atoms_dest[DND_DRAG_TYPE_PERSONA_ID] &&
