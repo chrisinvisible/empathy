@@ -226,21 +226,17 @@ fill_store (EmpathyIrcNetworkChooserDialog *self)
 
   for (l = networks; l != NULL; l = g_slist_next (l))
     {
-      gchar *name;
       EmpathyIrcNetwork *network = l->data;
       GtkTreeIter iter;
 
-      g_object_get (network, "name", &name, NULL);
-
       gtk_list_store_insert_with_values (priv->store, &iter, -1,
           COL_NETWORK_OBJ, network,
-          COL_NETWORK_NAME, name,
+          COL_NETWORK_NAME, empathy_irc_network_get_name (network),
           -1);
 
       if (network == priv->network)
         select_iter (self, &iter, FALSE);
 
-      g_free (name);
       g_object_unref (network);
     }
 
@@ -253,7 +249,6 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
-  gchar *name;
   GtkTreeIter iter;
 
   priv->changed = TRUE;
@@ -263,14 +258,12 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
     return;
 
   /* name could be changed */
-  g_object_get (network, "name", &name, NULL);
   gtk_list_store_set (GTK_LIST_STORE (priv->store), &iter,
-      COL_NETWORK_NAME, name, -1);
+      COL_NETWORK_NAME, empathy_irc_network_get_name (network), -1);
 
   scroll_to_iter (self, &iter);
 
   g_object_unref (network);
-  g_free (name);
 }
 
 static void
@@ -304,24 +297,20 @@ add_network (EmpathyIrcNetworkChooserDialog *self)
 {
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
-  gchar *name;
   GtkTreeIter iter;
 
   network = empathy_irc_network_new (_("New Network"));
   empathy_irc_network_manager_add (priv->network_manager, network);
 
-  g_object_get (network, "name", &name, NULL);
-
   gtk_list_store_insert_with_values (priv->store, &iter, -1,
       COL_NETWORK_OBJ, network,
-      COL_NETWORK_NAME, name,
+      COL_NETWORK_NAME, empathy_irc_network_get_name (network),
       -1);
 
   select_iter (self, &iter, TRUE);
 
   display_irc_network_dialog (self, network);
 
-  g_free (name);
   g_object_unref (network);
 }
 
@@ -331,14 +320,12 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
   EmpathyIrcNetwork *network;
   GtkTreeIter iter;
-  gchar *name;
 
   network = dup_selected_network (self, &iter);
   if (network == NULL)
     return;
 
-  g_object_get (network, "name", &name, NULL);
-  DEBUG ("Remove network %s", name);
+  DEBUG ("Remove network %s", empathy_irc_network_get_name (network));
 
   gtk_list_store_remove (priv->store, &iter);
   empathy_irc_network_manager_remove (priv->network_manager, network);
@@ -347,7 +334,6 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
   if (gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->store), &iter))
     select_iter (self, &iter, TRUE);
 
-  g_free (name);
   g_object_unref (network);
 }
 
