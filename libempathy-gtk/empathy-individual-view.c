@@ -455,7 +455,12 @@ individual_view_drag_data_received (GtkWidget *view,
 static gboolean
 individual_view_drag_motion_cb (DragMotionData *data)
 {
-  gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), data->path, FALSE);
+  if (data->view != NULL)
+    {
+      gtk_tree_view_expand_row (GTK_TREE_VIEW (data->view), data->path, FALSE);
+      g_object_remove_weak_pointer (G_OBJECT (data->view),
+          (gpointer *) &data->view);
+    }
 
   data->timeout_id = 0;
 
@@ -609,6 +614,7 @@ individual_view_drag_motion (GtkWidget *widget,
       dm = g_new0 (DragMotionData, 1);
 
       dm->view = EMPATHY_INDIVIDUAL_VIEW (widget);
+      g_object_add_weak_pointer (G_OBJECT (widget), (gpointer *) &dm->view);
       dm->path = gtk_tree_path_copy (path);
 
       dm->timeout_id = g_timeout_add_seconds (1,
