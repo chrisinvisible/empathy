@@ -58,6 +58,7 @@ typedef struct {
     GtkListStore *store;
     GtkTreeModelFilter *filter;
     GtkWidget *search;
+    GtkWidget *select_button;
 
     gulong search_sig;
 } EmpathyIrcNetworkChooserDialogPriv;
@@ -469,8 +470,10 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
       GTK_STOCK_ADD, GTK_RESPONSE_OK,
       GTK_STOCK_EDIT, GTK_RESPONSE_APPLY,
       GTK_STOCK_REMOVE, GTK_RESPONSE_REJECT,
-      GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
       NULL);
+
+  priv->select_button = gtk_dialog_add_button (dialog, _("Select"),
+      GTK_RESPONSE_CLOSE);
 
   fill_store (self);
 
