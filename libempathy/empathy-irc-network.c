@@ -359,3 +359,19 @@ empathy_irc_network_set_server_position (EmpathyIrcNetwork *self,
 
   g_signal_emit (self, signals[MODIFIED], 0);
 }
+
+const gchar *
+empathy_irc_network_get_name (EmpathyIrcNetwork *self)
+{
+  EmpathyIrcNetworkPriv *priv = GET_PRIV (self);
+
+  return priv->name;
+}
+
+const gchar *
+empathy_irc_network_get_charset (EmpathyIrcNetwork *self)
+{
+  EmpathyIrcNetworkPriv *priv = GET_PRIV (self);
+
+  return priv->charset;
+}
