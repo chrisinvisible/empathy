@@ -356,17 +356,33 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
 
   DEBUG ("Remove network %s", empathy_irc_network_get_name (network));
 
-  gtk_list_store_remove (priv->store, &iter);
-  empathy_irc_network_manager_remove (priv->network_manager, network);
-
-  /* Select next network */
-  if (gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->store), &iter))
+  /* Delete network and select next network */
+  if (gtk_list_store_remove (priv->store, &iter))
     {
       GtkTreeIter filter_iter = iter_to_filter_iter (self, &iter);
 
       select_iter (self, &filter_iter, TRUE);
     }
+  else
+    {
+      /* this should only happen if the last network was deleted */
+      GtkTreeIter last, filter_iter;
+      gint n_elements;
 
+      n_elements = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->store),
+          NULL);
+
+      if (n_elements > 0)
+        {
+          gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (priv->store), &last,
+              NULL, (n_elements-1));
+          filter_iter = iter_to_filter_iter (self, &last);
+
+          select_iter (self, &filter_iter, TRUE);
+        }
+    }
+
+  empathy_irc_network_manager_remove (priv->network_manager, network);
   gtk_widget_grab_focus (priv->treeview);
 
   g_object_unref (network);
