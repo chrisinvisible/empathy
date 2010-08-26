@@ -146,3 +146,44 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
 
   g_object_unref (ac_settings);
 }
+
+void
+empathy_account_widget_irc_build_simple (EmpathyAccountWidget *self,
+    const char *filename)
+{
+  EmpathyAccountWidgetIrc *settings;
+  EmpathyAccountSettings *ac_settings;
+  GtkAlignment *alignment;
+
+  settings = g_slice_new0 (EmpathyAccountWidgetIrc);
+  settings->self = self;
+
+  self->ui_details->gui = empathy_builder_get_file (filename,
+      "vbox_irc_simple", &self->ui_details->widget,
+      "alignment_network_simple", &alignment,
+      NULL);
+
+  /* Add network chooser button */
+  g_object_get (settings->self, "settings", &ac_settings, NULL);
+
+  settings->network_chooser = empathy_irc_network_chooser_new (ac_settings);
+
+  g_signal_connect (settings->network_chooser, "changed",
+      G_CALLBACK (network_changed_cb), settings);
+
+  gtk_container_add (GTK_CONTAINER (alignment), settings->network_chooser);
+
+  gtk_widget_show (settings->network_chooser);
+
+  empathy_account_widget_handle_params (self,
+      "entry_nick_simple", "account",
+      NULL);
+
+  empathy_builder_connect (self->ui_details->gui, settings,
+      "vbox_irc_simple", "destroy", account_widget_irc_destroy_cb,
+      NULL);
+
+  self->ui_details->default_focus = g_strdup ("entry_nick_simple");
+
+  g_object_unref (ac_settings);
+}

@@ -477,8 +477,7 @@ account_assistant_chooser_enter_details_filter_func (
     gboolean is_facebook,
     gpointer user_data)
 {
-  if (!tp_strdiff (protocol->name, "local-xmpp") ||
-      !tp_strdiff (protocol->name, "irc"))
+  if (!tp_strdiff (protocol->name, "local-xmpp"))
     return FALSE;
 
   return TRUE;

@@ -901,8 +901,16 @@ account_widget_build_irc (EmpathyAccountWidget *self,
   const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
-  empathy_account_widget_irc_build (self, filename,
-    &priv->table_common_settings);
+
+  if (priv->simple)
+    {
+      empathy_account_widget_irc_build_simple (self, filename);
+    }
+  else
+    {
+      empathy_account_widget_irc_build (self, filename,
+        &priv->table_common_settings);
+    }
 }
 
 static void
