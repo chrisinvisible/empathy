@@ -534,6 +534,8 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
 
   /* Request a side ensuring to display at least some networks */
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 300);
+
+  gtk_window_set_modal (GTK_WINDOW (self), TRUE);
 }
 
 static void
@@ -594,11 +596,13 @@ empathy_irc_network_chooser_dialog_init (EmpathyIrcNetworkChooserDialog *self)
 
 GtkWidget *
 empathy_irc_network_chooser_dialog_new (EmpathyAccountSettings *settings,
-    EmpathyIrcNetwork *network)
+    EmpathyIrcNetwork *network,
+    GtkWindow *parent)
 {
   return g_object_new (EMPATHY_TYPE_IRC_NETWORK_CHOOSER_DIALOG,
       "settings", settings,
       "network", network,
+      "transient-for", parent,
       NULL);
 }
 

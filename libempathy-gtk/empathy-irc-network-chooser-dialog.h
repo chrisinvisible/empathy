@@ -57,7 +57,8 @@ GType empathy_irc_network_chooser_dialog_get_type (void) G_GNUC_CONST;
 
 GtkWidget * empathy_irc_network_chooser_dialog_new (
     EmpathyAccountSettings *settings,
-    EmpathyIrcNetwork *network);
+    EmpathyIrcNetwork *network,
+    GtkWindow *parent);
 
 EmpathyIrcNetwork * empathy_irc_network_chooser_dialog_get_network (
     EmpathyIrcNetworkChooserDialog *self);

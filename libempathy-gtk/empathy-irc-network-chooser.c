@@ -264,12 +264,15 @@ clicked_cb (GtkButton *button,
     gpointer user_data)
 {
   EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (button);
+  GtkWindow *window;
 
   if (priv->dialog != NULL)
     goto out;
 
+  window = empathy_get_toplevel_window (GTK_WIDGET (button));
+
   priv->dialog = empathy_irc_network_chooser_dialog_new (priv->settings,
-      priv->network);
+      priv->network, window);
   gtk_widget_show_all (priv->dialog);
 
   tp_g_signal_connect_object (priv->dialog, "response",
