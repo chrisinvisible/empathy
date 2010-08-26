@@ -411,11 +411,30 @@ search_text_notify_cb (EmpathyLiveSearch *search,
 
   gtk_tree_model_filter_refilter (priv->filter);
 
-  /* Select first matching network */
+  /* Is there at least one network in the view ? */
   if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->filter),
         &filter_iter))
     {
-      select_iter (self, &filter_iter, TRUE);
+      const gchar *text;
+
+      text = empathy_live_search_get_text (EMPATHY_LIVE_SEARCH (priv->search));
+      if (!EMP_STR_EMPTY (text))
+        {
+          /* We are doing a search, select the first matching network */
+          select_iter (self, &filter_iter, TRUE);
+        }
+      else
+        {
+          /* Search has been cancelled. Scroll to the selected network */
+          GtkTreeSelection *selection;
+
+          selection = gtk_tree_view_get_selection (
+              GTK_TREE_VIEW (priv->treeview));
+
+          if (gtk_tree_selection_get_selected (selection, NULL, &filter_iter))
+            scroll_to_iter (self, &filter_iter);
+        }
+
       sensitive = TRUE;
     }
 
