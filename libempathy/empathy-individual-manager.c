@@ -171,7 +171,7 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
     EmpathyIndividualManager *self)
 {
   EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
-  GList *l, *added_filtered = NULL, *removed_filtered = NULL;
+  GList *l, *added_filtered = NULL;
 
   /* Filter the individuals for ones which contain EmpathyContacts */
   for (l = added; l; l = l->next)
@@ -197,26 +197,21 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
 
       if (g_hash_table_lookup (priv->individuals,
           folks_individual_get_id (ind)) != NULL)
-        {
-          removed_filtered = g_list_prepend (removed_filtered, ind);
-          remove_individual (self, ind);
-        }
+        remove_individual (self, ind);
     }
 
   /* Bail if we have no individuals left */
-  if (added_filtered == NULL && removed_filtered == NULL)
+  if (added_filtered == NULL && removed == NULL)
     return;
 
   added_filtered = g_list_reverse (added_filtered);
-  removed_filtered = g_list_reverse (removed_filtered);
 
   g_signal_emit (self, signals[MEMBERS_CHANGED], 0, message,
-      added_filtered, removed_filtered,
+      added_filtered, removed,
       tp_chanel_group_change_reason_from_folks_groups_change_reason (reason),
       TRUE);
 
   g_list_free (added_filtered);
-  g_list_free (removed_filtered);
 }
 
 static void
