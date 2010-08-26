@@ -1884,7 +1884,7 @@ individual_store_get_individual_status_icon_with_icon_name (
     {
       pixbuf_status =
           empathy_pixbuf_contact_status_icon_with_icon_name (contact,
-          status_icon_name, priv->show_protocols);
+          status_icon_name, show_protocols_here);
       if (pixbuf_status != NULL)
         {
           g_hash_table_insert (priv->status_icons,
