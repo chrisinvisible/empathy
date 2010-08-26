@@ -104,6 +104,7 @@ typedef struct {
 
   GtkWidget *notebook_account;
   GtkWidget *spinner;
+  gboolean loading;
 
   /* We have to keep a reference on the actual EmpathyAccountWidget, not just
    * his GtkWidget. It is the only reliable source we can query to know if
@@ -1313,7 +1314,8 @@ accounts_dialog_model_selection_changed (GtkTreeSelection *selection,
     }
 
   /* Update remove button sensitivity */
-  gtk_widget_set_sensitive (priv->button_remove, is_selection && !creating);
+  gtk_widget_set_sensitive (priv->button_remove, is_selection && !creating &&
+      !priv->loading);
 }
 
 static void
@@ -1872,10 +1874,19 @@ static void
 finished_loading (EmpathyAccountsDialog *self)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (self);
+  GtkTreeSelection *selection;
+  gboolean has_selected;
+
+  priv->loading = FALSE;
 
   gtk_widget_set_sensitive (priv->button_add, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
   gtk_widget_set_sensitive (priv->treeview, TRUE);
+
+  /* Sensitive the remove button if there is an account selected */
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->treeview));
+  has_selected = gtk_tree_selection_get_selected (selection, NULL, NULL);
+  gtk_widget_set_sensitive (priv->button_remove, has_selected);
 
   gtk_spinner_stop (GTK_SPINNER (priv->spinner));
   gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook_account),
@@ -2053,6 +2064,8 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 #endif /* HAVE_MEEGO */
 
   /* Display loading page */
+  priv->loading = TRUE;
+
   priv->spinner = gtk_spinner_new ();
 
   gtk_spinner_start (GTK_SPINNER (priv->spinner));
