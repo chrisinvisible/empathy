@@ -1860,6 +1860,15 @@ accounts_dialog_set_selected_account (EmpathyAccountsDialog *dialog,
 }
 
 static void
+finished_loading (EmpathyAccountsDialog *self)
+{
+  EmpathyAccountsDialogPriv *priv = GET_PRIV (self);
+
+  gtk_widget_set_sensitive (priv->button_add, TRUE);
+  gtk_widget_set_sensitive (priv->button_import, TRUE);
+}
+
+static void
 accounts_dialog_cms_prepare_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
@@ -1869,7 +1878,7 @@ accounts_dialog_cms_prepare_cb (GObject *source,
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
 
   if (!empathy_connection_managers_prepare_finish (cms, result, NULL))
-    return;
+    goto out;
 
   accounts_dialog_update_settings (dialog, NULL);
 
@@ -1879,6 +1888,9 @@ accounts_dialog_cms_prepare_cb (GObject *source,
       g_object_unref (priv->initial_selection);
       priv->initial_selection = NULL;
     }
+
+out:
+  finished_loading (dialog);
 }
 
 static void
@@ -2023,8 +2035,12 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_widget_hide (priv->button_remove);
 #endif /* HAVE_MEEGO */
 
-  /* Remove button is unsensitive until we have a selected account */
+  /* Remove button is insensitive until we have a selected account */
   gtk_widget_set_sensitive (priv->button_remove, FALSE);
+
+  /* Add and Import buttons are insensitive while the dialog is loading */
+  gtk_widget_set_sensitive (priv->button_add, FALSE);
+  gtk_widget_set_sensitive (priv->button_import, FALSE);
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
   gtk_box_pack_start (GTK_BOX (priv->hbox_protocol), priv->combobox_protocol,
