@@ -345,11 +345,12 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
   EmpathyIrcNetwork *network;
   GtkTreeIter iter;
 
-  gtk_widget_hide (priv->search);
-
   network = dup_selected_network (self, &iter);
   if (network == NULL)
     return;
+
+  /* Hide the search after picking the network to get the right one */
+  gtk_widget_hide (priv->search);
 
   DEBUG ("Remove network %s", empathy_irc_network_get_name (network));
 
