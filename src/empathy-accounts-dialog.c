@@ -1875,6 +1875,7 @@ finished_loading (EmpathyAccountsDialog *self)
 
   gtk_widget_set_sensitive (priv->button_add, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
+  gtk_widget_set_sensitive (priv->treeview, TRUE);
 
   gtk_spinner_stop (GTK_SPINNER (priv->spinner));
   gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook_account),
@@ -2065,9 +2066,11 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   /* Remove button is insensitive until we have a selected account */
   gtk_widget_set_sensitive (priv->button_remove, FALSE);
 
-  /* Add and Import buttons are insensitive while the dialog is loading */
+  /* Add and Import buttons and treeview are insensitive while the dialog
+   * is loading */
   gtk_widget_set_sensitive (priv->button_add, FALSE);
   gtk_widget_set_sensitive (priv->button_import, FALSE);
+  gtk_widget_set_sensitive (priv->treeview, FALSE);
 
   priv->combobox_protocol = empathy_protocol_chooser_new ();
   gtk_box_pack_start (GTK_BOX (priv->hbox_protocol), priv->combobox_protocol,
