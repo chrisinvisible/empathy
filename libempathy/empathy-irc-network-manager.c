@@ -32,6 +32,7 @@
 #include "empathy-debug.h"
 
 #define IRC_NETWORKS_DTD_FILENAME "empathy-irc-networks.dtd"
+#define IRC_NETWORKS_FILENAME "irc-networks.xml"
 #define SAVE_TIMER 4
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIrcNetworkManager)
@@ -780,4 +781,37 @@ empathy_irc_network_manager_find_network_by_address (
       (GHRFunc) find_network_by_address, (gchar *) address);
 
   return network;
+}
+
+EmpathyIrcNetworkManager *
+empathy_irc_network_manager_dup_default (void)
+{
+  static EmpathyIrcNetworkManager *default_mgr = NULL;
+  gchar *dir, *user_file_with_path, *global_file_with_path;
+
+  if (default_mgr != NULL)
+    return g_object_ref (default_mgr);
+
+  dir = g_build_filename (g_get_user_config_dir (), PACKAGE_NAME, NULL);
+  g_mkdir_with_parents (dir, S_IRUSR | S_IWUSR | S_IXUSR);
+  user_file_with_path = g_build_filename (dir, IRC_NETWORKS_FILENAME, NULL);
+  g_free (dir);
+
+  global_file_with_path = g_build_filename (g_getenv ("EMPATHY_SRCDIR"),
+      "libempathy", IRC_NETWORKS_FILENAME, NULL);
+  if (!g_file_test (global_file_with_path, G_FILE_TEST_EXISTS))
+    {
+      g_free (global_file_with_path);
+      global_file_with_path = g_build_filename (DATADIR, "empathy",
+          IRC_NETWORKS_FILENAME, NULL);
+    }
+
+  default_mgr = empathy_irc_network_manager_new (
+      global_file_with_path, user_file_with_path);
+
+  g_object_add_weak_pointer (G_OBJECT (default_mgr), (gpointer *) &default_mgr);
+
+  g_free (global_file_with_path);
+  g_free (user_file_with_path);
+  return default_mgr;
 }

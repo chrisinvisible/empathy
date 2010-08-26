@@ -257,7 +257,6 @@
   </object>
   <object class="GtkVBox" id="vbox_irc">
     <property name="visible">True</property>
-    <property name="orientation">vertical</property>
     <child>
       <object class="GtkTable" id="table_irc_settings">
         <property name="visible">True</property>
@@ -373,80 +372,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hbox174">
-            <property name="visible">True</property>
-            <property name="spacing">2</property>
-            <child>
-              <object class="GtkComboBox" id="combobox_network">
-                <property name="visible">True</property>
-              </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_add_network">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <child>
-                  <object class="GtkImage" id="image2">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-add</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_network">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <child>
-                  <object class="GtkImage" id="image834">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-edit</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_remove_network">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <child>
-                  <object class="GtkImage" id="image835">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-remove</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="x_options">GTK_FILL</property>
-            <property name="y_options">GTK_FILL</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="label_network2">
             <property name="visible">True</property>
             <property name="xalign">0</property>
@@ -457,6 +382,9 @@
             <property name="x_options">GTK_FILL</property>
             <property name="y_options"></property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
       <packing>
