@@ -258,8 +258,8 @@ details_update_show (EmpathyIndividualWidget *self,
           g_free (markup);
         }
 
-      if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP))
-        gtk_label_set_selectable (GTK_LABEL (w), TRUE);
+      gtk_label_set_selectable (GTK_LABEL (w),
+          (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE : TRUE);
 
       gtk_table_attach_defaults (GTK_TABLE (priv->table_details),
           w, 1, 2, n_rows, n_rows + 1);
@@ -650,8 +650,9 @@ location_update (EmpathyIndividualWidget *self)
           gtk_misc_set_alignment (GTK_MISC (label), 0, 0);
           gtk_widget_show (label);
 
-          if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP))
-            gtk_label_set_selectable (GTK_LABEL (label), TRUE);
+          gtk_label_set_selectable (GTK_LABEL (label),
+              (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE :
+                  TRUE);
         }
 
       g_free (svalue);
@@ -1235,8 +1236,8 @@ alias_presence_avatar_favourite_set_up (EmpathyIndividualWidget *self,
   else
     {
       alias = gtk_label_new (NULL);
-      if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP))
-        gtk_label_set_selectable (GTK_LABEL (alias), TRUE);
+      gtk_label_set_selectable (GTK_LABEL (alias),
+          (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE : TRUE);
       gtk_misc_set_alignment (GTK_MISC (alias), 0.0, 0.5);
     }
 
@@ -1399,7 +1400,8 @@ add_persona (EmpathyIndividualWidget *self,
   hbox = GTK_BOX (gtk_hbox_new (FALSE, 6));
 
   account_label = gtk_label_new (NULL);
-  gtk_label_set_selectable (GTK_LABEL (account_label), TRUE);
+  gtk_label_set_selectable (GTK_LABEL (account_label),
+      (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE : TRUE);
   gtk_misc_set_alignment (GTK_MISC (account_label), 0.0, 0.5);
   gtk_widget_show (account_label);
 
@@ -1426,7 +1428,8 @@ add_persona (EmpathyIndividualWidget *self,
 
   /* Set up ID label */
   label = gtk_label_new (NULL);
-  gtk_label_set_selectable (GTK_LABEL (label), TRUE);
+  gtk_label_set_selectable (GTK_LABEL (label),
+      (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE : TRUE);
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 
   g_object_set_data (G_OBJECT (table), "id-widget", label);
