@@ -71,6 +71,12 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountsDialog)
 G_DEFINE_TYPE (EmpathyAccountsDialog, empathy_accounts_dialog, GTK_TYPE_DIALOG);
 
+enum
+{
+  NOTEBOOK_PAGE_ACCOUNT = 0,
+  NOTEBOOK_PAGE_LOADING
+};
+
 typedef struct {
   GtkWidget *alignment_settings;
   GtkWidget *alignment_infobar;
@@ -95,6 +101,9 @@ typedef struct {
   GtkWidget *label_name;
   GtkWidget *label_type;
   GtkWidget *settings_widget;
+
+  GtkWidget *notebook_account;
+  GtkWidget *spinner;
 
   /* We have to keep a reference on the actual EmpathyAccountWidget, not just
    * his GtkWidget. It is the only reliable source we can query to know if
@@ -1866,6 +1875,10 @@ finished_loading (EmpathyAccountsDialog *self)
 
   gtk_widget_set_sensitive (priv->button_add, TRUE);
   gtk_widget_set_sensitive (priv->button_import, TRUE);
+
+  gtk_spinner_stop (GTK_SPINNER (priv->spinner));
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook_account),
+      NOTEBOOK_PAGE_ACCOUNT);
 }
 
 static void
@@ -1997,6 +2010,7 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   EmpathyAccountsDialogPriv    *priv = GET_PRIV (dialog);
   GtkWidget                    *content_area;
   GtkWidget *action_area, *vbox, *hbox, *align;
+  GtkWidget *alig;
 
   filename = empathy_file_lookup ("empathy-accounts-dialog.ui", "src");
 
@@ -2011,6 +2025,8 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
       "button_remove", &priv->button_remove,
       "button_import", &priv->button_import,
       "hbox_protocol", &priv->hbox_protocol,
+      "notebook_account", &priv->notebook_account,
+      "alignment_loading", &alig,
       NULL);
   g_free (filename);
 
@@ -2034,6 +2050,17 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
   gtk_widget_hide (action_area);
   gtk_widget_hide (priv->button_remove);
 #endif /* HAVE_MEEGO */
+
+  /* Display loading page */
+  priv->spinner = gtk_spinner_new ();
+
+  gtk_spinner_start (GTK_SPINNER (priv->spinner));
+  gtk_widget_show (priv->spinner);
+
+  gtk_container_add (GTK_CONTAINER (alig), priv->spinner);
+
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook_account),
+      NOTEBOOK_PAGE_LOADING);
 
   /* Remove button is insensitive until we have a selected account */
   gtk_widget_set_sensitive (priv->button_remove, FALSE);
