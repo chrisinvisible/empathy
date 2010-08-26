@@ -110,6 +110,7 @@ contact_toggle_cell_data_func (GtkTreeViewColumn *tree_column,
   g_object_set (cell,
       "visible", !is_group,
       "sensitive", individual != priv->start_individual,
+      "activatable", individual != priv->start_individual,
       "active", individual_added || individual == priv->start_individual,
       NULL);
 
