@@ -284,6 +284,8 @@ irc_network_dialog_destroy_cb (GtkWidget *widget,
   filter_iter = iter_to_filter_iter (self, &iter);
   scroll_to_iter (self, &filter_iter);
 
+  gtk_widget_grab_focus (priv->treeview);
+
   g_object_unref (network);
 }
 
@@ -364,6 +366,8 @@ remove_network (EmpathyIrcNetworkChooserDialog *self)
 
       select_iter (self, &filter_iter, TRUE);
     }
+
+  gtk_widget_grab_focus (priv->treeview);
 
   g_object_unref (network);
 }
