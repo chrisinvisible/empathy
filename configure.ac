@@ -50,8 +50,8 @@ CLUTTER_GTK_REQUIRED=0.10
 ENCHANT_REQUIRED=1.2.0
 GEOCLUE_REQUIRED=0.11
 ISO_CODES_REQUIRED=0.35
-LIBCHAMPLAIN_GTK_REQUIRED=0.4
-LIBCHAMPLAIN_REQUIRED=0.4
+LIBCHAMPLAIN_GTK_REQUIRED=0.7.1
+LIBCHAMPLAIN_REQUIRED=0.7.1
 NAUTILUS_SENDTO_REQUIRED=2.28.1
 NAUTILUS_SENDTO_REQUIRED_GTK3=2.90.0
 NETWORK_MANAGER_REQUIRED=0.7.0
@@ -370,8 +370,8 @@ if test "x$enable_map" != "xno"; then
    if test "x$have_gtk3" == "xno"; then
       PKG_CHECK_MODULES(LIBCHAMPLAIN,
       [
-         champlain-0.4 >= $LIBCHAMPLAIN_REQUIRED,
-         champlain-gtk-0.4 >= $LIBCHAMPLAIN_GTK_REQUIRED
+         champlain-0.8 >= $LIBCHAMPLAIN_REQUIRED,
+         champlain-gtk-0.8 >= $LIBCHAMPLAIN_GTK_REQUIRED
          clutter-gtk-0.10 >= $CLUTTER_GTK_REQUIRED
       ], have_libchamplain="yes", have_libchamplain="no")
    else
