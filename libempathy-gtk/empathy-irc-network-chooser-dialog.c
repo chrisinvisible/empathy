@@ -61,6 +61,7 @@ typedef struct {
     GtkWidget *select_button;
 
     gulong search_sig;
+    gulong activate_sig;
 } EmpathyIrcNetworkChooserDialogPriv;
 
 enum {
@@ -419,6 +420,13 @@ filter_visible_func (GtkTreeModel *model,
   return visible;
 }
 
+static void
+search_activate_cb (GtkWidget *search,
+  EmpathyIrcNetworkChooserDialog *self)
+{
+  gtk_widget_hide (search);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_CLOSE);
+}
 
 static void
 search_text_notify_cb (EmpathyLiveSearch *search,
@@ -468,6 +476,7 @@ dialog_destroy_cb (GtkWidget *widget,
   EmpathyIrcNetworkChooserDialogPriv *priv = GET_PRIV (self);
 
   g_signal_handler_disconnect (priv->search, priv->search_sig);
+  g_signal_handler_disconnect (priv->search, priv->activate_sig);
 }
 
 static void
@@ -531,6 +540,9 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
 
   priv->search_sig = g_signal_connect (priv->search, "notify::text",
       G_CALLBACK (search_text_notify_cb), self);
+
+  priv->activate_sig = g_signal_connect (priv->search, "activate",
+      G_CALLBACK (search_activate_cb), self);
 
   /* Add buttons */
   gtk_dialog_add_buttons (dialog,
