@@ -198,6 +198,15 @@ toggle_individual_row (EmpathyIndividualLinker *self,
 }
 
 static void
+row_activated_cb (EmpathyIndividualView *view,
+    GtkTreePath *path,
+    GtkTreeViewColumn *column,
+    EmpathyIndividualLinker *self)
+{
+  toggle_individual_row (self, path);
+}
+
+static void
 row_toggled_cb (GtkCellRendererToggle *cell_renderer,
     const gchar *path,
     EmpathyIndividualLinker *self)
@@ -205,29 +214,6 @@ row_toggled_cb (GtkCellRendererToggle *cell_renderer,
   GtkTreePath *tree_path = gtk_tree_path_new_from_string (path);
   toggle_individual_row (self, tree_path);
   gtk_tree_path_free (tree_path);
-}
-
-static void
-search_bar_activate_cb (EmpathyLiveSearch *search_bar,
-    EmpathyIndividualLinker *self)
-{
-  EmpathyIndividualLinkerPriv *priv = GET_PRIV (self);
-  GtkTreeSelection *selection;
-  GList *rows, *l;
-
-  /* Toggle the status of the selected individuals */
-  selection = gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (priv->individual_view));
-  rows = gtk_tree_selection_get_selected_rows (selection, NULL);
-
-  for (l = rows; l != NULL; l = l->next)
-    {
-      GtkTreePath *path = (GtkTreePath *) l->data;
-      toggle_individual_row (self, path);
-      gtk_tree_path_free (path);
-    }
-
-  g_list_free (rows);
 }
 
 static void
@@ -275,6 +261,9 @@ set_up (EmpathyIndividualLinker *self)
       EMPATHY_INDIVIDUAL_VIEW_FEATURE_NONE, EMPATHY_INDIVIDUAL_FEATURE_NONE);
   empathy_individual_view_set_show_offline (priv->individual_view, TRUE);
 
+  g_signal_connect (priv->individual_view, "row-activated",
+      (GCallback) row_activated_cb, self);
+
   /* Add a checkbox column to the selector */
   cell_renderer = gtk_cell_renderer_toggle_new ();
   g_signal_connect (cell_renderer, "toggled", (GCallback) row_toggled_cb, self);
@@ -298,8 +287,6 @@ set_up (EmpathyIndividualLinker *self)
   search_bar = empathy_live_search_new (GTK_WIDGET (priv->individual_view));
   empathy_individual_view_set_live_search (priv->individual_view,
       EMPATHY_LIVE_SEARCH (search_bar));
-  g_signal_connect (search_bar, "activate", (GCallback) search_bar_activate_cb,
-      self);
 
   gtk_box_pack_end (vbox, search_bar, FALSE, TRUE, 0);
 
