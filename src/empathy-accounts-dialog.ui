@@ -233,8 +233,11 @@
             <child>
               <object class="GtkLabel" id="label5">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">&lt;b&gt;&lt;span size='xx-large'&gt;Loading account information&lt;/span&gt;&lt;/b&gt;</property>
-                <property name="use_markup">True</property>
+                <property name="label" translatable="yes">Loading account information</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="scale" value="1.728"/> <!-- PANGO_SCALE_XX_LARGE -->
+                </attributes>
               </object>
               <packing>
                 <property name="position">1</property>
