@@ -157,7 +157,7 @@ reason_to_string (EmpathyTLSDialog *self)
           "Authority");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_EXPIRED:
-      reason_str = _("The certificate is expired");
+      reason_str = _("The certificate has expired");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_NOT_ACTIVATED:
       reason_str = _("The certificate hasn't yet been activated");
@@ -266,7 +266,7 @@ empathy_tls_dialog_constructed (GObject *object)
   text = reason_to_string (self);
 
   g_object_set (message_dialog,
-      "text", _("This connection is untrusted, would you like to "
+      "text", _("This connection is untrusted. Would you like to "
           "continue anyway?"),
       "secondary-text", text,
       NULL);

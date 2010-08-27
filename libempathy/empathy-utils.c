@@ -374,8 +374,8 @@ create_errors_to_message_hash (void)
 		"cryptographically weak"));
 	g_hash_table_insert (errors, TP_ERROR_STR_CERT_LIMIT_EXCEEDED,
 		_("The length of the server certificate, or the depth of the "
-		"server certificate chain exceed the limits imposed by the "
-		"crypto library"));
+		"server certificate chain, exceed the limits imposed by the "
+		"cryptography library"));
 
 	return errors;
 }

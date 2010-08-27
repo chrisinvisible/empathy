@@ -183,7 +183,7 @@ main (int argc, char *argv[])
         NULL },
       { "if-needed", 'n',
         0, G_OPTION_ARG_NONE, &only_if_needed,
-        N_("Don't display any dialogs if there are any non-salut accounts"),
+        N_("Don't display any dialogs if there are any non-Salut accounts"),
         NULL },
       { "select-account", 's',
         G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_STRING, &selected_account_name,
