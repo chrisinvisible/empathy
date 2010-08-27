@@ -1735,8 +1735,16 @@ do_constructed (GObject *obj)
   if (!priv->simple)
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
+      GtkWidget *image;
 
-      priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
+      /*  We can't use the stock button as its accelerator ('C') clashes with
+       *  the Close button. */
+      priv->cancel_button = gtk_button_new ();
+      gtk_button_set_label (GTK_BUTTON (priv->cancel_button), _("Ca_ncel"));
+      gtk_button_set_use_underline (GTK_BUTTON (priv->cancel_button), TRUE);
+
+      image = gtk_image_new_from_stock (GTK_STOCK_CANCEL, GTK_ICON_SIZE_BUTTON);
+      gtk_button_set_image (GTK_BUTTON (priv->cancel_button), image);
 
       priv->apply_button = gtk_button_new ();
       set_apply_button (self);
