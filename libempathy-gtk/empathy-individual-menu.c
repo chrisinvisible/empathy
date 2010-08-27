@@ -105,6 +105,10 @@ individual_menu_add_personas (GtkMenuShell *menu,
 
       store = folks_persona_get_store (FOLKS_PERSONA (persona));
       account = folks_persona_store_get_display_name (store);
+
+      /* Translators: this is used in the context menu for a contact. The first
+       * parameter is a contact ID (e.g. foo@jabber.org) and the second is one
+       * of the user's account IDs (e.g. me@hotmail.com). */
       label = g_strdup_printf (_("%s (%s)"),
           folks_persona_get_display_id (FOLKS_PERSONA (persona)), account);
 
@@ -826,6 +830,8 @@ empathy_individual_link_menu_item_new (FolksIndividual *individual)
   g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
 
   item = gtk_image_menu_item_new_with_mnemonic (
+      /* Translators: this is a verb meaning "to connect two contacts together
+       * to form a meta-contact". */
       C_("Link individual (contextual menu)", "_Link…"));
   /* TODO */
   /*image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);

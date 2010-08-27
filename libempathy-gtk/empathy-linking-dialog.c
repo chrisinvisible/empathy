@@ -89,6 +89,9 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   /* Set up dialog */
   gtk_dialog_set_has_separator (dialog, FALSE);
   gtk_window_set_resizable (GTK_WINDOW (self), TRUE);
+  /* Translators: this is the title of the linking dialogue (reached by
+   * right-clicking on a contact and selecting "Link…"). "Link" in this title
+   * is a verb. */
   gtk_window_set_title (GTK_WINDOW (self), _("Link Contacts"));
   gtk_widget_set_size_request (GTK_WIDGET (self), 600, 500);
 
@@ -99,6 +102,9 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   gtk_widget_show (button);
 
   /* Add button */
+  /* Translators: this is an action button in the linking dialogue. "Link" is
+   * used here as a verb meaning "to connect two contacts to form a
+   * meta-contact". */
   button = gtk_button_new_with_mnemonic (_("_Link"));
   gtk_dialog_add_action_widget (dialog, button, GTK_RESPONSE_OK);
   gtk_widget_show (button);
