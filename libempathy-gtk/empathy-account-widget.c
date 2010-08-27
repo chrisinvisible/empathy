@@ -1579,7 +1579,7 @@ add_enable_checkbox (EmpathyAccountWidget *self,
   gtk_widget_show (w);
 #else
   priv->enabled_checkbox =
-      gtk_check_button_new_with_label (_("Enabled"));
+      gtk_check_button_new_with_mnemonic (_("_Enabled"));
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->enabled_checkbox),
       is_enabled);
