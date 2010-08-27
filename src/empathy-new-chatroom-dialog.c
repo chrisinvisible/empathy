@@ -590,6 +590,7 @@ new_chatroom_dialog_new_room_cb (EmpathyTpRoomlist        *room_list,
 	gchar            *tooltip;
 	const gchar      *need_password;
 	const gchar      *invite_only;
+	gchar            *tmp;
 
 	DEBUG ("New chatroom listed: %s (%s)",
 		empathy_chatroom_get_name (chatroom),
@@ -600,13 +601,15 @@ new_chatroom_dialog_new_room_cb (EmpathyTpRoomlist        *room_list,
 	selection = gtk_tree_view_get_selection (view);
 	store = GTK_LIST_STORE (dialog->model);
 	members = g_strdup_printf ("%d", empathy_chatroom_get_members_count (chatroom));
+	tmp = g_strdup_printf ("<b>%s</b>", empathy_chatroom_get_name (chatroom));
 	/* Translators: Room/Join's roomlist tooltip. Parameters are a channel name,
 	yes/no, yes/no and a number. */
-	tooltip = g_strdup_printf (_("<b>%s</b>\nInvite required: %s\nPassword required: %s\nMembers: %s"),
-		empathy_chatroom_get_name (chatroom),
+	tooltip = g_strdup_printf (_("%s\nInvite required: %s\nPassword required: %s\nMembers: %s"),
+		tmp,
 		empathy_chatroom_get_invite_only (chatroom) ? _("Yes") : _("No"),
 		empathy_chatroom_get_need_password (chatroom) ? _("Yes") : _("No"),
 		members);
+	g_free (tmp);
 	invite_only = (empathy_chatroom_get_invite_only (chatroom) ?
 		GTK_STOCK_INDEX : NULL);
 	need_password = (empathy_chatroom_get_need_password (chatroom) ?
