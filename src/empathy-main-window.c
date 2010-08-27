@@ -91,8 +91,10 @@
 /* Name in the geometry file */
 #define GEOMETRY_NAME "main-window"
 
-/* Labels for empty contact list */
-#define NO_MATCH_FOUND _("No match found")
+enum {
+	PAGE_NO_MATCH = 0,
+	PAGE_CONTACT_LIST
+};
 
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 
@@ -375,11 +377,16 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 
 		if (empathy_individual_view_is_searching (
 				priv->individual_view)) {
-			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-					NO_MATCH_FOUND);
+			gchar *tmp;
+
+			tmp = g_strdup_printf ("<b><span size='xx-large'>%s</span></b>",
+				_("No match found"));
+
+			gtk_label_set_markup (GTK_LABEL (priv->no_entry_label), tmp);
+			g_free (tmp);
+
 			gtk_notebook_set_current_page (
-					GTK_NOTEBOOK (priv->notebook),
-					0);
+					GTK_NOTEBOOK (priv->notebook), PAGE_NO_MATCH);
 		}
 	}
 }
@@ -395,7 +402,7 @@ main_window_row_inserted_cb (GtkTreeModel      *model,
 	if (priv->empty) {
 		priv->empty = FALSE;
 		gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
-				1);
+				PAGE_CONTACT_LIST);
 		gtk_widget_grab_focus (GTK_WIDGET (priv->individual_view));
 	}
 }
