@@ -401,8 +401,9 @@ menu_item_set_contact (GtkWidget *item,
 }
 
 /**
- * Set the given menu @item to call @activate_callback upon the first valid
- * TpContact associated with @individual whenever @item is activated.
+ * Set the given menu @item to call @activate_callback using the TpContact
+ * (associated with @individual) with the highest availability who is also valid
+ * whenever @item is activated.
  *
  * @sensitivity_predicate is an optional function to determine whether the menu
  * item should be insensitive (if the function returns @FALSE). Otherwise, the
@@ -415,29 +416,50 @@ menu_item_set_first_contact (GtkWidget *item,
     SensitivityPredicate sensitivity_predicate)
 {
   GList *personas, *l;
+  FolksPresenceType best_presence = FOLKS_PRESENCE_TYPE_UNSET;
+  EmpathyContact *best_contact = NULL;
 
   personas = folks_individual_get_personas (individual);
   for (l = personas; l != NULL; l = l->next)
     {
-      TpContact *tp_contact;
-      EmpathyContact *contact;
       TpfPersona *persona = l->data;
-      gboolean contact_valid = TRUE;
+      FolksPresenceType presence;
 
       if (!TPF_IS_PERSONA (persona))
         continue;
 
-      tp_contact = tpf_persona_get_contact (persona);
-      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+      /* Only choose the contact if it has a higher presence than our current
+       * best choice of contact. */
+      presence = folks_presence_get_presence_type (FOLKS_PRESENCE (l->data));
+      if (folks_presence_typecmp (presence, best_presence) > 0)
+        {
+          TpContact *tp_contact;
+          EmpathyContact *contact;
 
-      contact_valid = menu_item_set_contact (item, contact,
-          G_CALLBACK (activate_callback), sensitivity_predicate);
+          tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
+          contact = empathy_contact_dup_from_tp_contact (tp_contact);
+          empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
 
-      g_object_unref (contact);
+          if (sensitivity_predicate == NULL ||
+              sensitivity_predicate (contact) == TRUE)
+            {
+              tp_clear_object (&best_contact);
 
-      /* stop after the first valid match */
-      if (contact_valid)
-        break;
+              best_presence = presence;
+              best_contact = g_object_ref (contact);
+            }
+
+          g_object_unref (contact);
+        }
+    }
+
+  /* Use the best contact we found */
+  if (best_contact != NULL)
+    {
+      menu_item_set_contact (item, best_contact, G_CALLBACK (activate_callback),
+          sensitivity_predicate);
+
+      g_object_unref (best_contact);
     }
 
   return item;
