@@ -1610,7 +1610,7 @@ personas_changed_cb (FolksIndividual *individual,
   EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
   GList *personas, *l, *children;
   gboolean show_personas, was_showing_personas, will_show_personas, is_last;
-  guint old_num_personas, new_num_personas;
+  guint old_num_personas, new_num_personas = 0;
 
   personas = folks_individual_get_personas (individual);
 
@@ -1618,7 +1618,12 @@ personas_changed_cb (FolksIndividual *individual,
    * displaying, not the number of Personas which were in the Individual
    * before. */
   old_num_personas = g_hash_table_size (priv->persona_tables);
-  new_num_personas = g_list_length (personas);
+
+  for (l = personas; l != NULL; l = l->next)
+    {
+      if (TPF_IS_PERSONA (l->data))
+        new_num_personas++;
+    }
 
   /*
    * What we display for various conditions:
