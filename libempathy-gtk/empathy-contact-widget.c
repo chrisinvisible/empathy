@@ -695,13 +695,17 @@ contact_widget_location_update (EmpathyContactWidget *information)
       gchar *text;
       gint64 stamp;
       time_t time_;
+      gchar *tmp;
 
       stamp = g_value_get_int64 (value);
       time_ = stamp;
 
       user_date = empathy_time_to_string_relative (time_);
 
-      text = g_strconcat ( _("<b>Location</b>, "), user_date, NULL);
+      tmp = g_strdup_printf ("<b>%s</b>", _("Location"));
+      /* translators: format is "Location, $date" */
+      text = g_strdup_printf (_("%s, %s"), tmp, user_date);
+      g_free (tmp);
       gtk_label_set_markup (GTK_LABEL (information->label_location), text);
       g_free (user_date);
       g_free (text);
