@@ -185,6 +185,9 @@ toggle_individual_row (EmpathyIndividualLinker *self,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, &individual,
       -1);
 
+  if (individual == NULL)
+    return;
+
   individual_added = GPOINTER_TO_UINT (g_hash_table_lookup (
       priv->changed_individuals, individual));
 
