@@ -1463,6 +1463,16 @@ do_get_property (GObject *object,
 }
 
 static void
+set_apply_button (EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
+  gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
+  gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_APPLY);
+}
+
+static void
 presence_changed_cb (TpAccountManager *manager,
     TpConnectionPresenceType state,
     const gchar *status,
@@ -1495,9 +1505,7 @@ presence_changed_cb (TpAccountManager *manager,
     {
       /* We are offline or modifying an existing account, display
        * a Save button */
-      gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
-      gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
-      gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_APPLY);
+      set_apply_button (self);
     }
 }
 
@@ -1723,7 +1731,8 @@ do_constructed (GObject *obj)
 
       priv->cancel_button = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
 
-      priv->apply_button = gtk_button_new_from_stock (GTK_STOCK_APPLY);
+      priv->apply_button = gtk_button_new ();
+      set_apply_button (self);
 
       /* We'll change this button to a "Log in" one if we are creating a new
        * account and are connected. */
