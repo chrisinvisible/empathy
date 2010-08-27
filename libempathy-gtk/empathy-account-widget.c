@@ -1466,10 +1466,17 @@ static void
 set_apply_button (EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  GtkWidget *image;
 
-  gtk_button_set_image (GTK_BUTTON (priv->apply_button), NULL);
-  gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), TRUE);
-  gtk_button_set_label (GTK_BUTTON (priv->apply_button), GTK_STOCK_APPLY);
+  /* We can't use the stock button as its accelerator ('A') clashes with the
+   * Add button. */
+  gtk_button_set_use_stock (GTK_BUTTON (priv->apply_button), FALSE);
+
+  gtk_button_set_label (GTK_BUTTON (priv->apply_button), _("A_pply"));
+  gtk_button_set_use_underline (GTK_BUTTON (priv->apply_button), TRUE);
+
+  image = gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_BUTTON);
+  gtk_button_set_image (GTK_BUTTON (priv->apply_button), image);
 }
 
 static void
