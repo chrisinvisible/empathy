@@ -372,8 +372,13 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 
 		if (empathy_individual_view_is_searching (
 				priv->individual_view)) {
-			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-					_("No match found"));
+			gchar *tmp;
+
+			tmp = g_strdup_printf ("<b><span size='xx-large'>%s</span></b>",
+				_("No match found"));
+
+			gtk_label_set_markup (GTK_LABEL (priv->no_entry_label), tmp);
+			g_free (tmp);
 
 			gtk_notebook_set_current_page (
 					GTK_NOTEBOOK (priv->notebook),
