@@ -91,9 +91,6 @@
 /* Name in the geometry file */
 #define GEOMETRY_NAME "main-window"
 
-/* Labels for empty contact list */
-#define NO_MATCH_FOUND _("No match found")
-
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 
 #define GET_PRIV(self) ((EmpathyMainWindowPriv *)((EmpathyMainWindow *) self)->priv)
@@ -376,7 +373,8 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 		if (empathy_individual_view_is_searching (
 				priv->individual_view)) {
 			gtk_label_set_text (GTK_LABEL (priv->no_entry_label),
-					NO_MATCH_FOUND);
+					_("No match found"));
+
 			gtk_notebook_set_current_page (
 					GTK_NOTEBOOK (priv->notebook),
 					0);
