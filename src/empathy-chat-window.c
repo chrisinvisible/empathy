@@ -1453,8 +1453,8 @@ chat_window_detach_hook (GtkNotebook *source,
 
 	empathy_chat_window_move_chat (window, new_window, chat);
 
-	gtk_window_move (GTK_WINDOW (priv->dialog), x, y);
 	gtk_widget_show (priv->dialog);
+	gtk_window_move (GTK_WINDOW (priv->dialog), x, y);
 
 	return NULL;
 }
