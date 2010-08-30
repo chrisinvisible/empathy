@@ -66,6 +66,8 @@ typedef struct {
   EmpathyIndividualView *individual_view; /* child widget */
   GtkWidget *preview_widget; /* child widget */
   EmpathyPersonaStore *persona_store; /* owned */
+  GtkTreeViewColumn *toggle_column; /* child widget */
+  GtkCellRenderer *toggle_renderer; /* child widget */
 
   FolksIndividual *start_individual; /* owned, allow-none */
   FolksIndividual *new_individual; /* owned, allow-none */
@@ -118,6 +120,21 @@ contact_toggle_cell_data_func (GtkTreeViewColumn *tree_column,
 }
 
 static void
+update_toggle_renderers (EmpathyIndividualLinker *self)
+{
+  EmpathyIndividualLinkerPriv *priv = GET_PRIV (self);
+
+  /* Re-setting the cell data func to the same function causes a refresh of the
+   * entire column, ensuring that each toggle button is correctly active or
+   * inactive. This is necessary because one Individual might appear multiple
+   * times in the list (in different groups), so toggling one instance of the
+   * Individual should toggle all of them. */
+  gtk_tree_view_column_set_cell_data_func (priv->toggle_column,
+      priv->toggle_renderer,
+      (GtkTreeCellDataFunc) contact_toggle_cell_data_func, self, NULL);
+}
+
+static void
 link_individual (EmpathyIndividualLinker *self,
     FolksIndividual *individual)
 {
@@ -137,6 +154,11 @@ link_individual (EmpathyIndividualLinker *self,
       g_list_copy (folks_individual_get_personas (individual)));
   folks_individual_set_personas (priv->new_individual, new_persona_list);
   g_list_free (new_persona_list);
+
+  /* Update the toggle renderers, so that if this Individual is listed in
+   * another group in the EmpathyIndividualView, the toggle button for that
+   * group is updated. */
+  update_toggle_renderers (self);
 }
 
 static void
@@ -166,6 +188,11 @@ unlink_individual (EmpathyIndividualLinker *self,
   new_persona_list = g_list_reverse (new_persona_list);
   folks_individual_set_personas (priv->new_individual, new_persona_list);
   g_list_free (new_persona_list);
+
+  /* Update the toggle renderers, so that if this Individual is listed in
+   * another group in the EmpathyIndividualView, the toggle button for that
+   * group is updated. */
+  update_toggle_renderers (self);
 }
 
 static void
@@ -296,7 +323,6 @@ set_up (EmpathyIndividualLinker *self)
 {
   EmpathyIndividualLinkerPriv *priv;
   EmpathyIndividualManager *individual_manager;
-  GtkCellRenderer *cell_renderer;
   GtkWidget *top_vbox;
   GtkPaned *paned;
   GtkWidget *label, *scrolled_window, *search_bar;
@@ -348,11 +374,19 @@ set_up (EmpathyIndividualLinker *self)
       (GCallback) individual_view_drag_persona_received_cb, self);
 
   /* Add a checkbox column to the selector */
-  cell_renderer = gtk_cell_renderer_toggle_new ();
-  g_signal_connect (cell_renderer, "toggled", (GCallback) row_toggled_cb, self);
-  gtk_tree_view_insert_column_with_data_func (
-      GTK_TREE_VIEW (priv->individual_view), 0, NULL, cell_renderer,
+  priv->toggle_renderer = gtk_cell_renderer_toggle_new ();
+  g_signal_connect (priv->toggle_renderer, "toggled",
+      (GCallback) row_toggled_cb, self);
+
+  priv->toggle_column = gtk_tree_view_column_new ();
+  gtk_tree_view_column_pack_start (priv->toggle_column, priv->toggle_renderer,
+      FALSE);
+  gtk_tree_view_column_set_cell_data_func (priv->toggle_column,
+      priv->toggle_renderer,
       (GtkTreeCellDataFunc) contact_toggle_cell_data_func, self, NULL);
+
+  gtk_tree_view_insert_column (GTK_TREE_VIEW (priv->individual_view),
+      priv->toggle_column, 0);
 
   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
