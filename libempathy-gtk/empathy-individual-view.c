@@ -1512,7 +1512,7 @@ individual_view_row_has_child_toggled_cb (GtkTreeModel *model,
    * a hash table, and expand or contract them as appropriate all at once in
    * an idle handler which iterates over all the group rows. */
   if (g_hash_table_lookup_extended (priv->expand_groups, name, NULL,
-      &will_expand) == FALSE &&
+      &will_expand) == FALSE ||
       GPOINTER_TO_INT (will_expand) != should_expand)
     {
       g_hash_table_insert (priv->expand_groups, g_strdup (name),
