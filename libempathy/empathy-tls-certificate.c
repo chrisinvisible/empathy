@@ -132,11 +132,10 @@ empathy_tls_certificate_prepare_async (EmpathyTLSCertificate *self,
 
       return;
     }
-                     
 
   /* if the object is already prepared, just complete in idle */
   if (priv->is_prepared)
-    {    
+    {
       tp_simple_async_report_success_in_idle (G_OBJECT (self),
           callback, user_data, empathy_tls_certificate_prepare_async);
 
