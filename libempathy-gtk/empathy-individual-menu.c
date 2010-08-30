@@ -440,7 +440,7 @@ menu_item_set_first_contact (GtkWidget *item,
           contact = empathy_contact_dup_from_tp_contact (tp_contact);
           empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
 
-          if (sensitivity_predicate == NULL ||
+          if (best_contact == NULL || sensitivity_predicate == NULL ||
               sensitivity_predicate (contact) == TRUE)
             {
               tp_clear_object (&best_contact);
