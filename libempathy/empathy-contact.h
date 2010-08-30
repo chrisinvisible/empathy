@@ -75,7 +75,6 @@ EmpathyContact * empathy_contact_from_tpl_contact (TpAccount *account,
     TplEntity *tpl_contact);
 TpContact * empathy_contact_get_tp_contact (EmpathyContact *contact);
 const gchar * empathy_contact_get_id (EmpathyContact *contact);
-void empathy_contact_set_id (EmpathyContact *contact, const gchar *id);
 const gchar * empathy_contact_get_alias (EmpathyContact *contact);
 void empathy_contact_set_alias (EmpathyContact *contact, const gchar *alias);
 void empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
@@ -87,16 +86,9 @@ void empathy_contact_set_persona (EmpathyContact *contact,
     FolksPersona *persona);
 TpConnection * empathy_contact_get_connection (EmpathyContact *contact);
 TpConnectionPresenceType empathy_contact_get_presence (EmpathyContact *contact);
-void empathy_contact_set_presence (EmpathyContact *contact,
-    TpConnectionPresenceType presence);
 const gchar * empathy_contact_get_presence_message (EmpathyContact *contact);
-void empathy_contact_set_presence_message (EmpathyContact *contact,
-    const gchar *message);
 guint empathy_contact_get_handle (EmpathyContact *contact);
-void empathy_contact_set_handle (EmpathyContact *contact, guint handle);
 EmpathyCapabilities empathy_contact_get_capabilities (EmpathyContact *contact);
-void empathy_contact_set_capabilities (EmpathyContact *contact,
-    EmpathyCapabilities capabilities);
 gboolean empathy_contact_is_user (EmpathyContact *contact);
 void empathy_contact_set_is_user (EmpathyContact *contact,
     gboolean is_user);

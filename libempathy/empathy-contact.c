@@ -407,6 +407,107 @@ set_tp_contact (EmpathyContact *contact,
 }
 
 static void
+empathy_contact_set_capabilities (EmpathyContact *contact,
+                                  EmpathyCapabilities capabilities)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+  priv = GET_PRIV (contact);
+
+  if (priv->capabilities == capabilities)
+    return;
+
+  priv->capabilities = capabilities;
+
+  g_object_notify (G_OBJECT (contact), "capabilities");
+}
+
+static void
+empathy_contact_set_id (EmpathyContact *contact,
+                        const gchar *id)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+  g_return_if_fail (id != NULL);
+
+  priv = GET_PRIV (contact);
+
+  /* We temporally ref the contact because it could be destroyed
+   * during the signal emition */
+  g_object_ref (contact);
+  if (tp_strdiff (id, priv->id))
+    {
+      g_free (priv->id);
+      priv->id = g_strdup (id);
+
+      g_object_notify (G_OBJECT (contact), "id");
+      if (EMP_STR_EMPTY (priv->alias))
+          g_object_notify (G_OBJECT (contact), "alias");
+    }
+
+  g_object_unref (contact);
+}
+
+static void
+empathy_contact_set_presence (EmpathyContact *contact,
+                              TpConnectionPresenceType presence)
+{
+  EmpathyContactPriv *priv;
+  TpConnectionPresenceType old_presence;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+  priv = GET_PRIV (contact);
+
+  if (presence == priv->presence)
+    return;
+
+  old_presence = priv->presence;
+  priv->presence = presence;
+
+  g_signal_emit (contact, signals[PRESENCE_CHANGED], 0, presence, old_presence);
+
+  g_object_notify (G_OBJECT (contact), "presence");
+}
+
+static void
+empathy_contact_set_presence_message (EmpathyContact *contact,
+                                      const gchar *message)
+{
+  EmpathyContactPriv *priv = GET_PRIV (contact);
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+  if (priv->persona != NULL)
+    {
+      folks_presence_set_presence_message (FOLKS_PRESENCE (priv->persona),
+          message);
+    }
+}
+
+static void
+empathy_contact_set_handle (EmpathyContact *contact,
+                            guint handle)
+{
+  EmpathyContactPriv *priv;
+
+  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
+
+  priv = GET_PRIV (contact);
+
+  g_object_ref (contact);
+  if (handle != priv->handle)
+    {
+      priv->handle = handle;
+      g_object_notify (G_OBJECT (contact), "handle");
+    }
+  g_object_unref (contact);
+}
+
+static void
 contact_get_property (GObject *object,
                       guint param_id,
                       GValue *value,
@@ -563,33 +664,6 @@ empathy_contact_get_id (EmpathyContact *contact)
     return tp_contact_get_identifier (priv->tp_contact);
 
   return priv->id;
-}
-
-void
-empathy_contact_set_id (EmpathyContact *contact,
-                        const gchar *id)
-{
-  EmpathyContactPriv *priv;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-  g_return_if_fail (id != NULL);
-
-  priv = GET_PRIV (contact);
-
-  /* We temporally ref the contact because it could be destroyed
-   * during the signal emition */
-  g_object_ref (contact);
-  if (tp_strdiff (id, priv->id))
-    {
-      g_free (priv->id);
-      priv->id = g_strdup (id);
-
-      g_object_notify (G_OBJECT (contact), "id");
-      if (EMP_STR_EMPTY (priv->alias))
-          g_object_notify (G_OBJECT (contact), "alias");
-    }
-
-  g_object_unref (contact);
 }
 
 const gchar *
@@ -880,28 +954,6 @@ empathy_contact_get_presence (EmpathyContact *contact)
   return priv->presence;
 }
 
-void
-empathy_contact_set_presence (EmpathyContact *contact,
-                              TpConnectionPresenceType presence)
-{
-  EmpathyContactPriv *priv;
-  TpConnectionPresenceType old_presence;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  priv = GET_PRIV (contact);
-
-  if (presence == priv->presence)
-    return;
-
-  old_presence = priv->presence;
-  priv->presence = presence;
-
-  g_signal_emit (contact, signals[PRESENCE_CHANGED], 0, presence, old_presence);
-
-  g_object_notify (G_OBJECT (contact), "presence");
-}
-
 const gchar *
 empathy_contact_get_presence_message (EmpathyContact *contact)
 {
@@ -915,21 +967,6 @@ empathy_contact_get_presence_message (EmpathyContact *contact)
     return folks_presence_get_presence_message (FOLKS_PRESENCE (priv->persona));
 
   return NULL;
-}
-
-void
-empathy_contact_set_presence_message (EmpathyContact *contact,
-                                      const gchar *message)
-{
-  EmpathyContactPriv *priv = GET_PRIV (contact);
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  if (priv->persona != NULL)
-    {
-      folks_presence_set_presence_message (FOLKS_PRESENCE (priv->persona),
-          message);
-    }
 }
 
 guint
@@ -947,25 +984,6 @@ empathy_contact_get_handle (EmpathyContact *contact)
   return priv->handle;
 }
 
-void
-empathy_contact_set_handle (EmpathyContact *contact,
-                            guint handle)
-{
-  EmpathyContactPriv *priv;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  priv = GET_PRIV (contact);
-
-  g_object_ref (contact);
-  if (handle != priv->handle)
-    {
-      priv->handle = handle;
-      g_object_notify (G_OBJECT (contact), "handle");
-    }
-  g_object_unref (contact);
-}
-
 EmpathyCapabilities
 empathy_contact_get_capabilities (EmpathyContact *contact)
 {
@@ -976,24 +994,6 @@ empathy_contact_get_capabilities (EmpathyContact *contact)
   priv = GET_PRIV (contact);
 
   return priv->capabilities;
-}
-
-void
-empathy_contact_set_capabilities (EmpathyContact *contact,
-                                  EmpathyCapabilities capabilities)
-{
-  EmpathyContactPriv *priv;
-
-  g_return_if_fail (EMPATHY_IS_CONTACT (contact));
-
-  priv = GET_PRIV (contact);
-
-  if (priv->capabilities == capabilities)
-    return;
-
-  priv->capabilities = capabilities;
-
-  g_object_notify (G_OBJECT (contact), "capabilities");
 }
 
 gboolean
