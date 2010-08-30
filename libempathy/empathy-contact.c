@@ -213,6 +213,41 @@ contact_dispose (GObject *object)
 }
 
 static void
+contact_constructed (GObject *object)
+{
+  EmpathyContact *contact = (EmpathyContact *) object;
+  EmpathyContactPriv *priv = GET_PRIV (contact);
+  GHashTable *location;
+  TpHandle self_handle;
+  TpHandle handle;
+
+  if (priv->tp_contact == NULL)
+    return;
+
+  priv->presence = empathy_contact_get_presence (contact);
+
+  location = tp_contact_get_location (priv->tp_contact);
+  if (location != NULL)
+    empathy_contact_set_location (contact, location);
+
+  set_capabilities_from_tp_caps (contact,
+      tp_contact_get_capabilities (priv->tp_contact));
+
+  contact_set_avatar_from_tp_contact (contact);
+
+  /* Set is-user property. Note that it could still be the handle is
+   * different from the connection's self handle, in the case the handle
+   * comes from a group interface. */
+  self_handle = tp_connection_get_self_handle (
+      tp_contact_get_connection (priv->tp_contact));
+  handle = tp_contact_get_handle (priv->tp_contact);
+  empathy_contact_set_is_user (contact, self_handle == handle);
+
+  g_signal_connect (priv->tp_contact, "notify",
+    G_CALLBACK (tp_contact_notify_cb), contact);
+}
+
+static void
 empathy_contact_class_init (EmpathyContactClass *class)
 {
   GObjectClass *object_class;
@@ -223,6 +258,7 @@ empathy_contact_class_init (EmpathyContactClass *class)
   object_class->dispose = contact_dispose;
   object_class->get_property = contact_get_property;
   object_class->set_property = contact_set_property;
+  object_class->constructed = contact_constructed;
 
   g_object_class_install_property (object_class,
       PROP_TP_CONTACT,
@@ -367,43 +403,6 @@ contact_finalize (GObject *object)
   g_free (priv->id);
 
   G_OBJECT_CLASS (empathy_contact_parent_class)->finalize (object);
-}
-
-static void
-set_tp_contact (EmpathyContact *contact,
-                TpContact *tp_contact)
-{
-  EmpathyContactPriv *priv = GET_PRIV (contact);
-  GHashTable *location;
-  TpHandle self_handle;
-  TpHandle handle;
-
-  if (tp_contact == NULL)
-    return;
-
-  g_assert (priv->tp_contact == NULL);
-  priv->tp_contact = g_object_ref (tp_contact);
-  priv->presence = empathy_contact_get_presence (contact);
-
-  location = tp_contact_get_location (tp_contact);
-  if (location != NULL)
-    empathy_contact_set_location (contact, location);
-
-  set_capabilities_from_tp_caps (contact,
-      tp_contact_get_capabilities (tp_contact));
-
-  contact_set_avatar_from_tp_contact (contact);
-
-  /* Set is-user property. Note that it could still be the handle is
-   * different from the connection's self handle, in the case the handle
-   * comes from a group interface. */
-  self_handle = tp_connection_get_self_handle (
-      tp_contact_get_connection (tp_contact));
-  handle = tp_contact_get_handle (tp_contact);
-  empathy_contact_set_is_user (contact, self_handle == handle);
-
-  g_signal_connect (priv->tp_contact, "notify",
-    G_CALLBACK (tp_contact_notify_cb), contact);
 }
 
 static void
@@ -568,7 +567,7 @@ contact_set_property (GObject *object,
   switch (param_id)
     {
       case PROP_TP_CONTACT:
-        set_tp_contact (contact, g_value_get_object (value));
+        priv->tp_contact = g_value_dup_object (value);
         break;
       case PROP_ACCOUNT:
         g_assert (priv->account == NULL);
