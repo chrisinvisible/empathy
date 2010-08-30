@@ -14,6 +14,7 @@ AM_CPPFLAGS =                                           \
 	$(ENCHANT_CFLAGS)				\
 	$(LIBCHAMPLAIN_CFLAGS)				\
 	$(GEOCLUE_CFLAGS)				\
+	$(GCR_CFLAGS)					\
 	$(MEEGO_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\
 	$(WARN_CFLAGS)					\
@@ -170,6 +171,7 @@ libempathy_gtk_la_LIBADD =			\
 	$(ENCHANT_LIBS)				\
 	$(LIBCHAMPLAIN_LIBS)			\
 	$(GEOCLUE_LIBS)				\
+	$(GCR_LIBS)				\
 	$(MEEGO_LIBS)				\
 	$(WEBKIT_LIBS)				\
 	$(top_builddir)/libempathy/libempathy.la
