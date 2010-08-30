@@ -65,6 +65,9 @@ void empathy_individual_linker_set_start_individual (
 GList * empathy_individual_linker_get_linked_personas (
     EmpathyIndividualLinker *self);
 
+gboolean empathy_individual_linker_get_has_changed (
+    EmpathyIndividualLinker *self);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_INDIVIDUAL_LINKER_H__ */

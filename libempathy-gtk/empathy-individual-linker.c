@@ -80,6 +80,7 @@ typedef struct {
 
 enum {
   PROP_START_INDIVIDUAL = 1,
+  PROP_HAS_CHANGED,
 };
 
 G_DEFINE_TYPE (EmpathyIndividualLinker, empathy_individual_linker,
@@ -159,6 +160,8 @@ link_individual (EmpathyIndividualLinker *self,
    * another group in the EmpathyIndividualView, the toggle button for that
    * group is updated. */
   update_toggle_renderers (self);
+
+  g_object_notify (G_OBJECT (self), "has-changed");
 }
 
 static void
@@ -193,6 +196,8 @@ unlink_individual (EmpathyIndividualLinker *self,
    * another group in the EmpathyIndividualView, the toggle button for that
    * group is updated. */
   update_toggle_renderers (self);
+
+  g_object_notify (G_OBJECT (self), "has-changed");
 }
 
 static void
@@ -503,6 +508,10 @@ get_property (GObject *object,
       case PROP_START_INDIVIDUAL:
         g_value_set_object (value, priv->start_individual);
         break;
+      case PROP_HAS_CHANGED:
+        g_value_set_boolean (value, empathy_individual_linker_get_has_changed (
+            EMPATHY_INDIVIDUAL_LINKER (object)));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
         break;
@@ -635,6 +644,24 @@ empathy_individual_linker_class_init (EmpathyIndividualLinkerClass *klass)
           FOLKS_TYPE_INDIVIDUAL,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
+  /**
+   * EmpathyIndividualLinker:has-changed:
+   *
+   * Whether #FolksIndividual<!-- -->s have been added to or removed from
+   * the linked individual currently displayed in the widget.
+   *
+   * This will be %FALSE after the widget is initialised, and set to %TRUE when
+   * an individual is checked in the individual view on the left of the widget.
+   * If the individual is later unchecked, this will be reset to %FALSE, etc.
+   */
+  g_object_class_install_property (object_class, PROP_HAS_CHANGED,
+      g_param_spec_boolean ("has-changed",
+          "Changed?",
+          "Whether individuals have been added to or removed from the linked "
+          "individual currently displayed in the widget.",
+          FALSE,
+          G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+
   g_type_class_add_private (object_class, sizeof (EmpathyIndividualLinkerPriv));
 }
 
@@ -718,7 +745,10 @@ empathy_individual_linker_set_start_individual (EmpathyIndividualLinker *self,
   empathy_persona_store_set_individual (priv->persona_store,
       priv->new_individual);
 
+  g_object_freeze_notify (G_OBJECT (self));
   g_object_notify (G_OBJECT (self), "start-individual");
+  g_object_notify (G_OBJECT (self), "has-changed");
+  g_object_thaw_notify (G_OBJECT (self));
 }
 
 /**
@@ -749,4 +779,30 @@ empathy_individual_linker_get_linked_personas (EmpathyIndividualLinker *self)
   personas = folks_individual_get_personas (priv->new_individual);
   g_assert (personas != NULL);
   return personas;
+}
+
+/**
+ * empathy_individual_linker_get_has_changed:
+ * @self: an #EmpathyIndividualLinker
+ *
+ * Return whether #FolksIndividual<!-- -->s have been added to or removed from
+ * the linked individual currently displayed in the widget.
+ *
+ * This will be %FALSE after the widget is initialised, and set to %TRUE when
+ * an individual is checked in the individual view on the left of the widget.
+ * If the individual is later unchecked, this will be reset to %FALSE, etc.
+ *
+ * Return value: %TRUE if the linked individual has been changed, %FALSE
+ * otherwise
+ */
+gboolean
+empathy_individual_linker_get_has_changed (EmpathyIndividualLinker *self)
+{
+  EmpathyIndividualLinkerPriv *priv;
+
+  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_LINKER (self), FALSE);
+
+  priv = GET_PRIV (self);
+
+  return (g_hash_table_size (priv->changed_individuals) > 0) ? TRUE : FALSE;
 }
