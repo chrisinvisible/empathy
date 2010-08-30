@@ -1,3 +1,85 @@
+NEW in 2.31.91 (30/08/2010)
+==============
+
+Loads of meta-contacts related bugs have been fixed. There are still
+issues but meta-contacts should be now more usable.
+
+Thanks to Cosimo Cecchi, Empathy is now able to ask user to manually approve
+untrusted TLS certificates. Note that you'll need telepathy-gabble 0.9.17 or
+newer to use this feature.
+
+The IRC account widget has been improved and it is now possible to create IRC
+accounts using the assistant.
+
+Dependencies:
+
+ • folks ≥ 0.1.15
+ • gnutls ≥ 2.8.5
+ • nautilus-sendto ≥ 2.31.7 (optional)
+ • champlain ≥ 0.7.1 (optional)
+
+Bugs fixed:
+ - Fixed #460647, Support metacontacts (Travis Treitter, Philip Treitter)
+ - Fixed #588243, Pre-defined IRC channel list is way too long (Guillaume Desmottes)
+ - Fixed #596086, initial empathy account wizard (Welcome Screen) does not offer IRC as an account (Guillaume Desmottes)
+ - Fixed #608140, dragging and dropping a chat tab hides the original window (Guillaume Desmottes)
+ - Fixed #611701, Should cope better with dialog loading (Guillaume Desmottes)
+ - Fixed #623164, Accelerator clashes in account dialog (Guillaume Desmottes)
+ - Fixed #624353, Clicking Add in the accounts dialog quickly populates the new account dialog with current details (Guillaume Desmottes)
+ - Fixed #626031, Update nautilus-sendto dep (Guillaume Desmottes)
+ - Fixed #626544, Add unlinking UI for Individuals (Philip Withnall)
+ - Fixed #626715, Linking UI: should display more info about the persona (Philip Withnall)
+ - Fixed #626728, Add EmpathyIndividualWidget (Philip Withnall)
+ - Fixed #626848, Allow interactive TLS certificate verification (Cosimo Cecchi)
+ - Fixed #627219, Link dialog search doesn't work (Philip Withnall)
+ - Fixed #627228, Empathy completely ignores local-pending contacts without a valid 'actor' handle (Guillaume Desmottes)
+ - Fixed #627242, Some contacts stay in the contact list once disconnected (Travis Treitter)
+ - Fixed #627246, Crash in individual_store_add_individual at empathy-individual-store.c line 357 (Philip Withnall)
+ - Fixed #627360, "Information" of a meta contact is too big for the screen (Philip Withnall)
+ - Fixed #627500, Linking dialog is confused when selecting personas (Felix Kaser)
+ - Fixed #627587, After upgrade to 2.31.90 (from 2.31.6) empathy does not list users of irc chat (Guillaume Desmottes)
+ - Fixed #627706, Use the Individual.personas_changed signal (Philip Withnall)
+ - Fixed #627715, Linking dialog: move personas using DnD (Philip Withnall)
+ - Fixed #627728, EmpathyContact avatar cleanups (Philip Withnall)
+ - Fixed #627786, [PATCH] Fix a reference and signal leak (Travis Treitter)
+ - Fixed #627802, when hovering over a contact I get tons of criticals (Sjoerd Simons)
+ - Fixed #627917, the information popup looks strange recently (Philip Withnall)
+ - Fixed #627930, Disallow linking local-xmpp contacts in the UI (Philip Withnall)
+ - Fixed #628011, Crash when trying to unlink contacts (Philip Withnall)
+ - Fixed #628062, Add translator comments (Philip Withnall)
+ - Fixed #628063, Remove markup from translatable strings (Guillaume Desmottes)
+ - Fixed #628064, Miscellaneous string fixes (Philip Withnall)
+ - Fixed #628078, Use libchamplain 0.7.1 or newer for the map plugin (Jiri Techet)
+ - Fixed #628121, Should pick an online persona when starting a chat (Philip Withnall)
+ - Fixed #628123, Linking UI checkbox update problem (Philip Withnall)
+ - Fixed #628124, Disallow activating group rows in the linking dialogue (Philip Withnall)
+ - Fixed #628320, Make the Link button in the linking dialogue only sensitive if changes have been made (Philip Withnall)
+ - Fixed #614884, [PATCH] allow building empathy without eds (Saleem Abdulrasool)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated cs Translation (Petr Kovar)
+ - Updated da Translation (Kenneth Nielsen)
+ - Updated el Translation (Michael Kotsarinis)
+ - Updated en_GB Translation (Philip Withnall)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Ivar Smolin, Mattias Põldaru)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated ja Translation (GLSJPN_Etsuko)
+ - Updated kk Translation (Baurzhan Muftakhidinov)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sr@latin Translation (Branko Kokanović)
+ - Updated sr Translation (Branko Kokanović)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated fr Documentation translation (Bruno Brouard)
+
 NEW in 2.31.90 (18/08/2010)
 ==============
 
