@@ -60,10 +60,24 @@ static GtkWidget *linking_dialog = NULL;
 
 typedef struct {
   EmpathyIndividualLinker *linker; /* child widget */
+  GtkWidget *link_button; /* child widget */
 } EmpathyLinkingDialogPriv;
 
 G_DEFINE_TYPE (EmpathyLinkingDialog, empathy_linking_dialog,
     GTK_TYPE_DIALOG);
+
+static void
+linker_notify_has_changed_cb (EmpathyIndividualLinker *linker,
+    GParamSpec *pspec,
+    EmpathyLinkingDialog *self)
+{
+  EmpathyLinkingDialogPriv *priv = GET_PRIV (self);
+
+  /* Only make the "Link" button sensitive if the linked Individual has been
+   * changed. */
+  gtk_widget_set_sensitive (priv->link_button,
+      empathy_individual_linker_get_has_changed (linker));
+}
 
 static void
 empathy_linking_dialog_class_init (EmpathyLinkingDialogClass *klass)
@@ -105,13 +119,16 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   /* Translators: this is an action button in the linking dialogue. "Link" is
    * used here as a verb meaning "to connect two contacts to form a
    * meta-contact". */
-  button = gtk_button_new_with_mnemonic (_("_Link"));
-  gtk_dialog_add_action_widget (dialog, button, GTK_RESPONSE_OK);
-  gtk_widget_show (button);
+  priv->link_button = gtk_button_new_with_mnemonic (_("_Link"));
+  gtk_dialog_add_action_widget (dialog, priv->link_button, GTK_RESPONSE_OK);
+  gtk_widget_show (priv->link_button);
 
   /* Linker widget */
   priv->linker =
       EMPATHY_INDIVIDUAL_LINKER (empathy_individual_linker_new (NULL));
+  g_signal_connect (priv->linker, "notify::has-changed",
+      (GCallback) linker_notify_has_changed_cb, self);
+
   gtk_container_set_border_width (GTK_CONTAINER (priv->linker), 8);
   content_area = GTK_BOX (gtk_dialog_get_content_area (dialog));
   gtk_box_pack_start (content_area, GTK_WIDGET (priv->linker), TRUE, TRUE, 0);
