@@ -99,7 +99,7 @@ network_changed_cb (EmpathyIrcNetworkChooser *chooser,
   empathy_account_widget_changed (settings->self);
 }
 
-void
+EmpathyIrcNetworkChooser *
 empathy_account_widget_irc_build (EmpathyAccountWidget *self,
     const char *filename,
     GtkWidget **table_common_settings)
@@ -145,9 +145,11 @@ empathy_account_widget_irc_build (EmpathyAccountWidget *self,
   self->ui_details->default_focus = g_strdup ("entry_nick");
 
   g_object_unref (ac_settings);
+
+  return EMPATHY_IRC_NETWORK_CHOOSER (settings->network_chooser);
 }
 
-void
+EmpathyIrcNetworkChooser *
 empathy_account_widget_irc_build_simple (EmpathyAccountWidget *self,
     const char *filename)
 {
@@ -186,4 +188,6 @@ empathy_account_widget_irc_build_simple (EmpathyAccountWidget *self,
   self->ui_details->default_focus = g_strdup ("entry_nick_simple");
 
   g_object_unref (ac_settings);
+
+  return EMPATHY_IRC_NETWORK_CHOOSER (settings->network_chooser);
 }

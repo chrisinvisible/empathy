@@ -23,14 +23,17 @@
 
 #include <gtk/gtk.h>
 #include <libempathy-gtk/empathy-account-widget.h>
+#include <libempathy-gtk/empathy-irc-network-chooser.h>
 
 G_BEGIN_DECLS
 
-void empathy_account_widget_irc_build (EmpathyAccountWidget *self,
+EmpathyIrcNetworkChooser * empathy_account_widget_irc_build (
+    EmpathyAccountWidget *self,
     const char *filename,
     GtkWidget **table_common_settings);
 
-void empathy_account_widget_irc_build_simple (EmpathyAccountWidget *self,
+EmpathyIrcNetworkChooser * empathy_account_widget_irc_build_simple (
+    EmpathyAccountWidget *self,
     const char *filename);
 
 G_END_DECLS
