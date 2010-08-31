@@ -11,9 +11,9 @@ msgstr ""
 "Project-Id-Version: empathy MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-28 15:01+0000\n"
-"PO-Revision-Date: 2010-08-30 11:01+0300\n"
-"Last-Translator: Ivar Smolin <okul@linux.ee>\n"
+"POT-Creation-Date: 2010-08-31 03:12+0000\n"
+"PO-Revision-Date: 2010-08-31 19:31+0300\n"
+"Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -553,6 +553,9 @@ msgstr "%s:"
 msgid "Username:"
 msgstr "Kasutajanimi:"
 
+msgid "A_pply"
+msgstr "_Rakenda"
+
 msgid "L_og in"
 msgstr "Logi _sisse"
 
@@ -560,14 +563,17 @@ msgstr "Logi _sisse"
 msgid "Account:"
 msgstr "Konto:"
 
-msgid "Enabled"
-msgstr "Lubatud"
+msgid "_Enabled"
+msgstr "_Lubatud"
 
 msgid "This account already exists on the server"
 msgstr "See konto on serveris juba olemas"
 
 msgid "Create a new account on the server"
 msgstr "Loo serverisse uus konto"
+
+msgid "Ca_ncel"
+msgstr "_Loobu"
 
 #. To translators: The first parameter is the login id and the
 #. * second one is the server. The resulting string will be something
@@ -626,6 +632,9 @@ msgstr "Mis on sinu GroupWise parool?"
 msgid "<b>Example:</b> 123456789"
 msgstr "<b>Näide:</b> 123456789"
 
+msgid "Ch_aracter set:"
+msgstr "_Kooditabel:"
+
 msgid "ICQ _UIN:"
 msgstr "ICQ _UIN:"
 
@@ -634,9 +643,6 @@ msgstr "Mis on sinu ICQ UIN?"
 
 msgid "What is your ICQ password?"
 msgstr "Mis on sinu ICQ parool?"
-
-msgid "_Character set:"
-msgstr "_Kooditabel:"
 
 msgid "Auto"
 msgstr "Automaatne"
@@ -699,10 +705,16 @@ msgstr "<b>Näide:</b> kasutaja@gmail.com"
 msgid "<b>Example:</b> user@jabber.org"
 msgstr "<b>Näide:</b> kasutaja@jabber.org"
 
+msgid "Encr_yption required (TLS/SSL)"
+msgstr "_Krüpteeringu nõudmine (TLS/SSL)"
+
+msgid "I_gnore SSL certificate errors"
+msgstr "SSL-sertifikaadi vigu _eiratakse"
+
 msgid "Override server settings"
 msgstr "Serveri sätete eiramine"
 
-msgid "Pri_ority:"
+msgid "Priori_ty:"
 msgstr "_Tähtsus:"
 
 msgid "Reso_urce:"
@@ -747,12 +759,6 @@ msgstr "Mis on sinu poolt eelistatav Jabberi ID?"
 msgid "What is your desired Jabber password?"
 msgstr "Mis on sinu poolt eelistatav Jabberi parool?"
 
-msgid "_Encryption required (TLS/SSL)"
-msgstr "_Krüpteeringu nõudmine (TLS/SSL)"
-
-msgid "_Ignore SSL certificate errors"
-msgstr "SSL-sertifikaadi vigu _eiratakse"
-
 msgid "<b>Example:</b> user@hotmail.com"
 msgstr "<b>Näide:</b> kasutaja@hotmail.com"
 
@@ -762,8 +768,11 @@ msgstr "Mis on sinu Windows Live ID?"
 msgid "What is your Windows Live password?"
 msgstr "Mis on sinu Windows Live parool?"
 
-msgid "_E-mail address:"
-msgstr "_E-posti aadress:"
+msgid "E-_mail address:"
+msgstr "_Meiliaadress:"
+
+msgid "Nic_kname:"
+msgstr "_Hüüdnimi:"
 
 msgid "_First Name:"
 msgstr "_Eesnimi:"
@@ -773,9 +782,6 @@ msgstr "_Jabberi ID:"
 
 msgid "_Last Name:"
 msgstr "_Perekonnanimi:"
-
-msgid "_Nickname:"
-msgstr "_Hüüdnimi:"
 
 msgid "_Published Name:"
 msgstr "_Avaldatud nimi:"
@@ -834,6 +840,9 @@ msgstr "Mis on sinu SIP-i sisselogimise ID?"
 msgid "_Username:"
 msgstr "_Kasutajanimi:"
 
+msgid "I_gnore conference and chat room invitations"
+msgstr "Konverentside ja jututubade kutseid _eiratakse"
+
 msgid "Use _Yahoo! Japan"
 msgstr "Jaapani _Yahoo! kasutamine"
 
@@ -845,9 +854,6 @@ msgstr "Mis on sinu Yahoo! parool?"
 
 msgid "Yahoo! I_D:"
 msgstr "Yahoo! I_D:"
-
-msgid "_Ignore conference and chat room invitations"
-msgstr "Konverentside ja jututubade kutseid _eiratakse"
 
 msgid "_Room List locale:"
 msgstr "_Tubade nimekirja lokaat:"
@@ -1331,6 +1337,12 @@ msgstr[1] "Meta-kontakt, mis sisaldab %u kontakti"
 
 msgid "<b>Location</b> at (date)"
 msgstr "<b>Asukoht</b> kuupäeval"
+
+msgid "New Network"
+msgstr "Uus võrk"
+
+msgid "Choose an IRC network"
+msgstr "Vali IRC võrk"
 
 msgid "new server"
 msgstr "uus server"
@@ -2787,24 +2799,3 @@ msgstr "Empathy kontod"
 
 msgid "Empathy Debugger"
 msgstr "Empathy siluja"
-
-#~ msgid "New Network"
-#~ msgstr "Uus võrk"
-
-#~ msgid "<b>Location</b>, "
-#~ msgstr "<b>Asukoht</b>,"
-
-#~ msgid "Send and receive messages"
-#~ msgstr "Sõnumite saatmine ja vastuvõtt"
-
-#~ msgid "Failed to reconnect this chat"
-#~ msgstr "Selle vestlusega taasühendumine nurjus"
-
-#~ msgid "Failed to join chat room"
-#~ msgstr "Jututoaga ühendumine nurjus"
-
-#~ msgid "Select a destination"
-#~ msgstr "Vali sihtkoht"
-
-#~ msgid "Important Room"
-#~ msgstr "Oluline jututuba"
