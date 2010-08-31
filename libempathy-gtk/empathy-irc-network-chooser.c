@@ -358,3 +358,11 @@ empathy_irc_network_chooser_new (EmpathyAccountSettings *settings)
       "settings", settings,
       NULL);
 }
+
+EmpathyIrcNetwork *
+empathy_irc_network_chooser_get_network (EmpathyIrcNetworkChooser *self)
+{
+  EmpathyIrcNetworkChooserPriv *priv = GET_PRIV (self);
+
+  return priv->network;
+}

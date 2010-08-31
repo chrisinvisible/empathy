@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include <libempathy/empathy-account-settings.h>
+#include <libempathy/empathy-irc-network.h>
 
 G_BEGIN_DECLS
 
@@ -55,6 +56,9 @@ typedef struct {
 GType empathy_irc_network_chooser_get_type (void) G_GNUC_CONST;
 
 GtkWidget * empathy_irc_network_chooser_new (EmpathyAccountSettings *settings);
+
+EmpathyIrcNetwork * empathy_irc_network_chooser_get_network (
+    EmpathyIrcNetworkChooser *self);
 
 G_END_DECLS
 
