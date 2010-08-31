@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-08-27 11:42+0000\n"
-"PO-Revision-Date: 2010-08-28 10:02+0200\n"
+"POT-Creation-Date: 2010-08-30 15:46+0000\n"
+"PO-Revision-Date: 2010-08-31 05:09+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../data/empathy.desktop.in.in.h:1
-#| msgid "Chat on Google Talk, Facebook, MSN, and many other chat services"
 msgid "Chat on Google Talk, Facebook, MSN and many other chat services"
 msgstr "Chatee en Google Talk, Facebook, MSN y muchos otros servicios de chat"
 
@@ -87,9 +86,6 @@ msgid "Display incoming events in the status area"
 msgstr "Mostrar los eventos entrantes en el área de estado"
 
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:12
-#| msgid ""
-#| "Display incoming events in the status area. If false present them right "
-#| "away to the user."
 msgid ""
 "Display incoming events in the status area. If false, present them to the "
 "user immediately."
@@ -314,8 +310,6 @@ msgstr ""
 "inicio."
 
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:64
-#| msgid ""
-#| "Whether Empathy should go into away mode automatically if user is idle."
 msgid ""
 "Whether Empathy should go into away mode automatically if the user is idle."
 msgstr ""
@@ -682,9 +676,6 @@ msgstr ""
 "débil"
 
 #: ../libempathy/empathy-utils.c:376
-#| msgid ""
-#| "The length of the server certificate, or the depth of the server "
-#| "certificate chain exceed the limits imposed by the crypto library"
 msgid ""
 "The length of the server certificate, or the depth of the server certificate "
 "chain, exceed the limits imposed by the cryptography library"
@@ -765,12 +756,16 @@ msgstr "%s:"
 msgid "Username:"
 msgstr "Nombre de usuario:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1488
+#: ../libempathy-gtk/empathy-account-widget.c:1475
+msgid "A_pply"
+msgstr "_Aplilcar"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1505
 msgid "L_og in"
 msgstr "Iniciar _sesión"
 
 #. Account and Identifier
-#: ../libempathy-gtk/empathy-account-widget.c:1556
+#: ../libempathy-gtk/empathy-account-widget.c:1571
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-individual-widget.c:1397
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
@@ -779,36 +774,41 @@ msgstr "Iniciar _sesión"
 msgid "Account:"
 msgstr "Cuenta:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1567
-msgid "Enabled"
-msgstr "Activada"
+#: ../libempathy-gtk/empathy-account-widget.c:1582
+#| msgid "Enabled"
+msgid "_Enabled"
+msgstr "_Activada"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1632
+#: ../libempathy-gtk/empathy-account-widget.c:1647
 msgid "This account already exists on the server"
 msgstr "Esta cuenta ya existe en el servidor"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1635
+#: ../libempathy-gtk/empathy-account-widget.c:1650
 msgid "Create a new account on the server"
 msgstr "Crear una cuenta nueva en el servidor"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1743
+msgid "Ca_ncel"
+msgstr "Ca_ncelar"
 
 #. To translators: The first parameter is the login id and the
 #. * second one is the server. The resulting string will be something
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:2004
+#: ../libempathy-gtk/empathy-account-widget.c:2028
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s en %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:2030
+#: ../libempathy-gtk/empathy-account-widget.c:2054
 #, c-format
 msgid "%s Account"
 msgstr "Cuenta %s"
 
-#: ../libempathy-gtk/empathy-account-widget.c:2034
+#: ../libempathy-gtk/empathy-account-widget.c:2058
 msgid "New account"
 msgstr "Cuenta nueva"
 
@@ -830,11 +830,11 @@ msgstr "Avanzadas"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:12
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "Pass_word:"
 msgstr "Contra_seña:"
 
@@ -875,7 +875,7 @@ msgid "<b>Example:</b> username"
 msgstr "<b>Ejemplo:</b> usuario"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:3
 msgid "Login I_D:"
 msgstr "_ID de sesión:"
@@ -893,21 +893,22 @@ msgid "<b>Example:</b> 123456789"
 msgstr "<b>Ejemplo:</b> 123456789"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
+#| msgid "Character set:"
+msgid "Ch_aracter set:"
+msgstr "C_onjunto de caracteres:"
+
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
 msgid "ICQ _UIN:"
 msgstr "_UIN ICQ:"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
 msgid "What is your ICQ UIN?"
 msgstr "¿Cuál es su UIN de ICQ?"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
 msgid "What is your ICQ password?"
 msgstr "¿Cuál es su contraseña de ICQ?"
-
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
-msgid "_Character set:"
-msgstr "Conjunto de _caracteres:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.c:183
 #: ../libempathy-gtk/empathy-account-widget-sip.c:216
@@ -975,7 +976,6 @@ msgid "Servers"
 msgstr "Servidores"
 
 #: ../libempathy-gtk/empathy-account-widget-irc.ui.h:9
-#| msgid "What is your IRC nick?"
 msgid "What is your IRC nickname?"
 msgstr "¿Cuál es su apodo del IRC?"
 
@@ -991,20 +991,31 @@ msgstr "<b>Ejemplo:</b> usuario@gmail.com"
 msgid "<b>Example:</b> user@jabber.org"
 msgstr "<b>Ejemplo:</b> usuario@jabber.org"
 
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#| msgid "_Encryption required (TLS/SSL)"
+msgid "Encr_yption required (TLS/SSL)"
+msgstr "Requiere ci_frado (TLS/SSL)"
+
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
+#| msgid "_Ignore SSL certificate errors"
+msgid "I_gnore SSL certificate errors"
+msgstr "_Ignorar los errores de certificados SSL"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Override server settings"
 msgstr "Sobreescribir los ajustes del servidor"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
-msgid "Pri_ority:"
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+#| msgid "Pri_ority:"
+msgid "Priori_ty:"
 msgstr "Pri_oridad:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
 msgid "Reso_urce:"
 msgstr "Re_curso:"
 
 #. This string is not wrapped in the dialog so you may have to add some '\n' to make it look nice.
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid ""
 "This is your username, not your normal Facebook login.\n"
 "If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
@@ -1016,49 +1027,41 @@ msgstr ""
 "Use <a href=\"http://www.facebook.com/username/\">esta página</a> para "
 "elegir un nombre de usuario en Facebook si no tiene uno."
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "Use old SS_L"
 msgstr "Usar SS_L antiguo"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "What is your Facebook password?"
 msgstr "¿Cuál es su contraseña de Facebook?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "What is your Facebook username?"
 msgstr "¿Cuál es su usuario de Facebook?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 msgid "What is your Google ID?"
 msgstr "¿Cuál es su ID de Google?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 msgid "What is your Google password?"
 msgstr "¿Cuál es su contraseña de Google?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
 msgid "What is your Jabber ID?"
 msgstr "¿Cuál es su ID de Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
 msgid "What is your Jabber password?"
 msgstr "¿Cuál es su contraseña de Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
 msgid "What is your desired Jabber ID?"
 msgstr "¿Cuál es el ID de usuario que quiere para Jabber?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
 msgid "What is your desired Jabber password?"
 msgstr "¿Cuál es la contraseña que quiere para Jabber?"
-
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
-msgid "_Encryption required (TLS/SSL)"
-msgstr "Requiere ci_frado (TLS/SSL)"
-
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
-msgid "_Ignore SSL certificate errors"
-msgstr "_Ignorar los errores de certificados SSL"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:1
 msgid "<b>Example:</b> user@hotmail.com"
@@ -1073,24 +1076,26 @@ msgid "What is your Windows Live password?"
 msgstr "¿Cuál es su contraseña de Windows Live?"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
-msgid "_E-mail address:"
+#| msgid "E-mail address:"
+msgid "E-_mail address:"
 msgstr "Dirección de correo-_e:"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:3
+#| msgid "Nickname:"
+msgid "Nic_kname:"
+msgstr "Apo_do:"
+
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:4
 msgid "_First Name:"
 msgstr "_Nombre:"
 
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:5
 msgid "_Jabber ID:"
 msgstr "ID _Jabber:"
 
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:6
 msgid "_Last Name:"
 msgstr "Ape_llidos:"
-
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:6
-msgid "_Nickname:"
-msgstr "_Apodo:"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:7
 msgid "_Published Name:"
@@ -1169,24 +1174,25 @@ msgid "_Username:"
 msgstr "_Usuario:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
+#| msgid "_Ignore conference and chat room invitations"
+msgid "I_gnore conference and chat room invitations"
+msgstr "_Ignorar invitaciones a conferencias y salas de chat"
+
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
 msgid "Use _Yahoo! Japan"
 msgstr "Usar _Yahoo! Japan"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "What is your Yahoo! ID?"
 msgstr "¿Cuál es su ID de Yahoo!?"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
 msgid "What is your Yahoo! password?"
 msgstr "¿Cuál es su contraseña de Yahoo!?"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "Yahoo! I_D:"
 msgstr "I_D de Yahoo!:"
-
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
-msgid "_Ignore conference and chat room invitations"
-msgstr "_Ignorar invitaciones a conferencias y salas de chat"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
 msgid "_Room List locale:"
@@ -1486,33 +1492,33 @@ msgid "Subscription Request"
 msgstr "Petición de suscripción"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
-#: ../libempathy-gtk/empathy-individual-view.c:2218
+#: ../libempathy-gtk/empathy-individual-view.c:2244
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "¿Realmente quiere quitar el grupo «%s»?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2006
-#: ../libempathy-gtk/empathy-individual-view.c:2221
+#: ../libempathy-gtk/empathy-individual-view.c:2247
 msgid "Removing group"
 msgstr "Quitando grupo"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:2055
 #: ../libempathy-gtk/empathy-contact-list-view.c:2132
-#: ../libempathy-gtk/empathy-individual-view.c:2275
-#: ../libempathy-gtk/empathy-individual-view.c:2360
+#: ../libempathy-gtk/empathy-individual-view.c:2301
+#: ../libempathy-gtk/empathy-individual-view.c:2386
 #: ../src/empathy-accounts-dialog.ui.h:7
 msgid "_Remove"
 msgstr "_Quitar"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2085
-#: ../libempathy-gtk/empathy-individual-view.c:2306
+#: ../libempathy-gtk/empathy-individual-view.c:2332
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "¿Realmente quiere quitar el contacto «%s»?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2087
-#: ../libempathy-gtk/empathy-individual-view.c:2308
+#: ../libempathy-gtk/empathy-individual-view.c:2334
 msgid "Removing contact"
 msgstr "Quitando el contacto"
 
@@ -1523,48 +1529,48 @@ msgid "_Add Contact…"
 msgstr "_Añadir contacto…"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:230
-#: ../libempathy-gtk/empathy-individual-menu.c:467
+#: ../libempathy-gtk/empathy-individual-menu.c:489
 #: ../src/empathy-main-window.ui.h:14
 msgid "_Chat"
 msgstr "_Chat"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:260
-#: ../libempathy-gtk/empathy-individual-menu.c:508
+#: ../libempathy-gtk/empathy-individual-menu.c:530
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "Llamada de vo_z"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:290
-#: ../libempathy-gtk/empathy-individual-menu.c:550
+#: ../libempathy-gtk/empathy-individual-menu.c:572
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "Llamada de _vídeo"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:330
-#: ../libempathy-gtk/empathy-individual-menu.c:608
+#: ../libempathy-gtk/empathy-individual-menu.c:630
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Previous Conversations"
 msgstr "Conversaciones an_teriores"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:352
-#: ../libempathy-gtk/empathy-individual-menu.c:649
+#: ../libempathy-gtk/empathy-individual-menu.c:671
 msgid "Send File"
 msgstr "Enviar archivo"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:375
-#: ../libempathy-gtk/empathy-individual-menu.c:691
+#: ../libempathy-gtk/empathy-individual-menu.c:713
 msgid "Share My Desktop"
 msgstr "Compartir mi escritorio"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:415
 #: ../libempathy-gtk/empathy-contact-widget.c:1541
-#: ../libempathy-gtk/empathy-individual-menu.c:725
+#: ../libempathy-gtk/empathy-individual-menu.c:747
 #: ../libempathy-gtk/empathy-individual-widget.c:1288
 msgid "Favorite"
 msgstr "Favorita"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:444
-#: ../libempathy-gtk/empathy-individual-menu.c:752
+#: ../libempathy-gtk/empathy-individual-menu.c:774
 msgid "Infor_mation"
 msgstr "Infor_mación"
 
@@ -1574,13 +1580,13 @@ msgid "_Edit"
 msgstr "_Editar"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:544
-#: ../libempathy-gtk/empathy-individual-menu.c:945
+#: ../libempathy-gtk/empathy-individual-menu.c:967
 #: ../src/empathy-chat-window.c:903
 msgid "Inviting you to this room"
 msgstr "Invitándolo a esta sala"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:575
-#: ../libempathy-gtk/empathy-individual-menu.c:992
+#: ../libempathy-gtk/empathy-individual-menu.c:1014
 msgid "_Invite to Chat Room"
 msgstr "_Invitar a sala de chat"
 
@@ -1745,7 +1751,6 @@ msgstr "Ubicación geográfica"
 #: ../libempathy-gtk/empathy-contact-widget.c:707
 #: ../libempathy-gtk/empathy-individual-widget.c:597
 #, c-format
-#| msgid "%s (%s)"
 msgid "%s, %s"
 msgstr "%s, %s"
 
@@ -1824,6 +1829,7 @@ msgid "_Add Group"
 msgstr "_Añadir grupo"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:397
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:554
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -1842,15 +1848,15 @@ msgstr "_Desenlazar"
 msgid "Linked Contacts"
 msgstr "Contactos enlazados"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:319
+#: ../libempathy-gtk/empathy-individual-linker.c:353
 msgid "Select contacts to link"
 msgstr "Seleccionar contactos para enlazar"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:384
+#: ../libempathy-gtk/empathy-individual-linker.c:426
 msgid "New contact preview"
 msgstr "Vista previa del contacto nuevo"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:428
+#: ../libempathy-gtk/empathy-individual-linker.c:470
 msgid "Contacts selected in the list on the left will be linked together."
 msgstr ""
 "Se enlazarán entre sí los contactos seleccionados en la lista de la "
@@ -1864,14 +1870,14 @@ msgstr ""
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:803
+#: ../libempathy-gtk/empathy-individual-menu.c:825
 msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "_Editar"
 
 #. Translators: this is a verb meaning "to connect two contacts together
 #. * to form a meta-contact".
-#: ../libempathy-gtk/empathy-individual-menu.c:835
+#: ../libempathy-gtk/empathy-individual-menu.c:857
 msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "_Enlazar…"
@@ -1886,6 +1892,15 @@ msgstr[1] "Metacontacto que contiene %u contactos"
 #: ../libempathy-gtk/empathy-individual-widget.ui.h:1
 msgid "<b>Location</b> at (date)"
 msgstr "<b>Ubicación</b> en (fecha)"
+
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:328
+msgid "New Network"
+msgstr "Red nueva"
+
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:495
+#| msgid "Which IRC network?"
+msgid "Choose an IRC network"
+msgstr "Elegir una red IRC"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:280
 msgid "new server"
@@ -1906,7 +1921,7 @@ msgstr "SSL"
 #. Translators: this is the title of the linking dialogue (reached by
 #. * right-clicking on a contact and selecting "Link…"). "Link" in this title
 #. * is a verb.
-#: ../libempathy-gtk/empathy-linking-dialog.c:95
+#: ../libempathy-gtk/empathy-linking-dialog.c:109
 msgid "Link Contacts"
 msgstr "Enlazar contactos"
 
@@ -1914,7 +1929,7 @@ msgstr "Enlazar contactos"
 #. Translators: this is an action button in the linking dialogue. "Link" is
 #. * used here as a verb meaning "to connect two contacts to form a
 #. * meta-contact".
-#: ../libempathy-gtk/empathy-linking-dialog.c:108
+#: ../libempathy-gtk/empathy-linking-dialog.c:122
 msgid "_Link"
 msgstr "_Enlazar"
 
@@ -1933,12 +1948,10 @@ msgid "Conversations"
 msgstr "Conversaciones"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:3
-#| msgid "Find next"
 msgid "Find Next"
 msgstr "Buscar siguiente"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:4
-#| msgid "Find previous"
 msgid "Find Previous"
 msgstr "Buscar anterior"
 
@@ -2116,7 +2129,6 @@ msgid "The certrificate is not signed by a Certification Authority"
 msgstr "El certificado no está firmado por una Autoridad de certificación"
 
 #: ../libempathy-gtk/empathy-tls-dialog.c:160
-#| msgid "The certificate is expired"
 msgid "The certificate has expired"
 msgstr "El certificado ha caducado"
 
@@ -2169,7 +2181,6 @@ msgid "Continue"
 msgstr "Continuar"
 
 #: ../libempathy-gtk/empathy-tls-dialog.c:269
-#| msgid "This connection is untrusted, would you like to continue anyway?"
 msgid "This connection is untrusted. Would you like to continue anyway?"
 msgstr "Esta conexión no es de confianza. ¿Quiere continuar de todas formas?"
 
@@ -2373,8 +2384,7 @@ msgstr "El contacto seleccionado está desconectado."
 msgid "No error message"
 msgstr "Sin mensaje de eeror"
 
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:244
-#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:259
+#: ../nautilus-sendto-plugin/empathy-nautilus-sendto.c:242
 msgid "Instant Message (Empathy)"
 msgstr "Mensaje instantáneo (Empathy)"
 
@@ -2673,7 +2683,6 @@ msgstr ""
 "¿Seguro que quiere continuar?"
 
 #: ../src/empathy-accounts-dialog.ui.h:1
-#| msgid "Contact information"
 msgid "Loading account information"
 msgstr "Cargando información de la cuenta"
 
@@ -3448,11 +3457,6 @@ msgstr "Miembros"
 #. yes/no, yes/no and a number.
 #: ../src/empathy-new-chatroom-dialog.c:607
 #, c-format
-#| msgid ""
-#| "<b>%s</b>\n"
-#| "Invite required: %s\n"
-#| "Password required: %s\n"
-#| "Members: %s"
 msgid ""
 "%s\n"
 "Invite required: %s\n"
@@ -3798,7 +3802,6 @@ msgstr ""
 "No mostrar ningún diálogo; realizar cualquier trabajo (ej. importar) y salir"
 
 #: ../src/empathy-accounts.c:186
-#| msgid "Don't display any dialogs if there are any non-salut accounts"
 msgid "Don't display any dialogs if there are any non-Salut accounts"
 msgstr "No mostrar ningún diálogo si existe alguna cuenta diferente de Salut"
 
@@ -3823,6 +3826,15 @@ msgstr "Cuentas en Empathy"
 msgid "Empathy Debugger"
 msgstr "Depurador de Empathy"
 
+#~ msgid "_Character set:"
+#~ msgstr "Conjunto de _caracteres:"
+
+#~ msgid "_E-mail address:"
+#~ msgstr "Dirección de correo-_e:"
+
+#~ msgid "_Nickname:"
+#~ msgstr "_Apodo:"
+
 #~ msgid "<b>Location</b>, "
 #~ msgstr "<b>Ubicación</b>, "
 
@@ -3838,9 +3850,6 @@ msgstr "Depurador de Empathy"
 
 #~ msgid "page 3"
 #~ msgstr "página 3"
-
-#~ msgid "New Network"
-#~ msgstr "Red nueva"
 
 #~ msgid "Your contact list is empty"
 #~ msgstr "Su lista de contactos está vacía"
