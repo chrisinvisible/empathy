@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-28 10:40+0200\n"
-"PO-Revision-Date: 2010-08-28 10:39+0200\n"
+"POT-Creation-Date: 2010-08-31 02:13+0200\n"
+"PO-Revision-Date: 2010-08-31 02:12+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
 "Language-Team: Hungarian <gnome at fsf dot hu>\n"
 "MIME-Version: 1.0\n"
@@ -715,12 +715,16 @@ msgstr "%s:"
 msgid "Username:"
 msgstr "Felhasználónév:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1488
+#: ../libempathy-gtk/empathy-account-widget.c:1475
+msgid "A_pply"
+msgstr "_Alkalmazás"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1505
 msgid "L_og in"
 msgstr "Bejele_ntkezés"
 
 #. Account and Identifier
-#: ../libempathy-gtk/empathy-account-widget.c:1556
+#: ../libempathy-gtk/empathy-account-widget.c:1571
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-individual-widget.c:1397
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
@@ -729,36 +733,40 @@ msgstr "Bejele_ntkezés"
 msgid "Account:"
 msgstr "Felhasználói fiók:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1567
-msgid "Enabled"
-msgstr "Engedélyezve"
+#: ../libempathy-gtk/empathy-account-widget.c:1582
+msgid "_Enabled"
+msgstr "_Engedélyezve"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1632
+#: ../libempathy-gtk/empathy-account-widget.c:1647
 msgid "This account already exists on the server"
 msgstr "Ez a fiók már létezik a kiszolgálón"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1635
+#: ../libempathy-gtk/empathy-account-widget.c:1650
 msgid "Create a new account on the server"
 msgstr "Új fiók létrehozása a kiszolgálón"
+
+#: ../libempathy-gtk/empathy-account-widget.c:1743
+msgid "Ca_ncel"
+msgstr "Mé_gse"
 
 #. To translators: The first parameter is the login id and the
 #. * second one is the server. The resulting string will be something
 #. * like: "MyUserName on chat.freenode.net".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:2004
+#: ../libempathy-gtk/empathy-account-widget.c:2028
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%1$s ezen: %2$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:2030
+#: ../libempathy-gtk/empathy-account-widget.c:2054
 #, c-format
 msgid "%s Account"
 msgstr "%s fiók"
 
-#: ../libempathy-gtk/empathy-account-widget.c:2034
+#: ../libempathy-gtk/empathy-account-widget.c:2058
 msgid "New account"
 msgstr "Új fiók"
 
@@ -780,11 +788,11 @@ msgstr "Speciális"
 
 #: ../libempathy-gtk/empathy-account-widget-aim.ui.h:3
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:4
 #: ../libempathy-gtk/empathy-account-widget-sip.ui.h:12
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
 msgid "Pass_word:"
 msgstr "_Jelszó:"
 
@@ -825,7 +833,7 @@ msgid "<b>Example:</b> username"
 msgstr "<b>Például:</b> felhasználónév"
 
 #: ../libempathy-gtk/empathy-account-widget-groupwise.ui.h:3
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:6
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:3
 msgid "Login I_D:"
 msgstr "Bejelentkezési a_zonosító:"
@@ -843,21 +851,21 @@ msgid "<b>Example:</b> 123456789"
 msgstr "<b>Például:</b> 123456789"
 
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:3
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:3
+msgid "Ch_aracter set:"
+msgstr "_Karakterkészlet:"
+
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:4
 msgid "ICQ _UIN:"
 msgstr "ICQ _UIN:"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
 msgid "What is your ICQ UIN?"
 msgstr "Mi az Ön ICQ UIN-ja?"
 
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
 msgid "What is your ICQ password?"
 msgstr "Mi az Ön ICQ jelszava?"
-
-#: ../libempathy-gtk/empathy-account-widget-icq.ui.h:7
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
-msgid "_Character set:"
-msgstr "_Karakterkészlet:"
 
 #: ../libempathy-gtk/empathy-account-widget-sip.c:183
 #: ../libempathy-gtk/empathy-account-widget-sip.c:216
@@ -940,20 +948,28 @@ msgstr "<b>Például:</b> felhasznalo@gmail.com"
 msgid "<b>Example:</b> user@jabber.org"
 msgstr "<b>Például:</b> felhasznalo@jabber.hu"
 
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:4
+msgid "Encr_yption required (TLS/SSL)"
+msgstr "_Titkosítás szükséges (TLS/SSL)"
+
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:5
+msgid "I_gnore SSL certificate errors"
+msgstr "SSL-tanúsítvány_hibák figyelmen kívül hagyása"
+
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
 msgid "Override server settings"
 msgstr "Kiszolgáló beállításainak felülbírálása"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:7
-msgid "Pri_ority:"
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:9
+msgid "Priori_ty:"
 msgstr "_Prioritás:"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
 msgid "Reso_urce:"
 msgstr "_Erőforrás:"
 
 #. This string is not wrapped in the dialog so you may have to add some '\n' to make it look nice.
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:12
 msgid ""
 "This is your username, not your normal Facebook login.\n"
 "If you are facebook.com/<b>badger</b>, enter <b>badger</b>.\n"
@@ -966,49 +982,41 @@ msgstr ""
 "Ha még nincs Facebook felhasználóneve, <a href=\"http://www.facebook.com/"
 "username/\">ezen az oldalon</a> választhat."
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:13
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
 msgid "Use old SS_L"
 msgstr "Régi SS_L használata"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:14
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
 msgid "What is your Facebook password?"
 msgstr "Mi az Ön Facebook jelszava?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:15
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
 msgid "What is your Facebook username?"
 msgstr "Mi az Ön Facebook felhasználóneve?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:16
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
 msgid "What is your Google ID?"
 msgstr "Mi az Ön Google azonosítója?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:17
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
 msgid "What is your Google password?"
 msgstr "Mi az Ön Google jelszava?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:18
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
 msgid "What is your Jabber ID?"
 msgstr "Mi az Ön Jabber azonosítója?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:19
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
 msgid "What is your Jabber password?"
 msgstr "Mi az Ön Jabber jelszava?"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:20
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
 msgid "What is your desired Jabber ID?"
 msgstr "Adja meg a kívánt Jabber azonosítót"
 
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:21
+#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
 msgid "What is your desired Jabber password?"
 msgstr "Adja meg a kívánt Jabber jelszót"
-
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:22
-msgid "_Encryption required (TLS/SSL)"
-msgstr "_Titkosítás szükséges (TLS/SSL)"
-
-#: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:23
-msgid "_Ignore SSL certificate errors"
-msgstr "SSL tanúsítvány_hibák figyelmen kívül hagyása"
 
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:1
 msgid "<b>Example:</b> user@hotmail.com"
@@ -1023,24 +1031,24 @@ msgid "What is your Windows Live password?"
 msgstr "Mi az Ön Windows Live jelszava?"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:2
-msgid "_E-mail address:"
+msgid "E-_mail address:"
 msgstr "_E-mail cím:"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:3
+msgid "Nic_kname:"
+msgstr "Be_cenév:"
+
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:4
 msgid "_First Name:"
 msgstr "_Utónév:"
 
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:4
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:5
 msgid "_Jabber ID:"
 msgstr "_Jabber azonosító:"
 
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:6
 msgid "_Last Name:"
 msgstr "_Vezetéknév:"
-
-#: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:6
-msgid "_Nickname:"
-msgstr "_Becenév:"
 
 #: ../libempathy-gtk/empathy-account-widget-local-xmpp.ui.h:7
 msgid "_Published Name:"
@@ -1119,24 +1127,24 @@ msgid "_Username:"
 msgstr "_Felhasználónév:"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:4
+msgid "I_gnore conference and chat room invitations"
+msgstr "Konferencia- és csevegőszoba-meghívások _figyelmen kívül hagyása"
+
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
 msgid "Use _Yahoo! Japan"
 msgstr "A _Yahoo! Japan használata"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:5
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "What is your Yahoo! ID?"
 msgstr "Mi az Ön Yahoo! azonosítója?"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
 msgid "What is your Yahoo! password?"
 msgstr "Mi az Ön Yahoo! jelszava?"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "Yahoo! I_D:"
 msgstr "Yahoo! a_zonosító:"
-
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
-msgid "_Ignore conference and chat room invitations"
-msgstr "Konferencia- és csevegőszoba-meghívások _figyelmen kívül hagyása"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
 msgid "_Room List locale:"
@@ -1436,33 +1444,33 @@ msgid "Subscription Request"
 msgstr "Feliratkozási kérés"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
-#: ../libempathy-gtk/empathy-individual-view.c:2218
+#: ../libempathy-gtk/empathy-individual-view.c:2244
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "Valóban el kívánja távolítani a(z) „%s” csoportot?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2006
-#: ../libempathy-gtk/empathy-individual-view.c:2221
+#: ../libempathy-gtk/empathy-individual-view.c:2247
 msgid "Removing group"
 msgstr "Csoport eltávolítása"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:2055
 #: ../libempathy-gtk/empathy-contact-list-view.c:2132
-#: ../libempathy-gtk/empathy-individual-view.c:2275
-#: ../libempathy-gtk/empathy-individual-view.c:2360
+#: ../libempathy-gtk/empathy-individual-view.c:2301
+#: ../libempathy-gtk/empathy-individual-view.c:2386
 #: ../src/empathy-accounts-dialog.ui.h:7
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2085
-#: ../libempathy-gtk/empathy-individual-view.c:2306
+#: ../libempathy-gtk/empathy-individual-view.c:2332
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "Valóban el kívánja távolítani „%s” partnert?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2087
-#: ../libempathy-gtk/empathy-individual-view.c:2308
+#: ../libempathy-gtk/empathy-individual-view.c:2334
 msgid "Removing contact"
 msgstr "Partner eltávolítása"
 
@@ -1473,48 +1481,48 @@ msgid "_Add Contact…"
 msgstr "Partner _felvétele…"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:230
-#: ../libempathy-gtk/empathy-individual-menu.c:467
+#: ../libempathy-gtk/empathy-individual-menu.c:489
 #: ../src/empathy-main-window.ui.h:14
 msgid "_Chat"
 msgstr "_Csevegés"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:260
-#: ../libempathy-gtk/empathy-individual-menu.c:508
+#: ../libempathy-gtk/empathy-individual-menu.c:530
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "_Hanghívás"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:290
-#: ../libempathy-gtk/empathy-individual-menu.c:550
+#: ../libempathy-gtk/empathy-individual-menu.c:572
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "_Videohívás"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:330
-#: ../libempathy-gtk/empathy-individual-menu.c:608
+#: ../libempathy-gtk/empathy-individual-menu.c:630
 #: ../src/empathy-main-window.ui.h:25
 msgid "_Previous Conversations"
 msgstr "K_orábbi társalgások"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:352
-#: ../libempathy-gtk/empathy-individual-menu.c:649
+#: ../libempathy-gtk/empathy-individual-menu.c:671
 msgid "Send File"
 msgstr "Fájl küldése"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:375
-#: ../libempathy-gtk/empathy-individual-menu.c:691
+#: ../libempathy-gtk/empathy-individual-menu.c:713
 msgid "Share My Desktop"
 msgstr "Az asztalom megosztása"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:415
 #: ../libempathy-gtk/empathy-contact-widget.c:1541
-#: ../libempathy-gtk/empathy-individual-menu.c:725
+#: ../libempathy-gtk/empathy-individual-menu.c:747
 #: ../libempathy-gtk/empathy-individual-widget.c:1288
 msgid "Favorite"
 msgstr "Kedvenc"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:444
-#: ../libempathy-gtk/empathy-individual-menu.c:752
+#: ../libempathy-gtk/empathy-individual-menu.c:774
 msgid "Infor_mation"
 msgstr "_Információk"
 
@@ -1524,13 +1532,13 @@ msgid "_Edit"
 msgstr "S_zerkesztés"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:544
-#: ../libempathy-gtk/empathy-individual-menu.c:945
+#: ../libempathy-gtk/empathy-individual-menu.c:967
 #: ../src/empathy-chat-window.c:903
 msgid "Inviting you to this room"
 msgstr "Meghívás ebbe a szobába"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:575
-#: ../libempathy-gtk/empathy-individual-menu.c:992
+#: ../libempathy-gtk/empathy-individual-menu.c:1014
 msgid "_Invite to Chat Room"
 msgstr "Meg_hívás csevegőszobába"
 
@@ -1773,6 +1781,7 @@ msgid "_Add Group"
 msgstr "Csoport _hozzáadása"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:397
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:554
 msgid "Select"
 msgstr "Kijelölés"
 
@@ -1791,15 +1800,15 @@ msgstr "S_zétválasztás"
 msgid "Linked Contacts"
 msgstr "Összekapcsolt partnerek"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:319
+#: ../libempathy-gtk/empathy-individual-linker.c:353
 msgid "Select contacts to link"
 msgstr "Válasszon összekapcsolandó partnereket"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:384
+#: ../libempathy-gtk/empathy-individual-linker.c:426
 msgid "New contact preview"
 msgstr "Új partner előnézete"
 
-#: ../libempathy-gtk/empathy-individual-linker.c:428
+#: ../libempathy-gtk/empathy-individual-linker.c:470
 msgid "Contacts selected in the list on the left will be linked together."
 msgstr "A bal oldali listában kiválasztott partnerek össze lesznek kapcsolva."
 
@@ -1811,14 +1820,14 @@ msgstr "A bal oldali listában kiválasztott partnerek össze lesznek kapcsolva.
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: ../libempathy-gtk/empathy-individual-menu.c:803
+#: ../libempathy-gtk/empathy-individual-menu.c:825
 msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "S_zerkesztés"
 
 #. Translators: this is a verb meaning "to connect two contacts together
 #. * to form a meta-contact".
-#: ../libempathy-gtk/empathy-individual-menu.c:835
+#: ../libempathy-gtk/empathy-individual-menu.c:857
 msgctxt "Link individual (contextual menu)"
 msgid "_Link…"
 msgstr "Össze_kapcsolás…"
@@ -1833,6 +1842,14 @@ msgstr[1] "%u partnert tartalmazó metapartner"
 #: ../libempathy-gtk/empathy-individual-widget.ui.h:1
 msgid "<b>Location</b> at (date)"
 msgstr "<b>Hely</b> az időpontban"
+
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:328
+msgid "New Network"
+msgstr "Új hálózat"
+
+#: ../libempathy-gtk/empathy-irc-network-chooser-dialog.c:495
+msgid "Choose an IRC network"
+msgstr "Válasszon IRC-hálózatot"
 
 #: ../libempathy-gtk/empathy-irc-network-dialog.c:280
 msgid "new server"
@@ -1853,7 +1870,7 @@ msgstr "SSL"
 #. Translators: this is the title of the linking dialogue (reached by
 #. * right-clicking on a contact and selecting "Link…"). "Link" in this title
 #. * is a verb.
-#: ../libempathy-gtk/empathy-linking-dialog.c:95
+#: ../libempathy-gtk/empathy-linking-dialog.c:109
 msgid "Link Contacts"
 msgstr "Partnerek összekapcsolása"
 
@@ -1861,7 +1878,7 @@ msgstr "Partnerek összekapcsolása"
 #. Translators: this is an action button in the linking dialogue. "Link" is
 #. * used here as a verb meaning "to connect two contacts to form a
 #. * meta-contact".
-#: ../libempathy-gtk/empathy-linking-dialog.c:108
+#: ../libempathy-gtk/empathy-linking-dialog.c:122
 msgid "_Link"
 msgstr "Összekap_csolás"
 
