@@ -961,6 +961,7 @@ individual_view_call_activated_cb (EmpathyCellRendererActivatable *cell,
     const gchar *path_string,
     EmpathyIndividualView *view)
 {
+  EmpathyIndividualViewPriv *priv = GET_PRIV (view);
   GtkWidget *menu;
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -968,6 +969,9 @@ individual_view_call_activated_cb (EmpathyCellRendererActivatable *cell,
   GdkEventButton *event;
   GtkMenuShell *shell;
   GtkWidget *item;
+
+  if (!(priv->view_features & EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_CALL))
+    return;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
   if (!gtk_tree_model_get_iter_from_string (model, &iter, path_string))
