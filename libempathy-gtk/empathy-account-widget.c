@@ -88,6 +88,9 @@ typedef struct {
   GtkWidget *param_account_widget;
   GtkWidget *param_password_widget;
 
+  /* Used only for IRC accounts */
+  EmpathyIrcNetworkChooser *irc_network_chooser;
+
   gboolean dispose_run;
 } EmpathyAccountWidgetPriv;
 
@@ -904,12 +907,13 @@ account_widget_build_irc (EmpathyAccountWidget *self,
 
   if (priv->simple)
     {
-      empathy_account_widget_irc_build_simple (self, filename);
+      priv->irc_network_chooser = empathy_account_widget_irc_build_simple (self,
+          filename);
     }
   else
     {
-      empathy_account_widget_irc_build (self, filename,
-        &priv->table_common_settings);
+      priv->irc_network_chooser = empathy_account_widget_irc_build (self,
+          filename, &priv->table_common_settings);
     }
 }
 
@@ -2016,17 +2020,19 @@ empathy_account_widget_get_default_display_name (EmpathyAccountWidget *self)
       /* TODO: this should be done in empathy-account-widget-irc */
       if (!tp_strdiff (protocol, "irc"))
         {
-          const gchar* server;
-          server = empathy_account_settings_get_string (priv->settings,
-              "server");
+          EmpathyIrcNetwork *network;
+
+          network = empathy_irc_network_chooser_get_network (
+              priv->irc_network_chooser);
+          g_assert (network != NULL);
 
           /* To translators: The first parameter is the login id and the
-           * second one is the server. The resulting string will be something
-           * like: "MyUserName on chat.freenode.net".
+           * second one is the network. The resulting string will be something
+           * like: "MyUserName on freenode".
            * You should reverse the order of these arguments if the
            * server should come before the login id in your locale.*/
           default_display_name = g_strdup_printf (_("%1$s on %2$s"),
-              login_id, server);
+              login_id, empathy_irc_network_get_name (network));
         }
       else if (account_widget_is_facebook (self))
         {
