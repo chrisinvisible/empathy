@@ -117,7 +117,7 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
 
   /* Unlink button */
   button = gtk_button_new_with_mnemonic (
-      C_("Unlink individual (button)", "_Unlink"));
+      C_("Unlink individual (button)", "_Unlink…"));
   gtk_dialog_add_action_widget (dialog, button, RESPONSE_UNLINK);
   gtk_widget_show (button);
 
@@ -170,13 +170,34 @@ linking_response_cb (EmpathyLinkingDialog *self,
     {
       EmpathyIndividualManager *manager;
       FolksIndividual *individual;
+      GtkWidget *dialog;
 
-      manager = empathy_individual_manager_dup_singleton ();
       individual =
           empathy_individual_linker_get_start_individual (priv->linker);
 
-      empathy_individual_manager_unlink_individual (manager, individual);
+      /* Show a confirmation dialogue first */
+      dialog = gtk_message_dialog_new (GTK_WINDOW (self), GTK_DIALOG_MODAL,
+          GTK_MESSAGE_WARNING, GTK_BUTTONS_NONE, _("Unlink meta-contact '%s'?"),
+          folks_individual_get_alias (individual));
+      gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+          _("Are you sure you want to unlink this meta-contact? This will "
+            "completely split the meta-contact into the contacts it "
+            "contains."));
+      gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+          C_("Unlink individual (button)", "_Unlink"), GTK_RESPONSE_OK,
+          NULL);
 
+      if (gtk_dialog_run (GTK_DIALOG (dialog)) != GTK_RESPONSE_OK)
+        {
+          gtk_widget_destroy (dialog);
+          return;
+        }
+
+      gtk_widget_destroy (dialog);
+
+      manager = empathy_individual_manager_dup_singleton ();
+      empathy_individual_manager_unlink_individual (manager, individual);
       g_object_unref (manager);
     }
 
