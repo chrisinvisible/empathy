@@ -68,6 +68,7 @@ typedef struct {
   EmpathyPersonaStore *persona_store; /* owned */
   GtkTreeViewColumn *toggle_column; /* child widget */
   GtkCellRenderer *toggle_renderer; /* child widget */
+  GtkWidget *search_widget; /* child widget */
 
   FolksIndividual *start_individual; /* owned, allow-none */
   FolksIndividual *new_individual; /* owned, allow-none */
@@ -330,7 +331,7 @@ set_up (EmpathyIndividualLinker *self)
   EmpathyIndividualManager *individual_manager;
   GtkWidget *top_vbox;
   GtkPaned *paned;
-  GtkWidget *label, *scrolled_window, *search_bar;
+  GtkWidget *label, *scrolled_window;
   GtkBox *vbox;
   EmpathyPersonaView *persona_view;
   gchar *tmp;
@@ -406,11 +407,12 @@ set_up (EmpathyIndividualLinker *self)
   gtk_widget_show (scrolled_window);
 
   /* Live search */
-  search_bar = empathy_live_search_new (GTK_WIDGET (priv->individual_view));
+  priv->search_widget = empathy_live_search_new (
+      GTK_WIDGET (priv->individual_view));
   empathy_individual_view_set_live_search (priv->individual_view,
-      EMPATHY_LIVE_SEARCH (search_bar));
+      EMPATHY_LIVE_SEARCH (priv->search_widget));
 
-  gtk_box_pack_end (vbox, search_bar, FALSE, TRUE, 0);
+  gtk_box_pack_end (vbox, priv->search_widget, FALSE, TRUE, 0);
 
   gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (vbox));
   gtk_paned_pack1 (paned, alignment, TRUE, FALSE);
@@ -805,4 +807,14 @@ empathy_individual_linker_get_has_changed (EmpathyIndividualLinker *self)
   priv = GET_PRIV (self);
 
   return (g_hash_table_size (priv->changed_individuals) > 0) ? TRUE : FALSE;
+}
+
+void
+empathy_individual_linker_set_search_text (EmpathyIndividualLinker *self,
+    const gchar *search_text)
+{
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_LINKER (self));
+
+  empathy_live_search_set_text (
+      EMPATHY_LIVE_SEARCH (GET_PRIV (self)->search_widget), search_text);
 }

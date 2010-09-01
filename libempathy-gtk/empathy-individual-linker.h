@@ -68,6 +68,9 @@ GList * empathy_individual_linker_get_linked_personas (
 gboolean empathy_individual_linker_get_has_changed (
     EmpathyIndividualLinker *self);
 
+void empathy_individual_linker_set_search_text (EmpathyIndividualLinker *self,
+    const gchar *search_text);
+
 G_END_DECLS
 
 #endif /* __EMPATHY_INDIVIDUAL_LINKER_H__ */
