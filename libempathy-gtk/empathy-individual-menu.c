@@ -62,6 +62,13 @@ enum {
   PROP_FEATURES,
 };
 
+enum {
+  SIGNAL_LINK_CONTACTS_ACTIVATED,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
+
 G_DEFINE_TYPE (EmpathyIndividualMenu, empathy_individual_menu, GTK_TYPE_MENU);
 
 static void
@@ -189,6 +196,16 @@ individual_menu_add_personas (GtkMenuShell *menu,
 }
 
 static void
+individual_link_menu_item_activate_cb (EmpathyIndividualMenu *self)
+{
+  EmpathyIndividualMenuPriv *priv = GET_PRIV (self);
+  GtkWidget *dialog;
+
+  dialog = empathy_linking_dialog_show (priv->individual, NULL);
+  g_signal_emit (self, signals[SIGNAL_LINK_CONTACTS_ACTIVATED], 0, dialog);
+}
+
+static void
 empathy_individual_menu_init (EmpathyIndividualMenu *self)
 {
   EmpathyIndividualMenuPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
@@ -295,6 +312,10 @@ constructed (GObject *object)
     {
       item = empathy_individual_link_menu_item_new (individual);
       gtk_menu_shell_append (shell, item);
+
+      g_signal_connect_swapped (item, "activate",
+          (GCallback) individual_link_menu_item_activate_cb, object);
+
       gtk_widget_show (item);
     }
 
@@ -407,6 +428,12 @@ empathy_individual_menu_class_init (EmpathyIndividualMenuClass *klass)
           EMPATHY_TYPE_INDIVIDUAL_FEATURE_FLAGS,
           EMPATHY_INDIVIDUAL_FEATURE_NONE,
           G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+  signals[SIGNAL_LINK_CONTACTS_ACTIVATED] =
+      g_signal_new ("link-contacts-activated", G_OBJECT_CLASS_TYPE (klass),
+          G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+          g_cclosure_marshal_VOID__OBJECT,
+          G_TYPE_NONE, 1, EMPATHY_TYPE_LINKING_DIALOG);
 
   g_type_class_add_private (object_class, sizeof (EmpathyIndividualMenuPriv));
 }
@@ -966,12 +993,6 @@ empathy_individual_edit_menu_item_new (FolksIndividual *individual)
   return item;
 }
 
-static void
-individual_link_menu_item_activate_cb (FolksIndividual *individual)
-{
-  empathy_linking_dialog_show (individual, NULL);
-}
-
 GtkWidget *
 empathy_individual_link_menu_item_new (FolksIndividual *individual)
 {
@@ -993,9 +1014,6 @@ empathy_individual_link_menu_item_new (FolksIndividual *individual)
   gtk_widget_set_sensitive (item,
       folks_individual_get_trust_level (individual) ==
           FOLKS_TRUST_LEVEL_PERSONAS);
-
-  g_signal_connect_swapped (item, "activate",
-      G_CALLBACK (individual_link_menu_item_activate_cb), individual);
 
   return item;
 }
