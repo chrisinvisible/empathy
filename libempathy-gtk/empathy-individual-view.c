@@ -1503,8 +1503,8 @@ individual_view_expand_idle_cb (EmpathyIndividualView *self)
   g_signal_handlers_unblock_by_func (self,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
 
-  g_object_unref (self);
   priv->expand_groups_idle_handler = 0;
+  g_object_unref (self);
 
   /* Empty the table of groups to expand/contract, since it may contain groups
    * which no longer exist in the tree view. This can happen after going
@@ -1927,6 +1927,8 @@ individual_view_finalize (GObject *object)
 {
   EmpathyIndividualViewPriv *priv = GET_PRIV (object);
 
+  if (priv->expand_groups_idle_handler != 0)
+    g_source_remove (priv->expand_groups_idle_handler);
   g_hash_table_destroy (priv->expand_groups);
 
   G_OBJECT_CLASS (empathy_individual_view_parent_class)->finalize (object);
