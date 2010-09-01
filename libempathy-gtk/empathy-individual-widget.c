@@ -1676,6 +1676,8 @@ personas_changed_cb (FolksIndividual *individual,
       /* Remove all Personas */
       for (l = personas; l != NULL; l = l->next)
         remove_persona (self, FOLKS_PERSONA (l->data));
+      for (l = removed; l != NULL; l = l->next)
+        remove_persona (self, FOLKS_PERSONA (l->data));
 
       /* Set up the Individual table instead */
       individual_table_set_up (self);
