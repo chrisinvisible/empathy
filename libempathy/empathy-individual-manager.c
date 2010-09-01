@@ -173,6 +173,20 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
   EmpathyIndividualManagerPriv *priv = GET_PRIV (self);
   GList *l, *added_filtered = NULL;
 
+  /* Handle the removals first, as one of the added Individuals might have the
+   * same ID as one of the removed Individuals (due to linking). */
+  for (l = removed; l; l = l->next)
+    {
+      FolksIndividual *ind = FOLKS_INDIVIDUAL (l->data);
+
+      g_signal_handlers_disconnect_by_func (ind,
+          individual_notify_personas_cb, self);
+
+      if (g_hash_table_lookup (priv->individuals,
+          folks_individual_get_id (ind)) != NULL)
+        remove_individual (self, ind);
+    }
+
   /* Filter the individuals for ones which contain EmpathyContacts */
   for (l = added; l; l = l->next)
     {
@@ -186,18 +200,6 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
           add_individual (self, ind);
           added_filtered = g_list_prepend (added_filtered, ind);
         }
-    }
-
-  for (l = removed; l; l = l->next)
-    {
-      FolksIndividual *ind = FOLKS_INDIVIDUAL (l->data);
-
-      g_signal_handlers_disconnect_by_func (ind,
-          individual_notify_personas_cb, self);
-
-      if (g_hash_table_lookup (priv->individuals,
-          folks_individual_get_id (ind)) != NULL)
-        remove_individual (self, ind);
     }
 
   /* Bail if we have no individuals left */
