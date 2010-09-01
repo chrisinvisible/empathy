@@ -118,6 +118,8 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   /* Unlink button */
   button = gtk_button_new_with_mnemonic (
       C_("Unlink individual (button)", "_Unlink…"));
+  gtk_widget_set_tooltip_text (button, _("Completely split the displayed "
+      "meta-contact into the contacts it contains."));
   gtk_dialog_add_action_widget (dialog, button, RESPONSE_UNLINK);
   gtk_widget_show (button);
 
