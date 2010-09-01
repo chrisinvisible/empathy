@@ -42,12 +42,27 @@
 #include "empathy-images.h"
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
+#include "empathy-gtk-enum-types.h"
 #include "empathy-individual-dialogs.h"
 #include "empathy-individual-edit-dialog.h"
 #include "empathy-individual-information-dialog.h"
 #include "empathy-ui-utils.h"
 #include "empathy-share-my-desktop.h"
 #include "empathy-linking-dialog.h"
+
+#define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIndividualMenu)
+
+typedef struct {
+  FolksIndividual *individual; /* owned */
+  EmpathyIndividualFeatureFlags features;
+} EmpathyIndividualMenuPriv;
+
+enum {
+  PROP_INDIVIDUAL = 1,
+  PROP_FEATURES,
+};
+
+G_DEFINE_TYPE (EmpathyIndividualMenu, empathy_individual_menu, GTK_TYPE_MENU);
 
 static void
 individual_menu_add_personas (GtkMenuShell *menu,
@@ -173,21 +188,28 @@ individual_menu_add_personas (GtkMenuShell *menu,
     }
 }
 
-GtkWidget *
-empathy_individual_menu_new (FolksIndividual *individual,
-    EmpathyIndividualFeatureFlags features)
+static void
+empathy_individual_menu_init (EmpathyIndividualMenu *self)
 {
-  GtkWidget *menu;
+  EmpathyIndividualMenuPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
+      EMPATHY_TYPE_INDIVIDUAL_MENU, EmpathyIndividualMenuPriv);
+
+  self->priv = priv;
+}
+
+static void
+constructed (GObject *object)
+{
+  EmpathyIndividualMenuPriv *priv = GET_PRIV (object);
   GtkMenuShell *shell;
   GtkWidget *item;
+  FolksIndividual *individual;
+  EmpathyIndividualFeatureFlags features;
 
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
-
-  if (features == EMPATHY_INDIVIDUAL_FEATURE_NONE)
-    return NULL;
-
-  menu = gtk_menu_new ();
-  shell = GTK_MENU_SHELL (menu);
+  /* Build the menu */
+  shell = GTK_MENU_SHELL (object);
+  individual = priv->individual;
+  features = priv->features;
 
   /* Add Contact */
   item = empathy_individual_add_menu_item_new (individual);
@@ -247,7 +269,7 @@ empathy_individual_menu_new (FolksIndividual *individual,
   gtk_widget_show (item);
 
   /* Menu items to target specific contacts */
-  individual_menu_add_personas (GTK_MENU_SHELL (menu), individual, features);
+  individual_menu_add_personas (GTK_MENU_SHELL (object), individual, features);
 
   /* Separator */
   if (features & (EMPATHY_INDIVIDUAL_FEATURE_EDIT |
@@ -291,8 +313,115 @@ empathy_individual_menu_new (FolksIndividual *individual,
       gtk_menu_shell_append (shell, item);
       gtk_widget_show (item);
     }
+}
 
-  return menu;
+static void
+get_property (GObject *object,
+    guint param_id,
+    GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyIndividualMenuPriv *priv;
+
+  priv = GET_PRIV (object);
+
+  switch (param_id)
+    {
+      case PROP_INDIVIDUAL:
+        g_value_set_object (value, priv->individual);
+        break;
+      case PROP_FEATURES:
+        g_value_set_flags (value, priv->features);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    }
+}
+
+static void
+set_property (GObject *object,
+    guint param_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyIndividualMenuPriv *priv;
+
+  priv = GET_PRIV (object);
+
+  switch (param_id)
+    {
+      case PROP_INDIVIDUAL:
+        priv->individual = g_value_dup_object (value);
+        break;
+      case PROP_FEATURES:
+        priv->features = g_value_get_flags (value);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+        break;
+    }
+}
+
+static void
+dispose (GObject *object)
+{
+  EmpathyIndividualMenuPriv *priv = GET_PRIV (object);
+
+  tp_clear_object (&priv->individual);
+
+  G_OBJECT_CLASS (empathy_individual_menu_parent_class)->dispose (object);
+}
+
+static void
+empathy_individual_menu_class_init (EmpathyIndividualMenuClass *klass)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+  object_class->constructed = constructed;
+  object_class->get_property = get_property;
+  object_class->set_property = set_property;
+  object_class->dispose = dispose;
+
+  /**
+   * EmpathyIndividualMenu:individual:
+   *
+   * The #FolksIndividual the menu is for.
+   */
+  g_object_class_install_property (object_class, PROP_INDIVIDUAL,
+      g_param_spec_object ("individual",
+          "Individual",
+          "The #FolksIndividual the menu is for.",
+          FOLKS_TYPE_INDIVIDUAL,
+          G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+  /**
+   * EmpathyIndividualMenu:features:
+   *
+   * A set of feature flags controlling which entries are shown.
+   */
+  g_object_class_install_property (object_class, PROP_FEATURES,
+      g_param_spec_flags ("features",
+          "Features",
+          "A set of feature flags controlling which entries are shown.",
+          EMPATHY_TYPE_INDIVIDUAL_FEATURE_FLAGS,
+          EMPATHY_INDIVIDUAL_FEATURE_NONE,
+          G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS));
+
+  g_type_class_add_private (object_class, sizeof (EmpathyIndividualMenuPriv));
+}
+
+GtkWidget *
+empathy_individual_menu_new (FolksIndividual *individual,
+    EmpathyIndividualFeatureFlags features)
+{
+  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
+  g_return_val_if_fail (features != EMPATHY_INDIVIDUAL_FEATURE_NONE, NULL);
+
+  return g_object_new (EMPATHY_TYPE_INDIVIDUAL_MENU,
+      "individual", individual,
+      "features", features,
+      NULL);
 }
 
 static void

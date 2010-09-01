@@ -39,6 +39,32 @@ typedef enum {
 	EMPATHY_INDIVIDUAL_FEATURE_ALL = (1 << 7) - 1,
 } EmpathyIndividualFeatureFlags;
 
+#define EMPATHY_TYPE_INDIVIDUAL_MENU (empathy_individual_menu_get_type ())
+#define EMPATHY_INDIVIDUAL_MENU(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), \
+    EMPATHY_TYPE_INDIVIDUAL_MENU, EmpathyIndividualMenu))
+#define EMPATHY_INDIVIDUAL_MENU_CLASS(k) (G_TYPE_CHECK_CLASS_CAST ((k), \
+    EMPATHY_TYPE_INDIVIDUAL_MENU, EmpathyIndividualMenuClass))
+#define EMPATHY_IS_INDIVIDUAL_MENU(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), \
+    EMPATHY_TYPE_INDIVIDUAL_MENU))
+#define EMPATHY_IS_INDIVIDUAL_MENU_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), \
+    EMPATHY_TYPE_INDIVIDUAL_MENU))
+#define EMPATHY_INDIVIDUAL_MENU_GET_CLASS(o) ( \
+    G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_INDIVIDUAL_MENU, \
+        EmpathyIndividualMenuClass))
+
+typedef struct {
+	GtkMenu parent;
+
+	/*<private>*/
+	gpointer priv;
+} EmpathyIndividualMenu;
+
+typedef struct {
+	GtkMenuClass parent_class;
+} EmpathyIndividualMenuClass;
+
+GType empathy_individual_menu_get_type (void) G_GNUC_CONST;
+
 GtkWidget * empathy_individual_menu_new (FolksIndividual *individual,
     EmpathyIndividualFeatureFlags features);
 GtkWidget * empathy_individual_add_menu_item_new  (FolksIndividual *individual);
