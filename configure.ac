@@ -204,10 +204,7 @@ if test "x$have_gtk3" == "xyes"; then
    PKG_CHECK_MODULES(CANBERRA, libcanberra-gtk3 >= $LIBCANBERRA_GTK_REQUIRED)
    PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
    PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
-   # gcr-1 doesn't exist at the moment, and could even be named differently
-   # once it exists, but checking for it makes sure configure abort, instead
-   # of allowing to build an empathy binary linked to both GTK+ 2 and 3.
-   PKG_CHECK_MODULES(GCR, gcr-1 >= $KEYRING_REQUIRED)
+   PKG_CHECK_MODULES(GCR, gcr-3 >= $KEYRING_REQUIRED)
 else
    PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 
