@@ -30,7 +30,6 @@
 
 #include <telepathy-glib/util.h>
 #include <folks/folks.h>
-#include <folks/folks-telepathy.h>
 
 #include <libempathy/empathy-individual-manager.h>
 #include <libempathy/empathy-utils.h>
@@ -61,25 +60,11 @@ static void individual_edit_dialog_set_individual (
 G_DEFINE_TYPE (EmpathyIndividualEditDialog, empathy_individual_edit_dialog,
     GTK_TYPE_DIALOG);
 
-/* Fairly arbitrary response ID for the "Unlink" button */
-#define RESPONSE_UNLINK 5
-
 static void
 individual_dialogs_response_cb (GtkDialog *dialog,
     gint response,
     GList **dialogs)
 {
-  if (response == RESPONSE_UNLINK)
-    {
-      EmpathyIndividualEditDialogPriv *priv = GET_PRIV (dialog);
-      EmpathyIndividualManager *manager =
-          empathy_individual_manager_dup_singleton ();
-
-      empathy_individual_manager_unlink_individual (manager, priv->individual);
-
-      g_object_unref (manager);
-    }
-
   *dialogs = g_list_remove (*dialogs, dialog);
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -119,30 +104,6 @@ empathy_individual_edit_dialog_show (FolksIndividual *individual,
 
   edit_dialogs = g_list_prepend (edit_dialogs, dialog);
   gtk_widget_show (dialog);
-}
-
-static void
-set_unlink_button_sensitivity (EmpathyIndividualEditDialog *self)
-{
-  EmpathyIndividualEditDialogPriv *priv = GET_PRIV (self);
-  GList *personas, *l;
-  guint num_personas = 0;
-
-  /* Count how many Telepathy personas we have, to see whether we can
-   * unlink */
-  if (priv->individual != NULL)
-    {
-      personas = folks_individual_get_personas (priv->individual);
-      for (l = personas; l != NULL; l = l->next)
-        {
-          if (TPF_IS_PERSONA (l->data))
-            num_personas++;
-        }
-    }
-
-  /* Only make the "Unlink" button sensitive if we have enough personas */
-  gtk_dialog_set_response_sensitive (GTK_DIALOG (self), RESPONSE_UNLINK,
-      (num_personas > 1) ? TRUE : FALSE);
 }
 
 static void
@@ -195,7 +156,6 @@ individual_edit_dialog_set_individual (
       /* Update the UI */
       empathy_individual_widget_set_individual (
           EMPATHY_INDIVIDUAL_WIDGET (priv->individual_widget), individual);
-      set_unlink_button_sensitivity (dialog);
     }
 }
 
@@ -275,7 +235,7 @@ static void
 empathy_individual_edit_dialog_init (
     EmpathyIndividualEditDialog *dialog)
 {
-  GtkWidget *button, *action_area;
+  GtkWidget *button;
   EmpathyIndividualEditDialogPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (
       dialog, EMPATHY_TYPE_INDIVIDUAL_EDIT_DIALOG,
       EmpathyIndividualEditDialogPriv);
@@ -296,17 +256,6 @@ empathy_individual_edit_dialog_init (
   gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (
       GTK_DIALOG (dialog))), priv->individual_widget, TRUE, TRUE, 0);
   gtk_widget_show (priv->individual_widget);
-
-  /* Unlink button */
-  button = gtk_button_new_with_mnemonic (
-      C_("Unlink individual (button)", "_Unlink"));
-  gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button, RESPONSE_UNLINK);
-
-  action_area = gtk_dialog_get_action_area (GTK_DIALOG (dialog));
-  gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (action_area), button,
-      TRUE);
-
-  gtk_widget_show (button);
 
   /* Close button */
   button = gtk_button_new_with_label (GTK_STOCK_CLOSE);

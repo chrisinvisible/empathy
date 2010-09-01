@@ -26,6 +26,9 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n-lib.h>
 
+#include <folks/folks.h>
+#include <folks/folks-telepathy.h>
+
 #include <libempathy/empathy-individual-manager.h>
 #include <libempathy/empathy-utils.h>
 
@@ -55,6 +58,9 @@
  */
 
 static GtkWidget *linking_dialog = NULL;
+
+/* Fairly arbitrary response ID for the "Unlink" button */
+#define RESPONSE_UNLINK 5
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyLinkingDialog)
 
@@ -109,6 +115,12 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   gtk_window_set_title (GTK_WINDOW (self), _("Link Contacts"));
   gtk_widget_set_size_request (GTK_WIDGET (self), 600, 500);
 
+  /* Unlink button */
+  button = gtk_button_new_with_mnemonic (
+      C_("Unlink individual (button)", "_Unlink"));
+  gtk_dialog_add_action_widget (dialog, button, RESPONSE_UNLINK);
+  gtk_widget_show (button);
+
   /* Cancel button */
   button = gtk_button_new_with_label (GTK_STOCK_CANCEL);
   gtk_button_set_use_stock (GTK_BUTTON (button), TRUE);
@@ -154,6 +166,19 @@ linking_response_cb (EmpathyLinkingDialog *self,
 
       g_object_unref (manager);
     }
+  else if (response == RESPONSE_UNLINK)
+    {
+      EmpathyIndividualManager *manager;
+      FolksIndividual *individual;
+
+      manager = empathy_individual_manager_dup_singleton ();
+      individual =
+          empathy_individual_linker_get_start_individual (priv->linker);
+
+      empathy_individual_manager_unlink_individual (manager, individual);
+
+      g_object_unref (manager);
+    }
 
   linking_dialog = NULL;
   gtk_widget_destroy (GTK_WIDGET (self));
@@ -175,6 +200,8 @@ empathy_linking_dialog_show (FolksIndividual *individual,
     GtkWindow *parent)
 {
   EmpathyLinkingDialogPriv *priv;
+  GList *personas, *l;
+  guint num_personas = 0;
 
   /* Create the dialogue if it doesn't exist */
   if (linking_dialog == NULL)
@@ -192,6 +219,19 @@ empathy_linking_dialog_show (FolksIndividual *individual,
     gtk_window_set_transient_for (GTK_WINDOW (linking_dialog), parent);
 
   empathy_individual_linker_set_start_individual (priv->linker, individual);
+
+  /* Count how many Telepathy personas we have, to see whether we can
+   * unlink */
+  personas = folks_individual_get_personas (individual);
+  for (l = personas; l != NULL; l = l->next)
+    {
+      if (TPF_IS_PERSONA (l->data))
+        num_personas++;
+    }
+
+  /* Only make the "Unlink" button sensitive if we have enough personas */
+  gtk_dialog_set_response_sensitive (GTK_DIALOG (linking_dialog),
+      RESPONSE_UNLINK, (num_personas > 1) ? TRUE : FALSE);
 
   gtk_window_present (GTK_WINDOW (linking_dialog));
 
