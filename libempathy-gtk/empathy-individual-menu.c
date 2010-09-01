@@ -860,7 +860,7 @@ empathy_individual_link_menu_item_new (FolksIndividual *individual)
   item = gtk_image_menu_item_new_with_mnemonic (
       /* Translators: this is a verb meaning "to connect two contacts together
        * to form a meta-contact". */
-      C_("Link individual (contextual menu)", "_Link…"));
+      C_("Link individual (contextual menu)", "_Link Contacts…"));
   /* TODO */
   /*image = gtk_image_new_from_icon_name (GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
   gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
