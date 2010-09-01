@@ -142,17 +142,18 @@ linking_response_cb (EmpathyLinkingDialog *self,
 {
   EmpathyLinkingDialogPriv *priv = GET_PRIV (self);
 
-  if (response == GTK_RESPONSE_OK) {
-    EmpathyIndividualManager *manager;
-    GList *personas;
+  if (response == GTK_RESPONSE_OK)
+    {
+      EmpathyIndividualManager *manager;
+      GList *personas;
 
-    manager = empathy_individual_manager_dup_singleton ();
+      manager = empathy_individual_manager_dup_singleton ();
 
-    personas = empathy_individual_linker_get_linked_personas (priv->linker);
-    empathy_individual_manager_link_personas (manager, personas);
+      personas = empathy_individual_linker_get_linked_personas (priv->linker);
+      empathy_individual_manager_link_personas (manager, personas);
 
-    g_object_unref (manager);
-  }
+      g_object_unref (manager);
+    }
 
   linking_dialog = NULL;
   gtk_widget_destroy (GTK_WIDGET (self));
