@@ -1503,13 +1503,12 @@ individual_view_expand_idle_cb (EmpathyIndividualView *self)
   g_signal_handlers_unblock_by_func (self,
       individual_view_row_expand_or_collapse_cb, GINT_TO_POINTER (TRUE));
 
-  priv->expand_groups_idle_handler = 0;
-  g_object_unref (self);
-
   /* Empty the table of groups to expand/contract, since it may contain groups
    * which no longer exist in the tree view. This can happen after going
    * offline, for example. */
   g_hash_table_remove_all (priv->expand_groups);
+  priv->expand_groups_idle_handler = 0;
+  g_object_unref (self);
 
   return FALSE;
 }
