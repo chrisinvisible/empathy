@@ -25,6 +25,8 @@
 
 #include <folks/folks.h>
 
+#include "empathy-individual-linker.h"
+
 G_BEGIN_DECLS
 
 #define EMPATHY_TYPE_LINKING_DIALOG (empathy_linking_dialog_get_type ())
@@ -55,6 +57,9 @@ GType empathy_linking_dialog_get_type (void) G_GNUC_CONST;
 
 GtkWidget * empathy_linking_dialog_show (FolksIndividual *individual,
     GtkWindow *parent);
+
+EmpathyIndividualLinker * empathy_linking_dialog_get_individual_linker (
+    EmpathyLinkingDialog *self);
 
 G_END_DECLS
 

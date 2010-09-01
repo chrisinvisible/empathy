@@ -196,3 +196,11 @@ empathy_linking_dialog_show (FolksIndividual *individual,
 
   return linking_dialog;
 }
+
+EmpathyIndividualLinker *
+empathy_linking_dialog_get_individual_linker (EmpathyLinkingDialog *self)
+{
+  g_return_val_if_fail (EMPATHY_IS_LINKING_DIALOG (self), NULL);
+
+  return GET_PRIV (self)->linker;
+}
