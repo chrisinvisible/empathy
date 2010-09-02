@@ -350,14 +350,17 @@ details_feature_prepared_cb (TpConnection *connection,
     DetailsData *data)
 {
   EmpathyIndividualWidget *self = data->widget;
-  EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
+  EmpathyIndividualWidgetPriv *priv = NULL;
 
-  if (tp_proxy_prepare_finish (connection, res, NULL) == FALSE)
+  if (tp_proxy_prepare_finish (connection, res, NULL) == FALSE || self == NULL)
     {
-      gtk_widget_hide (priv->vbox_details);
+      if (self != NULL)
+        gtk_widget_hide (GET_PRIV (self)->vbox_details);
       details_data_free (data);
       return;
     }
+
+  priv = GET_PRIV (self);
 
   /* Request the Individual's info */
   gtk_widget_show (priv->vbox_details);
