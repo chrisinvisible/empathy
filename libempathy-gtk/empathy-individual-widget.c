@@ -1701,6 +1701,14 @@ personas_changed_cb (FolksIndividual *individual,
 }
 
 static void
+individual_removed_cb (FolksIndividual *individual,
+    FolksIndividual *replacement_individual,
+    EmpathyIndividualWidget *self)
+{
+  empathy_individual_widget_set_individual (self, replacement_individual);
+}
+
+static void
 remove_individual (EmpathyIndividualWidget *self)
 {
   EmpathyIndividualWidgetPriv *priv = GET_PRIV (self);
@@ -1716,6 +1724,8 @@ remove_individual (EmpathyIndividualWidget *self)
           notify_avatar_cb, self);
       g_signal_handlers_disconnect_by_func (priv->individual,
           personas_changed_cb, self);
+      g_signal_handlers_disconnect_by_func (priv->individual,
+          individual_removed_cb, self);
 
       if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
         {
@@ -1762,6 +1772,8 @@ individual_update (EmpathyIndividualWidget *self)
           (GCallback) notify_avatar_cb, self);
       g_signal_connect (priv->individual, "personas-changed",
           (GCallback) personas_changed_cb, self);
+      g_signal_connect (priv->individual, "removed",
+          (GCallback) individual_removed_cb, self);
 
       if (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_EDIT_FAVOURITE)
         {
