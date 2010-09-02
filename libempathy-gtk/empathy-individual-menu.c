@@ -33,7 +33,6 @@
 
 #include <libempathy/empathy-call-factory.h>
 #include <libempathy/empathy-dispatcher.h>
-#include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-individual-manager.h>
 #include <libempathy/empathy-chatroom-manager.h>
 #include <libempathy/empathy-utils.h>
@@ -43,7 +42,6 @@
 #include "empathy-log-window.h"
 #include "empathy-contact-dialogs.h"
 #include "empathy-gtk-enum-types.h"
-#include "empathy-individual-dialogs.h"
 #include "empathy-individual-edit-dialog.h"
 #include "empathy-individual-information-dialog.h"
 #include "empathy-ui-utils.h"
@@ -227,14 +225,6 @@ constructed (GObject *object)
   shell = GTK_MENU_SHELL (object);
   individual = priv->individual;
   features = priv->features;
-
-  /* Add Contact */
-  item = empathy_individual_add_menu_item_new (individual);
-  if (item)
-    {
-      gtk_menu_shell_append (shell, item);
-      gtk_widget_show (item);
-    }
 
   /* Chat */
   if (features & EMPATHY_INDIVIDUAL_FEATURE_CHAT)
@@ -449,87 +439,6 @@ empathy_individual_menu_new (FolksIndividual *individual,
       "individual", individual,
       "features", features,
       NULL);
-}
-
-static void
-empathy_individual_add_menu_item_activated (GtkMenuItem *item,
-  FolksIndividual *individual)
-{
-  GtkWidget *toplevel;
-
-  toplevel = gtk_widget_get_toplevel (GTK_WIDGET (item));
-  if (!gtk_widget_is_toplevel (toplevel) || !GTK_IS_WINDOW (toplevel))
-    toplevel = NULL;
-
-  empathy_new_individual_dialog_show_with_individual (GTK_WINDOW (toplevel),
-      individual);
-}
-
-GtkWidget *
-empathy_individual_add_menu_item_new (FolksIndividual *individual)
-{
-  GtkWidget *item;
-  GtkWidget *image;
-  EmpathyIndividualManager *manager = NULL;
-  EmpathyContact *contact = NULL;
-  TpConnection *connection;
-  GList *l, *members;
-  gboolean found = FALSE;
-  EmpathyIndividualManagerFlags flags;
-
-  g_return_val_if_fail (FOLKS_IS_INDIVIDUAL (individual), NULL);
-
-  if (!empathy_individual_manager_initialized ())
-    {
-      item = NULL;
-      goto out;
-    }
-
-  manager = empathy_individual_manager_dup_singleton ();
-  contact = empathy_contact_dup_from_folks_individual (individual);
-  connection = empathy_contact_get_connection (contact);
-
-  flags = empathy_individual_manager_get_flags_for_connection (manager,
-      connection);
-
-  if (!(flags & EMPATHY_INDIVIDUAL_MANAGER_CAN_ADD))
-    {
-      item = NULL;
-      goto out;
-    }
-
-  members = empathy_individual_manager_get_members (
-      EMPATHY_INDIVIDUAL_MANAGER (manager));
-
-  for (l = members; l && !found; l = l->next)
-    {
-      if (!tp_strdiff (folks_individual_get_id (l->data),
-              folks_individual_get_id (individual)))
-        {
-          found = TRUE;
-        }
-    }
-  g_list_free (members);
-
-  if (found)
-    {
-      item = NULL;
-      goto out;
-    }
-
-  item = gtk_image_menu_item_new_with_mnemonic (_("_Add Contact…"));
-  image = gtk_image_new_from_icon_name (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU);
-  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-
-  g_signal_connect (item, "activate",
-      G_CALLBACK (empathy_individual_add_menu_item_activated),
-      individual);
-
-out:
-  tp_clear_object (&contact);
-  tp_clear_object (&manager);
-
-  return item;
 }
 
 typedef gboolean (*SensitivityPredicate) (EmpathyContact *contact);

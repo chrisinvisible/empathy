@@ -67,7 +67,6 @@ GType empathy_individual_menu_get_type (void) G_GNUC_CONST;
 
 GtkWidget * empathy_individual_menu_new (FolksIndividual *individual,
     EmpathyIndividualFeatureFlags features);
-GtkWidget * empathy_individual_add_menu_item_new  (FolksIndividual *individual);
 GtkWidget * empathy_individual_chat_menu_item_new (FolksIndividual *individual,
     EmpathyContact *contact);
 GtkWidget * empathy_individual_audio_call_menu_item_new (
