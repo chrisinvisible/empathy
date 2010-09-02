@@ -27,7 +27,7 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 #include <telepathy-glib/util.h>
-#include <telepathy-logger/log-manager.h>
+
 #include <folks/folks.h>
 #include <folks/folks-telepathy.h>
 
@@ -441,28 +441,28 @@ empathy_individual_menu_new (FolksIndividual *individual,
       NULL);
 }
 
-typedef gboolean (*SensitivityPredicate) (EmpathyContact *contact);
-
 /* Like menu_item_set_first_contact(), but always operates upon the given
- * contact */
+ * contact. If the contact is non-NULL, it is assumed that the menu entry should
+ * be sensitive. */
 static gboolean
 menu_item_set_contact (GtkWidget *item,
     EmpathyContact *contact,
     GCallback activate_callback,
-    SensitivityPredicate sensitivity_predicate)
+    EmpathyActionType action_type)
 {
-  gboolean contact_valid = TRUE;
+  gboolean can_do_action = FALSE;
 
-  if (sensitivity_predicate != NULL)
+  if (contact != NULL)
+    can_do_action = empathy_contact_can_do_action (contact, action_type);
+  gtk_widget_set_sensitive (item, can_do_action);
+
+  if (can_do_action == TRUE)
     {
-      contact_valid = sensitivity_predicate (contact);
-      gtk_widget_set_sensitive (item, sensitivity_predicate (contact));
+      g_signal_connect (item, "activate", G_CALLBACK (activate_callback),
+          contact);
     }
 
-  g_signal_connect (item, "activate", G_CALLBACK (activate_callback),
-      contact);
-
-  return contact_valid;
+  return can_do_action;
 }
 
 /**
@@ -470,62 +470,22 @@ menu_item_set_contact (GtkWidget *item,
  * (associated with @individual) with the highest availability who is also valid
  * whenever @item is activated.
  *
- * @sensitivity_predicate is an optional function to determine whether the menu
- * item should be insensitive (if the function returns @FALSE). Otherwise, the
- * menu item's sensitivity will not change.
+ * @action_type is the type of action performed by the menu entry; this is used
+ * so that only contacts which can perform that action (e.g. are capable of
+ * receiving video calls) are selected, as appropriate.
  */
 static GtkWidget *
 menu_item_set_first_contact (GtkWidget *item,
     FolksIndividual *individual,
     GCallback activate_callback,
-    SensitivityPredicate sensitivity_predicate)
+    EmpathyActionType action_type)
 {
-  GList *personas, *l;
-  FolksPresenceType best_presence = FOLKS_PRESENCE_TYPE_UNSET;
-  EmpathyContact *best_contact = NULL;
+  EmpathyContact *best_contact;
 
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l != NULL; l = l->next)
-    {
-      TpfPersona *persona = l->data;
-      FolksPresenceType presence;
-
-      if (!TPF_IS_PERSONA (persona))
-        continue;
-
-      /* Only choose the contact if it has a higher presence than our current
-       * best choice of contact. */
-      presence = folks_presence_get_presence_type (FOLKS_PRESENCE (l->data));
-      if (folks_presence_typecmp (presence, best_presence) > 0)
-        {
-          TpContact *tp_contact;
-          EmpathyContact *contact;
-
-          tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
-          contact = empathy_contact_dup_from_tp_contact (tp_contact);
-          empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
-
-          if (best_contact == NULL || sensitivity_predicate == NULL ||
-              sensitivity_predicate (contact) == TRUE)
-            {
-              tp_clear_object (&best_contact);
-
-              best_presence = presence;
-              best_contact = g_object_ref (contact);
-            }
-
-          g_object_unref (contact);
-        }
-    }
-
-  /* Use the best contact we found */
-  if (best_contact != NULL)
-    {
-      menu_item_set_contact (item, best_contact, G_CALLBACK (activate_callback),
-          sensitivity_predicate);
-
-      g_object_unref (best_contact);
-    }
+  best_contact = empathy_contact_dup_best_for_action (individual, action_type);
+  menu_item_set_contact (item, best_contact, G_CALLBACK (activate_callback),
+      action_type);
+  tp_clear_object (&best_contact);
 
   return item;
 }
@@ -560,12 +520,14 @@ empathy_individual_chat_menu_item_new (FolksIndividual *individual,
   if (contact != NULL)
     {
       menu_item_set_contact (item, contact,
-          G_CALLBACK (empathy_individual_chat_menu_item_activated), NULL);
+          G_CALLBACK (empathy_individual_chat_menu_item_activated),
+          EMPATHY_ACTION_CHAT);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
-          G_CALLBACK (empathy_individual_chat_menu_item_activated), NULL);
+          G_CALLBACK (empathy_individual_chat_menu_item_activated),
+          EMPATHY_ACTION_CHAT);
     }
 
   return item;
@@ -601,13 +563,13 @@ empathy_individual_audio_call_menu_item_new (FolksIndividual *individual,
     {
       menu_item_set_contact (item, contact,
           G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
-          empathy_contact_can_voip_audio);
+          EMPATHY_ACTION_AUDIO_CALL);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
           G_CALLBACK (empathy_individual_audio_call_menu_item_activated),
-          empathy_contact_can_voip_audio);
+          EMPATHY_ACTION_AUDIO_CALL);
     }
 
   return item;
@@ -644,13 +606,13 @@ empathy_individual_video_call_menu_item_new (FolksIndividual *individual,
     {
       menu_item_set_contact (item, contact,
           G_CALLBACK (empathy_individual_video_call_menu_item_activated),
-          empathy_contact_can_voip_video);
+          EMPATHY_ACTION_VIDEO_CALL);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
           G_CALLBACK (empathy_individual_video_call_menu_item_activated),
-          empathy_contact_can_voip_video);
+          EMPATHY_ACTION_VIDEO_CALL);
     }
 
   return item;
@@ -664,21 +626,6 @@ empathy_individual_log_menu_item_activated (GtkMenuItem *item,
 
   empathy_log_window_show (empathy_contact_get_account (contact),
       empathy_contact_get_id (contact), FALSE, NULL);
-}
-
-static gboolean
-contact_has_log (EmpathyContact *contact)
-{
-  TplLogManager *manager;
-  gboolean have_log;
-
-  manager = tpl_log_manager_dup_singleton ();
-  have_log = tpl_log_manager_exists (manager,
-      empathy_contact_get_account (contact), empathy_contact_get_id (contact),
-      FALSE);
-  g_object_unref (manager);
-
-  return have_log;
 }
 
 GtkWidget *
@@ -701,13 +648,13 @@ empathy_individual_log_menu_item_new (FolksIndividual *individual,
     {
       menu_item_set_contact (item, contact,
           G_CALLBACK (empathy_individual_log_menu_item_activated),
-          contact_has_log);
+          EMPATHY_ACTION_VIEW_LOGS);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
           G_CALLBACK (empathy_individual_log_menu_item_activated),
-          contact_has_log);
+          EMPATHY_ACTION_VIEW_LOGS);
     }
 
   return item;
@@ -743,13 +690,13 @@ empathy_individual_file_transfer_menu_item_new (FolksIndividual *individual,
     {
       menu_item_set_contact (item, contact,
           G_CALLBACK (empathy_individual_file_transfer_menu_item_activated),
-          empathy_contact_can_send_files);
+          EMPATHY_ACTION_SEND_FILE);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
           G_CALLBACK (empathy_individual_file_transfer_menu_item_activated),
-          empathy_contact_can_send_files);
+          EMPATHY_ACTION_SEND_FILE);
     }
 
   return item;
@@ -784,13 +731,13 @@ empathy_individual_share_my_desktop_menu_item_new (FolksIndividual *individual,
     {
       menu_item_set_contact (item, contact,
           G_CALLBACK (empathy_individual_share_my_desktop_menu_item_activated),
-          empathy_contact_can_use_rfb_stream_tube);
+          EMPATHY_ACTION_SHARE_MY_DESKTOP);
     }
   else
     {
       menu_item_set_first_contact (item, individual,
           G_CALLBACK (empathy_individual_share_my_desktop_menu_item_activated),
-          empathy_contact_can_use_rfb_stream_tube);
+          EMPATHY_ACTION_SHARE_MY_DESKTOP);
     }
 
   return item;
