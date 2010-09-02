@@ -1809,7 +1809,8 @@ do_constructed (GObject *obj)
   display_name = empathy_account_settings_get_display_name (priv->settings);
   default_display_name = empathy_account_widget_get_default_display_name (self);
 
-  if (tp_strdiff (display_name, default_display_name))
+  if (tp_strdiff (display_name, default_display_name) &&
+      !priv->creating_account)
     {
       /* The display name of the account is not the one that we'd assign by
        * default; assume that the user changed it manually */
