@@ -100,6 +100,17 @@ gboolean empathy_contact_can_voip_video (EmpathyContact *contact);
 gboolean empathy_contact_can_send_files (EmpathyContact *contact);
 gboolean empathy_contact_can_use_rfb_stream_tube (EmpathyContact *contact);
 
+typedef enum {
+  EMPATHY_ACTION_CHAT,
+  EMPATHY_ACTION_AUDIO_CALL,
+  EMPATHY_ACTION_VIDEO_CALL,
+  EMPATHY_ACTION_VIEW_LOGS,
+  EMPATHY_ACTION_SEND_FILE,
+  EMPATHY_ACTION_SHARE_MY_DESKTOP,
+} EmpathyActionType;
+
+gboolean empathy_contact_can_do_action (EmpathyContact *self,
+    EmpathyActionType action_type);
 
 #define EMPATHY_TYPE_AVATAR (empathy_avatar_get_type ())
 GType empathy_avatar_get_type (void) G_GNUC_CONST;
@@ -118,6 +129,9 @@ gboolean empathy_contact_equal (gconstpointer contact1,
     gconstpointer contact2);
 
 EmpathyContact *empathy_contact_dup_from_tp_contact (TpContact *tp_contact);
+EmpathyContact * empathy_contact_dup_best_for_action (
+    FolksIndividual *individual,
+    EmpathyActionType action_type);
 
 G_END_DECLS
 

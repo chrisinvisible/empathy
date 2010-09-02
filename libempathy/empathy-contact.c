@@ -29,6 +29,8 @@
 #include <telepathy-glib/interfaces.h>
 #include <telepathy-glib/util.h>
 
+#include <telepathy-logger/log-manager.h>
+
 #include <folks/folks.h>
 #include <folks/folks-telepathy.h>
 
@@ -1125,6 +1127,54 @@ empathy_contact_can_use_rfb_stream_tube (EmpathyContact *contact)
   return priv->capabilities & EMPATHY_CAPABILITIES_RFB_STREAM_TUBE;
 }
 
+static gboolean
+contact_has_log (EmpathyContact *contact)
+{
+  TplLogManager *manager;
+  gboolean have_log;
+
+  manager = tpl_log_manager_dup_singleton ();
+  have_log = tpl_log_manager_exists (manager,
+      empathy_contact_get_account (contact), empathy_contact_get_id (contact),
+      FALSE);
+  g_object_unref (manager);
+
+  return have_log;
+}
+
+gboolean
+empathy_contact_can_do_action (EmpathyContact *self,
+    EmpathyActionType action_type)
+{
+  gboolean sensitivity = FALSE;
+
+  switch (action_type)
+    {
+      case EMPATHY_ACTION_CHAT:
+        sensitivity = TRUE;
+        break;
+      case EMPATHY_ACTION_AUDIO_CALL:
+        sensitivity = empathy_contact_can_voip_audio (self);
+        break;
+      case EMPATHY_ACTION_VIDEO_CALL:
+        sensitivity = empathy_contact_can_voip_video (self);
+        break;
+      case EMPATHY_ACTION_VIEW_LOGS:
+        sensitivity = contact_has_log (self);
+        break;
+      case EMPATHY_ACTION_SEND_FILE:
+        sensitivity = empathy_contact_can_send_files (self);
+        break;
+      case EMPATHY_ACTION_SHARE_MY_DESKTOP:
+        sensitivity = empathy_contact_can_use_rfb_stream_tube (self);
+        break;
+      default:
+        g_assert_not_reached ();
+    }
+
+  return (sensitivity ? TRUE : FALSE);
+}
+
 static gchar *
 contact_get_avatar_filename (EmpathyContact *contact,
                              const gchar *token)
@@ -1686,3 +1736,93 @@ empathy_contact_dup_from_tp_contact (TpContact *tp_contact)
   return contact;
 }
 
+static int
+presence_sort_func (EmpathyContact *a, EmpathyContact *b)
+{
+  FolksPresence *presence_a, *presence_b;
+
+  presence_a = FOLKS_PRESENCE (empathy_contact_get_persona (a));
+  presence_b = FOLKS_PRESENCE (empathy_contact_get_persona (b));
+
+  /* We negate the result because we're sorting in reverse order (i.e. such that
+   * the Personas with the highest presence are at the beginning of the list. */
+  return -folks_presence_typecmp (folks_presence_get_presence_type (presence_a),
+      folks_presence_get_presence_type (presence_b));
+}
+
+static GCompareFunc
+get_sort_func_for_action (EmpathyActionType action_type)
+{
+  switch (action_type)
+    {
+      case EMPATHY_ACTION_CHAT:
+      case EMPATHY_ACTION_AUDIO_CALL:
+      case EMPATHY_ACTION_VIDEO_CALL:
+      case EMPATHY_ACTION_VIEW_LOGS:
+      case EMPATHY_ACTION_SEND_FILE:
+      case EMPATHY_ACTION_SHARE_MY_DESKTOP:
+      default:
+        return (GCompareFunc) presence_sort_func;
+    }
+}
+
+/**
+ * empathy_contact_dup_best_for_action:
+ * @individual: a #FolksIndividual
+ * @action_type: the type of action to be performed on the contact
+ *
+ * Chooses a #FolksPersona from the given @individual which is best-suited for
+ * the given @action_type. "Best-suited" is determined by choosing the persona
+ * with the highest presence out of all the personas which can perform the given
+ * @action_type (e.g. are capable of video calling).
+ *
+ * Return value: an #EmpathyContact for the best persona, or %NULL;
+ * unref with g_object_unref()
+ */
+EmpathyContact *
+empathy_contact_dup_best_for_action (FolksIndividual *individual,
+    EmpathyActionType action_type)
+{
+  GList *personas, *contacts, *l;
+  EmpathyContact *best_contact = NULL;
+
+  /* Build a list of EmpathyContacts that we can sort */
+  personas = folks_individual_get_personas (individual);
+  contacts = NULL;
+
+  for (l = personas; l != NULL; l = l->next)
+    {
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+
+      if (!TPF_IS_PERSONA (l->data))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+      empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
+
+      /* Only choose the contact if they're actually capable of the specified
+       * action. */
+      if (!empathy_contact_can_do_action (contact, action_type))
+        {
+          g_object_unref (contact);
+          continue;
+        }
+
+      contacts = g_list_prepend (contacts, contact);
+    }
+
+  /* Sort the contacts by some heuristic based on the action type, then take
+   * the top contact. */
+  if (contacts != NULL)
+    {
+      contacts = g_list_sort (contacts, get_sort_func_for_action (action_type));
+      best_contact = g_object_ref (contacts->data);
+    }
+
+  g_list_foreach (contacts, (GFunc) g_object_unref, NULL);
+  g_list_free (contacts);
+
+  return best_contact;
+}
