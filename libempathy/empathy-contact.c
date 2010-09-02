@@ -1750,14 +1750,40 @@ presence_sort_func (EmpathyContact *a, EmpathyContact *b)
       folks_presence_get_presence_type (presence_b));
 }
 
+/* Sort by presence as with presence_sort_func(), but if the two contacts have
+ * the same presence, prefer the one which can do both audio *and* video calls,
+ * over the one which can only do one of the two. */
+static int
+voip_sort_func (EmpathyContact *a, EmpathyContact *b)
+{
+  gboolean has_audio_video_a, has_audio_video_b;
+  gint presence_sort = presence_sort_func (a, b);
+
+  if (presence_sort != 0)
+    return presence_sort;
+
+  has_audio_video_a = empathy_contact_can_voip_audio (a) &&
+      empathy_contact_can_voip_video (a);
+  has_audio_video_b = empathy_contact_can_voip_audio (b) &&
+      empathy_contact_can_voip_video (b);
+
+  if (has_audio_video_a && !has_audio_video_b)
+    return -1;
+  else if (!has_audio_video_a && has_audio_video_b)
+    return 1;
+  else
+    return 0;
+}
+
 static GCompareFunc
 get_sort_func_for_action (EmpathyActionType action_type)
 {
   switch (action_type)
     {
-      case EMPATHY_ACTION_CHAT:
       case EMPATHY_ACTION_AUDIO_CALL:
       case EMPATHY_ACTION_VIDEO_CALL:
+        return (GCompareFunc) voip_sort_func;
+      case EMPATHY_ACTION_CHAT:
       case EMPATHY_ACTION_VIEW_LOGS:
       case EMPATHY_ACTION_SEND_FILE:
       case EMPATHY_ACTION_SHARE_MY_DESKTOP:
