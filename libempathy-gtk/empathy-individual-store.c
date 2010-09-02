@@ -819,24 +819,38 @@ individual_store_contact_updated_cb (EmpathyContact *contact,
 }
 
 static void
-individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
-    FolksIndividual *individual)
+individual_personas_changed_cb (FolksIndividual *individual,
+    GList *added,
+    GList *removed,
+    EmpathyIndividualStore *self)
 {
-  GList *personas, *l;
+  GList *l;
 
-  g_signal_connect (individual, "notify::avatar",
-      G_CALLBACK (individual_store_individual_updated_cb), self);
-  g_signal_connect (individual, "notify::presence-type",
-      G_CALLBACK (individual_store_individual_updated_cb), self);
-  g_signal_connect (individual, "notify::presence-message",
-      G_CALLBACK (individual_store_individual_updated_cb), self);
-  g_signal_connect (individual, "notify::alias",
-      G_CALLBACK (individual_store_individual_updated_cb), self);
+  DEBUG ("Individual '%s' personas-changed.",
+      folks_individual_get_id (individual));
 
   /* FIXME: libfolks hasn't grown capabilities support yet, so we have to go
    * through the EmpathyContacts for them. */
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l != NULL; l = l->next)
+  for (l = removed; l != NULL; l = l->next)
+    {
+      TpContact *tp_contact;
+      EmpathyContact *contact;
+
+      if (!TPF_IS_PERSONA (l->data))
+        continue;
+
+      tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
+      contact = empathy_contact_dup_from_tp_contact (tp_contact);
+      empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
+
+      g_object_set_data (G_OBJECT (contact), "individual", NULL);
+      g_signal_handlers_disconnect_by_func (contact,
+          (GCallback) individual_store_contact_updated_cb, self);
+
+      g_object_unref (contact);
+    }
+
+  for (l = added; l != NULL; l = l->next)
     {
       TpContact *tp_contact;
       EmpathyContact *contact;
@@ -850,11 +864,29 @@ individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
 
       g_object_set_data (G_OBJECT (contact), "individual", individual);
       g_signal_connect (contact, "notify::capabilities",
-          G_CALLBACK (individual_store_contact_updated_cb), self);
+          (GCallback) individual_store_contact_updated_cb, self);
 
       g_object_unref (contact);
     }
+}
 
+static void
+individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
+    FolksIndividual *individual)
+{
+  g_signal_connect (individual, "notify::avatar",
+      (GCallback) individual_store_individual_updated_cb, self);
+  g_signal_connect (individual, "notify::presence-type",
+      (GCallback) individual_store_individual_updated_cb, self);
+  g_signal_connect (individual, "notify::presence-message",
+      (GCallback) individual_store_individual_updated_cb, self);
+  g_signal_connect (individual, "notify::alias",
+      (GCallback) individual_store_individual_updated_cb, self);
+  g_signal_connect (individual, "personas-changed",
+      (GCallback) individual_personas_changed_cb, self);
+
+  individual_personas_changed_cb (individual,
+      folks_individual_get_personas (individual), NULL, self);
   individual_store_add_individual (self, individual);
 }
 
@@ -862,31 +894,13 @@ static void
 individual_store_disconnect_individual (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
-  GList *personas, *l;
+  individual_personas_changed_cb (individual, NULL,
+      folks_individual_get_personas (individual), self);
 
   g_signal_handlers_disconnect_by_func (individual,
-      G_CALLBACK (individual_store_individual_updated_cb), self);
-
-  /* FIXME: libfolks hasn't grown capabilities support yet, so we have to go
-   * through the EmpathyContacts for them. */
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l != NULL; l = l->next)
-    {
-      TpContact *tp_contact;
-      EmpathyContact *contact;
-
-      if (!TPF_IS_PERSONA (l->data))
-        continue;
-
-      tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
-      contact = empathy_contact_dup_from_tp_contact (tp_contact);
-      empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
-
-      g_signal_handlers_disconnect_by_func (contact,
-          G_CALLBACK (individual_store_contact_updated_cb), self);
-
-      g_object_unref (contact);
-    }
+      (GCallback) individual_store_individual_updated_cb, self);
+  g_signal_handlers_disconnect_by_func (individual,
+      (GCallback) individual_personas_changed_cb, self);
 }
 
 static void
