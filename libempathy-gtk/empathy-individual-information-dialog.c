@@ -43,6 +43,8 @@
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyIndividualInformationDialog)
 typedef struct {
   FolksIndividual *individual;
+  GtkWidget *individual_widget; /* child widget */
+  GtkWidget *label; /* child widget */
 } EmpathyIndividualInformationDialogPriv;
 
 enum {
@@ -53,6 +55,10 @@ enum {
 /* Info dialogs currently open.
  * Each dialog contains a referenced pointer to its Individual */
 static GList *information_dialogs = NULL;
+
+static void individual_information_dialog_set_individual (
+    EmpathyIndividualInformationDialog *dialog,
+    FolksIndividual *individual);
 
 G_DEFINE_TYPE (EmpathyIndividualInformationDialog,
     empathy_individual_information_dialog, GTK_TYPE_DIALOG);
@@ -104,63 +110,81 @@ empathy_individual_information_dialog_show (FolksIndividual *individual,
 }
 
 static void
+individual_removed_cb (FolksIndividual *individual,
+    FolksIndividual *replacement_individual,
+    EmpathyIndividualInformationDialog *self)
+{
+  individual_information_dialog_set_individual (self,
+      replacement_individual);
+
+  /* Destroy the dialogue */
+  if (replacement_individual == NULL)
+    {
+      individual_dialogs_response_cb (GTK_DIALOG (self),
+          GTK_RESPONSE_DELETE_EVENT, &information_dialogs);
+    }
+}
+
+static void
+set_label_visibility (EmpathyIndividualInformationDialog *dialog)
+{
+  EmpathyIndividualInformationDialogPriv *priv = GET_PRIV (dialog);
+  GList *personas, *l;
+  guint num_personas = 0;
+
+  /* Count how many Telepathy personas we have, to see whether we can
+   * unlink */
+  if (priv->individual != NULL)
+    {
+      personas = folks_individual_get_personas (priv->individual);
+      for (l = personas; l != NULL; l = l->next)
+        {
+          if (TPF_IS_PERSONA (l->data))
+            num_personas++;
+        }
+    }
+
+  /* Only make the label visible if we have enough personas */
+  gtk_widget_set_visible (priv->label, (num_personas > 1) ? TRUE : FALSE);
+}
+
+static void
 individual_information_dialog_set_individual (
     EmpathyIndividualInformationDialog *dialog,
     FolksIndividual *individual)
 {
   EmpathyIndividualInformationDialogPriv *priv;
-  GtkWidget *individual_widget;
-  GtkBox *content_area;
-  GList *personas, *l;
-  guint num_personas = 0;
 
   g_return_if_fail (EMPATHY_INDIVIDUAL_INFORMATION_DIALOG (dialog));
-  g_return_if_fail (FOLKS_IS_INDIVIDUAL (individual));
+  g_return_if_fail (individual == NULL || FOLKS_IS_INDIVIDUAL (individual));
 
   priv = GET_PRIV (dialog);
 
-  gtk_window_set_title (GTK_WINDOW (dialog),
-      folks_individual_get_alias (individual));
-
-  content_area = GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog)));
-
-  /* Determine how many personas we have, because we only want to display the
-   * label if we have more than one persona. */
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l != NULL; l = l->next)
+  /* Remove the old Individual */
+  if (priv->individual != NULL)
     {
-      if (TPF_IS_PERSONA (l->data))
-        num_personas++;
+      g_signal_handlers_disconnect_by_func (priv->individual,
+          (GCallback) individual_removed_cb, dialog);
     }
 
-  /* Label */
-  if (num_personas > 1)
+  tp_clear_object (&priv->individual);
+
+  /* Add the new Individual */
+  priv->individual = individual;
+
+  if (individual != NULL)
     {
-      gchar *label_string;
-      GtkWidget *label;
+      g_object_ref (individual);
+      g_signal_connect (individual, "removed",
+          (GCallback) individual_removed_cb, dialog);
 
-      /* Translators: the heading at the top of the Information dialogue */
-      label_string = g_strdup_printf ("<b>%s</b>", _("Linked Contacts"));
-      label = gtk_label_new (NULL);
-      gtk_label_set_markup (GTK_LABEL (label), label_string);
-      g_free (label_string);
-
-      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-      gtk_misc_set_padding (GTK_MISC (label), 6, 6);
-      gtk_box_pack_start (content_area, label, FALSE, TRUE, 0);
-      gtk_widget_show (label);
+      /* Update the UI */
+      gtk_window_set_title (GTK_WINDOW (dialog),
+          folks_individual_get_alias (individual));
+      empathy_individual_widget_set_individual (
+          EMPATHY_INDIVIDUAL_WIDGET (priv->individual_widget), individual);
+      set_label_visibility (dialog);
     }
-
-  /* Individual widget */
-  individual_widget = empathy_individual_widget_new (individual,
-      EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION |
-      EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS |
-      EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS);
-  gtk_container_set_border_width (GTK_CONTAINER (individual_widget), 6);
-  gtk_box_pack_start (content_area, individual_widget, TRUE, TRUE, 0);
-  gtk_widget_show (individual_widget);
-
-  priv->individual = g_object_ref (individual);
 }
 
 static void
@@ -202,40 +226,13 @@ individual_information_dialog_set_property (GObject *object,
 }
 
 static void
-individual_information_dialog_constructed (GObject *object)
+individual_information_dialog_dispose (GObject *object)
 {
-  GtkDialog *dialog = GTK_DIALOG (object);
-  GtkWidget *button;
-
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-  gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
-
-  /* Close button */
-  button = gtk_button_new_with_label (GTK_STOCK_CLOSE);
-  gtk_button_set_use_stock (GTK_BUTTON (button), TRUE);
-  gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button,
-      GTK_RESPONSE_CLOSE);
-  gtk_widget_set_can_default (button, TRUE);
-  gtk_window_set_default (GTK_WINDOW (dialog), button);
-  gtk_widget_show (button);
-
-  g_signal_connect (dialog, "response",
-      G_CALLBACK (individual_dialogs_response_cb), &information_dialogs);
-}
-
-static void
-individual_information_dialog_finalize (GObject *object)
-{
-  EmpathyIndividualInformationDialog *dialog;
-  EmpathyIndividualInformationDialogPriv *priv;
-
-  dialog = EMPATHY_INDIVIDUAL_INFORMATION_DIALOG (object);
-  priv = GET_PRIV (dialog);
-
-  g_object_unref (priv->individual);
+  individual_information_dialog_set_individual (
+      EMPATHY_INDIVIDUAL_INFORMATION_DIALOG (object), NULL);
 
   G_OBJECT_CLASS (
-      empathy_individual_information_dialog_parent_class)->finalize (object);
+      empathy_individual_information_dialog_parent_class)->dispose (object);
 }
 
 static void
@@ -244,10 +241,9 @@ empathy_individual_information_dialog_class_init (
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = individual_information_dialog_finalize;
+  object_class->dispose = individual_information_dialog_dispose;
   object_class->get_property = individual_information_dialog_get_property;
   object_class->set_property = individual_information_dialog_set_property;
-  object_class->constructed = individual_information_dialog_constructed;
 
   g_object_class_install_property (object_class,
       PROP_INDIVIDUAL,
@@ -267,10 +263,50 @@ static void
 empathy_individual_information_dialog_init (
     EmpathyIndividualInformationDialog *dialog)
 {
+  GtkWidget *button;
+  GtkBox *content_area;
+  gchar *label_string;
   EmpathyIndividualInformationDialogPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (
       dialog, EMPATHY_TYPE_INDIVIDUAL_INFORMATION_DIALOG,
       EmpathyIndividualInformationDialogPriv);
 
   dialog->priv = priv;
   priv->individual = NULL;
+
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+  gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
+
+  content_area = GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog)));
+
+  /* Translators: the heading at the top of the Information dialogue */
+  label_string = g_strdup_printf ("<b>%s</b>", _("Linked Contacts"));
+  priv->label = gtk_label_new (NULL);
+  gtk_label_set_markup (GTK_LABEL (priv->label), label_string);
+  g_free (label_string);
+
+  gtk_misc_set_alignment (GTK_MISC (priv->label), 0.0, 0.5);
+  gtk_misc_set_padding (GTK_MISC (priv->label), 6, 6);
+  gtk_box_pack_start (content_area, priv->label, FALSE, TRUE, 0);
+  gtk_widget_show (priv->label);
+
+  /* Individual widget */
+  priv->individual_widget = empathy_individual_widget_new (priv->individual,
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION |
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_DETAILS |
+      EMPATHY_INDIVIDUAL_WIDGET_SHOW_PERSONAS);
+  gtk_container_set_border_width (GTK_CONTAINER (priv->individual_widget), 6);
+  gtk_box_pack_start (content_area, priv->individual_widget, TRUE, TRUE, 0);
+  gtk_widget_show (priv->individual_widget);
+
+  /* Close button */
+  button = gtk_button_new_with_label (GTK_STOCK_CLOSE);
+  gtk_button_set_use_stock (GTK_BUTTON (button), TRUE);
+  gtk_dialog_add_action_widget (GTK_DIALOG (dialog), button,
+      GTK_RESPONSE_CLOSE);
+  gtk_widget_set_can_default (button, TRUE);
+  gtk_window_set_default (GTK_WINDOW (dialog), button);
+  gtk_widget_show (button);
+
+  g_signal_connect (dialog, "response",
+      G_CALLBACK (individual_dialogs_response_cb), &information_dialogs);
 }
