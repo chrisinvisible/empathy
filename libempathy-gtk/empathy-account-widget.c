@@ -491,11 +491,34 @@ empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     }
 }
 
+static GHashTable *
+build_translated_params (void)
+{
+  GHashTable *hash;
+
+  hash = g_hash_table_new (g_str_hash, g_str_equal);
+  g_hash_table_insert (hash, "account", _("Account"));
+  g_hash_table_insert (hash, "password", _("Password"));
+  g_hash_table_insert (hash, "server", _("Server"));
+  g_hash_table_insert (hash, "port", _("Port"));
+
+  return hash;
+}
+
 static gchar *
 account_widget_generic_format_param_name (const gchar *param_name)
 {
   gchar *str;
   gchar *p;
+  static GHashTable *translated_params = NULL;
+
+  if (G_UNLIKELY (translated_params == NULL))
+    translated_params = build_translated_params ();
+
+  /* Translate most common parameters */
+  str = g_hash_table_lookup (translated_params, param_name);
+  if (str != NULL)
+    return g_strdup (str);
 
   str = g_strdup (param_name);
 
