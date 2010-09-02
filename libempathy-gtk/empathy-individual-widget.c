@@ -530,7 +530,8 @@ location_update (EmpathyIndividualWidget *self)
   gboolean display_map = FALSE;
   GList *personas, *l;
 
-  if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION))
+  if (!(priv->flags & EMPATHY_INDIVIDUAL_WIDGET_SHOW_LOCATION) ||
+      priv->individual == NULL)
     {
       gtk_widget_hide (priv->vbox_location);
       return;
