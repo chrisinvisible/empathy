@@ -903,11 +903,9 @@ individual_view_row_activated (GtkTreeView *view,
 {
   EmpathyIndividualViewPriv *priv = GET_PRIV (view);
   FolksIndividual *individual;
-  EmpathyContact *contact = NULL;
-  FolksPresenceType best_presence = FOLKS_PRESENCE_TYPE_UNSET;
+  EmpathyContact *contact;
   GtkTreeModel *model;
   GtkTreeIter iter;
-  GList *personas, *l;
 
   if (!(priv->individual_features & EMPATHY_INDIVIDUAL_FEATURE_CHAT))
     return;
@@ -921,29 +919,8 @@ individual_view_row_activated (GtkTreeView *view,
     return;
 
   /* Determine which Persona to chat to, by choosing the most available one. */
-  personas = folks_individual_get_personas (individual);
-  for (l = personas; l != NULL; l = l->next)
-    {
-      FolksPresenceType presence;
-
-      if (!TPF_IS_PERSONA (l->data))
-        continue;
-
-      /* Only choose the contact if it has a higher presence than our current
-       * best choice of contact. */
-      presence = folks_presence_get_presence_type (FOLKS_PRESENCE (l->data));
-      if (folks_presence_typecmp (presence, best_presence) > 0)
-        {
-          TpContact *tp_contact;
-
-          tp_clear_object (&contact);
-          tp_contact = tpf_persona_get_contact (TPF_PERSONA (l->data));
-          contact = empathy_contact_dup_from_tp_contact (tp_contact);
-          empathy_contact_set_persona (contact, FOLKS_PERSONA (l->data));
-
-          best_presence = presence;
-        }
-    }
+  contact = empathy_contact_dup_best_for_action (individual,
+      EMPATHY_ACTION_CHAT);
 
   if (contact != NULL)
     {
