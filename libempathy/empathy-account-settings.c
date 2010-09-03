@@ -682,6 +682,20 @@ empathy_account_settings_get_string (EmpathyAccountSettings *settings,
   return g_value_get_string (v);
 }
 
+const gchar * const *
+empathy_account_settings_get_strv (EmpathyAccountSettings *settings,
+    const gchar *param)
+{
+  const GValue *v;
+
+  v = empathy_account_settings_get (settings, param);
+
+  if (v == NULL || !G_VALUE_HOLDS (v, G_TYPE_STRV))
+    return NULL;
+
+  return g_value_get_boxed (v);
+}
+
 gint32
 empathy_account_settings_get_int32 (EmpathyAccountSettings *settings,
     const gchar *param)
@@ -852,6 +866,18 @@ empathy_account_settings_set_string (EmpathyAccountSettings *settings,
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   tp_asv_set_string (priv->parameters, g_strdup (param), value);
+
+  account_settings_remove_from_unset (settings, param);
+}
+
+void
+empathy_account_settings_set_strv (EmpathyAccountSettings *settings,
+    const gchar *param,
+    gchar **value)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  tp_asv_set_strv (priv->parameters, param, value);
 
   account_settings_remove_from_unset (settings, param);
 }
