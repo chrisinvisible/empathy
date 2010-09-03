@@ -99,6 +99,9 @@ struct _EmpathyChatPriv {
 	gulong		   delete_range_id;
 	gulong		   notify_cursor_position_id;
 
+	/* Source func ID for update_misspelled_words() */
+	guint              update_misspelled_words_id;
+
 	GtkWidget         *widget;
 	GtkWidget         *hpaned;
 	GtkWidget         *vbox_left;
@@ -2291,6 +2294,7 @@ static gboolean
 update_misspelled_words (gpointer data)
 {
 	EmpathyChat *chat = EMPATHY_CHAT (data);
+	EmpathyChatPriv *priv = GET_PRIV (chat);
 	GtkTextBuffer *buffer;
 	GtkTextIter iter;
 	gint length;
@@ -2301,6 +2305,9 @@ update_misspelled_words (gpointer data)
 	length = gtk_text_iter_get_offset (&iter);
 	chat_input_text_buffer_insert_text_cb (buffer, &iter,
 					       NULL, length, chat);
+
+	priv->update_misspelled_words_id = 0;
+
 	return FALSE;
 }
 
@@ -2331,7 +2338,8 @@ conf_spell_checking_cb (GSettings *gsettings_chat,
 			/* Possibly changed dictionaries,
 			 * update misspelled words. Need to do so in idle
 			 * so the spell checker is updated. */
-			g_idle_add (update_misspelled_words, chat);
+			priv->update_misspelled_words_id =
+				g_idle_add (update_misspelled_words, chat);
 		}
 
 		return;
@@ -2364,7 +2372,8 @@ conf_spell_checking_cb (GSettings *gsettings_chat,
 
 		/* Mark misspelled words in the existing buffer.
 		 * Need to do so in idle so the spell checker is updated. */
-		g_idle_add (update_misspelled_words, chat);
+		priv->update_misspelled_words_id =
+			g_idle_add (update_misspelled_words, chat);
 	} else {
 		GtkTextTagTable *table;
 		GtkTextTag *tag;
@@ -2582,6 +2591,9 @@ chat_finalize (GObject *object)
 	priv = GET_PRIV (chat);
 
 	DEBUG ("Finalized: %p", object);
+
+	if (priv->update_misspelled_words_id != 0)
+		g_source_remove (priv->update_misspelled_words_id);
 
 	g_object_unref (priv->gsettings_chat);
 	g_object_unref (priv->gsettings_ui);
