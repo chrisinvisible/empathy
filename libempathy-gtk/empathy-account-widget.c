@@ -109,6 +109,8 @@ enum {
   LAST_SIGNAL
 };
 
+static void account_widget_apply_and_log_in (EmpathyAccountWidget *);
+
 static guint signals[LAST_SIGNAL] = { 0 };
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountWidget)
@@ -357,6 +359,16 @@ password_entry_changed_cb (GtkEditable *entry,
       GTK_ENTRY_ICON_SECONDARY, !EMP_STR_EMPTY (str));
 }
 
+static void
+password_entry_activated_cb (GtkEntry *entry,
+    EmpathyAccountWidget *self)
+{
+    EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+    if (gtk_widget_get_sensitive (priv->apply_button))
+        account_widget_apply_and_log_in (self);
+}
+
 void
 empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
     GtkWidget *widget,
@@ -433,6 +445,8 @@ empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
               G_CALLBACK (clear_icon_released_cb), self);
           g_signal_connect (widget, "changed",
               G_CALLBACK (password_entry_changed_cb), self);
+          g_signal_connect (widget, "activate",
+              G_CALLBACK (password_entry_activated_cb), self);
         }
 
       g_signal_connect (widget, "changed",
@@ -802,8 +816,7 @@ account_widget_applied_cb (GObject *source_object,
 }
 
 static void
-account_widget_apply_clicked_cb (GtkWidget *button,
-    EmpathyAccountWidget *self)
+account_widget_apply_and_log_in (EmpathyAccountWidget *self)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   gboolean display_name_overridden;
@@ -838,6 +851,13 @@ account_widget_apply_clicked_cb (GtkWidget *button,
   g_object_ref (self);
   empathy_account_settings_apply_async (priv->settings,
       account_widget_applied_cb, self);
+}
+
+static void
+account_widget_apply_clicked_cb (GtkWidget *button,
+    EmpathyAccountWidget *self)
+{
+    account_widget_apply_and_log_in (self);
 }
 
 static void
