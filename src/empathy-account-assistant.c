@@ -416,12 +416,18 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
 
   if (is_gtalk)
     {
+      gchar *fallback_servers[] = {
+          "talkx.l.google.com",
+          "talkx.l.google.com:443,oldssl",
+          "talkx.l.google.com:80",
+          NULL};
+
       empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
         NULL, NULL);
-      /* We should not have to set the server but that may cause issue with
-       * buggy router. */
-      empathy_account_settings_set_string (settings, "server",
-          "talk.google.com");
+
+      empathy_account_settings_set_string (settings, "server", NULL);
+      empathy_account_settings_set_strv (settings, "fallback-servers",
+          fallback_servers);
     }
   else if (is_facebook)
     {
