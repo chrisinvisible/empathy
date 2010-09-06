@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-06 12:59+0300\n"
-"PO-Revision-Date: 2010-09-06 12:59+0200\n"
+"POT-Creation-Date: 2010-09-06 15:26+0300\n"
+"PO-Revision-Date: 2010-09-06 15:28+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1437,7 +1437,7 @@ msgid "%A %B %d %Y"
 msgstr "%A %d %B %Y"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:243
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:288
+#: ../libempathy-gtk/empathy-individual-edit-dialog.c:248
 msgid "Edit Contact Information"
 msgstr "עריכת מידע איש קשר"
 
@@ -1804,11 +1804,6 @@ msgstr "בחירה"
 msgid "Group"
 msgstr "קבוצה"
 
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:302
-msgctxt "Unlink individual (button)"
-msgid "_Unlink"
-msgstr "_ניתוק"
-
 #. Translators: the heading at the top of the Information dialogue
 #: ../libempathy-gtk/empathy-individual-information-dialog.c:282
 msgid "Linked Contacts"
@@ -1876,17 +1871,45 @@ msgstr "SSL"
 #. Translators: this is the title of the linking dialogue (reached by
 #. * right-clicking on a contact and selecting "Link…"). "Link" in this title
 #. * is a verb.
-#: ../libempathy-gtk/empathy-linking-dialog.c:109
+#: ../libempathy-gtk/empathy-linking-dialog.c:115
 msgid "Link Contacts"
 msgstr "קישור בין אנשי קשר"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:120
+msgctxt "Unlink individual (button)"
+msgid "_Unlink…"
+msgstr "ה_פרדה…"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:121
+msgid ""
+"Completely split the displayed meta-contact into the contacts it contains."
+msgstr "פיצול משתמש העל המוצג לאנשי הקשר אותם הוא מכיל."
 
 #. Add button
 #. Translators: this is an action button in the linking dialogue. "Link" is
 #. * used here as a verb meaning "to connect two contacts to form a
 #. * meta-contact".
-#: ../libempathy-gtk/empathy-linking-dialog.c:122
+#: ../libempathy-gtk/empathy-linking-dialog.c:136
 msgid "_Link"
 msgstr "_קישור"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:182
+#, c-format
+msgid "Unlink meta-contact '%s'?"
+msgstr "האם לפרק את משתמש העל '%s'?"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:185
+msgid ""
+"Are you sure you want to unlink this meta-contact? This will completely "
+"split the meta-contact into the contacts it contains."
+msgstr ""
+"האם באמת ברצונך לפרק משתמש על זה? פעולה זו תפריד את משתמש העל לאנשי הקשר "
+"אותו הוא מכיל."
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:190
+msgctxt "Unlink individual (button)"
+msgid "_Unlink"
+msgstr "_ניתוק"
 
 #: ../libempathy-gtk/empathy-log-window.c:663
 msgid "Date"
