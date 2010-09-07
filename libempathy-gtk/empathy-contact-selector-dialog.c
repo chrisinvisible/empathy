@@ -316,7 +316,7 @@ empathy_contact_selector_dialog_init (EmpathyContactSelectorDialog *dialog)
     GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 
   /* Tweak the dialog */
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+  empathy_dialog_remove_separator (GTK_DIALOG (dialog));
 
   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_CENTER_ON_PARENT);

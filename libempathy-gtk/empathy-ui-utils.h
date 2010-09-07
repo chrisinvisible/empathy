@@ -129,6 +129,22 @@ void        empathy_window_iconify                      (GtkWindow        *windo
 							 GtkStatusIcon    *status_icon);
 GtkWindow * empathy_get_toplevel_window                 (GtkWidget        *widget);
 
+/**
+ * empathy_dialog_remove_separator:
+ * @d: a #GtkDialog
+ *
+ * Replacement for gtk_dialog_set_has_separator(), which was removed for GTK+ 3.
+ * This is a no-op for GTK+ 3, and expands to a call to
+ * gtk_dialog_set_has_separator() with %FALSE for GTK+ 2.
+ *
+ * FIXME: Once we depend on GTK+ 3 unconditionally, this macro can be removed.
+ */
+#ifndef HAVE_GTK3
+#define empathy_dialog_remove_separator(d) gtk_dialog_set_has_separator(d, FALSE);
+#else
+#define empathy_dialog_remove_separator(d)
+#endif
+
 /* URL */
 gchar *     empathy_make_absolute_url                   (const gchar      *url);
 

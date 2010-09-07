@@ -205,6 +205,8 @@ if test "x$have_gtk3" == "xyes"; then
    PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= $LIBNOTIFY_REQUIRED_GTK3)
    PKG_CHECK_MODULES(UNIQUE, unique-3.0 >= $UNIQUE_REQUIRED)
    PKG_CHECK_MODULES(GCR, gcr-3 >= $KEYRING_REQUIRED)
+
+   AC_DEFINE(HAVE_GTK3, 1, [Define if we're compiling against GTK+ 3])
 else
    PKG_CHECK_MODULES(GTK, gtk+-2.0 >= $GTK_REQUIRED)
 

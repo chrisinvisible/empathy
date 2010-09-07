@@ -2155,7 +2155,10 @@ accounts_dialog_build_ui (EmpathyAccountsDialog *dialog)
 
   gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
 
+  /* FIXME: Remove this once we unconditionally depend on GTK+ 3 */
+#ifndef HAVE_GTK3
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+#endif
 
   /* add dialog buttons */
   gtk_button_box_set_layout (GTK_BUTTON_BOX (action_area), GTK_BUTTONBOX_END);

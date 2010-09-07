@@ -178,7 +178,7 @@ empathy_contact_information_dialog_show (EmpathyContact *contact,
 
 	/* Create dialog */
 	dialog = gtk_dialog_new ();
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	empathy_dialog_remove_separator (GTK_DIALOG (dialog));
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_title (GTK_WINDOW (dialog),
 		empathy_contact_get_alias (contact));
@@ -238,7 +238,7 @@ empathy_contact_edit_dialog_show (EmpathyContact *contact,
 
 	/* Create dialog */
 	dialog = gtk_dialog_new ();
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	empathy_dialog_remove_separator (GTK_DIALOG (dialog));
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Edit Contact Information"));
 
@@ -290,7 +290,7 @@ empathy_contact_personal_dialog_show (GtkWindow *parent)
 
 	/* Create dialog */
 	personal_dialog = gtk_dialog_new ();
-	gtk_dialog_set_has_separator (GTK_DIALOG (personal_dialog), FALSE);
+	empathy_dialog_remove_separator (GTK_DIALOG (personal_dialog));
 	gtk_window_set_resizable (GTK_WINDOW (personal_dialog), FALSE);
 	gtk_window_set_title (GTK_WINDOW (personal_dialog), _("Personal Information"));
 
@@ -396,7 +396,7 @@ empathy_new_contact_dialog_show_with_contact (GtkWindow *parent,
 
 	/* Create dialog */
 	dialog = gtk_dialog_new ();
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	empathy_dialog_remove_separator (GTK_DIALOG (dialog));
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_title (GTK_WINDOW (dialog), _("New Contact"));
 

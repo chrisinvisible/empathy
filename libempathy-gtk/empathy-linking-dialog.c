@@ -34,6 +34,7 @@
 
 #include "empathy-linking-dialog.h"
 #include "empathy-individual-linker.h"
+#include "empathy-ui-utils.h"
 
 /**
  * SECTION:empathy-individual-widget
@@ -107,7 +108,7 @@ empathy_linking_dialog_init (EmpathyLinkingDialog *self)
   dialog = GTK_DIALOG (self);
 
   /* Set up dialog */
-  gtk_dialog_set_has_separator (dialog, FALSE);
+  empathy_dialog_remove_separator (GTK_DIALOG (dialog));
   gtk_window_set_resizable (GTK_WINDOW (self), TRUE);
   /* Translators: this is the title of the linking dialogue (reached by
    * right-clicking on a contact and selecting "Link…"). "Link" in this title

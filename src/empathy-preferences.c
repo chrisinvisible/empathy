@@ -884,7 +884,11 @@ empathy_preferences_init (EmpathyPreferences *preferences)
 	gtk_window_set_position (GTK_WINDOW (preferences),
 				 GTK_WIN_POS_CENTER_ON_PARENT);
 	gtk_window_set_icon_name (GTK_WINDOW (preferences), "gtk-preferences");
+
+	/* FIXME: Remove this once we unconditionally depend on GTK+ 3 */
+#ifndef HAVE_GTK3
 	gtk_dialog_set_has_separator (GTK_DIALOG (preferences), FALSE);
+#endif
 
 	filename = empathy_file_lookup ("empathy-preferences.ui", "src");
 	gui = empathy_builder_get_file (filename,

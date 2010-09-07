@@ -107,7 +107,7 @@ empathy_new_individual_dialog_show_with_individual (GtkWindow *parent,
 
   /* Create dialog */
   dialog = gtk_dialog_new ();
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+  empathy_dialog_remove_separator (GTK_DIALOG (dialog));
   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
   gtk_window_set_title (GTK_WINDOW (dialog), _("New Contact"));
 

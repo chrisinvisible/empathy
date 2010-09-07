@@ -521,7 +521,7 @@ empathy_status_preset_dialog_init (EmpathyStatusPresetDialog *self)
 
 	gtk_window_set_title (GTK_WINDOW (self),
 			_("Edit Custom Messages"));
-	gtk_dialog_set_has_separator (GTK_DIALOG (self), FALSE);
+	empathy_dialog_remove_separator (GTK_DIALOG (self));
 	gtk_dialog_add_button (GTK_DIALOG (self),
 			GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE);
 
