@@ -9,10 +9,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Empathy\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=empathy&component=general\n"
-"POT-Creation-Date: 2010-09-04 14:08+0000\n"
-"PO-Revision-Date: 2010-09-04 19:50+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-07 21:34+0200\n"
+"PO-Revision-Date: 2010-09-06 22:57+0200\n"
 "Last-Translator: Milo Casagrande <milo@ubuntu.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "MIME-Version: 1.0\n"
@@ -580,9 +579,9 @@ msgstr "Invisibile"
 msgid "Offline"
 msgstr "Fuori rete"
 
-#: ../libempathy/empathy-utils.c:253 ../src/empathy-call-window.c:1883
-#: ../src/empathy-call-window.c:1884 ../src/empathy-call-window.c:1885
-#: ../src/empathy-call-window.c:1886 ../src/empathy-call-window.ui.h:18
+#: ../libempathy/empathy-utils.c:253 ../src/empathy-call-window.c:1893
+#: ../src/empathy-call-window.c:1894 ../src/empathy-call-window.c:1895
+#: ../src/empathy-call-window.c:1896 ../src/empathy-call-window.ui.h:18
 msgid "Unknown"
 msgstr "Sconosciuto"
 
@@ -1475,7 +1474,7 @@ msgid "%s is now known as %s"
 msgstr "L'utente %s è ora conosciuto come %s"
 
 # (ndt) plurale per comprendere uomini e donne
-#: ../libempathy-gtk/empathy-chat.c:2287 ../src/empathy-call-window.c:1922
+#: ../libempathy-gtk/empathy-chat.c:2287 ../src/empathy-call-window.c:1932
 msgid "Disconnected"
 msgstr "Disconnessi"
 
@@ -1526,7 +1525,7 @@ msgstr "%A %d %B %Y"
 
 # (ndt) titolo dialogo
 #: ../libempathy-gtk/empathy-contact-dialogs.c:243
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:288
+#: ../libempathy-gtk/empathy-individual-edit-dialog.c:248
 msgid "Edit Contact Information"
 msgstr "Modifica informazioni contatto"
 
@@ -1905,11 +1904,6 @@ msgstr "Selezione"
 msgid "Group"
 msgstr "Gruppo"
 
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:302
-msgctxt "Unlink individual (button)"
-msgid "_Unlink"
-msgstr "_Dividi"
-
 #. Translators: the heading at the top of the Information dialogue
 #: ../libempathy-gtk/empathy-individual-information-dialog.c:282
 msgid "Linked Contacts"
@@ -1940,13 +1934,12 @@ msgctxt "Edit individual (contextual menu)"
 msgid "_Edit"
 msgstr "_Modifica"
 
-# (ndt) fa in modo che se si hanno diversi account dello stesso contatto, se ne veda solo uno...
 #. Translators: this is a verb meaning "to connect two contacts together
 #. * to form a meta-contact".
 #: ../libempathy-gtk/empathy-individual-menu.c:863
 msgctxt "Link individual (contextual menu)"
-msgid "_Link…"
-msgstr "_Unisci..."
+msgid "_Link Contacts…"
+msgstr "_Unisci contatti..."
 
 # (ndt) rivedere meta-contact, trovare idee migliori...
 #: ../libempathy-gtk/empathy-individual-widget.c:1569
@@ -1980,17 +1973,45 @@ msgstr "SSL"
 #. Translators: this is the title of the linking dialogue (reached by
 #. * right-clicking on a contact and selecting "Link…"). "Link" in this title
 #. * is a verb.
-#: ../libempathy-gtk/empathy-linking-dialog.c:109
+#: ../libempathy-gtk/empathy-linking-dialog.c:116
 msgid "Link Contacts"
 msgstr "Unisci contatti"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:121
+msgctxt "Unlink individual (button)"
+msgid "_Unlink…"
+msgstr "_Dividi..."
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:122
+msgid ""
+"Completely split the displayed meta-contact into the contacts it contains."
+msgstr "Divide il meta-contatto visualizzato nei singoli contatti"
 
 #. Add button
 #. Translators: this is an action button in the linking dialogue. "Link" is
 #. * used here as a verb meaning "to connect two contacts to form a
 #. * meta-contact".
-#: ../libempathy-gtk/empathy-linking-dialog.c:122
+#: ../libempathy-gtk/empathy-linking-dialog.c:137
 msgid "_Link"
 msgstr "_Unisci"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:183
+#, c-format
+msgid "Unlink meta-contact '%s'?"
+msgstr "Dividere il meta-contatto «%s»?"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:186
+msgid ""
+"Are you sure you want to unlink this meta-contact? This will completely "
+"split the meta-contact into the contacts it contains."
+msgstr ""
+"Dividere veramente questo meta-contatto? In questo modo il meta-contatto "
+"verrà diviso nei singoli contatti che lo compongono."
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:191
+msgctxt "Unlink individual (button)"
+msgid "_Unlink"
+msgstr "_Dividi"
 
 #: ../libempathy-gtk/empathy-log-window.c:663
 msgid "Date"
@@ -2701,7 +2722,7 @@ msgstr "Sono presenti delle modifiche non salvate per l'account %s."
 msgid "Your new account has not been saved yet."
 msgstr "Il nuovo account non è ancora stato salvato."
 
-#: ../src/empathy-accounts-dialog.c:281 ../src/empathy-call-window.c:808
+#: ../src/empathy-accounts-dialog.c:281 ../src/empathy-call-window.c:818
 msgid "Connecting…"
 msgstr "Connessione..."
 
@@ -2829,30 +2850,30 @@ msgstr "Gamma"
 msgid "Volume"
 msgstr "Volume"
 
-#: ../src/empathy-call-window.c:1163
+#: ../src/empathy-call-window.c:1173
 msgid "_Sidebar"
 msgstr "_Barra laterale"
 
-#: ../src/empathy-call-window.c:1182
+#: ../src/empathy-call-window.c:1192
 msgid "Audio input"
 msgstr "Ingresso audio"
 
-#: ../src/empathy-call-window.c:1186
+#: ../src/empathy-call-window.c:1196
 msgid "Video input"
 msgstr "Ingresso video"
 
-#: ../src/empathy-call-window.c:1190
+#: ../src/empathy-call-window.c:1200
 msgid "Dialpad"
 msgstr "Tastierino"
 
-#: ../src/empathy-call-window.c:1195
+#: ../src/empathy-call-window.c:1205
 msgid "Details"
 msgstr "Dettagli"
 
 # (ndt) quello che c'è dopo è il nome del contatto
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
-#: ../src/empathy-call-window.c:1263
+#: ../src/empathy-call-window.c:1273
 #, c-format
 msgid "Call with %s"
 msgstr "Chiamata con %s"
@@ -2860,42 +2881,42 @@ msgstr "Chiamata con %s"
 # (ndt) è il titolo del dialogo
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:1342
+#: ../src/empathy-call-window.c:1352
 msgid "Call"
 msgstr "Chiamata"
 
-#: ../src/empathy-call-window.c:1496
+#: ../src/empathy-call-window.c:1506
 msgid "The IP address as seen by the machine"
 msgstr "L'indirizzo IP visto dal computer"
 
-#: ../src/empathy-call-window.c:1498
+#: ../src/empathy-call-window.c:1508
 msgid "The IP address as seen by a server on the Internet"
 msgstr "L'indirizzo IP visto da un server su Internet"
 
 # (ndt) il lato oscuro... questa è interessante e da rivedere
-#: ../src/empathy-call-window.c:1500
+#: ../src/empathy-call-window.c:1510
 msgid "The IP address of the peer as seen by the other side"
 msgstr "L'indirizzo del nodo visto dall'altro lato"
 
-#: ../src/empathy-call-window.c:1502
+#: ../src/empathy-call-window.c:1512
 msgid "The IP address of a relay server"
 msgstr "L'indirizzo IP di un relay server"
 
-#: ../src/empathy-call-window.c:1504
+#: ../src/empathy-call-window.c:1514
 msgid "The IP address of the multicast group"
 msgstr "L'indirizzo IP del gruppo multicast"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:2237
+#: ../src/empathy-call-window.c:2247
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "Connessi — %d.%02dm"
 
-#: ../src/empathy-call-window.c:2298
+#: ../src/empathy-call-window.c:2308
 msgid "Technical Details"
 msgstr "Dettagli tecnici"
 
-#: ../src/empathy-call-window.c:2336
+#: ../src/empathy-call-window.c:2346
 #, c-format
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
@@ -2904,7 +2925,7 @@ msgstr ""
 "Il programma di %s non è in grado di comprendere alcuno dei formati audio "
 "supportati da questo computer"
 
-#: ../src/empathy-call-window.c:2341
+#: ../src/empathy-call-window.c:2351
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
@@ -2913,7 +2934,7 @@ msgstr ""
 "Il programma di %s non è in grado di comprendere alcuno dei formati video "
 "supportati da questo computer"
 
-#: ../src/empathy-call-window.c:2347
+#: ../src/empathy-call-window.c:2357
 #, c-format
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
@@ -2922,23 +2943,23 @@ msgstr ""
 "Impossibile stabilire una connessione con %s. Si potrebbe essere collegati a "
 "una rete che non supporta connessioni dirette."
 
-#: ../src/empathy-call-window.c:2353
+#: ../src/empathy-call-window.c:2363
 msgid "There was a failure on the network"
 msgstr "Si è verificato un problema sulla rete"
 
 # (ndt) eliminato volutamente il riferimento a computer
-#: ../src/empathy-call-window.c:2357
+#: ../src/empathy-call-window.c:2367
 msgid ""
 "The audio formats necessary for this call are not installed on your computer"
 msgstr "I formati audio necessari per eseguire la chiamata non sono installati"
 
 # (ndt) eliminato volutamente il riferimento a computer
-#: ../src/empathy-call-window.c:2360
+#: ../src/empathy-call-window.c:2370
 msgid ""
 "The video formats necessary for this call are not installed on your computer"
 msgstr "I formati video necessari per eseguire la chiamata non sono installati"
 
-#: ../src/empathy-call-window.c:2370
+#: ../src/empathy-call-window.c:2380
 #, c-format
 msgid ""
 "Something unexpected happened in a Telepathy component. Please <a href=\"%s"
@@ -2949,19 +2970,19 @@ msgstr ""
 "\"%s\">Segnalare un problema</a> e allegare le informazioni raccolte "
 "attraverso l'azione «Debug» presente nel menù «Aiuto»."
 
-#: ../src/empathy-call-window.c:2378
+#: ../src/empathy-call-window.c:2388
 msgid "There was a failure in the call engine"
 msgstr "Si è verificato un problema nel motore delle chiamate"
 
-#: ../src/empathy-call-window.c:2381
+#: ../src/empathy-call-window.c:2391
 msgid "The end of the stream was reached"
 msgstr "Raggiunta la fine del flusso"
 
-#: ../src/empathy-call-window.c:2421
+#: ../src/empathy-call-window.c:2431
 msgid "Can't establish audio stream"
 msgstr "Impossibile stabilire il flusso audio"
 
-#: ../src/empathy-call-window.c:2431
+#: ../src/empathy-call-window.c:2441
 msgid "Can't establish video stream"
 msgstr "Impossibile stabilire il flusso video"
 
@@ -3260,12 +3281,12 @@ msgstr "_Entra"
 #: ../src/empathy-event-manager.c:743
 #, c-format
 msgid "%s invited you to join %s"
-msgstr "%s ha inviato un invito per entrare in %s"
+msgstr "C'è un invito per entrare in %2$s da parte di %1$s"
 
 #: ../src/empathy-event-manager.c:749
 #, c-format
 msgid "You have been invited to join %s"
-msgstr "È disponibile un invito per entrare in %s"
+msgstr "C'è un invito per entrare in %s"
 
 #: ../src/empathy-event-manager.c:797
 #, c-format
