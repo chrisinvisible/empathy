@@ -446,8 +446,9 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
   gnutls_datum_t datum = { NULL, 0 };
   gsize exported_len;
   guchar *exported_cert = NULL;
-  gint res;
+  gint res, offset;
   gchar *user_certs_dir = NULL, *filename = NULL, *path = NULL;
+  gchar *hostname = NULL;
   GError *error = NULL;
   EmpathyTLSCertificatePriv *priv = GET_PRIV (self);
 
@@ -489,6 +490,11 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
       goto out;
     }
 
+  hostname = empathy_get_x509_certificate_hostname (cert);
+
+  if (hostname == NULL)
+    hostname = g_strdup ("ca");
+
   gnutls_x509_crt_deinit (cert);
 
   /* write the file */
@@ -505,13 +511,20 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
       goto out;
     }
 
+  offset = 0;
+
   do
     {
       g_free (path);
 
-      filename = g_strdup_printf ("cert-%p", cert);
+      if (offset == 0)
+        filename = g_strdup_printf ("cert-%s", hostname);
+      else
+        filename = g_strdup_printf ("cert-%s-%d", hostname, offset);
+
       path = g_build_filename (user_certs_dir, filename, NULL);
 
+      offset++;
       g_free (filename);
     }
   while (g_file_test (path, G_FILE_TEST_EXISTS));
@@ -533,4 +546,5 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
   g_free (path);
   g_free (exported_cert);
   g_free (user_certs_dir);
+  g_free (hostname);
 }
