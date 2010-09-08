@@ -35,7 +35,6 @@ G_DEFINE_TYPE (EmpathyAuthFactory, empathy_auth_factory, G_TYPE_OBJECT);
 
 typedef struct {
   TpBaseClient *handler;
-  TpHandleChannelsContext *context;
 
   gboolean dispose_run;
 } EmpathyAuthFactoryPriv;
@@ -51,6 +50,11 @@ static guint signals[LAST_SIGNAL] = { 0, };
 
 static EmpathyAuthFactory *auth_factory_singleton = NULL;
 
+typedef struct {
+  TpHandleChannelsContext *context;
+  EmpathyAuthFactory *self;
+} HandlerContextData;
+
 static void
 server_tls_handler_ready_cb (GObject *source,
     GAsyncResult *res,
@@ -58,29 +62,33 @@ server_tls_handler_ready_cb (GObject *source,
 {
   EmpathyServerTLSHandler *handler;
   GError *error = NULL;
-  EmpathyAuthFactory *self = user_data;
-  EmpathyAuthFactoryPriv *priv = GET_PRIV (self);
+  EmpathyAuthFactoryPriv *priv;
+  HandlerContextData *data = user_data;
 
+  priv = GET_PRIV (data->self);
   handler = empathy_server_tls_handler_new_finish (res, &error);
 
   if (error != NULL)
     {
       DEBUG ("Failed to create a server TLS handler; error %s",
           error->message);
-      tp_handle_channels_context_fail (priv->context, error);
+      tp_handle_channels_context_fail (data->context, error);
 
       g_error_free (error);
     }
   else
     {
-      tp_handle_channels_context_accept (priv->context);
-      g_signal_emit (self, signals[NEW_SERVER_TLS_HANDLER], 0,
+      tp_handle_channels_context_accept (data->context);
+      g_signal_emit (data->self, signals[NEW_SERVER_TLS_HANDLER], 0,
           handler);
 
       g_object_unref (handler);
     }
 
-  tp_clear_object (&priv->context);
+  tp_clear_object (&data->context);
+  tp_clear_object (&data->self);
+
+  g_slice_free (HandlerContextData, data);
 }
 
 static void
@@ -97,7 +105,7 @@ handle_channels_cb (TpSimpleHandler *handler,
   const GError *dbus_error;
   GError *error = NULL;
   EmpathyAuthFactory *self = user_data;
-  EmpathyAuthFactoryPriv *priv = GET_PRIV (self);
+  HandlerContextData *data;
 
   DEBUG ("Handle TLS carrier channels.");
 
@@ -134,10 +142,13 @@ handle_channels_cb (TpSimpleHandler *handler,
     }
 
   /* create a handler */
-  priv->context = g_object_ref (context);
+  data = g_slice_new0 (HandlerContextData);
+  data->context = g_object_ref (context);
+  data->self = g_object_ref (self);
+
   tp_handle_channels_context_delay (context);
   empathy_server_tls_handler_new_async (channel, server_tls_handler_ready_cb,
-      self);
+      data);
 
   return;
 
@@ -210,7 +221,6 @@ empathy_auth_factory_dispose (GObject *object)
   priv->dispose_run = TRUE;
 
   tp_clear_object (&priv->handler);
-  tp_clear_object (&priv->context);
 
   G_OBJECT_CLASS (empathy_auth_factory_parent_class)->dispose (object);
 }
