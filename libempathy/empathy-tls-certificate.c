@@ -426,16 +426,16 @@ empathy_tls_certificate_reject_finish (EmpathyTLSCertificate *self,
 static gsize
 get_exported_size (gnutls_x509_crt_t cert)
 {
-  gsize retval;
-  guchar fake;
+  gsize retval = 2;
+  guchar fake[2] = { 0, 0 };
 
   /* fake an export so we get the size to allocate */
   gnutls_x509_crt_export (cert, GNUTLS_X509_FMT_PEM,
-      &fake, &retval);
+      fake, &retval);
 
   DEBUG ("Should allocate %lu bytes", (gulong) retval);
 
-  return retval;
+  return retval + 1;
 }
 
 void
@@ -484,7 +484,8 @@ empathy_tls_certificate_store_ca (EmpathyTLSCertificate *self)
 
   if (res < 0)
     {
-      DEBUG ("Failed to export the CA certificate; GnuTLS returned %d", res);
+      DEBUG ("Failed to export the CA certificate; GnuTLS returned %d,"
+          "and should be %lu bytes long", res, (gulong) exported_len);
       gnutls_x509_crt_deinit (cert);
 
       goto out;
