@@ -29,6 +29,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <folks/folks.h>
@@ -96,6 +98,8 @@ TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType ty
 gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_dup_from_folks_individual (FolksIndividual *individual);
 TpChannelGroupChangeReason tp_chanel_group_change_reason_from_folks_groups_change_reason (FolksGroupsChangeReason reason);
+
+gchar * empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert);
 
 G_END_DECLS
 

@@ -16,10 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Some snippets are taken from GnuTLS 2.8.6, which is distributed under the
- * same GNU Lesser General Public License 2.1 (or later) version. See
- * get_certified_hostname ().
  */
 
 #include <config.h>
@@ -222,37 +218,6 @@ abort_verification (EmpathyTLSVerifier *self,
   tp_clear_object (&priv->verify_result);
 }
 
-static gchar *
-get_certified_hostname (gnutls_x509_crt_t cert)
-{
-  gchar dns_name[256];
-  gsize dns_name_size;
-  gint idx;
-  gint res = 0;
-
-  /* this snippet is taken from GnuTLS.
-   * see gnutls/lib/x509/rfc2818_hostname.c
-   */
-  for (idx = 0; res >= 0; idx++)
-    {
-      dns_name_size = sizeof (dns_name);
-      res = gnutls_x509_crt_get_subject_alt_name (cert, idx,
-          dns_name, &dns_name_size, NULL);
-
-      if (res == GNUTLS_SAN_DNSNAME || res == GNUTLS_SAN_IPADDRESS)
-        return g_strndup (dns_name, dns_name_size);
-    }
-
-  dns_name_size = sizeof (dns_name);
-  res = gnutls_x509_crt_get_dn_by_oid (cert, GNUTLS_OID_X520_COMMON_NAME,
-      0, 0, dns_name, &dns_name_size);
-
-  if (res >= 0)
-    return g_strndup (dns_name, dns_name_size);
-
-  return NULL;
-}
-
 static void
 real_start_verification (EmpathyTLSVerifier *self)
 {
@@ -273,7 +238,7 @@ real_start_verification (EmpathyTLSVerifier *self)
       gchar *certified_hostname;
 
       reason = EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH;
-      certified_hostname = get_certified_hostname (first_cert);
+      certified_hostname = empathy_get_x509_certificate_hostname (first_cert);
       tp_asv_set_string (priv->details,
           "expected-hostname", priv->hostname);
       tp_asv_set_string (priv->details,
