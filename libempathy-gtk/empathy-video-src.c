@@ -105,36 +105,71 @@ static void
 empathy_video_src_init (EmpathyGstVideoSrc *obj)
 {
   EmpathyGstVideoSrcPrivate *priv = EMPATHY_GST_VIDEO_SRC_GET_PRIVATE (obj);
-  GstElement *scale, *colorspace, *capsfilter;
+  GstElement *element, *element_back;
   GstPad *ghost, *src;
   GstCaps *caps;
+  gchar *str;
 
-  /* allocate any data required by the object here */
-  priv->src = empathy_gst_make_to_bin (GST_BIN (obj), NULL, "gconfvideosrc");
-  if (!priv->src)
-    g_error ("gst-plugins-good is probably missing. exit");
-
-  scale = empathy_gst_make_to_bin (GST_BIN (obj), priv->src, "videoscale");
-  if (!scale)
-    g_error ("gst-plugins-base is probably missing. exit");
-
-  colorspace = empathy_gst_make_to_bin (GST_BIN (obj),
-                                       scale, "ffmpegcolorspace");
-  if (!colorspace)
-    g_error ("gst-plugins-base is probably missing. exit");
-
-  capsfilter = empathy_gst_make_to_bin (GST_BIN (obj), scale, "capsfilter");
-  if (!capsfilter)
-    g_error ("core libgstreamer is probably missing. exit");
-
+  /* allocate caps here, so we can update it by optional elements */
   caps = gst_caps_new_simple ("video/x-raw-yuv",
     "width", G_TYPE_INT, 320,
     "height", G_TYPE_INT, 240,
     NULL);
 
-  g_object_set (G_OBJECT (capsfilter), "caps", caps, NULL);
+  /* allocate any data required by the object here */
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          NULL, "gconfvideosrc")))
+    g_error ("gst-plugins-good is probably missing. exit");
 
-  src = gst_element_get_static_pad (colorspace, "src");
+  /* we need to save our source to priv->src */
+  priv->src = element;
+
+  /* videomaxrate is curently optional plugin, becouse it depend on
+   * gst-plugins-bad. So we won't fail if it not exist.
+   * todo: in some time videorate will probably replace videomaxrate */
+  /* make a backup of *element before optional GstElement */
+  element_back = element;
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          element, "videomaxrate")))
+  {
+    g_warning ("gst-plugins-bad is probably missing.");
+    element = element_back;
+  }
+  else
+    gst_caps_set_simple (caps,
+      "framerate", GST_TYPE_FRACTION, 15, 1,
+      NULL);
+
+  str = gst_caps_to_string (caps);
+  g_debug ("Current video src caps are : %s", str);
+  g_free (str);
+
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          element, "videoscale")))
+    g_error ("gst-plugins-base is probably missing. exit");
+
+  /* postproc_tmpnois is other optional plugin, it depend on gst-ffmpeg.
+   * may be some day it will go to gst-plugins-base, than we can restrickt it */
+  element_back = element;
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          element, "postproc_tmpnoise")))
+  {
+    g_warning ("gst-ffmpeg is probably missing.");
+    element = element_back;
+  }
+
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          element, "ffmpegcolorspace")))
+    g_error ("gst-plugins-base is probably missing. exit");
+
+  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
+                                          element, "capsfilter")))
+    g_error ("core libgstreamer is probably missing. exit");
+
+  g_object_set (G_OBJECT (element), "caps", caps, NULL);
+
+
+  src = gst_element_get_static_pad (element, "src");
   if (!src)
     g_error ("src pad not found. exit");
 
