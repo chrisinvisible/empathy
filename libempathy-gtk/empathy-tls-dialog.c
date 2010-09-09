@@ -153,7 +153,7 @@ reason_to_string (EmpathyTLSDialog *self)
   switch (reason)
     {
     case EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED:
-      reason_str = _("The certrificate is not signed by a Certification "
+      reason_str = _("The certificate is not signed by a Certification "
           "Authority");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_EXPIRED:
