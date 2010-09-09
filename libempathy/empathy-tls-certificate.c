@@ -29,6 +29,7 @@
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 
+#include <telepathy-glib/gtypes.h>
 #include <telepathy-glib/util.h>
 
 #define DEBUG_FLAG EMPATHY_DEBUG_TLS
@@ -61,21 +62,6 @@ G_DEFINE_TYPE (EmpathyTLSCertificate, empathy_tls_certificate,
 
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyTLSCertificate);
 
-static GType
-array_of_ay_get_type (void)
-{
-  static GType t = 0;
-
-  if (G_UNLIKELY (t == 0))
-    {
-      t = dbus_g_type_get_collection ("GPtrArray",
-          dbus_g_type_get_collection ("GArray",
-              G_TYPE_UCHAR));
-    }
-
-  return t;
-}
-
 static void
 tls_certificate_got_all_cb (TpProxy *proxy,
     GHashTable *properties,
@@ -101,9 +87,9 @@ tls_certificate_got_all_cb (TpProxy *proxy,
   priv->state = tp_asv_get_uint32 (properties, "State", NULL);
 
   cert_data = tp_asv_get_boxed (properties, "CertificateChainData",
-      array_of_ay_get_type ());
+      TP_ARRAY_TYPE_UCHAR_ARRAY_LIST);
   g_assert (cert_data != NULL);
-  priv->cert_data = g_boxed_copy (array_of_ay_get_type (), cert_data);
+  priv->cert_data = g_boxed_copy (TP_ARRAY_TYPE_UCHAR_ARRAY_LIST, cert_data);
 
   DEBUG ("Got a certificate chain long %u, of type %s",
       priv->cert_data->len, priv->cert_type);
@@ -174,7 +160,7 @@ empathy_tls_certificate_finalize (GObject *object)
   DEBUG ("%p", object);
 
   g_free (priv->cert_type);
-  tp_clear_boxed (array_of_ay_get_type (), &priv->cert_data);
+  tp_clear_boxed (TP_ARRAY_TYPE_UCHAR_ARRAY_LIST, &priv->cert_data);
 
   G_OBJECT_CLASS (empathy_tls_certificate_parent_class)->finalize (object);
 }
@@ -234,7 +220,7 @@ empathy_tls_certificate_class_init (EmpathyTLSCertificateClass *klass)
 
   pspec = g_param_spec_boxed ("cert-data", "Certificate chain data",
       "The raw DER-encoded certificate chain data.",
-      array_of_ay_get_type (),
+      TP_ARRAY_TYPE_UCHAR_ARRAY_LIST,
       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
   g_object_class_install_property (oclass, PROP_CERT_DATA, pspec);
 
