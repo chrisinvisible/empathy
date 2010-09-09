@@ -56,6 +56,28 @@ typedef struct {
 } HandlerContextData;
 
 static void
+handler_context_data_free (HandlerContextData *data)
+{
+  tp_clear_object (&data->self);
+  tp_clear_object (&data->context);
+
+  g_slice_free (HandlerContextData, data);
+}
+
+static HandlerContextData *
+handler_context_data_new (EmpathyAuthFactory *self,
+    TpHandleChannelsContext *context)
+{
+  HandlerContextData *data;
+
+  data = g_slice_new0 (HandlerContextData);
+  data->self = g_object_ref (self);
+  data->context = g_object_ref (context);
+
+  return data;
+}
+
+static void
 server_tls_handler_ready_cb (GObject *source,
     GAsyncResult *res,
     gpointer user_data)
@@ -85,10 +107,7 @@ server_tls_handler_ready_cb (GObject *source,
       g_object_unref (handler);
     }
 
-  tp_clear_object (&data->context);
-  tp_clear_object (&data->self);
-
-  g_slice_free (HandlerContextData, data);
+  handler_context_data_free (data);
 }
 
 static void
@@ -142,10 +161,7 @@ handle_channels_cb (TpSimpleHandler *handler,
     }
 
   /* create a handler */
-  data = g_slice_new0 (HandlerContextData);
-  data->context = g_object_ref (context);
-  data->self = g_object_ref (self);
-
+  data = handler_context_data_new (self, context);
   tp_handle_channels_context_delay (context);
   empathy_server_tls_handler_new_async (channel, server_tls_handler_ready_cb,
       data);
