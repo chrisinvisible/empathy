@@ -20,8 +20,8 @@ msgstr ""
 "Project-Id-Version: Empathy\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-09-09 07:50+0000\n"
-"PO-Revision-Date: 2010-09-09 02:38-0300\n"
+"POT-Creation-Date: 2010-09-09 21:16+0000\n"
+"PO-Revision-Date: 2010-09-09 18:54-0300\n"
 "Last-Translator: Henrique P. Machado <hpmachado@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1866,11 +1866,9 @@ msgstr "_Editar"
 #. Translators: this is a verb meaning "to connect two contacts together
 #. * to form a meta-contact".
 #: ../libempathy-gtk/empathy-individual-menu.c:863
-#, fuzzy
-#| msgid "Link Contacts"
 msgctxt "Link individual (contextual menu)"
 msgid "_Link Contacts…"
-msgstr "Contatos agrupados"
+msgstr "Agr_upar contatos..."
 
 #: ../libempathy-gtk/empathy-individual-widget.c:1569
 #, c-format
@@ -1907,17 +1905,15 @@ msgid "Link Contacts"
 msgstr "Contatos agrupados"
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:121
-#, fuzzy
-#| msgctxt "Unlink individual (button)"
-#| msgid "_Unlink"
 msgctxt "Unlink individual (button)"
 msgid "_Unlink…"
-msgstr "_Desconectar"
+msgstr "_Desagrupar..."
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:122
 msgid ""
 "Completely split the displayed meta-contact into the contacts it contains."
 msgstr ""
+"Divide completamente os meta-contatos exibidos nos contatos que ele contém."
 
 #. Add button
 #. Translators: this is an action button in the linking dialogue. "Link" is
@@ -1930,13 +1926,15 @@ msgstr "_Agrupar"
 #: ../libempathy-gtk/empathy-linking-dialog.c:183
 #, c-format
 msgid "Unlink meta-contact '%s'?"
-msgstr ""
+msgstr "Desagrupar meta-contato \"%s\"?"
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:186
 msgid ""
 "Are you sure you want to unlink this meta-contact? This will completely "
 "split the meta-contact into the contacts it contains."
 msgstr ""
+"Você tem certeza que quer desagrupar este meta-contato? Isto irá dividir "
+"completamente os meta-contatos nos contatos que ele contém."
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:191
 msgctxt "Unlink individual (button)"
@@ -2131,8 +2129,6 @@ msgstr ""
 "verificada.\n"
 
 #: ../libempathy-gtk/empathy-tls-dialog.c:156
-#, fuzzy
-#| msgid "The certrificate is not signed by a Certification Authority"
 msgid "The certificate is not signed by a Certification Authority"
 msgstr "O certificado não é assinado por uma Autoridade Certificadora"
 
