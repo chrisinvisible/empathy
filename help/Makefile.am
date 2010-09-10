@@ -45,7 +45,7 @@ DOC_PAGES = \
 	irc-send-file.page \
 	irc-start-conversation.page \
 	license.page \
-	link-contacts \
+	link-contacts.page \
 	prev-conv.page \
 	prob-conn-acctdisabled.page \
 	prob-conn-auth.page \
