@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy.master.ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-03 21:39+0530\n"
-"PO-Revision-Date: 2010-09-03 21:50+0530\n"
+"POT-Creation-Date: 2010-09-11 11:10+0530\n"
+"PO-Revision-Date: 2010-09-11 11:14+0530\n"
 "Last-Translator: Dr.T.Vasudevan <agnihot3@gmail.com>\n"
 "Language-Team: Tamil <<Ubuntu-l10n-tam@lists.ubuntu.com>>\n"
 "MIME-Version: 1.0\n"
@@ -306,7 +306,8 @@ msgstr "எம்பதி துவங்கும்போது கணக்�
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:64
 msgid "Whether Empathy should go into away mode automatically if the user is idle."
 msgstr ""
-"பயனர் சும்மா  இருக்கும்போது  தானியங்கியாக எம்பதி வெளியே பாங்கிற்கு செல்ல  வேண்டுமா இல்லையா."
+"பயனர் சும்மா  இருக்கும்போது  தானியங்கியாக எம்பதி வெளியே பாங்கிற்கு செல்ல  வேண்டுமா "
+"இல்லையா."
 
 #: ../data/org.gnome.Empathy.gschema.xml.in.h:65
 msgid "Whether Empathy should reduce the location's accuracy for privacy reasons."
@@ -442,7 +443,7 @@ msgstr "செய்தி அனுப்புதல் மற்றும் 
 
 #. Tweak the dialog
 #: ../data/empathy-accounts.desktop.in.in.h:2
-#: ../src/empathy-accounts-dialog.c:2151
+#: ../src/empathy-accounts-dialog.c:2157
 msgid "Messaging and VoIP Accounts"
 msgstr "செய்தி அனுப்புதல் மற்றும் வோய்ப் கணக்குகள்"
 
@@ -490,138 +491,139 @@ msgstr "கோப்பு பரி மாற்றத்தில்  பி�
 msgid "The other participant is unable to transfer the file"
 msgstr "மற்ற பங்குதாரர் கோப்பு பரி மாற்றத்தை செய்ய முடியவில்லை."
 
-#: ../libempathy/empathy-tp-file.c:420 ../libempathy/empathy-utils.c:320
+#: ../libempathy/empathy-tp-file.c:420 ../libempathy/empathy-utils.c:324
 msgid "Unknown reason"
 msgstr "தெரியாத காரணம்"
 
-#: ../libempathy/empathy-utils.c:242
+#: ../libempathy/empathy-utils.c:246
 msgid "Available"
 msgstr "இருப்பவை"
 
-#: ../libempathy/empathy-utils.c:244
+#: ../libempathy/empathy-utils.c:248
 msgid "Busy"
 msgstr "வேலையில்"
 
-#: ../libempathy/empathy-utils.c:247
+#: ../libempathy/empathy-utils.c:251
 msgid "Away"
 msgstr "வெளியில்"
 
-#: ../libempathy/empathy-utils.c:249
+#: ../libempathy/empathy-utils.c:253
 msgid "Invisible"
 msgstr "மறைந்து"
 
-#: ../libempathy/empathy-utils.c:251
+#: ../libempathy/empathy-utils.c:255
 msgid "Offline"
 msgstr "இணைப்பு விலகி"
 
-#: ../libempathy/empathy-utils.c:253 ../src/empathy-call-window.c:1883
-#: ../src/empathy-call-window.c:1884 ../src/empathy-call-window.c:1885
-#: ../src/empathy-call-window.c:1886 ../src/empathy-call-window.ui.h:18
+#: ../libempathy/empathy-utils.c:257 ../src/empathy-call-window.c:1893
+#: ../src/empathy-call-window.c:1894 ../src/empathy-call-window.c:1895
+#: ../src/empathy-call-window.c:1896 ../src/empathy-call-window.ui.h:18
 msgid "Unknown"
 msgstr "தெரியாத"
 
-#: ../libempathy/empathy-utils.c:292
+#: ../libempathy/empathy-utils.c:296
 msgid "No reason specified"
 msgstr "காரணம் குறிப்பிடவில்லை"
 
-#: ../libempathy/empathy-utils.c:294 ../libempathy/empathy-utils.c:350
+#: ../libempathy/empathy-utils.c:298 ../libempathy/empathy-utils.c:354
 msgid "Status is set to offline"
 msgstr "நிலை இப்போது இணைப்பு விலகி "
 
-#: ../libempathy/empathy-utils.c:296 ../libempathy/empathy-utils.c:330
+#: ../libempathy/empathy-utils.c:300 ../libempathy/empathy-utils.c:334
 msgid "Network error"
 msgstr "வலையமைப்பு பிழை"
 
-#: ../libempathy/empathy-utils.c:298 ../libempathy/empathy-utils.c:332
+#: ../libempathy/empathy-utils.c:302 ../libempathy/empathy-utils.c:336
 msgid "Authentication failed"
 msgstr "உறுதி செய்தல் தோல்வி"
 
-#: ../libempathy/empathy-utils.c:300 ../libempathy/empathy-utils.c:334
+#: ../libempathy/empathy-utils.c:304 ../libempathy/empathy-utils.c:338
 msgid "Encryption error"
 msgstr "மறையாக்க பிழை"
 
-#: ../libempathy/empathy-utils.c:302
+#: ../libempathy/empathy-utils.c:306
 msgid "Name in use"
 msgstr "பயனில் உள்ள பெயர் "
 
-#: ../libempathy/empathy-utils.c:304 ../libempathy/empathy-utils.c:336
+#: ../libempathy/empathy-utils.c:308 ../libempathy/empathy-utils.c:340
 msgid "Certificate not provided"
 msgstr "சான்றிதழ் தரப்படவில்லை"
 
-#: ../libempathy/empathy-utils.c:306 ../libempathy/empathy-utils.c:338
+#: ../libempathy/empathy-utils.c:310 ../libempathy/empathy-utils.c:342
 msgid "Certificate untrusted"
 msgstr "சான்றிதழில் நம்பக தன்மை இல்லை"
 
-#: ../libempathy/empathy-utils.c:308 ../libempathy/empathy-utils.c:340
+#: ../libempathy/empathy-utils.c:312 ../libempathy/empathy-utils.c:344
 msgid "Certificate expired"
 msgstr "சான்றிதழ் காலாவதியானது"
 
-#: ../libempathy/empathy-utils.c:310 ../libempathy/empathy-utils.c:342
+#: ../libempathy/empathy-utils.c:314 ../libempathy/empathy-utils.c:346
 msgid "Certificate not activated"
 msgstr "சான்றிதழ் செயல்படுத்தப்படவில்லை"
 
-#: ../libempathy/empathy-utils.c:312 ../libempathy/empathy-utils.c:344
+#: ../libempathy/empathy-utils.c:316 ../libempathy/empathy-utils.c:348
 msgid "Certificate hostname mismatch"
 msgstr "சான்றிதழ் புரவலன் பெயர் ஒத்திசையவில்லை"
 
-#: ../libempathy/empathy-utils.c:314 ../libempathy/empathy-utils.c:346
+#: ../libempathy/empathy-utils.c:318 ../libempathy/empathy-utils.c:350
 msgid "Certificate fingerprint mismatch"
 msgstr "சான்றிதழ் அடையாளம் ஒத்திசையவில்லை"
 
-#: ../libempathy/empathy-utils.c:316 ../libempathy/empathy-utils.c:348
+#: ../libempathy/empathy-utils.c:320 ../libempathy/empathy-utils.c:352
 msgid "Certificate self-signed"
 msgstr "சான்றிதழ் தானே கையெழுத்திட்டது"
 
-#: ../libempathy/empathy-utils.c:318
+#: ../libempathy/empathy-utils.c:322
 msgid "Certificate error"
 msgstr "சான்றிதழ் பிழை"
 
-#: ../libempathy/empathy-utils.c:352
+#: ../libempathy/empathy-utils.c:356
 msgid "Encryption is not available"
 msgstr "குறீயீட்டுமுறை கிடைப்பில் இல்லை"
 
-#: ../libempathy/empathy-utils.c:354
+#: ../libempathy/empathy-utils.c:358
 msgid "Certificate is invalid"
 msgstr "சான்றிதழ் செல்லுபடியாகாது"
 
-#: ../libempathy/empathy-utils.c:356
+#: ../libempathy/empathy-utils.c:360
 msgid "Connection has been refused"
 msgstr "இணைப்பு மறுக்கப்பட்டது"
 
-#: ../libempathy/empathy-utils.c:358
+#: ../libempathy/empathy-utils.c:362
 msgid "Connection can't be established"
 msgstr "இணைக்க முடியவில்லை"
 
-#: ../libempathy/empathy-utils.c:360
+#: ../libempathy/empathy-utils.c:364
 msgid "Connection has been lost"
 msgstr "இணைப்பு அற்றுப்போயிற்று"
 
-#: ../libempathy/empathy-utils.c:362
+#: ../libempathy/empathy-utils.c:366
 msgid "This resource is already connected to the server"
 msgstr "இந்த மூலம் ஏற்கனவே சேவையகத்துக்கு இணைக்கப்பட்டது"
 
-#: ../libempathy/empathy-utils.c:364
+#: ../libempathy/empathy-utils.c:368
 msgid "Connection has been replaced by a new connection using the same resource"
 msgstr "இணைப்பு அதே முலத்துடன் புதிய இணைப்பால் மாற்றப்பட்டது."
 
-#: ../libempathy/empathy-utils.c:367
+#: ../libempathy/empathy-utils.c:371
 msgid "The account already exists on the server"
 msgstr "இந்த கணக்கு ஏற்கனவே சேவையகத்தில் உள்ளது"
 
-#: ../libempathy/empathy-utils.c:369
+#: ../libempathy/empathy-utils.c:373
 msgid "Server is currently too busy to handle the connection"
 msgstr "இணைப்பை கையாள சேவையகம் இப்போது மிகவும் வேலை பளுவில் உள்ளது."
 
-#: ../libempathy/empathy-utils.c:371
+#: ../libempathy/empathy-utils.c:375
 msgid "Certificate has been revoked"
 msgstr "சான்றிதழ் ரத்து செய்யப்பட்டது"
 
-#: ../libempathy/empathy-utils.c:373
+#: ../libempathy/empathy-utils.c:377
 msgid "Certificate uses an insecure cipher algorithm or is cryptographically weak"
 msgstr ""
-"சான்றிதழ் பாதுகாப்பில்லாத சைபர் அல்கோரிதத்தை பயன்படுத்துகிறது. இது மறையாக்கத்தில் பலகீனமானது."
+"சான்றிதழ் பாதுகாப்பில்லாத சைபர் அல்கோரிதத்தை பயன்படுத்துகிறது. இது மறையாக்கத்தில் "
+"பலகீனமானது."
 
-#: ../libempathy/empathy-utils.c:376
+#: ../libempathy/empathy-utils.c:380
 msgid ""
 "The length of the server certificate, or the depth of the server certificate "
 "chain, exceed the limits imposed by the cryptography library"
@@ -629,15 +631,15 @@ msgstr ""
 "சேவயகத்தின் சான்றிதழின் நீளம் அல்லது சங்கிலியின் ஆழம் மறையாக்க நூலகம் வரயறுத்த மதிப்பை "
 "தாண்டியது."
 
-#: ../libempathy/empathy-utils.c:540
+#: ../libempathy/empathy-utils.c:544
 msgid "People Nearby"
 msgstr "அருகில் உள்ள மக்கள்"
 
-#: ../libempathy/empathy-utils.c:545
+#: ../libempathy/empathy-utils.c:549
 msgid "Yahoo! Japan"
 msgstr "Yahoo! Japan"
 
-#: ../libempathy/empathy-utils.c:546
+#: ../libempathy/empathy-utils.c:550
 msgid "Facebook Chat"
 msgstr "Facebook அரட்டை"
 
@@ -1378,7 +1380,7 @@ msgstr "%s அறையில் சேர்ந்தார்"
 msgid "%s is now known as %s"
 msgstr "%s இப்போது %s ஆனார்"
 
-#: ../libempathy-gtk/empathy-chat.c:2287 ../src/empathy-call-window.c:1922
+#: ../libempathy-gtk/empathy-chat.c:2287 ../src/empathy-call-window.c:1932
 msgid "Disconnected"
 msgstr "துண்டிக்கபட்டது"
 
@@ -1426,7 +1428,7 @@ msgid "%A %B %d %Y"
 msgstr "%A %B %d %Y"
 
 #: ../libempathy-gtk/empathy-contact-dialogs.c:243
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:288
+#: ../libempathy-gtk/empathy-individual-edit-dialog.c:248
 msgid "Edit Contact Information"
 msgstr "தொடர்பின்  தகவல் ஐ திருத்து"
 
@@ -1793,11 +1795,6 @@ msgstr "தேர்வு"
 msgid "Group"
 msgstr "குழு"
 
-#: ../libempathy-gtk/empathy-individual-edit-dialog.c:302
-msgctxt "Unlink individual (button)"
-msgid "_Unlink"
-msgstr "_U இணைப்பை விலக்கு"
-
 #. Translators: the heading at the top of the Information dialogue
 #: ../libempathy-gtk/empathy-individual-information-dialog.c:282
 msgid "Linked Contacts"
@@ -1832,8 +1829,8 @@ msgstr "திருத்து (_E)"
 #. * to form a meta-contact".
 #: ../libempathy-gtk/empathy-individual-menu.c:863
 msgctxt "Link individual (contextual menu)"
-msgid "_Link…"
-msgstr "_L தொடுப்பு…"
+msgid "_Link Contacts…"
+msgstr "_L தொடர்புகள் ஐ தொடு..."
 
 #: ../libempathy-gtk/empathy-individual-widget.c:1569
 #, c-format
@@ -1865,17 +1862,44 @@ msgstr "எஸ்எஸ்எல்"
 #. Translators: this is the title of the linking dialogue (reached by
 #. * right-clicking on a contact and selecting "Link…"). "Link" in this title
 #. * is a verb.
-#: ../libempathy-gtk/empathy-linking-dialog.c:109
+#: ../libempathy-gtk/empathy-linking-dialog.c:116
 msgid "Link Contacts"
 msgstr "தொடர்புகள் ஐ தொடு"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:121
+msgctxt "Unlink individual (button)"
+msgid "_Unlink…"
+msgstr "_U தொடுப்பை விலக்கு..."
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:122
+msgid "Completely split the displayed meta-contact into the contacts it contains."
+msgstr "காட்டப்பட்ட மெடா தரவை அதில் உள்ள தொடர்புகளாக முழுக்க பகிரவும்."
 
 #. Add button
 #. Translators: this is an action button in the linking dialogue. "Link" is
 #. * used here as a verb meaning "to connect two contacts to form a
 #. * meta-contact".
-#: ../libempathy-gtk/empathy-linking-dialog.c:122
+#: ../libempathy-gtk/empathy-linking-dialog.c:137
 msgid "_Link"
 msgstr "_L தொடுப்பு"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:183
+#, c-format
+msgid "Unlink meta-contact '%s'?"
+msgstr "மெடா தொடர்ப்பு '%s' ஐ தொடுப்பு நீக்கவா?"
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:186
+msgid ""
+"Are you sure you want to unlink this meta-contact? This will completely "
+"split the meta-contact into the contacts it contains."
+msgstr ""
+"நீங்கள் நிச்சயமாக இந்த மெடா தொடர்பை நீக்க வேண்டுமா? இது மெடா தரவை அதில் உள்ள தொடர்புகளாக "
+"முழுக்க பகிரவும்."
+
+#: ../libempathy-gtk/empathy-linking-dialog.c:191
+msgctxt "Unlink individual (button)"
+msgid "_Unlink"
+msgstr "_U இணைப்பை விலக்கு"
 
 #: ../libempathy-gtk/empathy-log-window.c:663
 msgid "Date"
@@ -2407,7 +2431,7 @@ msgstr ""
 "சேர்க்கலாம்."
 
 #: ../src/empathy-account-assistant.c:220
-#: ../src/empathy-account-assistant.c:1310
+#: ../src/empathy-account-assistant.c:1316
 msgid "An error occurred"
 msgstr "ஒரு பிழை ஏற்பட்டது"
 
@@ -2421,31 +2445,31 @@ msgstr "ஒரு பிழை ஏற்பட்டது"
 msgid "New %s account"
 msgstr "புதிய %s கணக்கு"
 
-#: ../src/empathy-account-assistant.c:509
+#: ../src/empathy-account-assistant.c:515
 msgid "What kind of chat account do you have?"
 msgstr "எந்த வகையான அரட்டை கணக்கை நீங்கள் பெற்றிருக்கிறீர்கள்?"
 
-#: ../src/empathy-account-assistant.c:515
+#: ../src/empathy-account-assistant.c:521
 msgid "Do you have any other chat accounts you want to set up?"
 msgstr "நீங்கள் அமைக்க விரும்புவதற்கு உங்களுக்கு ஏதேனும் மற்ற அரட்டை கணக்குகள் இருக்கிறதா?"
 
-#: ../src/empathy-account-assistant.c:521
+#: ../src/empathy-account-assistant.c:527
 msgid "Enter your account details"
 msgstr "உங்களது கணக்கு விவரங்களை உள்ளிடவும்"
 
-#: ../src/empathy-account-assistant.c:526
+#: ../src/empathy-account-assistant.c:532
 msgid "What kind of chat account do you want to create?"
 msgstr "எந்த வகையான அரட்டை கணக்கை நீங்கள் உருவாக்க விரும்புகிறீர்கள்?"
 
-#: ../src/empathy-account-assistant.c:532
+#: ../src/empathy-account-assistant.c:538
 msgid "Do you want to create other chat accounts?"
 msgstr "மற்ற அரட்டை கணக்குகளை உருவாக்க நீங்கள் விரும்புகிறீர்களா?"
 
-#: ../src/empathy-account-assistant.c:539
+#: ../src/empathy-account-assistant.c:545
 msgid "Enter the details for the new account"
 msgstr "புதிய கணக்கிற்கு விவரங்களை உள்ளிடவும்"
 
-#: ../src/empathy-account-assistant.c:654
+#: ../src/empathy-account-assistant.c:660
 msgid ""
 "With Empathy you can chat with people online nearby and with friends and "
 "colleagues who use Google Talk, AIM, Windows Live and many other chat "
@@ -2457,41 +2481,41 @@ msgstr ""
 "கொலிக்ஸ் உடன் அரட்டை அடிக்கலாம். மைக்ரோ போன் அல்லது வெப்கேமிராவினால் நீங்களும் ஆடியோ அல்லது "
 "வீடியோ அழைப்புகளை பெறலாம். "
 
-#: ../src/empathy-account-assistant.c:671
+#: ../src/empathy-account-assistant.c:677
 msgid "Do you have an account you've been using with another chat program?"
 msgstr "மற்ற அரட்டை நிரலை பயன்படுத்திக் கொண்டிருக்கிற உங்களுக்கு ஒரு கணக்கு உள்ளதா?"
 
-#: ../src/empathy-account-assistant.c:694
+#: ../src/empathy-account-assistant.c:700
 msgid "Yes, import my account details from "
 msgstr "ஆம், எனது கணக்கு விவரங்களை இதிலிருந்து இறக்கவும் "
 
-#: ../src/empathy-account-assistant.c:715
+#: ../src/empathy-account-assistant.c:721
 msgid "Yes, I'll enter my account details now"
 msgstr "ஆம், இப்போது எனது கணக்கு விவரங்களை உள்ளிடுகிறேன்"
 
-#: ../src/empathy-account-assistant.c:737
+#: ../src/empathy-account-assistant.c:743
 msgid "No, I want a new account"
 msgstr "இல்லை, எனக்கு ஒரு புதிய கணக்கு வேண்டும்"
 
-#: ../src/empathy-account-assistant.c:747
+#: ../src/empathy-account-assistant.c:753
 msgid "No, I just want to see people online nearby for now"
 msgstr "இல்லை, இப்போது ஆன்லைனில் எனக்கு அருகிலிருக்கும் மக்களை நான் பார்க்க விரும்புகிறேன்"
 
-#: ../src/empathy-account-assistant.c:768
+#: ../src/empathy-account-assistant.c:774
 msgid "Select the accounts you want to import:"
 msgstr "நீங்கள் இறக்க விரும்பும் கணக்குகளை தேர்ந்தெடுக்கவும்:"
 
-#: ../src/empathy-account-assistant.c:852
+#: ../src/empathy-account-assistant.c:858
 #: ../src/empathy-new-chatroom-dialog.c:609
 #: ../src/empathy-new-chatroom-dialog.c:610
 msgid "Yes"
 msgstr "ஆம்"
 
-#: ../src/empathy-account-assistant.c:859
+#: ../src/empathy-account-assistant.c:865
 msgid "No, that's all for now"
 msgstr "இல்லை, இப்போதைக்கு அவ்வளவு தான்"
 
-#: ../src/empathy-account-assistant.c:1124
+#: ../src/empathy-account-assistant.c:1130
 msgid ""
 "Empathy can automatically discover and chat with the people connected on the "
 "same network as you. If you want to use this feature, please check that the "
@@ -2503,16 +2527,16 @@ msgstr ""
 "கணக்கு உரையாடல் மூலம் நீங்கள் இந்த விவரங்களை சுலபமாக மாற்றலாம் அல்லது இந்த அம்சத்தை செயல் "
 "நீக்கலாம்."
 
-#: ../src/empathy-account-assistant.c:1130
-#: ../src/empathy-account-assistant.c:1186
+#: ../src/empathy-account-assistant.c:1136
+#: ../src/empathy-account-assistant.c:1192
 msgid "Edit->Accounts"
 msgstr " திருத்துக->கணக்குகள்"
 
-#: ../src/empathy-account-assistant.c:1146
+#: ../src/empathy-account-assistant.c:1152
 msgid "I don't want to enable this feature for now"
 msgstr "இல்லை, இப்போது இந்த அம்சத்தை செயலாக்க விரும்பவில்லை"
 
-#: ../src/empathy-account-assistant.c:1182
+#: ../src/empathy-account-assistant.c:1188
 msgid ""
 "You won't be able to chat with people connected to your local network, as "
 "telepathy-salut is not installed. If you want to enable this feature, please "
@@ -2523,23 +2547,23 @@ msgstr ""
 "இயலாது. இந்த அம்சத்தை நீங்கள் செயலாக்க விரும்பினால் டெலிபதி-சலுட் நிறுவுங்கள். மேலும் "
 "கணக்கு உரையாடல் மூலம் அண்மையில் உள்ளோர் கணக்கு ஒன்று துவக்கவும். "
 
-#: ../src/empathy-account-assistant.c:1188
+#: ../src/empathy-account-assistant.c:1194
 msgid "telepathy-salut not installed"
 msgstr "டெலிபதி-சலுட் நிறுவப்படவில்லை"
 
-#: ../src/empathy-account-assistant.c:1234
+#: ../src/empathy-account-assistant.c:1240
 msgid "Messaging and VoIP Accounts Assistant"
 msgstr "செய்தி அனுப்புதல் மற்றும் வோய்ப் கணக்குகள் உதவியாளர்"
 
-#: ../src/empathy-account-assistant.c:1268
+#: ../src/empathy-account-assistant.c:1274
 msgid "Welcome to Empathy"
 msgstr "எம்பதிக்கு வரவேற்பு"
 
-#: ../src/empathy-account-assistant.c:1277
+#: ../src/empathy-account-assistant.c:1283
 msgid "Import your existing accounts"
 msgstr "உங்களிடம் இருக்கிற கணக்குகளை இறக்கவும்"
 
-#: ../src/empathy-account-assistant.c:1295
+#: ../src/empathy-account-assistant.c:1301
 msgid "Please enter personal details"
 msgstr "தயை செய்து சொந்த விவரங்களை உள்ளிடுக"
 
@@ -2556,7 +2580,7 @@ msgstr "சேமிக்கப்படாத மாற்றங்கள் �
 msgid "Your new account has not been saved yet."
 msgstr "உங்கள் கணக்கு இன்னும் சேமிக்கப்படவில்லை"
 
-#: ../src/empathy-accounts-dialog.c:281 ../src/empathy-call-window.c:808
+#: ../src/empathy-accounts-dialog.c:281 ../src/empathy-call-window.c:818
 msgid "Connecting…"
 msgstr "இணைக்கிறது"
 
@@ -2582,7 +2606,7 @@ msgstr "தெரியாத நிலை"
 msgid "Offline — Account Disabled"
 msgstr "இணைப்பு விலகி —கணக்கு முடக்கப்பட்டது"
 
-#: ../src/empathy-accounts-dialog.c:805
+#: ../src/empathy-accounts-dialog.c:811
 msgid ""
 "You are about to create a new account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2590,16 +2614,16 @@ msgstr ""
 "நீங்கள் புதிய கணக்கை துவக்கப்போகிறீர்கள்!அது உங்கள் \n"
 "மாற்றங்களை விலக்கிவிடும். நிச்சயம் தொடர வேண்டுமா?"
 
-#: ../src/empathy-accounts-dialog.c:1152
+#: ../src/empathy-accounts-dialog.c:1158
 #, c-format
 msgid "Do you want to remove %s from your computer?"
 msgstr "நீங்கள் நிச்சயம் குழு '%s' ஐ உங்கள் கணினியிலிருந்து நீக்க விரும்புகிறீர்களா?"
 
-#: ../src/empathy-accounts-dialog.c:1156
+#: ../src/empathy-accounts-dialog.c:1162
 msgid "This will not remove your account on the server."
 msgstr "இது உங்கள் கணக்கை சேவையகத்தில் இருந்து நீக்காது"
 
-#: ../src/empathy-accounts-dialog.c:1394
+#: ../src/empathy-accounts-dialog.c:1400
 msgid ""
 "You are about to select another account, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2607,7 +2631,7 @@ msgstr ""
 "நீங்கள் வேறு கணக்கை தேர்ந்தெடுக்கப்போகிறீர்கள்! அது உங்கள் \n"
 "மாற்றங்களை விலக்கிவிடும். நிச்சயம் தொடர வேண்டுமா?"
 
-#: ../src/empathy-accounts-dialog.c:1997
+#: ../src/empathy-accounts-dialog.c:2003
 msgid ""
 "You are about to close the window, which will discard\n"
 "your changes. Are you sure you want to proceed?"
@@ -2679,70 +2703,70 @@ msgstr "காமா"
 msgid "Volume"
 msgstr "ஒலி அளவு"
 
-#: ../src/empathy-call-window.c:1163
+#: ../src/empathy-call-window.c:1173
 msgid "_Sidebar"
 msgstr "பக்கப்பட்டை(_S)"
 
-#: ../src/empathy-call-window.c:1182
+#: ../src/empathy-call-window.c:1192
 msgid "Audio input"
 msgstr "ஒலி உள்ளீடு"
 
-#: ../src/empathy-call-window.c:1186
+#: ../src/empathy-call-window.c:1196
 msgid "Video input"
 msgstr "வீடியோ உள்ளீடு"
 
-#: ../src/empathy-call-window.c:1190
+#: ../src/empathy-call-window.c:1200
 msgid "Dialpad"
 msgstr "டயல் அட்டை"
 
-#: ../src/empathy-call-window.c:1195
+#: ../src/empathy-call-window.c:1205
 msgid "Details"
 msgstr "விவரங்கள்"
 
 #. translators: Call is a noun and %s is the contact name. This string
 #. * is used in the window title
-#: ../src/empathy-call-window.c:1263
+#: ../src/empathy-call-window.c:1273
 #, c-format
 msgid "Call with %s"
 msgstr "%s ஆல் அழை "
 
 #. translators: Call is a noun. This string is used in the window
 #. * title
-#: ../src/empathy-call-window.c:1342
+#: ../src/empathy-call-window.c:1352
 msgid "Call"
 msgstr "அழை"
 
-#: ../src/empathy-call-window.c:1496
+#: ../src/empathy-call-window.c:1506
 msgid "The IP address as seen by the machine"
 msgstr "கணினி பார்த்தபடி ஐபி முகவரி"
 
-#: ../src/empathy-call-window.c:1498
+#: ../src/empathy-call-window.c:1508
 msgid "The IP address as seen by a server on the Internet"
 msgstr "இணையத்தில் இருந்து சேவயகம் பார்த்தபடி ஐபி முகவரி"
 
-#: ../src/empathy-call-window.c:1500
+#: ../src/empathy-call-window.c:1510
 msgid "The IP address of the peer as seen by the other side"
 msgstr "மற்ற பக்கத்தில் இருந்து பார்த்தபடி பியரின் ஐபி முகவரி"
 
-#: ../src/empathy-call-window.c:1502
+#: ../src/empathy-call-window.c:1512
 msgid "The IP address of a relay server"
 msgstr "மேலனுப்பு சேவையகத்தின் ஐபி முகவர்."
 
-#: ../src/empathy-call-window.c:1504
+#: ../src/empathy-call-window.c:1514
 msgid "The IP address of the multicast group"
 msgstr "பல்வெளியீட்டு குழுவின் ஐபி முகவரி"
 
 #. Translators: number of minutes:seconds the caller has been connected
-#: ../src/empathy-call-window.c:2237
+#: ../src/empathy-call-window.c:2247
 #, c-format
 msgid "Connected — %d:%02dm"
 msgstr "இணைக்கப்பட்டது — %d:%02dm"
 
-#: ../src/empathy-call-window.c:2298
+#: ../src/empathy-call-window.c:2308
 msgid "Technical Details"
 msgstr "தொடர்பு விவரங்கள்"
 
-#: ../src/empathy-call-window.c:2336
+#: ../src/empathy-call-window.c:2346
 #, c-format
 msgid ""
 "%s's software does not understand any of the audio formats supported by your "
@@ -2751,7 +2775,7 @@ msgstr ""
 "%s' இன் மென்பொருள் உங்கள் கணினியில் ஆதரவு உள்ள எந்த ஒலி இசை ஒழுங்குகளையும் புரிந்து "
 "கொள்ளவில்லை"
 
-#: ../src/empathy-call-window.c:2341
+#: ../src/empathy-call-window.c:2351
 #, c-format
 msgid ""
 "%s's software does not understand any of the video formats supported by your "
@@ -2760,7 +2784,7 @@ msgstr ""
 "%s' இன் மென்பொருள் உங்கள் கணினியில் ஆதரவு உள்ள எந்த விடியோ ஒழுங்குகளையும் புரிந்து "
 "கொள்ளவில்லை"
 
-#: ../src/empathy-call-window.c:2347
+#: ../src/empathy-call-window.c:2357
 #, c-format
 msgid ""
 "Can't establish a connection to %s. One of you might be on a network that "
@@ -2769,19 +2793,19 @@ msgstr ""
 " %s' க்கு ஈனைக்க முடியவில்லை. உங்களில் ஒருவர் நேரடி இணைப்பை அனுமதிக்காத வலைப்பின்னலில் "
 "இருக்கலாம்."
 
-#: ../src/empathy-call-window.c:2353
+#: ../src/empathy-call-window.c:2363
 msgid "There was a failure on the network"
 msgstr "வ்லைப்பின்னலில் ஒரு தோல்வி"
 
-#: ../src/empathy-call-window.c:2357
+#: ../src/empathy-call-window.c:2367
 msgid "The audio formats necessary for this call are not installed on your computer"
 msgstr "இந்த அழைப்புக்கு தேவையான ஒலி ஒழுங்குக்கு ஆதரவு உங்கள் கணினியில் இல்லை."
 
-#: ../src/empathy-call-window.c:2360
+#: ../src/empathy-call-window.c:2370
 msgid "The video formats necessary for this call are not installed on your computer"
 msgstr "இந்த அழைப்புக்கு தேவையான விடியோ ஒழுங்குக்கு ஆதரவு உங்கள் கணினியில் இல்லை."
 
-#: ../src/empathy-call-window.c:2370
+#: ../src/empathy-call-window.c:2380
 #, c-format
 msgid ""
 "Something unexpected happened in a Telepathy component. Please <a href=\"%s"
@@ -2792,19 +2816,19 @@ msgstr ""
 "this bug</a> மேலும் உதவி பட்டியலில் உள்ள 'Debug' சாளரத்தில் காணும் பதிவேட்டு "
 "உள்ளடக்கத்தை இணைக்கவும்.."
 
-#: ../src/empathy-call-window.c:2378
+#: ../src/empathy-call-window.c:2388
 msgid "There was a failure in the call engine"
 msgstr "அழைப்பு பொறியில் ஒரு தோல்வி"
 
-#: ../src/empathy-call-window.c:2381
+#: ../src/empathy-call-window.c:2391
 msgid "The end of the stream was reached"
 msgstr "ஓடையின் இறுதி எட்டப்பட்டது"
 
-#: ../src/empathy-call-window.c:2421
+#: ../src/empathy-call-window.c:2431
 msgid "Can't establish audio stream"
 msgstr "ஒலி ஓடையை நிறுவ முடியவில்லை"
 
-#: ../src/empathy-call-window.c:2431
+#: ../src/empathy-call-window.c:2441
 msgid "Can't establish video stream"
 msgstr "விடியோ ஓடையை நிறுவ முடியவில்லை"
 
@@ -3748,6 +3772,10 @@ msgstr "எம்பதி கணக்குகள்"
 #: ../src/empathy-debugger.c:40
 msgid "Empathy Debugger"
 msgstr "எம்பதி வழு நீக்கி"
+
+#~ msgctxt "Link individual (contextual menu)"
+#~ msgid "_Link…"
+#~ msgstr "_L தொடுப்பு…"
 
 #~ msgid "Send and receive messages"
 #~ msgstr "செய்திகளை  அனுப்புக மற்றும் பெறுக"
