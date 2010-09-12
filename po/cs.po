@@ -11,18 +11,20 @@
 # Jiri Eischmann <jiri@eischmann.cz>, 2010.
 # Marek Černocký <marek@manet.cz>, 2010.
 # Petr Kovar <pknbe@volny.cz>, 2008, 2009, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-10 21:49+0200\n"
-"PO-Revision-Date: 2010-09-05 17:56+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=empathy&component=general\n"
+"POT-Creation-Date: 2010-09-11 23:20+0000\n"
+"PO-Revision-Date: 2010-09-12 08:46+0200\n"
 "Last-Translator: Petr Kovar <pknbe@volny.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
-"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Lokalize 1.0\n"
 "X-Poedit-Language: Czech\n"
@@ -1863,10 +1865,9 @@ msgstr "_Upravit"
 #. Translators: this is a verb meaning "to connect two contacts together
 #. * to form a meta-contact".
 #: ../libempathy-gtk/empathy-individual-menu.c:863
-#, fuzzy
 msgctxt "Link individual (contextual menu)"
 msgid "_Link Contacts…"
-msgstr "Pospojovat kontakty"
+msgstr "Po_spojovat kontakty…"
 
 #: ../libempathy-gtk/empathy-individual-widget.c:1569
 #, c-format
@@ -1904,15 +1905,14 @@ msgid "Link Contacts"
 msgstr "Pospojovat kontakty"
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:121
-#, fuzzy
 msgctxt "Unlink individual (button)"
 msgid "_Unlink…"
-msgstr "_Rozpojit"
+msgstr "_Rozpojit…"
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:122
 msgid ""
 "Completely split the displayed meta-contact into the contacts it contains."
-msgstr ""
+msgstr "Rozdělit zobrazený metakontakt na jednotlivé kontakty, které obsahuje."
 
 #. Add button
 #. Translators: this is an action button in the linking dialogue. "Link" is
@@ -1925,13 +1925,15 @@ msgstr "Pospo_jovat"
 #: ../libempathy-gtk/empathy-linking-dialog.c:183
 #, c-format
 msgid "Unlink meta-contact '%s'?"
-msgstr ""
+msgstr "Rozpojit metakontakt „%s“?"
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:186
 msgid ""
 "Are you sure you want to unlink this meta-contact? This will completely "
 "split the meta-contact into the contacts it contains."
 msgstr ""
+"Opravdu chcete rozpojit tento metakontakt? Tím se metakontakt rozdělí na "
+"jednotlivé kontakty, které obsahuje."
 
 #: ../libempathy-gtk/empathy-linking-dialog.c:191
 msgctxt "Unlink individual (button)"
@@ -2124,7 +2126,6 @@ msgid "The identity provided by the chat server cannot be verified.\n"
 msgstr "Identitu poskytovanou tímto diskuzním serverem nelze prověřit.\n"
 
 #: ../libempathy-gtk/empathy-tls-dialog.c:156
-#, fuzzy
 msgid "The certificate is not signed by a Certification Authority"
 msgstr "Certifikát není podepsán certifikační autoritou"
 
@@ -3830,72 +3831,3 @@ msgstr "Účty Empathy"
 msgid "Empathy Debugger"
 msgstr "Ladění Empathy"
 
-#~ msgctxt "Link individual (contextual menu)"
-#~ msgid "_Link…"
-#~ msgstr "Pospo_jovat…"
-
-#~ msgid "_Character set:"
-#~ msgstr "_Znaková sada:"
-
-#~ msgid "_E-mail address:"
-#~ msgstr "_E-mail:"
-
-#~ msgid "_Nickname:"
-#~ msgstr "_Přezdívka:"
-
-#~ msgid "<b>Location</b>, "
-#~ msgstr "<b>Poloha</b>, "
-
-#~ msgid "Your contact list is empty"
-#~ msgstr "Váš seznam kontaktů je prázdný"
-
-#~ msgid "Send and receive messages"
-#~ msgstr "Odesílá a přijímá zprávy"
-
-#~ msgid "MC 4 accounts have been imported"
-#~ msgstr "Účty MC 4 byly importovány"
-
-#~ msgid "MC 4 accounts have been imported."
-#~ msgstr "Účty MC 4 byly importovány."
-
-#~ msgid "Failed to reconnect this chat"
-#~ msgstr "Tuto diskuzi se nepodařilo obnovit"
-
-#~ msgid "Failed to join chat room"
-#~ msgstr "Nepovedlo se připojit do místnosti"
-
-#~ msgid "Select a destination"
-#~ msgstr "Vyberte cílové umístění"
-
-#~ msgid "%s account"
-#~ msgstr "%s účet"
-
-#~ msgid "Hostname of the proxy for outbound requests."
-#~ msgstr "Adresa proxy pro odchozí požadavky."
-
-#~ msgid ""
-#~ "Look up the DNS SRV record at the service's domain for the host name of a "
-#~ "STUN server."
-#~ msgstr "Prohledat DNS SRV záznam pro doménu serveru STUN."
-
-#~ msgid "Port of the proxy for outbound requests."
-#~ msgstr "Port proxy pro odchozí požadavky."
-
-#~ msgid ""
-#~ "The username for SIP authentication, if different from the SIP URI\n"
-#~ "username."
-#~ msgstr ""
-#~ "Uživatelské jméno pro SIP autentizaci (pokud se liší od\n"
-#~ " uživatelského jména v SIP URI)"
-
-#~ msgid ""
-#~ "Update the registration binding if the external address for the client is "
-#~ "discovered to be different from the local binding."
-#~ msgstr ""
-#~ "Aktualizovat registrovaná propojení pokud se vnější adresa klienta liší "
-#~ "od adresy získané vnitřním propojením."
-
-#~ msgid ""
-#~ "Use the loose routing behavior and the Route header as recommended in RFC "
-#~ "3261."
-#~ msgstr "Použít volné směrování a hlavičku směrovacích dat dle RFC 3261."
