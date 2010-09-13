@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy help fr\n"
-"POT-Creation-Date: 2010-09-10 12:10+0000\n"
+"POT-Creation-Date: 2010-09-11 17:27+0000\n"
 "PO-Revision-Date: 2010-09-10 20:17+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -22,8 +22,8 @@ msgstr ""
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: C/video-call.page:45(None) C/video-call.page:63(None)
-#: C/audio-video.page:70(None) C/audio-call.page:65(None)
+#: C/video-call.page:38(None) C/audio-video.page:70(None)
+#: C/audio-call.page:36(None)
 msgid "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
 msgstr ""
 "@@image: 'figures/camera-web.png'; md5=8166b4372f25b78cbf5a64fe2eac2ce5"
@@ -42,7 +42,7 @@ msgstr "Commencer une conversation vidéo avec un de vos contacts."
 #: C/irc-send-file.page:16(name) C/irc-nick-password.page:18(name)
 #: C/irc-manage.page:19(name) C/irc-join-room.page:16(name)
 #: C/irc-join-pwd.page:17(name) C/irc-commands.page:10(name)
-#: C/introduction.page:13(name) C/index.page:18(name)
+#: C/introduction.page:13(name) C/index.page:19(name)
 #: C/import-account.page:23(name) C/hide-contacts.page:11(name)
 #: C/group-conversations.page:19(name) C/geolocation-what-is.page:18(name)
 #: C/geolocation-turn.page:18(name) C/geolocation-supported.page:16(name)
@@ -64,7 +64,7 @@ msgstr "Milo Casagrande"
 #: C/irc-send-file.page:17(email) C/irc-nick-password.page:19(email)
 #: C/irc-manage.page:20(email) C/irc-join-room.page:17(email)
 #: C/irc-join-pwd.page:18(email) C/irc-commands.page:11(email)
-#: C/introduction.page:14(email) C/index.page:19(email)
+#: C/introduction.page:14(email) C/index.page:20(email)
 #: C/import-account.page:24(email) C/hide-contacts.page:12(email)
 #: C/group-conversations.page:20(email) C/geolocation-what-is.page:19(email)
 #: C/geolocation-turn.page:19(email) C/geolocation-supported.page:17(email)
@@ -87,7 +87,7 @@ msgstr "milo@ubuntu.com"
 #: C/irc-send-file.page:20(p) C/irc-nick-password.page:22(p)
 #: C/irc-manage.page:23(p) C/irc-join-room.page:20(p)
 #: C/irc-join-pwd.page:21(p) C/irc-commands.page:14(p)
-#: C/introduction.page:17(p) C/index.page:22(p) C/import-account.page:31(p)
+#: C/introduction.page:17(p) C/index.page:23(p) C/import-account.page:31(p)
 #: C/hide-contacts.page:15(p) C/group-conversations.page:23(p)
 #: C/geolocation-what-is.page:22(p) C/geolocation-turn.page:22(p)
 #: C/geolocation-supported.page:20(p) C/geolocation-privacy.page:21(p)
@@ -100,11 +100,11 @@ msgstr "milo@ubuntu.com"
 msgid "Creative Commons Share Alike 3.0"
 msgstr "Creative Commons Share Alike 3.0"
 
-#: C/video-call.page:35(title)
+#: C/video-call.page:28(title)
 msgid "Start a video conversation"
 msgstr "Mise en place d'une conversation vidéo"
 
-#: C/video-call.page:37(p)
+#: C/video-call.page:30(p)
 msgid ""
 "If you have a webcam, you can call your contacts and have a video "
 "conversation with them. This features only works with certain types of "
@@ -116,7 +116,7 @@ msgstr ""
 "certains types de comptes et votre contact doit utiliser une application qui "
 "supporte les appels vidéos."
 
-#: C/video-call.page:44(p)
+#: C/video-call.page:37(p)
 msgid ""
 "From the <gui>Contact List</gui> window, click the <media type=\"image\" "
 "mime=\"image/png\" src=\"figures/camera-web.png\">video call</media> icon "
@@ -128,7 +128,7 @@ msgstr ""
 "\">Appel vidéo</media> à côté du contact que vous souhaitez appeler et "
 "choisissez <gui style=\"menuitem\">Appel vidéo</gui>."
 
-#: C/video-call.page:50(p) C/audio-call.page:48(p)
+#: C/video-call.page:43(p) C/audio-call.page:42(p)
 msgid ""
 "A new window will open. When the connection is established, you will see "
 "<gui>Connected</gui> at the bottom of the window, along with the total "
@@ -138,38 +138,34 @@ msgstr ""
 "apparaître <gui>Connecté</gui> en bas de la fenêtre, ainsi que la durée "
 "totale de la conversation."
 
-#: C/video-call.page:55(p) C/audio-call.page:54(p)
+#: C/video-call.page:48(p) C/audio-call.page:48(p)
 msgid "To end the conversation, click on <gui style=\"button\">Hang up</gui>."
 msgstr ""
 "Pour terminer la conversation, cliquez sur <gui style=\"button\">Raccrocher</"
 "gui>."
 
 # "Send video" pour transformer une conversation video en audio ?
-#: C/video-call.page:61(p)
+#: C/video-call.page:54(p)
 msgid ""
 "To turn a video conversation into an audio conversation, choose <guiseq><gui "
-"style=\"menu\">Video</gui><gui style=\"menuitem\">Video Off</gui></guiseq>, "
-"or click the <media type=\"image\" mime=\"image/png\" src=\"figures/camera-"
-"web.png\">video call</media> toolbar button to deselect it."
+"style=\"menu\">Video</gui><gui style=\"menuitem\">Video Off</gui></guiseq>."
 msgstr ""
 "Pour transformer une conversation vidéo en une conversation audio, "
 "choisissez <guiseq><gui style=\"menu\">Vidéo</gui><gui style=\"menuitem"
-"\">Vidéo désactivée</gui></guiseq> ou cliquez sur le bouton <media type="
-"\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">Appel vidéo</"
-"media> de la barre d'outils pour la désélectionner."
+"\">Vidéo désactivée</gui></guiseq>."
 
-#: C/video-call.page:68(title)
+#: C/video-call.page:60(title)
 msgid "Start a video conversation with a meta-contact"
 msgstr "Commencer une conversation vidéo avec un méta-contact"
 
-#: C/video-call.page:71(p) C/send-message.page:53(p) C/audio-call.page:74(p)
+#: C/video-call.page:63(p) C/send-message.page:53(p) C/audio-call.page:66(p)
 msgid ""
 "From the <gui>Contact List</gui> window, right-click on the meta-contact."
 msgstr ""
 "Dans la fenêtre <gui>Liste des contacts</gui>, faites un clic droit sur le "
 "méta-contact."
 
-#: C/video-call.page:76(p)
+#: C/video-call.page:68(p)
 msgid ""
 "Select the contact you want to have the conversation, and from the menu "
 "select <gui style=\"menuitem\">Video Call</gui>."
@@ -177,7 +173,7 @@ msgstr ""
 "Sélectionnez le contact avec lequel vous voulez discuter et choisissez <gui "
 "style=\"menuitem\">Appel vidéo</gui> dans le menu."
 
-#: C/video-call.page:83(p) C/send-message.page:65(p) C/audio-call.page:86(p)
+#: C/video-call.page:75(p) C/send-message.page:65(p) C/audio-call.page:78(p)
 msgid ""
 "To recognize if a contact is a <em>meta-contact</em>, move your mouse on a "
 "contact in the <gui>Contact List</gui> window, and stop over it for a "
@@ -1281,12 +1277,12 @@ msgstr "Cliquez sur <gui style=\"button\">Lier</gui>."
 #: C/link-contacts.page:82(p)
 msgid ""
 "When a meta-contact has been created, the default contact that will be used "
-"to have a conversation with when you double-click on it, is the last contact "
-"you select to link from the <gui>Link Contacts</gui> window."
+"to have a conversation with when you double-click on it, is the contact with "
+"the highest presence on-line."
 msgstr ""
 "Quand un méta-contact a été créé, le contact par défaut qui sera utilisé "
-"comme interlocuteur lors d'un double-clic, est le dernier contact qui a été "
-"sélectionné pour être lié dans la fenêtre <gui>Lier des contacts</gui>."
+"comme interlocuteur lors d'un double-clic, est le contact qui est le plus "
+"souvent présent en-ligne."
 
 #: C/link-contacts.page:91(title)
 msgid "Separating contacts"
@@ -1295,13 +1291,13 @@ msgstr "Séparation de contacts"
 #: C/link-contacts.page:94(p)
 msgid ""
 "From the <gui>Contact List</gui>, right-click the contact to separate, and "
-"select <gui style=\"menuitem\">Unlink...</gui>."
+"select <gui style=\"menuitem\">Link Contacts...</gui>."
 msgstr ""
 "Dans la fenêtre <gui>Liste des contacts</gui>, faites un clic droit sur le "
-"contact à séparer et sélectionnez <gui style=\"menuitem\">Séparer...</gui>."
+"contact à séparer et sélectionnez <gui style=\"menuitem\">Lier des contacts...</gui>."
 
 #: C/link-contacts.page:100(p)
-msgid "Click on <gui style=\"button\">Unlink</gui>."
+msgid "Click <gui style=\"button\">Unlink</gui>."
 msgstr "Cliquez sur <gui style=\"button\">Séparer</gui>."
 
 #: C/license.page:8(desc)
@@ -1546,7 +1542,7 @@ msgstr "Salon de discussion et conversations"
 msgid "Common IRC Problems"
 msgstr "Problèmes IRC courants"
 
-#: C/irc-manage.page:52(title) C/index.page:52(title)
+#: C/irc-manage.page:52(title) C/index.page:55(title)
 msgid "Common Problems"
 msgstr "Problèmes courants"
 
@@ -1721,42 +1717,42 @@ msgstr "Fenêtre principale d'<app>Empathy</app>."
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: C/index.page:27(None)
+#: C/index.page:28(None)
 msgid ""
 "@@image: 'figures/empathy-logo.png'; md5=14568248b11d2cfe7992c5edd7e157e8"
 msgstr ""
 "@@image: 'figures/empathy-logo.png'; md5=14568248b11d2cfe7992c5edd7e157e8"
 
 #: C/index.page:7(title) C/index.page:8(title)
-msgid "Empathy Instant Messenger"
-msgstr "Messagerie instantanée Empathy"
+msgid "Empathy Internet Messenger"
+msgstr "Messagerie internet Empathy"
 
-#: C/index.page:26(title)
+#: C/index.page:27(title)
 msgid ""
-"<media type=\"image\" mime=\"image/png\" src=\"figures/empathy-logo.png"
-"\">Empathy Instant Messenger logo</media> Empathy Instant Messenger"
+"<media type=\"image\" mime=\"image/png\" src=\"figures/empathy-logo.png\"> "
+"Empathy Internet Messenger logo </media> Empathy Internet Messenger"
 msgstr ""
 "<media type=\"image\" mime=\"image/png\" src=\"figures/empathy-logo.png"
-"\">Logo de Messagerie instantanée Empathy</media> Messagerie instantanée "
+"\">Logo de Messagerie internet Empathy</media> Messagerie internet "
 "Empathy"
 
-#: C/index.page:32(title)
+#: C/index.page:35(title)
 msgid "Account Management"
 msgstr "Gestion des comptes"
 
-#: C/index.page:36(title)
+#: C/index.page:39(title)
 msgid "Contact Management"
 msgstr "Gestion des contacts"
 
-#: C/index.page:40(title)
+#: C/index.page:43(title)
 msgid "Text Conversations"
 msgstr "Conversations texte"
 
-#: C/index.page:44(title)
+#: C/index.page:47(title)
 msgid "Audio and Video Conversations"
 msgstr "Conversations audio et vidéo"
 
-#: C/index.page:48(title)
+#: C/index.page:51(title)
 msgid "Advanced Actions"
 msgstr "Actions avancées"
 
@@ -2730,7 +2726,7 @@ msgstr ""
 
 #. When image changes, this message will be marked fuzzy or untranslated for you.
 #. It doesn't matter what you translate it to: it's not used at all.
-#: C/audio-video.page:58(None) C/audio-call.page:42(None)
+#: C/audio-video.page:58(None)
 msgid ""
 "@@image: 'figures/audio-input-microphone.png'; "
 "md5=8d89026b66a263a3bc5b1f0665948567"
@@ -2928,11 +2924,11 @@ msgstr "zephyr"
 msgid "Call your contacts over the Internet."
 msgstr "Appeler vos contacts sur internet."
 
-#: C/audio-call.page:34(title)
+#: C/audio-call.page:27(title)
 msgid "Start an audio conversation"
 msgstr "Lancement d'une conversation audio"
 
-#: C/audio-call.page:36(p)
+#: C/audio-call.page:29(p)
 msgid ""
 "You can call your contacts and have an audio conversation with them. This "
 "features only works with certain types of accounts, and it requires the "
@@ -2943,36 +2939,32 @@ msgstr ""
 "est nécessaire pour l'autre personne d'avoir une application qui prend en "
 "charge les appels audio."
 
-#: C/audio-call.page:41(p)
+#: C/audio-call.page:34(p)
 msgid ""
 "From the <gui>Contact List</gui> window, click the <media type=\"image\" "
-"mime=\"image/png\" src=\"figures/audio-input-microphone.png\">audio call</"
-"media> icon next to the name of the contact you wish to call and choose <gui "
-"style=\"menuitem\">Audio Call</gui>."
+"mime=\"image/png\" src=\"figures/camera-web.png\">video call</media> icon "
+"next to the name of the contact you wish to call and choose <gui style="
+"\"menuitem\">Audio Call</gui>."
 msgstr ""
-"À partir de la fenêtre <gui>Listes des contacts</gui>, cliquez sur l'icône "
-"<media type=\"image\" mime=\"image/png\" src=\"figures/audio-input-"
-"microphone.png\"> appel audio</media> à côté du nom du contact que vous "
-"souhaitez appeler et choisissez <gui style=\"menuitem\">Appel audio</gui>."
+"À partir de la fenêtre <gui>Liste des contacts</gui>, cliquez sur l'icône "
+"<media type=\"image\" mime=\"image/png\" src=\"figures/camera-web.png"
+"\">Appel vidéo</media> à côté du contact que vous souhaitez appeler et "
+"choisissez <gui style=\"menuitem\">Appel audio</gui>."
 
-#: C/audio-call.page:61(p)
+#: C/audio-call.page:55(p)
 msgid ""
 "To turn an audio conversation into a video conversation, choose <guiseq><gui "
-"style=\"menu\">Video</gui><gui style=\"menuitem\">Video On</gui></guiseq>, "
-"or click the <media type=\"image\" mime=\"image/png\" src=\"figures/camera-"
-"web.png\">video call</media> toolbar button to select it."
+"style=\"menu\">Video</gui><gui style=\"menuitem\">Video On</gui></guiseq>."
 msgstr ""
 "Pour transformer un appel audio en conversation vidéo, choisissez "
 "<guiseq><gui style=\"menu\">Vidéo</gui><gui style=\"menuitem\">Vidéo "
-"activée</gui></guiseq> ou cliquez sur le bouton de la barre d'outils <media "
-"type=\"image\" mime=\"image/png\" src=\"figures/camera-web.png\">appel "
-"vidéo</media> pour le sélectionner."
+"activée</gui></guiseq>."
 
-#: C/audio-call.page:71(title)
+#: C/audio-call.page:63(title)
 msgid "Start an audio conversation with a meta-contact"
 msgstr "Lancement d'une conversation audio avec un méta-contact"
 
-#: C/audio-call.page:79(p)
+#: C/audio-call.page:71(p)
 msgid ""
 "Select the contact you want to have the conversation, and from the menu "
 "select <gui style=\"menuitem\">Audio Call</gui>."
@@ -3524,3 +3516,4 @@ msgstr ""
 "Bruno Brouard <annoa.b@gmail.com>, 2007,2010\n"
 "Frédéric Péters <fpeters@0d.be>, 2008\n"
 "Rémi Peixoto <remi.peixoto@gmail.com>, 2009"
+
