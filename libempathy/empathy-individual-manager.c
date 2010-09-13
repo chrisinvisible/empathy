@@ -210,7 +210,7 @@ aggregator_individuals_changed_cb (FolksIndividualAggregator *aggregator,
 
   g_signal_emit (self, signals[MEMBERS_CHANGED], 0, message,
       added_filtered, removed,
-      tp_chanel_group_change_reason_from_folks_groups_change_reason (reason),
+      tp_channel_group_change_reason_from_folks_groups_change_reason (reason),
       TRUE);
 
   g_list_free (added_filtered);
