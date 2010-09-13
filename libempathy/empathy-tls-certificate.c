@@ -415,7 +415,8 @@ empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
       -1, rejections, cert_proxy_reject_cb,
       reject_result, g_object_unref, G_OBJECT (self));
 
-  g_ptr_array_unref (rejections);
+  tp_clear_boxed (EMP_ARRAY_TYPE_TLS_CERTIFICATE_REJECTION_LIST,
+      &rejections);
 }
 
 gboolean
