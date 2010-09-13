@@ -374,6 +374,25 @@ empathy_tls_certificate_accept_finish (EmpathyTLSCertificate *self,
   return TRUE;
 }
 
+static GPtrArray *
+build_rejections_array (EmpTLSCertificateRejectReason reason,
+    GHashTable *details)
+{
+  GPtrArray *retval;
+  GValueArray *rejection;
+
+  retval = g_ptr_array_new ();
+  rejection = tp_value_array_build (3,
+      G_TYPE_UINT, reason,
+      G_TYPE_STRING, reject_reason_get_dbus_error (reason),
+      TP_HASH_TYPE_STRING_VARIANT_MAP, details,
+      NULL);
+
+  g_ptr_array_add (retval, rejection);
+
+  return retval;
+}
+
 void
 empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
     EmpTLSCertificateRejectReason reason,
@@ -381,20 +400,22 @@ empathy_tls_certificate_reject_async (EmpathyTLSCertificate *self,
     GAsyncReadyCallback callback,
     gpointer user_data)
 {
-  const gchar *dbus_error;
+  GPtrArray *rejections;
   GSimpleAsyncResult *reject_result;
 
   g_assert (EMPATHY_IS_TLS_CERTIFICATE (self));
 
   DEBUG ("Rejecting TLS certificate with reason %u", reason);
 
-  dbus_error = reject_reason_get_dbus_error (reason);
+  rejections = build_rejections_array (reason, details);
   reject_result = g_simple_async_result_new (G_OBJECT (self),
       callback, user_data, empathy_tls_certificate_reject_async);
 
   emp_cli_authentication_tls_certificate_call_reject (TP_PROXY (self),
-      -1, reason, dbus_error, details, cert_proxy_reject_cb,
+      -1, rejections, cert_proxy_reject_cb,
       reject_result, g_object_unref, G_OBJECT (self));
+
+  g_ptr_array_unref (rejections);
 }
 
 gboolean
