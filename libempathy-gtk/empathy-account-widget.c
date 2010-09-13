@@ -1333,7 +1333,6 @@ account_widget_build_yahoo (EmpathyAccountWidget *self,
           "entry_locale", "room-list-locale",
           "entry_charset", "charset",
           "spinbutton_port", "port",
-          "checkbutton_yahoojp", "yahoojp",
           "checkbutton_ignore_invites", "ignore-invites",
           NULL);
 
