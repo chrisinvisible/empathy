@@ -787,7 +787,6 @@ do_constructed (GObject *object)
 {
   EmpathyTpFile *tp_file;
   EmpathyTpFilePriv *priv;
-  GHashTable *props;
 
   tp_file = EMPATHY_TP_FILE (object);
   priv = GET_PRIV (tp_file);
@@ -795,8 +794,7 @@ do_constructed (GObject *object)
   g_signal_connect (priv->channel, "invalidated",
     G_CALLBACK (tp_file_invalidated_cb), tp_file);
 
-  props = tp_channel_borrow_immutable_properties (priv->channel);
-  priv->incoming = !tp_asv_get_boolean (props, TP_PROP_CHANNEL_REQUESTED, NULL);
+  priv->incoming = !tp_channel_get_requested (priv->channel);
 
   tp_cli_channel_type_file_transfer_connect_to_file_transfer_state_changed (
       priv->channel, tp_file_state_changed_cb, NULL, NULL, object, NULL);
