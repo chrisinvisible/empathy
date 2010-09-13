@@ -56,6 +56,50 @@ struct _EmpathyGstVideoSrcPrivate
 #define EMPATHY_GST_VIDEO_SRC_GET_PRIVATE(o) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), EMPATHY_TYPE_GST_VIDEO_SRC, \
     EmpathyGstVideoSrcPrivate))
+/**
+ * empathy_gst_make_to_bin - make gst faktory, add to bin and link it.
+ * @bin - bit to add to.
+ * @src - Element to link new crated element with. IF src == NULL,
+ *        we will only create Factory and add it to the bin.
+ * @factoryname - factory name of factory to create.
+ * we will return  pointer to new Element
+ */
+GstElement *
+empathy_gst_make_to_bin (GstBin *bin, GstElement *src,
+  const gchar *factoryname)
+{
+  GstElement *ret;
+
+  if (!(ret = gst_element_factory_make (factoryname, NULL)))
+  {
+    g_warning ("Factory \"%s\" not found.", factoryname);
+    goto error;
+  }
+
+  if (!gst_bin_add (bin, ret))
+  {
+    g_warning ("Can't add \"%s\" to bin.", factoryname);
+    goto error;
+  }
+
+  /* do not link if src == NULL, just exit here */
+  if (src == NULL)
+    return ret;
+
+  if (!gst_element_link (src, ret))
+  {
+    g_warning ("Can't link \"%s\".", factoryname);
+    gst_bin_remove (bin, ret);
+    goto error;
+  }
+
+  return ret;
+
+error:
+  gst_object_unref (ret);
+  return NULL;
+}
+
 
 static void
 empathy_video_src_init (EmpathyGstVideoSrc *obj)
@@ -66,10 +110,23 @@ empathy_video_src_init (EmpathyGstVideoSrc *obj)
   GstCaps *caps;
 
   /* allocate any data required by the object here */
-  scale = gst_element_factory_make ("videoscale", NULL);
-  colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
+  priv->src = empathy_gst_make_to_bin (GST_BIN (obj), NULL, "gconfvideosrc");
+  if (!priv->src)
+    g_error ("gst-plugins-good is probably missing. exit");
 
-  capsfilter = gst_element_factory_make ("capsfilter", NULL);
+  scale = empathy_gst_make_to_bin (GST_BIN (obj), priv->src, "videoscale");
+  if (!scale)
+    g_error ("gst-plugins-base is probably missing. exit");
+
+  colorspace = empathy_gst_make_to_bin (GST_BIN (obj),
+                                       scale, "ffmpegcolorspace");
+  if (!colorspace)
+    g_error ("gst-plugins-base is probably missing. exit");
+
+  capsfilter = empathy_gst_make_to_bin (GST_BIN (obj), scale, "capsfilter");
+  if (!capsfilter)
+    g_error ("core libgstreamer is probably missing. exit");
+
   caps = gst_caps_new_simple ("video/x-raw-yuv",
     "width", G_TYPE_INT, 320,
     "height", G_TYPE_INT, 240,
@@ -77,16 +134,17 @@ empathy_video_src_init (EmpathyGstVideoSrc *obj)
 
   g_object_set (G_OBJECT (capsfilter), "caps", caps, NULL);
 
-  priv->src = gst_element_factory_make ("gconfvideosrc", NULL);
-
-  gst_bin_add_many (GST_BIN (obj), priv->src, scale, colorspace, capsfilter,
-    NULL);
-  gst_element_link_many (priv->src, scale, colorspace, capsfilter, NULL);
-
-  src = gst_element_get_static_pad (capsfilter, "src");
+  src = gst_element_get_static_pad (colorspace, "src");
+  if (!src)
+    g_error ("src pad not found. exit");
 
   ghost = gst_ghost_pad_new ("src", src);
-  gst_element_add_pad (GST_ELEMENT (obj), ghost);
+  if (!ghost)
+    g_error ("can't create ghost pad. exit");
+
+  if (!gst_element_add_pad (GST_ELEMENT (obj), ghost))
+    g_error ("pad with the same name already existed or "
+            "the pad already had another parent. exit");
 
   gst_object_unref (G_OBJECT (src));
 }

@@ -81,6 +81,8 @@ void empathy_video_src_set_channel (GstElement *src,
 guint empathy_video_src_get_channel (GstElement *src,
   EmpathyGstVideoSrcChannel channel);
 
+GstElement *empathy_gst_make_to_bin (GstBin *bin, GstElement *src,
+  const gchar *factoryname);
 
 G_END_DECLS
 
