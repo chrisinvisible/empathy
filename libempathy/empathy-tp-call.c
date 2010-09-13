@@ -378,8 +378,6 @@ tp_call_constructor (GType type,
   GObject *object;
   EmpathyTpCall *call;
   EmpathyTpCallPriv *priv;
-  GHashTable *props;
-  gboolean requested;
 
   object = G_OBJECT_CLASS (empathy_tp_call_parent_class)->constructor (type,
       n_construct_params, construct_params);
@@ -404,10 +402,7 @@ tp_call_constructor (GType type,
       tp_call_request_streams_cb, NULL, NULL, G_OBJECT (call));
 
   /* Is the call incoming? */
-  props = tp_channel_borrow_immutable_properties (priv->channel);
-  requested = tp_asv_get_boolean (props, TP_PROP_CHANNEL_REQUESTED, NULL);
-
-  priv->is_incoming = !requested;
+  priv->is_incoming = !tp_channel_get_requested (priv->channel);
 
   /* Get the remote contact */
   empathy_tp_contact_factory_get_from_handle (
