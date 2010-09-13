@@ -99,7 +99,7 @@ struct _EmpathyChatPriv {
 	gulong		   delete_range_id;
 	gulong		   notify_cursor_position_id;
 
-	/* Source func ID for update_misspelled_words() */
+	/* Source func ID for update_misspelled_words () */
 	guint              update_misspelled_words_id;
 
 	GtkWidget         *widget;
