@@ -92,8 +92,8 @@
 #define GEOMETRY_NAME "main-window"
 
 enum {
-	PAGE_NO_MATCH = 0,
-	PAGE_CONTACT_LIST
+	PAGE_CONTACT_LIST = 0,
+	PAGE_NO_MATCH
 };
 
 G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
