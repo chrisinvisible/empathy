@@ -3244,6 +3244,11 @@ empathy_chat_paste (EmpathyChat *chat)
 
 	priv = GET_PRIV (chat);
 
+	if (gtk_widget_get_visible (priv->search_bar)) {
+		empathy_search_bar_paste_clipboard (EMPATHY_SEARCH_BAR (priv->search_bar));
+		return;
+	}
+
 	if (priv->tp_chat == NULL ||
 	    !gtk_widget_is_sensitive (chat->input_text_view))
 		return;
