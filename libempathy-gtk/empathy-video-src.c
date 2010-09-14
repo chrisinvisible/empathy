@@ -147,8 +147,20 @@ empathy_video_src_init (EmpathyGstVideoSrc *obj)
   g_free (str);
 
   if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "ffmpegcolorspace")) == NULL)
+    g_error ("Failed to add \"ffmpegcolorspace\" (gst-plugins-base missing?)");
+
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
       element, "videoscale")) == NULL)
     g_error ("Failed to add \"videoscale\", (gst-plugins-base missing?)");
+
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "capsfilter")) == NULL)
+    g_error (
+      "Failed to add \"capsfilter\" (gstreamer core elements missing?)");
+
+  g_object_set (G_OBJECT (element), "caps", caps, NULL);
+
 
   /* optionally add postproc_tmpnoise to improve the performance of encoders */
   element_back = element;
@@ -158,17 +170,6 @@ empathy_video_src_init (EmpathyGstVideoSrc *obj)
       g_message ("Failed to add \"postproc_tmpnoise\" (gst-ffmpeg missing?)");
       element = element_back;
     }
-
-  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
-      element, "ffmpegcolorspace")) == NULL)
-    g_error ("Failed to add \"ffmpegcolorspace\" (gst-plugins-base missing?)");
-
-  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
-      element, "capsfilter")) == NULL)
-    g_error (
-      "Failed to add \"capsfilter\" (gstreamer core elements missing?)");
-
-  g_object_set (G_OBJECT (element), "caps", caps, NULL);
 
   src = gst_element_get_static_pad (element, "src");
   g_assert (src != NULL);
