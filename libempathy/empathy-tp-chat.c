@@ -1119,8 +1119,11 @@ tp_chat_group_members_changed_cb (TpChannel     *self,
 	/* Contact renamed */
 	if (reason == TP_CHANNEL_GROUP_CHANGE_REASON_RENAMED) {
 		/* there can only be a single 'added' and a single 'removed' handle */
-		g_warn_if_fail (removed->len == 1);
-		g_warn_if_fail (added->len == 1);
+		if (removed->len != 1 || added->len != 1) {
+			g_warning ("RENAMED with %u added, %u removed (expected 1, 1)",
+				added->len, removed->len);
+			return;
+		}
 
 		old_handle = g_array_index (removed, guint, 0);
 
