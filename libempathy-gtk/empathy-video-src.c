@@ -57,28 +57,29 @@ struct _EmpathyGstVideoSrcPrivate
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), EMPATHY_TYPE_GST_VIDEO_SRC, \
     EmpathyGstVideoSrcPrivate))
 /**
- * empathy_gst_make_to_bin - make gst faktory, add to bin and link it.
- * @bin - bit to add to.
- * @src - Element to link new crated element with. IF src == NULL,
- *        we will only create Factory and add it to the bin.
- * @factoryname - factory name of factory to create.
- * we will return  pointer to new Element
+ * empathy_gst_add_to_bin - create a new gst element, add to bin and link it.
+ * @bin - bin to add the new element to.
+ * @src - src element for the new element (may be NULL).
+ * @name - name of the factory for the new element
+ *
+ * Returns: The newly created element ot %NULL on failure
  */
-GstElement *
-empathy_gst_make_to_bin (GstBin *bin, GstElement *src,
+static GstElement *
+empathy_gst_add_to_bin (GstBin *bin,
+  GstElement *src,
   const gchar *factoryname)
 {
   GstElement *ret;
 
-  if (!(ret = gst_element_factory_make (factoryname, NULL)))
+  if ((ret = gst_element_factory_make (factoryname, NULL)) == NULL)
   {
-    g_warning ("Factory \"%s\" not found.", factoryname);
+    g_message ("Element factory \"%s\" not found.", factoryname);
     goto error;
   }
 
   if (!gst_bin_add (bin, ret))
   {
-    g_warning ("Can't add \"%s\" to bin.", factoryname);
+    g_warning ("Couldn't add \"%s\" to bin.", factoryname);
     goto error;
   }
 
@@ -88,7 +89,7 @@ empathy_gst_make_to_bin (GstBin *bin, GstElement *src,
 
   if (!gst_element_link (src, ret))
   {
-    g_warning ("Can't link \"%s\".", factoryname);
+    g_warning ("Failed to link \"%s\".", factoryname);
     gst_bin_remove (bin, ret);
     goto error;
   }
@@ -96,7 +97,8 @@ empathy_gst_make_to_bin (GstBin *bin, GstElement *src,
   return ret;
 
 error:
-  gst_object_unref (ret);
+  if (ret != NULL)
+    gst_object_unref (ret);
   return NULL;
 }
 
@@ -117,69 +119,67 @@ empathy_video_src_init (EmpathyGstVideoSrc *obj)
     NULL);
 
   /* allocate any data required by the object here */
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          NULL, "gconfvideosrc")))
-    g_error ("gst-plugins-good is probably missing. exit");
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      NULL, "gconfvideosrc")) == NULL)
+    g_error ("Couldn't add \"gconfvideosrc\" (gst-plugins-good missing?)");
 
   /* we need to save our source to priv->src */
   priv->src = element;
 
-  /* videomaxrate is curently optional plugin, becouse it depend on
-   * gst-plugins-bad. So we won't fail if it not exist.
-   * todo: in some time videorate will probably replace videomaxrate */
-  /* make a backup of *element before optional GstElement */
+  /* videomaxrate is optional as it's part of gst-plugins-bad. So don't
+   * fail if it doesn't exist. */
   element_back = element;
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          element, "videomaxrate")))
-  {
-    g_warning ("gst-plugins-bad is probably missing.");
-    element = element_back;
-  }
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "videomaxrate")) == NULL)
+    {
+      g_message ("Couldn't add \"videomaxrate\" (gst-plugins-bad missing?)");
+      element = element_back;
+    }
   else
-    gst_caps_set_simple (caps,
-      "framerate", GST_TYPE_FRACTION, 15, 1,
-      NULL);
+    {
+      gst_caps_set_simple (caps,
+        "framerate", GST_TYPE_FRACTION, 15, 1,
+        NULL);
+    }
 
   str = gst_caps_to_string (caps);
   g_debug ("Current video src caps are : %s", str);
   g_free (str);
 
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          element, "videoscale")))
-    g_error ("gst-plugins-base is probably missing. exit");
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "videoscale")) == NULL)
+    g_error ("Failed to add \"videoscale\", (gst-plugins-base missing?)");
 
-  /* postproc_tmpnois is other optional plugin, it depend on gst-ffmpeg.
-   * may be some day it will go to gst-plugins-base, than we can restrickt it */
+  /* optionally add postproc_tmpnoise to improve the performance of encoders */
   element_back = element;
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          element, "postproc_tmpnoise")))
-  {
-    g_warning ("gst-ffmpeg is probably missing.");
-    element = element_back;
-  }
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "postproc_tmpnoise")) == NULL)
+    {
+      g_message ("Failed to add \"postproc_tmpnoise\" (gst-ffmpeg missing?)");
+      element = element_back;
+    }
 
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          element, "ffmpegcolorspace")))
-    g_error ("gst-plugins-base is probably missing. exit");
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "ffmpegcolorspace")) == NULL)
+    g_error ("Failed to add \"ffmpegcolorspace\" (gst-plugins-base missing?)");
 
-  if (!(element = empathy_gst_make_to_bin (GST_BIN (obj),
-                                          element, "capsfilter")))
-    g_error ("core libgstreamer is probably missing. exit");
+  if ((element = empathy_gst_add_to_bin (GST_BIN (obj),
+      element, "capsfilter")) == NULL)
+    g_error (
+      "Failed to add \"capsfilter\" (gstreamer core elements missing?)");
 
   g_object_set (G_OBJECT (element), "caps", caps, NULL);
 
-
   src = gst_element_get_static_pad (element, "src");
-  if (!src)
-    g_error ("src pad not found. exit");
+  g_assert (src != NULL);
 
   ghost = gst_ghost_pad_new ("src", src);
-  if (!ghost)
-    g_error ("can't create ghost pad. exit");
+  if (ghost == NULL)
+    g_error ("Unable to create ghost pad for the videosrc");
 
   if (!gst_element_add_pad (GST_ELEMENT (obj), ghost))
     g_error ("pad with the same name already existed or "
-            "the pad already had another parent. exit");
+            "the pad already had another parent.");
 
   gst_object_unref (G_OBJECT (src));
 }
