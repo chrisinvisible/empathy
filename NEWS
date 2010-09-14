@@ -1,3 +1,70 @@
+NEW in 2.31.92 (14/09/2010)
+==============
+
+The "I'm on a horse" release.
+
+This is the GNOME 2.32 release candidate. A bunch of meta-contacts related
+bugs have been fixed and the audio/video client has been improved to
+reduce the bandwith used by the video stream.
+
+We also use the stable API of the Conference, ServerTLSConnection and
+TLSCertificate interfaces so you should upgrade to telepathy-gabble 0.9.18
+if you want to use these features.
+
+Bugs fixed:
+ - Fixed #598394, Use network name for IRC account name (Guillaume Desmottes)
+ - Fixed #628993, crash in empathy-auth-client (Cosimo Cecchi)
+ - Fixed #609484, Impossible to add Yahoo Japan account. (Guillaume Desmottes)
+ - Fixed #611107, account window stretches when facebook account selected (Guillaume Desmottes)
+ - Fixed #622376, EmpathyLiveSearch matching algorithm could be smarter with words (Xavier Claessens)
+ - Fixed #625575, when setting up a new account, hitting enter in the password field should "apply" (Cyril Roelandt)
+ - Fixed #627819, the linking ui misses some contacts (Philip Withnall)
+ - Fixed #628133, Linking dialog's live search should copy the one from the roster (Philip Withnall)
+ - Fixed #628156, crash on startup with empathy 2.31.90 (Philip Withnall)
+ - Fixed #628338, Refactor code to choose the best Persona to perform an action on (Philip Withnall)
+ - Fixed #628376, Unlinking/editing links for an Individual is complicated (Philip Withnall)
+ - Fixed #628377, Context menu name "Link…" is ambiguous (Philip Withnall)
+ - Fixed #628596, Crash in individual_view_expand_idle_cb (Philip Withnall)
+ - Fixed #628601, Untranslated strings in IM account setting dialog (Guillaume Desmottes)
+ - Fixed #628681, Behave correctly on Individual removals and persona changes (Philip Withnall)
+ - Fixed #628786, Add video noise filter to videosrc pipe (Alexey Fisher)
+ - Fixed #628789, Add videomaxrate filter to prevent hi cpu usage. (Alexey Fisher)
+ - Fixed #629134, Typo in empathy-tls-dialog.c (Guillaume Desmottes)
+ - Fixed #629565, use stable API for ServerTLSConnection, TLSCertificate and Conference (Simon McVittie)
+ - Fixed #629594, paste pastes in the 'send' box when the 'find' box is selected (Guillaume Desmottes)
+ - Fixed #627238, gtk_widget_event: assertion `WIDGET_REALIZED_FOR_EVENT (widget, event)' failed (Felix Kaser)
+ - Fixed #628153, Crash in individual_store_contact_update() (Philip Withnall)
+
+Translations:
+ - Updated ar Translation (Khaled Hosny)
+ - Updated cs Translation (Marek Černocký, Petr Kovar)
+ - Updated da Translation (Kenneth Nielsen)
+ - Updated de Translation (Christian Kirbach)
+ - Updated en_GB Translation (Bruce Cowan, Philip Withnall)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated fi Translation (Timo Jyrinki)
+ - Updated fr Translation (Claude Paroz)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande)
+ - Updated ja Translation (Takayuki KUSANO)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated pt_BR Translation (Henrique P. Machado)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated sv Translation (Daniel Nylander)
+ - Updated ta Translation (Dr.Tirumurti Vasudevan, drtv)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated es Documentation translation (Jorge González)
+ - Updated fr Documentation translation (Bruno Brouard)
+ - Updated gl Documentation translation (Fran Diéguez)
+
 NEW in 2.31.91.1 (02/09/2010)
 ================
 
