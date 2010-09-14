@@ -315,3 +315,10 @@ empathy_search_bar_class_init (EmpathySearchBarClass *class)
   widget_class->size_allocate = empathy_search_bar_size_allocate;
 }
 
+void
+empathy_search_bar_paste_clipboard (EmpathySearchBar *self)
+{
+  EmpathySearchBarPriv *priv = GET_PRIV (self);
+
+  gtk_editable_paste_clipboard (GTK_EDITABLE (priv->search_entry));
+}
