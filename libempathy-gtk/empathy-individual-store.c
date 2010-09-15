@@ -874,6 +874,8 @@ static void
 individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
     FolksIndividual *individual)
 {
+  individual_store_add_individual (self, individual);
+
   g_signal_connect (individual, "notify::avatar",
       (GCallback) individual_store_individual_updated_cb, self);
   g_signal_connect (individual, "notify::presence-type",
@@ -887,7 +889,6 @@ individual_store_add_individual_and_connect (EmpathyIndividualStore *self,
 
   individual_personas_changed_cb (individual,
       folks_individual_get_personas (individual), NULL, self);
-  individual_store_add_individual (self, individual);
 }
 
 static void
