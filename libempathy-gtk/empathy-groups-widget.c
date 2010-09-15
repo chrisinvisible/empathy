@@ -394,7 +394,8 @@ set_up (EmpathyGroupsWidget *self)
   renderer = gtk_cell_renderer_toggle_new ();
   g_signal_connect (renderer, "toggled", (GCallback) cell_toggled_cb, self);
 
-  column = gtk_tree_view_column_new_with_attributes (_("Select"), renderer,
+  column = gtk_tree_view_column_new_with_attributes (
+      C_("verb in a column header displaying group names", "Select"), renderer,
       "active", COL_ENABLED,
       NULL);
 

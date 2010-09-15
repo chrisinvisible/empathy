@@ -551,7 +551,8 @@ empathy_irc_network_chooser_dialog_constructed (GObject *object)
       GTK_STOCK_REMOVE, GTK_RESPONSE_REJECT,
       NULL);
 
-  priv->select_button = gtk_dialog_add_button (dialog, _("Select"),
+  priv->select_button = gtk_dialog_add_button (dialog,
+      C_("verb displayed on a button to select an IRC network", "Select"),
       GTK_RESPONSE_CLOSE);
 
   fill_store (self);
