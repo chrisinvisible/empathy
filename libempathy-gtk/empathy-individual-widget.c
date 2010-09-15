@@ -436,7 +436,7 @@ groups_update (EmpathyIndividualWidget *self)
     {
       empathy_groups_widget_set_groupable (
           EMPATHY_GROUPS_WIDGET (priv->groups_widget),
-          FOLKS_GROUPS (priv->individual));
+          FOLKS_GROUPABLE (priv->individual));
       gtk_widget_show (priv->groups_widget);
     }
   else
@@ -760,8 +760,8 @@ location_update (EmpathyIndividualWidget *self)
 
               /* Add a marker to the map */
               marker = champlain_marker_new_with_text (
-                  folks_alias_get_alias (FOLKS_ALIAS (persona)), NULL, NULL,
-                  NULL);
+                  folks_aliasable_get_alias (FOLKS_ALIASABLE (persona)), NULL,
+                  NULL, NULL);
               champlain_base_marker_set_position (
                   CHAMPLAIN_BASE_MARKER (marker), lat, lon);
               clutter_container_add (CLUTTER_CONTAINER (layer), marker, NULL);
@@ -1057,7 +1057,7 @@ entry_alias_focus_event_cb (GtkEditable *editable,
         }
       else
         {
-          folks_alias_set_alias (FOLKS_ALIAS (priv->individual), alias);
+          folks_aliasable_set_alias (FOLKS_ALIASABLE (priv->individual), alias);
         }
     }
 
@@ -1132,12 +1132,12 @@ notify_alias_cb (gpointer folks_object,
   if (GTK_IS_ENTRY (alias_widget))
     {
       gtk_entry_set_text (GTK_ENTRY (alias_widget),
-          folks_alias_get_alias (FOLKS_ALIAS (folks_object)));
+          folks_aliasable_get_alias (FOLKS_ALIASABLE (folks_object)));
     }
   else
     {
       gtk_label_set_label (GTK_LABEL (alias_widget),
-          folks_alias_get_alias (FOLKS_ALIAS (folks_object)));
+          folks_aliasable_get_alias (FOLKS_ALIASABLE (folks_object)));
     }
 }
 

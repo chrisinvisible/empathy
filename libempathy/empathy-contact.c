@@ -703,12 +703,12 @@ empathy_contact_set_alias (EmpathyContact *contact,
 
   /* Set the alias on the persona if possible */
   persona = empathy_contact_get_persona (contact);
-  if (persona != NULL && FOLKS_IS_ALIAS (persona))
+  if (persona != NULL && FOLKS_IS_ALIASABLE (persona))
     {
       DEBUG ("Setting alias for contact %s to %s",
           empathy_contact_get_id (contact), alias);
 
-      folks_alias_set_alias (FOLKS_ALIAS (persona), alias);
+      folks_aliasable_set_alias (FOLKS_ALIASABLE (persona), alias);
     }
 
   if (tp_strdiff (alias, priv->alias))
@@ -726,10 +726,10 @@ groups_change_group_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
-  FolksGroups *groups = FOLKS_GROUPS (source);
+  FolksGroupable *groupable = FOLKS_GROUPABLE (source);
   GError *error = NULL;
 
-  folks_groups_change_group_finish (groups, result, &error);
+  folks_groupable_change_group_finish (groupable, result, &error);
   if (error != NULL)
     {
       g_warning ("failed to change group: %s", error->message);
@@ -753,8 +753,8 @@ empathy_contact_change_group (EmpathyContact *contact, const gchar *group,
   persona = empathy_contact_get_persona (contact);
   if (persona != NULL)
     {
-      if (FOLKS_IS_GROUPS (persona))
-        folks_groups_change_group (FOLKS_GROUPS (persona), group, is_member,
+      if (FOLKS_IS_GROUPABLE (persona))
+        folks_groupable_change_group (FOLKS_GROUPABLE (persona), group, is_member,
           groups_change_group_cb, contact);
       return;
     }
@@ -918,7 +918,7 @@ empathy_contact_set_persona (EmpathyContact *contact,
   /* Set the persona's groups */
   if (priv->groups != NULL)
     {
-      folks_groups_set_groups (FOLKS_GROUPS (persona), priv->groups);
+      folks_groupable_set_groups (FOLKS_GROUPABLE (persona), priv->groups);
       g_hash_table_destroy (priv->groups);
       priv->groups = NULL;
     }

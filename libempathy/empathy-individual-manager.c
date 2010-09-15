@@ -464,10 +464,10 @@ groups_change_group_cb (GObject *source,
     GAsyncResult *result,
     gpointer user_data)
 {
-  FolksGroups *groups = FOLKS_GROUPS (source);
+  FolksGroupable *groupable = FOLKS_GROUPABLE (source);
   GError *error = NULL;
 
-  folks_groups_change_group_finish (groups, result, &error);
+  folks_groupable_change_group_finish (groupable, result, &error);
   if (error != NULL)
     {
       g_warning ("failed to change group: %s", error->message);
@@ -480,7 +480,7 @@ remove_group_cb (const gchar *id,
     FolksIndividual *individual,
     const gchar *group)
 {
-  folks_groups_change_group (FOLKS_GROUPS (individual), group, FALSE,
+  folks_groupable_change_group (FOLKS_GROUPABLE (individual), group, FALSE,
       groups_change_group_cb, NULL);
 }
 

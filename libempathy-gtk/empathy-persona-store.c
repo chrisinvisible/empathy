@@ -142,7 +142,7 @@ persona_active_new (EmpathyPersonaStore *self,
   ShowActiveData *data;
 
   DEBUG ("Contact:'%s' now active, and %s be removed",
-      folks_alias_get_alias (FOLKS_ALIAS (persona)),
+      folks_aliasable_get_alias (FOLKS_ALIASABLE (persona)),
       remove_ ? "WILL" : "WILL NOT");
 
   data = g_slice_new0 (ShowActiveData);
@@ -212,7 +212,8 @@ persona_set_active (EmpathyPersonaStore *self,
 static gboolean
 persona_active_cb (ShowActiveData *data)
 {
-  const gchar *alias = folks_alias_get_alias (FOLKS_ALIAS (data->persona));
+  const gchar *alias =
+      folks_aliasable_get_alias (FOLKS_ALIASABLE (data->persona));
 
   if (data->remove)
     {
@@ -234,7 +235,7 @@ persona_updated_cb (FolksPersona *persona,
     EmpathyPersonaStore *self)
 {
   DEBUG ("Contact:'%s' updated, checking roster is in sync...",
-      folks_alias_get_alias (FOLKS_ALIAS (persona)));
+      folks_aliasable_get_alias (FOLKS_ALIASABLE (persona)));
 
   update_persona (self, persona);
 }
@@ -288,7 +289,7 @@ add_persona (EmpathyPersonaStore *self,
 
   priv = GET_PRIV (self);
 
-  alias = folks_alias_get_alias (FOLKS_ALIAS (persona));
+  alias = folks_aliasable_get_alias (FOLKS_ALIASABLE (persona));
   if (EMP_STR_EMPTY (alias))
     return;
 
@@ -407,7 +408,7 @@ update_persona (EmpathyPersonaStore *self,
   const gchar *alias;
 
   path = find_persona (self, persona);
-  alias = folks_alias_get_alias (FOLKS_ALIAS (persona));
+  alias = folks_aliasable_get_alias (FOLKS_ALIASABLE (persona));
 
   if (path == NULL)
     {
@@ -551,8 +552,9 @@ sort_personas (FolksPersona *persona_a,
   g_return_val_if_fail (persona_a != NULL || persona_b != NULL, 0);
 
   /* alias */
-  ret_val = g_utf8_collate (folks_alias_get_alias (FOLKS_ALIAS (persona_a)),
-          folks_alias_get_alias (FOLKS_ALIAS (persona_b)));
+  ret_val = g_utf8_collate (
+      folks_aliasable_get_alias (FOLKS_ALIASABLE (persona_a)),
+      folks_aliasable_get_alias (FOLKS_ALIASABLE (persona_b)));
 
   if (ret_val != 0)
     goto out;

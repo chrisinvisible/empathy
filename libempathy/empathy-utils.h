@@ -98,7 +98,7 @@ void empathy_connect_new_account (TpAccount *account,
 TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType type);
 gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_dup_from_folks_individual (FolksIndividual *individual);
-TpChannelGroupChangeReason tp_channel_group_change_reason_from_folks_groups_change_reason (FolksGroupsChangeReason reason);
+TpChannelGroupChangeReason tp_channel_group_change_reason_from_folks_groups_change_reason (FolksGroupableChangeReason reason);
 
 gchar * empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert);
 
