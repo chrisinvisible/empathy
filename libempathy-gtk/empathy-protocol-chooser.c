@@ -178,6 +178,11 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
          * should use Gabble */
         continue;
 
+      if (!tp_strdiff (cm->name, "haze") &&
+          !tp_strdiff (proto->name, "sip"))
+        /* Haze's SIP implementation is pretty useless (bgo #629736) */
+        continue;
+
       if (tp_strdiff (cm->name, "haze") && !tp_strdiff (saved_cm_name, "haze"))
         {
           GtkTreeIter titer;
