@@ -284,6 +284,15 @@ empathy_call_window_fullscreen_set_fullscreen (EmpathyCallWindowFullscreen *fs,
   fs->is_fullscreen = set_fullscreen;
 }
 
+static void
+video_widget_destroy_cb (GtkWidget *widget,
+    EmpathyCallWindowFullscreen *self)
+{
+  EmpathyCallWindowFullscreenPriv *priv = GET_PRIV (self);
+
+  priv->video_widget = NULL;
+}
+
 void
 empathy_call_window_fullscreen_set_video_widget (
     EmpathyCallWindowFullscreen *fs,
@@ -291,4 +300,7 @@ empathy_call_window_fullscreen_set_video_widget (
 {
   EmpathyCallWindowFullscreenPriv *priv = GET_PRIV (fs);
   priv->video_widget = video_widget;
+
+  tp_g_signal_connect_object (video_widget, "destroy",
+      G_CALLBACK (video_widget_destroy_cb), fs, 0);
 }
