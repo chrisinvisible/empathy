@@ -1912,6 +1912,9 @@ empathy_call_window_disconnected (EmpathyCallWindow *self,
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
   gboolean could_reset_pipeline;
 
+  /* Leave full screen mode if needed */
+  gtk_window_unfullscreen (GTK_WINDOW (self));
+
   could_reset_pipeline = empathy_call_window_reset_pipeline (self);
 
   if (priv->call_state == CONNECTING)
