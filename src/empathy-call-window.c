@@ -1094,6 +1094,8 @@ empathy_call_window_init (EmpathyCallWindow *self)
     "action_camera_off", "changed", action_camera_change_cb,
     NULL);
 
+  gtk_action_set_sensitive (priv->menu_fullscreen, FALSE);
+
   priv->lock = g_mutex_new ();
 
   gtk_container_add (GTK_CONTAINER (self), top_vbox);
@@ -1915,6 +1917,8 @@ empathy_call_window_disconnected (EmpathyCallWindow *self,
   /* Leave full screen mode if needed */
   gtk_window_unfullscreen (GTK_WINDOW (self));
 
+  gtk_action_set_sensitive (priv->menu_fullscreen, FALSE);
+
   could_reset_pipeline = empathy_call_window_reset_pipeline (self);
 
   if (priv->call_state == CONNECTING)
@@ -2503,6 +2507,8 @@ empathy_call_window_connected (gpointer user_data)
   g_mutex_unlock (priv->lock);
 
   empathy_call_window_update_timer (self);
+
+  gtk_action_set_sensitive (priv->menu_fullscreen, TRUE);
 
   return FALSE;
 }
