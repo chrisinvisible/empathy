@@ -1773,10 +1773,9 @@ empathy_call_window_dispose (GObject *object)
     G_OBJECT_CLASS (empathy_call_window_parent_class)->dispose (object);
 }
 
-void
-empathy_call_window_finalize (GObject *object)
+static void
+disconnect_video_output_motion_handler (EmpathyCallWindow *self)
 {
-  EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
   EmpathyCallWindowPriv *priv = GET_PRIV (self);
 
   if (priv->video_output_motion_handler_id != 0)
@@ -1785,6 +1784,15 @@ empathy_call_window_finalize (GObject *object)
           priv->video_output_motion_handler_id);
       priv->video_output_motion_handler_id = 0;
     }
+}
+
+void
+empathy_call_window_finalize (GObject *object)
+{
+  EmpathyCallWindow *self = EMPATHY_CALL_WINDOW (object);
+  EmpathyCallWindowPriv *priv = GET_PRIV (self);
+
+  disconnect_video_output_motion_handler (self);
 
   /* free any data held directly by the object here */
   g_mutex_free (priv->lock);
@@ -2968,12 +2976,7 @@ empathy_call_window_state_event_cb (GtkWidget *widget,
         }
       else
         {
-          if (priv->video_output_motion_handler_id != 0)
-            {
-              g_signal_handler_disconnect (G_OBJECT (priv->video_output),
-                  priv->video_output_motion_handler_id);
-              priv->video_output_motion_handler_id = 0;
-            }
+          disconnect_video_output_motion_handler (window);
         }
 
       empathy_call_window_fullscreen_set_fullscreen (priv->fullscreen,
