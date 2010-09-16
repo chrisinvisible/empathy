@@ -1966,6 +1966,7 @@ empathy_call_window_disconnected (EmpathyCallWindow *self,
           GTK_PROGRESS_BAR (priv->volume_progress_bar), 0);
 
       /* destroy the video output; it will be recreated when we'll redial */
+      disconnect_video_output_motion_handler (self);
       gtk_widget_destroy (priv->video_output);
       priv->video_output = NULL;
 
