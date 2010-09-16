@@ -2930,10 +2930,15 @@ show_borders (EmpathyCallWindow *window, gboolean set_fullscreen)
       set_fullscreen ? 0 : CONTENT_HBOX_BORDER_WIDTH);
   gtk_box_set_spacing (GTK_BOX (priv->content_hbox),
       set_fullscreen ? 0 : CONTENT_HBOX_SPACING);
-  gtk_box_set_child_packing (GTK_BOX (priv->content_hbox),
-      priv->video_output, TRUE, TRUE,
-      set_fullscreen ? 0 : CONTENT_HBOX_CHILDREN_PACKING_PADDING,
-      GTK_PACK_START);
+
+  if (priv->video_output != NULL)
+    {
+      gtk_box_set_child_packing (GTK_BOX (priv->content_hbox),
+          priv->video_output, TRUE, TRUE,
+          set_fullscreen ? 0 : CONTENT_HBOX_CHILDREN_PACKING_PADDING,
+          GTK_PACK_START);
+    }
+
   gtk_box_set_child_packing (GTK_BOX (priv->content_hbox),
       priv->vbox, TRUE, TRUE,
       set_fullscreen ? 0 : CONTENT_HBOX_CHILDREN_PACKING_PADDING,
