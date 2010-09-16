@@ -222,10 +222,12 @@ main (int argc, char *argv[])
 
   if (unique_app_is_running (unique_app))
     {
-      unique_app_send_message (unique_app, UNIQUE_ACTIVATE, NULL);
-
-      g_object_unref (unique_app);
-      return EXIT_SUCCESS;
+      if (unique_app_send_message (unique_app, UNIQUE_ACTIVATE, NULL) ==
+          UNIQUE_RESPONSE_OK)
+        {
+          g_object_unref (unique_app);
+          return EXIT_SUCCESS;
+        }
     }
 
   account_manager = tp_account_manager_dup ();
