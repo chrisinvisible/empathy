@@ -69,7 +69,10 @@ empathy_call_window_fullscreen_set_cursor_visible (
 {
   EmpathyCallWindowFullscreenPriv *priv = GET_PRIV (fs);
 
-  if (priv->video_widget != NULL && !show_cursor)
+  if (priv->video_widget == NULL)
+    return;
+
+  if (!show_cursor)
     {
       gdk_window_set_cursor (gtk_widget_get_window (priv->video_widget),
           gdk_cursor_new (GDK_BLANK_CURSOR));
