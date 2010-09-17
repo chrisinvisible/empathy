@@ -381,68 +381,18 @@ static void
 account_assistant_protocol_changed_cb (GtkComboBox *chooser,
     EmpathyAccountAssistant *self)
 {
-  TpConnectionManager *cm;
-  TpConnectionManagerProtocol *proto;
   EmpathyAccountSettings *settings;
   EmpathyAccountAssistantPriv *priv;
-  char *str;
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object = NULL;
-  gboolean is_gtalk = FALSE, is_facebook = FALSE;
-  gchar *service;
-  const gchar *display_name;
 
   priv = GET_PRIV (self);
 
-  cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &service);
+  settings = empathy_protocol_chooser_create_account_settings (
+      EMPATHY_PROTOCOL_CHOOSER (chooser));
 
-  if (cm == NULL || proto == NULL)
-    /* we are not ready yet */
+  if (settings == NULL)
     return;
-
-  /* Create account */
-  if (!tp_strdiff (service, "google-talk"))
-    {
-      is_gtalk = TRUE;
-    }
-  else if (!tp_strdiff (service, "facebook"))
-    {
-      is_facebook = TRUE;
-    }
-
-  if (service != NULL)
-    display_name = empathy_service_name_to_display_name (service);
-  else
-    display_name = empathy_protocol_name_to_display_name (proto->name);
-
-  /* To translator: %s is the protocol name */
-  str = g_strdup_printf (_("New %s account"), display_name);
-
-  settings = empathy_account_settings_new (cm->name, proto->name, str);
-
-  if (is_gtalk)
-    {
-      gchar *fallback_servers[] = {
-          "talkx.l.google.com",
-          "talkx.l.google.com:443,oldssl",
-          "talkx.l.google.com:80",
-          NULL};
-
-      empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
-        NULL, NULL);
-
-      empathy_account_settings_set_strv (settings, "fallback-servers",
-          fallback_servers);
-    }
-  else if (is_facebook)
-    {
-      empathy_account_settings_set_icon_name_async (settings, "im-facebook",
-        NULL, NULL);
-
-      empathy_account_settings_set_string (settings, "server",
-          "chat.facebook.com");
-    }
 
   if (priv->first_resp == RESPONSE_CREATE_ACCOUNT)
     empathy_account_settings_set_boolean (settings, "register", TRUE);
@@ -477,9 +427,6 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   gtk_box_pack_start (GTK_BOX (priv->enter_or_create_page), account_widget,
       FALSE, FALSE, 0);
   gtk_widget_show (account_widget);
-
-  g_free (str);
-  g_free (service);
 }
 
 static gboolean

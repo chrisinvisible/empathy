@@ -584,63 +584,11 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 {
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   EmpathyAccountSettings *settings;
-  gchar *str;
-  const gchar *display_name;
-  TpConnectionManager *cm;
-  TpConnectionManagerProtocol *proto;
-  gboolean is_gtalk = FALSE, is_facebook = FALSE;
-  gchar *service;
 
-  cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &service);
-  if (cm == NULL)
+  settings = empathy_protocol_chooser_create_account_settings (
+      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol));
+  if (settings == NULL)
     return;
-
-  if (!tp_strdiff (service, "google-talk"))
-    {
-      is_gtalk = TRUE;
-    }
-  else if (!tp_strdiff (service, "facebook"))
-    {
-      is_facebook = TRUE;
-    }
-
-  if (service != NULL)
-    display_name = empathy_service_name_to_display_name (service);
-  else
-    display_name = empathy_protocol_name_to_display_name (proto->name);
-
-  /* Create account */
-  /* To translator: %s is the name of the protocol, such as "Google Talk" or
-   * "Yahoo!"
-   */
-  str = g_strdup_printf (_("New %s account"), display_name);
-  settings = empathy_account_settings_new (cm->name, proto->name, str);
-
-  g_free (str);
-
-  if (is_gtalk)
-    {
-      gchar *fallback_servers[] = {
-          "talkx.l.google.com",
-          "talkx.l.google.com:443,oldssl",
-          "talkx.l.google.com:80",
-          NULL};
-
-      empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
-          NULL, NULL);
-
-      empathy_account_settings_set_strv (settings, "fallback-servers",
-          fallback_servers);
-    }
-  else if (is_facebook)
-    {
-      empathy_account_settings_set_icon_name_async (settings, "im-facebook",
-          NULL, NULL);
-
-      empathy_account_settings_set_string (settings, "server",
-          "chat.facebook.com");
-    }
 
   accounts_dialog_add (dialog, settings);
   accounts_dialog_model_set_selected (dialog, settings);
@@ -648,8 +596,6 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   gtk_widget_show_all (priv->hbox_protocol);
 
   g_object_unref (settings);
-  g_object_unref (cm);
-  g_free (service);
 }
 
 static void

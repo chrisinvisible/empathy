@@ -557,3 +557,59 @@ empathy_protocol_chooser_set_visible (EmpathyProtocolChooser *protocol_chooser,
 
   gtk_combo_box_set_active (GTK_COMBO_BOX (protocol_chooser), 0);
 }
+
+EmpathyAccountSettings *
+empathy_protocol_chooser_create_account_settings (EmpathyProtocolChooser *self)
+{
+  EmpathyAccountSettings *settings;
+  gchar *str;
+  const gchar *display_name;
+  TpConnectionManager *cm;
+  TpConnectionManagerProtocol *proto;
+  gchar *service;
+
+  cm = empathy_protocol_chooser_dup_selected (self, &proto, &service);
+  if (cm == NULL || proto == NULL)
+    return NULL;
+
+  if (service != NULL)
+    display_name = empathy_service_name_to_display_name (service);
+  else
+    display_name = empathy_protocol_name_to_display_name (proto->name);
+
+  /* Create account */
+  /* To translator: %s is the name of the protocol, such as "Google Talk" or
+   * "Yahoo!"
+   */
+  str = g_strdup_printf (_("New %s account"), display_name);
+  settings = empathy_account_settings_new (cm->name, proto->name, str);
+
+  g_free (str);
+
+  if (!tp_strdiff (service, "google-talk"))
+    {
+      gchar *fallback_servers[] = {
+          "talkx.l.google.com",
+          "talkx.l.google.com:443,oldssl",
+          "talkx.l.google.com:80",
+          NULL};
+
+      empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
+          NULL, NULL);
+
+      empathy_account_settings_set_strv (settings, "fallback-servers",
+          fallback_servers);
+    }
+  else if (!tp_strdiff (service, "facebook"))
+    {
+      empathy_account_settings_set_icon_name_async (settings, "im-facebook",
+          NULL, NULL);
+
+      empathy_account_settings_set_string (settings, "server",
+          "chat.facebook.com");
+    }
+
+  g_object_unref (cm);
+  g_free (service);
+  return settings;
+}

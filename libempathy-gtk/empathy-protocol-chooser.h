@@ -28,6 +28,8 @@
 
 #include <telepathy-glib/connection-manager.h>
 
+#include <libempathy/empathy-account-settings.h>
+
 G_BEGIN_DECLS
 
 #define EMPATHY_TYPE_PROTOCOL_CHOOSER (empathy_protocol_chooser_get_type ())
@@ -74,6 +76,9 @@ void empathy_protocol_chooser_set_visible (
     EmpathyProtocolChooser *protocol_chooser,
     EmpathyProtocolChooserFilterFunc func,
     gpointer user_data);
+
+EmpathyAccountSettings * empathy_protocol_chooser_create_account_settings (
+    EmpathyProtocolChooser *self);
 
 G_END_DECLS
 #endif /*  __EMPATHY_PROTOCOL_CHOOSER_H__ */
