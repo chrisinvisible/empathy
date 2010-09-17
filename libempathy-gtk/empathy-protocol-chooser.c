@@ -77,8 +77,7 @@ enum
   COL_LABEL,
   COL_CM,
   COL_PROTOCOL_NAME,
-  COL_IS_GTALK,
-  COL_IS_FACEBOOK,
+  COL_SERVICE,
   COL_COUNT
 };
 
@@ -131,16 +130,18 @@ protocol_chooser_sort_func (GtkTreeModel *model,
        * non-gtalk */
       if (cmp == 0)
         {
-          gboolean is_gtalk, is_facebook;
+          gchar *service;
+
           gtk_tree_model_get (model, iter_a,
-            COL_IS_GTALK, &is_gtalk,
-            COL_IS_FACEBOOK, &is_facebook,
+            COL_SERVICE, &service,
             -1);
 
-          if (is_gtalk || is_facebook)
+          if (service != NULL)
             cmp = 1;
           else
             cmp = -1;
+
+          g_free (service);
         }
     }
 
@@ -235,8 +236,6 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           COL_LABEL, display_name,
           COL_CM, cm,
           COL_PROTOCOL_NAME, proto->name,
-          COL_IS_GTALK, FALSE,
-          COL_IS_FACEBOOK, FALSE,
           -1);
 
       if (!tp_strdiff (proto->name, "jabber") &&
@@ -249,8 +248,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
              COL_LABEL, display_name,
              COL_CM, cm,
              COL_PROTOCOL_NAME, proto->name,
-             COL_IS_GTALK, TRUE,
-             COL_IS_FACEBOOK, FALSE,
+             COL_SERVICE, "google-talk",
              -1);
 
           display_name = empathy_protocol_name_to_display_name ("facebook");
@@ -260,8 +258,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
              COL_LABEL, display_name,
              COL_CM, cm,
              COL_PROTOCOL_NAME, proto->name,
-             COL_IS_GTALK, FALSE,
-             COL_IS_FACEBOOK, TRUE,
+             COL_SERVICE, "facebook",
              -1);
         }
 
@@ -312,8 +309,7 @@ protocol_chooser_constructed (GObject *object)
           G_TYPE_STRING,    /* Label     */
           G_TYPE_OBJECT,    /* CM */
           G_TYPE_STRING,    /* protocol name  */
-          G_TYPE_BOOLEAN,   /* is gtalk  */
-          G_TYPE_BOOLEAN);  /* is facebook  */
+          G_TYPE_STRING);   /* service */
 
   /* Set the protocol sort function */
   gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (priv->store),
@@ -426,13 +422,12 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
   TpConnectionManager *cm = NULL;
   gchar *protocol_name = NULL;
   gboolean visible = FALSE;
-  gboolean is_gtalk, is_facebook;
+  gchar *service;
 
   gtk_tree_model_get (model, iter,
       COL_CM, &cm,
       COL_PROTOCOL_NAME, &protocol_name,
-      COL_IS_GTALK, &is_gtalk,
-      COL_IS_FACEBOOK, &is_facebook,
+      COL_SERVICE, &service,
       -1);
 
   if (cm != NULL && protocol_name != NULL)
@@ -444,7 +439,7 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
 
       if (protocol != NULL)
         {
-          visible = priv->filter_func (cm, protocol, is_gtalk, is_facebook,
+          visible = priv->filter_func (cm, protocol, service,
               priv->filter_user_data);
         }
     }
@@ -452,6 +447,7 @@ protocol_chooser_filter_visible_func (GtkTreeModel *model,
   if (cm != NULL)
     g_object_unref (cm);
 
+  g_free (service);
   return visible;
 }
 
@@ -470,8 +466,7 @@ TpConnectionManager *
 empathy_protocol_chooser_dup_selected (
     EmpathyProtocolChooser *protocol_chooser,
     TpConnectionManagerProtocol **protocol,
-    gboolean *is_gtalk,
-    gboolean *is_facebook)
+    gchar **service)
 {
   GtkTreeIter iter;
   TpConnectionManager *cm = NULL;
@@ -512,17 +507,10 @@ empathy_protocol_chooser_dup_selected (
             }
         }
 
-      if (is_gtalk != NULL)
+      if (service != NULL)
         {
           gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
-              COL_IS_GTALK, is_gtalk,
-              -1);
-        }
-
-      if (is_facebook != NULL)
-        {
-          gtk_tree_model_get (GTK_TREE_MODEL (cur_model), &iter,
-              COL_IS_FACEBOOK, is_facebook,
+              COL_SERVICE, service,
               -1);
         }
     }

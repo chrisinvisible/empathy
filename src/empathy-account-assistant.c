@@ -388,25 +388,34 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   char *str;
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object = NULL;
-  gboolean is_gtalk, is_facebook;
+  gboolean is_gtalk = FALSE, is_facebook = FALSE;
   const gchar *name;
+  gchar *service;
 
   priv = GET_PRIV (self);
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &is_gtalk, &is_facebook);
+      EMPATHY_PROTOCOL_CHOOSER (chooser), &proto, &service);
 
   if (cm == NULL || proto == NULL)
     /* we are not ready yet */
     return;
 
   /* Create account */
-  if (is_gtalk)
-    name = "gtalk";
-  else if (is_facebook)
-    name = "facebook";
+  if (!tp_strdiff (service, "google-talk"))
+    {
+      is_gtalk = TRUE;
+      name = "gtalk";
+    }
+  else if (!tp_strdiff (service, "facebook"))
+    {
+      is_facebook = TRUE;
+      name ="facebook";
+    }
   else
-    name = proto->name;
+    {
+      name = proto->name;
+    }
 
   /* To translator: %s is the protocol name */
   str = g_strdup_printf (_("New %s account"),
@@ -472,14 +481,14 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   gtk_widget_show (account_widget);
 
   g_free (str);
+  g_free (service);
 }
 
 static gboolean
 account_assistant_chooser_enter_details_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
-    gboolean is_gtalk,
-    gboolean is_facebook,
+    const gchar *service,
     gpointer user_data)
 {
   if (!tp_strdiff (protocol->name, "local-xmpp"))
@@ -492,11 +501,10 @@ static gboolean
 account_assistant_chooser_create_account_filter_func (
     TpConnectionManager *cm,
     TpConnectionManagerProtocol *protocol,
-    gboolean is_gtalk,
-    gboolean is_facebook,
+    const gchar *service,
     gpointer user_data)
 {
-  if (is_gtalk || is_facebook)
+  if (service != NULL)
     return FALSE;
 
   return tp_connection_manager_protocol_can_register (protocol);

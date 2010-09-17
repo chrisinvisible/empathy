@@ -588,21 +588,30 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   const gchar *name, *display_name;
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
-  gboolean is_gtalk, is_facebook;
+  gboolean is_gtalk = FALSE, is_facebook = FALSE;
+  gchar *service;
 
   cm = empathy_protocol_chooser_dup_selected (
-      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &is_gtalk,
-      &is_facebook);
+      EMPATHY_PROTOCOL_CHOOSER (priv->combobox_protocol), &proto, &service);
   if (cm == NULL)
     return;
 
-  if (is_gtalk)
-    name = "gtalk";
-  else if (is_facebook)
-    name ="facebook";
+  if (!tp_strdiff (service, "google-talk"))
+    {
+      is_gtalk = TRUE;
+      name = "gtalk";
+    }
+  else if (!tp_strdiff (service, "facebook"))
+    {
+      is_facebook = TRUE;
+      name ="facebook";
+    }
   else
-    name = proto->name;
+    {
+      name = proto->name;
+    }
 
+  /* TODO: pass the service name to empathy_protocol_name_to_display_name */
   display_name = empathy_protocol_name_to_display_name (name);
   if (display_name == NULL)
     display_name = proto->name;
@@ -646,6 +655,7 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
 
   g_object_unref (settings);
   g_object_unref (cm);
+  g_free (service);
 }
 
 static void
