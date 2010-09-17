@@ -389,8 +389,8 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   GtkWidget *account_widget;
   EmpathyAccountWidget *widget_object = NULL;
   gboolean is_gtalk = FALSE, is_facebook = FALSE;
-  const gchar *name;
   gchar *service;
+  const gchar *display_name;
 
   priv = GET_PRIV (self);
 
@@ -405,21 +405,19 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
   if (!tp_strdiff (service, "google-talk"))
     {
       is_gtalk = TRUE;
-      name = "gtalk";
     }
   else if (!tp_strdiff (service, "facebook"))
     {
       is_facebook = TRUE;
-      name ="facebook";
-    }
-  else
-    {
-      name = proto->name;
     }
 
+  if (service != NULL)
+    display_name = empathy_service_name_to_display_name (service);
+  else
+    display_name = empathy_protocol_name_to_display_name (proto->name);
+
   /* To translator: %s is the protocol name */
-  str = g_strdup_printf (_("New %s account"),
-      empathy_protocol_name_to_display_name (name));
+  str = g_strdup_printf (_("New %s account"), display_name);
 
   settings = empathy_account_settings_new (cm->name, proto->name, str);
 

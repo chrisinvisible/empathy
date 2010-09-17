@@ -585,7 +585,7 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   EmpathyAccountsDialogPriv *priv = GET_PRIV (dialog);
   EmpathyAccountSettings *settings;
   gchar *str;
-  const gchar *name, *display_name;
+  const gchar *display_name;
   TpConnectionManager *cm;
   TpConnectionManagerProtocol *proto;
   gboolean is_gtalk = FALSE, is_facebook = FALSE;
@@ -599,22 +599,16 @@ accounts_dialog_setup_ui_to_add_account (EmpathyAccountsDialog *dialog)
   if (!tp_strdiff (service, "google-talk"))
     {
       is_gtalk = TRUE;
-      name = "gtalk";
     }
   else if (!tp_strdiff (service, "facebook"))
     {
       is_facebook = TRUE;
-      name ="facebook";
-    }
-  else
-    {
-      name = proto->name;
     }
 
-  /* TODO: pass the service name to empathy_protocol_name_to_display_name */
-  display_name = empathy_protocol_name_to_display_name (name);
-  if (display_name == NULL)
-    display_name = proto->name;
+  if (service != NULL)
+    display_name = empathy_service_name_to_display_name (service);
+  else
+    display_name = empathy_protocol_name_to_display_name (proto->name);
 
   /* Create account */
   /* To translator: %s is the name of the protocol, such as "Google Talk" or

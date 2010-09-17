@@ -539,7 +539,6 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
     gboolean translated;
   } names[] = {
     { "jabber", "Jabber", FALSE },
-    { "gtalk", "Google Talk", FALSE },
     { "msn", "MSN", FALSE, },
     { "local-xmpp", N_("People Nearby"), TRUE },
     { "irc", "IRC", FALSE },
@@ -547,7 +546,6 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
     { "aim", "AIM", FALSE },
     { "yahoo", "Yahoo!", FALSE },
     { "yahoojp", N_("Yahoo! Japan"), TRUE },
-    { "facebook", N_("Facebook Chat"), TRUE },
     { "groupwise", "GroupWise", FALSE },
     { "sip", "SIP", FALSE },
     { NULL, NULL }
@@ -564,7 +562,35 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
         }
     }
 
-  return NULL;
+  return proto_name;
+}
+
+const char *
+empathy_service_name_to_display_name (const gchar *service_name)
+{
+  int i;
+  static struct {
+    const gchar *service;
+    const gchar *display;
+    gboolean translated;
+  } names[] = {
+    { "google-talk", "Google Talk", FALSE },
+    { "facebook", N_("Facebook Chat"), TRUE },
+    { NULL, NULL }
+  };
+
+  for (i = 0; names[i].service != NULL; i++)
+    {
+      if (!tp_strdiff (service_name, names[i].service))
+        {
+          if (names[i].translated)
+            return _(names[i].display);
+          else
+            return names[i].display;
+        }
+    }
+
+  return service_name;
 }
 
 /* Note: this function depends on the account manager having its core feature

@@ -225,10 +225,8 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
           g_strdup (proto->name), g_strdup (cm->name));
 
       icon_name = empathy_protocol_icon_name (proto->name);
-      display_name = empathy_protocol_name_to_display_name (proto->name);
 
-      if (display_name == NULL)
-        display_name = proto->name;
+      display_name = empathy_protocol_name_to_display_name (proto->name);
 
       gtk_list_store_insert_with_values (priv->store,
           NULL, 0,
@@ -241,7 +239,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
       if (!tp_strdiff (proto->name, "jabber") &&
           !tp_strdiff (cm->name, "gabble"))
         {
-          display_name = empathy_protocol_name_to_display_name ("gtalk");
+          display_name = empathy_service_name_to_display_name ("google-talk");
           gtk_list_store_insert_with_values (priv->store,
              NULL, 0,
              COL_ICON, "im-google-talk",
@@ -251,7 +249,7 @@ protocol_choosers_add_cm (EmpathyProtocolChooser *chooser,
              COL_SERVICE, "google-talk",
              -1);
 
-          display_name = empathy_protocol_name_to_display_name ("facebook");
+          display_name = empathy_service_name_to_display_name ("facebook");
           gtk_list_store_insert_with_values (priv->store,
              NULL, 0,
              COL_ICON, "im-facebook",
