@@ -1770,6 +1770,40 @@ voip_cmp_func (EmpathyContact *a,
     return 0;
 }
 
+static gint
+ft_cmp_func (EmpathyContact *a,
+    EmpathyContact *b)
+{
+  gboolean can_send_files_a, can_send_files_b;
+
+  can_send_files_a = empathy_contact_can_send_files (a);
+  can_send_files_b = empathy_contact_can_send_files (b);
+
+  if (can_send_files_a == can_send_files_b)
+    return 0;
+  else if (can_send_files_a)
+    return -1;
+  else
+    return 1;
+}
+
+static gint
+rfb_stream_tube_cmp_func (EmpathyContact *a,
+    EmpathyContact *b)
+{
+  gboolean rfb_a, rfb_b;
+
+  rfb_a = empathy_contact_can_use_rfb_stream_tube (a);
+  rfb_b = empathy_contact_can_use_rfb_stream_tube (b);
+
+  if (rfb_a == rfb_b)
+    return 0;
+  else if (rfb_a)
+    return -1;
+  else
+    return 1;
+}
+
 /* Sort by presence as with presence_cmp_func(), but if the two contacts have
  * the same presence, prefer the one which can do both audio *and* video calls,
  * over the one which can only do one of the two. */
@@ -1784,6 +1818,33 @@ voip_sort_func (EmpathyContact *a, EmpathyContact *b)
   return voip_cmp_func (a, b);
 }
 
+/* Sort by presence as with presence_cmp_func() and then break ties using the
+ * most "capable" individual. So users will be able to pick more actions on
+ * the contact in the "Contact" menu of the chat window. */
+static gint
+chat_sort_func (EmpathyContact *a,
+    EmpathyContact *b)
+{
+  gint result;
+
+  result = presence_cmp_func (a, b);
+  if (result != 0)
+    return result;
+
+  /* Prefer individual supporting file transfer */
+  result = ft_cmp_func (a, b);
+  if (result != 0)
+    return result;
+
+  /* Check audio/video capabilities */
+  result = voip_cmp_func (a, b);
+  if (result != 0)
+    return result;
+
+  /* Check 'Share my destop' feature */
+  return rfb_stream_tube_cmp_func (a, b);
+}
+
 static GCompareFunc
 get_sort_func_for_action (EmpathyActionType action_type)
 {
@@ -1793,6 +1854,7 @@ get_sort_func_for_action (EmpathyActionType action_type)
       case EMPATHY_ACTION_VIDEO_CALL:
         return (GCompareFunc) voip_sort_func;
       case EMPATHY_ACTION_CHAT:
+        return (GCompareFunc) chat_sort_func;
       case EMPATHY_ACTION_VIEW_LOGS:
       case EMPATHY_ACTION_SEND_FILE:
       case EMPATHY_ACTION_SHARE_MY_DESKTOP:
