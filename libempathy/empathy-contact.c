@@ -1737,7 +1737,8 @@ empathy_contact_dup_from_tp_contact (TpContact *tp_contact)
 }
 
 static int
-presence_sort_func (EmpathyContact *a, EmpathyContact *b)
+presence_cmp_func (EmpathyContact *a,
+    EmpathyContact *b)
 {
   FolksPresence *presence_a, *presence_b;
 
@@ -1750,17 +1751,11 @@ presence_sort_func (EmpathyContact *a, EmpathyContact *b)
       folks_presence_get_presence_type (presence_b));
 }
 
-/* Sort by presence as with presence_sort_func(), but if the two contacts have
- * the same presence, prefer the one which can do both audio *and* video calls,
- * over the one which can only do one of the two. */
-static int
-voip_sort_func (EmpathyContact *a, EmpathyContact *b)
+static gint
+voip_cmp_func (EmpathyContact *a,
+    EmpathyContact *b)
 {
   gboolean has_audio_video_a, has_audio_video_b;
-  gint presence_sort = presence_sort_func (a, b);
-
-  if (presence_sort != 0)
-    return presence_sort;
 
   has_audio_video_a = empathy_contact_can_voip_audio (a) &&
       empathy_contact_can_voip_video (a);
@@ -1773,6 +1768,20 @@ voip_sort_func (EmpathyContact *a, EmpathyContact *b)
     return 1;
   else
     return 0;
+}
+
+/* Sort by presence as with presence_cmp_func(), but if the two contacts have
+ * the same presence, prefer the one which can do both audio *and* video calls,
+ * over the one which can only do one of the two. */
+static int
+voip_sort_func (EmpathyContact *a, EmpathyContact *b)
+{
+  gint presence_sort = presence_cmp_func (a, b);
+
+  if (presence_sort != 0)
+    return presence_sort;
+
+  return voip_cmp_func (a, b);
 }
 
 static GCompareFunc
@@ -1788,7 +1797,7 @@ get_sort_func_for_action (EmpathyActionType action_type)
       case EMPATHY_ACTION_SEND_FILE:
       case EMPATHY_ACTION_SHARE_MY_DESKTOP:
       default:
-        return (GCompareFunc) presence_sort_func;
+        return (GCompareFunc) presence_cmp_func;
     }
 }
 
