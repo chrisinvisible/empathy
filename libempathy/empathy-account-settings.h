@@ -63,6 +63,7 @@ GType empathy_account_settings_get_type (void);
 EmpathyAccountSettings * empathy_account_settings_new (
     const gchar *connection_manager,
     const gchar *protocol,
+    const gchar *service,
     const char *display_name);
 
 EmpathyAccountSettings * empathy_account_settings_new_for_account (
@@ -72,6 +73,9 @@ gboolean empathy_account_settings_is_ready (EmpathyAccountSettings *settings);
 
 const gchar *empathy_account_settings_get_cm (EmpathyAccountSettings *settings);
 const gchar *empathy_account_settings_get_protocol (
+    EmpathyAccountSettings *settings);
+
+const gchar *empathy_account_settings_get_service (
     EmpathyAccountSettings *settings);
 
 TpAccount *empathy_account_settings_get_account (

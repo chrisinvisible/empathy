@@ -582,7 +582,7 @@ empathy_protocol_chooser_create_account_settings (EmpathyProtocolChooser *self)
    * "Yahoo!"
    */
   str = g_strdup_printf (_("New %s account"), display_name);
-  settings = empathy_account_settings_new (cm->name, proto->name, str);
+  settings = empathy_account_settings_new (cm->name, proto->name, service, str);
 
   g_free (str);
 

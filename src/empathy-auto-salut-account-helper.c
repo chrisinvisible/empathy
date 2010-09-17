@@ -79,7 +79,7 @@ create_salut_account_settings (void)
   GError *error = NULL;
 #endif
 
-  settings = empathy_account_settings_new ("salut", "local-xmpp",
+  settings = empathy_account_settings_new ("salut", "local-xmpp", NULL,
       _("People nearby"));
 
 #if HAVE_EDS

@@ -43,6 +43,7 @@ enum {
   PROP_ACCOUNT = 1,
   PROP_CM_NAME,
   PROP_PROTOCOL,
+  PROP_SERVICE,
   PROP_DISPLAY_NAME,
   PROP_DISPLAY_NAME_OVERRIDDEN,
   PROP_READY
@@ -62,6 +63,7 @@ struct _EmpathyAccountSettingsPriv
   TpAccount *account;
   gchar *cm_name;
   gchar *protocol;
+  gchar *service;
   gchar *display_name;
   gchar *icon_name;
   gboolean display_name_overridden;
@@ -123,6 +125,9 @@ empathy_account_settings_set_property (GObject *object,
       case PROP_PROTOCOL:
         priv->protocol = g_value_dup_string (value);
         break;
+      case PROP_SERVICE:
+        priv->service = g_value_dup_string (value);
+        break;
       case PROP_DISPLAY_NAME:
         priv->display_name = g_value_dup_string (value);
         break;
@@ -155,6 +160,9 @@ empathy_account_settings_get_property (GObject *object,
       case PROP_PROTOCOL:
         g_value_set_string (value, priv->protocol);
         break;
+      case PROP_SERVICE:
+        g_value_set_string (value, priv->service);
+        break;
       case PROP_DISPLAY_NAME:
         g_value_set_string (value, priv->display_name);
         break;
@@ -180,11 +188,14 @@ empathy_account_settings_constructed (GObject *object)
     {
       g_free (priv->cm_name);
       g_free (priv->protocol);
+      g_free (priv->service);
 
       priv->cm_name =
         g_strdup (tp_account_get_connection_manager (priv->account));
       priv->protocol =
         g_strdup (tp_account_get_protocol (priv->account));
+      priv->service =
+        g_strdup (tp_account_get_service (priv->account));
       priv->icon_name = g_strdup
         (tp_account_get_icon_name (priv->account));
     }
@@ -245,6 +256,13 @@ empathy_account_settings_class_init (
     g_param_spec_string ("protocol",
       "Protocol",
       "The name of the protocol this account uses",
+      NULL,
+      G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class, PROP_SERVICE,
+    g_param_spec_string ("service",
+      "Service",
+      "The service of this account, or NULL",
       NULL,
       G_PARAM_STATIC_STRINGS | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
@@ -329,6 +347,7 @@ empathy_account_settings_finalize (GObject *object)
   /* free any data held directly by the object here */
   g_free (priv->cm_name);
   g_free (priv->protocol);
+  g_free (priv->service);
   g_free (priv->display_name);
   g_free (priv->icon_name);
 
@@ -440,11 +459,13 @@ empathy_account_settings_managers_ready_cb (GObject *object,
 EmpathyAccountSettings *
 empathy_account_settings_new (const gchar *connection_manager,
     const gchar *protocol,
+    const gchar *service,
     const char *display_name)
 {
   return g_object_new (EMPATHY_TYPE_ACCOUNT_SETTINGS,
       "connection-manager", connection_manager,
       "protocol", protocol,
+      "service", service,
       "display-name", display_name,
       NULL);
 }
@@ -500,6 +521,14 @@ empathy_account_settings_get_protocol (EmpathyAccountSettings *settings)
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
   return priv->protocol;
+}
+
+const gchar *
+empathy_account_settings_get_service (EmpathyAccountSettings *settings)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  return priv->service;
 }
 
 gchar *
@@ -1188,6 +1217,9 @@ empathy_account_settings_do_create_account (EmpathyAccountSettings *settings)
 
   tp_asv_set_string (properties, TP_IFACE_ACCOUNT ".Icon",
       priv->icon_name);
+
+  if (priv->service != NULL)
+    tp_asv_set_string (properties, TP_PROP_ACCOUNT_SERVICE, priv->service);
 
   tp_account_manager_create_account_async (priv->account_manager,
     priv->cm_name, priv->protocol, priv->display_name,
