@@ -1755,19 +1755,29 @@ static gint
 voip_cmp_func (EmpathyContact *a,
     EmpathyContact *b)
 {
-  gboolean has_audio_video_a, has_audio_video_b;
+  gboolean has_audio_a, has_audio_b;
+  gboolean has_video_a, has_video_b;
 
-  has_audio_video_a = empathy_contact_can_voip_audio (a) &&
-      empathy_contact_can_voip_video (a);
-  has_audio_video_b = empathy_contact_can_voip_audio (b) &&
-      empathy_contact_can_voip_video (b);
+  has_audio_a = empathy_contact_can_voip_audio (a);
+  has_audio_b = empathy_contact_can_voip_audio (b);
+  has_video_a = empathy_contact_can_voip_video (a);
+  has_video_b = empathy_contact_can_voip_video (b);
 
-  if (has_audio_video_a && !has_audio_video_b)
+  /* First check video */
+  if (has_video_a == has_video_b)
+    {
+      /* Use audio to to break tie */
+      if (has_audio_a == has_audio_b)
+        return 0;
+      else if (has_audio_a)
+        return -1;
+      else
+        return 1;
+    }
+  else if (has_video_a)
     return -1;
-  else if (!has_audio_video_a && has_audio_video_b)
-    return 1;
   else
-    return 0;
+    return 1;
 }
 
 static gint
