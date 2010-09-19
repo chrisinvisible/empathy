@@ -59,7 +59,7 @@
 
 #define CHAT_DIR_CREATE_MODE  (S_IRUSR | S_IWUSR | S_IXUSR)
 #define CHAT_FILE_CREATE_MODE (S_IRUSR | S_IWUSR)
-#define IS_ENTER(v) (v == GDK_Return || v == GDK_ISO_Enter || v == GDK_KP_Enter)
+#define IS_ENTER(v) (v == GDK_KEY_Return || v == GDK_KEY_ISO_Enter || v == GDK_KEY_KP_Enter)
 #define MAX_INPUT_HEIGHT 150
 #define COMPOSING_STOP_TIMEOUT 5
 
@@ -1483,15 +1483,15 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 
 	/* Catch ctrl+up/down so we can traverse messages we sent */
 	if ((event->state & GDK_CONTROL_MASK) &&
-	    (event->keyval == GDK_Up ||
-	     event->keyval == GDK_Down)) {
+	    (event->keyval == GDK_KEY_Up ||
+	     event->keyval == GDK_KEY_Down)) {
 		GtkTextBuffer *buffer;
 		const gchar   *str;
 
 		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (chat->input_text_view));
 		chat_input_history_update (chat, buffer);
 
-		if (event->keyval == GDK_Up) {
+		if (event->keyval == GDK_KEY_Up) {
 			str = chat_input_history_get_next (chat);
 		} else {
 			str = chat_input_history_get_prev (chat);
@@ -1537,24 +1537,24 @@ chat_input_key_press_event_cb (GtkWidget   *widget,
 		return FALSE;
 	}
 	if (!(event->state & GDK_CONTROL_MASK) &&
-	    event->keyval == GDK_Page_Up) {
+	    event->keyval == GDK_KEY_Page_Up) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_value (adj) - gtk_adjustment_get_page_size (adj));
 		return TRUE;
 	}
 	if ((event->state & GDK_CONTROL_MASK) != GDK_CONTROL_MASK &&
-	    event->keyval == GDK_Page_Down) {
+	    event->keyval == GDK_KEY_Page_Down) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (text_view_sw));
 		val = MIN (gtk_adjustment_get_value (adj) + gtk_adjustment_get_page_size (adj),
 			   gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj));
 		gtk_adjustment_set_value (adj, val);
 		return TRUE;
 	}
-	if (event->keyval == GDK_Escape) {
+	if (event->keyval == GDK_KEY_Escape) {
 		empathy_search_bar_hide (EMPATHY_SEARCH_BAR (priv->search_bar));
 	}
 	if (!(event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) &&
-	    event->keyval == GDK_Tab) {
+	    event->keyval == GDK_KEY_Tab) {
 		GtkTextBuffer *buffer;
 		GtkTextIter    start, current;
 		gchar         *nick, *completed;
