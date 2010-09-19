@@ -243,7 +243,6 @@ empathy_individual_edit_dialog_init (
   dialog->priv = priv;
   priv->individual = NULL;
 
-  empathy_dialog_remove_separator (GTK_DIALOG (dialog));
   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
   gtk_window_set_title (GTK_WINDOW (dialog), _("Edit Contact Information"));
 

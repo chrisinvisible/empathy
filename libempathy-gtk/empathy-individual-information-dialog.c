@@ -273,7 +273,6 @@ empathy_individual_information_dialog_init (
   dialog->priv = priv;
   priv->individual = NULL;
 
-  empathy_dialog_remove_separator (GTK_DIALOG (dialog));
   gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
 
   content_area = GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog)));

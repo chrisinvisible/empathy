@@ -198,11 +198,6 @@ empathy_import_dialog_init (EmpathyImportDialog *self)
   gtk_container_set_border_width (GTK_CONTAINER (self), 5);
   gtk_window_set_title (GTK_WINDOW (self), _("Import Accounts"));
   gtk_window_set_modal (GTK_WINDOW (self), TRUE);
-
-  /* FIXME: Remove this once we unconditionally depend on GTK+ 3 */
-#ifndef HAVE_GTK3
-  gtk_dialog_set_has_separator (GTK_DIALOG (self), FALSE);
-#endif
 }
 
 static void
