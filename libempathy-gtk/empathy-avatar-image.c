@@ -160,11 +160,11 @@ avatar_image_add_filter (EmpathyAvatarImage *avatar_image)
 	gdk_error_trap_push ();
 	if (gdkwindow) {
 		XWindowAttributes attrs;
-		XGetWindowAttributes (gdk_display, window, &attrs);
+		XGetWindowAttributes (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), window, &attrs);
 		mask |= attrs.your_event_mask;
 	}
 
-	XSelectInput (gdk_display, window, mask);
+	XSelectInput (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), window, mask);
 
 	gdk_error_trap_pop ();
 
