@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-09-11 05:45+0000\n"
+"POT-Creation-Date: 2010-09-19 09:08+0000\n"
 "PO-Revision-Date: 2010-09-11 15:06+0900\n"
 "Last-Translator: Takayuki KUASNO <AE5T-KSN@asahi-net.or.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -744,16 +744,16 @@ msgstr "%s:"
 msgid "Username:"
 msgstr "ユーザ名:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1522
+#: ../libempathy-gtk/empathy-account-widget.c:1521
 msgid "A_pply"
 msgstr "適用(_P)"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1552
+#: ../libempathy-gtk/empathy-account-widget.c:1551
 msgid "L_og in"
 msgstr "ログイン(_O)"
 
 #. Account and Identifier
-#: ../libempathy-gtk/empathy-account-widget.c:1618
+#: ../libempathy-gtk/empathy-account-widget.c:1617
 #: ../libempathy-gtk/empathy-contact-widget.ui.h:2
 #: ../libempathy-gtk/empathy-individual-widget.c:1401
 #: ../libempathy-gtk/empathy-contact-selector-dialog.ui.h:1
@@ -762,19 +762,19 @@ msgstr "ログイン(_O)"
 msgid "Account:"
 msgstr "アカウント:"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1629
+#: ../libempathy-gtk/empathy-account-widget.c:1628
 msgid "_Enabled"
 msgstr "サインイン(_E)"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1694
+#: ../libempathy-gtk/empathy-account-widget.c:1693
 msgid "This account already exists on the server"
 msgstr "このアカウントはすでにサーバに存在します"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1697
+#: ../libempathy-gtk/empathy-account-widget.c:1696
 msgid "Create a new account on the server"
 msgstr "サーバで新しいアカウントを作る"
 
-#: ../libempathy-gtk/empathy-account-widget.c:1790
+#: ../libempathy-gtk/empathy-account-widget.c:1789
 msgid "Ca_ncel"
 msgstr "中止(_N)"
 
@@ -783,19 +783,19 @@ msgstr "中止(_N)"
 #. * like: "MyUserName on freenode".
 #. * You should reverse the order of these arguments if the
 #. * server should come before the login id in your locale.
-#: ../libempathy-gtk/empathy-account-widget.c:2078
+#: ../libempathy-gtk/empathy-account-widget.c:2077
 #, c-format
 msgid "%1$s on %2$s"
 msgstr "%2$s にある %1$s"
 
 #. To translators: The parameter is the protocol name. The resulting
 #. * string will be something like: "Jabber Account"
-#: ../libempathy-gtk/empathy-account-widget.c:2104
+#: ../libempathy-gtk/empathy-account-widget.c:2103
 #, c-format
 msgid "%s Account"
 msgstr "%s アカウント"
 
-#: ../libempathy-gtk/empathy-account-widget.c:2108
+#: ../libempathy-gtk/empathy-account-widget.c:2107
 msgid "New account"
 msgstr "新しいアカウント"
 
@@ -842,7 +842,7 @@ msgstr "AIMのスクリーンネームを入力してください"
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:8
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:24
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:7
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
 msgid "_Port:"
 msgstr "ポート番号(_P):"
 
@@ -851,7 +851,7 @@ msgstr "ポート番号(_P):"
 #: ../libempathy-gtk/empathy-account-widget-icq.ui.h:9
 #: ../libempathy-gtk/empathy-account-widget-jabber.ui.h:25
 #: ../libempathy-gtk/empathy-account-widget-msn.ui.h:8
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:12
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
 #: ../src/empathy-new-chatroom-dialog.ui.h:9
 msgid "_Server:"
 msgstr "サーバ(_S):"
@@ -1161,22 +1161,18 @@ msgid "I_gnore conference and chat room invitations"
 msgstr "会議とチャットルームへの勧誘を無視(_G)"
 
 #: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:6
-msgid "Use _Yahoo! Japan"
-msgstr "Yahoo! Japan に接続(_Y)"
-
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "What is your Yahoo! ID?"
 msgstr "Yahoo! IDを入力してください"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:7
 msgid "What is your Yahoo! password?"
 msgstr "Yahoo!のパスワードを入力してください"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:9
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:8
 msgid "Yahoo! I_D:"
 msgstr "Yahoo! の ID(_D):"
 
-#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:11
+#: ../libempathy-gtk/empathy-account-widget-yahoo.ui.h:10
 msgid "_Room List locale:"
 msgstr "部屋の一覧がある場所(_R):"
 
@@ -1802,8 +1798,8 @@ msgid ""
 "Select the groups you want this contact to appear in.  Note that you can "
 "select more than one group or no groups."
 msgstr ""
-"この仲間を登録するグループを選択して下さい (1つ以上のグループを選択したり、あ"
-"るいは全く選択しなくても構いません)"
+"この仲間を登録するグループを選択してください (1つ以上のグループを選択したり、"
+"あるいは全く選択しなくても構いません)"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:363
 msgid "_Add Group"
@@ -2404,7 +2400,7 @@ msgid ""
 msgstr ""
 "Empathy は有用とは思いますが、その頒布にあたっては市場性及び特定の目的、その"
 "適合性についての暗黙の保証を含めて、いかなる保証も行ないません。詳細について"
-"は GNU 一般公衆利用許諾契約書をご覧下さい。"
+"は GNU 一般公衆利用許諾契約書をご覧ください。"
 
 #: ../src/empathy-about-dialog.c:93
 msgid ""
@@ -2414,7 +2410,7 @@ msgid ""
 msgstr ""
 "あなたは、本プログラムと一緒に GNU 一般公衆利用許諾契約書の写しを受け取ってい"
 "るはずです。そうでない場合は、Free Software Foundation, Inc., 51 Franklin "
-"Street, Fifth Floor, Boston, MA 02110-130159 USA まで手紙を書いて下さい。"
+"Street, Fifth Floor, Boston, MA 02110-130159 USA まで手紙を書いてください。"
 
 #: ../src/empathy-about-dialog.c:121
 msgid "An Instant Messaging client for GNOME"
@@ -2686,7 +2682,7 @@ msgid ""
 "you want to use."
 msgstr ""
 "新しいアカウントを登録するには、まず最初に利用するプロトコルのバックエンドを"
-"インストールしておいて下さい。"
+"インストールしておいてください。"
 
 #: ../src/empathy-accounts-dialog.ui.h:5
 msgid "_Add…"
@@ -3478,7 +3474,7 @@ msgid ""
 "the current account's server"
 msgstr ""
 "その部屋を提供しているサーバを入力するか、またはその部屋が現在利用している"
-"サーバにある場合は空のままにして下さい"
+"サーバにある場合は空のままにしてください"
 
 #: ../src/empathy-new-chatroom-dialog.ui.h:5
 msgid "Join Room"
@@ -3801,6 +3797,9 @@ msgstr "Empathy のアカウント"
 msgid "Empathy Debugger"
 msgstr "Empathy デバッガ"
 
+#~ msgid "Use _Yahoo! Japan"
+#~ msgstr "Yahoo! Japan に接続(_Y)"
+
 #~ msgid "_Character set:"
 #~ msgstr "文字集合(_C):"
 
@@ -3876,7 +3875,7 @@ msgstr "Empathy デバッガ"
 #~ msgstr "設定(_P)"
 
 #~ msgid "Please configure a contact."
-#~ msgstr "連絡先を設定して下さい"
+#~ msgstr "連絡先を設定してください"
 
 #~ msgid "Select contact..."
 #~ msgstr "連絡先の選択..."
