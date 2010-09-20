@@ -465,8 +465,7 @@ contact_widget_details_request_cb (GObject *object,
           G_CALLBACK (contact_widget_details_notify_cb), information);
     }
 
-  g_object_unref (information->details_cancellable);
-  information->details_cancellable = NULL;
+  tp_clear_object (&information->details_cancellable);
 }
 
 static void
