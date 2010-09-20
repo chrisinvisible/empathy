@@ -1428,8 +1428,9 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 		chat_window_show_or_update_notification (window, message, chat);
 	}
 
-	/* update the number of unread messages */
+	/* update the number of unread messages and the window icon */
 	chat_window_title_update (priv);
+	chat_window_icon_update (priv);
 }
 
 static GtkNotebook *
