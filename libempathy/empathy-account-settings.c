@@ -877,7 +877,7 @@ empathy_account_settings_set_strv (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
-  tp_asv_set_strv (priv->parameters, param, value);
+  tp_asv_set_strv (priv->parameters, g_strdup (param), value);
 
   account_settings_remove_from_unset (settings, param);
 }
