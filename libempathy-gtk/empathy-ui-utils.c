@@ -1614,7 +1614,7 @@ empathy_window_present_with_time (GtkWindow *window,
 void
 empathy_window_present (GtkWindow *window)
 {
-  empathy_window_present_with_time (window, GDK_CURRENT_TIME);
+  empathy_window_present_with_time (window, gtk_get_current_event_time ());
 }
 
 GtkWindow *
