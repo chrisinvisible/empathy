@@ -57,27 +57,11 @@ struct _EmpathyChatWindowClass {
 };
 
 GType              empathy_chat_window_get_type       (void);
-EmpathyChatWindow *empathy_chat_window_get_default    (gboolean room);
-EmpathyChatWindow *empathy_chat_window_new            (void);
-GtkWidget *        empathy_chat_window_get_dialog     (EmpathyChatWindow *window);
-void               empathy_chat_window_add_chat       (EmpathyChatWindow *window,
-						       EmpathyChat       *chat);
-void               empathy_chat_window_remove_chat    (EmpathyChatWindow *window,
-						       EmpathyChat       *chat);
-void               empathy_chat_window_move_chat      (EmpathyChatWindow *old_window,
-						       EmpathyChatWindow *new_window,
-						       EmpathyChat       *chat);
-void               empathy_chat_window_switch_to_chat (EmpathyChatWindow *window,
-						       EmpathyChat       *chat);
-gboolean           empathy_chat_window_has_focus      (EmpathyChatWindow *window);
+
 EmpathyChat *      empathy_chat_window_find_chat      (TpAccount        *account,
 						       const gchar      *id);
 void               empathy_chat_window_present_chat   (EmpathyChat      *chat,
 						       gint64 timestamp);
-
-void               empathy_chat_window_get_nb_chats   (EmpathyChatWindow *window,
-						       guint *nb_rooms,
-						       guint *nb_private);
 
 G_END_DECLS
 

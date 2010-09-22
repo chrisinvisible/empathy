@@ -146,6 +146,20 @@ static const GtkTargetEntry drag_types_dest_file[] = {
 
 static void chat_window_update (EmpathyChatWindow *window);
 
+static void empathy_chat_window_add_chat (EmpathyChatWindow *window,
+			      EmpathyChat	*chat);
+
+static void empathy_chat_window_remove_chat (EmpathyChatWindow *window,
+				 EmpathyChat	   *chat);
+
+static void empathy_chat_window_move_chat (EmpathyChatWindow *old_window,
+			       EmpathyChatWindow *new_window,
+			       EmpathyChat       *chat);
+
+static void empathy_chat_window_get_nb_chats (EmpathyChatWindow *self,
+			       guint *nb_rooms,
+			       guint *nb_private);
+
 G_DEFINE_TYPE (EmpathyChatWindow, empathy_chat_window, G_TYPE_OBJECT);
 
 static void
@@ -1154,6 +1168,12 @@ chat_window_tabs_right_activate_cb (GtkAction         *action,
 	chat_window_menu_context_update (priv, num_pages);
 }
 
+static EmpathyChatWindow *
+empathy_chat_window_new (void)
+{
+	return EMPATHY_CHAT_WINDOW (g_object_new (EMPATHY_TYPE_CHAT_WINDOW, NULL));
+}
+
 static void
 chat_window_detach_activate_cb (GtkAction         *action,
 				EmpathyChatWindow *window)
@@ -1346,6 +1366,21 @@ chat_window_set_highlight_room_tab_label (EmpathyChat *chat)
 	widget = g_object_get_data (G_OBJECT (chat), "chat-window-tab-label");
 	gtk_label_set_markup (GTK_LABEL (widget), markup);
 	g_free (markup);
+}
+
+static gboolean
+empathy_chat_window_has_focus (EmpathyChatWindow *window)
+{
+	EmpathyChatWindowPriv *priv;
+	gboolean              has_focus;
+
+	g_return_val_if_fail (EMPATHY_IS_CHAT_WINDOW (window), FALSE);
+
+	priv = GET_PRIV (window);
+
+	g_object_get (priv->dialog, "has-toplevel-focus", &has_focus, NULL);
+
+	return has_focus;
 }
 
 static void
@@ -2062,17 +2097,23 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 						   window);
 }
 
-EmpathyChatWindow *
-empathy_chat_window_new (void)
+static GtkWidget *
+empathy_chat_window_get_dialog (EmpathyChatWindow *window)
 {
-	return EMPATHY_CHAT_WINDOW (g_object_new (EMPATHY_TYPE_CHAT_WINDOW, NULL));
+	EmpathyChatWindowPriv *priv;
+
+	g_return_val_if_fail (window != NULL, NULL);
+
+	priv = GET_PRIV (window);
+
+	return priv->dialog;
 }
 
 /* Returns the window to open a new tab in if there is only one window
  * visble, otherwise, returns NULL indicating that a new window should
  * be added.
  */
-EmpathyChatWindow *
+static EmpathyChatWindow *
 empathy_chat_window_get_default (gboolean room)
 {
 	GSettings *gsettings = g_settings_new (EMPATHY_PREFS_UI_SCHEMA);
@@ -2118,19 +2159,7 @@ empathy_chat_window_get_default (gboolean room)
 	return NULL;
 }
 
-GtkWidget *
-empathy_chat_window_get_dialog (EmpathyChatWindow *window)
-{
-	EmpathyChatWindowPriv *priv;
-
-	g_return_val_if_fail (window != NULL, NULL);
-
-	priv = GET_PRIV (window);
-
-	return priv->dialog;
-}
-
-void
+static void
 empathy_chat_window_add_chat (EmpathyChatWindow *window,
 			      EmpathyChat	*chat)
 {
@@ -2199,7 +2228,7 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 	DEBUG ("Chat added (%d references)", G_OBJECT (chat)->ref_count);
 }
 
-void
+static void
 empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 				 EmpathyChat	   *chat)
 {
@@ -2237,7 +2266,7 @@ empathy_chat_window_remove_chat (EmpathyChatWindow *window,
 	g_object_unref (chat);
 }
 
-void
+static void
 empathy_chat_window_move_chat (EmpathyChatWindow *old_window,
 			       EmpathyChatWindow *new_window,
 			       EmpathyChat       *chat)
@@ -2266,7 +2295,7 @@ empathy_chat_window_move_chat (EmpathyChatWindow *old_window,
 	g_object_unref (chat);
 }
 
-void
+static void
 empathy_chat_window_switch_to_chat (EmpathyChatWindow *window,
 				    EmpathyChat	      *chat)
 {
@@ -2282,21 +2311,6 @@ empathy_chat_window_switch_to_chat (EmpathyChatWindow *window,
 					  GTK_WIDGET (chat));
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook),
 				       page_num);
-}
-
-gboolean
-empathy_chat_window_has_focus (EmpathyChatWindow *window)
-{
-	EmpathyChatWindowPriv *priv;
-	gboolean              has_focus;
-
-	g_return_val_if_fail (EMPATHY_IS_CHAT_WINDOW (window), FALSE);
-
-	priv = GET_PRIV (window);
-
-	g_object_get (priv->dialog, "has-toplevel-focus", &has_focus, NULL);
-
-	return has_focus;
 }
 
 EmpathyChat *
@@ -2380,7 +2394,7 @@ empathy_chat_window_present_chat (EmpathyChat *chat,
 	gtk_widget_grab_focus (chat->input_text_view);
 }
 
-void
+static void
 empathy_chat_window_get_nb_chats (EmpathyChatWindow *self,
 			       guint *nb_rooms,
 			       guint *nb_private)
