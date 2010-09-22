@@ -32,7 +32,8 @@ G_BEGIN_DECLS
 void empathy_geometry_bind (GtkWindow *window,
     const gchar *name);
 
-void empathy_geometry_unbind (GtkWindow *window);
+void empathy_geometry_unbind (GtkWindow *window,
+    const gchar *name);
 
 G_END_DECLS
 

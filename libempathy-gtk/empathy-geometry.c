@@ -127,24 +127,25 @@ geometry_get_key_file (void)
 }
 
 static void
-empathy_geometry_save (GtkWindow *window,
-    const gchar *name)
+empathy_geometry_save (GtkWindow *window)
 {
   GKeyFile *key_file;
   GdkWindow *gdk_window;
   GdkWindowState window_state;
-  gchar *escaped_name;
   gint x, y, w, h;
   gboolean maximized;
+  gchar *position_str = NULL;
+  GHashTable *names;
+  GHashTableIter iter;
+  const gchar *name;
+
+  names = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
 
   g_return_if_fail (GTK_IS_WINDOW (window));
-  g_return_if_fail (!EMP_STR_EMPTY (name));
+  g_return_if_fail (names != NULL);
 
   if (!gtk_widget_get_visible (GTK_WIDGET (window)))
     return;
-
-  /* escape the name so that unwanted characters such as # are removed */
-  escaped_name = g_uri_escape_string (name, NULL, TRUE);
 
   /* Get window geometry */
   gtk_window_get_position (window, &x, &y);
@@ -162,19 +163,30 @@ empathy_geometry_save (GtkWindow *window,
   /* Save window size only if not maximized */
   if (!maximized)
     {
-      gchar *str;
-
-      str = g_strdup_printf (GEOMETRY_POSITION_FORMAT, x, y, w, h);
-      g_key_file_set_string (key_file, GEOMETRY_POSITION_GROUP,
-          escaped_name, str);
-      g_free (str);
+      position_str = g_strdup_printf (GEOMETRY_POSITION_FORMAT, x, y, w, h);
     }
 
-  g_key_file_set_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP,
-      escaped_name, maximized);
+  g_hash_table_iter_init (&iter, names);
+  while (g_hash_table_iter_next (&iter, (gpointer) &name, NULL))
+    {
+      gchar *escaped_name;
+
+      /* escape the name so that unwanted characters such as # are removed */
+      escaped_name = g_uri_escape_string (name, NULL, TRUE);
+
+      g_key_file_set_boolean (key_file, GEOMETRY_MAXIMIZED_GROUP,
+          escaped_name, maximized);
+
+      if (position_str != NULL)
+        g_key_file_set_string (key_file, GEOMETRY_POSITION_GROUP,
+            escaped_name, position_str);
+
+      g_free (escaped_name);
+    }
+
 
   geometry_schedule_store (key_file);
-  g_free (escaped_name);
+  g_free (position_str);
 }
 
 static void
@@ -224,10 +236,7 @@ geometry_configure_event_cb (GtkWindow *window,
     GdkEventConfigure *event,
     gpointer user_data)
 {
-  gchar *name;
-
-  name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
-  empathy_geometry_save (window, name);
+  empathy_geometry_save (window);
 
   return FALSE;
 }
@@ -239,10 +248,7 @@ geometry_window_state_event_cb (GtkWindow *window,
 {
   if ((event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) != 0)
     {
-      gchar *name;
-
-      name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
-      empathy_geometry_save (window, name);
+      empathy_geometry_save (window);
     }
 
   return FALSE;
@@ -252,10 +258,19 @@ static void
 geometry_map_cb (GtkWindow *window,
     gpointer user_data)
 {
-  gchar *name;
+  GHashTable *names;
+  GHashTableIter iter;
+  const gchar *name;
 
   /* The WM will replace this window, restore its last position */
-  name = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+  names = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+
+  g_assert (names != NULL);
+
+  /* Use the first name we get in the hash table */
+  g_hash_table_iter_init (&iter, names);
+  g_assert (g_hash_table_iter_next (&iter, (gpointer) &name, NULL));
+
   empathy_geometry_load (window, name);
 }
 
@@ -263,22 +278,36 @@ void
 empathy_geometry_bind (GtkWindow *window,
     const gchar *name)
 {
-  gchar *str;
+  GHashTable *names;
+  gboolean connect_sigs = FALSE;
 
   g_return_if_fail (GTK_IS_WINDOW (window));
   g_return_if_fail (!EMP_STR_EMPTY (name));
 
   /* Check if this window is already bound */
-  str = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
-  if (str != NULL)
-    return;
+  names = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+  if (names == NULL)
+    {
+      connect_sigs = TRUE;
+      names = g_hash_table_new_full (g_str_hash, g_str_equal,
+          g_free, NULL);
+
+      g_object_set_data_full (G_OBJECT (window), GEOMETRY_NAME_KEY, names,
+          (GDestroyNotify) g_hash_table_unref);
+    }
+  else if (g_hash_table_lookup (names, name) != NULL)
+    {
+      return;
+    }
 
   /* Store the geometry name in the window's data */
-  str = g_strdup (name);
-  g_object_set_data_full (G_OBJECT (window), GEOMETRY_NAME_KEY, str, g_free);
+  g_hash_table_insert (names, g_strdup (name), GUINT_TO_POINTER (TRUE));
 
   /* Load initial geometry */
   empathy_geometry_load (window, name);
+
+  if (!connect_sigs)
+    return;
 
   /* Track geometry changes */
   g_signal_connect (window, "configure-event",
@@ -290,8 +319,20 @@ empathy_geometry_bind (GtkWindow *window,
 }
 
 void
-empathy_geometry_unbind (GtkWindow *window)
+empathy_geometry_unbind (GtkWindow *window,
+    const gchar *name)
 {
+  GHashTable *names;
+
+  names = g_object_get_data (G_OBJECT (window), GEOMETRY_NAME_KEY);
+  if (names == NULL)
+    return;
+
+  g_hash_table_remove (names, name);
+
+  if (g_hash_table_size (names) > 0)
+    return;
+
   g_signal_handlers_disconnect_by_func (window,
     geometry_configure_event_cb, NULL);
   g_signal_handlers_disconnect_by_func (window,
