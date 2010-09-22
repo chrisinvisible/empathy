@@ -126,7 +126,7 @@ geometry_get_key_file (void)
   return key_file;
 }
 
-void
+static void
 empathy_geometry_save (GtkWindow *window,
     const gchar *name)
 {
@@ -177,7 +177,7 @@ empathy_geometry_save (GtkWindow *window,
   g_free (escaped_name);
 }
 
-void
+static void
 empathy_geometry_load (GtkWindow *window,
     const gchar *name)
 {

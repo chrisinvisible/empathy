@@ -29,12 +29,6 @@
 
 G_BEGIN_DECLS
 
-void empathy_geometry_save (GtkWindow *window,
-    const gchar *name);
-
-void empathy_geometry_load (GtkWindow *window,
-    const gchar *name);
-
 void empathy_geometry_bind (GtkWindow *window,
     const gchar *name);
 
