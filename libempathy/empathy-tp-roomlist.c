@@ -261,65 +261,47 @@ stop_listing_cb (TpChannel *proxy,
 }
 
 static void
-channel_ready_cb (TpChannel *channel,
-		  const GError *error,
-		  gpointer user_data)
+tp_roomlist_create_channel_cb (GObject *source,
+				GAsyncResult *result,
+				gpointer      user_data)
 {
-	EmpathyTpRoomlist *list = EMPATHY_TP_ROOMLIST (user_data);
-	EmpathyTpRoomlistPriv *priv = GET_PRIV (list);
+	EmpathyTpRoomlist *self = user_data;
+	EmpathyTpRoomlistPriv *priv = GET_PRIV (self);
+	GError *error = NULL;
 
-	if (error != NULL) {
-		DEBUG ("Channel invalidated: %s", error->message);
-		g_signal_emit (list, signals[DESTROY], 0);
+	priv->channel = tp_account_channel_request_create_and_handle_channel_finish (
+		TP_ACCOUNT_CHANNEL_REQUEST (source), result, NULL, &error);
+
+	if (priv->channel == NULL) {
+		DEBUG ("Error creating channel: %s", error->message);
+		g_error_free (error);
 		return;
 	}
 
 	g_signal_connect (priv->channel, "invalidated",
-			  G_CALLBACK (tp_roomlist_invalidated_cb),
-			  list);
+			  G_CALLBACK (tp_roomlist_invalidated_cb), self);
 
 	tp_cli_channel_type_room_list_connect_to_listing_rooms (priv->channel,
 								tp_roomlist_listing_cb,
 								NULL, NULL,
-								G_OBJECT (list),
+								G_OBJECT (self),
 								NULL);
 	tp_cli_channel_type_room_list_connect_to_got_rooms (priv->channel,
 							    tp_roomlist_got_rooms_cb,
 							    NULL, NULL,
-							    G_OBJECT (list),
+							    G_OBJECT (self),
 							    NULL);
 
 	tp_cli_channel_type_room_list_call_get_listing_rooms (priv->channel, -1,
 							      tp_roomlist_get_listing_rooms_cb,
 							      NULL, NULL,
-							      G_OBJECT (list));
+							      G_OBJECT (self));
 
 	if (priv->start_requested == TRUE) {
 		tp_cli_channel_type_room_list_call_list_rooms (priv->channel, -1,
-			call_list_rooms_cb, list, NULL, NULL);
+			call_list_rooms_cb, self, NULL, NULL);
 		priv->start_requested = FALSE;
 	}
-}
-
-static void
-tp_roomlist_request_channel_cb (TpConnection *connection,
-				const gchar  *object_path,
-				const GError *error,
-				gpointer      user_data,
-				GObject      *list)
-{
-	EmpathyTpRoomlistPriv *priv = GET_PRIV (list);
-
-	if (error) {
-		DEBUG ("Error requesting channel: %s", error->message);
-		return;
-	}
-
-	priv->channel = tp_channel_new (priv->connection, object_path,
-					TP_IFACE_CHANNEL_TYPE_ROOM_LIST,
-					TP_HANDLE_TYPE_NONE,
-					0, NULL);
-	tp_channel_call_when_ready (priv->channel, channel_ready_cb, list);
 }
 
 static void
@@ -351,18 +333,26 @@ static void
 tp_roomlist_constructed (GObject *list)
 {
 	EmpathyTpRoomlistPriv *priv = GET_PRIV (list);
+	GHashTable *request;
+	TpAccountChannelRequest *req;
+
+	request = tp_asv_new (
+		TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+		  TP_IFACE_CHANNEL_TYPE_ROOM_LIST,
+		TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT, TP_HANDLE_TYPE_NONE,
+		NULL);
 
 	priv->connection = tp_account_get_connection (priv->account);
 	g_object_ref (priv->connection);
 
-	tp_cli_connection_call_request_channel (priv->connection, -1,
-						TP_IFACE_CHANNEL_TYPE_ROOM_LIST,
-						TP_HANDLE_TYPE_NONE,
-						0,
-						TRUE,
-						tp_roomlist_request_channel_cb,
-						NULL, NULL,
-						list);
+	req = tp_account_channel_request_new (priv->account, request,
+		TP_USER_ACTION_TIME_CURRENT_TIME);
+
+	tp_account_channel_request_create_and_handle_channel_async (req, NULL,
+		tp_roomlist_create_channel_cb, list);
+
+	g_hash_table_unref (request);
+	g_object_unref (req);
 }
 
 static void
