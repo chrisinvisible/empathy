@@ -2192,10 +2192,20 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 			name = "room-window";
 
 		if (separate_windows) {
+			gint x, y;
+
+			/* Save current position of the window */
+			gtk_window_get_position (GTK_WINDOW (priv->dialog), &x, &y);
+
 			/* First bind to the 'generic' name. So new window for which we didn't
 			* save a geometry yet will have the geometry of the last saved
 			* window (bgo #601191). */
 			empathy_geometry_bind (GTK_WINDOW (priv->dialog), name);
+
+			/* Restore previous position of the window so the newly created window
+			* won't be in the same position as the latest saved window and so
+			* completely hide it. */
+			gtk_window_move (GTK_WINDOW (priv->dialog), x, y);
 
 			/* Then bind it to the name of the contact/room so we'll save the
 			* geometry specific to this window */
