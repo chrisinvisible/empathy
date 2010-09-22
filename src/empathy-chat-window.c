@@ -2188,11 +2188,18 @@ empathy_chat_window_add_chat (EmpathyChatWindow *window,
 
 		g_object_unref (gsettings);
 
-		if (separate_windows) {
-			name = empathy_chat_get_id (chat);
-		}
-		else if (empathy_chat_is_room (chat)) {
+		if (empathy_chat_is_room (chat))
 			name = "room-window";
+
+		if (separate_windows) {
+			/* First bind to the 'generic' name. So new window for which we didn't
+			* save a geometry yet will have the geometry of the last saved
+			* window (bgo #601191). */
+			empathy_geometry_bind (GTK_WINDOW (priv->dialog), name);
+
+			/* Then bind it to the name of the contact/room so we'll save the
+			* geometry specific to this window */
+			name = empathy_chat_get_id (chat);
 		}
 
 		empathy_geometry_bind (GTK_WINDOW (priv->dialog), name);
