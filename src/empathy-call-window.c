@@ -3118,6 +3118,10 @@ empathy_call_window_restart_call (EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
+  /* Remove error info bars */
+  gtk_container_forall (GTK_CONTAINER (priv->errors_vbox),
+      (GtkCallback) gtk_widget_destroy, NULL);
+
   create_video_output_widget (window);
 
   g_signal_connect (G_OBJECT (priv->audio_input_adj), "value-changed",
