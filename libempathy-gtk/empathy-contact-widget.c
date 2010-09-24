@@ -293,7 +293,6 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       TpContactInfoField *field;
       InfoFieldData *field_data;
       GList *ll;
-      GStrv value = NULL;
       GtkWidget *w;
 
       field_data = find_info_field_data (spec->name);
@@ -308,13 +307,20 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         {
           field = ll->data;
           if (!tp_strdiff (field->field_name, spec->name))
-            {
-              value = field->field_value;
-              break;
-            }
+            break;
         }
 
-      field = tp_contact_info_field_new (spec->name, spec->parameters, value);
+      if (field != NULL)
+        {
+          /* We found the field, make a copy for the details_to_set list */
+          field = tp_contact_info_field_copy (field);
+        }
+      else
+        {
+          field = tp_contact_info_field_new (spec->name, spec->parameters,
+              NULL);
+        }
+
       information->details_to_set = g_list_prepend (information->details_to_set,
           field);
 
