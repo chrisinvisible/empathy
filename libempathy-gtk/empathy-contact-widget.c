@@ -290,7 +290,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
   for (l = specs; l != NULL; l = l->next)
     {
       TpContactInfoFieldSpec *spec = l->data;
-      TpContactInfoField *field;
+      TpContactInfoField *field = NULL;
       InfoFieldData *field_data;
       GList *ll;
       GtkWidget *w;
@@ -299,15 +299,15 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       if (field_data == NULL)
         {
           DEBUG ("Unhandled ContactInfo field spec: %s", spec->name);
-          continue;
         }
 
       /* Search initial value */
-      for (ll = info; ll != NULL; ll = ll->next)
+      for (ll = info; ll != NULL && field == NULL; ll = ll->next)
         {
-          field = ll->data;
-          if (!tp_strdiff (field->field_name, spec->name))
-            break;
+          TpContactInfoField *tmp = ll->data;
+
+          if (!tp_strdiff (tmp->field_name, spec->name))
+            field = tmp;
         }
 
       if (field != NULL)
@@ -317,12 +317,23 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         }
       else
         {
+          /* Empathy doesn't support editing this file and it's not in the
+           * contact's fields so we can't do much with it. */
+          if (field_data == NULL)
+            continue;
+
           field = tp_contact_info_field_new (spec->name, spec->parameters,
               NULL);
         }
 
       information->details_to_set = g_list_prepend (information->details_to_set,
           field);
+
+      /* Empathy doesn't display this field so we can't change it. But we put
+       * it in the details_to_set list so it won't be erased when calling
+       * SetContactInfo (bgo #630427) */
+      if (field_data == NULL)
+        continue;
 
       /* Add Title */
       w = gtk_label_new (_(field_data->title));
