@@ -277,11 +277,13 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
   TpConnection *connection;
   GList *specs, *l;
   guint n_rows = 0;
+  GList *info;
 
   g_assert (information->details_to_set == NULL);
 
   contact = empathy_contact_get_tp_contact (information->contact);
   connection = tp_contact_get_connection (contact);
+  info = tp_contact_get_contact_info (contact);
 
   specs = tp_connection_get_contact_info_supported_fields (connection);
   specs = g_list_sort (specs, (GCompareFunc) contact_info_field_spec_cmp);
@@ -290,7 +292,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       TpContactInfoFieldSpec *spec = l->data;
       TpContactInfoField *field;
       InfoFieldData *field_data;
-      GList *info, *ll;
+      GList *ll;
       GStrv value = NULL;
       GtkWidget *w;
 
@@ -302,7 +304,6 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         }
 
       /* Search initial value */
-      info = tp_contact_get_contact_info (contact);
       for (ll = info; ll != NULL; ll = ll->next)
         {
           field = ll->data;
