@@ -339,6 +339,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       n_rows++;
     }
   g_list_free (specs);
+  g_list_free (info);
 
   return n_rows;
 }
