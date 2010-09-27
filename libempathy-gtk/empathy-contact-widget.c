@@ -314,11 +314,14 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         {
           /* We found the field, make a copy for the details_to_set list */
           field = tp_contact_info_field_copy (field);
+          DEBUG ("Field %s is in our vCard", spec->name);
         }
       else
         {
           /* Empathy doesn't support editing this file and it's not in the
            * contact's fields so we can't do much with it. */
+          DEBUG ("Field %s is not in our vCard", spec->name);
+
           if (field_data == NULL)
             continue;
 
