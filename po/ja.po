@@ -24,8 +24,8 @@ msgstr ""
 "Project-Id-Version: empathy master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-09-19 09:08+0000\n"
-"PO-Revision-Date: 2010-09-11 15:06+0900\n"
+"POT-Creation-Date: 2010-09-27 09:05+0000\n"
+"PO-Revision-Date: 2010-09-27 21:03+0900\n"
 "Last-Translator: Takayuki KUASNO <AE5T-KSN@asahi-net.or.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "MIME-Version: 1.0\n"
@@ -659,6 +659,7 @@ msgstr ""
 "れている長さを越えています"
 
 #: ../libempathy/empathy-utils.c:544
+#: ../libempathy-gtk/empathy-contact-list-store.h:73
 msgid "People Nearby"
 msgstr "すぐ近くにいる人達"
 
@@ -1469,6 +1470,14 @@ msgstr "あとで決める(_L)"
 msgid "Subscription Request"
 msgstr "登録のリクエスト"
 
+#: ../libempathy-gtk/empathy-contact-list-store.h:71
+msgid "Ungrouped"
+msgstr "グループ無所属"
+
+#: ../libempathy-gtk/empathy-contact-list-store.h:72
+msgid "Favorite People"
+msgstr "お気に入りの人達"
+
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
 #: ../libempathy-gtk/empathy-individual-view.c:2232
 #, c-format
@@ -1540,7 +1549,7 @@ msgid "Share My Desktop"
 msgstr "デスクトップを共有する"
 
 #: ../libempathy-gtk/empathy-contact-menu.c:415
-#: ../libempathy-gtk/empathy-contact-widget.c:1541
+#: ../libempathy-gtk/empathy-contact-widget.c:1539
 #: ../libempathy-gtk/empathy-individual-menu.c:759
 #: ../libempathy-gtk/empathy-individual-widget.c:1292
 msgid "Favorite"
@@ -1596,128 +1605,128 @@ msgstr "ウェブサイト:"
 msgid "Birthday:"
 msgstr "誕生日:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:579
+#: ../libempathy-gtk/empathy-contact-widget.c:578
 #: ../libempathy-gtk/empathy-individual-widget.c:454
 msgid "Country ISO Code:"
 msgstr "ISOによる国コード:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:581
+#: ../libempathy-gtk/empathy-contact-widget.c:580
 #: ../libempathy-gtk/empathy-individual-widget.c:456
 msgid "Country:"
 msgstr "国:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:583
+#: ../libempathy-gtk/empathy-contact-widget.c:582
 #: ../libempathy-gtk/empathy-individual-widget.c:458
 msgid "State:"
 msgstr "連邦・州:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:585
+#: ../libempathy-gtk/empathy-contact-widget.c:584
 #: ../libempathy-gtk/empathy-individual-widget.c:460
 msgid "City:"
 msgstr "都市:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:587
+#: ../libempathy-gtk/empathy-contact-widget.c:586
 #: ../libempathy-gtk/empathy-individual-widget.c:462
 msgid "Area:"
 msgstr "地域:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:589
+#: ../libempathy-gtk/empathy-contact-widget.c:588
 #: ../libempathy-gtk/empathy-individual-widget.c:464
 msgid "Postal Code:"
 msgstr "郵便番号:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:591
+#: ../libempathy-gtk/empathy-contact-widget.c:590
 #: ../libempathy-gtk/empathy-individual-widget.c:466
 msgid "Street:"
 msgstr "通り:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:593
+#: ../libempathy-gtk/empathy-contact-widget.c:592
 #: ../libempathy-gtk/empathy-individual-widget.c:468
 msgid "Building:"
 msgstr "ビル:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:595
+#: ../libempathy-gtk/empathy-contact-widget.c:594
 #: ../libempathy-gtk/empathy-individual-widget.c:470
 msgid "Floor:"
 msgstr "階:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:597
+#: ../libempathy-gtk/empathy-contact-widget.c:596
 #: ../libempathy-gtk/empathy-individual-widget.c:472
 msgid "Room:"
 msgstr "部屋番号:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:599
+#: ../libempathy-gtk/empathy-contact-widget.c:598
 #: ../libempathy-gtk/empathy-individual-widget.c:474
 msgid "Text:"
 msgstr "テキスト:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:601
+#: ../libempathy-gtk/empathy-contact-widget.c:600
 #: ../libempathy-gtk/empathy-individual-widget.c:476
 msgid "Description:"
 msgstr "説明:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:603
+#: ../libempathy-gtk/empathy-contact-widget.c:602
 #: ../libempathy-gtk/empathy-individual-widget.c:478
 msgid "URI:"
 msgstr "URI:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:605
+#: ../libempathy-gtk/empathy-contact-widget.c:604
 #: ../libempathy-gtk/empathy-individual-widget.c:480
 msgid "Accuracy Level:"
 msgstr "精度のレベル:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:607
+#: ../libempathy-gtk/empathy-contact-widget.c:606
 #: ../libempathy-gtk/empathy-individual-widget.c:482
 msgid "Error:"
 msgstr "エラー:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:609
+#: ../libempathy-gtk/empathy-contact-widget.c:608
 #: ../libempathy-gtk/empathy-individual-widget.c:484
 msgid "Vertical Error (meters):"
 msgstr "垂直誤差 (メートル):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:611
+#: ../libempathy-gtk/empathy-contact-widget.c:610
 #: ../libempathy-gtk/empathy-individual-widget.c:486
 msgid "Horizontal Error (meters):"
 msgstr "水平誤差 (メートル):"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:613
+#: ../libempathy-gtk/empathy-contact-widget.c:612
 #: ../libempathy-gtk/empathy-individual-widget.c:488
 msgid "Speed:"
 msgstr "速度:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:615
+#: ../libempathy-gtk/empathy-contact-widget.c:614
 #: ../libempathy-gtk/empathy-individual-widget.c:490
 msgid "Bearing:"
 msgstr "方位:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:617
+#: ../libempathy-gtk/empathy-contact-widget.c:616
 #: ../libempathy-gtk/empathy-individual-widget.c:492
 msgid "Climb Speed:"
 msgstr "上昇速度:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:619
+#: ../libempathy-gtk/empathy-contact-widget.c:618
 #: ../libempathy-gtk/empathy-individual-widget.c:494
 msgid "Last Updated on:"
 msgstr "最後のアップデートは:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:621
+#: ../libempathy-gtk/empathy-contact-widget.c:620
 #: ../libempathy-gtk/empathy-individual-widget.c:496
 msgid "Longitude:"
 msgstr "経度:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:623
+#: ../libempathy-gtk/empathy-contact-widget.c:622
 #: ../libempathy-gtk/empathy-individual-widget.c:498
 msgid "Latitude:"
 msgstr "緯度:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:625
+#: ../libempathy-gtk/empathy-contact-widget.c:624
 #: ../libempathy-gtk/empathy-individual-widget.c:500
 msgid "Altitude:"
 msgstr "高度:"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:688
-#: ../libempathy-gtk/empathy-contact-widget.c:705
+#: ../libempathy-gtk/empathy-contact-widget.c:687
+#: ../libempathy-gtk/empathy-contact-widget.c:704
 #: ../libempathy-gtk/empathy-individual-widget.c:582
 #: ../libempathy-gtk/empathy-individual-widget.c:599
 #: ../src/empathy-preferences.ui.h:12
@@ -1725,23 +1734,23 @@ msgid "Location"
 msgstr "場所"
 
 #. translators: format is "Location, $date"
-#: ../libempathy-gtk/empathy-contact-widget.c:707
+#: ../libempathy-gtk/empathy-contact-widget.c:706
 #: ../libempathy-gtk/empathy-individual-widget.c:601
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:759
+#: ../libempathy-gtk/empathy-contact-widget.c:758
 #: ../libempathy-gtk/empathy-individual-widget.c:650
 msgid "%B %e, %Y at %R UTC"
 msgstr "%Y年%B%e日 %R UTC"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:842
+#: ../libempathy-gtk/empathy-contact-widget.c:841
 #: ../libempathy-gtk/empathy-individual-widget.c:841
 msgid "Save Avatar"
 msgstr "アバターの保存"
 
-#: ../libempathy-gtk/empathy-contact-widget.c:898
+#: ../libempathy-gtk/empathy-contact-widget.c:897
 #: ../libempathy-gtk/empathy-individual-widget.c:899
 msgid "Unable to save avatar"
 msgstr "アバターを保存できません"
@@ -1931,10 +1940,12 @@ msgid "Conversations"
 msgstr "会話"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:3
+#: ../libempathy-gtk/empathy-search-bar.ui.h:1
 msgid "Find Next"
 msgstr "次を検索"
 
 #: ../libempathy-gtk/empathy-log-window.ui.h:4
+#: ../libempathy-gtk/empathy-search-bar.ui.h:2
 msgid "Find Previous"
 msgstr "前を検索"
 
@@ -2018,15 +2029,15 @@ msgstr "在席中にし現在の状態を設定する"
 msgid "Custom messages…"
 msgstr "独自のメッセージ…"
 
-#: ../libempathy-gtk/empathy-search-bar.ui.h:1
+#: ../libempathy-gtk/empathy-search-bar.ui.h:3
 msgid "Find:"
 msgstr "検索:"
 
-#: ../libempathy-gtk/empathy-search-bar.ui.h:2
+#: ../libempathy-gtk/empathy-search-bar.ui.h:4
 msgid "Match case"
 msgstr "大文字小文字を区別して一致"
 
-#: ../libempathy-gtk/empathy-search-bar.ui.h:3
+#: ../libempathy-gtk/empathy-search-bar.ui.h:5
 msgid "Phrase not found"
 msgstr "フレーズが見つかりませんでした"
 
@@ -2425,7 +2436,7 @@ msgstr ""
 "(Contributed to Moblin by Intel GLS)\n"
 "草野 貴之 <AE5T-KSN@asahi-net.or.jp>\n"
 "西堀 清貴 <ml.nishibori.kiyotaka@gmail.com>\n"
-"日本GNOMEユーザ会 <http://www.gnome.gr.jp/>"
+"日本GNOMEユーザー会 <http://www.gnome.gr.jp/>"
 
 #: ../src/empathy-account-assistant.c:167
 msgid "There was an error while importing the accounts."
