@@ -1,3 +1,57 @@
+NEW in 2.32.0 (27/09/2010)
+=============
+
+Not a lot of code changes since 2.31.92 as we were in hard code freeze but we
+still fixed 2 crashes.
+Most of the work has been done by the awesome GNOME Translation Team. Thanks
+to them Empathy 2.32.0 is translated in more than 30 languages.
+See http://l10n.gnome.org/module/empathy/
+
+Bugs fixed:
+ - Fixed #629380, Double contacts after adding new contact in group "Ungrouped" (Philip Withnall)
+ - Fixed #629736, Blacklist Haze's sip protocol (Guillaume Desmottes)
+ - Fixed #629957, Failed assertion in contact_widget_details_feature_prepared_cb() (Guillaume Desmottes)
+ - Fixed #630168, empathy-accounts assert failure: *** glibc detected *** /usr/bin/empathy-accounts: free(): invalid pointer: 0x0809d5b6 *** (Guillaume Desmottes)
+ - Fixed #630214, File missing from POTFILES.in (Gabor Kelemen)
+ - Fixed #630400, Untranslatable strings (Gabor Kelemen)
+ - Fixed #630476, Typo in user guide: witn (Gabor Kelemen)
+
+Translations:
+ - Updated an Translation (Daniel Martinez Cucalon)
+ - Updated ar Translation (Khaled Hosny)
+ - Updated bg Translation (Damyan Ivanov)
+ - Updated cs Translation (Marek Černocký)
+ - Updated da Translation (Kenneth Nielsen)
+ - Updated de Translation (Christian Kirbach)
+ - Updated en_GB Translation (Bruce Cowan)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated eu Translation (Inaki Larranaga Murgoitio)
+ - Updated fr Translation (Claude Paroz)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated hu Translation (Gabor Kelemen)
+ - Updated it Translation (Milo Casagrande)
+ - Updated ja Translation (Takayuki KUSANO)
+ - Updated lt Translation (Žygimantas Beručka)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated pl Translation (Piotr Drąg)
+ - Updated pt_BR Translation (Djavan Fagundes)
+ - Updated pt Translation (Duarte Loreto)
+ - Updated ro Translation (Lucian Adrian Grijincu)
+ - Updated ru Translation (Yuri Myasoedov)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated zh_CN Translation (Xhacker Liu, Aron Xu)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann, Christian Kirbach)
+ - Updated es Documentation translation (Jorge González)
+ - Updated fr Documentation translation (Claude Paroz)
+ - Updated gl Documentation translation (Fran Diéguez)
+ - Updated hu Documentation translation (Gabor Kelemen)
+
 NEW in 2.31.92 (14/09/2010)
 ==============
 
