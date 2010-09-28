@@ -153,7 +153,7 @@ field_value_is_empty (TpContactInfoField *field)
   if (field->field_value == NULL)
     return TRUE;
 
-  return EMP_STR_EMPTY (field->field_value[0]);
+  return field->field_value[0] == NULL;
 }
 
 static void
