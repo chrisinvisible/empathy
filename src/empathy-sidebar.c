@@ -75,7 +75,7 @@ G_DEFINE_TYPE (EmpathySidebar, empathy_sidebar, GTK_TYPE_VBOX)
     (G_TYPE_INSTANCE_GET_PRIVATE ((object), EMPATHY_TYPE_SIDEBAR, EmpathySidebarPrivate))
 
 static void
-empathy_sidebar_destroy (GtkObject *object)
+empathy_sidebar_destroy (GtkWidget *object)
 {
   EmpathySidebar *sidebar = EMPATHY_SIDEBAR (object);
 
@@ -91,7 +91,7 @@ empathy_sidebar_destroy (GtkObject *object)
       sidebar->priv->page_model = NULL;
     }
 
-  (* GTK_OBJECT_CLASS (empathy_sidebar_parent_class)->destroy) (object);
+  (* GTK_WIDGET_CLASS (empathy_sidebar_parent_class)->destroy) (object);
 }
 
 static void
@@ -197,15 +197,13 @@ empathy_sidebar_class_init (EmpathySidebarClass *empathy_sidebar_class)
 {
   GObjectClass *g_object_class;
   GtkWidgetClass *widget_class;
-  GtkObjectClass *gtk_object_klass;
 
   g_object_class = G_OBJECT_CLASS (empathy_sidebar_class);
   widget_class = GTK_WIDGET_CLASS (empathy_sidebar_class);
-  gtk_object_klass = GTK_OBJECT_CLASS (empathy_sidebar_class);
 
   g_type_class_add_private (g_object_class, sizeof (EmpathySidebarPrivate));
 
-  gtk_object_klass->destroy = empathy_sidebar_destroy;
+  widget_class->destroy = empathy_sidebar_destroy;
   g_object_class->get_property = empathy_sidebar_get_property;
   g_object_class->set_property = empathy_sidebar_set_property;
 

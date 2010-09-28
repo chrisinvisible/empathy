@@ -60,7 +60,7 @@ enum
 
 static guint signals[LAST_SIGNAL];
 
-static void live_search_hook_widget_destroy_cb (GtkObject *object,
+static void live_search_hook_widget_destroy_cb (GtkWidget *object,
     gpointer user_data);
 
 /**
@@ -376,7 +376,7 @@ live_search_release_hook_widget (EmpathyLiveSearch *self)
 }
 
 static void
-live_search_hook_widget_destroy_cb (GtkObject *object,
+live_search_hook_widget_destroy_cb (GtkWidget *object,
     gpointer user_data)
 {
   EmpathyLiveSearch *self = EMPATHY_LIVE_SEARCH (user_data);
