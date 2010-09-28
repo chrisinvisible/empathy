@@ -147,6 +147,15 @@ enum
   COL_COUNT
 };
 
+static gboolean
+field_value_is_empty (TpContactInfoField *field)
+{
+  if (field->field_value == NULL)
+    return TRUE;
+
+  return EMP_STR_EMPTY (field->field_value[0]);
+}
+
 static void
 contact_widget_save (EmpathyContactWidget *information)
 {
@@ -161,7 +170,7 @@ contact_widget_save (EmpathyContactWidget *information)
       TpContactInfoField *field = l->data;
 
       next = l->next;
-      if (field->field_value == NULL || EMP_STR_EMPTY (field->field_value[0]))
+      if (field_value_is_empty (field))
         {
           DEBUG ("Drop empty field: %s", field->field_name);
           tp_contact_info_field_free (field);
