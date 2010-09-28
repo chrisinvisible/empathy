@@ -425,7 +425,6 @@ account_assistant_protocol_changed_cb (GtkComboBox *chooser,
       empathy_account_settings_set_icon_name_async (settings, "im-google-talk",
         NULL, NULL);
 
-      empathy_account_settings_set_string (settings, "server", NULL);
       empathy_account_settings_set_strv (settings, "fallback-servers",
           fallback_servers);
     }
