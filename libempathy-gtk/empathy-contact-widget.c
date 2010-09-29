@@ -282,7 +282,21 @@ static gboolean
 field_spec_match_field (TpContactInfoFieldSpec *spec,
     TpContactInfoField *field)
 {
-  return (!tp_strdiff (field->field_name, spec->name));
+  guint i;
+
+  if (tp_strdiff (field->field_name, spec->name))
+    return FALSE;
+
+  if (g_strv_length (field->parameters) != g_strv_length (spec->parameters))
+    return FALSE;
+
+  for (i = 0; field->parameters[i] != NULL; i++)
+    {
+      if (tp_strdiff (field->parameters[i], spec->parameters[i]))
+        return FALSE;
+    }
+
+  return TRUE;
 }
 
 static guint
