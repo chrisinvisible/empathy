@@ -58,27 +58,6 @@ empathy_search_bar_new (EmpathyChatView *view)
 }
 
 static void
-empathy_search_bar_size_request (GtkWidget *widget,
-    GtkRequisition *requisition)
-{
-  GtkBin *bin;
-  GtkWidget *child;
-
-  bin = GTK_BIN (widget);
-  child = gtk_bin_get_child (bin);
-
-  if (child && gtk_widget_get_visible (child))
-    {
-      GtkRequisition child_requisition;
-
-      gtk_widget_size_request (child, &child_requisition);
-
-      requisition->width = child_requisition.width;
-      requisition->height = child_requisition.height;
-    }
-}
-
-static void
 empathy_search_bar_size_allocate (GtkWidget *widget,
     GtkAllocation *allocation)
 {
@@ -311,7 +290,6 @@ empathy_search_bar_class_init (EmpathySearchBarClass *class)
   g_type_class_add_private (gobject_class, sizeof (EmpathySearchBarPriv));
 
   /* Neither GtkBin nor GtkContainer seems to do this for us :( */
-  widget_class->size_request = empathy_search_bar_size_request;
   widget_class->size_allocate = empathy_search_bar_size_allocate;
 }
 
