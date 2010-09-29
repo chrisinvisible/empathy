@@ -2536,29 +2536,6 @@ chat_create_ui (EmpathyChat *chat)
 }
 
 static void
-chat_size_request (GtkWidget      *widget,
-		   GtkRequisition *requisition)
-{
-  GtkBin *bin = GTK_BIN (widget);
-  GtkWidget *child;
-
-  requisition->width = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
-  requisition->height = gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
-
-  child = gtk_bin_get_child (bin);
-
-  if (child && gtk_widget_get_visible (child))
-    {
-      GtkRequisition child_requisition;
-
-      gtk_widget_size_request (child, &child_requisition);
-
-      requisition->width += child_requisition.width;
-      requisition->height += child_requisition.height;
-    }
-}
-
-static void
 chat_size_allocate (GtkWidget     *widget,
 		    GtkAllocation *allocation)
 {
@@ -2674,7 +2651,6 @@ empathy_chat_class_init (EmpathyChatClass *klass)
 	object_class->set_property = chat_set_property;
 	object_class->constructed = chat_constructed;
 
-	widget_class->size_request = chat_size_request;
 	widget_class->size_allocate = chat_size_allocate;
 
 	g_object_class_install_property (object_class,
