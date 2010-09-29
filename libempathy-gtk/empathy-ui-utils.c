@@ -1570,7 +1570,7 @@ empathy_window_iconify (GtkWindow *window, GtkStatusIcon *status_icon)
 	XChangeProperty (dpy,
 			 GDK_WINDOW_XID (gdk_window),
 			 gdk_x11_get_xatom_by_name_for_display (
-				gdk_drawable_get_display (gdk_window),
+				gdk_window_get_display (gdk_window),
 			 "_NET_WM_ICON_GEOMETRY"),
 			 XA_CARDINAL, 32, PropModeReplace,
 			 (guchar *)&data, 4);
