@@ -33,10 +33,6 @@
 
 #define WEB_SITE "http://live.gnome.org/Empathy"
 
-static void about_dialog_activate_link_cb (GtkAboutDialog  *about,
-					   const gchar     *link,
-					   gpointer         data);
-
 static const char *authors[] = {
 	"Alban Crequy",
 	"Andreas Lööw",
@@ -95,20 +91,10 @@ static const char *license[] = {
 	   "51 Franklin Street, Fifth Floor, Boston, MA 02110-130159 USA")
 };
 
-static void
-about_dialog_activate_link_cb (GtkAboutDialog *about,
-			       const gchar    *link_,
-			       gpointer        data)
-{
-	empathy_url_show (GTK_WIDGET (about), link_);
-}
-
 void
 empathy_about_dialog_new (GtkWindow *parent)
 {
 	gchar *license_trans;
-
-	gtk_about_dialog_set_url_hook (about_dialog_activate_link_cb, NULL, NULL);
 
 	license_trans = g_strconcat (_(license[0]), "\n\n",
 				     _(license[1]), "\n\n",
