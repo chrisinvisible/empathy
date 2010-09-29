@@ -155,13 +155,13 @@ tp_chat_add (EmpathyContactList *list,
 		object_path = tp_proxy_get_object_path (priv->channel);
 
 		props = tp_asv_new (
-		    TP_IFACE_CHANNEL ".ChannelType", G_TYPE_STRING,
+		    TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
 		        TP_IFACE_CHANNEL_TYPE_TEXT,
-		    TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT,
+		    TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
 		        TP_HANDLE_TYPE_NONE,
-		    TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
+		    TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_CHANNELS,
 		        TP_ARRAY_TYPE_OBJECT_PATH_LIST, &channels,
-		    TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
+		    TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_INVITEE_IDS,
 		        G_TYPE_STRV, invitees,
 		    /* FIXME: InvitationMessage ? */
 		    NULL);
@@ -1320,7 +1320,7 @@ tp_chat_constructor (GType                  type,
 			const char **oprops = g_value_get_boxed (
 				g_value_array_get_nth (array, 1));
 
-			if (tp_strv_contains (oprops, TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels")) {
+			if (tp_strv_contains (oprops, TP_PROP_CHANNEL_INTERFACE_CONFERENCE_INITIAL_CHANNELS)) {
 				priv->can_upgrade_to_muc = TRUE;
 				break;
 			}
