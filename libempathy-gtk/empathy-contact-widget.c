@@ -278,6 +278,13 @@ contact_info_field_spec_cmp (TpContactInfoFieldSpec *spec1,
   return contact_info_field_name_cmp (spec1->name, spec2->name);
 }
 
+static gboolean
+field_spec_match_field (TpContactInfoFieldSpec *spec,
+    TpContactInfoField *field)
+{
+  return (!tp_strdiff (field->field_name, spec->name));
+}
+
 static guint
 contact_widget_details_update_edit (EmpathyContactWidget *information)
 {
@@ -314,7 +321,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         {
           TpContactInfoField *tmp = ll->data;
 
-          if (!tp_strdiff (tmp->field_name, spec->name))
+          if (field_spec_match_field (spec, tmp))
             field = tmp;
         }
 
