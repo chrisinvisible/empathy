@@ -145,13 +145,12 @@ cell_renderer_activatable_activate (GtkCellRenderer      *cell,
 
 static void
 cell_renderer_activatable_render (
-    GtkCellRenderer      *cell,
-    GdkWindow            *window,
-    GtkWidget            *widget,
-    GdkRectangle         *background_area,
-    GdkRectangle         *cell_area,
-    GdkRectangle         *expose_area,
-    GtkCellRendererState  flags)
+    GtkCellRenderer *cell,
+    cairo_t *cr,
+    GtkWidget *widget,
+    const GdkRectangle *background_area,
+    const GdkRectangle *cell_area,
+    GtkCellRendererState flags)
 {
   EmpathyCellRendererActivatablePriv *priv = GET_PRIV (cell);
 
@@ -160,7 +159,7 @@ cell_renderer_activatable_render (
 
   GTK_CELL_RENDERER_CLASS
     (empathy_cell_renderer_activatable_parent_class)->render (
-        cell, window, widget, background_area, cell_area, expose_area, flags);
+        cell, cr, widget, background_area, cell_area, flags);
 }
 
 static void
