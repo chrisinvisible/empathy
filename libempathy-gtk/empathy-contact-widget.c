@@ -327,7 +327,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
         }
       else
         {
-          /* Empathy doesn't support editing this file and it's not in the
+          /* Empathy doesn't support editing this field and it's not in the
            * contact's fields so we can't do much with it. */
           DEBUG ("Field %s is not in our vCard", spec->name);
 
