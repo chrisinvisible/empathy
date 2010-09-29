@@ -566,31 +566,6 @@ finalize (GObject *object)
 }
 
 static void
-size_request (GtkWidget *widget,
-    GtkRequisition *requisition)
-{
-  GtkBin *bin = GTK_BIN (widget);
-  GtkWidget *child;
-
-  requisition->width =
-      gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
-  requisition->height =
-      gtk_container_get_border_width (GTK_CONTAINER (widget)) * 2;
-
-  child = gtk_bin_get_child (bin);
-
-  if (child && gtk_widget_get_visible (child))
-    {
-      GtkRequisition child_requisition;
-
-      gtk_widget_size_request (child, &child_requisition);
-
-      requisition->width += child_requisition.width;
-      requisition->height += child_requisition.height;
-    }
-}
-
-static void
 size_allocate (GtkWidget *widget,
     GtkAllocation *allocation)
 {
@@ -628,7 +603,6 @@ empathy_individual_linker_class_init (EmpathyIndividualLinkerClass *klass)
   object_class->dispose = dispose;
   object_class->finalize = finalize;
 
-  widget_class->size_request = size_request;
   widget_class->size_allocate = size_allocate;
 
   /**
