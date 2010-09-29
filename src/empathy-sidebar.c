@@ -294,10 +294,10 @@ empathy_sidebar_select_button_key_press_cb (GtkWidget *widget,
 {
   EmpathySidebar *sidebar = EMPATHY_SIDEBAR (user_data);
 
-  if (event->keyval == GDK_space ||
-      event->keyval == GDK_KP_Space ||
-      event->keyval == GDK_Return ||
-      event->keyval == GDK_KP_Enter)
+  if (event->keyval == GDK_KEY_space ||
+      event->keyval == GDK_KEY_KP_Space ||
+      event->keyval == GDK_KEY_Return ||
+      event->keyval == GDK_KEY_KP_Enter)
     {
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), TRUE);
 

@@ -466,7 +466,7 @@ status_icon_key_press_event_cb  (GtkWidget *window,
 				 GdkEventKey *event,
 				 EmpathyStatusIcon *icon)
 {
-	if (event->keyval == GDK_Escape) {
+	if (event->keyval == GDK_KEY_Escape) {
 		status_icon_set_visibility (icon, FALSE, TRUE);
 	}
 	return FALSE;

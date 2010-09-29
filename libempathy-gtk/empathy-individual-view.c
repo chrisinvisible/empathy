@@ -882,7 +882,7 @@ individual_view_key_press_event_cb (EmpathyIndividualView *view,
     GdkEventKey *event,
     gpointer user_data)
 {
-  if (event->keyval == GDK_Menu)
+  if (event->keyval == GDK_KEY_Menu)
     {
       MenuPopupData *data;
 
@@ -1314,7 +1314,7 @@ individual_view_search_key_navigation_cb (GtkWidget *search,
   GdkEventKey *eventkey = ((GdkEventKey *) event);
   gboolean ret = FALSE;
 
-  if (eventkey->keyval == GDK_Up || eventkey->keyval == GDK_Down)
+  if (eventkey->keyval == GDK_KEY_Up || eventkey->keyval == GDK_KEY_Down)
     {
       GdkEvent *new_event;
 

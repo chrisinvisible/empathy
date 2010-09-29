@@ -525,12 +525,12 @@ presence_chooser_entry_key_press_event_cb (EmpathyPresenceChooser *self,
 {
 	EmpathyPresenceChooserPriv *priv = GET_PRIV (self);
 
-	if (priv->editing_status && event->keyval == GDK_Escape) {
+	if (priv->editing_status && event->keyval == GDK_KEY_Escape) {
 		/* the user pressed Escape, undo the editing */
 		presence_chooser_reset_status (self);
 		return TRUE;
 	}
-	else if (event->keyval == GDK_Up || event->keyval == GDK_Down) {
+	else if (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down) {
 		/* ignore */
 		return TRUE;
 	}

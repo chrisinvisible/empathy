@@ -230,7 +230,7 @@ empathy_search_bar_key_pressed (GtkWidget   *widget,
     GdkEventKey *event,
     gpointer user_data)
 {
-  if (event->keyval == GDK_Escape)
+  if (event->keyval == GDK_KEY_Escape)
     {
       empathy_search_bar_hide (EMPATHY_SEARCH_BAR (widget));
       return TRUE;

@@ -3218,7 +3218,7 @@ empathy_call_window_key_press_cb (GtkWidget *video_output,
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
 
-  if (priv->is_fullscreen && event->keyval == GDK_Escape)
+  if (priv->is_fullscreen && event->keyval == GDK_KEY_Escape)
     {
       /* Since we are in fullscreen mode, toggling will bring us back to
          normal mode. */

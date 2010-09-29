@@ -255,15 +255,15 @@ live_search_entry_key_pressed_cb (GtkEntry *entry,
   gboolean ret;
 
   /* if esc key pressed, hide the search */
-  if (event->keyval == GDK_Escape)
+  if (event->keyval == GDK_KEY_Escape)
     {
       gtk_widget_hide (GTK_WIDGET (self));
       return TRUE;
     }
 
   /* emit key navigation signal, so other widgets can respond to it properly */
-  if (event->keyval == GDK_Up || event->keyval == GDK_Down
-      || event->keyval == GDK_Left || event->keyval == GDK_Right)
+  if (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down
+      || event->keyval == GDK_KEY_Left || event->keyval == GDK_KEY_Right)
      {
        g_signal_emit (self, signals[KEYNAV], 0, event, &ret);
        return ret;
@@ -319,20 +319,20 @@ live_search_key_press_event_cb (GtkWidget *widget,
   /* dont forward this event to the entry, else the event is consumed by the
    * entry and does not close the window */
   if (!gtk_widget_get_visible (GTK_WIDGET (self)) &&
-      event->keyval == GDK_Escape)
+      event->keyval == GDK_KEY_Escape)
     return FALSE;
 
   /* do not show the search if CTRL and/or ALT are pressed with a key
    * this is needed, because otherwise the CTRL + F accel would not work,
    * because the entry consumes it */
   if (event->state & (GDK_MOD1_MASK | GDK_CONTROL_MASK) ||
-      event->keyval == GDK_Control_L ||
-      event->keyval == GDK_Control_R)
+      event->keyval == GDK_KEY_Control_L ||
+      event->keyval == GDK_KEY_Control_R)
     return FALSE;
 
   /* dont forward the up and down arrow keys to the entry, they are needed for
    * navigation in the treeview and are not needed in the search entry */
-   if (event->keyval == GDK_Up || event->keyval == GDK_Down)
+   if (event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down)
      return FALSE;
 
   /* realize the widget if it is not realized yet */

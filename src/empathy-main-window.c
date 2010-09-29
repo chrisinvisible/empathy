@@ -725,7 +725,7 @@ main_window_key_press_event_cb  (GtkWidget   *window,
 {
 	EmpathyChatManager *chat_manager;
 
-	if (event->keyval == GDK_T
+	if (event->keyval == GDK_KEY_T
 	    && event->state & GDK_SHIFT_MASK
 	    && event->state & GDK_CONTROL_MASK) {
 		chat_manager = empathy_chat_manager_dup_singleton ();
