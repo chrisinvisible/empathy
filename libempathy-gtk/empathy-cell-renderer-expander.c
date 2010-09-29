@@ -73,11 +73,10 @@ static void     empathy_cell_renderer_expander_get_size     (GtkCellRenderer    
 							    gint                            *width,
 							    gint                            *height);
 static void     empathy_cell_renderer_expander_render       (GtkCellRenderer                 *cell,
-							    GdkWindow                       *window,
+							    cairo_t *cr,
 							    GtkWidget                       *widget,
-							    GdkRectangle                    *background_area,
-							    GdkRectangle                    *cell_area,
-							    GdkRectangle                    *expose_area,
+							    const GdkRectangle              *background_area,
+							    const GdkRectangle              *cell_area,
 							    GtkCellRendererState             flags);
 static gboolean empathy_cell_renderer_expander_activate     (GtkCellRenderer                 *cell,
 							    GdkEvent                        *event,
@@ -294,11 +293,10 @@ empathy_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 
 static void
 empathy_cell_renderer_expander_render (GtkCellRenderer      *cell,
-				      GdkWindow            *window,
+				      cairo_t *cr,
 				      GtkWidget            *widget,
-				      GdkRectangle         *background_area,
-				      GdkRectangle         *cell_area,
-				      GdkRectangle         *expose_area,
+				      const GdkRectangle   *background_area,
+				      const GdkRectangle   *cell_area,
 				      GtkCellRendererState  flags)
 {
 	EmpathyCellRendererExpander     *expander;
@@ -328,7 +326,8 @@ empathy_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	} else
 		expander_style = priv->expander_style;
 
-	empathy_cell_renderer_expander_get_size (cell, widget, cell_area,
+	empathy_cell_renderer_expander_get_size (cell, widget,
+						(GdkRectangle *) cell_area,
 						&x_offset, &y_offset,
 						NULL, NULL);
 
@@ -338,9 +337,8 @@ empathy_cell_renderer_expander_render (GtkCellRenderer      *cell,
 		      NULL);
 
 	gtk_paint_expander (gtk_widget_get_style (widget),
-			    window,
+			    cr,
 			    GTK_STATE_NORMAL,
-			    expose_area,
 			    widget,
 			    "treeview",
 			    cell_area->x + x_offset + xpad + priv->expander_size / 2,
