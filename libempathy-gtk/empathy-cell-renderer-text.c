@@ -58,11 +58,10 @@ static void cell_renderer_text_get_size          (GtkCellRenderer             *c
 						  gint                        *width,
 						  gint                        *height);
 static void cell_renderer_text_render            (GtkCellRenderer             *cell,
-						  GdkDrawable                 *window,
+						  cairo_t *cr,
 						  GtkWidget                   *widget,
-						  GdkRectangle                *background_area,
-						  GdkRectangle                *cell_area,
-						  GdkRectangle                *expose_area,
+						  const GdkRectangle          *background_area,
+						  const GdkRectangle          *cell_area,
 						  GtkCellRendererState         flags);
 static void cell_renderer_text_update_text       (EmpathyCellRendererText      *cell,
 						  GtkWidget                   *widget,
@@ -266,11 +265,10 @@ cell_renderer_text_get_size (GtkCellRenderer *cell,
 
 static void
 cell_renderer_text_render (GtkCellRenderer      *cell,
-			   GdkWindow            *window,
+			   cairo_t *cr,
 			   GtkWidget            *widget,
-			   GdkRectangle         *background_area,
-			   GdkRectangle         *cell_area,
-			   GdkRectangle         *expose_area,
+			   const GdkRectangle   *background_area,
+			   const GdkRectangle   *cell_area,
 			   GtkCellRendererState  flags)
 {
 	EmpathyCellRendererText *celltext;
@@ -282,11 +280,11 @@ cell_renderer_text_render (GtkCellRenderer      *cell,
 					(flags & GTK_CELL_RENDERER_SELECTED));
 
 	(GTK_CELL_RENDERER_CLASS (empathy_cell_renderer_text_parent_class)->render) (
-		cell, window,
+		cell, cr,
 		widget,
 		background_area,
 		cell_area,
-		expose_area, flags);
+		flags);
 }
 
 static void
