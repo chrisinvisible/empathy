@@ -159,9 +159,9 @@ tp_chat_add (EmpathyContactList *list,
 		        TP_IFACE_CHANNEL_TYPE_TEXT,
 		    TP_IFACE_CHANNEL ".TargetHandleType", G_TYPE_UINT,
 		        TP_HANDLE_TYPE_NONE,
-		    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
+		    TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels",
 		        TP_ARRAY_TYPE_OBJECT_PATH_LIST, &channels,
-		    EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
+		    TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialInviteeIDs",
 		        G_TYPE_STRV, invitees,
 		    /* FIXME: InvitationMessage ? */
 		    NULL);
@@ -907,7 +907,7 @@ tp_chat_update_remote_contact (EmpathyTpChat *chat)
 	 * have the group interface. If it has the conference interface, then
 	 * it is indeed a MUC. */
 	if (tp_proxy_has_interface_by_id (priv->channel,
-					  EMP_IFACE_QUARK_CHANNEL_INTERFACE_CONFERENCE)) {
+					  TP_IFACE_QUARK_CHANNEL_INTERFACE_CONFERENCE)) {
 		return;
 	}
 
@@ -1320,7 +1320,7 @@ tp_chat_constructor (GType                  type,
 			const char **oprops = g_value_get_boxed (
 				g_value_array_get_nth (array, 1));
 
-			if (tp_strv_contains (oprops, EMP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels")) {
+			if (tp_strv_contains (oprops, TP_IFACE_CHANNEL_INTERFACE_CONFERENCE ".InitialChannels")) {
 				priv->can_upgrade_to_muc = TRUE;
 				break;
 			}
