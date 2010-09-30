@@ -556,7 +556,7 @@ empathy_protocol_name_to_display_name (const gchar *proto_name)
       if (!tp_strdiff (proto_name, names[i].proto))
         {
           if (names[i].translated)
-            return gettext(names[i].display);
+            return gettext (names[i].display);
           else
             return names[i].display;
         }
@@ -584,7 +584,7 @@ empathy_service_name_to_display_name (const gchar *service_name)
       if (!tp_strdiff (service_name, names[i].service))
         {
           if (names[i].translated)
-            return gettext(names[i].display);
+            return gettext (names[i].display);
           else
             return names[i].display;
         }
