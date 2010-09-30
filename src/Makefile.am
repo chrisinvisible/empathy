@@ -106,12 +106,15 @@ empathy_debugger_SOURCES =						\
 	empathy-debugger.c		 				\
 	$(NULL)
 
-empathy_av_SOURCES =						\
+empathy_handwritten_av_source = \
 	empathy-av.c \
 	empathy-call-window-fullscreen.c empathy-call-window-fullscreen.h \
 	empathy-call-window.c empathy-call-window.h	 \
-	empathy-sidebar.c empathy-sidebar.h \
 	$(NULL)
+
+empathy_av_SOURCES =						\
+	$(empathy_handwritten_av_source) \
+	ev-sidebar.c ev-sidebar.h
 
 empathy_auth_client_SOURCES =						\
 	empathy-auth-client.c
@@ -152,7 +155,7 @@ nodist_empathy_SOURCES = $(BUILT_SOURCES)
 check_c_sources = \
     $(empathy_handwritten_source) \
     $(empathy_logs_SOURCES) \
-    $(empathy_av_SOURCES)
+    $(empathy_handwritten_av_source)
 
 include $(top_srcdir)/tools/check-coding-style.mk
 check-local: check-coding-style

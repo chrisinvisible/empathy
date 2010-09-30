@@ -53,7 +53,7 @@
 
 #include "empathy-call-window.h"
 #include "empathy-call-window-fullscreen.h"
-#include "empathy-sidebar.h"
+#include "ev-sidebar.h"
 
 #define BUTTON_ID "empathy-call-dtmf-button-id"
 
@@ -245,10 +245,10 @@ static void empathy_call_window_set_send_video (EmpathyCallWindow *window,
 static void empathy_call_window_mic_toggled_cb (
   GtkToggleToolButton *toggle, EmpathyCallWindow *window);
 
-static void empathy_call_window_sidebar_hidden_cb (EmpathySidebar *sidebar,
+static void empathy_call_window_sidebar_hidden_cb (EvSidebar *sidebar,
   EmpathyCallWindow *window);
 
-static void empathy_call_window_sidebar_shown_cb (EmpathySidebar *sidebar,
+static void empathy_call_window_sidebar_shown_cb (EvSidebar *sidebar,
   EmpathyCallWindow *window);
 
 static void empathy_call_window_hangup_cb (gpointer object,
@@ -1183,7 +1183,7 @@ empathy_call_window_init (EmpathyCallWindow *self)
   gtk_box_pack_end (GTK_BOX (priv->vbox), h, FALSE, FALSE, 3);
   gtk_box_pack_end (GTK_BOX (h), priv->sidebar_button, FALSE, FALSE, 3);
 
-  priv->sidebar = empathy_sidebar_new ();
+  priv->sidebar = ev_sidebar_new ();
   g_signal_connect (G_OBJECT (priv->sidebar),
     "hide", G_CALLBACK (empathy_call_window_sidebar_hidden_cb), self);
   g_signal_connect (G_OBJECT (priv->sidebar),
@@ -1191,21 +1191,21 @@ empathy_call_window_init (EmpathyCallWindow *self)
   gtk_paned_pack2 (GTK_PANED (priv->pane), priv->sidebar, FALSE, FALSE);
 
   page = empathy_call_window_create_audio_input (self);
-  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Audio input"),
-    page);
+  ev_sidebar_add_page (EV_SIDEBAR (priv->sidebar), "audio-input",
+      _("Audio input"), page);
 
   page = empathy_call_window_create_video_input (self);
-  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Video input"),
-    page);
+  ev_sidebar_add_page (EV_SIDEBAR (priv->sidebar), "video-input",
+      _("Video input"), page);
 
   priv->dtmf_panel = empathy_call_window_create_dtmf (self);
-  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Dialpad"),
-    priv->dtmf_panel);
+  ev_sidebar_add_page (EV_SIDEBAR (priv->sidebar), "dialpad",
+      _("Dialpad"), priv->dtmf_panel);
 
   gtk_widget_set_sensitive (priv->dtmf_panel, FALSE);
 
-  empathy_sidebar_add_page (EMPATHY_SIDEBAR (priv->sidebar), _("Details"),
-    priv->details_vbox);
+  ev_sidebar_add_page (EV_SIDEBAR (priv->sidebar), "details",
+      _("Details"), priv->details_vbox);
 
   gtk_widget_show_all (top_vbox);
 
@@ -3100,7 +3100,7 @@ empathy_call_window_mic_toggled_cb (GtkToggleToolButton *toggle,
 }
 
 static void
-empathy_call_window_sidebar_hidden_cb (EmpathySidebar *sidebar,
+empathy_call_window_sidebar_hidden_cb (EvSidebar *sidebar,
   EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
@@ -3110,7 +3110,7 @@ empathy_call_window_sidebar_hidden_cb (EmpathySidebar *sidebar,
 }
 
 static void
-empathy_call_window_sidebar_shown_cb (EmpathySidebar *sidebar,
+empathy_call_window_sidebar_shown_cb (EvSidebar *sidebar,
   EmpathyCallWindow *window)
 {
   EmpathyCallWindowPriv *priv = GET_PRIV (window);
