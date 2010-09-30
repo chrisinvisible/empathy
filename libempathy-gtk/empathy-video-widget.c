@@ -170,8 +170,10 @@ empathy_video_widget_constructed (GObject *object)
 static void empathy_video_widget_dispose (GObject *object);
 static void empathy_video_widget_finalize (GObject *object);
 
-static gboolean empathy_video_widget_expose_event (GtkWidget *widget,
-  GdkEventExpose *event);
+
+static gboolean empathy_video_widget_draw (GtkWidget *widget,
+  cairo_t *cr);
+
 static void
 empathy_video_widget_element_set_sink_properties (EmpathyVideoWidget *self);
 
@@ -258,7 +260,7 @@ empathy_video_widget_class_init (
   object_class->set_property = empathy_video_widget_set_property;
   object_class->get_property = empathy_video_widget_get_property;
 
-  widget_class->expose_event = empathy_video_widget_expose_event;
+  widget_class->draw = empathy_video_widget_draw;
 
   param_spec = g_param_spec_object ("gst-element",
     "gst-element", "The underlaying gstreamer element",
@@ -421,20 +423,22 @@ empathy_video_widget_sync_message_cb (GstBus *bus, GstMessage *message,
 }
 
 static gboolean
-empathy_video_widget_expose_event (GtkWidget *widget, GdkEventExpose *event)
+empathy_video_widget_draw (GtkWidget *widget,
+    cairo_t *cr)
 {
   EmpathyVideoWidget *self = EMPATHY_VIDEO_WIDGET (widget);
   EmpathyVideoWidgetPriv *priv = GET_PRIV (self);
   GtkAllocation allocation;
 
-  if (event != NULL && event->count > 0)
-    return TRUE;
-
   if (priv->overlay == NULL)
     {
       gtk_widget_get_allocation (widget, &allocation);
-      gdk_window_clear_area (gtk_widget_get_window (widget), 0, 0,
-                             allocation.width, allocation.height);
+
+      gtk_paint_flat_box (gtk_widget_get_style (widget), cr,
+          GTK_STATE_NORMAL, GTK_SHADOW_NONE, widget, NULL,
+          0, 0,
+          gtk_widget_get_allocated_width (widget),
+          gtk_widget_get_allocated_height (widget));
       return TRUE;
     }
 
