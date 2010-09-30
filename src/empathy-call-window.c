@@ -603,17 +603,8 @@ empathy_call_window_create_audio_input (EmpathyCallWindow *self)
 
   priv->volume_progress_bar = gtk_progress_bar_new ();
 
-  /* FIXME: Once we unconditionally depend on GTK+ 3, we can remove the fallback
-   * for GTK+ 2 here. GtkProgressBar doesn't implement GtkOrientable in GTK+ 2,
-   * unfortunately. */
-#ifndef HAVE_GTK3
-  gtk_progress_bar_set_orientation (
-      GTK_PROGRESS_BAR (priv->volume_progress_bar),
-      GTK_PROGRESS_BOTTOM_TO_TOP);
-#else
   gtk_orientable_set_orientation (GTK_ORIENTABLE (priv->volume_progress_bar),
       GTK_ORIENTATION_VERTICAL);
-#endif
 
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->volume_progress_bar),
       0);
