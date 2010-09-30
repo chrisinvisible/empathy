@@ -1661,7 +1661,6 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	priv->throbber = gtk_spinner_new ();
 	gtk_widget_set_size_request (priv->throbber, 16, -1);
 	gtk_widget_set_tooltip_text (priv->throbber, _("Show and edit accounts"));
-	gtk_widget_set_has_window (GTK_WIDGET (priv->throbber), TRUE);
 	gtk_widget_set_events (priv->throbber, GDK_BUTTON_PRESS_MASK);
 	g_signal_connect (priv->throbber, "button-press-event",
 		G_CALLBACK (main_window_throbber_button_press_event_cb),
