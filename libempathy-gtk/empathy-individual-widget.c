@@ -45,7 +45,6 @@
 #include "empathy-groups-widget.h"
 #include "empathy-gtk-enum-types.h"
 #include "empathy-individual-widget.h"
-#include "empathy-kludge-label.h"
 #include "empathy-string-parser.h"
 #include "empathy-ui-utils.h"
 
@@ -1267,8 +1266,7 @@ alias_presence_avatar_favourite_set_up (EmpathyIndividualWidget *self,
       FALSE, 0);
   gtk_widget_show (image);
 
-  /* Set up status_label as a KludgeLabel */
-  label = empathy_kludge_label_new ("");
+  label = gtk_label_new ("");
   gtk_label_set_line_wrap_mode (GTK_LABEL (label), PANGO_WRAP_WORD_CHAR);
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
 

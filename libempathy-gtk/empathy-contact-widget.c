@@ -50,7 +50,6 @@
 #include "empathy-groups-widget.h"
 #include "empathy-ui-utils.h"
 #include "empathy-string-parser.h"
-#include "empathy-kludge-label.h"
 
 #define DEBUG_FLAG EMPATHY_DEBUG_CONTACT
 #include <libempathy/empathy-debug.h>
@@ -1428,8 +1427,7 @@ favourite_toggled_cb (GtkToggleButton *button,
 static void
 contact_widget_contact_setup (EmpathyContactWidget *information)
 {
-  /* Setup label_status as a KludgeLabel */
-  information->label_status = empathy_kludge_label_new ("");
+  information->label_status = gtk_label_new ("");
   gtk_label_set_line_wrap_mode (GTK_LABEL (information->label_status),
                                 PANGO_WRAP_WORD_CHAR);
   gtk_label_set_line_wrap (GTK_LABEL (information->label_status),
