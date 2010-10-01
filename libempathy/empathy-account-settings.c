@@ -894,6 +894,9 @@ empathy_account_settings_set_string (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
+  g_return_if_fail (param != NULL);
+  g_return_if_fail (value != NULL);
+
   tp_asv_set_string (priv->parameters, g_strdup (param), value);
 
   account_settings_remove_from_unset (settings, param);
@@ -905,6 +908,9 @@ empathy_account_settings_set_strv (EmpathyAccountSettings *settings,
     gchar **value)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  g_return_if_fail (param != NULL);
+  g_return_if_fail (value != NULL);
 
   tp_asv_set_strv (priv->parameters, g_strdup (param), value);
 
@@ -918,6 +924,8 @@ empathy_account_settings_set_int32 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
+  g_return_if_fail (param != NULL);
+
   tp_asv_set_int32 (priv->parameters, g_strdup (param), value);
 
   account_settings_remove_from_unset (settings, param);
@@ -929,6 +937,8 @@ empathy_account_settings_set_int64 (EmpathyAccountSettings *settings,
     gint64 value)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  g_return_if_fail (param != NULL);
 
   tp_asv_set_int64 (priv->parameters, g_strdup (param), value);
 
@@ -942,6 +952,8 @@ empathy_account_settings_set_uint32 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
+  g_return_if_fail (param != NULL);
+
   tp_asv_set_uint32 (priv->parameters, g_strdup (param), value);
 
   account_settings_remove_from_unset (settings, param);
@@ -954,6 +966,8 @@ empathy_account_settings_set_uint64 (EmpathyAccountSettings *settings,
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
 
+  g_return_if_fail (param != NULL);
+
   tp_asv_set_uint64 (priv->parameters, g_strdup (param), value);
 
   account_settings_remove_from_unset (settings, param);
@@ -965,6 +979,8 @@ empathy_account_settings_set_boolean (EmpathyAccountSettings *settings,
     gboolean value)
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+
+  g_return_if_fail (param != NULL);
 
   tp_asv_set_boolean (priv->parameters, g_strdup (param), value);
 
@@ -1001,6 +1017,8 @@ empathy_account_settings_set_display_name_async (
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   GSimpleAsyncResult *result;
+
+  g_return_if_fail (name != NULL);
 
   result = g_simple_async_result_new (G_OBJECT (settings),
       callback, user_data, empathy_account_settings_set_display_name_finish);
@@ -1075,6 +1093,8 @@ empathy_account_settings_set_icon_name_async (
 {
   EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
   GSimpleAsyncResult *result;
+
+  g_return_if_fail (name != NULL);
 
   result = g_simple_async_result_new (G_OBJECT (settings),
       callback, user_data, empathy_account_settings_set_icon_name_finish);
