@@ -274,11 +274,11 @@ chat_text_view_populate_popup (EmpathyChatTextView *view,
 	/* Clear menu item */
 	if (gtk_text_buffer_get_char_count (priv->buffer) > 0) {
 		item = gtk_separator_menu_item_new ();
-		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show (item);
 
 		item = gtk_image_menu_item_new_from_stock (GTK_STOCK_CLEAR, NULL);
-		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show (item);
 
 		g_signal_connect_swapped (item, "activate",
