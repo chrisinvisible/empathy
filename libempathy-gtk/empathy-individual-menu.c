@@ -133,6 +133,8 @@ individual_menu_add_personas (GtkMenuShell *menu,
           folks_persona_get_display_id (FOLKS_PERSONA (persona)), account);
 
       contact_item = gtk_image_menu_item_new_with_label (label);
+      gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (contact_item),
+                                                 TRUE);
       contact_submenu = gtk_menu_new ();
       gtk_menu_item_set_submenu (GTK_MENU_ITEM (contact_item), contact_submenu);
       image = gtk_image_new_from_icon_name (
