@@ -1469,7 +1469,7 @@ chat_window_new_message_cb (EmpathyChat       *chat,
 }
 
 static GtkNotebook *
-chat_window_detach_hook (GtkNotebook *source,
+notebook_create_window_cb (GtkNotebook *source,
 			 GtkWidget   *page,
 			 gint         x,
 			 gint         y,
@@ -1919,8 +1919,6 @@ empathy_chat_window_class_init (EmpathyChatWindowClass *klass)
 		"  ythickness = 0\n"
 		"}\n"
 		"widget \"*.empathy-close-button\" style \"empathy-close-button-style\"");
-
-	gtk_notebook_set_window_creation_hook (chat_window_detach_hook, NULL, NULL);
 }
 
 static void
@@ -1990,7 +1988,12 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 	priv->chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
 
 	priv->notebook = gtk_notebook_new ();
-	gtk_notebook_set_group (GTK_NOTEBOOK (priv->notebook), "EmpathyChatWindow");
+
+	g_signal_connect (priv->notebook, "create-window",
+		G_CALLBACK (notebook_create_window_cb), window);
+
+	gtk_notebook_set_group_name (GTK_NOTEBOOK (priv->notebook),
+		"EmpathyChatWindow");
 	gtk_notebook_set_scrollable (GTK_NOTEBOOK (priv->notebook), TRUE);
 	gtk_notebook_popup_enable (GTK_NOTEBOOK (priv->notebook));
 	gtk_box_pack_start (GTK_BOX (chat_vbox), priv->notebook, TRUE, TRUE, 0);
