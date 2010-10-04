@@ -112,8 +112,8 @@ cell_renderer_activatable_activate (GtkCellRenderer      *cell,
     GdkEvent *event,
     GtkWidget *widget,
     const gchar *path_string,
-    GdkRectangle *background_area,
-    GdkRectangle *cell_area,
+    const GdkRectangle *background_area,
+    const GdkRectangle *cell_area,
     GtkCellRendererState  flags)
 {
   EmpathyCellRendererActivatable *activatable;

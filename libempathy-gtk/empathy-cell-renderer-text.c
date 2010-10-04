@@ -52,7 +52,7 @@ static void cell_renderer_text_set_property      (GObject                     *o
 						  GParamSpec                  *pspec);
 static void cell_renderer_text_get_size          (GtkCellRenderer             *cell,
 						  GtkWidget                   *widget,
-						  GdkRectangle                *cell_area,
+						  const GdkRectangle          *cell_area,
 						  gint                        *x_offset,
 						  gint                        *y_offset,
 						  gint                        *width,
@@ -240,13 +240,13 @@ cell_renderer_text_set_property (GObject      *object,
 }
 
 static void
-cell_renderer_text_get_size (GtkCellRenderer *cell,
-			     GtkWidget       *widget,
-			     GdkRectangle    *cell_area,
-			     gint            *x_offset,
-			     gint            *y_offset,
-			     gint            *width,
-			     gint            *height)
+cell_renderer_text_get_size (GtkCellRenderer    *cell,
+			     GtkWidget          *widget,
+			     const GdkRectangle *cell_area,
+			     gint               *x_offset,
+			     gint               *y_offset,
+			     gint               *width,
+			     gint               *height)
 {
 	EmpathyCellRendererText     *celltext;
 	EmpathyCellRendererTextPriv *priv;

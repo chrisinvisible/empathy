@@ -67,7 +67,7 @@ static void     empathy_cell_renderer_expander_set_property (GObject            
 static void     empathy_cell_renderer_expander_finalize     (GObject                         *object);
 static void     empathy_cell_renderer_expander_get_size     (GtkCellRenderer                 *cell,
 							    GtkWidget                       *widget,
-							    GdkRectangle                    *cell_area,
+							    const GdkRectangle              *cell_area,
 							    gint                            *x_offset,
 							    gint                            *y_offset,
 							    gint                            *width,
@@ -82,8 +82,8 @@ static gboolean empathy_cell_renderer_expander_activate     (GtkCellRenderer    
 							    GdkEvent                        *event,
 							    GtkWidget                       *widget,
 							    const gchar                     *path,
-							    GdkRectangle                    *background_area,
-							    GdkRectangle                    *cell_area,
+							    const GdkRectangle              *background_area,
+							    const GdkRectangle              *cell_area,
 							    GtkCellRendererState             flags);
 
 G_DEFINE_TYPE (EmpathyCellRendererExpander, empathy_cell_renderer_expander, GTK_TYPE_CELL_RENDERER)
@@ -243,13 +243,13 @@ empathy_cell_renderer_expander_new (void)
 }
 
 static void
-empathy_cell_renderer_expander_get_size (GtkCellRenderer *cell,
-					GtkWidget       *widget,
-					GdkRectangle    *cell_area,
-					gint            *x_offset,
-					gint            *y_offset,
-					gint            *width,
-					gint            *height)
+empathy_cell_renderer_expander_get_size (GtkCellRenderer    *cell,
+					GtkWidget          *widget,
+					const GdkRectangle *cell_area,
+					gint               *x_offset,
+					gint               *y_offset,
+					gint               *width,
+					gint               *height)
 {
 	EmpathyCellRendererExpander     *expander;
 	EmpathyCellRendererExpanderPriv *priv;
@@ -422,7 +422,7 @@ empathy_cell_renderer_expander_start_animation (EmpathyCellRendererExpander *exp
 					       GtkTreeView                *tree_view,
 					       GtkTreePath                *path,
 					       gboolean                    expanding,
-					       GdkRectangle               *background_area)
+					       const GdkRectangle         *background_area)
 {
 	EmpathyCellRendererExpanderPriv *priv;
 
@@ -454,8 +454,8 @@ empathy_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 					GdkEvent             *event,
 					GtkWidget            *widget,
 					const gchar          *path_string,
-					GdkRectangle         *background_area,
-					GdkRectangle         *cell_area,
+					const GdkRectangle   *background_area,
+					const GdkRectangle   *cell_area,
 					GtkCellRendererState  flags)
 {
 	EmpathyCellRendererExpander     *expander;
