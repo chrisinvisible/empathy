@@ -260,10 +260,13 @@ real_start_verification (EmpathyTLSVerifier *self)
       /* if the last certificate is self-signed, and we have a list of
        * trusted CAs, ignore it, as we want to check the chain against our
        * trusted CAs list first.
+       * if we have only one certificate in the chain, don't ignore it though,
+       * as it's the CA certificate itself.
        */
       last_cert = g_ptr_array_index (priv->cert_chain, num_certs - 1);
 
-      if (gnutls_x509_crt_check_issuer (last_cert, last_cert) > 0)
+      if (gnutls_x509_crt_check_issuer (last_cert, last_cert) > 0 &&
+          num_certs > 1)
         num_certs--;
     }
 
