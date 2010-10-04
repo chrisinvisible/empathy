@@ -1,3 +1,30 @@
+NEW in 2.91.0 (04/10/2010)
+=============
+
+This is the first release in the new 2.91 development branch.
+Empathy now depends on GTK+3 and can't build with GTK+2 anymore.
+As a consequence, dependencies linking on GTK+ itself have been bumped to
+depend on the GTK+3 version of those libs.
+
+Dependencies:
+
+ • GTK+ ≥ 2.91.0
+ • libcanberra-gtk3 ≥ 0.25
+ • libnotify ≥ 0.5.1
+ • libunique ≥ 2.90.1
+ • WebKitGTK+ ≥ 1.3.2 (optional)
+ • nautilus-sendto ≥ 2.90.0 (optional)
+
+Bugs fixed (since 2.32.0.1):
+ - Fixed #601191, Use the size of the latest chat window when opening a new a one in "one window per chat" mode (Guillaume Desmottes)
+ - Fixed #629544, First item of context menu must be "copy", not "clear" (Bilal Akhtar)
+ - Fixed #629707, Missing msgctxt for translatable "Select" string (Guillaume Desmottes)
+ - Fixed #629734, Should use Account.Service (Guillaume Desmottes)
+ - Fixed #630025, FTBFS with GTK+/GDK 3 git master (Guillaume Desmottes)
+ - Fixed #630343, Stop using Connection.RequestChannel() (Guillaume Desmottes)
+ - Fixed #630709, Use tp-glib generated code rather than our (Guillaume Desmottes)
+ - Fixed #631080, Stop popping up the import dialog (Guillaume Desmottes)
+
 NEW in 2.32.0 (27/09/2010)
 =============
 
