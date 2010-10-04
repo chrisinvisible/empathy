@@ -363,7 +363,6 @@ empathy_contact_file_transfer_menu_item_new (EmpathyContact *contact)
 	return item;
 }
 
-/* FIXME  we should check if the contact supports vnc stream tube */
 GtkWidget *
 empathy_contact_share_my_desktop_menu_item_new (EmpathyContact *contact)
 {
