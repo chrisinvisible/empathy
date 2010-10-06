@@ -385,6 +385,9 @@ main_window_row_deleted_cb (GtkTreeModel      *model,
 			gtk_label_set_markup (GTK_LABEL (priv->no_entry_label), tmp);
 			g_free (tmp);
 
+			gtk_label_set_ellipsize (GTK_LABEL (priv->no_entry_label),
+				PANGO_ELLIPSIZE_END);
+
 			gtk_notebook_set_current_page (
 					GTK_NOTEBOOK (priv->notebook), PAGE_NO_MATCH);
 		}
