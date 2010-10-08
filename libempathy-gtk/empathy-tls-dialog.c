@@ -216,7 +216,7 @@ reason_to_string (EmpathyTLSDialog *self)
 static GtkWidget *
 build_gcr_widget (EmpathyTLSDialog *self)
 {
-  GcrCertificateBasicsWidget *widget;
+  GcrCertificateWidget *widget;
   GcrCertificate *certificate;
   GPtrArray *cert_chain = NULL;
   GArray *first_cert;
@@ -229,7 +229,7 @@ build_gcr_widget (EmpathyTLSDialog *self)
 
   certificate = gcr_simple_certificate_new ((const guchar *) first_cert->data,
       first_cert->len);
-  widget = gcr_certificate_basics_widget_new (certificate);
+  widget = gcr_certificate_widget_new (certificate);
 
   g_object_unref (certificate);
   g_ptr_array_unref (cert_chain);
