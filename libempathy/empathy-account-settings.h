@@ -181,16 +181,6 @@ gboolean empathy_account_settings_is_valid (EmpathyAccountSettings *settings);
 const TpConnectionManagerProtocol * empathy_account_settings_get_tp_protocol (
     EmpathyAccountSettings *settings);
 
-const gchar *empathy_account_settings_get_storage_provider (
-    EmpathyAccountSettings *self);
-const GValue *empathy_account_settings_get_storage_identifier (
-    EmpathyAccountSettings *self);
-GHashTable *empathy_account_settings_get_storage_specific_information (
-    EmpathyAccountSettings *self);
-TpStorageRestrictionFlags empathy_account_settings_get_storage_restrictions (
-    EmpathyAccountSettings *self);
-
-
 G_END_DECLS
 
 #endif /* #ifndef __EMPATHY_ACCOUNT_SETTINGS_H__*/
