@@ -32,8 +32,8 @@
 
 #ifdef HAVE_MEEGO
 #include <mx-gtk/mx-gtk.h>
-#include <gio/gdesktopappinfo.h>
 #endif /* HAVE_MEEGO */
+#include <gio/gdesktopappinfo.h>
 
 #include <libempathy/empathy-utils.h>
 
@@ -919,53 +919,57 @@ account_widget_build_generic (EmpathyAccountWidget *self,
         G_CALLBACK (account_widget_settings_ready_cb), self);
 }
 
-#ifdef HAVE_MEEGO
 static void
 account_widget_launch_external_clicked (GtkWidget *button,
-    gpointer user_data)
+    TpAccount *account)
 {
-  GDesktopAppInfo *app_info;
-  const gchar *args[3] = { NULL, };
-  GError *error = NULL;
-
-  app_info = g_desktop_app_info_new ("gnome-control-center.desktop");
-
-  if (app_info == NULL)
+  if (!tp_strdiff (tp_account_get_storage_provider (account),
+        "com.meego.libsocialweb"))
     {
-      g_critical ("Could not locate 'gnome-control-center.desktop'");
-      return;
+      /* we know how to handle this external provider */
+      GDesktopAppInfo *app_info;
+      const gchar *args[3] = { NULL, };
+      GError *error = NULL;
+
+      app_info = g_desktop_app_info_new ("gnome-control-center.desktop");
+
+      if (app_info == NULL)
+        {
+          g_critical ("Could not locate 'gnome-control-center.desktop'");
+          return;
+        }
+
+      args[0] = g_app_info_get_commandline (G_APP_INFO (app_info));
+      args[1] = "bisho.desktop";
+      args[2] = NULL;
+
+      gdk_spawn_on_screen (gtk_widget_get_screen (button),
+          NULL, (gchar **) args, NULL,
+          G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error);
+      if (error != NULL)
+        {
+          g_critical ("Failed to launch editor: %s", error->message);
+          g_clear_error (&error);
+        }
+
+      g_object_unref (app_info);
     }
-
-  args[0] = g_app_info_get_commandline (G_APP_INFO (app_info));
-  args[1] = "bisho.desktop";
-  args[2] = NULL;
-
-  gdk_spawn_on_screen (gtk_widget_get_screen (button),
-      NULL, (gchar **) args, NULL,
-      G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error);
-  if (error != NULL)
-    {
-      g_critical ("Failed to launch editor: %s", error->message);
-      g_clear_error (&error);
-    }
-
-  g_object_unref (app_info);
 }
-#endif /* HAVE_MEEGO */
 
 static void
 account_widget_build_external (EmpathyAccountWidget *self,
     EmpathyAccountSettings *settings)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  TpAccount *account = empathy_account_settings_get_account (settings);
   GtkWidget *bar, *widget;
   gchar *str;
 
   self->ui_details->widget = gtk_vbox_new (FALSE, 6);
   priv->table_common_settings = gtk_table_new (1, 2, FALSE);
 
-  if (!tp_strdiff (empathy_account_settings_get_storage_provider (settings),
-        "org.moblin.libsocialweb"))
+  if (!tp_strdiff (tp_account_get_storage_provider (account),
+        "com.meego.libsocialweb"))
     {
       /* we know how to handle this external provider */
       str = g_strdup_printf (
@@ -990,17 +994,16 @@ account_widget_build_external (EmpathyAccountWidget *self,
       widget);
   gtk_container_set_border_width (GTK_CONTAINER (bar), 6);
 
-#ifdef HAVE_MEEGO
-  if (!tp_strdiff (empathy_account_settings_get_storage_provider (settings),
-        "org.moblin.libsocialweb"))
+  if (!tp_strdiff (tp_account_get_storage_provider (account),
+        "com.meego.libsocialweb"))
     {
+      /* we know how to handle this external provider */
       widget = gtk_info_bar_add_button (GTK_INFO_BAR (bar),
           _("Launch My Web Accounts"), RESPONSE_LAUNCH);
 
       g_signal_connect (widget, "clicked",
-          G_CALLBACK (account_widget_launch_external_clicked), NULL);
+          G_CALLBACK (account_widget_launch_external_clicked), account);
     }
-#endif
 
   gtk_box_pack_start (GTK_BOX (self->ui_details->widget), bar,
       FALSE, TRUE, 0);
@@ -1829,7 +1832,7 @@ do_constructed (GObject *obj)
   account = empathy_account_settings_get_account (priv->settings);
 
   /* Empathy can only edit accounts without the Cannot_Set_Parameters flag */
-  if (empathy_account_settings_get_storage_restrictions (priv->settings) &
+  if (tp_account_get_storage_restrictions (account) &
       TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS)
     {
       DEBUG ("Account is provided by an external storage provider");
@@ -1889,7 +1892,7 @@ do_constructed (GObject *obj)
 
   /* handle apply and cancel button */
   if (!priv->simple &&
-      !(empathy_account_settings_get_storage_restrictions (priv->settings) &
+      !(tp_account_get_storage_restrictions (account) &
         TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS))
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
@@ -1950,7 +1953,7 @@ do_constructed (GObject *obj)
 #endif /* HAVE_MEEGO */
 
   /* add the Enable checkbox to accounts that support it */
-  if (!(empathy_account_settings_get_storage_restrictions (priv->settings) &
+  if (!(tp_account_get_storage_restrictions (account) &
       TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_ENABLED))
     add_enable_checkbox (self, account);
 

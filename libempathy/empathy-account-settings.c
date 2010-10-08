@@ -210,7 +210,12 @@ empathy_account_settings_constructed (GObject *object)
 
   if (!priv->ready)
     {
-      tp_account_prepare_async (priv->account, NULL,
+      GQuark features[] = {
+          TP_ACCOUNT_FEATURE_CORE,
+          TP_ACCOUNT_FEATURE_STORAGE,
+          0 };
+
+      tp_proxy_prepare_async (priv->account, features,
           empathy_account_settings_account_ready_cb, self);
       tp_g_signal_connect_object (priv->managers, "notify::ready",
         G_CALLBACK (empathy_account_settings_managers_ready_cb), object, 0);
@@ -436,7 +441,7 @@ empathy_account_settings_account_ready_cb (GObject *source_object,
   TpAccount *account = TP_ACCOUNT (source_object);
   GError *error = NULL;
 
-  if (!tp_account_prepare_finish (account, result, &error))
+  if (!tp_proxy_prepare_finish (account, result, &error))
     {
       DEBUG ("Failed to prepare account: %s", error->message);
       g_error_free (error);
