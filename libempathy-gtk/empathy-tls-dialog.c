@@ -148,47 +148,48 @@ reason_to_string (EmpathyTLSDialog *self)
   details = priv->details;
 
   g_string_append (str, _("The identity provided by the chat server cannot be "
-          "verified.\n"));
+          "verified."));
+  g_string_append (str, "\n\n");
 
   switch (reason)
     {
     case EMP_TLS_CERTIFICATE_REJECT_REASON_UNTRUSTED:
       reason_str = _("The certificate is not signed by a Certification "
-          "Authority");
+          "Authority.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_EXPIRED:
-      reason_str = _("The certificate has expired");
+      reason_str = _("The certificate has expired.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_NOT_ACTIVATED:
-      reason_str = _("The certificate hasn't yet been activated");
+      reason_str = _("The certificate hasn't yet been activated.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_FINGERPRINT_MISMATCH:
-      reason_str = _("The certificate does not have the expected fingerprint");
+      reason_str = _("The certificate does not have the expected fingerprint.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH:
       reason_str = _("The hostname verified by the certificate doesn't match "
-          "the server name");
+          "the server name.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_SELF_SIGNED:
-      reason_str = _("The certificate is self-signed");
+      reason_str = _("The certificate is self-signed.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_REVOKED:
       reason_str = _("The certificate has been revoked by the issuing "
-          "Certification Authority");
+          "Certification Authority.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_INSECURE:
-      reason_str = _("The certificate is cryptographically weak");
+      reason_str = _("The certificate is cryptographically weak.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_LIMIT_EXCEEDED:
-      reason_str = _("The certificate length exceeds verifiable limits");
+      reason_str = _("The certificate length exceeds verifiable limits.");
       break;
     case EMP_TLS_CERTIFICATE_REJECT_REASON_UNKNOWN:
     default:
-      reason_str = _("The certificate is malformed");
+      reason_str = _("The certificate is malformed.");
       break;
     }
 
-  g_string_append_printf (str, "%s.", reason_str);
+  g_string_append (str, reason_str);
 
   /* add more information in case of HOSTNAME_MISMATCH */
   if (reason == EMP_TLS_CERTIFICATE_REJECT_REASON_HOSTNAME_MISMATCH)
@@ -201,7 +202,7 @@ reason_to_string (EmpathyTLSDialog *self)
 
       if (expected_hostname != NULL && certificate_hostname != NULL)
         {
-          g_string_append (str, "\n");
+          g_string_append (str, "\n\n");
           g_string_append_printf (str, _("Expected hostname: %s"),
               expected_hostname);
           g_string_append (str, "\n");
