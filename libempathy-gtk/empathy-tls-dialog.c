@@ -221,6 +221,7 @@ build_gcr_widget (EmpathyTLSDialog *self)
   GcrCertificate *certificate;
   GPtrArray *cert_chain = NULL;
   GArray *first_cert;
+  int height;
   EmpathyTLSDialogPriv *priv = GET_PRIV (self);
 
   g_object_get (priv->certificate,
@@ -231,6 +232,12 @@ build_gcr_widget (EmpathyTLSDialog *self)
   certificate = gcr_simple_certificate_new ((const guchar *) first_cert->data,
       first_cert->len);
   widget = gcr_certificate_widget_new (certificate);
+
+  /* FIXME: make this widget bigger by default -- GTK+ should really handle
+   * this sort of thing for us */
+  gtk_widget_get_preferred_height (GTK_WIDGET (widget), NULL, &height);
+  /* force the widget to at least 150 pixels high */
+  gtk_widget_set_size_request (GTK_WIDGET (widget), -1, MAX (height, 150));
 
   g_object_unref (certificate);
   g_ptr_array_unref (cert_chain);
