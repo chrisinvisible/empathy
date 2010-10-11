@@ -2132,29 +2132,6 @@ empathy_individual_view_dup_selected (EmpathyIndividualView *view)
   return individual;
 }
 
-EmpathyIndividualManagerFlags
-empathy_individual_view_get_flags (EmpathyIndividualView *view)
-{
-  EmpathyIndividualViewPriv *priv;
-  GtkTreeSelection *selection;
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-  EmpathyIndividualFeatureFlags flags;
-
-  g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (view), 0);
-
-  priv = GET_PRIV (view);
-
-  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
-  if (!gtk_tree_selection_get_selected (selection, &model, &iter))
-    return 0;
-
-  gtk_tree_model_get (model, &iter,
-      EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, &flags, -1);
-
-  return flags;
-}
-
 gchar *
 empathy_individual_view_get_selected_group (EmpathyIndividualView *view,
     gboolean *is_fake_group)
@@ -2355,7 +2332,8 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
   GtkWidget *menu = NULL;
   GtkWidget *item;
   GtkWidget *image;
-  EmpathyIndividualManagerFlags flags;
+  gboolean can_remove = FALSE;
+  GList *l;
 
   g_return_val_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (view), NULL);
 
@@ -2363,16 +2341,31 @@ empathy_individual_view_get_individual_menu (EmpathyIndividualView *view)
   if (individual == NULL)
     return NULL;
 
-  flags = empathy_individual_view_get_flags (view);
+  /* If any of the Individual's personas can be removed, add an option to
+   * remove. This will act as a best-effort option. If any Personas cannot be
+   * removed from the server, then this option will just be inactive upon
+   * subsequent menu openings */
+  for (l = folks_individual_get_personas (individual); l != NULL; l = l->next)
+    {
+      FolksPersona *persona = FOLKS_PERSONA (l->data);
+      FolksPersonaStore *store = folks_persona_get_store (persona);
+      FolksMaybeBool maybe_can_remove =
+          folks_persona_store_get_can_remove_personas (store);
+
+      if (maybe_can_remove == FOLKS_MAYBE_BOOL_TRUE)
+        {
+          can_remove = TRUE;
+          break;
+        }
+    }
 
   menu = empathy_individual_menu_new (individual, priv->individual_features);
 
   /* Remove contact */
-  if (priv->view_features &
-      EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_REMOVE &&
-      flags & EMPATHY_INDIVIDUAL_MANAGER_CAN_REMOVE)
+  if ((priv->view_features &
+      EMPATHY_INDIVIDUAL_VIEW_FEATURE_INDIVIDUAL_REMOVE) &&
+      can_remove)
     {
-
       /* create the menu if required, or just add a separator */
       if (menu == NULL)
         menu = gtk_menu_new ();

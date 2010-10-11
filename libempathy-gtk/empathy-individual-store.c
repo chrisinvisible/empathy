@@ -158,8 +158,7 @@ static void
 add_individual_to_store (GtkTreeStore *self,
     GtkTreeIter *iter,
     GtkTreeIter *parent,
-    FolksIndividual *individual,
-    EmpathyIndividualManagerFlags flags)
+    FolksIndividual *individual)
 {
   gboolean can_audio_call, can_video_call;
 
@@ -172,7 +171,6 @@ add_individual_to_store (GtkTreeStore *self,
       EMPATHY_INDIVIDUAL_STORE_COL_INDIVIDUAL, individual,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_GROUP, FALSE,
       EMPATHY_INDIVIDUAL_STORE_COL_IS_SEPARATOR, FALSE,
-      EMPATHY_INDIVIDUAL_STORE_COL_FLAGS, flags,
       EMPATHY_INDIVIDUAL_STORE_COL_CAN_AUDIO_CALL, can_audio_call,
       EMPATHY_INDIVIDUAL_STORE_COL_CAN_VIDEO_CALL, can_video_call,
       -1);
@@ -376,7 +374,6 @@ individual_store_add_individual (EmpathyIndividualStore *self,
   GList *groups = NULL, *l;
   EmpathyContact *contact;
   TpConnection *connection;
-  EmpathyIndividualManagerFlags flags = 0;
   gchar *protocol_name;
 
   priv = GET_PRIV (self);
@@ -392,8 +389,6 @@ individual_store_add_individual (EmpathyIndividualStore *self,
 
   contact = empathy_contact_dup_from_folks_individual (individual);
   connection = empathy_contact_get_connection (contact);
-  flags = empathy_individual_manager_get_flags_for_connection (priv->manager,
-      connection);
 
   tp_connection_parse_object_path (connection, &protocol_name, NULL);
 
@@ -420,7 +415,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
         }
 
       add_individual_to_store (GTK_TREE_STORE (self), &iter, parent,
-          individual, flags);
+          individual);
     }
 
   g_free (protocol_name);
@@ -434,7 +429,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
           FALSE);
 
       add_individual_to_store (GTK_TREE_STORE (self), &iter, &iter_group,
-          individual, flags);
+          individual);
     }
   g_list_free (groups);
   if (group_set != NULL)
@@ -450,7 +445,7 @@ individual_store_add_individual (EmpathyIndividualStore *self,
           &iter_group, NULL, NULL, TRUE);
 
       add_individual_to_store (GTK_TREE_STORE (self), &iter, &iter_group,
-          individual, flags);
+          individual);
     }
 
   individual_store_contact_update (self, individual);
@@ -1493,7 +1488,6 @@ individual_store_setup (EmpathyIndividualStore *self)
     G_TYPE_BOOLEAN,             /* Is separator */
     G_TYPE_BOOLEAN,             /* Can make audio calls */
     G_TYPE_BOOLEAN,             /* Can make video calls */
-    EMPATHY_TYPE_INDIVIDUAL_MANAGER_FLAGS,      /* Flags */
     G_TYPE_BOOLEAN,             /* Is a fake group */
   };
 

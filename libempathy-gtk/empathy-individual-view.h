@@ -98,9 +98,6 @@ EmpathyIndividualView *empathy_individual_view_new (
 FolksIndividual *empathy_individual_view_dup_selected (
     EmpathyIndividualView *view);
 
-EmpathyIndividualManagerFlags empathy_individual_view_get_flags (
-    EmpathyIndividualView *view);
-
 gchar *empathy_individual_view_get_selected_group (EmpathyIndividualView *view,
     gboolean * is_fake_group);
 
