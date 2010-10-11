@@ -93,6 +93,8 @@ static PidginCmMapItem pidgin_cm_map[] =
 #define PIDGIN_ACCOUNT_TAG_PROTOCOL "protocol"
 #define PIDGIN_ACCOUNT_TAG_PASSWORD "password"
 #define PIDGIN_ACCOUNT_TAG_SETTINGS "settings"
+#define PIDGIN_SETTING_PROP_UI "ui"
+#define PIDGIN_SETTING_PROP_NAME "name"
 #define PIDGIN_SETTING_PROP_TYPE "type"
 #define PIDGIN_PROTOCOL_BONJOUR "bonjour"
 #define PIDGIN_PROTOCOL_NOVELL "novell"
@@ -110,7 +112,7 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
 
   /* We can't do anything if the setting don't have a name */
   tag_name = (gchar *) xmlGetProp (setting,
-      (xmlChar *) PIDGIN_ACCOUNT_TAG_NAME);
+      (xmlChar *) PIDGIN_SETTING_PROP_NAME);
   if (!tag_name)
     return;
 
@@ -183,10 +185,54 @@ import_dialog_pidgin_parse_setting (EmpathyImportAccountData *data,
   g_free (content);
 }
 
+static void
+import_dialog_pidgin_handle_settings (EmpathyImportAccountData *data,
+                                      xmlNodePtr settings)
+{
+  xmlNodePtr setting;
+  gchar *tag_ui, *name, *type, *content;
+
+  tag_ui = (gchar *) xmlGetProp (settings, (xmlChar *) PIDGIN_SETTING_PROP_UI);
+
+  /* UI settings - fetch the Enabled parameter.
+   * The expected value of the ui property is 'gtk-gaim', which looks obsolete,
+   * but still valid for 2.7.3.
+   */
+  if (tag_ui && !tp_strdiff (tag_ui, "gtk-gaim"))
+    {
+      for (setting = settings->children; setting; setting = setting->next)
+        {
+          name = (gchar *) xmlGetProp (setting,
+              (xmlChar *) PIDGIN_SETTING_PROP_NAME);
+          type = (gchar *) xmlGetProp (setting,
+              (xmlChar *) PIDGIN_SETTING_PROP_TYPE);
+          /* The Enabled parameter is supposed to be boolean.
+           * Pidgin name of the setting is 'auto-login'.
+           */
+          if (!tp_strdiff (name, "auto-login") && !tp_strdiff (type, "bool"))
+            {
+              content = (gchar *) xmlNodeGetContent (setting);
+              data->enabled = (0 != (gint) g_ascii_strtod (content, NULL));
+              g_free (content);
+            }
+          g_free (type);
+          g_free (name);
+        }
+    }
+  /* General settings. */
+  else
+    {
+      for (setting = settings->children; setting; setting = setting->next)
+        import_dialog_pidgin_parse_setting (data, setting);
+    }
+
+  g_free (tag_ui);
+}
+
 GList *
 empathy_import_pidgin_load (void)
 {
-  xmlNodePtr rootnode, node, child, setting;
+  xmlNodePtr rootnode, node, child;
   xmlParserCtxtPtr ctxt;
   xmlDocPtr doc;
   gchar *filename;
@@ -310,8 +356,7 @@ empathy_import_pidgin_load (void)
           /* Other settings */
           else if (!tp_strdiff ((gchar *) child->name,
               PIDGIN_ACCOUNT_TAG_SETTINGS))
-              for (setting = child->children; setting; setting = setting->next)
-                import_dialog_pidgin_parse_setting (data, setting);
+            import_dialog_pidgin_handle_settings (data, child);
         }
 
       /* If we have the needed settings, add the account data to the list,

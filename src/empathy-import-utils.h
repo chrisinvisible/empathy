@@ -37,6 +37,8 @@ typedef struct
   gchar *connection_manager;
   /* The name of the account import source */
   gchar *source;
+  /* Indicates whether the account is enabled by default */
+  gboolean enabled;
 } EmpathyImportAccountData;
 
 typedef enum {

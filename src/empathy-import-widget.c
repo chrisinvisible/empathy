@@ -167,6 +167,7 @@ import_widget_create_account_cb (GObject *source,
   GAsyncResult *result,
   gpointer user_data)
 {
+  TpAccountManager *account_manager;
   TpAccount *account;
   GError *error = NULL;
   EmpathyImportWidget *self = user_data;
@@ -183,6 +184,13 @@ import_widget_create_account_cb (GObject *source,
     }
 
   DEBUG ("account created\n");
+
+  if (tp_account_is_enabled (account))
+    {
+      account_manager = tp_account_manager_dup ();
+      empathy_connect_new_account (account, account_manager);
+      g_object_unref (account_manager);
+    }
 
   g_object_unref (self);
 }
@@ -208,7 +216,8 @@ import_widget_add_account (EmpathyImportWidget *self,
 
   DEBUG ("display name: %s\n", display_name);
 
-  properties = g_hash_table_new (NULL, NULL);
+  properties = tp_asv_new (NULL, NULL);
+  tp_asv_set_boolean (properties, TP_IFACE_ACCOUNT ".Enabled", data->enabled);
 
   tp_account_manager_create_account_async (account_manager,
       (const gchar*) data->connection_manager, data->protocol, display_name,

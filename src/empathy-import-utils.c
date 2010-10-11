@@ -40,6 +40,7 @@ empathy_import_account_data_new (const gchar *source)
   data->source = g_strdup (source);
   data->protocol = NULL;
   data->connection_manager = NULL;
+  data->enabled = FALSE;
 
   return data;
 }
