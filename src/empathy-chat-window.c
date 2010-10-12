@@ -1320,7 +1320,7 @@ chat_window_show_or_update_notification (EmpathyChatWindow *window,
 		   to an existing notification with the same title.
 		   In this way the previous message will not be lost: the new
 		   message will appear below it, in the same notification */
-		notification = notify_notification_new (header, escaped, NULL, NULL);
+		notification = notify_notification_new (header, escaped, NULL);
 
 		if (priv->notification == NULL) {
 			priv->notification = notification;
