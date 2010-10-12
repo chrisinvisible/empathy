@@ -56,8 +56,7 @@ can_add_contact_to_account (TpAccount *account,
     return FALSE;
 
   individual_manager = empathy_individual_manager_dup_singleton ();
-  result = empathy_individual_manager_get_flags_for_connection (
-    individual_manager, connection) & EMPATHY_INDIVIDUAL_MANAGER_CAN_ADD;
+  result = empathy_connection_can_add_personas (connection);
   g_object_unref (individual_manager);
 
   return result;

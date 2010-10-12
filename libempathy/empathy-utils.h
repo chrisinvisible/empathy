@@ -34,6 +34,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <folks/folks.h>
+#include <folks/folks-telepathy.h>
 #include <telepathy-glib/account-manager.h>
 
 #include "empathy-contact.h"
@@ -99,6 +100,8 @@ TpConnectionPresenceType empathy_folks_presence_type_to_tp (FolksPresenceType ty
 gboolean empathy_folks_individual_contains_contact (FolksIndividual *individual);
 EmpathyContact * empathy_contact_dup_from_folks_individual (FolksIndividual *individual);
 TpChannelGroupChangeReason tp_channel_group_change_reason_from_folks_groups_change_reason (FolksGroupableChangeReason reason);
+TpfPersonaStore * empathy_get_persona_store_for_connection (TpConnection *connection);
+gboolean empathy_connection_can_add_personas (TpConnection *connection);
 
 gchar * empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert);
 

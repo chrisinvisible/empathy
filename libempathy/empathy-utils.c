@@ -770,6 +770,58 @@ tp_channel_group_change_reason_from_folks_groups_change_reason (
   return (TpChannelGroupChangeReason) reason;
 }
 
+TpfPersonaStore *
+empathy_get_persona_store_for_connection (TpConnection *connection)
+{
+  FolksBackendStore *backend_store;
+  FolksBackend *backend;
+  TpfPersonaStore *result = NULL;
+
+  backend_store = folks_backend_store_dup ();
+  backend = folks_backend_store_get_backend_by_name (backend_store,
+      "telepathy");
+  if (backend != NULL)
+    {
+      GHashTable *stores_hash;
+      GList *stores, *l;
+
+      stores_hash = folks_backend_get_persona_stores (backend);
+      stores = g_hash_table_get_values (stores_hash);
+      for (l = stores; l != NULL && result == NULL; l = l->next)
+        {
+          TpfPersonaStore *persona_store = TPF_PERSONA_STORE (l->data);
+          TpAccount *account;
+          TpConnection *conn_cur;
+
+          account = tpf_persona_store_get_account (persona_store);
+          conn_cur = tp_account_get_connection (account);
+          if (conn_cur == connection)
+            result = persona_store;
+        }
+
+      g_list_free (stores);
+    }
+
+  g_object_unref (backend);
+  g_object_unref (backend_store);
+
+  return result;
+}
+
+gboolean
+empathy_connection_can_add_personas (TpConnection *connection)
+{
+  FolksPersonaStore *persona_store;
+
+  g_return_val_if_fail (TP_IS_CONNECTION (connection), FALSE);
+
+  persona_store = FOLKS_PERSONA_STORE (
+      empathy_get_persona_store_for_connection (connection));
+
+  return (folks_persona_store_get_can_add_personas (persona_store) ==
+      FOLKS_MAYBE_BOOL_TRUE);
+}
+
 gchar *
 empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert)
 {
