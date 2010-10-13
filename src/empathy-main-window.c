@@ -101,6 +101,7 @@ G_DEFINE_TYPE (EmpathyMainWindow, empathy_main_window, GTK_TYPE_WINDOW);
 #define GET_PRIV(self) ((EmpathyMainWindowPriv *)((EmpathyMainWindow *) self)->priv)
 
 struct _EmpathyMainWindowPriv {
+	EmpathyContactList      *contact_manager;
 	EmpathyIndividualStore  *individual_store;
 	EmpathyIndividualView   *individual_view;
 	TpAccountManager        *account_manager;
@@ -695,6 +696,7 @@ empathy_main_window_finalize (GObject *window)
 
 	g_object_unref (priv->account_manager);
 	g_object_unref (priv->individual_store);
+	g_object_unref (priv->contact_manager);
 	g_hash_table_destroy (priv->errors);
 
 	/* disconnect all handlers of status-changed signal */
@@ -1536,7 +1538,6 @@ static void
 empathy_main_window_init (EmpathyMainWindow *window)
 {
 	EmpathyMainWindowPriv    *priv;
-	EmpathyContactList       *list_iface;
 	EmpathyIndividualManager *individual_manager;
 	GtkBuilder               *gui;
 	GtkWidget                *sw;
@@ -1676,7 +1677,12 @@ empathy_main_window_init (EmpathyMainWindow *window)
 	gtk_container_add (GTK_CONTAINER (item), priv->throbber);
 	priv->throbber_tool_item = GTK_WIDGET (item);
 
-	list_iface = EMPATHY_CONTACT_LIST (empathy_contact_manager_dup_singleton ());
+	/* XXX: this class is designed to live for the duration of the program,
+	 * so it's got a race condition between its signal handlers and its
+	 * finalization. The class is planned to be removed, so we won't fix
+	 * this before then. */
+	priv->contact_manager = EMPATHY_CONTACT_LIST (
+			empathy_contact_manager_dup_singleton ());
 	individual_manager = empathy_individual_manager_dup_singleton ();
 	priv->individual_store = empathy_individual_store_new (
 			individual_manager);
@@ -1691,10 +1697,8 @@ empathy_main_window_init (EmpathyMainWindow *window)
 			EMPATHY_INDIVIDUAL_FEATURE_ALL);
 
 	priv->butterfly_log_migration_members_changed_id = g_signal_connect (
-			list_iface, "members-changed",
+			priv->contact_manager, "members-changed",
 			G_CALLBACK (main_window_members_changed_cb), window);
-
-	g_object_unref (list_iface);
 
 	gtk_widget_show (GTK_WIDGET (priv->individual_view));
 	gtk_container_add (GTK_CONTAINER (sw),
