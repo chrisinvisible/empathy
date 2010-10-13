@@ -34,8 +34,6 @@
 #include <extensions/extensions.h>
 
 #include "empathy-individual-manager.h"
-#include "empathy-contact-manager.h"
-#include "empathy-contact-list.h"
 #include "empathy-marshal.h"
 #include "empathy-utils.h"
 
@@ -51,7 +49,6 @@
 typedef struct
 {
   FolksIndividualAggregator *aggregator;
-  EmpathyContactManager *contact_manager;
   GHashTable *individuals; /* Individual.id -> Individual */
 } EmpathyIndividualManagerPriv;
 
@@ -222,7 +219,6 @@ individual_manager_dispose (GObject *object)
   EmpathyIndividualManagerPriv *priv = GET_PRIV (object);
 
   g_hash_table_destroy (priv->individuals);
-  tp_clear_object (&priv->contact_manager);
   tp_clear_object (&priv->aggregator);
 
   G_OBJECT_CLASS (empathy_individual_manager_parent_class)->dispose (object);
@@ -316,7 +312,6 @@ empathy_individual_manager_init (EmpathyIndividualManager *self)
       EMPATHY_TYPE_INDIVIDUAL_MANAGER, EmpathyIndividualManagerPriv);
 
   self->priv = priv;
-  priv->contact_manager = empathy_contact_manager_dup_singleton ();
   priv->individuals = g_hash_table_new_full (g_str_hash, g_str_equal,
       NULL, g_object_unref);
 
