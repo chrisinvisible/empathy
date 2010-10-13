@@ -35,14 +35,6 @@ G_BEGIN_DECLS
 #define EMPATHY_IS_INDIVIDUAL_MANAGER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), EMPATHY_TYPE_INDIVIDUAL_MANAGER))
 #define EMPATHY_IS_INDIVIDUAL_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), EMPATHY_TYPE_INDIVIDUAL_MANAGER))
 #define EMPATHY_INDIVIDUAL_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), EMPATHY_TYPE_INDIVIDUAL_MANAGER, EmpathyIndividualManagerClass))
-    typedef enum
-{
-  EMPATHY_INDIVIDUAL_MANAGER_NO_FLAGS = 0,
-  EMPATHY_INDIVIDUAL_MANAGER_CAN_ADD = 1 << 0,
-  EMPATHY_INDIVIDUAL_MANAGER_CAN_REMOVE = 1 << 1,
-  EMPATHY_INDIVIDUAL_MANAGER_CAN_ALIAS = 1 << 2,
-  EMPATHY_INDIVIDUAL_MANAGER_CAN_GROUP = 1 << 3,
-} EmpathyIndividualManagerFlags;
 
 typedef struct _EmpathyIndividualManager EmpathyIndividualManager;
 typedef struct _EmpathyIndividualManagerClass EmpathyIndividualManagerClass;
@@ -81,11 +73,6 @@ void empathy_individual_manager_remove (EmpathyIndividualManager *manager,
 
 void empathy_individual_manager_remove_group (EmpathyIndividualManager *manager,
     const gchar *group);
-
-EmpathyIndividualManagerFlags
-empathy_individual_manager_get_flags_for_connection (
-    EmpathyIndividualManager *manager,
-    TpConnection *connection);
 
 void empathy_individual_manager_link_personas (EmpathyIndividualManager *self,
     GList *personas);
