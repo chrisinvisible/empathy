@@ -822,6 +822,34 @@ empathy_connection_can_add_personas (TpConnection *connection)
       FOLKS_MAYBE_BOOL_TRUE);
 }
 
+gboolean
+empathy_connection_can_alias_personas (TpConnection *connection)
+{
+  FolksPersonaStore *persona_store;
+
+  g_return_val_if_fail (TP_IS_CONNECTION (connection), FALSE);
+
+  persona_store = FOLKS_PERSONA_STORE (
+      empathy_get_persona_store_for_connection (connection));
+
+  return (folks_persona_store_get_can_alias_personas (persona_store) ==
+      FOLKS_MAYBE_BOOL_TRUE);
+}
+
+gboolean
+empathy_connection_can_group_personas (TpConnection *connection)
+{
+  FolksPersonaStore *persona_store;
+
+  g_return_val_if_fail (TP_IS_CONNECTION (connection), FALSE);
+
+  persona_store = FOLKS_PERSONA_STORE (
+      empathy_get_persona_store_for_connection (connection));
+
+  return (folks_persona_store_get_can_group_personas (persona_store) ==
+      FOLKS_MAYBE_BOOL_TRUE);
+}
+
 gchar *
 empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert)
 {

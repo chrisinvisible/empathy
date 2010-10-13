@@ -822,15 +822,12 @@ empathy_individual_edit_menu_item_new (FolksIndividual *individual)
   if (empathy_individual_manager_initialized ())
     {
       TpConnection *connection;
-      EmpathyIndividualManagerFlags flags;
 
       manager = empathy_individual_manager_dup_singleton ();
       connection = empathy_contact_get_connection (contact);
-      flags = empathy_individual_manager_get_flags_for_connection (
-          manager, connection);
 
-      enable = (flags & EMPATHY_INDIVIDUAL_MANAGER_CAN_ALIAS ||
-                flags & EMPATHY_INDIVIDUAL_MANAGER_CAN_GROUP);
+      enable = (empathy_connection_can_alias_personas (connection) &&
+                empathy_connection_can_group_personas (connection));
 
       g_object_unref (manager);
     }

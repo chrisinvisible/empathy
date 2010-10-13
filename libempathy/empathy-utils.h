@@ -102,6 +102,8 @@ EmpathyContact * empathy_contact_dup_from_folks_individual (FolksIndividual *ind
 TpChannelGroupChangeReason tp_channel_group_change_reason_from_folks_groups_change_reason (FolksGroupableChangeReason reason);
 TpfPersonaStore * empathy_get_persona_store_for_connection (TpConnection *connection);
 gboolean empathy_connection_can_add_personas (TpConnection *connection);
+gboolean empathy_connection_can_alias_personas (TpConnection *connection);
+gboolean empathy_connection_can_group_personas (TpConnection *connection);
 
 gchar * empathy_get_x509_certificate_hostname (gnutls_x509_crt_t cert);
 
