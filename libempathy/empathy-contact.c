@@ -39,6 +39,7 @@
 #endif
 
 #include "empathy-contact.h"
+#include "empathy-individual-manager.h"
 #include "empathy-utils.h"
 #include "empathy-enum-types.h"
 #include "empathy-marshal.h"
