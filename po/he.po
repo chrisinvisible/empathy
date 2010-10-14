@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-06 01:48+0200\n"
-"PO-Revision-Date: 2010-10-06 01:49+0200\n"
+"POT-Creation-Date: 2010-10-14 11:13+0200\n"
+"PO-Revision-Date: 2010-10-14 11:14+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -700,7 +700,7 @@ msgstr "הכול"
 
 #: ../libempathy-gtk/empathy-account-widget.c:514
 #: ../libempathy-gtk/empathy-log-window.c:646
-#: ../src/empathy-import-widget.c:312
+#: ../src/empathy-import-widget.c:321
 msgid "Account"
 msgstr "חשבון"
 
@@ -1800,7 +1800,7 @@ msgid "Select"
 msgstr "בחירה"
 
 #: ../libempathy-gtk/empathy-groups-widget.c:408
-#: ../src/empathy-main-window.c:1247
+#: ../src/empathy-main-window.c:1250
 msgid "Group"
 msgstr "קבוצה"
 
@@ -2109,72 +2109,73 @@ msgid "Blue"
 msgstr "כחול"
 
 #: ../libempathy-gtk/empathy-tls-dialog.c:150
-msgid "The identity provided by the chat server cannot be verified.\n"
-msgstr "הזהות שסופקה על ידי שרת הצ׳אט אינה ניתנת לאימות.\n"
+msgid "The identity provided by the chat server cannot be verified."
+msgstr "הזהות שסופקה על ידי שרת הצ׳אט אינה ניתנת לאימות."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:156
-msgid "The certificate is not signed by a Certification Authority"
-msgstr "אישור אבטחה זה אינו חתום על ידי רשות אישורי אבטחה"
+#: ../libempathy-gtk/empathy-tls-dialog.c:157
+msgid "The certificate is not signed by a Certification Authority."
+msgstr "אישור אבטחה זה אינו חתום על ידי רשות אישורי אבטחה."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:160
-msgid "The certificate has expired"
-msgstr "אישור האבטחה פג"
+#: ../libempathy-gtk/empathy-tls-dialog.c:161
+msgid "The certificate has expired."
+msgstr "אישור האבטחה פג."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:163
-msgid "The certificate hasn't yet been activated"
-msgstr "אישור האבטחה לא הופעל"
+#: ../libempathy-gtk/empathy-tls-dialog.c:164
+msgid "The certificate hasn't yet been activated."
+msgstr "אישור האבטחה לא הופעל."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:166
-msgid "The certificate does not have the expected fingerprint"
-msgstr "לאישור האבטחה אין את טביעת האצבע המצופה"
+#: ../libempathy-gtk/empathy-tls-dialog.c:167
+msgid "The certificate does not have the expected fingerprint."
+msgstr "לאישור האבטחה אין את טביעת האצבע המצופה."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:169
-msgid "The hostname verified by the certificate doesn't match the server name"
-msgstr "שם המארח שצוין באישור האבטחה אינו תואם לשם השרת"
+#: ../libempathy-gtk/empathy-tls-dialog.c:170
+msgid "The hostname verified by the certificate doesn't match the server name."
+msgstr "שם המארח שצוין באישור האבטחה אינו תואם לשם השרת."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:173
-msgid "The certificate is self-signed"
-msgstr "אישור האבטחה נחתם עצמאית"
+#: ../libempathy-gtk/empathy-tls-dialog.c:174
+msgid "The certificate is self-signed."
+msgstr "אישור האבטחה נחתם עצמאית."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:176
-msgid "The certificate has been revoked by the issuing Certification Authority"
-msgstr "אישור האבטחה נשלל על ידי רשות אישורי האבטחה המנפיקה"
+#: ../libempathy-gtk/empathy-tls-dialog.c:177
+msgid ""
+"The certificate has been revoked by the issuing Certification Authority."
+msgstr "אישור האבטחה נשלל על ידי רשות אישורי האבטחה המנפיקה."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:180
-msgid "The certificate is cryptographically weak"
-msgstr "אישור אבטחה זה חלש מבחינת הצפנה"
+#: ../libempathy-gtk/empathy-tls-dialog.c:181
+msgid "The certificate is cryptographically weak."
+msgstr "אישור אבטחה זה חלש מבחינת הצפנה."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:183
-msgid "The certificate length exceeds verifiable limits"
-msgstr "אורך אישור האבטחה חורג מהגבולות הניתנים לאימות"
+#: ../libempathy-gtk/empathy-tls-dialog.c:184
+msgid "The certificate length exceeds verifiable limits."
+msgstr "אורך אישור האבטחה חורג מהגבולות הניתנים לאימות."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:187
-msgid "The certificate is malformed"
-msgstr "אישור האבטחה פגום"
+#: ../libempathy-gtk/empathy-tls-dialog.c:188
+msgid "The certificate is malformed."
+msgstr "אישור האבטחה פגום."
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:205
+#: ../libempathy-gtk/empathy-tls-dialog.c:206
 #, c-format
 msgid "Expected hostname: %s"
 msgstr "המארח הצפוי: %s"
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:208
+#: ../libempathy-gtk/empathy-tls-dialog.c:209
 #, c-format
 msgid "Certificate hostname: %s"
 msgstr "מארח אישור האבטחה: %s"
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:263
+#: ../libempathy-gtk/empathy-tls-dialog.c:271
 msgid "Continue"
 msgstr "המשך"
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:269
+#: ../libempathy-gtk/empathy-tls-dialog.c:277
 msgid "This connection is untrusted. Would you like to continue anyway?"
 msgstr "חיבור זה אינו מהימן. האם ברצונך להמשיך בכל מקרה?"
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:286
+#: ../libempathy-gtk/empathy-tls-dialog.c:294
 msgid "Remember this choice for future connections"
 msgstr "יש לזכור בחירה זו עבור חיבורים עתידיים"
 
-#: ../libempathy-gtk/empathy-tls-dialog.c:294
+#: ../libempathy-gtk/empathy-tls-dialog.c:302
 msgid "Certificate Details"
 msgstr "פרטי התעודה"
 
@@ -3289,15 +3290,15 @@ msgid "Import Accounts"
 msgstr "יבוא חשבונות"
 
 #. Translators: this is the header of a treeview column
-#: ../src/empathy-import-widget.c:292
+#: ../src/empathy-import-widget.c:301
 msgid "Import"
 msgstr "יבוא"
 
-#: ../src/empathy-import-widget.c:301
+#: ../src/empathy-import-widget.c:310
 msgid "Protocol"
 msgstr "פרוטוקול"
 
-#: ../src/empathy-import-widget.c:325
+#: ../src/empathy-import-widget.c:334
 msgid "Source"
 msgstr "מקור"
 
@@ -3305,27 +3306,27 @@ msgstr "מקור"
 msgid "No match found"
 msgstr "לא נמצאה התאמה"
 
-#: ../src/empathy-main-window.c:535
+#: ../src/empathy-main-window.c:538
 msgid "Reconnect"
 msgstr "התחברות מחדש"
 
-#: ../src/empathy-main-window.c:541
+#: ../src/empathy-main-window.c:544
 msgid "Edit Account"
 msgstr "עריכת חשבון"
 
-#: ../src/empathy-main-window.c:547
+#: ../src/empathy-main-window.c:550
 msgid "Close"
 msgstr "סגירה"
 
-#: ../src/empathy-main-window.c:1229
+#: ../src/empathy-main-window.c:1232
 msgid "Contact"
 msgstr "איש קשר"
 
-#: ../src/empathy-main-window.c:1554
+#: ../src/empathy-main-window.c:1557
 msgid "Contact List"
 msgstr "רשימת אנשי קשר"
 
-#: ../src/empathy-main-window.c:1663
+#: ../src/empathy-main-window.c:1666
 msgid "Show and edit accounts"
 msgstr "הצגה ועריכה של חשבונות"
 
