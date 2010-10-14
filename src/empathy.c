@@ -73,12 +73,174 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
 
-static gboolean start_hidden = FALSE;
-static gboolean no_connect = FALSE;
+#define EMPATHY_TYPE_APP (empathy_app_get_type ())
+#define EMPATHY_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), EMPATHY_TYPE_APP, EmpathyApp))
+#define EMPATHY_APP_CLASS(obj) (G_TYPE_CHECK_CLASS_CAST ((obj), EMPATHY_TYPE_APP, EmpathyAppClass))
+#define EMPATHY_IS_EMPATHY_APP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), EMPATHY_TYPE_APP))
+#define EMPATHY_IS_EMPATHY_APP_CLASS(obj) (G_TYPE_CHECK_CLASS_TYPE ((obj), EMPATHY_TYPE_APP))
+#define EMPATHY_APP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), EMPATHY_TYPE_APP, EmpathyAppClass))
+
+typedef struct _EmpathyApp EmpathyApp;
+typedef struct _EmpathyAppClass EmpathyAppClass;
+
+enum
+{
+  PROP_NO_CONNECT = 1,
+  PROP_START_HIDDEN
+};
+
+GType empathy_app_get_type (void);
+
+struct _EmpathyAppClass
+{
+  GObjectClass parent_class;
+};
+
+struct _EmpathyApp
+{
+  GObject parent;
+
+  /* Properties */
+  gboolean no_connect;
+  gboolean start_hidden;
+
+  GtkWidget *window;
+  EmpathyStatusIcon *icon;
+  EmpathyDispatcher *dispatcher;
+  TpAccountManager *account_manager;
+  TplLogManager *log_manager;
+  EmpathyChatroomManager *chatroom_manager;
+  EmpathyFTFactory  *ft_factory;
+  EmpathyIdle *idle;
+  EmpathyConnectivity *connectivity;
+  EmpathyChatManager *chat_manager;
+  UniqueApp *unique_app;
+  GSettings *gsettings;
+#ifdef HAVE_GEOCLUE
+  EmpathyLocationManager *location_manager;
+#endif
+#ifdef ENABLE_DEBUG
+  TpDebugSender *debug_sender;
+#endif
+};
+
+
+G_DEFINE_TYPE(EmpathyApp, empathy_app, G_TYPE_OBJECT)
+
+static void
+empathy_app_dispose (GObject *object)
+{
+  EmpathyApp *self = EMPATHY_APP (object);
+  void (*dispose) (GObject *) =
+    G_OBJECT_CLASS (empathy_app_parent_class)->dispose;
+
+  if (self->idle != NULL)
+    {
+      empathy_idle_set_state (self->idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
+    }
+
+#ifdef ENABLE_DEBUG
+  tp_clear_object (&self->debug_sender);
+#endif
+
+  tp_clear_object (&self->chat_manager);
+  tp_clear_object (&self->idle);
+  tp_clear_object (&self->connectivity);
+  tp_clear_object (&self->icon);
+  tp_clear_object (&self->account_manager);
+  tp_clear_object (&self->log_manager);
+  tp_clear_object (&self->dispatcher);
+  tp_clear_object (&self->chatroom_manager);
+#ifdef HAVE_GEOCLUE
+  tp_clear_object (&self->location_manager);
+#endif
+  tp_clear_object (&self->ft_factory);
+  tp_clear_object (&self->unique_app);
+  tp_clear_object (&self->gsettings);
+
+  if (dispose != NULL)
+    dispose (object);
+}
+
+static void
+empathy_app_finalize (GObject *object)
+{
+  EmpathyApp *self = EMPATHY_APP (object);
+  void (*finalize) (GObject *) =
+    G_OBJECT_CLASS (empathy_app_parent_class)->finalize;
+
+  gtk_widget_destroy (self->window);
+
+  if (finalize != NULL)
+    finalize (object);
+}
 
 static void account_manager_ready_cb (GObject *source_object,
     GAsyncResult *result,
     gpointer user_data);
+
+static EmpathyApp *
+empathy_app_new (gboolean no_connect,
+    gboolean start_hidden)
+{
+  return g_object_new (EMPATHY_TYPE_APP,
+      "no-connect", no_connect,
+      "start-hidden", start_hidden,
+      NULL);
+}
+
+static void
+empathy_app_set_property (GObject *object,
+    guint prop_id,
+    const GValue *value,
+    GParamSpec *pspec)
+{
+  EmpathyApp *self = EMPATHY_APP (object);
+
+  switch (prop_id)
+    {
+      case PROP_NO_CONNECT:
+        self->no_connect = g_value_get_boolean (value);
+        break;
+      case PROP_START_HIDDEN:
+        self->start_hidden = g_value_get_boolean (value);
+        break;
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void empathy_app_constructed (GObject *object);
+
+static void
+empathy_app_class_init (EmpathyAppClass *klass)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  GParamSpec *spec;
+
+  gobject_class->set_property = empathy_app_set_property;
+  gobject_class->constructed = empathy_app_constructed;
+  gobject_class->dispose = empathy_app_dispose;
+  gobject_class->finalize = empathy_app_finalize;
+
+  spec = g_param_spec_boolean ("no-connect", "no connect",
+      "Don't connect on startup",
+      FALSE,
+      G_PARAM_STATIC_STRINGS | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (gobject_class, PROP_NO_CONNECT, spec);
+
+  spec = g_param_spec_boolean ("start-hidden", "start hidden",
+      "Don't display the contact list or any other dialogs on startup",
+      FALSE,
+      G_PARAM_STATIC_STRINGS | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+  g_object_class_install_property (gobject_class, PROP_START_HIDDEN, spec);
+}
+
+static void
+empathy_app_init (EmpathyApp *self)
+{
+}
 
 static void
 use_conn_notify_cb (GSettings *gsettings,
@@ -160,11 +322,12 @@ migrate_config_to_xdg_dir (void)
 }
 
 static void
-show_accounts_ui (GdkScreen *screen,
+show_accounts_ui (EmpathyApp *self,
+    GdkScreen *screen,
     gboolean if_needed)
 {
   empathy_accounts_dialog_show_application (screen,
-      NULL, if_needed, start_hidden);
+      NULL, if_needed, self->start_hidden);
 }
 
 static UniqueResponse
@@ -174,7 +337,7 @@ unique_app_message_cb (UniqueApp *unique_app,
     guint timestamp,
     gpointer user_data)
 {
-  GtkWindow *window = user_data;
+  EmpathyApp *self = user_data;
   TpAccountManager *account_manager;
 
   DEBUG ("Other instance launched, presenting the main window. "
@@ -186,27 +349,22 @@ unique_app_message_cb (UniqueApp *unique_app,
   /* We're requested to show stuff again, disable the start hidden global
    * in case the accounts wizard wants to pop up.
    */
-  start_hidden = FALSE;
+  self->start_hidden = FALSE;
 
-  gtk_window_set_screen (GTK_WINDOW (window),
+  gtk_window_set_screen (GTK_WINDOW (self->window),
       unique_message_data_get_screen (data));
-  gtk_window_set_startup_id (GTK_WINDOW (window),
+  gtk_window_set_startup_id (GTK_WINDOW (self->window),
       unique_message_data_get_startup_id (data));
-  gtk_window_present_with_time (GTK_WINDOW (window), timestamp);
-  gtk_window_set_skip_taskbar_hint (window, FALSE);
+  gtk_window_present_with_time (GTK_WINDOW (self->window), timestamp);
+  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (self->window), FALSE);
 
   account_manager = tp_account_manager_dup ();
   tp_account_manager_prepare_async (account_manager, NULL,
-      account_manager_ready_cb, NULL);
+      account_manager_ready_cb, self);
   g_object_unref (account_manager);
 
   return UNIQUE_RESPONSE_OK;
 }
-
-static gboolean show_version_cb (const char *option_name,
-    const char *value,
-    gpointer data,
-    GError **error) G_GNUC_NORETURN;
 
 static gboolean
 show_version_cb (const char *option_name,
@@ -251,11 +409,9 @@ account_manager_ready_cb (GObject *source_object,
     gpointer user_data)
 {
   TpAccountManager *manager = TP_ACCOUNT_MANAGER (source_object);
+  EmpathyApp *self = user_data;
   GError *error = NULL;
-  EmpathyIdle *idle;
-  EmpathyConnectivity *connectivity;
   TpConnectionPresenceType presence;
-  GSettings *gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
 
   if (!tp_account_manager_prepare_finish (manager, result, &error))
     {
@@ -279,27 +435,21 @@ account_manager_ready_cb (GObject *source_object,
     }
 
   /* Autoconnect */
-  idle = empathy_idle_dup_singleton ();
-  connectivity = empathy_connectivity_dup_singleton ();
-
   presence = tp_account_manager_get_most_available_presence (manager, NULL,
       NULL);
 
-  if (g_settings_get_boolean (gsettings, EMPATHY_PREFS_AUTOCONNECT) &&
-      !no_connect &&
+  if (g_settings_get_boolean (self->gsettings, EMPATHY_PREFS_AUTOCONNECT) &&
+      !self->no_connect &&
       tp_connection_presence_type_cmp_availability
           (presence, TP_CONNECTION_PRESENCE_TYPE_OFFLINE)
             <= 0)
       /* if current state is Offline, then put it online */
-      empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
+      empathy_idle_set_state (self->idle,
+          TP_CONNECTION_PRESENCE_TYPE_AVAILABLE);
 
   /* Pop up the accounts dialog if we don't have any account */
   if (!empathy_accounts_has_accounts (manager))
-    show_accounts_ui (gdk_screen_get_default (), TRUE);
-
-  g_object_unref (idle);
-  g_object_unref (connectivity);
-  g_object_unref (gsettings);
+    show_accounts_ui (self, gdk_screen_get_default (), TRUE);
 }
 
 static void
@@ -396,32 +546,125 @@ empathy_idle_set_auto_away_cb (GSettings *gsettings,
       g_settings_get_boolean (gsettings, key));
 }
 
+static void
+empathy_app_constructed (GObject *object)
+{
+  EmpathyApp *self = (EmpathyApp *) object;
+  GError *error = NULL;
+  gboolean chatroom_manager_ready;
+  gboolean autoaway;
+
+  g_set_application_name (_(PACKAGE_NAME));
+
+  gtk_window_set_default_icon_name ("empathy");
+  textdomain (GETTEXT_PACKAGE);
+
+#ifdef ENABLE_DEBUG
+  /* Set up debug sender */
+  self->debug_sender = tp_debug_sender_dup ();
+  g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
+#endif
+
+  self->unique_app = unique_app_new ("org.gnome."PACKAGE_NAME, NULL);
+
+  if (unique_app_is_running (self->unique_app))
+    {
+      if (unique_app_send_message (self->unique_app, UNIQUE_ACTIVATE, NULL) ==
+          UNIQUE_RESPONSE_OK)
+        {
+          g_object_unref (self->unique_app);
+          exit (EXIT_SUCCESS);
+        }
+    }
+
+  notify_init (_(PACKAGE_NAME));
+
+  /* Setting up Idle */
+  self->idle = empathy_idle_dup_singleton ();
+
+  self->gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
+  autoaway = g_settings_get_boolean (self->gsettings, EMPATHY_PREFS_AUTOAWAY);
+
+  g_signal_connect (self->gsettings,
+      "changed::" EMPATHY_PREFS_AUTOAWAY,
+      G_CALLBACK (empathy_idle_set_auto_away_cb), self->idle);
+
+  empathy_idle_set_auto_away (self->idle, autoaway);
+
+  /* Setting up Connectivity */
+  self->connectivity = empathy_connectivity_dup_singleton ();
+  use_conn_notify_cb (self->gsettings, EMPATHY_PREFS_USE_CONN,
+      self->connectivity);
+  g_signal_connect (self->gsettings,
+      "changed::" EMPATHY_PREFS_USE_CONN,
+      G_CALLBACK (use_conn_notify_cb), self->connectivity);
+
+  /* account management */
+  self->account_manager = tp_account_manager_dup ();
+  tp_account_manager_prepare_async (self->account_manager, NULL,
+      account_manager_ready_cb, self);
+
+  /* The EmpathyDispatcher doesn't dispatch anything any more but we have to
+   * keep it around as we still use it to request channels */
+  self->dispatcher = empathy_dispatcher_dup_singleton ();
+
+  migrate_config_to_xdg_dir ();
+
+  /* Setting up UI */
+  self->window = empathy_main_window_dup ();
+  gtk_widget_show (self->window);
+  self->icon = empathy_status_icon_new (GTK_WINDOW (self->window),
+      self->start_hidden);
+
+  /* Chat manager */
+  self->chat_manager = empathy_chat_manager_dup_singleton ();
+
+  g_signal_connect (self->unique_app, "message-received",
+      G_CALLBACK (unique_app_message_cb), self);
+
+  /* Logging */
+  self->log_manager = tpl_log_manager_dup_singleton ();
+
+  self->chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
+
+  g_object_get (self->chatroom_manager, "ready", &chatroom_manager_ready, NULL);
+  if (!chatroom_manager_ready)
+    {
+      g_signal_connect (G_OBJECT (self->chatroom_manager), "notify::ready",
+          G_CALLBACK (chatroom_manager_ready_cb), self->account_manager);
+    }
+  else
+    {
+      chatroom_manager_ready_cb (self->chatroom_manager, NULL,
+          self->account_manager);
+    }
+
+  /* Create the FT factory */
+  self->ft_factory = empathy_ft_factory_dup_singleton ();
+  g_signal_connect (self->ft_factory, "new-ft-handler",
+      G_CALLBACK (new_ft_handler_cb), NULL);
+  g_signal_connect (self->ft_factory, "new-incoming-transfer",
+      G_CALLBACK (new_incoming_transfer_cb), NULL);
+
+  if (!empathy_ft_factory_register (self->ft_factory, &error))
+    {
+      g_warning ("Failed to register FileTransfer handler: %s", error->message);
+      g_error_free (error);
+    }
+
+  /* Location mananger */
+#ifdef HAVE_GEOCLUE
+  self->location_manager = empathy_location_manager_dup_singleton ();
+#endif
+}
+
 int
 main (int argc, char *argv[])
 {
-#ifdef HAVE_GEOCLUE
-  EmpathyLocationManager *location_manager = NULL;
-#endif
-  EmpathyStatusIcon *icon;
-  EmpathyDispatcher *dispatcher;
-  TpAccountManager *account_manager;
-  TplLogManager *log_manager;
-  EmpathyChatroomManager *chatroom_manager;
-  EmpathyFTFactory  *ft_factory;
-  GtkWidget *window;
-  EmpathyIdle *idle;
-  EmpathyConnectivity *connectivity;
-  EmpathyChatManager *chat_manager;
+  EmpathyApp *app;
   GError *error = NULL;
-  UniqueApp *unique_app;
-  gboolean chatroom_manager_ready;
-  gboolean autoaway = TRUE;
-#ifdef ENABLE_DEBUG
-  TpDebugSender *debug_sender;
-#endif
-  GSettings *gsettings;
-
   GOptionContext *optcontext;
+  gboolean no_connect = FALSE, start_hidden = FALSE;
   GOptionEntry options[] = {
       { "no-connect", 'n',
         0, G_OPTION_ARG_NONE, &no_connect,
@@ -437,8 +680,8 @@ main (int argc, char *argv[])
       { NULL }
   };
 
-  /* Init */
   g_thread_init (NULL);
+  g_type_init ();
 
 #ifdef HAVE_LIBCHAMPLAIN
   gtk_clutter_init (&argc, &argv);
@@ -460,133 +703,14 @@ main (int argc, char *argv[])
   g_option_context_free (optcontext);
 
   empathy_gtk_init ();
-  g_set_application_name (_(PACKAGE_NAME));
 
-  gtk_window_set_default_icon_name ("empathy");
-  textdomain (GETTEXT_PACKAGE);
-
-#ifdef ENABLE_DEBUG
-  /* Set up debug sender */
-  debug_sender = tp_debug_sender_dup ();
-  g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
-#endif
-
-  unique_app = unique_app_new ("org.gnome."PACKAGE_NAME, NULL);
-
-  if (unique_app_is_running (unique_app))
-    {
-      if (unique_app_send_message (unique_app, UNIQUE_ACTIVATE, NULL) ==
-          UNIQUE_RESPONSE_OK)
-        {
-          g_object_unref (unique_app);
-          return EXIT_SUCCESS;
-        }
-    }
-
-  notify_init (_(PACKAGE_NAME));
-
-  /* Setting up Idle */
-  idle = empathy_idle_dup_singleton ();
-
-  gsettings = g_settings_new (EMPATHY_PREFS_SCHEMA);
-  autoaway = g_settings_get_boolean (gsettings, EMPATHY_PREFS_AUTOAWAY);
-
-  g_signal_connect (gsettings,
-      "changed::" EMPATHY_PREFS_AUTOAWAY,
-      G_CALLBACK (empathy_idle_set_auto_away_cb), idle);
-
-  empathy_idle_set_auto_away (idle, autoaway);
-
-  /* Setting up Connectivity */
-  connectivity = empathy_connectivity_dup_singleton ();
-  use_conn_notify_cb (gsettings, EMPATHY_PREFS_USE_CONN,
-      connectivity);
-  g_signal_connect (gsettings,
-      "changed::" EMPATHY_PREFS_USE_CONN,
-      G_CALLBACK (use_conn_notify_cb), connectivity);
-
-  /* account management */
-  account_manager = tp_account_manager_dup ();
-  tp_account_manager_prepare_async (account_manager, NULL,
-      account_manager_ready_cb, NULL);
-
-  /* The EmpathyDispatcher doesn't dispatch anything any more but we have to
-   * keep it around as we still use it to request channels */
-  dispatcher = empathy_dispatcher_dup_singleton ();
-
-  migrate_config_to_xdg_dir ();
-
-  /* Setting up UI */
-  window = empathy_main_window_dup ();
-  gtk_widget_show (window);
-  icon = empathy_status_icon_new (GTK_WINDOW (window), start_hidden);
-
-  /* Chat manager */
-  chat_manager = empathy_chat_manager_dup_singleton ();
-
-  g_signal_connect (unique_app, "message-received",
-      G_CALLBACK (unique_app_message_cb), window);
-
-  /* Logging */
-  log_manager = tpl_log_manager_dup_singleton ();
-
-  chatroom_manager = empathy_chatroom_manager_dup_singleton (NULL);
-
-  g_object_get (chatroom_manager, "ready", &chatroom_manager_ready, NULL);
-  if (!chatroom_manager_ready)
-    {
-      g_signal_connect (G_OBJECT (chatroom_manager), "notify::ready",
-          G_CALLBACK (chatroom_manager_ready_cb), account_manager);
-    }
-  else
-    {
-      chatroom_manager_ready_cb (chatroom_manager, NULL, account_manager);
-    }
-
-  /* Create the FT factory */
-  ft_factory = empathy_ft_factory_dup_singleton ();
-  g_signal_connect (ft_factory, "new-ft-handler",
-      G_CALLBACK (new_ft_handler_cb), NULL);
-  g_signal_connect (ft_factory, "new-incoming-transfer",
-      G_CALLBACK (new_incoming_transfer_cb), NULL);
-
-  if (!empathy_ft_factory_register (ft_factory, &error))
-    {
-      g_warning ("Failed to register FileTransfer handler: %s", error->message);
-      g_error_free (error);
-    }
-
-  /* Location mananger */
-#ifdef HAVE_GEOCLUE
-  location_manager = empathy_location_manager_dup_singleton ();
-#endif
+  app = empathy_app_new (no_connect, start_hidden);
 
   gtk_main ();
-
-  empathy_idle_set_state (idle, TP_CONNECTION_PRESENCE_TYPE_OFFLINE);
-
-#ifdef ENABLE_DEBUG
-  g_object_unref (debug_sender);
-#endif
-
-  g_object_unref (chat_manager);
-  g_object_unref (idle);
-  g_object_unref (connectivity);
-  g_object_unref (icon);
-  g_object_unref (account_manager);
-  g_object_unref (log_manager);
-  g_object_unref (dispatcher);
-  g_object_unref (chatroom_manager);
-#ifdef HAVE_GEOCLUE
-  g_object_unref (location_manager);
-#endif
-  g_object_unref (ft_factory);
-  g_object_unref (unique_app);
-  g_object_unref (gsettings);
-  gtk_widget_destroy (window);
 
   notify_uninit ();
   xmlCleanupParser ();
 
+  g_object_unref (app);
   return EXIT_SUCCESS;
 }
