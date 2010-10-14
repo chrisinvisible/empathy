@@ -176,6 +176,14 @@ gboolean empathy_account_settings_apply_finish (
   GAsyncResult *result,
   GError **error);
 
+void empathy_account_settings_set_regex (EmpathyAccountSettings *settings,
+  const gchar *param,
+  const gchar *regex);
+
+gboolean empathy_account_settings_parameter_is_valid (
+    EmpathyAccountSettings *settings,
+    const gchar *param);
+
 gboolean empathy_account_settings_is_valid (EmpathyAccountSettings *settings);
 
 const TpConnectionManagerProtocol * empathy_account_settings_get_tp_protocol (

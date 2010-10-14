@@ -116,6 +116,49 @@ static guint signals[LAST_SIGNAL] = { 0 };
 #define GET_PRIV(obj) EMPATHY_GET_PRIV (obj, EmpathyAccountWidget)
 #define CHANGED_TIMEOUT 300
 
+#define DIGIT             "0-9"
+#define DIGITS            "(["DIGIT"]+)"
+#define ALPHA             "a-zA-Z"
+#define ALPHAS            "(["ALPHA"]+)"
+#define ALPHADIGIT        ALPHA DIGIT
+#define ALPHADIGITS       "(["ALPHADIGIT"]+)"
+#define ALPHADIGITDASH    ALPHA DIGIT "-"
+#define ALPHADIGITDASHS   "(["ALPHADIGITDASH"]*)"
+
+#define HOSTNUMBER        "("DIGITS"\\."DIGITS"\\."DIGITS"\\."DIGITS")"
+#define TOPLABEL          ALPHAS"|(["ALPHA"]" ALPHADIGITDASHS "["ALPHADIGIT"])"
+#define DOMAINLABEL       ALPHADIGITS"|(["ALPHADIGIT"]" ALPHADIGITDASHS \
+                                       "["ALPHADIGIT"])"
+#define HOSTNAME          "((" DOMAINLABEL "\\.)+" TOPLABEL ")"
+/* Based on http://www.ietf.org/rfc/rfc1738.txt (section 5) */
+#define HOST              "("HOSTNAME "|" HOSTNUMBER")"
+/* Based on http://www.ietf.org/rfc/rfc0822.txt (appendix D) */
+#define EMAIL_LOCALPART   "([^\\(\\)<>@,;:\\\\\"\\[\\]\\s]+)"
+
+/* UIN is digital according to the unofficial specification:
+ * http://iserverd.khstu.ru/docum_ext/icqv5.html#CTS
+ * 5 digits minimun according to http://en.wikipedia.org/wiki/ICQ#UIN */
+#define ICQ_USER_NAME     "(["DIGIT"]{5,})"
+/* Based on http://www.ietf.org/rfc/rfc2812.txt (section 2.3.1) */
+#define IRC_SPECIAL       "_\\[\\]{}\\\\|`^"
+#define IRC_USER_NAME     "(["ALPHA IRC_SPECIAL"]["ALPHADIGITDASH IRC_SPECIAL"]*)"
+/* Based on http://www.ietf.org/rfc/rfc4622.txt (section 2.2)
+ * We just exclude invalid characters to avoid ucschars and other redundant
+ * complexity */
+#define JABBER_USER_NAME  "([^@:'\"<>&\\s]+)"
+/* ID is an email according to the unofficial specification:
+ * http://www.hypothetic.org/docs/msn/general/names.php */
+#define MSN_USER_NAME     EMAIL_LOCALPART
+/* Based on the official help:
+ * http://help.yahoo.com/l/us/yahoo/edit/registration/edit-01.html */
+#define YAHOO_USER_NAME   "(["ALPHA"]["ALPHADIGIT"_\\.]{3,31})"
+
+#define ACCOUNT_REGEX_ICQ      "^"ICQ_USER_NAME"$"
+#define ACCOUNT_REGEX_IRC      "^"IRC_USER_NAME"$"
+#define ACCOUNT_REGEX_JABBER   "^"JABBER_USER_NAME"@"HOST"$"
+#define ACCOUNT_REGEX_MSN      "^"MSN_USER_NAME"@"HOST"$"
+#define ACCOUNT_REGEX_YAHOO    "^"YAHOO_USER_NAME"$"
+
 static void
 account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
     gboolean sensitive)
@@ -133,6 +176,35 @@ account_widget_set_control_buttons_sensitivity (EmpathyAccountWidget *self,
       gtk_widget_set_sensitive (priv->cancel_button,
           (sensitive || priv->creating_account) && priv->other_accounts_exist);
     }
+}
+
+static void
+account_widget_set_entry_highlighting (GtkEntry *entry, gboolean highlight)
+{
+  GdkColor color;
+  GtkStyle *style;
+
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+
+  style = gtk_widget_get_style (GTK_WIDGET (entry));
+
+  if (highlight)
+    {
+      color = style->bg[GTK_STATE_SELECTED];
+
+      /* Here we take the current theme colour and add it to
+       * the colour for white and average the two. This
+       * gives a colour which is inline with the theme but
+       * slightly whiter.
+       */
+      color.red = (color.red + (style->white).red) / 2;
+      color.green = (color.green + (style->white).green) / 2;
+      color.blue = (color.blue + (style->white).blue) / 2;
+
+      gtk_widget_modify_base (GTK_WIDGET (entry), GTK_STATE_NORMAL, &color);
+    }
+  else
+    gtk_widget_modify_base (GTK_WIDGET (entry), GTK_STATE_NORMAL, NULL);
 }
 
 static void
@@ -156,9 +228,13 @@ account_widget_entry_changed_common (EmpathyAccountWidget *self,
   const gchar *str;
   const gchar *param_name;
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  gboolean prev_status;
+  gboolean curr_status;
 
   str = gtk_entry_get_text (entry);
   param_name = g_object_get_data (G_OBJECT (entry), "param_name");
+  prev_status = empathy_account_settings_parameter_is_valid (priv->settings,
+                                                             param_name);
 
   if (EMP_STR_EMPTY (str))
     {
@@ -180,6 +256,11 @@ account_widget_entry_changed_common (EmpathyAccountWidget *self,
           tp_strdiff (param_name, "password") ? str : "***");
       empathy_account_settings_set_string (priv->settings, param_name, str);
     }
+
+  curr_status = empathy_account_settings_parameter_is_valid (priv->settings,
+                                                             param_name);
+  if (curr_status != prev_status)
+    account_widget_set_entry_highlighting (entry, !curr_status);
 }
 
 static void
@@ -188,6 +269,21 @@ account_widget_entry_changed_cb (GtkEditable *entry,
 {
   account_widget_entry_changed_common (self, GTK_ENTRY (entry), FALSE);
   empathy_account_widget_changed (self);
+}
+
+static void
+account_widget_entry_map_cb (GtkEntry *entry,
+    EmpathyAccountWidget *self)
+{
+  EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+  const gchar *param_name;
+  gboolean is_valid;
+
+  /* need to initialize input highlighting */
+  param_name = g_object_get_data (G_OBJECT (entry), "param_name");
+  is_valid = empathy_account_settings_parameter_is_valid (priv->settings,
+                                                          param_name);
+  account_widget_set_entry_highlighting (entry, !is_valid);
 }
 
 static void
@@ -451,6 +547,8 @@ empathy_account_widget_setup_widget (EmpathyAccountWidget *self,
 
       g_signal_connect (widget, "changed",
           G_CALLBACK (account_widget_entry_changed_cb), self);
+      g_signal_connect (widget, "map",
+          G_CALLBACK (account_widget_entry_map_cb), self);
     }
   else if (GTK_IS_TOGGLE_BUTTON (widget))
     {
@@ -948,6 +1046,9 @@ account_widget_build_irc (EmpathyAccountWidget *self,
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
 
+  empathy_account_settings_set_regex (priv->settings, "account",
+      ACCOUNT_REGEX_IRC);
+
   if (priv->simple)
     {
       priv->irc_network_chooser = empathy_account_widget_irc_build_simple (self,
@@ -974,6 +1075,9 @@ account_widget_build_msn (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  empathy_account_settings_set_regex (priv->settings, "account",
+      ACCOUNT_REGEX_MSN);
 
   if (priv->simple)
     {
@@ -1104,6 +1208,9 @@ account_widget_build_jabber (EmpathyAccountWidget *self,
   is_gtalk = account_widget_is_gtalk (self);
   is_facebook = account_widget_is_facebook (self);
 
+  empathy_account_settings_set_regex (priv->settings, "account",
+      ACCOUNT_REGEX_JABBER);
+
   if (priv->simple && !is_gtalk && !is_facebook)
     {
       /* Simple widget for XMPP */
@@ -1228,6 +1335,9 @@ account_widget_build_icq (EmpathyAccountWidget *self,
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   GtkWidget *spinbutton_port;
 
+  empathy_account_settings_set_regex (priv->settings, "account",
+      ACCOUNT_REGEX_ICQ);
+
   if (priv->simple)
     {
       self->ui_details->gui = empathy_builder_get_file (filename,
@@ -1305,6 +1415,9 @@ account_widget_build_yahoo (EmpathyAccountWidget *self,
     const char *filename)
 {
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
+
+  empathy_account_settings_set_regex (priv->settings, "account",
+      ACCOUNT_REGEX_YAHOO);
 
   if (priv->simple)
     {

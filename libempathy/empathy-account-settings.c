@@ -69,9 +69,15 @@ struct _EmpathyAccountSettingsPriv
   gboolean display_name_overridden;
   gboolean ready;
 
+  /* Parameter name (gchar *) -> parameter value (GValue) */
   GHashTable *parameters;
+  /* Keys are parameter names from the hash above (gchar *).
+   * Values are regular expresions that should match corresponding parameter
+   * values (GRegex *). Possible regexp patterns are defined in
+   * empathy-account-widget.c */
+  GHashTable *param_regexps;
   GArray *unset_parameters;
-  GArray *required_params;
+  GList *required_params;
 
   gulong managers_ready_id;
 
@@ -93,7 +99,12 @@ empathy_account_settings_init (EmpathyAccountSettings *obj)
   priv->parameters = g_hash_table_new_full (g_str_hash, g_str_equal,
     g_free, (GDestroyNotify) tp_g_value_slice_free);
 
+  priv->param_regexps = g_hash_table_new_full (g_str_hash, g_str_equal,
+    g_free, (GDestroyNotify) g_regex_unref);
+
   priv->unset_parameters = g_array_new (TRUE, FALSE, sizeof (gchar *));
+
+  priv->required_params = NULL;
 }
 
 static void empathy_account_settings_dispose (GObject *object);
@@ -343,6 +354,7 @@ empathy_account_settings_finalize (GObject *object)
 {
   EmpathyAccountSettings *self = EMPATHY_ACCOUNT_SETTINGS (object);
   EmpathyAccountSettingsPriv *priv = GET_PRIV (self);
+  GList *l;
 
   /* free any data held directly by the object here */
   g_free (priv->cm_name);
@@ -352,9 +364,14 @@ empathy_account_settings_finalize (GObject *object)
   g_free (priv->icon_name);
 
   if (priv->required_params != NULL)
-    g_array_free (priv->required_params, TRUE);
+    {
+      for (l = priv->required_params; l; l = l->next)
+        g_free (l->data);
+      g_list_free (priv->required_params);
+    }
 
   g_hash_table_destroy (priv->parameters);
+  g_hash_table_destroy (priv->param_regexps);
 
   empathy_account_settings_free_unset_parameters (self);
   g_array_free (priv->unset_parameters, TRUE);
@@ -407,16 +424,13 @@ empathy_account_settings_check_readyness (EmpathyAccountSettings *self)
   if (priv->required_params == NULL)
     {
       TpConnectionManagerParam *cur;
-      char *val;
-
-      priv->required_params = g_array_new (TRUE, FALSE, sizeof (gchar *));
 
       for (cur = tp_protocol->params; cur->name != NULL; cur++)
         {
           if (tp_connection_manager_param_is_required (cur))
             {
-              val = g_strdup (cur->name);
-              g_array_append_val (priv->required_params, val);
+              priv->required_params = g_list_append (priv->required_params,
+                                                     g_strdup (cur->name));
             }
         }
     }
@@ -1339,42 +1353,90 @@ empathy_account_settings_has_account (EmpathyAccountSettings *settings,
   return (!tp_strdiff (account_path, priv_account_path));
 }
 
+void
+empathy_account_settings_set_regex (EmpathyAccountSettings *settings,
+    const gchar *param,
+    const gchar *pattern)
+{
+  EmpathyAccountSettingsPriv *priv = GET_PRIV (settings);
+  GRegex *regex;
+
+  regex = g_regex_new (pattern, 0, 0, NULL);
+  g_hash_table_insert (priv->param_regexps, g_strdup (param), regex);
+}
+
 gboolean
-empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
+empathy_account_settings_parameter_is_valid (
+    EmpathyAccountSettings *settings,
+    const gchar *param)
 {
   EmpathyAccountSettingsPriv *priv;
-  guint idx;
-  gchar *current;
-  gboolean missed = FALSE;
+  const GRegex *regex;
+  const gchar *value;
 
   g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), FALSE);
 
   priv = GET_PRIV (settings);
 
-  for (idx = 0; idx < priv->required_params->len; idx++)
+  if (g_list_find_custom (priv->required_params, param, (GCompareFunc) strcmp))
     {
-      current = g_array_index (priv->required_params, gchar *, idx);
-
       /* first, look if it's set in our own parameters */
-      if (tp_asv_lookup (priv->parameters, current))
-        continue;
+      if (tp_asv_lookup (priv->parameters, param))
+        goto test_regex;
 
       /* if we did not unset the parameter, look if it's in the account */
       if (priv->account != NULL &&
-          !empathy_account_settings_is_unset (settings, current))
+          !empathy_account_settings_is_unset (settings, param))
         {
           const GHashTable *account_params;
 
           account_params = tp_account_get_parameters (priv->account);
-          if (tp_asv_lookup (account_params, current))
-            continue;
+          if (tp_asv_lookup (account_params, param))
+            goto test_regex;
         }
 
-      missed = TRUE;
-      break;
+      return FALSE;
     }
 
-  return !missed;
+test_regex:
+  /* test whether parameter value matches its regex */
+  regex = g_hash_table_lookup (priv->param_regexps, param);
+  if (regex)
+    {
+      value = empathy_account_settings_get_string (settings, param);
+      if (value != NULL && !g_regex_match (regex, value, 0, NULL))
+        return FALSE;
+    }
+
+  return TRUE;
+}
+
+gboolean
+empathy_account_settings_is_valid (EmpathyAccountSettings *settings)
+{
+  EmpathyAccountSettingsPriv *priv;
+  const gchar *param;
+  GHashTableIter iter;
+  GList *l;
+
+  g_return_val_if_fail (EMPATHY_IS_ACCOUNT_SETTINGS (settings), FALSE);
+
+  priv = GET_PRIV (settings);
+
+  for (l = priv->required_params; l; l = l->next)
+    {
+      if (!empathy_account_settings_parameter_is_valid (settings, l->data))
+        return FALSE;
+    }
+
+  g_hash_table_iter_init (&iter, priv->param_regexps);
+  while (g_hash_table_iter_next (&iter, (gpointer *) &param, NULL))
+    {
+      if (!empathy_account_settings_parameter_is_valid (settings, param))
+        return FALSE;
+    }
+
+  return TRUE;
 }
 
 const TpConnectionManagerProtocol *
