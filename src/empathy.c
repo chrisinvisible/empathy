@@ -30,7 +30,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include <unique/unique.h>
 
 #ifdef HAVE_LIBCHAMPLAIN
 #include <clutter-gtk/clutter-gtk.h>
@@ -114,7 +113,6 @@ struct _EmpathyApp
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
   EmpathyChatManager *chat_manager;
-  UniqueApp *unique_app;
   GSettings *gsettings;
 #ifdef HAVE_GEOCLUE
   EmpathyLocationManager *location_manager;
@@ -155,7 +153,6 @@ empathy_app_dispose (GObject *object)
   tp_clear_object (&self->location_manager);
 #endif
   tp_clear_object (&self->ft_factory);
-  tp_clear_object (&self->unique_app);
   tp_clear_object (&self->gsettings);
 
   if (dispose != NULL)
@@ -231,18 +228,39 @@ empathy_app_set_property (GObject *object,
     }
 }
 
+static void
+empathy_app_activated (GtkApplication *app,
+    GVariant *args)
+{
+  EmpathyApp *self = (EmpathyApp *) app;
+
+  /* We're requested to show stuff again, disable the start hidden global
+   * in case the accounts wizard wants to pop up.
+   */
+  self->start_hidden = FALSE;
+
+  empathy_window_present (GTK_WINDOW (self->window));
+
+  /* Display the accounts dialog if needed */
+  tp_account_manager_prepare_async (self->account_manager, NULL,
+      account_manager_ready_cb, self);
+}
+
 static void empathy_app_constructed (GObject *object);
 
 static void
 empathy_app_class_init (EmpathyAppClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  GtkApplicationClass *gtk_app_class = GTK_APPLICATION_CLASS (klass);
   GParamSpec *spec;
 
   gobject_class->set_property = empathy_app_set_property;
   gobject_class->constructed = empathy_app_constructed;
   gobject_class->dispose = empathy_app_dispose;
   gobject_class->finalize = empathy_app_finalize;
+
+  gtk_app_class->activated = empathy_app_activated;
 
   spec = g_param_spec_boolean ("no-connect", "no connect",
       "Don't connect on startup",
@@ -348,42 +366,6 @@ show_accounts_ui (EmpathyApp *self,
 {
   empathy_accounts_dialog_show_application (screen,
       NULL, if_needed, self->start_hidden);
-}
-
-static UniqueResponse
-unique_app_message_cb (UniqueApp *unique_app,
-    gint command,
-    UniqueMessageData *data,
-    guint timestamp,
-    gpointer user_data)
-{
-  EmpathyApp *self = user_data;
-  TpAccountManager *account_manager;
-
-  DEBUG ("Other instance launched, presenting the main window. "
-      "Command=%d, timestamp %u", command, timestamp);
-
-  /* XXX: the standalone app somewhat breaks this case, since
-   * communicating it would be a pain */
-
-  /* We're requested to show stuff again, disable the start hidden global
-   * in case the accounts wizard wants to pop up.
-   */
-  self->start_hidden = FALSE;
-
-  gtk_window_set_screen (GTK_WINDOW (self->window),
-      unique_message_data_get_screen (data));
-  gtk_window_set_startup_id (GTK_WINDOW (self->window),
-      unique_message_data_get_startup_id (data));
-  gtk_window_present_with_time (GTK_WINDOW (self->window), timestamp);
-  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (self->window), FALSE);
-
-  account_manager = tp_account_manager_dup ();
-  tp_account_manager_prepare_async (account_manager, NULL,
-      account_manager_ready_cb, self);
-  g_object_unref (account_manager);
-
-  return UNIQUE_RESPONSE_OK;
 }
 
 static gboolean
@@ -585,18 +567,6 @@ empathy_app_constructed (GObject *object)
   g_log_set_default_handler (tp_debug_sender_log_handler, G_LOG_DOMAIN);
 #endif
 
-  self->unique_app = unique_app_new ("org.gnome."PACKAGE_NAME, NULL);
-
-  if (unique_app_is_running (self->unique_app))
-    {
-      if (unique_app_send_message (self->unique_app, UNIQUE_ACTIVATE, NULL) ==
-          UNIQUE_RESPONSE_OK)
-        {
-          g_object_unref (self->unique_app);
-          exit (EXIT_SUCCESS);
-        }
-    }
-
   notify_init (_(PACKAGE_NAME));
 
   /* Setting up Idle */
@@ -638,9 +608,6 @@ empathy_app_constructed (GObject *object)
 
   /* Chat manager */
   self->chat_manager = empathy_chat_manager_dup_singleton ();
-
-  g_signal_connect (self->unique_app, "message-received",
-      G_CALLBACK (unique_app_message_cb), self);
 
   /* Logging */
   self->log_manager = tpl_log_manager_dup_singleton ();
