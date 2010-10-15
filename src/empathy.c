@@ -93,12 +93,12 @@ GType empathy_app_get_type (void);
 
 struct _EmpathyAppClass
 {
-  GObjectClass parent_class;
+  GtkApplicationClass parent_class;
 };
 
 struct _EmpathyApp
 {
-  GObject parent;
+  GtkApplication parent;
 
   /* Properties */
   gboolean no_connect;
@@ -125,7 +125,7 @@ struct _EmpathyApp
 };
 
 
-G_DEFINE_TYPE(EmpathyApp, empathy_app, G_TYPE_OBJECT)
+G_DEFINE_TYPE(EmpathyApp, empathy_app, GTK_TYPE_APPLICATION)
 
 static void
 empathy_app_dispose (GObject *object)
@@ -180,13 +180,33 @@ static void account_manager_ready_cb (GObject *source_object,
     gpointer user_data);
 
 static EmpathyApp *
-empathy_app_new (gboolean no_connect,
+empathy_app_new (guint argc,
+    const gchar * const * argv,
+    gboolean no_connect,
     gboolean start_hidden)
 {
-  return g_object_new (EMPATHY_TYPE_APP,
+  EmpathyApp *self;
+  GError *error = NULL;
+  GVariant *argv_variant;
+
+  argv_variant = g_variant_new_bytestring_array (argv, argc);
+
+  self = g_initable_new (EMPATHY_TYPE_APP,
+      NULL, &error,
+      "application-id", "org.gnome."PACKAGE_NAME,
+      "argv", argv_variant,
+      "register", TRUE,
       "no-connect", no_connect,
       "start-hidden", start_hidden,
       NULL);
+
+  if (self == NULL)
+    {
+      g_critical ("Failed to initiate EmpathyApp: %s", error->message);
+      g_error_free (error);
+    }
+
+  return self;
 }
 
 static void
@@ -704,9 +724,10 @@ main (int argc, char *argv[])
 
   empathy_gtk_init ();
 
-  app = empathy_app_new (no_connect, start_hidden);
+  app = empathy_app_new (argc, (const gchar * const *) argv,
+      no_connect, start_hidden);
 
-  gtk_main ();
+  gtk_application_run (GTK_APPLICATION (app));
 
   notify_uninit ();
   xmlCleanupParser ();
