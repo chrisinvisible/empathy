@@ -72,6 +72,8 @@
 #define DEBUG_FLAG EMPATHY_DEBUG_OTHER
 #include <libempathy/empathy-debug.h>
 
+#define EMPATHY_DBUS_NAME "org.gnome.Empathy"
+
 #define EMPATHY_TYPE_APP (empathy_app_get_type ())
 #define EMPATHY_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), EMPATHY_TYPE_APP, EmpathyApp))
 #define EMPATHY_APP_CLASS(obj) (G_TYPE_CHECK_CLASS_CAST ((obj), EMPATHY_TYPE_APP, EmpathyAppClass))
@@ -190,7 +192,7 @@ empathy_app_new (guint argc,
 
   self = g_initable_new (EMPATHY_TYPE_APP,
       NULL, &error,
-      "application-id", "org.gnome."PACKAGE_NAME,
+      "application-id", EMPATHY_DBUS_NAME,
       "argv", argv_variant,
       "register", TRUE,
       "no-connect", no_connect,
