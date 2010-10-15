@@ -27,15 +27,19 @@
 
 #include "empathy-debug-window.h"
 
+#define EMPATHY_DEBUGGER_DBUS_NAME "org.gnome.Empathy.Debugger"
+
 int
 main (int argc,
     char **argv)
 {
   GtkWidget *window;
+  GtkApplication *app;
 
   g_thread_init (NULL);
-  gtk_init (&argc, &argv);
   empathy_gtk_init ();
+
+  app = gtk_application_new (EMPATHY_DEBUGGER_DBUS_NAME, &argc, &argv);
 
   g_set_application_name (_("Empathy Debugger"));
 
@@ -45,7 +49,8 @@ main (int argc,
   window = empathy_debug_window_new (NULL);
   g_signal_connect (window, "destroy", gtk_main_quit, NULL);
 
-  gtk_main ();
+  gtk_application_run (app);
 
+  g_object_unref (app);
   return EXIT_SUCCESS;
 }
