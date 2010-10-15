@@ -26,6 +26,7 @@
 #include <config.h>
 
 #include <string.h>
+#include <stdio.h>
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -101,7 +102,7 @@ static void     preferences_languages_load               (EmpathyPreferences    
 static gboolean preferences_languages_load_foreach       (GtkTreeModel           *model,
 							  GtkTreePath            *path,
 							  GtkTreeIter            *iter,
-							  gchar                 **languages);
+							  GList                  *languages);
 static void     preferences_languages_cell_toggled_cb    (GtkCellRendererToggle  *cell,
 							  gchar                  *path_string,
 							  EmpathyPreferences      *preferences);
@@ -471,9 +472,6 @@ preferences_languages_add (EmpathyPreferences *preferences)
 
 	codes = empathy_spell_get_language_codes ();
 
-	g_settings_set_boolean (priv->gsettings_chat,
-				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
-				codes != NULL);
 	if (!codes) {
 		gtk_widget_set_sensitive (priv->treeview_spell_checker, FALSE);
 	}
@@ -569,37 +567,34 @@ preferences_languages_load (EmpathyPreferences *preferences)
 	EmpathyPreferencesPriv *priv = GET_PRIV (preferences);
 	GtkTreeView   *view;
 	GtkTreeModel  *model;
-	gchar         *value;
-	gchar        **vlanguages;
+	GList         *enabled_codes;
 
-	value = g_settings_get_string (priv->gsettings_chat,
-				       EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES);
+	enabled_codes = empathy_spell_get_enabled_language_codes ();
 
-	if (value == NULL)
+	g_settings_set_boolean (priv->gsettings_chat,
+				EMPATHY_PREFS_CHAT_SPELL_CHECKER_ENABLED,
+				enabled_codes != NULL);
+
+	if (enabled_codes == NULL)
 		return;
-
-	vlanguages = g_strsplit (value, ",", -1);
-	g_free (value);
 
 	view = GTK_TREE_VIEW (priv->treeview_spell_checker);
 	model = gtk_tree_view_get_model (view);
 
 	gtk_tree_model_foreach (model,
 				(GtkTreeModelForeachFunc) preferences_languages_load_foreach,
-				vlanguages);
+				enabled_codes);
 
-	g_strfreev (vlanguages);
+	g_list_free (enabled_codes);
 }
 
 static gboolean
 preferences_languages_load_foreach (GtkTreeModel  *model,
 				    GtkTreePath   *path,
 				    GtkTreeIter   *iter,
-				    gchar        **languages)
+				    GList         *languages)
 {
 	gchar    *code;
-	gchar    *lang;
-	gint      i;
 	gboolean  found = FALSE;
 
 	if (!languages) {
@@ -611,10 +606,8 @@ preferences_languages_load_foreach (GtkTreeModel  *model,
 		return FALSE;
 	}
 
-	for (i = 0, lang = languages[i]; lang; lang = languages[++i]) {
-		if (!tp_strdiff (lang, code)) {
-			found = TRUE;
-		}
+	if (g_list_find_custom (languages, code, (GCompareFunc) strcmp)) {
+		found = TRUE;
 	}
 
 	g_free (code);

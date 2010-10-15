@@ -48,8 +48,11 @@ typedef struct {
 #define ISO_CODES_DATADIR    ISO_CODES_PREFIX "/share/xml/iso-codes"
 #define ISO_CODES_LOCALESDIR ISO_CODES_PREFIX "/share/locale"
 
+/* Language code (gchar *) -> language name (gchar *) */
 static GHashTable  *iso_code_names = NULL;
-static GList       *languages = NULL;
+/* Contains only _enabled_ languages
+ * Language code (gchar *) -> language (SpellLanguage *) */
+static GHashTable  *languages = NULL;
 
 static void
 spell_iso_codes_parse_start_tag (GMarkupParseContext  *ctx,
@@ -162,24 +165,22 @@ spell_notify_languages_cb (GSettings   *gsettings,
 			   const gchar *key,
 			   gpointer     user_data)
 {
-	GList *l;
-
 	DEBUG ("Resetting languages due to config change");
 
 	/* We just reset the languages list. */
-	for (l = languages; l; l = l->next) {
-		SpellLanguage *lang;
-
-		lang = l->data;
-
-		enchant_broker_free_dict (lang->config, lang->speller);
-		enchant_broker_free (lang->config);
-
-		g_slice_free (SpellLanguage, lang);
+	if (languages != NULL) {
+		g_hash_table_destroy (languages);
+		languages = NULL;
 	}
+}
 
-	g_list_free (languages);
-	languages = NULL;
+static void
+empathy_spell_free_language (SpellLanguage *lang)
+{
+	enchant_broker_free_dict (lang->config, lang->speller);
+	enchant_broker_free (lang->config);
+
+	g_slice_free (SpellLanguage, lang);
 }
 
 static void
@@ -200,6 +201,9 @@ spell_setup_languages (void)
 	if (languages) {
 		return;
 	}
+
+	languages = g_hash_table_new_full (g_str_hash, g_str_equal,
+			g_free, (GDestroyNotify) empathy_spell_free_language);
 
 	str = g_settings_get_string (gsettings,
 			EMPATHY_PREFS_CHAT_SPELL_CHECKER_LANGUAGES);
@@ -224,7 +228,9 @@ spell_setup_languages (void)
 			if (lang->speller == NULL) {
 				DEBUG ("language '%s' has no valid dict", strv[i]);
 			} else {
-				languages = g_list_append (languages, lang);
+				g_hash_table_insert (languages,
+						     g_strdup (strv[i]),
+						     lang);
 			}
 
 			i++;
@@ -294,6 +300,13 @@ empathy_spell_get_language_codes (void)
 	return list_langs;
 }
 
+GList *
+empathy_spell_get_enabled_language_codes (void)
+{
+	spell_setup_languages ();
+	return g_hash_table_get_keys (languages);
+}
+
 void
 empathy_spell_free_language_codes (GList *codes)
 {
@@ -309,7 +322,8 @@ empathy_spell_check (const gchar *word)
 	gboolean     digit;
 	gunichar     c;
 	gint         len;
-	GList       *l;
+	GHashTableIter iter;
+	SpellLanguage  *lang;
 
 	g_return_val_if_fail (word != NULL, FALSE);
 
@@ -332,11 +346,8 @@ empathy_spell_check (const gchar *word)
 	}
 
 	len = strlen (word);
-	for (l = languages; l; l = l->next) {
-		SpellLanguage  *lang;
-
-		lang = l->data;
-
+	g_hash_table_iter_init (&iter, languages);
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer *) &lang)) {
 		enchant_result = enchant_dict_check (lang->speller, word, len);
 
 		if (enchant_result == 0) {
@@ -348,36 +359,40 @@ empathy_spell_check (const gchar *word)
 }
 
 GList *
-empathy_spell_get_suggestions (const gchar *word)
+empathy_spell_get_suggestions (const gchar *code, const gchar *word)
 {
 	gint   len;
-	GList *l1;
 	GList *suggestion_list = NULL;
+	SpellLanguage *lang;
+	gchar **suggestions;
+	gsize   i, number_of_suggestions;
 
+	g_return_val_if_fail (code != NULL, NULL);
 	g_return_val_if_fail (word != NULL, NULL);
 
 	spell_setup_languages ();
 
+	if (!languages) {
+		return NULL;
+	}
+
 	len = strlen (word);
 
-	for (l1 = languages; l1; l1 = l1->next) {
-		SpellLanguage *lang;
-		gchar **suggestions;
-		gsize   i, number_of_suggestions;
+	lang = g_hash_table_lookup (languages, code);
+	if (!lang) {
+		return NULL;
+	}
 
-		lang = l1->data;
+	suggestions = enchant_dict_suggest (lang->speller, word, len,
+					    &number_of_suggestions);
 
-		suggestions = enchant_dict_suggest (lang->speller, word, len,
-						    &number_of_suggestions);
+	for (i = 0; i < number_of_suggestions; i++) {
+		suggestion_list = g_list_append (suggestion_list,
+						 g_strdup (suggestions[i]));
+	}
 
-		for (i = 0; i < number_of_suggestions; i++) {
-			suggestion_list = g_list_append (suggestion_list,
-							 g_strdup (suggestions[i]));
-		}
-
-		if (suggestions) {
-			enchant_dict_free_string_list (lang->speller, suggestions);
-		}
+	if (suggestions) {
+		enchant_dict_free_string_list (lang->speller, suggestions);
 	}
 
 	return suggestion_list;

@@ -1763,33 +1763,79 @@ chat_spelling_menu_activate_cb (GtkMenuItem     *menu_item,
                                gtk_menu_item_get_label (menu_item));
 }
 
+
+static GtkWidget *
+chat_spelling_build_suggestions_menu (const gchar *code,
+				      EmpathyChatSpell *chat_spell)
+{
+	GList     *suggestions, *l;
+	GtkWidget *menu, *menu_item;
+
+	suggestions = empathy_spell_get_suggestions (code, chat_spell->word);
+	if (suggestions == NULL)
+		return NULL;
+
+	menu = gtk_menu_new ();
+	for (l = suggestions; l; l = l->next) {
+		menu_item = gtk_menu_item_new_with_label (l->data);
+		g_signal_connect (G_OBJECT (menu_item), "activate",
+				  G_CALLBACK (chat_spelling_menu_activate_cb),
+				  chat_spell);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+	}
+	empathy_spell_free_suggestions (suggestions);
+
+	gtk_widget_show_all (menu);
+
+	return menu;
+}
+
 static GtkWidget *
 chat_spelling_build_menu (EmpathyChatSpell *chat_spell)
 {
-    GtkWidget *menu, *menu_item;
-    GList     *suggestions, *l;
+	GtkWidget *menu, *submenu, *item;
+	GList     *codes, *l;
 
-    menu = gtk_menu_new ();
-    suggestions = empathy_spell_get_suggestions (chat_spell->word);
-    if (suggestions == NULL) {
-        menu_item = gtk_menu_item_new_with_label (_("(No Suggestions)"));
-	gtk_widget_set_sensitive (menu_item, FALSE);
-        gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-    } else {
-        for (l = suggestions; l; l = l->next) {
-            menu_item = gtk_menu_item_new_with_label (l->data);
-            g_signal_connect (G_OBJECT (menu_item),
-                          "activate",
-                          G_CALLBACK (chat_spelling_menu_activate_cb),
-                          chat_spell);
-            gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-        }
-    }
-    empathy_spell_free_suggestions (suggestions);
+	codes = empathy_spell_get_enabled_language_codes ();
+	g_assert (codes != NULL);
 
-    gtk_widget_show_all (menu);
+	if (g_list_length (codes) > 1) {
+		menu = gtk_menu_new ();
 
-    return menu;
+		for (l = codes; l; l = l->next) {
+			const gchar *code, *name;
+
+			code = l->data;
+			name = empathy_spell_get_language_name (code);
+			if (!name)
+				continue;
+
+			item = gtk_image_menu_item_new_with_label (name);
+
+			submenu = chat_spelling_build_suggestions_menu (
+					code, chat_spell);
+			if (submenu == NULL)
+				gtk_widget_set_sensitive (item, FALSE);
+			else
+				gtk_menu_item_set_submenu (GTK_MENU_ITEM (item),
+							   submenu);
+			gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
+		}
+	} else {
+		menu = chat_spelling_build_suggestions_menu (codes->data,
+							     chat_spell);
+		if (menu == NULL) {
+			menu = gtk_menu_new ();
+			item = gtk_menu_item_new_with_label (_("(No Suggestions)"));
+			gtk_widget_set_sensitive (item, FALSE);
+			gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+		}
+	}
+	g_list_free (codes);
+
+	gtk_widget_show_all (menu);
+
+	return menu;
 }
 
 static void

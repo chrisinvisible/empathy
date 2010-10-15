@@ -31,9 +31,11 @@ G_BEGIN_DECLS
 gboolean     empathy_spell_supported           (void);
 const gchar *empathy_spell_get_language_name   (const gchar *code);
 GList       *empathy_spell_get_language_codes  (void);
+GList       *empathy_spell_get_enabled_language_codes (void);
 void         empathy_spell_free_language_codes (GList       *codes);
 gboolean     empathy_spell_check               (const gchar *word);
-GList *      empathy_spell_get_suggestions     (const gchar *word);
+GList *      empathy_spell_get_suggestions     (const gchar *code,
+						const gchar *word);
 void         empathy_spell_free_suggestions    (GList       *suggestions);
 
 G_END_DECLS
