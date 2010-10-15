@@ -259,7 +259,21 @@ account_manager_ready_cb (GObject *source_object,
 
   if (!tp_account_manager_prepare_finish (manager, result, &error))
     {
+      GtkWidget *dialog;
+
       DEBUG ("Failed to prepare account manager: %s", error->message);
+
+      dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
+          GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+          _("Error contacting the Account Manager"));
+      gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+          _("There was an error while trying to connect to the Telepathy "
+            "Account Manager. The error was:\n\n%s"),
+          error->message);
+
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+
       g_error_free (error);
       return;
     }
