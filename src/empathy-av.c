@@ -41,6 +41,8 @@
 /* Exit after $TIMEOUT seconds if not displaying any call window */
 #define TIMEOUT 60
 
+#define EMPATHY_AV_DBUS_NAME "org.gnome.Empathy.AudioVideo"
+
 static guint nb_windows = 0;
 static guint timeout_id = 0;
 static gboolean use_timer = TRUE;
@@ -126,6 +128,7 @@ main (int argc,
 #endif
   EmpathyCallFactory *call_factory;
   GError *error = NULL;
+  GtkApplication *app;
 
   /* Init */
   g_thread_init (NULL);
@@ -151,6 +154,8 @@ main (int argc,
 
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
+
+  app = gtk_application_new (EMPATHY_AV_DBUS_NAME, &argc, &argv);
 
 #ifdef ENABLE_DEBUG
   /* Set up debug sender */
@@ -179,8 +184,9 @@ main (int argc,
 
   start_timer ();
 
-  gtk_main ();
+  gtk_application_run (app);
 
+  g_object_unref (app);
   g_object_unref (call_factory);
 
 #ifdef ENABLE_DEBUG
