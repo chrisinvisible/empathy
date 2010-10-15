@@ -31,7 +31,6 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <unique/unique.h>
 
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/defs.h>
@@ -135,35 +134,17 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
     }
 }
 
-static UniqueResponse
-unique_app_message_cb (UniqueApp *unique_app,
-    gint command,
-    UniqueMessageData *data,
-    guint timestamp,
-    gpointer user_data)
+static void
+app_activated_cb (GtkApplication *app)
 {
-  DEBUG ("Other instance launched, presenting the main window. "
-      "Command=%d, timestamp %u", command, timestamp);
+  TpAccountManager *account_manager;
 
-  if (command == UNIQUE_ACTIVATE)
-    {
-      TpAccountManager *account_manager;
+  account_manager = tp_account_manager_dup ();
 
-      account_manager = tp_account_manager_dup ();
-
-      empathy_accounts_show_accounts_ui (account_manager, NULL,
+  empathy_accounts_show_accounts_ui (account_manager, NULL,
           G_CALLBACK (gtk_main_quit));
 
-      g_object_unref (account_manager);
-    }
-  else
-    {
-      g_warning (G_STRLOC "unhandled unique app command %d", command);
-
-      return UNIQUE_RESPONSE_PASSTHROUGH;
-    }
-
-  return UNIQUE_RESPONSE_OK;
+  g_object_unref (account_manager);
 }
 
 #define COMMAND_ACCOUNTS_DIALOG 1
@@ -173,7 +154,7 @@ main (int argc, char *argv[])
 {
   TpAccountManager *account_manager;
   GError *error = NULL;
-  UniqueApp *unique_app;
+  GtkApplication *app;
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
@@ -218,30 +199,20 @@ main (int argc, char *argv[])
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  unique_app = unique_app_new (EMPATHY_ACCOUNTS_DBUS_NAME, NULL);
-
-  if (unique_app_is_running (unique_app))
-    {
-      if (unique_app_send_message (unique_app, UNIQUE_ACTIVATE, NULL) ==
-          UNIQUE_RESPONSE_OK)
-        {
-          g_object_unref (unique_app);
-          return EXIT_SUCCESS;
-        }
-    }
+  app = gtk_application_new (EMPATHY_ACCOUNTS_DBUS_NAME, &argc, &argv);
 
   account_manager = tp_account_manager_dup ();
 
   tp_account_manager_prepare_async (account_manager, NULL,
     account_manager_ready_for_accounts_cb, selected_account_name);
 
-  g_signal_connect (unique_app, "message-received",
-      G_CALLBACK (unique_app_message_cb), NULL);
+  g_signal_connect (app, "activated",
+      G_CALLBACK (app_activated_cb), NULL);
 
-  gtk_main ();
+  gtk_application_run (app);
 
   g_object_unref (account_manager);
-  g_object_unref (unique_app);
+  g_object_unref (app);
 
   return EXIT_SUCCESS;
 }
