@@ -1413,7 +1413,7 @@ am_prepared_cb (GObject *am,
   gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 0);
 
   /* CM */
-  priv->chooser = gtk_combo_box_new_text ();
+  priv->chooser = gtk_combo_box_text_new ();
   priv->service_store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING,
       G_TYPE_STRING, G_TYPE_BOOLEAN);
   gtk_combo_box_set_model (GTK_COMBO_BOX (priv->chooser),
@@ -1489,7 +1489,7 @@ am_prepared_cb (GObject *am,
   gtk_container_add (GTK_CONTAINER (priv->level_label), label);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar), priv->level_label, -1);
 
-  priv->level_filter = gtk_combo_box_new_text ();
+  priv->level_filter = gtk_combo_box_text_new ();
   gtk_widget_show (priv->level_filter);
 
   item = gtk_tool_item_new ();
