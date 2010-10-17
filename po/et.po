@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: empathy MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-09-22 00:00+0000\n"
-"PO-Revision-Date: 2010-09-22 11:05+0300\n"
+"POT-Creation-Date: 2010-10-16 10:46+0000\n"
+"PO-Revision-Date: 2010-10-17 15:05+0300\n"
 "Last-Translator: Mattias Põldaru <mahfiaz gmail com>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "Language: et\n"
@@ -96,9 +96,6 @@ msgstr "Empathy tohib kasutada võrku asukoha arvamiseks"
 
 msgid "Empathy default download folder"
 msgstr "Empathy vaikimisi allalaadimiste kataloog"
-
-msgid "Empathy has asked about importing accounts"
-msgstr "Empathylt küsiti kontode importimise kohta"
 
 msgid "Empathy has migrated butterfly logs"
 msgstr "Empathy on üle kandnud butterfly logid"
@@ -225,10 +222,6 @@ msgstr "Kas Empathy võib kasutada mobiilivõrku asukoha arvamiseks."
 
 msgid "Whether Empathy can use the network to guess the location."
 msgstr "Kas Empathy võib kasutada võrku asukoha arvamiseks."
-
-msgid "Whether Empathy has asked about importing accounts from other programs."
-msgstr ""
-"Kas Empathy on küsinud kontode importimise kohta teistest rakendustest."
 
 msgid "Whether Empathy has migrated butterfly logs."
 msgstr "Kas Empathy on üle kandnud butterfly logid."
@@ -502,6 +495,9 @@ msgstr "Lähedalasuvad inimesed"
 msgid "Yahoo! Japan"
 msgstr "Jaapani Yahoo!"
 
+msgid "Google Talk"
+msgstr "Google Talk"
+
 msgid "Facebook Chat"
 msgstr "Facebooki vestlus"
 
@@ -743,7 +739,7 @@ msgstr ""
 "See on sinu kasutajanimi, mitte tavaline Facebooki sisselogimise nimi.\n"
 "Kui sinu leht on facebook.com/<b>hüüdnimi</b>, sisesta <b>hüüdnimi</b>.\n"
 "Kui sul veel ei ole Facebooki kasutajanime, saad selle luua <a href=\"http://"
-"www.facebook.com/username/\">siin lehel</a>."
+"www.facebook.com/username/\">siin</a>."
 
 msgid "Use old SS_L"
 msgstr "Kasutatakse _vana SSL-i"
@@ -1305,6 +1301,7 @@ msgstr ""
 msgid "_Add Group"
 msgstr "_Lisa grupp"
 
+msgctxt "verb in a column header displaying group names"
 msgid "Select"
 msgstr "Vali"
 
@@ -1355,6 +1352,10 @@ msgstr "Uus võrk"
 
 msgid "Choose an IRC network"
 msgstr "Vali IRC võrk"
+
+msgctxt "verb displayed on a button to select an IRC network"
+msgid "Select"
+msgstr "Vali"
 
 msgid "new server"
 msgstr "uus server"
@@ -1473,6 +1474,14 @@ msgstr "Kohalolu ja praeguse oleku määramine"
 msgid "Custom messages…"
 msgstr "Muud teated…"
 
+#. Create account
+#. To translator: %s is the name of the protocol, such as "Google Talk" or
+#. * "Yahoo!"
+#.
+#, c-format
+msgid "New %s account"
+msgstr "Uus %s konto"
+
 msgid "Find:"
 msgstr "Otsi:"
 
@@ -1536,38 +1545,39 @@ msgstr "Puhas"
 msgid "Blue"
 msgstr "Sinine"
 
-msgid "The identity provided by the chat server cannot be verified.\n"
-msgstr "Selle vestlusserveri identiteeti pole võimalik tõendada.\n"
+msgid "The identity provided by the chat server cannot be verified."
+msgstr "Selle vestlusserveri identiteeti pole võimalik tõendada."
 
-msgid "The certificate is not signed by a Certification Authority"
-msgstr "Sertifikaat ei ole sertifitseerija poolt allkirjastatud"
+msgid "The certificate is not signed by a Certification Authority."
+msgstr "Sertifikaat ei ole sertifitseerija poolt allkirjastatud."
 
-msgid "The certificate has expired"
-msgstr "Sertifikaat on aegunud"
+msgid "The certificate has expired."
+msgstr "Sertifikaat on aegunud."
 
-msgid "The certificate hasn't yet been activated"
-msgstr "Sertifikaat pole aktiveeritud"
+msgid "The certificate hasn't yet been activated."
+msgstr "Sertifikaat pole aktiveeritud."
 
-msgid "The certificate does not have the expected fingerprint"
-msgstr "Sertifikaadil ei ole ootuspärane sõrmejälg"
+msgid "The certificate does not have the expected fingerprint."
+msgstr "Sertifikaadil ei ole ootuspärane sõrmejälg."
 
-msgid "The hostname verified by the certificate doesn't match the server name"
-msgstr "Sertifikaadi tõendatud hostinimi ei klapi serveri nimega"
+msgid "The hostname verified by the certificate doesn't match the server name."
+msgstr "Sertifikaadi tõendatud hostinimi ei klapi serveri nimega."
 
-msgid "The certificate is self-signed"
-msgstr "Isetunnustatud sertifikaat"
+msgid "The certificate is self-signed."
+msgstr "Isetunnustatud sertifikaat."
 
-msgid "The certificate has been revoked by the issuing Certification Authority"
-msgstr "Sertifikaat on sertifitseerija poolt tühistatud"
+msgid ""
+"The certificate has been revoked by the issuing Certification Authority."
+msgstr "Sertifikaat on sertifitseerija poolt tühistatud."
 
-msgid "The certificate is cryptographically weak"
-msgstr "Sertifikaati krüpto on nõrk"
+msgid "The certificate is cryptographically weak."
+msgstr "Sertifikaadi krüpto on nõrk."
 
-msgid "The certificate length exceeds verifiable limits"
-msgstr "Sertifikaadi pikkus ületab tõendatavad piirid"
+msgid "The certificate length exceeds verifiable limits."
+msgstr "Sertifikaadi pikkus ületab tõendatavad piirid."
 
-msgid "The certificate is malformed"
-msgstr "Sertifikaati on vigastatud"
+msgid "The certificate is malformed."
+msgstr "Sertifikaati on vigastatud."
 
 #, c-format
 msgid "Expected hostname: %s"
@@ -1704,6 +1714,20 @@ msgstr "Veateade puudub"
 msgid "Instant Message (Empathy)"
 msgstr "Välksõnum (Empathy)"
 
+msgid "Error contacting the Account Manager"
+msgstr "Viga kontohalduriga ühendumisel"
+
+#, c-format
+msgid ""
+"There was an error while trying to connect to the Telepathy Account Manager. "
+"The error was:\n"
+"\n"
+"%s"
+msgstr ""
+"Telepathy kontohalduriga ühendumisel esines järgnev viga:\n"
+"\n"
+"%s"
+
 msgid "Don't connect on startup"
 msgstr "Käivitumisel ei ühenduta"
 
@@ -1778,15 +1802,6 @@ msgstr ""
 
 msgid "An error occurred"
 msgstr "Tekkis viga"
-
-#. To translator: %s is the protocol name
-#. Create account
-#. To translator: %s is the name of the protocol, such as "Google Talk" or
-#. * "Yahoo!"
-#.
-#, c-format
-msgid "New %s account"
-msgstr "Uus %s konto"
 
 msgid "What kind of chat account do you have?"
 msgstr "Mis sorti konto sul on?"
@@ -2825,6 +2840,3 @@ msgstr "Empathy kontod"
 
 msgid "Empathy Debugger"
 msgstr "Empathy siluja"
-
-#~ msgid "Use _Yahoo! Japan"
-#~ msgstr "Jaapani _Yahoo! kasutamine"
