@@ -40,7 +40,7 @@ KEYRING_REQUIRED=2.26.0
 LIBCANBERRA_GTK_REQUIRED=0.25
 LIBNOTIFY_REQUIRED=0.5.1
 TELEPATHY_FARSIGHT_REQUIRED=0.0.14
-TELEPATHY_GLIB_REQUIRED=0.11.16
+TELEPATHY_GLIB_REQUIRED=0.13.1.1
 TELEPATHY_LOGGER=0.1.5
 UNIQUE_REQUIRED=1.1.2
 
@@ -389,6 +389,7 @@ if test "x$enable_meego" != "xno"; then
     PKG_CHECK_MODULES(MEEGO,
     [
        mx-gtk-1.0
+       gio-unix-2.0
     ], have_meego="yes", have_meego="no")
 
     if test "x$have_meego" = "xyes"; then
