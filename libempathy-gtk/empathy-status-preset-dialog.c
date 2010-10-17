@@ -22,7 +22,7 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  *
- * Authors: Davyd Madeley <davyd.madeley@collabora.co.uk>
+ * Authors: Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 /**
  * SECTION:empathy-status-preset-dialog
@@ -179,7 +179,7 @@ status_preset_dialog_setup_add_combobox (EmpathyStatusPresetDialog *self)
 				 GTK_TREE_MODEL (store));
 	g_object_unref (store);
 
-	gtk_combo_box_entry_set_text_column (GTK_COMBO_BOX_ENTRY (combobox),
+	gtk_combo_box_set_entry_text_column (GTK_COMBO_BOX (combobox),
 			ADD_COMBO_DEFAULT_TEXT);
 
 	for (i = 0; i < G_N_ELEMENTS (states); i++) {

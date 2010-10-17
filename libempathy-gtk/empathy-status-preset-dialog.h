@@ -22,7 +22,7 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301  USA
  *
- * Authors: Davyd Madeley <davyd.madeley@collabora.co.uk>
+ * Authors: Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #ifndef __EMPATHY_STATUS_PRESET_DIALOG_H__

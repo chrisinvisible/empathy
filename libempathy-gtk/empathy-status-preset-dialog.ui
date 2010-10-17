@@ -88,8 +88,9 @@
         <property name="visible">True</property>
         <property name="spacing">3</property>
         <child>
-          <object class="GtkComboBoxEntry" id="add-combobox">
+          <object class="GtkComboBox" id="add-combobox">
             <property name="visible">True</property>
+	    <property name="has-entry">True</property>
           </object>
           <packing>
             <property name="position">0</property>
