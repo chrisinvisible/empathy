@@ -21,7 +21,7 @@
  * Authors: Richard Hult <richard@imendio.com>
  *          Martyn Russell <martyn@imendio.com>
  *          Xavier Claessens <xclaesse@gmail.com>
- *          Davyd Madeley <davyd.madeley@collabora.co.uk>
+ *          Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #include "config.h"
@@ -126,6 +126,7 @@ static struct { TpConnectionPresenceType state;
 			 { TP_CONNECTION_PRESENCE_TYPE_UNSET, },
 			};
 
+static void            presence_chooser_constructed            (GObject                    *object);
 static void            presence_chooser_finalize               (GObject                    *object);
 static void            presence_chooser_presence_changed_cb    (EmpathyPresenceChooser      *chooser);
 static void            presence_chooser_menu_add_item          (GtkWidget                  *menu,
@@ -138,13 +139,14 @@ static void            presence_chooser_set_state              (TpConnectionPres
 static void            presence_chooser_custom_activate_cb     (GtkWidget                  *item,
 								gpointer                    user_data);
 
-G_DEFINE_TYPE (EmpathyPresenceChooser, empathy_presence_chooser, GTK_TYPE_COMBO_BOX_ENTRY);
+G_DEFINE_TYPE (EmpathyPresenceChooser, empathy_presence_chooser, GTK_TYPE_COMBO_BOX);
 
 static void
 empathy_presence_chooser_class_init (EmpathyPresenceChooserClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = presence_chooser_constructed;
 	object_class->finalize = presence_chooser_finalize;
 
 	g_type_class_add_private (object_class, sizeof (EmpathyPresenceChooserPriv));
@@ -848,13 +850,20 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 {
 	EmpathyPresenceChooserPriv *priv = G_TYPE_INSTANCE_GET_PRIVATE (chooser,
 		EMPATHY_TYPE_PRESENCE_CHOOSER, EmpathyPresenceChooserPriv);
-	GtkWidget *entry;
-	GtkCellRenderer *renderer;
 
 	chooser->priv = priv;
 
 	/* Create the not-favorite icon */
 	priv->not_favorite_pixbuf = create_not_favorite_pixbuf ();
+}
+
+static void
+presence_chooser_constructed (GObject *object)
+{
+	EmpathyPresenceChooser *chooser = EMPATHY_PRESENCE_CHOOSER (object);
+	EmpathyPresenceChooserPriv *priv = chooser->priv;
+	GtkWidget *entry;
+	GtkCellRenderer *renderer;
 
 	tp_g_signal_connect_object (gtk_icon_theme_get_default (), "changed",
 				     G_CALLBACK (icon_theme_changed_cb),
@@ -862,7 +871,7 @@ empathy_presence_chooser_init (EmpathyPresenceChooser *chooser)
 
 	presence_chooser_create_model (chooser);
 
-	gtk_combo_box_entry_set_text_column (GTK_COMBO_BOX_ENTRY (chooser),
+	gtk_combo_box_set_entry_text_column (GTK_COMBO_BOX (chooser),
 					     COL_STATUS_TEXT);
 	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (chooser),
 					      combo_row_separator_func,
@@ -983,7 +992,10 @@ presence_chooser_finalize (GObject *object)
 GtkWidget *
 empathy_presence_chooser_new (void)
 {
-	return g_object_new (EMPATHY_TYPE_PRESENCE_CHOOSER, NULL);
+	/* FIXME, why can't this go in init()? */
+	return g_object_new (EMPATHY_TYPE_PRESENCE_CHOOSER,
+		"has-entry", TRUE,
+		NULL);
 }
 
 static void

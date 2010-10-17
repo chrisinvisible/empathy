@@ -21,7 +21,7 @@
  * Authors: Richard Hult <richard@imendio.com>
  *          Martyn Russell <martyn@imendio.com>
  *          Xavier Claessens <xclaesse@gmail.com>
- *          Davyd Madeley <davyd.madeley@collabora.co.uk>
+ *          Danielle Madeley <danielle.madeley@collabora.co.uk>
  */
 
 #ifndef __EMPATHY_PRESENCE_CHOOSER_H__
@@ -42,14 +42,14 @@ typedef struct _EmpathyPresenceChooser      EmpathyPresenceChooser;
 typedef struct _EmpathyPresenceChooserClass EmpathyPresenceChooserClass;
 
 struct _EmpathyPresenceChooser {
-	GtkComboBoxEntry parent;
+	GtkComboBox parent;
 
 	/*<private>*/
 	gpointer priv;
 };
 
 struct _EmpathyPresenceChooserClass {
-	GtkComboBoxEntryClass parent_class;
+	GtkComboBoxClass parent_class;
 };
 
 GType      empathy_presence_chooser_get_type           (void) G_GNUC_CONST;
