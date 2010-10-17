@@ -655,8 +655,8 @@ account_assistant_build_introduction_page (EmpathyAccountAssistant *self)
           GINT_TO_POINTER (RESPONSE_IMPORT));
       gtk_widget_show (radio);
 
-      w = gtk_combo_box_new_text ();
-      gtk_combo_box_append_text (GTK_COMBO_BOX (w), "Pidgin");
+      w = gtk_combo_box_text_new ();
+      gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (w), "Pidgin");
       gtk_box_pack_start (GTK_BOX (hbox_1), w, TRUE, TRUE, 0);
       gtk_combo_box_set_active (GTK_COMBO_BOX (w), 0);
       gtk_widget_show (w);
