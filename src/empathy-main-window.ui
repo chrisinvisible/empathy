@@ -166,6 +166,12 @@
           <accelerator key="3" modifiers="GDK_CONTROL_MASK"/>
         </child>
         <child>
+          <object class="GtkAction" id="view_search_contacts">
+            <property name="name">view_search_contacts</property>
+            <property name="label" translatable="yes">Find in Contact _List</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="room">
             <property name="name">room</property>
             <property name="label" translatable="yes">_Room</property>
@@ -248,6 +254,7 @@
           <menuitem action="view_normal_size"/>
           <menuitem action="view_compact_size"/>
           <separator/>
+          <menuitem action="view_search_contacts"/>
           <menuitem action="view_history"/>
           <menuitem action="view_show_ft_manager"/>
           <menuitem action="view_show_map"/>

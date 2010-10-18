@@ -133,5 +133,7 @@ EmpathyIndividualStore *empathy_individual_view_get_store (
 void empathy_individual_view_set_store (EmpathyIndividualView *self,
     EmpathyIndividualStore *store);
 
+void empathy_individual_view_start_search (EmpathyIndividualView *self);
+
 G_END_DECLS
 #endif /* __EMPATHY_INDIVIDUAL_VIEW_H__ */

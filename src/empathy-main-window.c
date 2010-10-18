@@ -954,6 +954,15 @@ main_window_notify_contact_list_size_cb (GSettings         *gsettings,
 }
 
 static void
+main_window_view_search_contacts_cb (GtkCheckMenuItem  *item,
+				     EmpathyMainWindow *window)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (window);
+
+	empathy_individual_view_start_search (priv->individual_view);
+}
+
+static void
 main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 			      EmpathyMainWindow *window)
 {
@@ -1601,6 +1610,7 @@ empathy_main_window_init (EmpathyMainWindow *window)
 			      "view_show_protocols", "toggled", main_window_view_show_protocols_cb,
 			      "view_sort_by_name", "changed", main_window_view_sort_contacts_cb,
 			      "view_normal_size_with_avatars", "changed", main_window_view_contacts_list_size_cb,
+			      "view_search_contacts", "activate", main_window_view_search_contacts_cb,
 			      "view_show_map", "activate", main_window_view_show_map_cb,
 			      "edit", "activate", main_window_edit_cb,
 			      "edit_accounts", "activate", main_window_edit_accounts_cb,
