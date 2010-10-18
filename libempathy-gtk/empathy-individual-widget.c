@@ -1269,6 +1269,7 @@ alias_presence_avatar_favourite_set_up (EmpathyIndividualWidget *self,
   label = gtk_label_new ("");
   gtk_label_set_line_wrap_mode (GTK_LABEL (label), PANGO_WRAP_WORD_CHAR);
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
 
   gtk_label_set_selectable (GTK_LABEL (label),
       (priv->flags & EMPATHY_INDIVIDUAL_WIDGET_FOR_TOOLTIP) ? FALSE : TRUE);
