@@ -207,7 +207,7 @@ empathy_notify_manager_notification_is_enabled  (EmpathyNotifyManager *self)
   if (presence != TP_CONNECTION_PRESENCE_TYPE_AVAILABLE &&
       presence != TP_CONNECTION_PRESENCE_TYPE_UNSET)
     {
-      if (!g_settings_get_boolean (gsettings,
+      if (g_settings_get_boolean (gsettings,
             EMPATHY_PREFS_NOTIFICATIONS_DISABLED_AWAY))
         goto finally;
     }
