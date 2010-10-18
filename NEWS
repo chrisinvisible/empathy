@@ -1,3 +1,51 @@
+NEW in 2.91.1 (18/10/2010)
+=============
+
+The "The Pet Petter" release.
+
+The spelling suggestions menu has been improved to display one sub-menu per
+language. Empathy gained support for accounts managed by external applications
+and made one step further to GNOME 3 by switching from libunique to
+GtkApplication.
+
+Dependencies:
+
+ • GTK+ ≥ 2.91.1
+ • telepathy-glib ≥ 0.13.2
+ • No more dependency on libunique
+
+Bugs fixed:
+ - Fixed #631095, auth client crashes when trying to connect (Cosimo Cecchi)
+ - Fixed #532832, Spelling propositions when multi language support (Vitaly Minko)
+ - Fixed #594145, should enable accounts after import (Vitaly Minko)
+ - Fixed #619901, support Account.Iface.Storage (Danielle Madeley)
+ - Fixed #621339, Port Empathy to GtkApplication (Guillaume Desmottes)
+ - Fixed #629261, Shouldn't allow jid without domain (Vitaly Minko)
+ - Fixed #630188, Port Empathy to Folks 0.3.x (Travis Treitter)
+ - Fixed #631098, Always show status icon in contact right-click menu (for meta-contacts) (Guillaume Desmottes)
+ - Fixed #631339, Update to latest GTK3 API breaks (Travis Treitter)
+ - Fixed #631455, window resizes irreversibly when perfoming a contact search (Guillaume Desmottes)
+ - Fixed #631657, Empathy doesn't build with gcr-3 (Danielle Madeley)
+ - Fixed #632422, notifications show up even if I'm busy (Guillaume Desmottes)
+ - Fixed #632434, Contact tooltip as alignement issues for status (Guillaume Desmottes)
+ - Fixed #594576, Empathy should complain at runtime if MC5 is not installed (Chandni Verma)
+
+Translations:
+ - Updated ca Translation (Gil Forcada)
+ - Updated es Translation (Jorge González)
+ - Updated et Translation (Mattias Põldaru)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated ko Translation (Changwoo Ryu)
+ - Updated nb Translation (Kjartan Maraas)
+ - Updated pa Translation (A S Alam)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated zh_HK Translation (Cheng-Chia Tseng)
+ - Updated zh_TW Translation (Cheng-Chia Tseng)
+
+Documentation translations:
+ - Updated sl Documentation translation (Andrej Žnidaršič, Matej Urbančič)
+
 NEW in 2.91.0 (04/10/2010)
 =============
 
