@@ -956,6 +956,15 @@ main_window_notify_contact_list_size_cb (GSettings         *gsettings,
 }
 
 static void
+main_window_edit_search_contacts_cb (GtkCheckMenuItem  *item,
+				     EmpathyMainWindow *window)
+{
+	EmpathyMainWindowPriv *priv = GET_PRIV (window);
+
+	empathy_individual_view_start_search (priv->individual_view);
+}
+
+static void
 main_window_view_show_map_cb (GtkCheckMenuItem  *item,
 			      EmpathyMainWindow *window)
 {
@@ -1607,6 +1616,7 @@ empathy_main_window_init (EmpathyMainWindow *window)
 			      "edit_accounts", "activate", main_window_edit_accounts_cb,
 			      "edit_personal_information", "activate", main_window_edit_personal_information_cb,
 			      "edit_preferences", "activate", main_window_edit_preferences_cb,
+			      "edit_search_contacts", "activate", main_window_edit_search_contacts_cb,
 			      "help_about", "activate", main_window_help_about_cb,
 			      "help_debug", "activate", main_window_help_debug_cb,
 			      "help_contents", "activate", main_window_help_contents_cb,

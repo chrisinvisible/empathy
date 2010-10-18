@@ -107,6 +107,12 @@
           </object>
         </child>
         <child>
+          <object class="GtkAction" id="edit_search_contacts">
+            <property name="name">edit_search_contacts</property>
+            <property name="label" translatable="yes">Find in Contact _List</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkAction" id="view">
             <property name="name">view</property>
             <property name="label" translatable="yes">_View</property>
@@ -236,6 +242,7 @@
           <menuitem action="edit_personal_information"/>
           <separator/>
           <menuitem action="edit_preferences"/>
+          <menuitem action="edit_search_contacts"/>
         </menu>
         <menu action="view">
           <menuitem action="view_show_offline"/>

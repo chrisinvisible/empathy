@@ -1223,10 +1223,7 @@ individual_view_start_search_cb (EmpathyIndividualView *view,
   if (priv->search_widget == NULL)
     return FALSE;
 
-  if (gtk_widget_get_visible (GTK_WIDGET (priv->search_widget)))
-    gtk_widget_grab_focus (GTK_WIDGET (priv->search_widget));
-  else
-    gtk_widget_show (GTK_WIDGET (priv->search_widget));
+  empathy_individual_view_start_search (view);
 
   return TRUE;
 }
@@ -2571,4 +2568,18 @@ empathy_individual_view_set_store (EmpathyIndividualView *self,
       tp_g_signal_connect_object (priv->store, "row-deleted",
           G_CALLBACK (individual_view_store_row_deleted_cb), self, 0);
     }
+}
+
+void
+empathy_individual_view_start_search (EmpathyIndividualView *self)
+{
+  EmpathyIndividualViewPriv *priv = GET_PRIV (self);
+
+  g_return_if_fail (EMPATHY_IS_INDIVIDUAL_VIEW (self));
+  g_return_if_fail (priv->search_widget != NULL);
+
+  if (gtk_widget_get_visible (GTK_WIDGET (priv->search_widget)))
+    gtk_widget_grab_focus (GTK_WIDGET (priv->search_widget));
+  else
+    gtk_widget_show (GTK_WIDGET (priv->search_widget));
 }
