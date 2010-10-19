@@ -24,6 +24,7 @@
 
 #include <glib.h>
 
+#include <telepathy-glib/account.h>
 #include <telepathy-glib/enums.h>
 
 G_BEGIN_DECLS
