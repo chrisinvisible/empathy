@@ -70,12 +70,6 @@ void empathy_dispatcher_join_muc (TpAccount *account,
   const gchar *roomname,
   gint64 timestamp);
 
-void empathy_dispatcher_find_requestable_channel_classes_async
-    (EmpathyDispatcher *dispatcher, TpConnection *connection,
-     const gchar *channel_type, guint handle_type,
-     EmpathyDispatcherFindChannelClassCb callback, gpointer user_data,
-     const char *first_property_name, ...);
-
 GList * empathy_dispatcher_find_requestable_channel_classes
     (EmpathyDispatcher *dispatcher, TpConnection *connection,
      const gchar *channel_type, guint handle_type,

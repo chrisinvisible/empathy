@@ -59,7 +59,6 @@ typedef struct
   GHashTable *connections;
   GHashTable *outstanding_classes_requests;
 
-  GHashTable *request_channel_class_async_ids;
   /* reffed (TpAccount *) => gulong
    * Signal handler ID of the "status-changed" signal */
   GHashTable *status_changed_handlers;
@@ -262,17 +261,6 @@ dispatcher_status_changed_cb (TpAccount *account,
     dispatcher_init_connection_if_needed (self, conn);
 }
 
-static void
-remove_idle_handlers (gpointer key,
-                      gpointer value,
-                      gpointer user_data)
-{
-  guint source_id;
-
-  source_id = GPOINTER_TO_UINT (value);
-  g_source_remove (source_id);
-}
-
 static GObject *
 dispatcher_constructor (GType type,
                         guint n_construct_params,
@@ -328,13 +316,6 @@ dispatcher_finalize (GObject *object)
   gpointer connection;
   GList *list;
   gpointer account, id;
-
-  if (priv->request_channel_class_async_ids != NULL)
-    {
-      g_hash_table_foreach (priv->request_channel_class_async_ids,
-        remove_idle_handlers, NULL);
-      g_hash_table_destroy (priv->request_channel_class_async_ids);
-    }
 
   g_hash_table_iter_init (&iter, priv->outstanding_classes_requests);
   while (g_hash_table_iter_next (&iter, &connection, (gpointer *) &list))
@@ -473,8 +454,6 @@ empathy_dispatcher_init (EmpathyDispatcher *self)
       "account-validity-changed", G_CALLBACK (account_validity_changed_cb),
       self, 0);
 
-  priv->request_channel_class_async_ids = g_hash_table_new (g_direct_hash,
-    g_direct_equal);
   priv->status_changed_handlers = g_hash_table_new_full (NULL, NULL,
       (GDestroyNotify) g_object_unref, NULL);
 }
@@ -679,48 +658,6 @@ empathy_dispatcher_find_channel_classes (EmpathyDispatcher *self,
   return matching_classes;
 }
 
-static gboolean
-find_channel_class_idle_cb (gpointer user_data)
-{
-  GList *retval;
-  GList *requests;
-  FindChannelRequest *request = user_data;
-  ConnectionData *cd;
-  gboolean is_ready = TRUE;
-  EmpathyDispatcherPriv *priv = GET_PRIV (request->dispatcher);
-
-  g_hash_table_remove (priv->request_channel_class_async_ids, request);
-
-  cd = g_hash_table_lookup (priv->connections, request->connection);
-
-  if (cd == NULL)
-    is_ready = FALSE;
-  else if (cd->requestable_channels == NULL)
-    is_ready = FALSE;
-
-  if (is_ready)
-    {
-      retval = empathy_dispatcher_find_channel_classes (request->dispatcher,
-          request->connection, request->channel_type, request->handle_type,
-          request->properties);
-
-      request->callback (retval, request->user_data);
-      free_find_channel_request (request);
-      g_list_free (retval);
-
-      return FALSE;
-    }
-
-  requests = g_hash_table_lookup (priv->outstanding_classes_requests,
-      request->connection);
-  requests = g_list_prepend (requests, request);
-
-  g_hash_table_insert (priv->outstanding_classes_requests,
-      request->connection, requests);
-
-  return FALSE;
-}
-
 static GArray *
 setup_varargs (va_list var_args,
                const char *channel_namespace,
@@ -821,65 +758,4 @@ empathy_dispatcher_find_requestable_channel_classes
     }
 
   return retval;
-}
-
-/**
- * empathy_dispatcher_find_requestable_channel_classes_async:
- * @dispatcher: an #EmpathyDispatcher
- * @connection: a #TpConnection
- * @channel_type: a string identifying the type of the channel to lookup
- * @handle_type: the handle type for the channel
- * @callback: the callback to call when @connection is ready
- * @user_data: the user data to pass to @callback
- * @first_property_name: %NULL, or the name of the first fixed property,
- * followed optionally by more names, followed by %NULL.
- *
- * Please see the documentation of
- * empathy_dispatcher_find_requestable_channel_classes() for a detailed
- * description of this function.
- */
-void
-empathy_dispatcher_find_requestable_channel_classes_async
-                                 (EmpathyDispatcher *self,
-                                  TpConnection *connection,
-                                  const gchar *channel_type,
-                                  guint handle_type,
-                                  EmpathyDispatcherFindChannelClassCb callback,
-                                  gpointer user_data,
-                                  const char *first_property_name,
-                                  ...)
-{
-  va_list var_args;
-  GArray *properties;
-  FindChannelRequest *request;
-  EmpathyDispatcherPriv *priv;
-  guint source_id;
-
-  g_return_if_fail (EMPATHY_IS_DISPATCHER (self));
-  g_return_if_fail (TP_IS_CONNECTION (connection));
-  g_return_if_fail (channel_type != NULL);
-  g_return_if_fail (handle_type != 0);
-
-  priv = GET_PRIV (self);
-
-  va_start (var_args, first_property_name);
-
-  properties = setup_varargs (var_args, channel_type, first_property_name);
-
-  va_end (var_args);
-
-  /* append another request for this connection */
-  request = g_slice_new0 (FindChannelRequest);
-  request->dispatcher = g_object_ref (self);
-  request->channel_type = g_strdup (channel_type);
-  request->handle_type = handle_type;
-  request->connection = connection;
-  request->callback = callback;
-  request->user_data = user_data;
-  request->properties = properties;
-
-  source_id = g_idle_add (find_channel_class_idle_cb, request);
-
-  g_hash_table_insert (priv->request_channel_class_async_ids,
-    request, GUINT_TO_POINTER (source_id));
 }
