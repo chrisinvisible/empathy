@@ -255,7 +255,7 @@ empathy_chat_manager_init (EmpathyChatManager *self)
     }
 
   /* Text channels handler */
-  priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE, "Empathy",
+  priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE, "Empathy.Chat",
       FALSE, handle_channels, self, NULL);
 
   /* EmpathyTpChat relies on this feature being prepared */
