@@ -32,6 +32,7 @@
 
 enum {
   CLOSED_CHATS_CHANGED,
+  HANDLED_CHATS_CHANGED,
   LAST_SIGNAL
 };
 
@@ -46,6 +47,8 @@ struct _EmpathyChatManagerPriv
 {
   /* Queue of (ChatData *) representing the closed chats */
   GQueue *closed_queue;
+
+  guint num_handled_channels;
 
   TpBaseClient *handler;
 };
@@ -202,6 +205,24 @@ tp_chat_ready_cb (GObject *object,
 }
 
 static void
+channel_invalidated (TpChannel *channel,
+    guint domain,
+    gint code,
+    gchar *message,
+    EmpathyChatManager *self)
+{
+  EmpathyChatManagerPriv *priv = GET_PRIV (self);
+
+  priv->num_handled_channels--;
+
+  DEBUG ("Channel closed; we are now handling %u text channels",
+      priv->num_handled_channels);
+
+  g_signal_emit (self, signals[HANDLED_CHATS_CHANGED], 0,
+      priv->num_handled_channels);
+}
+
+static void
 handle_channels (TpSimpleHandler *handler,
     TpAccount *account,
     TpConnection *connection,
@@ -211,12 +232,20 @@ handle_channels (TpSimpleHandler *handler,
     TpHandleChannelsContext *context,
     gpointer user_data)
 {
+  EmpathyChatManager *self = (EmpathyChatManager *) user_data;
+  EmpathyChatManagerPriv *priv = GET_PRIV (self);
   GList *l;
+  gboolean handling = FALSE;
 
   for (l = channels; l != NULL; l = g_list_next (l))
     {
       TpChannel *channel = l->data;
       EmpathyTpChat *tp_chat;
+
+      if (tp_proxy_get_invalidated (channel) != NULL)
+        continue;
+
+      handling = TRUE;
 
       tp_chat = empathy_tp_chat_new (account, channel);
 
@@ -232,9 +261,23 @@ handle_channels (TpSimpleHandler *handler,
           ctx->sig_id = g_signal_connect (tp_chat, "notify::ready",
               G_CALLBACK (tp_chat_ready_cb), ctx);
         }
+
+      priv->num_handled_channels++;
+
+      g_signal_connect (channel, "invalidated",
+          G_CALLBACK (channel_invalidated), self);
     }
 
   tp_handle_channels_context_accept (context);
+
+  if (handling)
+    {
+      DEBUG ("Channels handled; we are now handling %u text channels",
+          priv->num_handled_channels);
+
+      g_signal_emit (self, signals[HANDLED_CHATS_CHANGED], 0,
+          priv->num_handled_channels);
+    }
 }
 
 static void
@@ -346,6 +389,16 @@ empathy_chat_manager_class_init (
         G_TYPE_NONE,
         1, G_TYPE_UINT, NULL);
 
+  signals[HANDLED_CHATS_CHANGED] =
+    g_signal_new ("handled-chats-changed",
+        G_TYPE_FROM_CLASS (object_class),
+        G_SIGNAL_RUN_LAST,
+        0,
+        NULL, NULL,
+        g_cclosure_marshal_VOID__UINT,
+        G_TYPE_NONE,
+        1, G_TYPE_UINT, NULL);
+
   g_type_class_add_private (empathy_chat_manager_class,
     sizeof (EmpathyChatManagerPriv));
 }
@@ -407,4 +460,12 @@ empathy_chat_manager_get_num_closed_chats (EmpathyChatManager *self)
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
 
   return g_queue_get_length (priv->closed_queue);
+}
+
+guint
+empathy_chat_manager_get_num_handled_chats (EmpathyChatManager *self)
+{
+  EmpathyChatManagerPriv *priv = GET_PRIV (self);
+
+  return priv->num_handled_channels;
 }
