@@ -63,7 +63,6 @@
 #include "empathy-main-window.h"
 #include "empathy-accounts-common.h"
 #include "empathy-accounts-dialog.h"
-#include "empathy-chat-manager.h"
 #include "empathy-status-icon.h"
 #include "empathy-ft-manager.h"
 
@@ -114,7 +113,6 @@ struct _EmpathyApp
   EmpathyFTFactory  *ft_factory;
   EmpathyIdle *idle;
   EmpathyConnectivity *connectivity;
-  EmpathyChatManager *chat_manager;
   GSettings *gsettings;
 #ifdef HAVE_GEOCLUE
   EmpathyLocationManager *location_manager;
@@ -143,7 +141,6 @@ empathy_app_dispose (GObject *object)
   tp_clear_object (&self->debug_sender);
 #endif
 
-  tp_clear_object (&self->chat_manager);
   tp_clear_object (&self->idle);
   tp_clear_object (&self->connectivity);
   tp_clear_object (&self->icon);
@@ -602,9 +599,6 @@ empathy_app_constructed (GObject *object)
   gtk_widget_show (self->window);
   self->icon = empathy_status_icon_new (GTK_WINDOW (self->window),
       self->start_hidden);
-
-  /* Chat manager */
-  self->chat_manager = empathy_chat_manager_dup_singleton ();
 
   /* Logging */
   self->log_manager = tpl_log_manager_dup_singleton ();
