@@ -85,7 +85,8 @@ bin_PROGRAMS =			\
 
 libexec_PROGRAMS = \
 	empathy-av \
-	empathy-auth-client
+	empathy-auth-client \
+	empathy-chat
 
 BUILT_SOURCES=
 
@@ -115,6 +116,13 @@ empathy_av_SOURCES =						\
 
 empathy_auth_client_SOURCES =						\
 	empathy-auth-client.c
+
+empathy_chat_SOURCES =						\
+	empathy-about-dialog.c empathy-about-dialog.h			\
+	empathy-chat-manager.c empathy-chat-manager.h		\
+	empathy-chat-window.c empathy-chat-window.h		\
+	empathy-invite-participant-dialog.c empathy-invite-participant-dialog.h \
+	empathy-chat.c
 
 empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
