@@ -1031,33 +1031,51 @@ callbacks_data_free (gpointer user_data)
   g_slice_free (CallbacksData, data);
 }
 
-static void
+static gboolean
 set_content_hash_type_from_classes (EmpathyFTHandler *handler,
-    GList *classes)
+    GPtrArray *classes)
 {
-  GValueArray *class;
-  GValue *v;
-  GList *l;
   GArray *possible_values;
   guint value;
-  GHashTable *fprops;
   gboolean valid;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
+  gboolean support_ft = FALSE;
+  guint i;
 
   possible_values = g_array_new (TRUE, TRUE, sizeof (guint));
 
-  for (l = classes; l != NULL; l = l->next)
+  for (i = 0; i < classes->len; i++)
     {
-      class = l->data;
-      v = g_value_array_get_nth (class, 0);
-      fprops = g_value_get_boxed (v);
+      GHashTable *fixed;
+      GStrv allowed;
+      const gchar *chan_type;
+
+      tp_value_array_unpack (g_ptr_array_index (classes, i), 2,
+          &fixed, &allowed);
+
+      chan_type = tp_asv_get_string (fixed, TP_PROP_CHANNEL_CHANNEL_TYPE);
+
+      if (tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+        continue;
+
+      if (tp_asv_get_uint32 (fixed, TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, NULL) !=
+          TP_HANDLE_TYPE_CONTACT)
+        continue;
+
+      support_ft = TRUE;
 
       value = tp_asv_get_uint32
-        (fprops, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHashType",
+        (fixed, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHashType",
          &valid);
 
       if (valid)
         g_array_append_val (possible_values, value);
+    }
+
+  if (!support_ft)
+    {
+      g_array_free (possible_values, TRUE);
+      return FALSE;
     }
 
   if (possible_values->len == 0)
@@ -1093,6 +1111,8 @@ out:
 
   DEBUG ("Hash enabled %s; setting content hash type as %u",
          priv->use_hash ? "True" : "False", priv->content_hash_type);
+
+  return TRUE;
 }
 
 static void
@@ -1106,8 +1126,6 @@ conn_prepared_cb (GObject *conn,
   GError *myerr = NULL;
   TpCapabilities *caps;
   GPtrArray *classes;
-  guint i;
-  GList *channel_classes = NULL;
 
   if (!tp_proxy_prepare_finish (conn, result, &myerr))
     {
@@ -1120,30 +1138,8 @@ conn_prepared_cb (GObject *conn,
   caps = tp_connection_get_capabilities (TP_CONNECTION (conn));
   classes = tp_capabilities_get_channel_classes (caps);
 
-  for (i = 0; i < classes->len; i++)
-    {
-      GValueArray *val;
-      GHashTable *fixed;
-      GStrv allowed;
-      const gchar *chan_type;
-
-      val = g_ptr_array_index (classes, i);
-
-      tp_value_array_unpack (val, 2, &fixed, &allowed);
-
-      chan_type = tp_asv_get_string (fixed, TP_PROP_CHANNEL_CHANNEL_TYPE);
-
-      if (tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
-        continue;
-
-      if (tp_asv_get_uint32 (fixed, TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, NULL) !=
-          TP_HANDLE_TYPE_CONTACT)
-        continue;
-
-      channel_classes = g_list_prepend (channel_classes, val);
-    }
-
-  if (channel_classes == NULL)
+  /* set whether we support hash and the type of it */
+  if (!set_content_hash_type_from_classes (handler, classes))
     {
       g_set_error_literal (&myerr, EMPATHY_FT_ERROR_QUARK,
           EMPATHY_FT_ERROR_NOT_SUPPORTED,
@@ -1157,15 +1153,11 @@ conn_prepared_cb (GObject *conn,
     }
   else
     {
-      /* set whether we support hash and the type of it */
-      set_content_hash_type_from_classes (handler, channel_classes);
-
       /* get back to the caller now */
       data->callback (handler, NULL, data->user_data);
     }
 
 out:
-  g_list_free (channel_classes);
   callbacks_data_free (data);
 }
 
