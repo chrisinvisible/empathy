@@ -31,7 +31,7 @@
 #include "empathy-chat-manager.h"
 
 enum {
-  CHATS_CHANGED,
+  CLOSED_CHATS_CHANGED,
   LAST_SIGNAL
 };
 
@@ -45,7 +45,7 @@ typedef struct _EmpathyChatManagerPriv EmpathyChatManagerPriv;
 struct _EmpathyChatManagerPriv
 {
   /* Queue of (ChatData *) representing the closed chats */
-  GQueue *queue;
+  GQueue *closed_queue;
 
   TpBaseClient *handler;
 };
@@ -244,7 +244,7 @@ empathy_chat_manager_init (EmpathyChatManager *self)
   TpDBusDaemon *dbus;
   GError *error = NULL;
 
-  priv->queue = g_queue_new ();
+  priv->closed_queue = g_queue_new ();
 
   dbus = tp_dbus_daemon_dup (&error);
   if (dbus == NULL)
@@ -292,11 +292,11 @@ empathy_chat_manager_finalize (GObject *object)
   EmpathyChatManager *self = EMPATHY_CHAT_MANAGER (object);
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
 
-  if (priv->queue != NULL)
+  if (priv->closed_queue != NULL)
     {
-      g_queue_foreach (priv->queue, (GFunc) chat_data_free, NULL);
-      g_queue_free (priv->queue);
-      priv->queue = NULL;
+      g_queue_foreach (priv->closed_queue, (GFunc) chat_data_free, NULL);
+      g_queue_free (priv->closed_queue);
+      priv->closed_queue = NULL;
     }
 
   tp_clear_object (&priv->handler);
@@ -336,8 +336,8 @@ empathy_chat_manager_class_init (
   object_class->finalize = empathy_chat_manager_finalize;
   object_class->constructor = empathy_chat_manager_constructor;
 
-  signals[CHATS_CHANGED] =
-    g_signal_new ("chats-changed",
+  signals[CLOSED_CHATS_CHANGED] =
+    g_signal_new ("closed-chats-changed",
         G_TYPE_FROM_CLASS (object_class),
         G_SIGNAL_RUN_LAST,
         0,
@@ -365,12 +365,13 @@ empathy_chat_manager_closed_chat (EmpathyChatManager *self,
 
   data = chat_data_new (chat);
 
-  DEBUG ("Adding %s to queue: %s", data->room ? "room" : "contact", data->id);
+  DEBUG ("Adding %s to closed queue: %s",
+      data->room ? "room" : "contact", data->id);
 
-  g_queue_push_tail (priv->queue, data);
+  g_queue_push_tail (priv->closed_queue, data);
 
-  g_signal_emit (self, signals[CHATS_CHANGED], 0,
-      g_queue_get_length (priv->queue));
+  g_signal_emit (self, signals[CLOSED_CHATS_CHANGED], 0,
+      g_queue_get_length (priv->closed_queue));
 }
 
 void
@@ -379,12 +380,12 @@ empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
   ChatData *data;
 
-  data = g_queue_pop_tail (priv->queue);
+  data = g_queue_pop_tail (priv->closed_queue);
 
   if (data == NULL)
     return;
 
-  DEBUG ("Removing %s from queue and starting a chat with: %s",
+  DEBUG ("Removing %s from closed queue and starting a chat with: %s",
       data->room ? "room" : "contact", data->id);
 
   if (data->room)
@@ -394,16 +395,16 @@ empathy_chat_manager_undo_closed_chat (EmpathyChatManager *self)
     empathy_dispatcher_chat_with_contact_id (data->account, data->id,
         TP_USER_ACTION_TIME_NOT_USER_ACTION);
 
-  g_signal_emit (self, signals[CHATS_CHANGED], 0,
-      g_queue_get_length (priv->queue));
+  g_signal_emit (self, signals[CLOSED_CHATS_CHANGED], 0,
+      g_queue_get_length (priv->closed_queue));
 
   chat_data_free (data);
 }
 
 guint
-empathy_chat_manager_get_num_chats (EmpathyChatManager *self)
+empathy_chat_manager_get_num_closed_chats (EmpathyChatManager *self)
 {
   EmpathyChatManagerPriv *priv = GET_PRIV (self);
 
-  return g_queue_get_length (priv->queue);
+  return g_queue_get_length (priv->closed_queue);
 }

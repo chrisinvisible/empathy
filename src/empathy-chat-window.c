@@ -2091,12 +2091,12 @@ empathy_chat_window_init (EmpathyChatWindow *window)
 
 	priv->chat_manager = empathy_chat_manager_dup_singleton ();
 	priv->chat_manager_chats_changed_id =
-		g_signal_connect (priv->chat_manager, "chats-changed",
+		g_signal_connect (priv->chat_manager, "closed-chats-changed",
 				  G_CALLBACK (chat_window_chat_manager_chats_changed_cb),
 				  window);
 
 	chat_window_chat_manager_chats_changed_cb (priv->chat_manager,
-						   empathy_chat_manager_get_num_chats (priv->chat_manager),
+						   empathy_chat_manager_get_num_closed_chats (priv->chat_manager),
 						   window);
 }
 
