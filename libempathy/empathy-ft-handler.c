@@ -1096,13 +1096,52 @@ out:
 }
 
 static void
-find_ft_channel_classes_cb (GList *channel_classes,
+conn_prepared_cb (GObject *conn,
+    GAsyncResult *result,
     gpointer user_data)
 {
   CallbacksData *data = user_data;
   EmpathyFTHandler *handler = data->handler;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
   GError *myerr = NULL;
+  TpCapabilities *caps;
+  GPtrArray *classes;
+  guint i;
+  GList *channel_classes = NULL;
+
+  if (!tp_proxy_prepare_finish (conn, result, &myerr))
+    {
+      DEBUG ("Failed to prepare connection: %s", myerr->message);
+
+      data->callback (handler, myerr, data->user_data);
+      goto out;
+    }
+
+  caps = tp_connection_get_capabilities (TP_CONNECTION (conn));
+  classes = tp_capabilities_get_channel_classes (caps);
+
+  for (i = 0; i < classes->len; i++)
+    {
+      GValueArray *val;
+      GHashTable *fixed;
+      GStrv allowed;
+      const gchar *chan_type;
+
+      val = g_ptr_array_index (classes, i);
+
+      tp_value_array_unpack (val, 2, &fixed, &allowed);
+
+      chan_type = tp_asv_get_string (fixed, TP_PROP_CHANNEL_CHANNEL_TYPE);
+
+      if (tp_strdiff (chan_type, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER))
+        continue;
+
+      if (tp_asv_get_uint32 (fixed, TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, NULL) !=
+          TP_HANDLE_TYPE_CONTACT)
+        continue;
+
+      channel_classes = g_list_prepend (channel_classes, val);
+    }
 
   if (channel_classes == NULL)
     {
@@ -1125,6 +1164,8 @@ find_ft_channel_classes_cb (GList *channel_classes,
       data->callback (handler, NULL, data->user_data);
     }
 
+out:
+  g_list_free (channel_classes);
   callbacks_data_free (data);
 }
 
@@ -1202,11 +1243,14 @@ out:
   else
     {
       /* see if FT/hashing are allowed */
-      empathy_dispatcher_find_requestable_channel_classes_async
-          (priv->dispatcher, empathy_contact_get_connection (priv->contact),
-           TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER, TP_HANDLE_TYPE_CONTACT,
-           find_ft_channel_classes_cb, cb_data,
-           TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHashType", NULL);
+      TpConnection *connection;
+      GQuark features[] = { TP_CONNECTION_FEATURE_CAPABILITIES, 0 };
+
+      connection = empathy_contact_get_connection (priv->contact);
+      g_assert (connection != NULL);
+
+      tp_proxy_prepare_async (connection, features,
+          conn_prepared_cb, cb_data);
     }
 }
 
