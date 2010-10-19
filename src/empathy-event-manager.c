@@ -1206,6 +1206,10 @@ empathy_event_manager_init (EmpathyEventManager *manager)
   priv->approver = tp_simple_approver_new (dbus, "Empathy.EventManager", FALSE,
       approve_channels, manager, NULL);
 
+  /* EmpathyTpChat relies on this feature being prepared */
+  tp_base_client_add_connection_features_varargs (priv->approver,
+    TP_CONNECTION_FEATURE_CAPABILITIES, 0);
+
   /* Private text channels */
   tp_base_client_take_approver_filter (priv->approver,
       tp_asv_new (
