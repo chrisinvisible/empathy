@@ -30,7 +30,6 @@
 #include "empathy-tp-chat.h"
 #include "empathy-tp-contact-factory.h"
 #include "empathy-contact-list.h"
-#include "empathy-dispatcher.h"
 #include "empathy-marshal.h"
 #include "empathy-time.h"
 #include "empathy-utils.h"
@@ -1272,6 +1271,9 @@ tp_chat_constructor (GType                  type,
 			  G_CALLBACK (tp_chat_invalidated_cb),
 			  chat, 0);
 
+	g_assert (tp_proxy_is_prepared (priv->connection,
+		TP_CONNECTION_FEATURE_CAPABILITIES));
+
 	if (tp_proxy_has_interface_by_id (priv->channel,
 					  TP_IFACE_QUARK_CHANNEL_INTERFACE_GROUP)) {
 		const TpIntSet *members;
@@ -1295,8 +1297,9 @@ tp_chat_constructor (GType                  type,
 		tp_g_signal_connect_object (priv->channel, "group-members-changed",
 			G_CALLBACK (tp_chat_group_members_changed_cb), chat, 0);
 	} else {
-		EmpathyDispatcher *dispatcher = empathy_dispatcher_dup_singleton ();
-		GList *list, *ptr;
+		TpCapabilities *caps;
+		GPtrArray *classes;
+		guint i;
 
 		/* Get the self contact from the connection's self handle */
 		handle = tp_connection_get_self_handle (priv->connection);
@@ -1310,13 +1313,13 @@ tp_chat_constructor (GType                  type,
 			handle, tp_chat_got_remote_contact_cb,
 			NULL, NULL, chat);
 
-		list = empathy_dispatcher_find_requestable_channel_classes (
-			dispatcher, priv->connection,
-			tp_channel_get_channel_type (priv->channel),
-			TP_UNKNOWN_HANDLE_TYPE, NULL);
+		caps = tp_connection_get_capabilities (priv->connection);
+		g_assert (caps != NULL);
 
-		for (ptr = list; ptr; ptr = ptr->next) {
-			GValueArray *array = ptr->data;
+		classes = tp_capabilities_get_channel_classes (caps);
+
+		for (i = 0; i < classes->len; i++) {
+			GValueArray *array = g_ptr_array_index (classes, i);
 			const char **oprops = g_value_get_boxed (
 				g_value_array_get_nth (array, 1));
 
@@ -1325,9 +1328,6 @@ tp_chat_constructor (GType                  type,
 				break;
 			}
 		}
-
-		g_list_free (list);
-		g_object_unref (dispatcher);
 	}
 
 	if (tp_proxy_has_interface_by_id (priv->channel,
