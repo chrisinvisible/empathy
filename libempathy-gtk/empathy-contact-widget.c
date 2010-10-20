@@ -149,10 +149,19 @@ enum
 static gboolean
 field_value_is_empty (TpContactInfoField *field)
 {
+  guint i;
+
   if (field->field_value == NULL)
     return TRUE;
 
-  return field->field_value[0] == NULL;
+  /* Field is empty if all its values are empty */
+  for (i = 0; field->field_value[i] != NULL; i++)
+    {
+      if (!tp_str_empty (field->field_value[i]))
+        return FALSE;
+    }
+
+  return TRUE;
 }
 
 static void
