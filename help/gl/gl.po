@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy.help.master\n"
 "POT-Creation-Date: 2010-09-11 17:27+0000\n"
-"PO-Revision-Date: 2010-09-18 19:50+0200\n"
+"PO-Revision-Date: 2010-10-20 09:08+0200\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <gnome-gl-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1910,7 +1910,7 @@ msgstr ""
 
 #: C/geolocation-what-is.page:37(p)
 msgid "With geolocation in <app>Empathy</app> you can:"
-msgstr "Coa xeolocalización en <placeholder-1> vostede pode:"
+msgstr "Coa xeolocalización en <app>Empathy</app> vostede pode:"
 
 #: C/geolocation-what-is.page:42(p)
 msgid "Publish your geographical location to your contacts."
@@ -1979,6 +1979,9 @@ msgid ""
 "position, select the appropriate option in the <gui>Geoclue Settings</gui> "
 "section."
 msgstr ""
+"Se ten un dispositivo externo como un GPS ou quere enviar unha posición máis "
+"exacta, seleccione a opción axeitada na sección <gui>Configuracións de "
+"Geoclue</gui>."
 
 #: C/geolocation-supported.page:7(desc)
 msgid "Services that supports geolocation and compatibility."
@@ -1994,6 +1997,8 @@ msgid ""
 "service. In order to use it, you and your contacts need to have a Jabber "
 "account."
 msgstr ""
+"Polo momento a opción de xeolocalización só'é compatíbel co servizo Jabber. "
+"Para poder usala, vostede e os seus contactos deben ter unha conta de Jabber."
 
 #: C/geolocation-supported.page:39(p)
 msgid ""
@@ -2001,6 +2006,9 @@ msgid ""
 "feature. Most of the Jabber servers support it. See your service website "
 "documentation for more information."
 msgstr ""
+"Tamén é necesario que o servidor que está usando sexa compatíbel coa opción "
+"de xeolocalización. A maioría dos servidores teñen compatibilidade. Vexa a "
+"páxina web de documentación do seu servizo para obter máis información."
 
 #: C/geolocation-supported.page:47(title)
 msgid "Compatibility"
@@ -2053,6 +2061,9 @@ msgid ""
 "send different information. The use of external devices such as GPS or "
 "mobile phone will increase the accuracy of the information sent."
 msgstr ""
+"Diferentes tipos de redes poden ter diferentes axustes de precisión e poden "
+"enviar información diferente. O uso de dispositivos externos tales como un "
+"GPS ou teléfono móbil pode incrementar a precisión da información enviada."
 
 #: C/geolocation-privacy.page:49(p)
 msgid ""
@@ -2110,7 +2121,7 @@ msgstr ""
 
 #: C/geolocation-privacy.page:92(p)
 msgid "Only your contacts can see your position."
-msgstr ""
+msgstr "Só os seus contactos poden ver a súa posición."
 
 #: C/geolocation-not-showing.page:8(desc)
 msgid "<app>Empathy</app> does not publish my geographical position."
@@ -2125,18 +2136,25 @@ msgid ""
 "If your contacts cannot see your location, <app>Empathy</app> might not be "
 "able to discover with a good margin of precision your geographical position."
 msgstr ""
+"Se os contactos non poden ver a súa posición, <app>Empathy</app> pode non "
+"ser capaz de descubrir a súa posición xeográfica con unha boa marxe de "
+"precisión."
 
 #: C/geolocation-not-showing.page:38(p)
 msgid ""
 "In this case, your position will not be published, but you are still able to "
 "see the location of your contacts."
 msgstr ""
+"Neste caso non se publicará a súa posición pero aínda así poderá ver a "
+"posición dos seus contactos."
 
 #: C/geolocation-not-showing.page:42(p)
 msgid ""
 "If you want to publish your geographical position, you can try to use an "
 "external device such as a GPS."
 msgstr ""
+"Se quere publicar a súa posición xeográfica pode intentar usar un "
+"dispositivo externo tal como un GPS."
 
 #: C/geolocation-not-showing.page:48(p)
 msgid ""
@@ -2146,6 +2164,11 @@ msgid ""
 "PEP</link> is maintained online. Google Talk does not support this feature "
 "at this time."
 msgstr ""
+"Para publicar a súa localización xeográfica o seu servidor Jabber debe ser "
+"compatíbel co protocolo de eventos persoais (PEP). Mantense en liña unha "
+"lista dos <link href=\"http://coccinella.im/servers/servers_by_pubsub_pep."
+"html\">servidores que admiten PEP</link>. Polo momento Google Talk non é "
+"compatíbel con esta característica."
 
 #: C/geolocation.page:8(desc)
 msgid "Use and understand geolocation in <app>Empathy</app>."
@@ -2184,18 +2207,24 @@ msgid ""
 "See <link xref=\"irc-join-room\"/> for more information on how to join an "
 "IRC room."
 msgstr ""
+"Para obter máis información sobre como unirse a unha sala de chat IRC, "
+"consulte a <link xref=\"irc-join-room\"/>."
 
 #: C/favorite-rooms.page:46(p)
 msgid ""
 "See <link xref=\"group-conversations\"/> for more information on how to "
 "start or join a group conversation."
 msgstr ""
+"Para obter máis información sobre como unirse a unha conversa en grupo, "
+"consulte a <link xref=\"group-conversations\"/>."
 
 #: C/favorite-rooms.page:54(p)
 msgid ""
 "From the conversation window, choose <guiseq><gui>Conversation</"
 "gui><gui>Favorite Chat Room</gui></guiseq>."
 msgstr ""
+"Desde a xanela de conversa, elixa <guiseq><gui>Conversa</gui><gui>Sala de "
+"chat favorita</gui></guiseq>."
 
 #: C/favorite-rooms.page:63(title)
 msgid "Join favorite rooms"
@@ -2203,13 +2232,15 @@ msgstr "Unirse ás salas favoritas"
 
 #: C/favorite-rooms.page:71(p)
 msgid "Press <key>F5</key>."
-msgstr ""
+msgstr "Prema <key>F5</key>."
 
 #: C/favorite-rooms.page:76(p)
 msgid ""
 "Choose <guiseq><gui>Room</gui><gui>Join Favorites</gui></guiseq>, to join "
 "all your favorite rooms."
 msgstr ""
+"Seleccione <guiseq><gui>Salas</gui><gui>Unirse ás favoritas</gui></guiseq> "
+"para unirse a todas as súas salas favoritas."
 
 #: C/favorite-rooms.page:82(p)
 msgid "Choose <gui>Room</gui>, and select the favorite room you want to join."
@@ -2220,6 +2251,7 @@ msgid ""
 "To join a favorite room, you need to be connected to the Internet and to "
 "your account."
 msgstr ""
+"Para unirse a unha sala favorita debe estar conectado a Internet e coa conta."
 
 #: C/favorite-rooms.page:98(title)
 msgid "Manage favorite rooms"
@@ -2230,12 +2262,16 @@ msgid ""
 "From the <gui>Contact List</gui> window, choose <guiseq><gui>Room</"
 "gui><gui>Manage Favorites</gui></guiseq>."
 msgstr ""
+"Dese a xanela <gui>Lista de contactos</gui> elixa <guiseq><gui>Sala</"
+"gui><gui>Xestionar salas favoritas</gui></guiseq>."
 
 #: C/favorite-rooms.page:107(p)
 msgid ""
 "From the <gui>Account</gui> drop-down list, select the account you want to "
 "manage the favorite rooms of."
 msgstr ""
+"Desde a lista despregábel <gui>Conta</gui> seleccione a conta da que quere "
+"xestionar as salas favoritas."
 
 #: C/favorite-rooms.page:111(p)
 msgid "Select <gui>All</gui> to see all you favorite rooms."
@@ -2250,6 +2286,8 @@ msgid ""
 "Select the <gui>Auto-Connect</gui> check-box in order to automatically join "
 "that room when you connect to your account."
 msgstr ""
+"Seleccione a caixa de verificación <gui>Autoconectar</gui> para unirse a esa "
+"sala automaticamente ao conectarse coa conta."
 
 #: C/favorite-rooms.page:127(p)
 msgid "Click on <gui>Remove</gui> to remove the room from your favorites."
@@ -2261,7 +2299,7 @@ msgstr "Cando remate prema <placeholder-1/>."
 
 #: C/disable-account.page:9(desc)
 msgid "Prevent <app>Empathy</app> from automatically logging in to an account."
-msgstr ""
+msgstr "Evitar que <app>Empathy</app> inicie sesión automaticamente na conta."
 
 #: C/disable-account.page:39(title)
 msgid "Disable an account"
@@ -2295,7 +2333,7 @@ msgstr "Para reactivar a conta simplemente seleccione <placeholder-1/>."
 
 #: C/create-account.page:9(desc)
 msgid "Register for an account with one of the supported messaging services."
-msgstr ""
+msgstr "Rexistre unha conta con un dos servizos de mensaxería admitidos."
 
 #: C/create-account.page:33(title)
 msgid "Register for a new account"
@@ -2336,6 +2374,9 @@ msgid ""
 "new account from the website: <link href=\"http://www.facebook.com\">www."
 "facebook.com</link>."
 msgstr ""
+"Para usar Facebook para comunicarse cos seus amigos necesita crear unha nova "
+"conta desde o sitio web: <link href=\"http://www.facebook.com\">www.facebook."
+"com</link>."
 
 #: C/create-account.page:59(title) C/audio-video.page:170(p)
 msgid "Jabber"
@@ -2347,6 +2388,10 @@ msgid ""
 "choose your account provider and communicate with all other Jabber users, "
 "regardless of their account provider."
 msgstr ""
+"Jabber é un sistema de mensaxaría instantánea abeto. Como o correo "
+"electrónico, Jabber permítelle seleccionar o seu fornecedor de conta e "
+"comunicarse cos ouros usuarios de Jabber, independentemente do fornecedor da "
+"conta."
 
 #: C/create-account.page:65(p)
 msgid ""
@@ -2354,6 +2399,9 @@ msgid ""
 "free providers; one popular provider is <link href=\"http://register.jabber."
 "org/\">Jabber.org</link>."
 msgstr ""
+"Deberá crear unha nova conta con un fornecedor Jabber. Existen moitos "
+"fornecedores libres; un fornecedor popular é <link href=\"http://register."
+"jabber.org/\">Jabber.org</link>."
 
 #: C/create-account.page:70(p)
 msgid ""
@@ -2361,6 +2409,9 @@ msgid ""
 "Google Talk is a Jabber service. Simply use your Google Mail address and "
 "password in <app>Empathy</app> to connect."
 msgstr ""
+"Se usa Google Mail ou Google Talk xa ten unha conta Jabber. Talk é un "
+"servizo Jabber. Simplemente use o seu enderezo de Google Mail e o seu "
+"contrasinal para conectarse."
 
 #: C/create-account.page:77(title) C/audio-video.page:190(p)
 msgid "People Nearby"
@@ -2373,6 +2424,10 @@ msgid ""
 "such as a wireless hotspot. It automatically finds all other users on the "
 "network who are also using this service."
 msgstr ""
+"Para usar esta característica non precisa crear unha conta con un fornecedor "
+"de servizos. Este servizo funciona sempre que esté conectado a unha rede "
+"local, tal como un punto sen fíos. Automaticamente encontra outros usuarios "
+"na rede que estean usando este servizo."
 
 #: C/create-account.page:84(p)
 msgid "For more information, see <link xref=\"salut-protocol\"/>."
@@ -2437,7 +2492,7 @@ msgstr ""
 
 #: C/create-account.page:125(title)
 msgid "Proprietary Services"
-msgstr ""
+msgstr "Servizos privativos"
 
 #: C/create-account.page:127(p)
 msgid ""
@@ -2447,6 +2502,11 @@ msgid ""
 "new account with one of these services, you will need to visit the service’s "
 "web site and agree to its terms of use."
 msgstr ""
+"Existen moitos servizos privativos de mensaxaría instantánea desenvolvidos "
+"por diferentes empresas e organizacións, <app>Empathy</app> permítelle "
+"conectarse a unha conta existente dos servizos máis populares. Para crear "
+"unha nova conta con un destes servizos, debe visitar a páxina web do servizo "
+"e aceptar os termos de uso."
 
 #: C/create-account.page:136(link) C/audio-video.page:135(p)
 msgid "AIM"
@@ -2558,7 +2618,7 @@ msgstr "Icona para a conversa de son"
 
 #: C/audio-video.page:64(p)
 msgid "The contact is able to have an audio conversation."
-msgstr ""
+msgstr "O contacto pode ter conversas de son."
 
 #: C/audio-video.page:70(media)
 msgid "Icon for video conversation"
@@ -2566,7 +2626,7 @@ msgstr "Icona para a conversa de vídeo"
 
 #: C/audio-video.page:76(p)
 msgid "The contact is able to have a video conversation."
-msgstr ""
+msgstr "O contacto pode ter conversas de vídeo."
 
 #: C/audio-video.page:83(p)
 msgid ""
@@ -2594,6 +2654,9 @@ msgid ""
 "supported services. The following table lists whether audio and video is "
 "supported for each type of account."
 msgstr ""
+"Só pode ter conversas de son e vídeo usando contas en certos servizos "
+"compatíbeis. A seguinte táboa mostra se o son ou vídeo están admitidos para "
+"cada tipo de conta."
 
 #: C/audio-video.page:102(p)
 msgid ""
@@ -2602,6 +2665,10 @@ msgid ""
 "plugins may make audio or video conversations possible on account types that "
 "are listed as unsupported here."
 msgstr ""
+"Os tipos de contas son fornecidos por engadidos. Pode que o seu sistema non "
+"teña dispoñíbel todos os seguintes tipos, ou pode ter tipos non mostrados "
+"aquí. As actualizacións de engadidos pode facer posíbel conversas de son ou "
+"vídeo en tipos de contas que aquí móstranse como non compatíbeis."
 
 #: C/audio-video.page:110(p)
 msgid ""
@@ -2610,6 +2677,10 @@ msgid ""
 "gnome.org/archives/gnome-doc-list/2009-September/msg00006.html\">asked the "
 "accessibility team</link> for input."
 msgstr ""
+"Gustariame poñer táboas como ésta sen usar nada para Non e ✔ para Sí, pero "
+"débese tener en conta o impacto na accesibilidade. Xa <link href=\"http://"
+"mail.gnome.org/archives/gnome-doc-list/2009-September/msg00006.html"
+"\">preguntei ao equipo de accesibilidade</link>."
 
 #: C/audio-video.page:118(p)
 msgid ""
@@ -2856,10 +2927,14 @@ msgid ""
 "login ID and a password. Some accounts may require additional information. "
 "See <link xref=\"accounts-window#details\"/> for more information."
 msgstr ""
+"Introduza a información requirida. Para a maioría das contas só necesitará "
+"un ID de inicio de sesión e un contrasinal. Algunhas contas poden requirir "
+"información adicional. Para obter máis información consulte a <link xref="
+"\"accounts-window#details\"/>."
 
 #: C/add-account.page:71(p)
 msgid "Click <gui style=\"button\">Log in</gui>."
-msgstr ""
+msgstr "Prema <gui style=\"button\">Iniciar sesión</gui>."
 
 #: C/add-account.page:78(p)
 msgid ""
@@ -2868,10 +2943,13 @@ msgid ""
 "name or press the space bar. Edit the account name and press <key>Enter</"
 "key> when you’re finished."
 msgstr ""
+"Para cambiar o nome que identifica a conta na xanela <gui>Contas</gui>, "
+"seleccione a conta da lista á esquerda e prema no nome ou a barra "
+"espaciadora. Edite o nome da conta e prema <key>Intro</key> cando remate."
 
 #: C/accounts-window.page:11(desc)
 msgid "Add, modify, and delete accounts."
-msgstr ""
+msgstr "Engadir, modificar e borrar contas."
 
 #: C/accounts-window.page:33(title)
 msgid "Accounts Window"
@@ -2882,6 +2960,7 @@ msgid ""
 "The <gui>Accounts</gui> window allows you to add, modify, and delete "
 "accounts."
 msgstr ""
+"A xanela <gui>Contas</gui> permítelle engadir, modificar e eliminar contas."
 
 #: C/accounts-window.page:43(title)
 msgid "Account Details"
@@ -2893,10 +2972,13 @@ msgid ""
 "Certain accounts or account types, however, may require additional "
 "information."
 msgstr ""
+"Para a maioría dos tipos de conta pode, simplemente, introducir un ID de "
+"inicio de sesión e un contrasinal. Porén, algúns tipos de conta poden "
+"requirir información adicional."
 
 #: C/account-jabber.page:7(desc)
 msgid "Advanced options for Jabber and Google Talk accounts."
-msgstr ""
+msgstr "Opcións avanzadas para contas Jabber e Google Talk."
 
 #: C/account-jabber.page:29(title)
 msgid "Jabber account details"
@@ -2922,6 +3004,8 @@ msgid ""
 "Google Talk is a type of Jabber account. These instructions hold for Google "
 "Talk accounts as well."
 msgstr ""
+"Google Talk é un tipo de conta Jabber. Estas instrucións tamén funcionan "
+"para contas de Google Talk."
 
 #: C/account-jabber.page:45(gui)
 msgid "Encryption required (TLS/SSL)"
