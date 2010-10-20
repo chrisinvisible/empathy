@@ -773,46 +773,26 @@ static void
 ft_handler_populate_outgoing_request (EmpathyFTHandler *handler)
 {
   guint contact_handle;
-  GHashTable *request;
-  GValue *value;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
-
-  request = priv->request = g_hash_table_new_full (g_str_hash, g_str_equal,
-	    NULL, (GDestroyNotify) tp_g_value_slice_free);
 
   contact_handle = empathy_contact_get_handle (priv->contact);
 
-  /* org.freedesktop.Telepathy.Channel.ChannelType */
-  value = tp_g_value_slice_new_string (TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER);
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".ChannelType", value);
-
-  /* org.freedesktop.Telepathy.Channel.TargetHandleType */
-  value = tp_g_value_slice_new_uint (TP_HANDLE_TYPE_CONTACT);
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandleType", value);
-
-  /* org.freedesktop.Telepathy.Channel.TargetHandle */
-  value = tp_g_value_slice_new_uint (contact_handle);
-  g_hash_table_insert (request, TP_IFACE_CHANNEL ".TargetHandle", value);
-
-  /* org.freedesktop.Telepathy.Channel.Type.FileTransfer.ContentType */
-  value = tp_g_value_slice_new_string (priv->content_type);
-  g_hash_table_insert (request,
-      TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentType", value);
-
-  /* org.freedesktop.Telepathy.Channel.Type.FileTransfer.Filename */
-  value = tp_g_value_slice_new_string (priv->filename);
-  g_hash_table_insert (request,
-      TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".Filename", value);
-
-  /* org.freedesktop.Telepathy.Channel.Type.FileTransfer.Size */
-  value = tp_g_value_slice_new_uint64 (priv->total_bytes);
-  g_hash_table_insert (request,
-      TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".Size", value);
-
-  /* org.freedesktop.Telepathy.Channel.Type.FileTransfer.Date */
-  value = tp_g_value_slice_new_uint64 ((guint64) priv->mtime);
-  g_hash_table_insert (request,
-      TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".Date", value);
+  priv->request = tp_asv_new (
+      TP_PROP_CHANNEL_CHANNEL_TYPE, G_TYPE_STRING,
+        TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER,
+      TP_PROP_CHANNEL_TARGET_HANDLE_TYPE, G_TYPE_UINT,
+        TP_HANDLE_TYPE_CONTACT,
+      TP_PROP_CHANNEL_TARGET_HANDLE, G_TYPE_UINT,
+        contact_handle,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_TYPE, G_TYPE_STRING,
+        priv->content_type,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_FILENAME, G_TYPE_STRING,
+        priv->filename,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_SIZE, G_TYPE_UINT64,
+        priv->total_bytes,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_DATE, G_TYPE_UINT64,
+        priv->mtime,
+      NULL);
 }
 
 static gboolean
@@ -822,7 +802,6 @@ hash_job_done (gpointer user_data)
   EmpathyFTHandler *handler = hash_data->handler;
   EmpathyFTHandlerPriv *priv;
   GError *error = NULL;
-  GValue *value;
 
   DEBUG ("Closing stream after hashing.");
 
@@ -864,10 +843,9 @@ hash_job_done (gpointer user_data)
       /* set the checksum in the request...
        * org.freedesktop.Telepathy.Channel.Type.FileTransfer.ContentHash
        */
-      value = tp_g_value_slice_new_string
-          (g_checksum_get_string (hash_data->checksum));
-      g_hash_table_insert (priv->request,
-          TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHash", value);
+      tp_asv_set_string (priv->request,
+          TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH,
+          g_checksum_get_string (hash_data->checksum));
     }
 
 cleanup:
@@ -987,7 +965,6 @@ ft_handler_read_async_cb (GObject *source,
   GFileInputStream *stream;
   GError *error = NULL;
   HashingData *hash_data;
-  GValue *value;
   EmpathyFTHandler *handler = user_data;
   EmpathyFTHandlerPriv *priv = GET_PRIV (handler);
 
@@ -1009,10 +986,9 @@ ft_handler_read_async_cb (GObject *source,
   /* FIXME: MD5 is the only ContentHashType supported right now */
   hash_data->checksum = g_checksum_new (G_CHECKSUM_MD5);
 
-  /* org.freedesktop.Telepathy.Channel.Type.FileTransfer.ContentHashType */
-  value = tp_g_value_slice_new_uint (TP_FILE_HASH_TYPE_MD5);
-  g_hash_table_insert (priv->request,
-      TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHashType", value);
+  tp_asv_set_uint32 (priv->request,
+      TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH_TYPE,
+      TP_FILE_HASH_TYPE_MD5);
 
   g_signal_emit (handler, signals[HASHING_STARTED], 0);
 
@@ -1065,7 +1041,7 @@ set_content_hash_type_from_classes (EmpathyFTHandler *handler,
       support_ft = TRUE;
 
       value = tp_asv_get_uint32
-        (fixed, TP_IFACE_CHANNEL_TYPE_FILE_TRANSFER ".ContentHashType",
+        (fixed, TP_PROP_CHANNEL_TYPE_FILE_TRANSFER_CONTENT_HASH_TYPE,
          &valid);
 
       if (valid)
