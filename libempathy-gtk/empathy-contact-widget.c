@@ -165,6 +165,24 @@ field_value_is_empty (TpContactInfoField *field)
 }
 
 static void
+set_contact_info_cb (GObject *source,
+    GAsyncResult *result,
+    gpointer user_data)
+{
+  GError *error = NULL;
+
+  if (!tp_connection_set_contact_info_finish (TP_CONNECTION (source), result,
+        &error))
+    {
+      DEBUG ("SetContactInfo() failed: %s", error->message);
+      g_error_free (error);
+      return;
+    }
+
+  DEBUG ("SetContactInfo() succeeded");
+}
+
+static void
 contact_widget_save (EmpathyContactWidget *information)
 {
   TpConnection *connection;
@@ -190,7 +208,7 @@ contact_widget_save (EmpathyContactWidget *information)
   if (information->details_to_set != NULL)
     {
       tp_connection_set_contact_info_async (connection,
-          information->details_to_set, NULL, NULL);
+          information->details_to_set, set_contact_info_cb, NULL);
       tp_contact_info_list_free (information->details_to_set);
       information->details_to_set = NULL;
     }
