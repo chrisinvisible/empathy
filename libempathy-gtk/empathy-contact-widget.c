@@ -313,11 +313,27 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
   connection = tp_contact_get_connection (contact);
 
   info = tp_contact_get_contact_info (contact);
-  info = g_list_sort (info, (GCompareFunc) contact_info_field_cmp);
 
   specs = tp_connection_get_contact_info_supported_fields (connection);
 
+  /* Look at the fields set in our vCard */
   for (l = info; l != NULL; l = l->next)
+    {
+      TpContactInfoField *field = l->data;
+
+      /* make a copy for the details_to_set list */
+      field = tp_contact_info_field_copy (field);
+      DEBUG ("Field %s is in our vCard", field->field_name);
+
+      information->details_to_set = g_list_prepend (information->details_to_set,
+          field);
+    }
+
+  /* Add widgets for supported fields */
+  information->details_to_set = g_list_sort (information->details_to_set,
+      (GCompareFunc) contact_info_field_cmp);
+
+  for (l = information->details_to_set; l != NULL; l= g_list_next (l))
     {
       TpContactInfoField *field = l->data;
       InfoFieldData *field_data;
@@ -326,21 +342,12 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       field_data = find_info_field_data (field->field_name);
       if (field_data == NULL)
         {
+          /* Empathy doesn't display this field so we can't change it.
+           * But we put it in the details_to_set list so it won't be erased
+           * when calling SetContactInfo (bgo #630427) */
           DEBUG ("Unhandled ContactInfo field spec: %s", field->field_name);
+          continue;
         }
-
-      /* make a copy for the details_to_set list */
-      field = tp_contact_info_field_copy (field);
-      DEBUG ("Field %s is in our vCard", field->field_name);
-
-      information->details_to_set = g_list_prepend (information->details_to_set,
-          field);
-
-      /* Empathy doesn't display this field so we can't change it. But we put
-       * it in the details_to_set list so it won't be erased when calling
-       * SetContactInfo (bgo #630427) */
-      if (field_data == NULL)
-        continue;
 
       /* Add Title */
       w = gtk_label_new (_(field_data->title));
