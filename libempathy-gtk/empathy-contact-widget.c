@@ -298,6 +298,40 @@ contact_info_field_cmp (TpContactInfoField *field1,
   return contact_info_field_name_cmp (field1->field_name, field2->field_name);
 }
 
+static gboolean
+field_name_in_field_list (GList *list,
+    const gchar *name)
+{
+  GList *l;
+
+  for (l = list; l != NULL; l = g_list_next (l))
+    {
+      TpContactInfoField *field = l->data;
+
+      if (!tp_strdiff (field->field_name, name))
+        return TRUE;
+    }
+
+  return FALSE;
+}
+
+static TpContactInfoFieldSpec *
+get_spec_from_list (GList *list,
+    const gchar *name)
+{
+  GList *l;
+
+  for (l = list; l != NULL; l = g_list_next (l))
+    {
+      TpContactInfoFieldSpec *spec = l->data;
+
+      if (!tp_strdiff (spec->name, name))
+        return spec;
+    }
+
+  return NULL;
+}
+
 static guint
 contact_widget_details_update_edit (EmpathyContactWidget *information)
 {
@@ -306,6 +340,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
   GList *specs, *l;
   guint n_rows = 0;
   GList *info;
+  guint i;
 
   g_assert (information->details_to_set == NULL);
 
@@ -324,6 +359,29 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
       /* make a copy for the details_to_set list */
       field = tp_contact_info_field_copy (field);
       DEBUG ("Field %s is in our vCard", field->field_name);
+
+      information->details_to_set = g_list_prepend (information->details_to_set,
+          field);
+    }
+
+  /* Add fields which are supported but not in the vCard */
+  for (i = 0; info_field_datas[i].field_name != NULL; i++)
+    {
+      TpContactInfoFieldSpec *spec;
+      TpContactInfoField *field;
+
+      /* Check if the field was in the vCard */
+      if (field_name_in_field_list (information->details_to_set,
+            info_field_datas[i].field_name))
+        continue;
+
+      /* Check if the CM supports the field */
+      spec = get_spec_from_list (specs, info_field_datas[i].field_name);
+      if (spec == NULL)
+        continue;
+
+      /* add an empty field so user can set a value */
+      field = tp_contact_info_field_new (spec->name, spec->parameters, NULL);
 
       information->details_to_set = g_list_prepend (information->details_to_set,
           field);
