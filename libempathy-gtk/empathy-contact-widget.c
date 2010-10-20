@@ -298,34 +298,6 @@ contact_info_field_cmp (TpContactInfoField *field1,
   return contact_info_field_name_cmp (field1->field_name, field2->field_name);
 }
 
-static gint
-contact_info_field_spec_cmp (TpContactInfoFieldSpec *spec1,
-    TpContactInfoFieldSpec *spec2)
-{
-  return contact_info_field_name_cmp (spec1->name, spec2->name);
-}
-
-static gboolean
-field_spec_match_field (TpContactInfoFieldSpec *spec,
-    TpContactInfoField *field)
-{
-  guint i;
-
-  if (tp_strdiff (field->field_name, spec->name))
-    return FALSE;
-
-  if (g_strv_length (field->parameters) != g_strv_length (spec->parameters))
-    return FALSE;
-
-  for (i = 0; field->parameters[i] != NULL; i++)
-    {
-      if (tp_strdiff (field->parameters[i], spec->parameters[i]))
-        return FALSE;
-    }
-
-  return TRUE;
-}
-
 static guint
 contact_widget_details_update_edit (EmpathyContactWidget *information)
 {
@@ -339,51 +311,27 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
 
   contact = empathy_contact_get_tp_contact (information->contact);
   connection = tp_contact_get_connection (contact);
+
   info = tp_contact_get_contact_info (contact);
+  info = g_list_sort (info, (GCompareFunc) contact_info_field_cmp);
 
   specs = tp_connection_get_contact_info_supported_fields (connection);
-  specs = g_list_sort (specs, (GCompareFunc) contact_info_field_spec_cmp);
-  for (l = specs; l != NULL; l = l->next)
+
+  for (l = info; l != NULL; l = l->next)
     {
-      TpContactInfoFieldSpec *spec = l->data;
-      TpContactInfoField *field = NULL;
+      TpContactInfoField *field = l->data;
       InfoFieldData *field_data;
-      GList *ll;
       GtkWidget *w;
 
-      field_data = find_info_field_data (spec->name);
+      field_data = find_info_field_data (field->field_name);
       if (field_data == NULL)
         {
-          DEBUG ("Unhandled ContactInfo field spec: %s", spec->name);
+          DEBUG ("Unhandled ContactInfo field spec: %s", field->field_name);
         }
 
-      /* Search initial value */
-      for (ll = info; ll != NULL && field == NULL; ll = ll->next)
-        {
-          TpContactInfoField *tmp = ll->data;
-
-          if (field_spec_match_field (spec, tmp))
-            field = tmp;
-        }
-
-      if (field != NULL)
-        {
-          /* We found the field, make a copy for the details_to_set list */
-          field = tp_contact_info_field_copy (field);
-          DEBUG ("Field %s is in our vCard", spec->name);
-        }
-      else
-        {
-          /* Empathy doesn't support editing this field and it's not in the
-           * contact's fields so we can't do much with it. */
-          DEBUG ("Field %s is not in our vCard", spec->name);
-
-          if (field_data == NULL)
-            continue;
-
-          field = tp_contact_info_field_new (spec->name, spec->parameters,
-              NULL);
-        }
+      /* make a copy for the details_to_set list */
+      field = tp_contact_info_field_copy (field);
+      DEBUG ("Field %s is in our vCard", field->field_name);
 
       information->details_to_set = g_list_prepend (information->details_to_set,
           field);
@@ -414,6 +362,7 @@ contact_widget_details_update_edit (EmpathyContactWidget *information)
 
       n_rows++;
     }
+
   g_list_free (specs);
   g_list_free (info);
 
