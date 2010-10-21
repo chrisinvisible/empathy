@@ -39,7 +39,8 @@ main (int argc,
   g_thread_init (NULL);
   empathy_gtk_init ();
 
-  app = gtk_application_new (EMPATHY_DEBUGGER_DBUS_NAME, &argc, &argv);
+  app = gtk_application_new (EMPATHY_DEBUGGER_DBUS_NAME,
+      G_APPLICATION_IS_SERVICE);
 
   g_set_application_name (_("Empathy Debugger"));
 
@@ -49,7 +50,9 @@ main (int argc,
   window = empathy_debug_window_new (NULL);
   g_signal_connect (window, "destroy", gtk_main_quit, NULL);
 
-  gtk_application_run (app);
+  /* don't let this application exit automatically */
+  g_application_hold (G_APPLICATION (app));
+  g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
   return EXIT_SUCCESS;
