@@ -135,7 +135,7 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
 }
 
 static void
-app_activated_cb (GtkApplication *app)
+app_activate_cb (GApplication *app)
 {
   TpAccountManager *account_manager;
 
@@ -199,17 +199,19 @@ main (int argc, char *argv[])
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  app = gtk_application_new (EMPATHY_ACCOUNTS_DBUS_NAME, &argc, &argv);
+  app = gtk_application_new (EMPATHY_ACCOUNTS_DBUS_NAME,
+      G_APPLICATION_IS_SERVICE);
 
   account_manager = tp_account_manager_dup ();
 
   tp_account_manager_prepare_async (account_manager, NULL,
     account_manager_ready_for_accounts_cb, selected_account_name);
 
-  g_signal_connect (app, "activated",
-      G_CALLBACK (app_activated_cb), NULL);
+  g_signal_connect (app, "activate", G_CALLBACK (app_activate_cb), NULL);
 
-  gtk_application_run (app);
+  /* don't let this application exit automatically */
+  g_application_hold (G_APPLICATION (app));
+  g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (account_manager);
   g_object_unref (app);
