@@ -231,8 +231,7 @@ empathy_app_set_property (GObject *object,
 }
 
 static void
-empathy_app_activated (GtkApplication *app,
-    GVariant *args)
+empathy_app_activate (GApplication *app)
 {
   EmpathyApp *self = (EmpathyApp *) app;
 
@@ -254,7 +253,7 @@ static void
 empathy_app_class_init (EmpathyAppClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-  GtkApplicationClass *gtk_app_class = GTK_APPLICATION_CLASS (klass);
+  GApplicationClass *g_app_class = G_APPLICATION_CLASS (klass);
   GParamSpec *spec;
 
   gobject_class->set_property = empathy_app_set_property;
@@ -262,7 +261,7 @@ empathy_app_class_init (EmpathyAppClass *klass)
   gobject_class->dispose = empathy_app_dispose;
   gobject_class->finalize = empathy_app_finalize;
 
-  gtk_app_class->activated = empathy_app_activated;
+  g_app_class->activate = empathy_app_activate;
 
   spec = g_param_spec_boolean ("no-connect", "no connect",
       "Don't connect on startup",
@@ -696,7 +695,7 @@ main (int argc, char *argv[])
   app = empathy_app_new (argc, (const gchar * const *) argv,
       no_connect, start_hidden);
 
-  gtk_application_run (GTK_APPLICATION (app));
+  g_application_run (G_APPLICATION (app), argc, argv);
 
   notify_uninit ();
   xmlCleanupParser ();
