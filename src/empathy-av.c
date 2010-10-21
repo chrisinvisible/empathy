@@ -43,18 +43,10 @@
 
 #define EMPATHY_AV_DBUS_NAME "org.gnome.Empathy.AudioVideo"
 
+static GtkApplication *app = NULL;
+static gboolean app_held = FALSE;
 static guint nb_windows = 0;
-static guint timeout_id = 0;
 static gboolean use_timer = TRUE;
-
-static gboolean
-timeout_cb (gpointer data)
-{
-  DEBUG ("Timing out; exiting");
-
-  gtk_main_quit ();
-  return FALSE;
-}
 
 static void
 start_timer (void)
@@ -62,24 +54,19 @@ start_timer (void)
   if (!use_timer)
     return;
 
-  if (timeout_id != 0)
-    return;
-
   DEBUG ("Start timer");
 
-  timeout_id = g_timeout_add_seconds (TIMEOUT, timeout_cb, NULL);
+  if (app_held)
+    g_application_release (G_APPLICATION (app));
 }
 
 static void
 stop_timer (void)
 {
-  if (timeout_id == 0)
-    return;
-
   DEBUG ("Stop timer");
 
-  g_source_remove (timeout_id);
-  timeout_id = 0;
+  g_application_hold (G_APPLICATION (app));
+  app_held = TRUE;
 }
 
 static void
@@ -128,7 +115,6 @@ main (int argc,
 #endif
   EmpathyCallFactory *call_factory;
   GError *error = NULL;
-  GtkApplication *app;
 
   /* Init */
   g_thread_init (NULL);
@@ -155,7 +141,7 @@ main (int argc,
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  app = gtk_application_new (EMPATHY_AV_DBUS_NAME, &argc, &argv);
+  app = gtk_application_new (EMPATHY_AV_DBUS_NAME, G_APPLICATION_IS_SERVICE);
 
 #ifdef ENABLE_DEBUG
   /* Set up debug sender */
@@ -182,9 +168,20 @@ main (int argc,
       use_timer = FALSE;
     }
 
+  /* the inactivity timeout can only be set while the application is held */
+  g_application_hold (G_APPLICATION (app));
+  g_application_set_inactivity_timeout (G_APPLICATION (app), TIMEOUT * 1000);
+  if (use_timer)
+    {
+      g_application_release (G_APPLICATION (app));
+      app_held = FALSE;
+    }
+  else
+    app_held = TRUE;
+
   start_timer ();
 
-  gtk_application_run (app);
+  g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
   g_object_unref (call_factory);
