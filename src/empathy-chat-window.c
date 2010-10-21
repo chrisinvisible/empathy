@@ -2112,9 +2112,8 @@ empathy_chat_window_get_dialog (EmpathyChatWindow *window)
 	return priv->dialog;
 }
 
-/* Returns the window to open a new tab in if there is only one window
- * visble, otherwise, returns NULL indicating that a new window should
- * be added.
+/* Returns the window to open a new tab in if there is a suitable window,
+ * otherwise, returns NULL indicating that a new window should be added.
  */
 static EmpathyChatWindow *
 empathy_chat_window_get_default (gboolean room)
@@ -2137,26 +2136,27 @@ empathy_chat_window_get_default (gboolean room)
 		EmpathyChatWindowPriv *priv;
 		EmpathyChatWindow *chat_window;
 		GtkWidget         *dialog;
+		guint nb_rooms, nb_private;
 
 		chat_window = l->data;
 		priv = GET_PRIV (chat_window);
 
 		dialog = empathy_chat_window_get_dialog (chat_window);
-		if (empathy_window_get_is_visible (GTK_WINDOW (dialog))) {
-			guint nb_rooms, nb_private;
-			empathy_chat_window_get_nb_chats (chat_window, &nb_rooms, &nb_private);
 
-			/* Skip the window if there aren't any rooms in it */
-			if (room && nb_rooms == 0)
-				continue;
+		empathy_chat_window_get_nb_chats (chat_window, &nb_rooms, &nb_private);
 
-			/* Skip the window if there aren't any 1-1 chats in it */
-			if (!room && nb_private == 0)
-				continue;
+		/* Skip the window if there aren't any rooms in it */
+		if (room && nb_rooms == 0)
+			continue;
 
-			/* Found a visible window on this desktop */
-			return chat_window;
-		}
+		/* Skip the window if there aren't any 1-1 chats in it */
+		if (!room && nb_private == 0)
+			continue;
+
+		/* Found a window on this desktop, make it visible if necessary */
+		if (!empathy_window_get_is_visible (GTK_WINDOW (dialog)))
+			empathy_window_present (GTK_WINDOW (dialog));
+		return chat_window;
 	}
 
 	return NULL;
