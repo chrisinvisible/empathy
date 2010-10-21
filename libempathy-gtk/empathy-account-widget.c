@@ -1922,6 +1922,7 @@ do_constructed (GObject *obj)
   EmpathyAccountWidget *self = EMPATHY_ACCOUNT_WIDGET (obj);
   EmpathyAccountWidgetPriv *priv = GET_PRIV (self);
   TpAccount *account;
+  TpStorageRestrictionFlags storage_restrictions;
   const gchar *display_name, *default_display_name;
   guint i = 0;
   struct {
@@ -1944,9 +1945,13 @@ do_constructed (GObject *obj)
 
   account = empathy_account_settings_get_account (priv->settings);
 
+  if (account != NULL)
+    storage_restrictions = tp_account_get_storage_restrictions (account);
+  else
+    storage_restrictions = 0;
+
   /* Empathy can only edit accounts without the Cannot_Set_Parameters flag */
-  if (tp_account_get_storage_restrictions (account) &
-      TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS)
+  if (storage_restrictions & TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS)
     {
       DEBUG ("Account is provided by an external storage provider");
 
@@ -2005,7 +2010,7 @@ do_constructed (GObject *obj)
 
   /* handle apply and cancel button */
   if (!priv->simple &&
-      !(tp_account_get_storage_restrictions (account) &
+      !(storage_restrictions &
         TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_PARAMETERS))
     {
       GtkWidget *hbox = gtk_hbox_new (TRUE, 3);
@@ -2066,8 +2071,7 @@ do_constructed (GObject *obj)
 #endif /* HAVE_MEEGO */
 
   /* add the Enable checkbox to accounts that support it */
-  if (!(tp_account_get_storage_restrictions (account) &
-      TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_ENABLED))
+  if (!(storage_restrictions & TP_STORAGE_RESTRICTION_FLAG_CANNOT_SET_ENABLED))
     add_enable_checkbox (self, account);
 
   /* hook up to widget destruction to unref ourselves */
