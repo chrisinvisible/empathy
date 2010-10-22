@@ -691,6 +691,7 @@ main (int argc, char *argv[])
   app = empathy_app_new (argc, (const gchar * const *) argv,
       no_connect, start_hidden);
 
+  g_application_hold (G_APPLICATION (app));
   g_application_run (G_APPLICATION (app), argc, argv);
 
   notify_uninit ();
