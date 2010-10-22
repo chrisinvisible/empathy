@@ -190,13 +190,9 @@ empathy_app_new (guint argc,
 
   argv_variant = g_variant_new_bytestring_array (argv, argc);
 
-  self = g_initable_new (EMPATHY_TYPE_APP,
-      NULL, &error,
+  self = g_object_new (EMPATHY_TYPE_APP,
       "application-id", EMPATHY_DBUS_NAME,
-      "argv", argv_variant,
-      "register", TRUE,
-      "no-connect", no_connect,
-      "start-hidden", start_hidden,
+      "flags", G_APPLICATION_IS_SERVICE,
       NULL);
 
   if (self == NULL)
