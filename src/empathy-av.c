@@ -44,41 +44,25 @@
 #define EMPATHY_AV_DBUS_NAME "org.gnome.Empathy.AudioVideo"
 
 static GtkApplication *app = NULL;
-static gboolean app_held = FALSE;
-static guint nb_windows = 0;
+static gboolean activated = FALSE;
 static gboolean use_timer = TRUE;
 
 static void
-start_timer (void)
-{
-  if (!use_timer)
-    return;
-
-  DEBUG ("Start timer");
-
-  if (app_held)
-    g_application_release (G_APPLICATION (app));
-}
+new_call_handler_cb (EmpathyCallFactory *factory,
+    EmpathyCallHandler *handler,
+    gboolean outgoing,
+    gpointer user_data);
 
 static void
-stop_timer (void)
+activate_cb (GApplication *application)
 {
-  DEBUG ("Stop timer");
+  if (!use_timer && !activated)
+    {
+      /* keep a 'ref' to the application */
+      g_application_hold (G_APPLICATION (app));
 
-  g_application_hold (G_APPLICATION (app));
-  app_held = TRUE;
-}
-
-static void
-call_window_destroy_cb (EmpathyCallWindow *window,
-    gpointer user_data)
-{
-  nb_windows--;
-
-  if (nb_windows > 0)
-    return;
-
-  start_timer ();
+      activated = TRUE;
+    }
 }
 
 static void
@@ -93,11 +77,10 @@ new_call_handler_cb (EmpathyCallFactory *factory,
 
   window = empathy_call_window_new (handler);
 
-  nb_windows++;
-  stop_timer ();
+  g_application_hold (G_APPLICATION (app));
 
-  g_signal_connect (window, "destroy",
-      G_CALLBACK (call_window_destroy_cb), NULL);
+  g_signal_connect_swapped (window, "destroy",
+      G_CALLBACK (g_application_release), app);
 
   gtk_widget_show (GTK_WIDGET (window));
 }
@@ -141,7 +124,8 @@ main (int argc,
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  app = gtk_application_new (EMPATHY_AV_DBUS_NAME, G_APPLICATION_IS_SERVICE);
+  app = gtk_application_new (EMPATHY_AV_DBUS_NAME, G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate_cb), NULL);
 
 #ifdef ENABLE_DEBUG
   /* Set up debug sender */
@@ -158,8 +142,9 @@ main (int argc,
     {
       g_critical ("Failed to register Handler: %s", error->message);
       g_error_free (error);
-      return EXIT_FAILURE;
     }
+
+  g_object_unref (call_factory);
 
   if (g_getenv ("EMPATHY_PERSIST") != NULL)
     {
@@ -171,15 +156,7 @@ main (int argc,
   /* the inactivity timeout can only be set while the application is held */
   g_application_hold (G_APPLICATION (app));
   g_application_set_inactivity_timeout (G_APPLICATION (app), TIMEOUT * 1000);
-  if (use_timer)
-    {
-      g_application_release (G_APPLICATION (app));
-      app_held = FALSE;
-    }
-  else
-    app_held = TRUE;
-
-  start_timer ();
+  g_application_release (G_APPLICATION (app));
 
   g_application_run (G_APPLICATION (app), argc, argv);
 
