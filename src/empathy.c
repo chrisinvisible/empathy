@@ -104,6 +104,8 @@ struct _EmpathyApp
   gboolean no_connect;
   gboolean start_hidden;
 
+  gboolean activated;
+
   GtkWidget *window;
   EmpathyStatusIcon *icon;
   EmpathyDispatcher *dispatcher;
@@ -198,16 +200,62 @@ empathy_app_set_property (GObject *object,
 }
 
 static void
+new_incoming_transfer_cb (EmpathyFTFactory *factory,
+    EmpathyFTHandler *handler,
+    GError *error,
+    gpointer user_data)
+{
+  if (error)
+    empathy_ft_manager_display_error (handler, error);
+  else
+    empathy_receive_file_with_file_chooser (handler);
+}
+
+static void
+new_ft_handler_cb (EmpathyFTFactory *factory,
+    EmpathyFTHandler *handler,
+    GError *error,
+    gpointer user_data)
+{
+  if (error)
+    empathy_ft_manager_display_error (handler, error);
+  else
+    empathy_ft_manager_add_handler (handler);
+
+  g_object_unref (handler);
+}
+
+static void
 empathy_app_activate (GApplication *app)
 {
   EmpathyApp *self = (EmpathyApp *) app;
 
-  /* We're requested to show stuff again, disable the start hidden global
-   * in case the accounts wizard wants to pop up.
-   */
-  self->start_hidden = FALSE;
+  if (!self->activated)
+    {
+      GError *error = NULL;
 
-  g_application_hold (G_APPLICATION (app));
+      /* Create the FT factory */
+      self->ft_factory = empathy_ft_factory_dup_singleton ();
+      g_signal_connect (self->ft_factory, "new-ft-handler",
+          G_CALLBACK (new_ft_handler_cb), NULL);
+      g_signal_connect (self->ft_factory, "new-incoming-transfer",
+          G_CALLBACK (new_incoming_transfer_cb), NULL);
+
+      if (!empathy_ft_factory_register (self->ft_factory, &error))
+        {
+          g_warning ("Failed to register FileTransfer handler: %s",
+              error->message);
+          g_error_free (error);
+        }
+
+      /* We're requested to show stuff again, disable the start hidden global in
+       * case the accounts wizard wants to pop up.
+      */
+      self->start_hidden = FALSE;
+
+      g_application_hold (G_APPLICATION (app));
+      self->activated = TRUE;
+    }
 
   empathy_window_present (GTK_WINDOW (self->window));
 
@@ -347,32 +395,6 @@ show_version_cb (const char *option_name,
   g_print ("%s\n", PACKAGE_STRING);
 
   exit (EXIT_SUCCESS);
-}
-
-static void
-new_incoming_transfer_cb (EmpathyFTFactory *factory,
-    EmpathyFTHandler *handler,
-    GError *error,
-    gpointer user_data)
-{
-  if (error)
-    empathy_ft_manager_display_error (handler, error);
-  else
-    empathy_receive_file_with_file_chooser (handler);
-}
-
-static void
-new_ft_handler_cb (EmpathyFTFactory *factory,
-    EmpathyFTHandler *handler,
-    GError *error,
-    gpointer user_data)
-{
-  if (error)
-    empathy_ft_manager_display_error (handler, error);
-  else
-    empathy_ft_manager_add_handler (handler);
-
-  g_object_unref (handler);
 }
 
 static void
@@ -522,7 +544,6 @@ static void
 empathy_app_constructed (GObject *object)
 {
   EmpathyApp *self = (EmpathyApp *) object;
-  GError *error = NULL;
   gboolean chatroom_manager_ready;
   gboolean autoaway;
 
@@ -593,23 +614,13 @@ empathy_app_constructed (GObject *object)
           self->account_manager);
     }
 
-  /* Create the FT factory */
-  self->ft_factory = empathy_ft_factory_dup_singleton ();
-  g_signal_connect (self->ft_factory, "new-ft-handler",
-      G_CALLBACK (new_ft_handler_cb), NULL);
-  g_signal_connect (self->ft_factory, "new-incoming-transfer",
-      G_CALLBACK (new_incoming_transfer_cb), NULL);
-
-  if (!empathy_ft_factory_register (self->ft_factory, &error))
-    {
-      g_warning ("Failed to register FileTransfer handler: %s", error->message);
-      g_error_free (error);
-    }
-
   /* Location mananger */
 #ifdef HAVE_GEOCLUE
   self->location_manager = empathy_location_manager_dup_singleton ();
 #endif
+
+  self->activated = FALSE;
+  self->ft_factory = NULL;
 }
 
 int
