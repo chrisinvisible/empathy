@@ -29,29 +29,43 @@
 
 #define EMPATHY_DEBUGGER_DBUS_NAME "org.gnome.Empathy.Debugger"
 
+static GtkWidget *window = NULL;
+
+static void
+activate_cb (GApplication *app)
+{
+  if (window == NULL)
+    {
+      window = empathy_debug_window_new (NULL);
+      g_signal_connect (window, "destroy", gtk_main_quit, NULL);
+
+      /* don't let this application exit automatically */
+      g_application_hold (G_APPLICATION (app));
+    }
+  else
+    {
+      gtk_window_present (GTK_WINDOW (window));
+    }
+}
+
 int
 main (int argc,
     char **argv)
 {
-  GtkWidget *window;
   GtkApplication *app;
 
   g_thread_init (NULL);
   empathy_gtk_init ();
 
   app = gtk_application_new (EMPATHY_DEBUGGER_DBUS_NAME,
-      G_APPLICATION_IS_SERVICE);
+      G_APPLICATION_FLAGS_NONE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate_cb), NULL);
 
   g_set_application_name (_("Empathy Debugger"));
 
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  window = empathy_debug_window_new (NULL);
-  g_signal_connect (window, "destroy", gtk_main_quit, NULL);
-
-  /* don't let this application exit automatically */
-  g_application_hold (G_APPLICATION (app));
   g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
