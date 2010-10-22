@@ -37,6 +37,8 @@ gboolean     empathy_spell_check               (const gchar *word);
 GList *      empathy_spell_get_suggestions     (const gchar *code,
 						const gchar *word);
 void         empathy_spell_free_suggestions    (GList       *suggestions);
+void         empathy_spell_add_to_dictionary   (const gchar *code,
+						const gchar *word);
 
 G_END_DECLS
 

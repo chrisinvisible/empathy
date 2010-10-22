@@ -359,7 +359,8 @@ empathy_spell_check (const gchar *word)
 }
 
 GList *
-empathy_spell_get_suggestions (const gchar *code, const gchar *word)
+empathy_spell_get_suggestions (const gchar *code,
+			       const gchar *word)
 {
 	gint   len;
 	GList *suggestion_list = NULL;
@@ -409,6 +410,26 @@ empathy_spell_supported (void)
 	return TRUE;
 }
 
+void
+empathy_spell_add_to_dictionary (const gchar *code,
+				 const gchar *word)
+{
+	SpellLanguage *lang;
+
+	g_return_if_fail (code != NULL);
+	g_return_if_fail (word != NULL);
+
+	spell_setup_languages ();
+	if (languages == NULL)
+		return;
+
+	lang = g_hash_table_lookup (languages, code);
+	if (lang == NULL)
+		return;
+
+	enchant_dict_add_to_pwl (lang->speller, word, strlen (word));
+}
+
 #else /* not HAVE_ENCHANT */
 
 gboolean
@@ -453,6 +474,14 @@ void
 empathy_spell_free_language_codes (GList *codes)
 {
 }
+
+void
+empathy_spell_add_to_dictionary (const gchar *code,
+				 const gchar *word)
+{
+	DEBUG ("Support disabled, could not expand the dictionary");
+}
+
 
 #endif /* HAVE_ENCHANT */
 

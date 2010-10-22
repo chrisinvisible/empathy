@@ -172,6 +172,8 @@ static guint signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (EmpathyChat, empathy_chat, GTK_TYPE_BIN);
 
+static gboolean update_misspelled_words (gpointer data);
+
 static void
 chat_get_property (GObject    *object,
 		   guint       param_id,
@@ -1838,6 +1840,123 @@ chat_spelling_build_menu (EmpathyChatSpell *chat_spell)
 	return menu;
 }
 
+typedef struct {
+	EmpathyChat  *chat;
+	gchar        *word;
+	gchar        *code;
+} EmpathyChatWord;
+
+static EmpathyChatWord *
+chat_word_new (EmpathyChat  *chat,
+		const gchar  *word,
+		const gchar  *code)
+{
+	EmpathyChatWord *chat_word;
+
+	chat_word = g_slice_new0 (EmpathyChatWord);
+
+	chat_word->chat = g_object_ref (chat);
+	chat_word->word = g_strdup (word);
+	chat_word->code = g_strdup (code);
+
+	return chat_word;
+}
+
+static void
+chat_word_free (EmpathyChatWord *chat_word)
+{
+	g_object_unref (chat_word->chat);
+	g_free (chat_word->word);
+	g_free (chat_word->code);
+	g_slice_free (EmpathyChatWord, chat_word);
+}
+
+static void
+chat_add_to_dictionary_activate_cb (GtkMenuItem     *menu_item,
+				    EmpathyChatWord *chat_word)
+{
+	EmpathyChatPriv *priv = GET_PRIV (chat_word->chat);
+
+	empathy_spell_add_to_dictionary (chat_word->code,
+					 chat_word->word);
+	priv->update_misspelled_words_id =
+		g_idle_add (update_misspelled_words, chat_word->chat);
+}
+
+static GtkWidget *
+chat_spelling_build_add_to_dictionary_item (EmpathyChatSpell *chat_spell)
+{
+	GtkWidget       *menu, *item, *lang_item, *image;
+	GList           *codes, *l;
+	gchar           *label;
+	const gchar     *code, *name;
+	EmpathyChatWord *chat_word;
+
+	codes = empathy_spell_get_enabled_language_codes ();
+	g_assert (codes != NULL);
+	if (g_list_length (codes) > 1) {
+		/* translators: %s is the selected word */
+		label = g_strdup_printf(_("Add '%s' to Dictionary"),
+					chat_spell->word);
+		item = gtk_image_menu_item_new_with_mnemonic (label);
+		g_free (label);
+		image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
+						      GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item),
+					       image);
+
+		menu = gtk_menu_new ();
+
+		for (l = codes; l; l = l->next) {
+			code = l->data;
+			name = empathy_spell_get_language_name (code);
+			if (name == NULL)
+				continue;
+
+			lang_item = gtk_image_menu_item_new_with_label (name);
+
+			chat_word= chat_word_new (chat_spell->chat,
+						  chat_spell->word, code);
+			g_object_set_data_full (G_OBJECT (lang_item),
+				"chat-word", chat_word,
+				(GDestroyNotify) chat_word_free);
+
+			g_signal_connect (G_OBJECT (lang_item), "activate",
+				G_CALLBACK (chat_add_to_dictionary_activate_cb),
+				chat_word);
+			gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), lang_item);
+		}
+		gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), menu);
+	} else {
+		code = codes->data;
+		name = empathy_spell_get_language_name (code);
+		g_assert (name != NULL);
+		/* translators: first %s is the selected word,
+		 * second %s is the language name of the target dictionary */
+		label = g_strdup_printf(_("Add '%s' to %s Dictionary"),
+					chat_spell->word, name);
+		item = gtk_image_menu_item_new_with_mnemonic (label);
+		g_free (label);
+		image = gtk_image_new_from_icon_name (GTK_STOCK_ADD,
+						      GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+
+		chat_word = chat_word_new (chat_spell->chat, chat_spell->word,
+					   code);
+		g_object_set_data_full (G_OBJECT (item), "chat-word", chat_word,
+					(GDestroyNotify) chat_word_free);
+
+		g_signal_connect (G_OBJECT (item), "activate",
+				  G_CALLBACK (chat_add_to_dictionary_activate_cb),
+				  chat_word);
+	}
+	g_list_free (codes);
+
+	gtk_widget_show_all (item);
+
+	return item;
+}
+
 static void
 chat_text_send_cb (GtkMenuItem *menuitem,
 		   EmpathyChat *chat)
@@ -1860,6 +1979,7 @@ chat_input_populate_popup_cb (GtkTextView *view,
 	gchar                *str = NULL;
 	EmpathyChatSpell     *chat_spell;
 	GtkWidget            *spell_menu;
+	GtkWidget            *spell_item;
 	EmpathySmileyManager *smiley_manager;
 	GtkWidget            *smiley_menu;
 	GtkWidget            *image;
@@ -1917,13 +2037,14 @@ chat_input_populate_popup_cb (GtkTextView *view,
 	if (!EMP_STR_EMPTY (str)) {
 		chat_spell = chat_spell_new (chat, str, start, end);
 		g_object_set_data_full (G_OBJECT (menu),
-					"chat_spell", chat_spell,
+					"chat-spell", chat_spell,
 					(GDestroyNotify) chat_spell_free);
 
 		item = gtk_separator_menu_item_new ();
 		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show (item);
 
+		/* Spelling suggestions */
 		item = gtk_image_menu_item_new_with_mnemonic (_("_Spelling Suggestions"));
 		image = gtk_image_new_from_icon_name (GTK_STOCK_SPELL_CHECK,
 						      GTK_ICON_SIZE_MENU);
@@ -1931,6 +2052,17 @@ chat_input_populate_popup_cb (GtkTextView *view,
 
 		spell_menu = chat_spelling_build_menu (chat_spell);
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), spell_menu);
+
+
+		spell_item = gtk_separator_menu_item_new ();
+		gtk_menu_shell_append (GTK_MENU_SHELL (spell_menu), spell_item);
+		gtk_widget_show (spell_item);
+
+		/* Add to dictionary */
+		spell_item = chat_spelling_build_add_to_dictionary_item (chat_spell);
+
+		gtk_menu_shell_append (GTK_MENU_SHELL (spell_menu), spell_item);
+		gtk_widget_show (spell_item);
 
 		gtk_menu_shell_prepend (GTK_MENU_SHELL (menu), item);
 		gtk_widget_show (item);
