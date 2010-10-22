@@ -51,7 +51,21 @@ static void
 new_call_handler_cb (EmpathyCallFactory *factory,
     EmpathyCallHandler *handler,
     gboolean outgoing,
-    gpointer user_data);
+    gpointer user_data)
+{
+  EmpathyCallWindow *window;
+
+  DEBUG ("Create a new call window");
+
+  window = empathy_call_window_new (handler);
+
+  g_application_hold (G_APPLICATION (app));
+
+  g_signal_connect_swapped (window, "destroy",
+      G_CALLBACK (g_application_release), app);
+
+  gtk_widget_show (GTK_WIDGET (window));
+}
 
 static void
 activate_cb (GApplication *application)
@@ -79,26 +93,6 @@ activate_cb (GApplication *application)
 
       g_object_unref (call_factory);
     }
-}
-
-static void
-new_call_handler_cb (EmpathyCallFactory *factory,
-    EmpathyCallHandler *handler,
-    gboolean outgoing,
-    gpointer user_data)
-{
-  EmpathyCallWindow *window;
-
-  DEBUG ("Create a new call window");
-
-  window = empathy_call_window_new (handler);
-
-  g_application_hold (G_APPLICATION (app));
-
-  g_signal_connect_swapped (window, "destroy",
-      G_CALLBACK (g_application_release), app);
-
-  gtk_widget_show (GTK_WIDGET (window));
 }
 
 int
