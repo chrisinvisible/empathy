@@ -139,6 +139,9 @@ app_activate_cb (GApplication *app)
 {
   TpAccountManager *account_manager;
 
+  /* don't let this application exit automatically */
+  g_application_hold (G_APPLICATION (app));
+
   account_manager = tp_account_manager_dup ();
 
   empathy_accounts_show_accounts_ui (account_manager, NULL,
@@ -200,7 +203,7 @@ main (int argc, char *argv[])
   textdomain (GETTEXT_PACKAGE);
 
   app = gtk_application_new (EMPATHY_ACCOUNTS_DBUS_NAME,
-      G_APPLICATION_IS_SERVICE);
+      G_APPLICATION_FLAGS_NONE);
 
   account_manager = tp_account_manager_dup ();
 
@@ -209,8 +212,6 @@ main (int argc, char *argv[])
 
   g_signal_connect (app, "activate", G_CALLBACK (app_activate_cb), NULL);
 
-  /* don't let this application exit automatically */
-  g_application_hold (G_APPLICATION (app));
   g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (account_manager);
