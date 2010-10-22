@@ -189,7 +189,6 @@ empathy_app_new (guint argc,
 
   self = g_object_new (EMPATHY_TYPE_APP,
       "application-id", EMPATHY_DBUS_NAME,
-      "flags", G_APPLICATION_IS_SERVICE,
       NULL);
 
   if (self == NULL)
@@ -232,6 +231,8 @@ empathy_app_activate (GApplication *app)
    * in case the accounts wizard wants to pop up.
    */
   self->start_hidden = FALSE;
+
+  g_application_hold (G_APPLICATION (app));
 
   empathy_window_present (GTK_WINDOW (self->window));
 
@@ -685,7 +686,6 @@ main (int argc, char *argv[])
   app = empathy_app_new (argc, (const gchar * const *) argv,
       no_connect, start_hidden);
 
-  g_application_hold (G_APPLICATION (app));
   g_application_run (G_APPLICATION (app), argc, argv);
 
   notify_uninit ();
