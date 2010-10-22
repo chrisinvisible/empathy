@@ -344,7 +344,7 @@ chat_text_view_is_scrolled_down (EmpathyChatTextView *view)
 	gdouble upper;
 	gdouble page_size;
 
-	vadj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (view));
+	vadj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (view));
 	value = gtk_adjustment_get_value (vadj);
 	upper = gtk_adjustment_get_upper (vadj);
 	page_size = gtk_adjustment_get_page_size (vadj);
@@ -495,7 +495,7 @@ chat_text_view_size_allocate (GtkWidget     *widget,
 	if (down) {
 		GtkAdjustment *adj;
 
-		adj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (widget));
+		adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (widget));
 		gtk_adjustment_set_value (adj,
 					  gtk_adjustment_get_upper (adj) -
 					  gtk_adjustment_get_page_size (adj));
@@ -683,7 +683,7 @@ chat_text_view_scroll_cb (EmpathyChatTextView *view)
 
 	priv = GET_PRIV (view);
 
-	adj = gtk_text_view_get_vadjustment (GTK_TEXT_VIEW (view));
+	adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (view));
 	max_val = gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj);
 
 	g_return_val_if_fail (priv->scroll_time != NULL, FALSE);
