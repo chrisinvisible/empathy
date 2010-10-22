@@ -175,31 +175,6 @@ static void account_manager_ready_cb (GObject *source_object,
     GAsyncResult *result,
     gpointer user_data);
 
-static EmpathyApp *
-empathy_app_new (guint argc,
-    const gchar * const * argv,
-    gboolean no_connect,
-    gboolean start_hidden)
-{
-  EmpathyApp *self;
-  GError *error = NULL;
-  GVariant *argv_variant;
-
-  argv_variant = g_variant_new_bytestring_array (argv, argc);
-
-  self = g_object_new (EMPATHY_TYPE_APP,
-      "application-id", EMPATHY_DBUS_NAME,
-      NULL);
-
-  if (self == NULL)
-    {
-      g_critical ("Failed to initiate EmpathyApp: %s", error->message);
-      g_error_free (error);
-    }
-
-  return self;
-}
-
 static void
 empathy_app_set_property (GObject *object,
     guint prop_id,
@@ -683,8 +658,9 @@ main (int argc, char *argv[])
 
   empathy_gtk_init ();
 
-  app = empathy_app_new (argc, (const gchar * const *) argv,
-      no_connect, start_hidden);
+  app = g_object_new (EMPATHY_TYPE_APP,
+      "application-id", EMPATHY_DBUS_NAME,
+      NULL);
 
   g_application_run (G_APPLICATION (app), argc, argv);
 
