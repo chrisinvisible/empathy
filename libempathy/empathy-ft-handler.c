@@ -827,8 +827,7 @@ hash_job_done (gpointer user_data)
 
           error = g_error_new_literal (EMPATHY_FT_ERROR_QUARK,
               EMPATHY_FT_ERROR_HASH_MISMATCH,
-              _("The hash of the received file and the "
-                "sent one do not match"));
+              _("File transfer completed, but the file was corrupted"));
           goto cleanup;
         }
       else
