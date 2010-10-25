@@ -231,7 +231,7 @@ empathy_contact_chat_menu_item_new (EmpathyContact *contact)
 	image = gtk_image_new_from_icon_name (EMPATHY_IMAGE_MESSAGE,
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
-	gtk_widget_set_sensitive (item, !empathy_contact_is_user(contact));
+	gtk_widget_set_sensitive (item, !empathy_contact_is_user (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -263,7 +263,7 @@ empathy_contact_audio_call_menu_item_new (EmpathyContact *contact)
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	gtk_widget_set_sensitive (item, empathy_contact_can_voip_audio (contact) &&
-					!empathy_contact_is_user(contact));
+					!empathy_contact_is_user (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -294,7 +294,7 @@ empathy_contact_video_call_menu_item_new (EmpathyContact *contact)
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	gtk_widget_set_sensitive (item, empathy_contact_can_voip_video (contact) &&
-					!empathy_contact_is_user(contact));
+					!empathy_contact_is_user (contact));
 	gtk_widget_show (image);
 
 	g_signal_connect (item, "activate",
@@ -580,7 +580,7 @@ empathy_contact_invite_menu_item_new (EmpathyContact *contact)
 					      GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 
-	if (empathy_contact_is_user(contact)) {
+	if (empathy_contact_is_user (contact)) {
 		gtk_widget_set_sensitive (item, FALSE);
 		gtk_widget_show (image);
 		return item;
