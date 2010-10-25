@@ -164,7 +164,7 @@ main (int argc, char *argv[])
         NULL },
       { "if-needed", 'n',
         0, G_OPTION_ARG_NONE, &only_if_needed,
-        N_("Don't display any dialogs if there are any non-Salut accounts"),
+        N_("Don't display any dialogs unless there are only \"People Nearby\" accounts"),
         NULL },
       { "select-account", 's',
         G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_STRING, &selected_account_name,
