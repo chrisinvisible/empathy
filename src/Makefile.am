@@ -112,17 +112,20 @@ empathy_handwritten_av_source = \
 
 empathy_av_SOURCES =						\
 	$(empathy_handwritten_av_source) \
-	ev-sidebar.c ev-sidebar.h
+	ev-sidebar.c ev-sidebar.h \
+	$(NULL)
 
 empathy_auth_client_SOURCES =						\
-	empathy-auth-client.c
+	empathy-auth-client.c \
+	$(NULL)
 
 empathy_chat_SOURCES =						\
 	empathy-about-dialog.c empathy-about-dialog.h			\
 	empathy-chat-manager.c empathy-chat-manager.h		\
 	empathy-chat-window.c empathy-chat-window.h		\
 	empathy-invite-participant-dialog.c empathy-invite-participant-dialog.h \
-	empathy-chat.c
+	empathy-chat.c \
+	$(NULL)
 
 empathy_handwritten_source = \
 	empathy-about-dialog.c empathy-about-dialog.h			\
