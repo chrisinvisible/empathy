@@ -107,13 +107,14 @@ main (int argc,
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
   g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
 
-  if (!g_option_context_parse (optcontext, &argc, &argv, &error)) {
-    g_print ("%s\nRun '%s --help' to see a full list of available command "
-        "line options.\n",
-        error->message, argv[0]);
-    g_warning ("Error in empathy-av init: %s", error->message);
-    return EXIT_FAILURE;
-  }
+  if (!g_option_context_parse (optcontext, &argc, &argv, &error))
+    {
+      g_print ("%s\nRun '%s --help' to see a full list of available command "
+          "line options.\n",
+          error->message, argv[0]);
+      g_warning ("Error in empathy-av init: %s", error->message);
+      return EXIT_FAILURE;
+    }
 
   g_option_context_free (optcontext);
 
@@ -154,7 +155,9 @@ main (int argc,
       app_held = FALSE;
     }
   else
-    app_held = TRUE;
+    {
+      app_held = TRUE;
+    }
 
   start_timer ();
 
