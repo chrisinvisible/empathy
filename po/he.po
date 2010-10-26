@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-23 02:33+0200\n"
-"PO-Revision-Date: 2010-10-23 02:34+0200\n"
+"POT-Creation-Date: 2010-10-26 08:22+0200\n"
+"PO-Revision-Date: 2010-10-26 08:23+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -634,7 +634,7 @@ msgstr ""
 #: ../libempathy/empathy-utils.c:543
 #: ../libempathy-gtk/empathy-contact-list-store.h:73
 msgid "People Nearby"
-msgstr "אנשים קרובים"
+msgstr "אנשים בקרבתי"
 
 #: ../libempathy/empathy-utils.c:548
 msgid "Yahoo! Japan"
@@ -1528,58 +1528,58 @@ msgstr "הוספת _איש קשר…"
 msgid "_Chat"
 msgstr "_שיחה"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:260
+#: ../libempathy-gtk/empathy-contact-menu.c:261
 #: ../libempathy-gtk/empathy-individual-menu.c:559
 msgctxt "menu item"
 msgid "_Audio Call"
 msgstr "שיחה _קולית"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:290
+#: ../libempathy-gtk/empathy-contact-menu.c:292
 #: ../libempathy-gtk/empathy-individual-menu.c:601
 msgctxt "menu item"
 msgid "_Video Call"
 msgstr "שיחת _וידאו"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:330
+#: ../libempathy-gtk/empathy-contact-menu.c:333
 #: ../libempathy-gtk/empathy-individual-menu.c:644
 #: ../src/empathy-main-window.ui.h:26
 msgid "_Previous Conversations"
 msgstr "שיחות _קודמות"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:352
+#: ../libempathy-gtk/empathy-contact-menu.c:355
 #: ../libempathy-gtk/empathy-individual-menu.c:685
 msgid "Send File"
 msgstr "שליחת קובץ"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:374
+#: ../libempathy-gtk/empathy-contact-menu.c:378
 #: ../libempathy-gtk/empathy-individual-menu.c:727
 msgid "Share My Desktop"
 msgstr "שיתוף שולחן העבודה שלי"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:414
+#: ../libempathy-gtk/empathy-contact-menu.c:418
 #: ../libempathy-gtk/empathy-contact-widget.c:1568
 #: ../libempathy-gtk/empathy-individual-menu.c:761
 #: ../libempathy-gtk/empathy-individual-widget.c:1291
 msgid "Favorite"
 msgstr "מועדף"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:443
+#: ../libempathy-gtk/empathy-contact-menu.c:447
 #: ../libempathy-gtk/empathy-individual-menu.c:788
 msgid "Infor_mation"
 msgstr "_מידע"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:489
+#: ../libempathy-gtk/empathy-contact-menu.c:493
 msgctxt "Edit contact (contextual menu)"
 msgid "_Edit"
 msgstr "ע_ריכה"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:543
+#: ../libempathy-gtk/empathy-contact-menu.c:547
 #: ../libempathy-gtk/empathy-individual-menu.c:969
 #: ../src/empathy-chat-window.c:917
 msgid "Inviting you to this room"
 msgstr "מזמין/ה אותך לחדר זה"
 
-#: ../libempathy-gtk/empathy-contact-menu.c:574
+#: ../libempathy-gtk/empathy-contact-menu.c:578
 #: ../libempathy-gtk/empathy-individual-menu.c:1016
 msgid "_Invite to Chat Room"
 msgstr "ה_זמנה לחדר שיחה"
@@ -2403,11 +2403,11 @@ msgstr "אין הודעת שגיאה"
 msgid "Instant Message (Empathy)"
 msgstr "הודעה מיידית (Empathy)"
 
-#: ../src/empathy.c:423
+#: ../src/empathy.c:420
 msgid "Error contacting the Account Manager"
 msgstr "שגיאה ביצירת קשר עם מנהל החשבונות"
 
-#: ../src/empathy.c:425
+#: ../src/empathy.c:422
 #, c-format
 msgid ""
 "There was an error while trying to connect to the Telepathy Account Manager. "
@@ -2419,15 +2419,15 @@ msgstr ""
 "\n"
 "%s"
 
-#: ../src/empathy.c:655
+#: ../src/empathy.c:649
 msgid "Don't connect on startup"
 msgstr "לא להתחבר בהפעלה"
 
-#: ../src/empathy.c:659
+#: ../src/empathy.c:653
 msgid "Don't display the contact list or any other dialogs on startup"
 msgstr "אין להציג את רשימת אנשי הקשר או כל דו־שיח אחר בהפעלה"
 
-#: ../src/empathy.c:676
+#: ../src/empathy.c:670
 msgid "- Empathy IM Client"
 msgstr "- לקוח המסרים המידיים Empathy"
 
@@ -2741,7 +2741,7 @@ msgstr "לקוח האימות של Empathy"
 
 #: ../src/empathy-auto-salut-account-helper.c:83
 msgid "People nearby"
-msgstr "אנשים קרובים"
+msgstr "אנשים בקרבתי"
 
 #: ../src/empathy-av.c:122
 msgid "- Empathy Audio/Video Client"
@@ -3809,8 +3809,9 @@ msgstr ""
 "אין להציג דו־שיח כלשהו; תתבצע פעולה כלשהי (לדוגמה יבוא) ולאחריה התכנית תסגר"
 
 #: ../src/empathy-accounts.c:167
-msgid "Don't display any dialogs if there are any non-Salut accounts"
-msgstr "אין להציג תיבות דו־שיח כלשהן אם יש חשבונות שאינם מסוג salut"
+msgid ""
+"Don't display any dialogs unless there are only \"People Nearby\" accounts"
+msgstr "אין להציג תיבות דו־שיח כלשהן אלא אם כן ישנן חשבונות \"אנשים בקרבתי\""
 
 #: ../src/empathy-accounts.c:171
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
