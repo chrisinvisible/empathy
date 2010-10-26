@@ -54,6 +54,7 @@
 static gboolean only_if_needed = FALSE;
 static gboolean hidden = FALSE;
 static gchar *selected_account_name = NULL;
+static gboolean account_manager_prepared = FALSE;
 
 static void
 account_prepare_cb (GObject *source_object,
@@ -131,33 +132,49 @@ account_manager_ready_for_accounts_cb (GObject *source_object,
   else
     {
       maybe_show_accounts_ui (manager);
+      account_manager_prepared = TRUE;
     }
 }
 
-static void
-app_activate_cb (GApplication *app)
+static int
+app_command_line_cb (GApplication *app,
+    GApplicationCommandLine *cmdline)
 {
-  TpAccountManager *account_manager;
+  gchar **argv;
+  gint argc;
 
-  /* don't let this application exit automatically */
-  g_application_hold (G_APPLICATION (app));
+  g_application_hold (app);
 
-  account_manager = tp_account_manager_dup ();
+  argv = g_application_command_line_get_arguments (cmdline, &argc);
 
-  empathy_accounts_show_accounts_ui (account_manager, NULL,
-          G_CALLBACK (gtk_main_quit));
+  /* if the window is ready, present it; otherwise, it will be presented when
+   * the accounts manager is prepared */
+  if (account_manager_prepared)
+    {
+      TpAccountManager *account_manager;
 
-  g_object_unref (account_manager);
+      account_manager = tp_account_manager_dup ();
+      empathy_accounts_show_accounts_ui (account_manager, NULL,
+              G_CALLBACK (gtk_main_quit));
+
+      g_object_unref (account_manager);
+    }
+
+  g_strfreev (argv);
+
+  return 0;
 }
 
-#define COMMAND_ACCOUNTS_DIALOG 1
-
-int
-main (int argc, char *argv[])
+static gboolean
+local_cmdline (GApplication *app,
+    gchar ***arguments,
+    gint *exit_status)
 {
-  TpAccountManager *account_manager;
+  gint i;
+  gchar **argv;
+  gint argc = 0;
+  gboolean retval = FALSE;
   GError *error = NULL;
-  GtkApplication *app;
 
   GOptionContext *optcontext;
   GOptionEntry options[] = {
@@ -178,23 +195,42 @@ main (int argc, char *argv[])
       { NULL }
   };
 
-  g_thread_init (NULL);
-  empathy_init ();
-
   optcontext = g_option_context_new (N_("- Empathy Accounts"));
   g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
   g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
+
+  argv = *arguments;
+  for (i = 0; argv[i] != NULL; i++)
+    argc++;
 
   if (!g_option_context_parse (optcontext, &argc, &argv, &error))
     {
       g_print ("%s\nRun '%s --help' to see a full list of available command line options.\n",
           error->message, argv[0]);
       g_warning ("Error in empathy init: %s", error->message);
-      return EXIT_FAILURE;
+
+      *exit_status = EXIT_FAILURE;
+      retval = TRUE;
     }
 
   g_option_context_free (optcontext);
 
+  return retval;
+}
+
+#define COMMAND_ACCOUNTS_DIALOG 1
+
+int
+main (int argc, char *argv[])
+{
+  TpAccountManager *account_manager;
+  GtkApplication *app;
+  GObjectClass *app_class;
+
+  g_thread_init (NULL);
+  empathy_init ();
+
+  gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
   g_set_application_name (_("Empathy Accounts"));
@@ -203,14 +239,17 @@ main (int argc, char *argv[])
   textdomain (GETTEXT_PACKAGE);
 
   app = gtk_application_new (EMPATHY_ACCOUNTS_DBUS_NAME,
-      G_APPLICATION_FLAGS_NONE);
+      G_APPLICATION_HANDLES_COMMAND_LINE);
+  app_class = G_OBJECT_GET_CLASS (app);
+  G_APPLICATION_CLASS (app_class)->local_command_line = local_cmdline;
 
   account_manager = tp_account_manager_dup ();
 
   tp_account_manager_prepare_async (account_manager, NULL,
     account_manager_ready_for_accounts_cb, selected_account_name);
 
-  g_signal_connect (app, "activate", G_CALLBACK (app_activate_cb), NULL);
+  g_signal_connect (app, "command-line", G_CALLBACK (app_command_line_cb),
+      NULL);
 
   g_application_run (G_APPLICATION (app), argc, argv);
 
