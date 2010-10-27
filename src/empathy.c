@@ -167,7 +167,8 @@ empathy_app_finalize (GObject *object)
   void (*finalize) (GObject *) =
     G_OBJECT_CLASS (empathy_app_parent_class)->finalize;
 
-  gtk_widget_destroy (self->window);
+  if (self->window != NULL)
+    gtk_widget_destroy (self->window);
 
   if (finalize != NULL)
     finalize (object);
@@ -225,8 +226,9 @@ new_ft_handler_cb (EmpathyFTFactory *factory,
   g_object_unref (handler);
 }
 
-static void
-empathy_app_activate (GApplication *app)
+static int
+empathy_app_command_line (GApplication *app,
+    GApplicationCommandLine *cmdline)
 {
   EmpathyApp *self = (EmpathyApp *) app;
 
@@ -248,20 +250,93 @@ empathy_app_activate (GApplication *app)
           g_error_free (error);
         }
 
-      /* We're requested to show stuff again, disable the start hidden global in
-       * case the accounts wizard wants to pop up.
-      */
-      self->start_hidden = FALSE;
-
       g_application_hold (G_APPLICATION (app));
       self->activated = TRUE;
+
+      /* Setting up UI */
+      self->window = empathy_main_window_dup ();
+      gtk_widget_show (self->window);
+      self->icon = empathy_status_icon_new (GTK_WINDOW (self->window),
+          self->start_hidden);
+    }
+  else
+    {
+      /* We're requested to show stuff again, disable the start hidden global in
+       * case the accounts wizard wants to pop up.
+       */
+      self->start_hidden = FALSE;
     }
 
-  empathy_window_present (GTK_WINDOW (self->window));
+  if (!self->start_hidden)
+    empathy_window_present (GTK_WINDOW (self->window));
 
   /* Display the accounts dialog if needed */
   tp_account_manager_prepare_async (self->account_manager, NULL,
       account_manager_ready_cb, self);
+
+  return 0;
+}
+
+static gboolean
+show_version_cb (const char *option_name,
+    const char *value,
+    gpointer data,
+    GError **error);
+
+static gboolean
+empathy_app_local_command_line (GApplication *app,
+    gchar ***arguments,
+    gint *exit_status)
+{
+  EmpathyApp *self = (EmpathyApp *) app;
+  gint i;
+  gchar **argv;
+  gint argc = 0;
+  gboolean retval = FALSE;
+  GError *error = NULL;
+  gboolean no_connect = FALSE, start_hidden = FALSE;
+
+  GOptionContext *optcontext;
+  GOptionEntry options[] = {
+      { "no-connect", 'n',
+        0, G_OPTION_ARG_NONE, &no_connect,
+        N_("Don't connect on startup"),
+        NULL },
+      { "start-hidden", 'h',
+        0, G_OPTION_ARG_NONE, &start_hidden,
+        N_("Don't display the contact list or any other dialogs on startup"),
+        NULL },
+      { "version", 'v',
+        G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb,
+        NULL, NULL },
+      { NULL }
+  };
+
+  optcontext = g_option_context_new (N_("- Empathy IM Client"));
+  g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
+  g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
+
+  argv = *arguments;
+  for (i = 0; argv[i] != NULL; i++)
+    argc++;
+
+  if (!g_option_context_parse (optcontext, &argc, &argv, &error))
+    {
+      g_print ("%s\nRun '%s --help' to see a full list of available command "
+          "line options.\n",
+          error->message, argv[0]);
+      g_warning ("Error in empathy init: %s", error->message);
+
+      *exit_status = EXIT_FAILURE;
+      retval = TRUE;
+    }
+
+  g_option_context_free (optcontext);
+
+  self->no_connect = no_connect;
+  self->start_hidden = start_hidden;
+
+  return retval;
 }
 
 static void empathy_app_constructed (GObject *object);
@@ -278,7 +353,8 @@ empathy_app_class_init (EmpathyAppClass *klass)
   gobject_class->dispose = empathy_app_dispose;
   gobject_class->finalize = empathy_app_finalize;
 
-  g_app_class->activate = empathy_app_activate;
+  g_app_class->command_line = empathy_app_command_line;
+  g_app_class->local_command_line = empathy_app_local_command_line;
 
   spec = g_param_spec_boolean ("no-connect", "no connect",
       "Don't connect on startup",
@@ -591,12 +667,6 @@ empathy_app_constructed (GObject *object)
 
   migrate_config_to_xdg_dir ();
 
-  /* Setting up UI */
-  self->window = empathy_main_window_dup ();
-  gtk_widget_show (self->window);
-  self->icon = empathy_status_icon_new (GTK_WINDOW (self->window),
-      self->start_hidden);
-
   /* Logging */
   self->log_manager = tpl_log_manager_dup_singleton ();
 
@@ -621,29 +691,13 @@ empathy_app_constructed (GObject *object)
 
   self->activated = FALSE;
   self->ft_factory = NULL;
+  self->window = NULL;
 }
 
 int
 main (int argc, char *argv[])
 {
   EmpathyApp *app;
-  GError *error = NULL;
-  GOptionContext *optcontext;
-  gboolean no_connect = FALSE, start_hidden = FALSE;
-  GOptionEntry options[] = {
-      { "no-connect", 'n',
-        0, G_OPTION_ARG_NONE, &no_connect,
-        N_("Don't connect on startup"),
-        NULL },
-      { "start-hidden", 'h',
-        0, G_OPTION_ARG_NONE, &start_hidden,
-        N_("Don't display the contact list or any other dialogs on startup"),
-        NULL },
-      { "version", 'v',
-        G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb,
-        NULL, NULL },
-      { NULL }
-  };
 
   g_thread_init (NULL);
   g_type_init ();
@@ -653,24 +707,12 @@ main (int argc, char *argv[])
 #endif
 
   empathy_init ();
-
-  optcontext = g_option_context_new (N_("- Empathy IM Client"));
-  g_option_context_add_group (optcontext, gtk_get_option_group (TRUE));
-  g_option_context_add_main_entries (optcontext, options, GETTEXT_PACKAGE);
-
-  if (!g_option_context_parse (optcontext, &argc, &argv, &error)) {
-    g_print ("%s\nRun '%s --help' to see a full list of available command line options.\n",
-        error->message, argv[0]);
-    g_warning ("Error in empathy init: %s", error->message);
-    return EXIT_FAILURE;
-  }
-
-  g_option_context_free (optcontext);
-
+  gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
   app = g_object_new (EMPATHY_TYPE_APP,
       "application-id", EMPATHY_DBUS_NAME,
+      "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
       NULL);
 
   g_application_run (G_APPLICATION (app), argc, argv);
