@@ -93,6 +93,15 @@ typedef struct
 typedef struct
 {
   EmpathyIndividualView *view;
+  guint timeout_id;
+  /* Distance between mouse pointer and the nearby border. Negative when
+     scrolling updards.*/
+  gint distance;
+} AutoScrollData;
+
+typedef struct
+{
+  EmpathyIndividualView *view;
   FolksIndividual *individual;
   gboolean remove;
 } ShowActiveData;
@@ -549,6 +558,32 @@ individual_view_drag_motion_cb (DragMotionData *data)
   return FALSE;
 }
 
+/* Minimum distance between the mouse pointer and a horizontal border when we
+   start auto scrolling. */
+#define AUTO_SCROLL_MARGIN_SIZE 20
+/* How far to scroll per one tick. */
+#define AUTO_SCROLL_PITCH       10
+
+static gboolean
+individual_view_auto_scroll_cb (AutoScrollData *data)
+{
+	GtkAdjustment         *adj;
+	gdouble                new_value;
+
+	adj = gtk_scrollable_get_vadjustment (GTK_TREE_VIEW (data->view));
+
+	if (data->distance < 0)
+		new_value = adj->value - AUTO_SCROLL_PITCH;
+	else
+		new_value = adj->value + AUTO_SCROLL_PITCH;
+
+	new_value = CLAMP (new_value, adj->lower, adj->upper - adj->page_size);
+
+	gtk_adjustment_set_value (adj, new_value);
+
+	return TRUE;
+}
+
 static gboolean
 individual_view_drag_motion (GtkWidget *widget,
     GdkDragContext *context,
@@ -561,6 +596,7 @@ individual_view_drag_motion (GtkWidget *widget,
   GdkAtom target;
   GtkTreeIter iter;
   static DragMotionData *dm = NULL;
+  static AutoScrollData as;
   GtkTreePath *path;
   gboolean is_row;
   gboolean is_different = FALSE;
@@ -569,6 +605,24 @@ individual_view_drag_motion (GtkWidget *widget,
 
   priv = GET_PRIV (EMPATHY_INDIVIDUAL_VIEW (widget));
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
+
+  if (!as.view)
+      as.view = EMPATHY_INDIVIDUAL_VIEW (widget);
+
+  if (as.timeout_id)
+    g_source_remove (as.timeout_id);
+
+  if (y < AUTO_SCROLL_MARGIN_SIZE ||
+      y > (widget->allocation.height - AUTO_SCROLL_MARGIN_SIZE))
+    {
+      if (y < AUTO_SCROLL_MARGIN_SIZE)
+        as.distance = MIN (-y, -1);
+      else
+        as.distance = MAX (widget->allocation.height - y, 1);
+
+      as.timeout_id = g_timeout_add (10 * ABS (as.distance),
+          (GSourceFunc) individual_view_auto_scroll_cb, &as);
+    }
 
   is_row = gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
       x, y, &path, NULL, NULL, NULL);
