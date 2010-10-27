@@ -29,6 +29,7 @@
 G_BEGIN_DECLS
 
 void empathy_subscription_dialog_show        (EmpathyContact *contact,
+				              const gchar *message,
 				              GtkWindow      *parent);
 void empathy_contact_information_dialog_show (EmpathyContact *contact,
 					      GtkWindow      *parent);

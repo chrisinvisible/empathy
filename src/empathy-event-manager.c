@@ -976,7 +976,7 @@ out:
 static void
 event_pending_subscribe_func (EventPriv *event)
 {
-  empathy_subscription_dialog_show (event->public.contact, NULL);
+  empathy_subscription_dialog_show (event->public.contact, NULL, NULL);
   event_remove (event);
 }
 
