@@ -150,8 +150,6 @@ event_manager_approval_free (EventManagerApproval *approval)
   g_slice_free (EventManagerApproval, approval);
 }
 
-static void event_remove (EventPriv *event);
-
 static void
 event_free (EventPriv *event)
 {
@@ -180,6 +178,14 @@ event_remove (EventPriv *event)
   priv->events = g_slist_remove (priv->events, event);
   g_signal_emit (event->manager, signals[EVENT_REMOVED], 0, event);
   event_free (event);
+}
+
+void
+empathy_event_remove (EmpathyEvent *event_public)
+{
+  EventPriv *event = (EventPriv *) event_public;
+
+  event_remove (event);
 }
 
 static gboolean

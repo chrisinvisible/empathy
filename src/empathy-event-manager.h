@@ -74,6 +74,7 @@ void                 empathy_event_activate              (EmpathyEvent        *e
 void                 empathy_event_inhibit_updates       (EmpathyEvent        *event);
 void                 empathy_event_approve               (EmpathyEvent        *event);
 void                 empathy_event_decline               (EmpathyEvent        *event);
+void                 empathy_event_remove                (EmpathyEvent        *event);
 
 G_END_DECLS
 
