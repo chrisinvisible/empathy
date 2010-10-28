@@ -33,7 +33,7 @@ servicefile_in_files = \
 servicefile_DATA = $(servicefile_in_files:.service.in=.service)
 
 org.freedesktop.Telepathy.Client.Empathy.Chat.service: org.freedesktop.Telepathy.Client.Empathy.Chat.service.in
-	$(AM_V_GEN)sed -e "s|[@]bindir[@]|$(bindir)|" $< > $@
+	$(AM_V_GEN)sed -e "s|[@]libexecdir[@]|$(libexecdir)|" $< > $@
 
 org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service: org.freedesktop.Telepathy.Client.Empathy.AudioVideo.service.in
 	$(AM_V_GEN)sed -e "s|[@]libexecdir[@]|$(libexecdir)|" $< > $@
