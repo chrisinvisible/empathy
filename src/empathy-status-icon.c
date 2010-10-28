@@ -35,6 +35,7 @@
 #include <telepathy-glib/account-manager.h>
 #include <telepathy-glib/util.h>
 
+#include <libempathy/empathy-contact-manager.h>
 #include <libempathy/empathy-gsettings.h>
 #include <libempathy/empathy-utils.h>
 
@@ -130,6 +131,48 @@ notification_decline_cb (NotifyNotification *notification,
 }
 
 static void
+notification_decline_subscription_cb (NotifyNotification *notification,
+			gchar              *action,
+			EmpathyStatusIcon  *icon)
+{
+	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
+	EmpathyContactManager *manager;
+
+	if (priv->event == NULL)
+		return;
+
+
+	manager = empathy_contact_manager_dup_singleton ();
+	empathy_contact_list_remove (EMPATHY_CONTACT_LIST (manager),
+				     priv->event->contact, "");
+
+	empathy_event_remove (priv->event);
+
+	g_object_unref (manager);
+}
+
+static void
+notification_accept_subscription_cb (NotifyNotification *notification,
+			gchar              *action,
+			EmpathyStatusIcon  *icon)
+{
+	EmpathyStatusIconPriv *priv = GET_PRIV (icon);
+	EmpathyContactManager *manager;
+
+	if (priv->event == NULL)
+		return;
+
+
+	manager = empathy_contact_manager_dup_singleton ();
+	empathy_contact_list_add (EMPATHY_CONTACT_LIST (manager),
+				  priv->event->contact, "");
+
+	empathy_event_remove (priv->event);
+
+	g_object_unref (manager);
+}
+
+static void
 add_notification_actions (EmpathyStatusIcon *self,
 			  NotifyNotification *notification)
 {
@@ -162,6 +205,17 @@ add_notification_actions (EmpathyStatusIcon *self,
 				"accept", _("Accept"), (NotifyActionCallback) notification_approve_cb,
 					self, NULL);
 			break;
+
+		case EMPATHY_EVENT_TYPE_SUBSCRIPTION:
+			notify_notification_add_action (notification,
+				"decline", _("Decline"),
+					(NotifyActionCallback) notification_decline_subscription_cb,
+					self, NULL);
+
+			notify_notification_add_action (notification,
+				"accept", _("Accept"),
+					(NotifyActionCallback) notification_accept_subscription_cb,
+					self, NULL);
 
 		default:
 			break;
