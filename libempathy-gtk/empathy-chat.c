@@ -3385,6 +3385,31 @@ empathy_chat_copy (EmpathyChat *chat)
 
 		gtk_text_buffer_copy_clipboard (buffer, clipboard);
 	}
+	else {
+		gint start_offset;
+		gint end_offset;
+		EmpathyChatPriv *priv = GET_PRIV (chat);
+
+		if (gtk_label_get_selection_bounds (GTK_LABEL (priv->label_topic),
+							       &start_offset,
+							       &end_offset)) {
+			gchar *start;
+			gchar *end;
+			gchar *selection;
+			const gchar *topic;
+			GtkClipboard *clipboard;
+
+			topic = gtk_label_get_text (GTK_LABEL (priv->label_topic));
+			start = g_utf8_offset_to_pointer (topic, start_offset);
+			end = g_utf8_offset_to_pointer (topic, end_offset);
+			selection = g_strndup (start, end - start);
+
+			clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+			gtk_clipboard_set_text (clipboard, selection, -1);
+
+			g_free (selection);
+		}
+	}
 }
 
 void
