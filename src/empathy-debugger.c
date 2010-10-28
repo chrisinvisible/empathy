@@ -53,6 +53,7 @@ main (int argc,
     char **argv)
 {
   GtkApplication *app;
+  gint retval;
 
   g_thread_init (NULL);
   empathy_gtk_init ();
@@ -66,8 +67,9 @@ main (int argc,
   gtk_window_set_default_icon_name ("empathy");
   textdomain (GETTEXT_PACKAGE);
 
-  g_application_run (G_APPLICATION (app), argc, argv);
+  retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
-  return EXIT_SUCCESS;
+
+  return retval;
 }
