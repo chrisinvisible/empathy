@@ -42,46 +42,30 @@
 #define EMPATHY_CHAT_DBUS_NAME "org.gnome.Empathy.Chat"
 
 static GtkApplication *app = NULL;
-static gboolean app_held = FALSE;
-static guint timeout_id = 0;
+static gboolean activated = FALSE;
 static gboolean use_timer = TRUE;
-
-static void
-start_timer (void)
-{
-  if (!use_timer)
-    return;
-
-  DEBUG ("Start timer");
-
-  if (app_held)
-    g_application_release (G_APPLICATION (app));
-}
-
-static void
-stop_timer (void)
-{
-  if (timeout_id == 0)
-    return;
-
-  DEBUG ("Stop timer");
-
-  g_application_hold (G_APPLICATION (app));
-  app_held = TRUE;
-}
 
 static void
 handled_chats_changed_cb (EmpathyChatManager *mgr,
     guint nb_chats,
     gpointer user_data)
 {
-  if (nb_chats > 0)
-    {
-      stop_timer ();
-    }
+  DEBUG ("New chat count: %u", nb_chats);
+
+  if (nb_chats == 0)
+    g_application_release (G_APPLICATION (app));
   else
+    g_application_hold (G_APPLICATION (app));
+}
+
+static void
+activate_cb (GApplication *application)
+{
+  if (!use_timer && !activated)
     {
-      start_timer ();
+      /* keep a 'ref' to the application */
+      g_application_hold (G_APPLICATION (application));
+      activated = TRUE;
     }
 }
 
@@ -96,8 +80,8 @@ main (int argc,
 #ifdef ENABLE_DEBUG
   TpDebugSender *debug_sender;
 #endif
-  EmpathyChatManager *chat_mgr;
   GError *error = NULL;
+  EmpathyChatManager *chat_mgr;
   EmpathyIdle *idle;
 
   /* Init */
@@ -124,6 +108,7 @@ main (int argc,
   textdomain (GETTEXT_PACKAGE);
 
   app = gtk_application_new (EMPATHY_CHAT_DBUS_NAME, G_APPLICATION_IS_SERVICE);
+  g_signal_connect (app, "activate", G_CALLBACK (activate_cb), NULL);
 
 #ifdef ENABLE_DEBUG
   /* Set up debug sender */
@@ -137,7 +122,7 @@ main (int argc,
   chat_mgr = empathy_chat_manager_dup_singleton ();
 
   g_signal_connect (chat_mgr, "handled-chats-changed",
-      G_CALLBACK (handled_chats_changed_cb), NULL);
+      G_CALLBACK (handled_chats_changed_cb), GUINT_TO_POINTER (1));
 
   if (g_getenv ("EMPATHY_PERSIST") != NULL)
     {
@@ -149,17 +134,7 @@ main (int argc,
   /* the inactivity timeout can only be set while the application is held */
   g_application_hold (G_APPLICATION (app));
   g_application_set_inactivity_timeout (G_APPLICATION (app), TIMEOUT * 1000);
-  if (use_timer)
-    {
-      g_application_release (G_APPLICATION (app));
-      app_held = FALSE;
-    }
-  else
-    {
-      app_held = TRUE;
-    }
-
-  start_timer ();
+  g_application_release (G_APPLICATION (app));
 
   DEBUG ("Waiting for text channels to handle");
 
