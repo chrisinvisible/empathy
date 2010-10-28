@@ -226,6 +226,7 @@ main (int argc, char *argv[])
   TpAccountManager *account_manager;
   GtkApplication *app;
   GObjectClass *app_class;
+  gint retval;
 
   g_thread_init (NULL);
   empathy_init ();
@@ -251,10 +252,10 @@ main (int argc, char *argv[])
   g_signal_connect (app, "command-line", G_CALLBACK (app_command_line_cb),
       NULL);
 
-  g_application_run (G_APPLICATION (app), argc, argv);
+  retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (account_manager);
   g_object_unref (app);
 
-  return EXIT_SUCCESS;
+  return retval;
 }
