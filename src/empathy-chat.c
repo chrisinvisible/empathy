@@ -83,6 +83,7 @@ main (int argc,
   GError *error = NULL;
   EmpathyChatManager *chat_mgr;
   EmpathyIdle *idle;
+  gint retval;
 
   /* Init */
   g_thread_init (NULL);
@@ -138,7 +139,7 @@ main (int argc,
 
   DEBUG ("Waiting for text channels to handle");
 
-  g_application_run (G_APPLICATION (app), argc, argv);
+  retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
   g_object_unref (idle);
@@ -148,5 +149,5 @@ main (int argc,
   g_object_unref (debug_sender);
 #endif
 
-  return EXIT_SUCCESS;
+  return retval;
 }
