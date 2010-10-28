@@ -698,6 +698,7 @@ int
 main (int argc, char *argv[])
 {
   EmpathyApp *app;
+  gint retval;
 
   g_thread_init (NULL);
   g_type_init ();
@@ -715,11 +716,12 @@ main (int argc, char *argv[])
       "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
       NULL);
 
-  g_application_run (G_APPLICATION (app), argc, argv);
+  retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   notify_uninit ();
   xmlCleanupParser ();
 
   g_object_unref (app);
-  return EXIT_SUCCESS;
+
+  return retval;
 }
