@@ -83,7 +83,7 @@ typedef struct
   GHashTable *expand_groups;
 
   /* Auto scroll */
-  guint timeout_id;
+  guint auto_scroll_timeout_id;
   /* Distance between mouse pointer and the nearby border. Negative when
      scrolling updards.*/
   gint distance;
@@ -606,10 +606,10 @@ individual_view_drag_motion (GtkWidget *widget,
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
 
 
-  if (priv->timeout_id != 0)
+  if (priv->auto_scroll_timeout_id != 0)
     {
-      g_source_remove (priv->timeout_id);
-      priv->timeout_id = 0;
+      g_source_remove (priv->auto_scroll_timeout_id);
+      priv->auto_scroll_timeout_id = 0;
     }
 
   gtk_widget_get_allocation (widget, &allocation);
@@ -622,7 +622,7 @@ individual_view_drag_motion (GtkWidget *widget,
       else
         priv->distance = MAX (allocation.height - y, 1);
 
-      priv->timeout_id = g_timeout_add (10 * ABS (priv->distance),
+      priv->auto_scroll_timeout_id = g_timeout_add (10 * ABS (priv->distance),
           (GSourceFunc) individual_view_auto_scroll_cb, widget);
     }
 
