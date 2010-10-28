@@ -570,14 +570,15 @@ individual_view_auto_scroll_cb (AutoScrollData *data)
 	GtkAdjustment         *adj;
 	gdouble                new_value;
 
-	adj = gtk_scrollable_get_vadjustment (GTK_TREE_VIEW (data->view));
+	adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (data->view));
 
 	if (data->distance < 0)
-		new_value = adj->value - AUTO_SCROLL_PITCH;
+		new_value = gtk_adjustment_get_value (adj) - AUTO_SCROLL_PITCH;
 	else
-		new_value = adj->value + AUTO_SCROLL_PITCH;
+		new_value = gtk_adjustment_get_value (adj) + AUTO_SCROLL_PITCH;
 
-	new_value = CLAMP (new_value, adj->lower, adj->upper - adj->page_size);
+	new_value = CLAMP (new_value, gtk_adjustment_get_lower (adj),
+		gtk_adjustment_get_upper (adj) - gtk_adjustment_get_page_size (adj));
 
 	gtk_adjustment_set_value (adj, new_value);
 
@@ -602,6 +603,7 @@ individual_view_drag_motion (GtkWidget *widget,
   gboolean is_different = FALSE;
   gboolean cleanup = TRUE;
   gboolean retval = TRUE;
+  GtkAllocation allocation;
 
   priv = GET_PRIV (EMPATHY_INDIVIDUAL_VIEW (widget));
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (widget));
@@ -612,13 +614,15 @@ individual_view_drag_motion (GtkWidget *widget,
   if (as.timeout_id)
     g_source_remove (as.timeout_id);
 
+  gtk_widget_get_allocation (widget, &allocation);
+
   if (y < AUTO_SCROLL_MARGIN_SIZE ||
-      y > (widget->allocation.height - AUTO_SCROLL_MARGIN_SIZE))
+      y > (allocation.height - AUTO_SCROLL_MARGIN_SIZE))
     {
       if (y < AUTO_SCROLL_MARGIN_SIZE)
         as.distance = MIN (-y, -1);
       else
-        as.distance = MAX (widget->allocation.height - y, 1);
+        as.distance = MAX (allocation.height - y, 1);
 
       as.timeout_id = g_timeout_add (10 * ABS (as.distance),
           (GSourceFunc) individual_view_auto_scroll_cb, &as);
