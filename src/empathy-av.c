@@ -107,6 +107,7 @@ main (int argc,
   TpDebugSender *debug_sender;
 #endif
   GError *error = NULL;
+  gint retval;
 
   /* Init */
   g_thread_init (NULL);
@@ -154,7 +155,7 @@ main (int argc,
   g_application_set_inactivity_timeout (G_APPLICATION (app), TIMEOUT * 1000);
   g_application_release (G_APPLICATION (app));
 
-  g_application_run (G_APPLICATION (app), argc, argv);
+  retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
 
@@ -162,5 +163,5 @@ main (int argc,
   g_object_unref (debug_sender);
 #endif
 
-  return EXIT_SUCCESS;
+  return retval;
 }
