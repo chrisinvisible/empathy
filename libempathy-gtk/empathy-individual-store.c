@@ -1819,7 +1819,7 @@ empathy_individual_store_get_parent_group (GtkTreeModel *model,
   GtkTreeIter parent_iter, iter;
   gchar *name = NULL;
   gboolean is_group;
-  gboolean fake;
+  gboolean fake = FALSE;
 
   g_return_val_if_fail (GTK_IS_TREE_MODEL (model), NULL);
 
