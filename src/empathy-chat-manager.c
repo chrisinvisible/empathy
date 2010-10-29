@@ -45,6 +45,7 @@ typedef struct _EmpathyChatManagerPriv EmpathyChatManagerPriv;
 
 struct _EmpathyChatManagerPriv
 {
+  EmpathyChatroomManager *chatroom_mgr;
   /* Queue of (ChatData *) representing the closed chats */
   GQueue *closed_queue;
 
@@ -99,32 +100,31 @@ chat_data_free (ChatData *data)
 }
 
 static void
-tell_chatroom_manager_if_needed (TpAccount *account,
+tell_chatroom_manager_if_needed (EmpathyChatManager *self,
+    TpAccount *account,
     EmpathyTpChat *chat)
 {
+  EmpathyChatManagerPriv *priv = GET_PRIV (self);
   TpHandleType type;
 
   tp_channel_get_handle (empathy_tp_chat_get_channel (chat), &type);
 
   if (type == TP_HANDLE_TYPE_ROOM)
     {
-      EmpathyChatroomManager *chatroom_mgr;
-
-      chatroom_mgr = empathy_chatroom_manager_dup_singleton (NULL);
-      empathy_chatroom_manager_chat_handled (chatroom_mgr, chat, account);
-      g_object_unref (chatroom_mgr);
+      empathy_chatroom_manager_chat_handled (priv->chatroom_mgr, chat, account);
     }
 }
 
 static void
-process_tp_chat (EmpathyTpChat *tp_chat,
+process_tp_chat (EmpathyChatManager *self,
+    EmpathyTpChat *tp_chat,
     TpAccount *account,
     gint64 user_action_time)
 {
   EmpathyChat *chat = NULL;
   const gchar *id;
 
-  tell_chatroom_manager_if_needed (account, tp_chat);
+  tell_chatroom_manager_if_needed (self, account, tp_chat);
 
   id = empathy_tp_chat_get_id (tp_chat);
   if (!tp_str_empty (id))
@@ -157,6 +157,7 @@ process_tp_chat (EmpathyTpChat *tp_chat,
 
 typedef struct
 {
+  EmpathyChatManager *self;
   EmpathyTpChat *tp_chat;
   TpAccount *account;
   gint64 user_action_time;
@@ -164,12 +165,14 @@ typedef struct
 } chat_ready_ctx;
 
 static chat_ready_ctx *
-chat_ready_ctx_new (EmpathyTpChat *tp_chat,
+chat_ready_ctx_new (EmpathyChatManager *self,
+    EmpathyTpChat *tp_chat,
     TpAccount *account,
     gint64 user_action_time)
 {
   chat_ready_ctx *ctx = g_slice_new0 (chat_ready_ctx);
 
+  ctx->self = g_object_ref (self);
   ctx->tp_chat = g_object_ref (tp_chat);
   ctx->account = g_object_ref (account);
   ctx->user_action_time = user_action_time;
@@ -179,6 +182,7 @@ chat_ready_ctx_new (EmpathyTpChat *tp_chat,
 static void
 chat_ready_ctx_free (chat_ready_ctx *ctx)
 {
+  g_object_unref (ctx->self);
   g_object_unref (ctx->tp_chat);
   g_object_unref (ctx->account);
 
@@ -199,7 +203,7 @@ tp_chat_ready_cb (GObject *object,
   if (!empathy_tp_chat_is_ready (tp_chat))
     return;
 
-  process_tp_chat (tp_chat, ctx->account, ctx->user_action_time);
+  process_tp_chat (ctx->self, tp_chat, ctx->account, ctx->user_action_time);
 
   chat_ready_ctx_free (ctx);
 }
@@ -251,11 +255,11 @@ handle_channels (TpSimpleHandler *handler,
 
       if (empathy_tp_chat_is_ready (tp_chat))
         {
-          process_tp_chat (tp_chat, account, user_action_time);
+          process_tp_chat (self, tp_chat, account, user_action_time);
         }
       else
         {
-          chat_ready_ctx *ctx = chat_ready_ctx_new (tp_chat, account,
+          chat_ready_ctx *ctx = chat_ready_ctx_new (self, tp_chat, account,
               user_action_time);
 
           ctx->sig_id = g_signal_connect (tp_chat, "notify::ready",
@@ -296,6 +300,8 @@ empathy_chat_manager_init (EmpathyChatManager *self)
       g_error_free (error);
       return;
     }
+
+  priv->chatroom_mgr = empathy_chatroom_manager_dup_singleton (NULL);
 
   /* Text channels handler */
   priv->handler = tp_simple_handler_new (dbus, FALSE, FALSE, "Empathy.Chat",
@@ -343,6 +349,7 @@ empathy_chat_manager_finalize (GObject *object)
     }
 
   tp_clear_object (&priv->handler);
+  tp_clear_object (&priv->chatroom_mgr);
 
   G_OBJECT_CLASS (empathy_chat_manager_parent_class)->finalize (object);
 }
