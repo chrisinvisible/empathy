@@ -44,6 +44,8 @@ test_parsers (void)
       "http://foo.com; bar", "[http://foo.com]; bar",
       "http://foo.com: bar", "[http://foo.com]: bar",
       "http://foo.com:bar", "[http://foo.com:bar]",
+      "http://apos'foo.com", "[http://apos'foo.com]",
+      "mailto:bar'?user@server.com", "[mailto:bar'?user@server.com]",
 
       /* They are not links! */
       "http://", "http[:/]/", /* Hm... */
@@ -54,7 +56,7 @@ test_parsers (void)
       "mailto:user@.com", "mailto:user@.com",
       "user@.com", "user@.com",
 
-      /* Links inside (), {}, [], <> or "" */
+      /* Links inside (), {}, [], <>, "" or '' */
       /* FIXME: How to test if the ending ] is matched or not? */
       "Foo (www.foo.com)", "Foo ([www.foo.com])",
       "Foo {www.foo.com}", "Foo {[www.foo.com]}",
@@ -68,6 +70,8 @@ test_parsers (void)
       "Foo [user@server.com]", "Foo [[user@server.com]]",
       "Foo <user@server.com>", "Foo &lt;[user@server.com]&gt;",
       "Foo \"user@server.com\"", "Foo &quot;[user@server.com]&quot;",
+      "<a href='http://apos'foo.com'>bar</a>", "&lt;a href=&apos;[http://apos'foo.com]&apos;&gt;bar&lt;/a&gt;",
+      "Foo 'bar'?user@server.com'", "Foo &apos;[bar'?user@server.com]&apos;",
 
       /* Basic smileys */
       "a:)b", "a[:)]b",
