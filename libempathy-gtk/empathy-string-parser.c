@@ -161,20 +161,24 @@ empathy_string_replace_link (const gchar *text,
 {
 	GString *string = user_data;
 	gchar *real_url;
-	gchar *escaped;
+	gchar *title;
+	gchar *markup;
 
 	real_url = empathy_make_absolute_url_len (text, len);
 
-	/* The thing we are making a link of may contain
-	 * characters which need escaping */
-	escaped = g_markup_escape_text (text, len);
+	/* Need to copy manually, because g_markup_printf_escaped does not work
+	 * with string precision pitfalls. */
+	title = g_strndup (text, len);
 
 	/* Append the link inside <a href=""></a> tag */
-	g_string_append_printf (string, "<a href=\"%s\">%s</a>",
-				real_url, escaped);
+	markup = g_markup_printf_escaped ("<a href=\"%s\">%s</a>",
+			real_url, title);
+
+	g_string_append (string, markup);
 
 	g_free (real_url);
-	g_free (escaped);
+	g_free (title);
+	g_free (markup);
 }
 
 void
