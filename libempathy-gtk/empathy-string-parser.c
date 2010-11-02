@@ -27,14 +27,14 @@
 #include "empathy-ui-utils.h"
 
 #define SCHEMES           "([a-zA-Z\\+]+)"
-#define INVALID_CHARS     "\\s\"'"
-#define INVALID_CHARS_EXT INVALID_CHARS "\\[\\]<>(){},;:?"
-#define BODY              "([^"INVALID_CHARS"]+)"
-#define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_EXT".]"
-#define BODY_STRICT       "([^"INVALID_CHARS_EXT"]+)"
+#define INVALID_CHARS     "\\s\"<>"
+#define INVALID_CHARS_EXT INVALID_CHARS "\\[\\](){},;:"
+#define INVALID_CHARS_FULL INVALID_CHARS_EXT "?'"
+#define BODY              "([^"INVALID_CHARS_FULL"])([^"INVALID_CHARS_EXT"]*)"
+#define BODY_END          "([^"INVALID_CHARS"]*)[^"INVALID_CHARS_FULL".]"
 #define URI_REGEX         "("SCHEMES"://"BODY_END")" \
 		          "|((www|ftp)\\."BODY_END")" \
-		          "|((mailto:)?"BODY_STRICT"@"BODY"\\."BODY_END")"
+		          "|((mailto:)?"BODY"@"BODY"\\."BODY_END")"
 
 static GRegex *
 uri_regex_dup_singleton (void)
