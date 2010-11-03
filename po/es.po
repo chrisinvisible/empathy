@@ -2,15 +2,16 @@
 # Copyright (C) 2003 Free Software Foundation
 # This file is distributed under the same license as the Gossip package.
 # Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2009, 2010.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: empathy.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=empathy&component=general\n"
-"POT-Creation-Date: 2010-11-02 09:02+0000\n"
-"PO-Revision-Date: 2010-11-02 11:10+0100\n"
-"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"POT-Creation-Date: 2010-11-03 16:16+0000\n"
+"PO-Revision-Date: 2010-11-03 17:04+0100\n"
+"Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -486,7 +487,6 @@ msgid "Messaging and VoIP Accounts"
 msgstr "Cuentas de mensajería y Voz IP"
 
 #: ../libempathy/empathy-ft-handler.c:830
-#| msgid "File transfer completed"
 msgid "File transfer completed, but the file was corrupted"
 msgstr "Se completó la transferencia de archivo pero el archivo está corrupto"
 
@@ -1296,8 +1296,8 @@ msgid ""
 "join a new chat room\""
 msgstr ""
 "/say <mensaje>: enviar un <mensaje> a la conversación actual. Esto se usa "
-"para enviar un mensaje comenzando por una «/». Por ejemplo: «/say /join se "
-"usa para unirse a una sala de chat nueva»"
+"para enviar un mensaje comenzando por una «/». Por ejemplo: «/say /join se usa "
+"para unirse a una sala de chat nueva»"
 
 #: ../libempathy-gtk/empathy-chat.c:856
 msgid ""
@@ -2524,7 +2524,9 @@ msgstr "Un cliente de mensajería instantánea para GNOME"
 
 #: ../src/empathy-about-dialog.c:113
 msgid "translator-credits"
-msgstr "Jorge González <jorgegonz@svn.gnome.org>, 2007-2010"
+msgstr ""
+"Jorge González <jorgegonz@svn.gnome.org>, 2007-2010\n"
+"Daniel Mustieles <daniel.mustieles@gmail.com>, 2010"
 
 #: ../src/empathy-account-assistant.c:167
 msgid "There was an error while importing the accounts."
@@ -2796,11 +2798,11 @@ msgstr "Cliente de autenticación de Empathy"
 msgid "People nearby"
 msgstr "Gente cerca"
 
-#: ../src/empathy-av.c:115
+#: ../src/empathy-av.c:118
 msgid "- Empathy Audio/Video Client"
 msgstr ": Cliente de sonido/vídeo Empathy"
 
-#: ../src/empathy-av.c:131
+#: ../src/empathy-av.c:134
 msgid "Empathy Audio/Video Client"
 msgstr "Cliente de sonido/vídeo Empathy"
 
@@ -3249,12 +3251,12 @@ msgstr "Le han invitado a unirse a %s"
 msgid "Incoming file transfer from %s"
 msgstr "Transferencia de archivo entrante de %s"
 
-#: ../src/empathy-event-manager.c:1005
+#: ../src/empathy-event-manager.c:1006
 #, c-format
-msgid "Subscription requested by %s"
-msgstr "Petición de suscripción de %s"
+msgid "%s would like permission to see when you are available"
+msgstr "%s quiere permiso para ver cuándo está disponible"
 
-#: ../src/empathy-event-manager.c:1009
+#: ../src/empathy-event-manager.c:1010
 #, c-format
 msgid ""
 "\n"
@@ -3263,12 +3265,12 @@ msgstr ""
 "\n"
 "Mensaje: %s"
 
-#: ../src/empathy-event-manager.c:1052
+#: ../src/empathy-event-manager.c:1053
 #, c-format
 msgid "%s is now offline."
 msgstr "Ahora %s está desconectado."
 
-#: ../src/empathy-event-manager.c:1072
+#: ../src/empathy-event-manager.c:1073
 #, c-format
 msgid "%s is now online."
 msgstr "Ahora %s está conectado."
@@ -3906,6 +3908,9 @@ msgstr "Cuentas en Empathy"
 msgid "Empathy Debugger"
 msgstr "Depurador de Empathy"
 
+#~ msgid "Subscription requested by %s"
+#~ msgstr "Petición de suscripción de %s"
+
 #~ msgid "The hash of the received file and the sent one do not match"
 #~ msgstr "El «hash» del archivo recibido y del enviado no coinciden"
 
@@ -4306,9 +4311,6 @@ msgstr "Depurador de Empathy"
 
 #~ msgid "unknown size"
 #~ msgstr "tamaño desconocido"
-
-#~ msgid "%s would like to send you a file"
-#~ msgstr "%s quiere enviarle un archivo"
 
 #~ msgid "Do you want to accept the file \"%s\" (%s)?"
 #~ msgstr "¿Quiere aceptar el archivo «%s» (%s)?"
