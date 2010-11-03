@@ -47,6 +47,8 @@ static GtkApplication *app = NULL;
 static gboolean activated = FALSE;
 static gboolean use_timer = TRUE;
 
+static EmpathyCallFactory *call_factory = NULL;
+
 static void
 new_call_handler_cb (EmpathyCallFactory *factory,
     EmpathyCallHandler *handler,
@@ -72,12 +74,12 @@ activate_cb (GApplication *application)
 {
   if (!use_timer && !activated)
     {
-      EmpathyCallFactory *call_factory;
       GError *error = NULL;
 
       /* keep a 'ref' to the application */
       g_application_hold (G_APPLICATION (app));
 
+      g_assert (call_factory == NULL);
       call_factory = empathy_call_factory_initialise ();
 
       g_signal_connect (G_OBJECT (call_factory), "new-call-handler",
@@ -90,8 +92,6 @@ activate_cb (GApplication *application)
         }
 
       activated = TRUE;
-
-      g_object_unref (call_factory);
     }
 }
 
@@ -158,6 +158,7 @@ main (int argc,
   retval = g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
+  tp_clear_object (&call_factory);
 
 #ifdef ENABLE_DEBUG
   g_object_unref (debug_sender);
