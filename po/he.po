@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: empathy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-26 08:22+0200\n"
-"PO-Revision-Date: 2010-10-26 08:23+0200\n"
+"POT-Creation-Date: 2010-11-03 09:11+0200\n"
+"PO-Revision-Date: 2010-11-03 09:11+0200\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -447,18 +447,18 @@ msgid "Messaging and VoIP Accounts"
 msgstr "חשבונות התכתבות ו־VoIP"
 
 #: ../libempathy/empathy-ft-handler.c:830
-msgid "The hash of the received file and the sent one do not match"
-msgstr "סכום הגיבוב של הקובץ שנשלח ושל הקובץ שהתקבל אינם תואמים"
+msgid "File transfer completed, but the file was corrupted"
+msgstr "העברת קובץ הושלמה, אך הקובץ היה פגום"
 
-#: ../libempathy/empathy-ft-handler.c:1122
+#: ../libempathy/empathy-ft-handler.c:1121
 msgid "File transfer not supported by remote contact"
 msgstr "העברת קבצים לא נתמכת על ידי איש הקשר המרוחק"
 
-#: ../libempathy/empathy-ft-handler.c:1178
+#: ../libempathy/empathy-ft-handler.c:1177
 msgid "The selected file is not a regular file"
 msgstr "הקובץ הנבחר אינו קובץ רגיל"
 
-#: ../libempathy/empathy-ft-handler.c:1187
+#: ../libempathy/empathy-ft-handler.c:1186
 msgid "The selected file is empty"
 msgstr "הקובץ הנבחר ריק"
 
@@ -1487,33 +1487,33 @@ msgid "Favorite People"
 msgstr "אנשים מועדפים"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2004
-#: ../libempathy-gtk/empathy-individual-view.c:2206
+#: ../libempathy-gtk/empathy-individual-view.c:2262
 #, c-format
 msgid "Do you really want to remove the group '%s'?"
 msgstr "האם להסיר את הקבוצה '%s'?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2006
-#: ../libempathy-gtk/empathy-individual-view.c:2209
+#: ../libempathy-gtk/empathy-individual-view.c:2265
 msgid "Removing group"
 msgstr "הקבוצה מוסרת"
 
 #. Remove
 #: ../libempathy-gtk/empathy-contact-list-view.c:2055
 #: ../libempathy-gtk/empathy-contact-list-view.c:2132
-#: ../libempathy-gtk/empathy-individual-view.c:2263
-#: ../libempathy-gtk/empathy-individual-view.c:2377
+#: ../libempathy-gtk/empathy-individual-view.c:2319
+#: ../libempathy-gtk/empathy-individual-view.c:2433
 #: ../src/empathy-accounts-dialog.ui.h:7
 msgid "_Remove"
 msgstr "ה_סרה"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2085
-#: ../libempathy-gtk/empathy-individual-view.c:2294
+#: ../libempathy-gtk/empathy-individual-view.c:2350
 #, c-format
 msgid "Do you really want to remove the contact '%s'?"
 msgstr "להסיר את איש הקשר '%s'?"
 
 #: ../libempathy-gtk/empathy-contact-list-view.c:2087
-#: ../libempathy-gtk/empathy-individual-view.c:2296
+#: ../libempathy-gtk/empathy-individual-view.c:2352
 msgid "Removing contact"
 msgstr "איש קשר מוסר"
 
@@ -2403,11 +2403,23 @@ msgstr "אין הודעת שגיאה"
 msgid "Instant Message (Empathy)"
 msgstr "הודעה מיידית (Empathy)"
 
-#: ../src/empathy.c:420
+#: ../src/empathy.c:303
+msgid "Don't connect on startup"
+msgstr "לא להתחבר בהפעלה"
+
+#: ../src/empathy.c:307
+msgid "Don't display the contact list or any other dialogs on startup"
+msgstr "אין להציג את רשימת אנשי הקשר או כל דו־שיח אחר בהפעלה"
+
+#: ../src/empathy.c:315
+msgid "- Empathy IM Client"
+msgstr "- לקוח המסרים המידיים Empathy"
+
+#: ../src/empathy.c:494
 msgid "Error contacting the Account Manager"
 msgstr "שגיאה ביצירת קשר עם מנהל החשבונות"
 
-#: ../src/empathy.c:422
+#: ../src/empathy.c:496
 #, c-format
 msgid ""
 "There was an error while trying to connect to the Telepathy Account Manager. "
@@ -2418,18 +2430,6 @@ msgstr ""
 "אירעה שגיאה בעת ניסיון ההתחברות למנהל החשבונות של Telepathy. השגיאה הייתה:\n"
 "\n"
 "%s"
-
-#: ../src/empathy.c:649
-msgid "Don't connect on startup"
-msgstr "לא להתחבר בהפעלה"
-
-#: ../src/empathy.c:653
-msgid "Don't display the contact list or any other dialogs on startup"
-msgstr "אין להציג את רשימת אנשי הקשר או כל דו־שיח אחר בהפעלה"
-
-#: ../src/empathy.c:670
-msgid "- Empathy IM Client"
-msgstr "- לקוח המסרים המידיים Empathy"
 
 #: ../src/empathy-about-dialog.c:81
 msgid ""
@@ -2743,11 +2743,11 @@ msgstr "לקוח האימות של Empathy"
 msgid "People nearby"
 msgstr "אנשים בקרבתי"
 
-#: ../src/empathy-av.c:122
+#: ../src/empathy-av.c:115
 msgid "- Empathy Audio/Video Client"
 msgstr "- לקוח השמע/הווידאו Empathy"
 
-#: ../src/empathy-av.c:138
+#: ../src/empathy-av.c:131
 msgid "Empathy Audio/Video Client"
 msgstr "לקוח השמע/הווידאו Empathy"
 
@@ -3803,36 +3803,39 @@ msgstr "נא לבחור אנשי קשר להזמנה לדיון:"
 msgid "Invite"
 msgstr "הזמנה"
 
-#: ../src/empathy-accounts.c:163
+#: ../src/empathy-accounts.c:183
 msgid "Don't display any dialogs; do any work (eg, importing) and exit"
 msgstr ""
 "אין להציג דו־שיח כלשהו; תתבצע פעולה כלשהי (לדוגמה יבוא) ולאחריה התכנית תסגר"
 
-#: ../src/empathy-accounts.c:167
+#: ../src/empathy-accounts.c:187
 msgid ""
 "Don't display any dialogs unless there are only \"People Nearby\" accounts"
 msgstr "אין להציג תיבות דו־שיח כלשהן אלא אם כן ישנן חשבונות \"אנשים בקרבתי\""
 
-#: ../src/empathy-accounts.c:171
+#: ../src/empathy-accounts.c:191
 msgid "Initially select given account (eg, gabble/jabber/foo_40example_2eorg0)"
 msgstr ""
 "בחירת החשבון הנתון כבר בהתחלה (לדוגמה gabble/jabber/foo_40example_2eorg0)"
 
-#: ../src/empathy-accounts.c:173
+#: ../src/empathy-accounts.c:193
 msgid "<account-id>"
 msgstr "<account-id>"
 
-#: ../src/empathy-accounts.c:181
+#: ../src/empathy-accounts.c:198
 msgid "- Empathy Accounts"
 msgstr "- חשבונות Empathy"
 
-#: ../src/empathy-accounts.c:197
+#: ../src/empathy-accounts.c:237
 msgid "Empathy Accounts"
 msgstr "חשבונות Empathy"
 
-#: ../src/empathy-debugger.c:45
+#: ../src/empathy-debugger.c:65
 msgid "Empathy Debugger"
 msgstr "מנפה השגיאות של Empathy"
+
+#~ msgid "The hash of the received file and the sent one do not match"
+#~ msgstr "סכום הגיבוב של הקובץ שנשלח ושל הקובץ שהתקבל אינם תואמים"
 
 #~ msgid "Empathy has asked about importing accounts"
 #~ msgstr "Empathy has asked about importing accounts"
