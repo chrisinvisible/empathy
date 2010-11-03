@@ -72,12 +72,15 @@ new_call_handler_cb (EmpathyCallFactory *factory,
 static void
 activate_cb (GApplication *application)
 {
-  if (!use_timer && !activated)
+  if (!activated)
     {
       GError *error = NULL;
 
-      /* keep a 'ref' to the application */
-      g_application_hold (G_APPLICATION (app));
+      if (!use_timer)
+        {
+          /* keep a 'ref' to the application */
+          g_application_hold (G_APPLICATION (app));
+        }
 
       g_assert (call_factory == NULL);
       call_factory = empathy_call_factory_initialise ();
