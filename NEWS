@@ -1,3 +1,59 @@
+NEW in 2.91.2 (08/11/2010)
+=============
+
+The text channel handler has been splitted to its own process (empathy-chat).
+Thanks to Vitaly Minko, you can now add new words to the dictionary using the
+spelling menu.
+
+Empathy continues to follow the development of the GNOME 3 platform and so
+has been ported to latest GLib and GTK+ APIs.
+
+Dependencies:
+
+ • GTK+ ≥ 2.91.3
+ • GLib ≥ 2.27.2
+ • libnotify ≥ 0.7.0
+
+Bugs fixed:
+ - Fixed #632681, tp_account_get_storage_restrictions: assertion `TP_IS_ACCOUNT (self)' failed when creating an account (Danielle Madeley)
+ - Fixed #550775, Can't add words to dictionary in empathy (Vitaly Minko)
+ - Fixed #573283, Most options should be disabled when right clicking on  in a chatroom (Vitaly Minko)
+ - Fixed #581029, Context needed to translate (Guillaume Desmottes)
+ - Fixed #609942, URLs are split at apostrophes (Vitaly Minko)
+ - Fixed #612205, Ctrl-C not working in the topic (Vitaly Minko)
+ - Fixed #616339, Problem with & symbol from status messages links in tooltips. (Vitaly Minko)
+ - Fixed #619858, contacts list should autoscroll when drag-n-dropping (Vitaly Minko)
+ - Fixed #619961, Drag and drop should work onto a collapsed group (Vitaly Minko)
+ - Fixed #625780, Not attaching to minimized window (Vitaly Minko)
+ - Fixed #628823, "Salut" -> "People Nearby" in the error message (Francisca Gallardo)
+ - Fixed #630421, Empathy fails to support multiple TEL fields in ContactInfo (Guillaume Desmottes)
+ - Fixed #631946, decouple roster from Text channel handler (Guillaume Desmottes)
+ - Fixed #632024, Be able to start contact search using menu (Vitaly Minko)
+ - Fixed #632550, Continue killing EmpathyDispatcher (Guillaume Desmottes)
+ - Fixed #632564, assertion `EMPATHY_IS_CONTACT (contact)' failed in individual_store_contact_sort (Travis Treitter)
+ - Fixed #632846, Empathy needs to catch up with G/tkApplication API breaks (Travis Reitter)
+ - Fixed #632912, Empathy programs no longer guarantee uniqueness (Travis Reitter)
+ - Fixed #632926, Hash mismatch error string is incomprehensible. (Guillaume Desmottes)
+ - Fixed #633329, Crash when trying to join a MUC (Guillaume Desmottes)
+ - Fixed #633816, empathy-av crashes at startup (Guillaume Desmottes)
+ - Fixed #633870, Jabber subscription request dialog is too difficult to understand for non-technical users (Alex Launi)
+
+Translations:
+ - Updated ca@valencia Translation (Carles Ferrando)
+ - Updated crh Translation (Reşat SABIQ)
+ - Updated es Translation (Daniel Mustieles, Jorge González)
+ - Updated gl Translation (Fran Diéguez)
+ - Updated he Translation (Yaron Shahrabani)
+ - Updated ja Translation (Takayuki KUSANO)
+ - Updated sl Translation (Matej Urbančič)
+ - Updated zh_CN Translation (Aron Xu)
+
+Documentation translations:
+ - Updated de Documentation translation (Mario Blättermann)
+ - Updated fr Documentation translation (Claude Paroz)
+ - Updated gl Documentation translation (Fran Diéguez)
+ - Updated hu Documentation translation (Gabor Kelemen)
+
 NEW in 2.91.1 (18/10/2010)
 =============
 
