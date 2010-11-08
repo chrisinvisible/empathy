@@ -992,7 +992,7 @@ presence_chooser_finalize (GObject *object)
 GtkWidget *
 empathy_presence_chooser_new (void)
 {
-	/* FIXME, why can't this go in init()? */
+	/* FIXME, why can't this go in init ()? */
 	return g_object_new (EMPATHY_TYPE_PRESENCE_CHOOSER,
 		"has-entry", TRUE,
 		NULL);

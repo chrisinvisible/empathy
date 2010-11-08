@@ -1896,7 +1896,7 @@ chat_spelling_build_add_to_dictionary_item (EmpathyChatSpell *chat_spell)
 	g_assert (codes != NULL);
 	if (g_list_length (codes) > 1) {
 		/* translators: %s is the selected word */
-		label = g_strdup_printf(_("Add '%s' to Dictionary"),
+		label = g_strdup_printf (_("Add '%s' to Dictionary"),
 					chat_spell->word);
 		item = gtk_image_menu_item_new_with_mnemonic (label);
 		g_free (label);
@@ -1933,7 +1933,7 @@ chat_spelling_build_add_to_dictionary_item (EmpathyChatSpell *chat_spell)
 		g_assert (name != NULL);
 		/* translators: first %s is the selected word,
 		 * second %s is the language name of the target dictionary */
-		label = g_strdup_printf(_("Add '%s' to %s Dictionary"),
+		label = g_strdup_printf (_("Add '%s' to %s Dictionary"),
 					chat_spell->word, name);
 		item = gtk_image_menu_item_new_with_mnemonic (label);
 		g_free (label);
