@@ -91,11 +91,13 @@ subscription_dialog_response_cb (GtkDialog *dialog,
 
 void
 empathy_subscription_dialog_show (EmpathyContact *contact,
+				  const gchar *message,
 				  GtkWindow     *parent)
 {
 	GtkBuilder *gui;
 	GtkWidget *dialog;
 	GtkWidget *hbox_subscription;
+	GtkWidget *vbox;
 	GtkWidget *contact_widget;
 	GList     *l;
 	gchar     *filename;
@@ -119,16 +121,37 @@ empathy_subscription_dialog_show (EmpathyContact *contact,
 	g_free (filename);
 	g_object_unref (gui);
 
+	vbox = gtk_vbox_new (FALSE, 6);
+
+	gtk_box_pack_end (GTK_BOX (hbox_subscription), vbox,
+			  TRUE, TRUE, 0);
+
 	/* Contact info widget */
 	contact_widget = empathy_contact_widget_new (contact,
 						     EMPATHY_CONTACT_WIDGET_NO_SET_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_ALIAS |
 						     EMPATHY_CONTACT_WIDGET_EDIT_GROUPS);
-	gtk_box_pack_end (GTK_BOX (hbox_subscription),
+	gtk_box_pack_start (GTK_BOX (vbox),
 			  contact_widget,
 			  TRUE, TRUE,
 			  0);
+
+	if (!tp_str_empty (message)) {
+		GtkWidget *label;
+		gchar *tmp;
+
+		label = gtk_label_new ("");
+		tmp = g_strdup_printf ("<i>%s</i>", message);
+
+		gtk_label_set_markup (GTK_LABEL (label), tmp);
+		g_free (tmp);
+		gtk_widget_show (label);
+
+		gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
+	}
+
 	gtk_widget_show (contact_widget);
+	gtk_widget_show (vbox);
 
 	g_object_set_data (G_OBJECT (dialog), "contact_widget", contact_widget);
 	subscription_dialogs = g_list_prepend (subscription_dialogs, dialog);
