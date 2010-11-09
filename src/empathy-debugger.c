@@ -56,6 +56,7 @@ main (int argc,
   gint retval;
 
   g_thread_init (NULL);
+  gtk_init (&argc, &argv);
   empathy_gtk_init ();
 
   app = gtk_application_new (EMPATHY_DEBUGGER_DBUS_NAME,
