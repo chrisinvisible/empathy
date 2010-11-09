@@ -45,7 +45,7 @@ static const char *authors[] = {
 	"Frederic Crozat",
 	"Frederic Peters",
 	"Geert-Jan Van den Bogaerde",
-	"Guillaume Desmottes",
+	"Guillaume Desmottes <guillaume.desmottes@collabora.co.uk>",
 	"Johan Hammar",
 	"Jonatan Magnusson",
 	"Jonny Lamb",
